@@ -74,8 +74,6 @@ namespace ST.CORE
 
 			app.UsePageRedirect();
 
-			//app.UseClaimsSynchronizer();
-
 			app.UseConfiguredCors(Configuration);
 
 			app.UseSwagger()
@@ -99,7 +97,7 @@ namespace ST.CORE
 			var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
 
 			var migrationsAssembly = typeof(Identity.Constants).GetTypeInfo().Assembly.GetName().Name;
-			
+
 			services.Configure<SecurityStampValidatorOptions>(options =>
 			{
 				// enables immediate logout, after updating the user's stat.
@@ -116,8 +114,6 @@ namespace ST.CORE
 			{
 				options = options.GetDefaultOptions(connectionString);
 			});
-
-			services.RegisterApiServices(Configuration);
 
 			services.AddDbContextAndIdentity(connectionString, migrationsAssembly, HostingEnvironment)
 				.AddApplicationSpecificServices()
@@ -146,45 +142,7 @@ namespace ST.CORE
 					checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
 				});
 
-			services.AddAuthentication(options => { })
-				.AddFacebook(options =>
-				{
-					options.AppId = Configuration["Secrets:Facebook:AppId"];
-					options.AppSecret = Configuration["Secrets:Facebook:AppSecret"];
-				})
-				.AddGoogle(options =>
-				{
-					options.ClientId = Configuration["Secrets:Google:ClientId"];
-					options.ClientSecret = Configuration["Secrets:Google:ClientSecret"];
-					options.Events.OnCreatingTicket = context =>
-					{
-						context.Identity.AddClaim(new Claim("image",
-							context.User.GetValue("image").SelectToken("url").ToString()));
-						return Task.CompletedTask;
-					};
-				})
-				.AddLinkedIn(options =>
-				{
-					options.ClientId = Configuration["Secrets:LinkedIn:ClientId"];
-					options.ClientSecret = Configuration["Secrets:LinkedIn:ClientSecret"];
-					options.Scope.Add("r_basicprofile");
-					options.Scope.Add("r_emailaddress");
-					options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id", ClaimValueTypes.String);
-					options.ClaimActions.MapJsonKey(ClaimTypes.Name, "formattedName", ClaimValueTypes.String);
-					options.ClaimActions.MapJsonKey(ClaimTypes.Email, "emailAddress", ClaimValueTypes.Email);
-					options.ClaimActions.MapJsonKey(ClaimTypes.Uri, "pictureUrl", ClaimValueTypes.String);
-
-					options.Events = new OAuthEvents
-					{
-						OnRemoteFailure = loginFailureHandler =>
-						{
-							options.StateDataFormat.Unprotect(loginFailureHandler.Request.Query["state"]);
-							loginFailureHandler.Response.Redirect("/Account/login");
-							loginFailureHandler.HandleResponse();
-							return Task.FromResult(0);
-						}
-					};
-				});
+			services.AddAdditionalAuthetificationProviders(Configuration);
 
 			services.AddApiVersioning(options =>
 			{
@@ -201,7 +159,7 @@ namespace ST.CORE
 
 			//Register dynamic table repository
 			services.RegisterDynamicDataServices();
-			//Add signaler
+			//Add signalar
 			services.AddStSignalR();
 
 			//Run background service

@@ -1,12 +1,15 @@
-﻿using ST.Procesess.Models.ParserModels;
-using System;
+﻿using ST.Procesess.Models;
+using ST.Procesess.Models.ParserModels;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ST.Procesess.Abstraction
 {
     public interface IProcessParser
     {
-
+        void Init(string schema, IEnumerable<Dictionary<string, string>> xSettings);
+        string GetStringSchema { get; }
+        XSchema GetXSchema { get; }
+        IEnumerable<STProcess> GetProcesses();
+        IEnumerable<STProcess> GetProcessFromCollaborationDiagram();
     }
 }

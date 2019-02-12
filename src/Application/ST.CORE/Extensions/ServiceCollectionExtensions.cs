@@ -4,10 +4,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -47,6 +51,8 @@ using ST.MPass.Gov;
 using ST.Notifications.Abstraction;
 using ST.Notifications.Providers;
 using ST.Notifications.Services;
+using ST.Procesess.Abstraction;
+using ST.Procesess.Parsers;
 using Swashbuckle.AspNetCore.Swagger;
 using constants = ST.Identity.Constants;
 
@@ -167,6 +173,7 @@ namespace ST.CORE.Extensions
 		/// <returns></returns>
 		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services)
 		{
+			services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
 			services.AddTransient<IEmailSender, EmailSender>();
 			services.AddTransient<IMPassService, MPassService>();
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -175,6 +182,7 @@ namespace ST.CORE.Extensions
 			services.AddTransient<ILocalizationService, LocalizationService>();
 			services.AddTransient<IPageRender, PageRender>();
 			services.AddTransient<IMenuService, MenuService>();
+			services.AddTransient<IProcessParser, ProcessParser>();
 			return services;
 		}
 
@@ -212,18 +220,61 @@ namespace ST.CORE.Extensions
 		}
 
 		/// <summary>
-		/// Register API Services
+		/// Add Additional Authetification Providers
 		/// </summary>
 		/// <param name="services"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		public static IServiceCollection RegisterApiServices(this IServiceCollection services,
-			IConfiguration configuration)
+		public static IServiceCollection AddAdditionalAuthetificationProviders(this IServiceCollection services, IConfiguration configuration)
 		{
-			services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
+			services.AddAuthentication(options => { })
+				.AddFacebook(options =>
+				{
+					options.AppId = configuration["Secrets:Facebook:AppId"];
+					options.AppSecret = configuration["Secrets:Facebook:AppSecret"];
+				})
+				.AddGoogle(options =>
+				{
+					options.ClientId = configuration["Secrets:Google:ClientId"];
+					options.ClientSecret = configuration["Secrets:Google:ClientSecret"];
+					options.Events.OnCreatingTicket = context =>
+					{
+						context.Identity.AddClaim(new Claim("image",
+						context.User.GetValue("image").SelectToken("url").ToString()));
+						return Task.CompletedTask;
+					};
+				})
+				.AddLinkedIn(options =>
+				{
+					options.ClientId = configuration["Secrets:LinkedIn:ClientId"];
+					options.ClientSecret = configuration["Secrets:LinkedIn:ClientSecret"];
+					options.Scope.Add("r_basicprofile");
+					options.Scope.Add("r_emailaddress");
+					options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id", ClaimValueTypes.String);
+					options.ClaimActions.MapJsonKey(ClaimTypes.Name, "formattedName", ClaimValueTypes.String);
+					options.ClaimActions.MapJsonKey(ClaimTypes.Email, "emailAddress", ClaimValueTypes.Email);
+					options.ClaimActions.MapJsonKey(ClaimTypes.Uri, "pictureUrl", ClaimValueTypes.String);
+
+					options.Events = new OAuthEvents
+					{
+						OnRemoteFailure = loginFailureHandler =>
+						{
+							options.StateDataFormat.Unprotect(loginFailureHandler.Request.Query["state"]);
+							loginFailureHandler.Response.Redirect("/Account/login");
+							loginFailureHandler.HandleResponse();
+							return Task.FromResult(0);
+						}
+					};
+				});
 			return services;
 		}
 
+		/// <summary>
+		/// Add localization
+		/// </summary>
+		/// <param name="services"></param>
+		/// <param name="configuration"></param>
+		/// <returns></returns>
 		public static IServiceCollection AddStLocalization(this IServiceCollection services,
 			IConfiguration configuration)
 		{
