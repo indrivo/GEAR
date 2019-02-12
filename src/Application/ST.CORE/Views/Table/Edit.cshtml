@@ -1,0 +1,376 @@
+@model ST.Entities.ViewModels.Table.UpdateTableViewModel
+
+@inject IStringLocalizer Localizer
+
+@{
+	ViewData["Title"] = "Edit";
+}
+
+<form asp-action="Edit" role="form" class="ui form">
+	<input type="hidden" asp-for="Id" />
+	<input type="hidden" asp-for="Name" />
+	<input type="hidden" asp-for="EntityType" />
+	<input type="hidden" asp-for="ModifiedBy" />
+	<input type="hidden" asp-for="Created" />
+	<input type="hidden" id="tabValue" value="@Model.TabName" />
+	<div class="card">
+		<div class="card-body pb-0">
+			<h4 class="card-title">Table edit</h4>
+		</div>
+		<div id="menuTab">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs customtab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" data-toggle="tab" href="#itemOne" role="tab">
+						<span class="hidden-sm-up">
+							<i class="ti-home"></i>
+						</span> <span class="hidden-xs-down">Entity information</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-toggle="tab" href="#itemTwo" role="tab">
+						<span class="hidden-sm-up">
+							<i class="ti-user"></i>
+						</span> <span class="hidden-xs-down">Fields</span>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" data-toggle="tab" href="#itemThree" role="tab">
+						<span class="hidden-sm-up">
+							<i class="ti-email"></i>
+						</span> <span class="hidden-xs-down">Forms</span>
+					</a>
+				</li>
+			</ul>
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<!--Tab_1-->
+				<div class="tab-pane active" id="itemOne" role="tabpanel">
+					<div class="p-20">
+						<blockquote>
+							<div class="font-weight-bold">General information about entity.</div>
+							<ul class="list-icons">
+								<li>
+									<strong>Entity Name:</strong> <i class="ti-angle-right mr-2"></i>@Model.Name
+								</li>
+								<li>
+									<strong>Entity Type:</strong><i class="ti-angle-right mr-2"></i> @Model.EntityType
+								</li>
+								<li>
+									<strong>Created Date:</strong><i class="ti-angle-right mr-2"></i>@Model.Created
+								</li>
+								<li>
+									<strong>Rated By:</strong><i class="ti-angle-right mr-2"></i>@Model.ModifiedBy
+								</li>
+							</ul>
+						</blockquote>
+
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label asp-for="Description" class="control-label"></label>
+							<textarea rows="3" asp-for="Description" class="form-control"></textarea>
+							<span asp-validation-for="Description" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="row p-3 button-group">
+						<div class="col-lg-2 col-md-3">
+							<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i>Save</button>
+						</div>
+						@if (!Model.IsSystem)
+						{
+							<div class="col-lg-2 col-md-3">
+								<a href="#" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>Delete</a>
+							</div>
+						}
+
+						<div class="col-lg-2 col-md-3">
+							<a asp-action="Index" class="btn btn-block btn-link">Back To List</a>
+						</div>
+					</div>
+				</div>
+				<!--End_Tab_1-->
+				<!--Tab_2-->
+				<div class="tab-pane p-20" id="itemTwo" role="tabpanel">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="btn-group mb-4">
+								<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Add Field
+								</button>
+								<div class="dropdown-menu " style="overflow-y: auto;">
+									@foreach (var item in Model.Groups)
+									{
+										<a class="dropdown-item" style="font-weight: bold;" href="#">@item.GroupName</a>
+										foreach (var type in item.TableFieldTypes)
+										{
+											<a class="dropdown-item" asp-action="AddField" asp-route-id="@Model.Id" asp-route-type="@type.Name">@type.Name</a>
+										}
+										<div class="dropdown-divider"></div>
+									}
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							@if (Model.TableFields.Any())
+							{
+								<table class="table table-hover contact-list color-table purple-table">
+									<thead class="full-width">
+										<tr>
+											<th>Field Name</th>
+											<th>Data Type</th>
+											<th>Allow NULL</th>
+											<th>Created Date</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (var item in Model.TableFields)
+										{
+											<tr>
+												<td>
+													@Html.DisplayFor(modelItem => item.Name)
+												</td>
+												<td>
+													@Html.DisplayFor(modelItem => item.DataType)
+												</td>
+												<td style="text-align: center">
+													@if (item.AllowNull == false)
+													{
+														<i class="circle outline icon"></i>
+													}
+													else
+													{
+														<i class="circle icon"></i>
+													}
+												</td>
+												<td>
+													@Html.DisplayFor(modelItem => item.Created)
+												</td>
+												<td>
+													@if (!item.IsSystem)
+													{
+														if (!Model.IsPartOfDbContext)
+														{
+															<a asp-action="EditField" asp-route-type="@item.TableFieldTypeId" asp-route-fieldId="@item.Id" class="btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Edit">
+																<i class="ti-pencil" aria-hidden="true"></i>
+															</a>
+															<a href="#" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
+																<i class="ti-close" aria-hidden="true"></i>
+															</a>
+														}
+														else
+														{
+															<a class="" style="width: 155px">System Field</a>
+														}
+													}
+													else
+													{
+														<a class="" style="width: 155px">System Field</a>
+													}
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							}
+							else
+							{
+								<div class="ui horizontal divider">
+									There are no fields.
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+				<!--End_Tab_2-->
+				<!--Tab_3-->
+				<div class="tab-pane p-20" id="itemThree" role="tabpanel">
+
+					<div class="row">
+						<div class="card col-md-12">
+							<div class="card-body">
+								<h4 class="card-title">@Localizer["forms"]</h4>
+								<h6 class="card-subtitle">List of forms</h6>
+								<div class="table-responsive">
+									<div class="mt-2">
+										<div class="d-flex">
+											<div class="mr-auto">
+												<div class="form-group">
+													<a asp-action="Create" asp-controller="Form" class="btn btn-primary btn-sm">
+														<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_forms"]
+													</a>
+													<small>New form will be added.</small>
+												</div>
+											</div>
+										</div>
+									</div>
+									<table style="margin: 0em; width: 100%;" class="table table-striped table-bordered" id="formTable">
+										<thead>
+											<tr>
+												<th>@Html.DisplayNameFor(model => model.Name)</th>
+												<th>@Localizer["entity_name"]</th>
+												<th>Description</th>
+												<th>@Localizer["created"]</th>
+												<th>@Localizer["changed"]</th>
+												<th>Author</th>
+												<th>Deleted</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+										<tbody></tbody>
+										<tfoot></tfoot>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--End_Tab_3-->
+			</div>
+		</div>
+	</div>
+</form>
+
+
+@section Scripts {
+	<script language="javascript" type="text/javascript">
+		$(document).ready(function() {
+			$('.sa-delete').click(function() {
+				const id = $(this).attr("data-id");
+				swal({
+					title: "Are you sure?",
+					text: "You will not be able to recover this field!",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Yes, delete it!",
+					closeOnConfirm: false
+				}).then(() => {
+						$.ajax({
+							url: '@Url.Action("DeleteField", "Table")',
+							method: "get",
+							dataType: "json",
+							contentType: "application/x-www-form-urlencoded; charset=utf-8",
+							data: {
+								id: id
+							},
+							success: function(data) {
+								if (data) {
+									swal("Deleted!", "Field has been deleted.", "success");
+									location.reload();
+								} else {
+									swal("Fail!", "Api not respond or not have permissions.", "error");
+								}
+							},
+							error: function(error) {
+								swal("Fail!", "Api not respond or not have permissions.", "error");
+							}
+						});
+					});
+			});
+
+			$('.sa-delete-table').click(function() {
+				swal({
+					title: "Are you sure?",
+					text: "You will not be able to recover this table!",
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Yes, delete it!",
+					closeOnConfirm: false
+				}).then(() => {
+						$.ajax({
+							url: '@Url.Action("DeleteTable", "Table")',
+							method: "get",
+							dataType: "json",
+							contentType: "application/x-www-form-urlencoded; charset=utf-8",
+							data: {
+								id: "@Model.Id"
+							},
+							success: function(data) {
+								if (data === 0) {
+									swal("Deleted!", "Table has been deleted.", "success");
+									window.location.href = '@Url.Action("Index", "Table")';
+								} else {
+									swal("Fail!", "Api not respond or not have permissions.", "error");
+								}
+							},
+							error: function(error) {
+								swal("Fail!", "Api not respond or not have permissions.", "error");
+							}
+						});
+					});
+			});
+		});
+	</script>
+
+	<script type="text/javascript" language="javascript">
+		function getTokenAntiForgery() {
+			const token = '@Html.AntiForgeryToken()';
+			return $(token).val();
+		}
+	</script>
+	<script type="text/javascript" language="javascript">
+		$(document).ready(function ($) {
+			const tableId = '#formTable';
+			if ($.fn.DataTable.isDataTable(tableId)) {
+				alert();
+				$(tableId).dataTable().fnDestroy();
+				$(tableId).dataTable().empty();
+			}
+			$(tableId).DataTable({
+				"processing": true, // for show progress bar
+				"serverSide": true, // for process server side
+				"filter": true, // this is for disable filter (search box)
+				"orderMulti": false, // for disable multiple column at once
+				"destroy": true,
+				"ajax": {
+					"url": '@Url.Action("LoadForms", "Form")',
+					"type": "POST",
+					"data": {
+						entityId: "@Model.Id"
+					}
+				},
+				"columns": [
+					{ "data": "name" },
+					{ "data": "tableName" },
+					{ "data": "description" },
+					{ "data": "created" },
+					{ "data": "changed" },
+					{ "data": "author" },
+					{ "data": "isDeleted" },
+					{
+						data: null,
+						"render": function(data, type, row, meta) {
+							return `<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
+									<a class="btn btn-warning btn-sm" href="@Url.Action("Preview")?formId=${row.id}">Preview</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
+								}'); >Delete</button>
+									</div>`;
+						}
+					}
+				]
+			});
+		});
+
+		function createAlert(rowId) {
+			const object = {
+				alertTitle: "Delete this form?",
+				alertText: "Are you sure that you want to leave this form?",
+				confirmButtonText: "Yes, delete it!",
+				rowId: rowId,
+				tableId: "#formTable",
+				urlForDelete: '@Url.Action("Delete")',
+				type:"warning",
+				onDeleteSuccess: "Form has been deleted.",
+				onDeleteFail: "Something wrong",
+				onServerNoResponse:"Api not respond or not have permissions."
+			};
+			DeleteData(object);
+		}
+	</script>
+}

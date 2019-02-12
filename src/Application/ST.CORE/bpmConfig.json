@@ -1,0 +1,683 @@
+[
+  {
+    "Id": "bpmn:Process",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:Lane",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              },
+              {
+                "Name": "Color",
+                "Type": "color",
+                "FormName": "color"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "Actors",
+        "Sections": [
+          {
+            "Name": "Role",
+            "Elements": [
+              {
+                "Name": "Select role",
+                "Type": "select",
+                "Settings": {
+                  "Url": "/PageRender/LoadDataFromEntity?entityName=Roles",
+                  "Params": {
+                    "Name": "name",
+                    "Value": "name"
+                  }
+                },
+                "FormName": "name"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:SequenceFlow",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              },
+              {
+                "Name": "Color",
+                "Type": "color",
+                "FormName": "color"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:StartEvent",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              },
+              {
+                "Name": "Color",
+                "Type": "color",
+                "FormName": "color"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "Form",
+        "Sections": [
+          {
+            "Name": "Form",
+            "Elements": [
+              {
+                "Name": "Select form",
+                "Type": "select",
+                "Settings": {
+                  "Url": "/PageRender/LoadDataFromEntity?entityName=Forms",
+                  "Params": {
+                    "Name": "name",
+                    "Value": "id"
+                  }
+                },
+                "FormName": "form"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "Listeners",
+        "Sections": []
+      },
+      {
+        "Name": "Extensions",
+        "Sections": []
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:EndEvent",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "Listeners",
+        "Sections": []
+      },
+      {
+        "Name": "Extensions",
+        "Sections": []
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:IntermediateThrowEvent",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Name": "Listeners",
+        "Sections": []
+      },
+      {
+        "Name": "Extensions",
+        "Sections": []
+      }
+    ]
+  },
+  //Tasks
+  {
+    "Id": "bpmn:SendTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:Task",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:ReceiveTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:UserTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:ManualTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:BusinessRuleTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:ServiceTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:ScriptTask",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:CallActivity",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:SubProcess",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:Transaction",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  //Database Referenece
+  {
+    "Id": "bpmn:DataStoreReference",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  //Participant
+  {
+    "Id": "bpmn:Participant",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bpmn:Collaboration",
+    "Tabs": [
+      {
+        "Name": "General",
+        "Sections": [
+          {
+            "Name": "General",
+            "Elements": [
+              {
+                "Name": "Id",
+                "Type": "label",
+                "LoadValue": "id"
+              },
+              {
+                "Name": "Name",
+                "Type": "input",
+                "FormName": "name"
+              },
+              {
+                "Name": "Description",
+                "Type": "textarea",
+                "FormName": "description"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

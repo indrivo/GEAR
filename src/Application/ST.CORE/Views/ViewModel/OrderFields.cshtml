@@ -1,0 +1,140 @@
+@using ST.Entities.Models.ViewModels;
+
+@{
+	ViewData["Title"] = "Order view model fields";
+	var data = (IList<ViewModelFields>)ViewBag.Data;
+}
+
+<style>
+	.delEvt:hover {
+		color: red;
+		cursor: pointer;
+	}
+
+	.edit:hover {
+		color: orange;
+		cursor: pointer;
+	}
+
+	.delEvt, .edit, .float {
+		font-size: 1em;
+		padding-left: 1em;
+		float: right;
+	}
+
+		.float:hover {
+			cursor: pointer;
+		}
+
+	.save {
+		margin: 1em;
+		width: 7em;
+	}
+</style>
+
+<div class="card">
+	<div class="card-body">
+		<h4 class="card-title">Fields of view model</h4>
+		<h6 class="card-subtitle">You can order fields by drag and drop</h6>
+		<div class="table-responsive">
+			<div class="mt-2">
+				<div class="d-flex">
+					<div class="mr-auto">
+						<div class="form-group">
+							<a href="#" id="addScript" class="btn btn-primary btn-sm">
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add field
+							</a>
+							<small>You can add new field.</small>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<ul class="list-group" id="columns">
+				@foreach (var item in data)
+				{
+					<li class="list-group-item column" dataId="@item.Id" viewModelId="@item.ViewModelId" order="@item.Order" draggable="true">
+						<input type="text" class="form-control" style="width: 80%;" value="@item.Name" />
+						<span class="fa fa-close delEvt"></span>
+						<div class="float" data-id="@item.Id"><span class="fa fa-pencil"></span> Template</div>
+					</li>
+				}
+			</ul>
+			<button id="update" class="save btn btn-success">Update</button>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts{
+	<script src="~/assets/js/builder/drag-and-drop-list.js"></script>
+	<script>
+		function removeItem() {
+			document.getElementById("columns").removeChild($(this).parent()[0]);
+		}
+
+		$(".delEvt").on("click", removeItem);
+
+		$("#update").on("click", function () {
+			const columns = $("#columns").children();
+			var data = [];
+			$.each(columns, function (index, col) {
+				var script = $($(col).children()[0]).val();
+				data.push({
+					order: $(col).attr("order"),
+					name: script,
+					viewModelId: $(col).attr("viewModelId"),
+					id: $(col).attr("dataId")
+				});
+			});
+
+			$.ajax({
+				url: "@Url.Action("UpdateViewModelFields")",
+				data: {
+					items: data
+				},
+				type: "post",
+				success: function (data) {
+					if (data.is_success) {
+						location.reload();
+					}
+					else {
+						alert("Fail to save data!");
+					}
+				},
+				error: function (err) {
+					console.log(err);
+					alert("Fail to save data!");
+				}
+			});
+		});
+
+		$(".float").on("click", function () {
+			var id = $(this).attr("data-id");
+			location.href = `/ViewModel/TemplateEdit?id=${id}`;
+		});
+
+		$("#addScript").on("click", function () {
+			const script = document.createElement("li");
+			const first = $("#columns li:first-child");
+			const order = $("#columns").children().length;
+			const viewModelId = first.attr("viewModelId");
+			script.setAttribute("class", "list-group-item column");
+			script.setAttribute("order", order);
+			script.setAttribute("dataId", "@Guid.Empty");
+			script.setAttribute("viewModelId", viewModelId);
+
+			const input = document.createElement("input");
+			input.setAttribute("type", "text");
+			input.setAttribute("class", "form-control");
+			input.setAttribute("value", ``);
+		    input.setAttribute("style", "width: 80%;");
+			script.appendChild(input);
+			const span = document.createElement("span");
+			span.setAttribute("class", "fa fa-close delEvt");
+			span.addEventListener("click", removeItem);
+			script.appendChild(span);
+			document.querySelector("#columns").appendChild(script);
+		 });
+	</script>
+}

@@ -1,0 +1,24 @@
+﻿{
+  "NotificationTypes": [
+    {
+      "Id": "8C263760-B391-4BCC-961A-C7E049CA468F",
+      "Name": "Add",
+      "Description": "Notification on add somethings"
+    },
+    {
+      "Id": "72F151F2-68AB-4473-8069-519D39B31612",
+      "Name": "Delete",
+      "Description": "Notification on delete"
+    },
+    {
+      "Id": "36B41600-E458-476A-A4BD-5CE788B087F5",
+      "Name": "Edit",
+      "Description": "Notification on edit"
+    },
+    {
+      "Id": "3FB5D5FB-2B23-4FBB-A094-2E21557C9401",
+      "Name": "Info",
+      "Description": "Notification for info"
+    }
+  ]
+}

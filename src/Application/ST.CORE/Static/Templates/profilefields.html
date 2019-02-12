@@ -1,0 +1,50 @@
+{{for}}
+<div class="field">
+	{{if !isSystem}}
+	{{if type == 'decimal'}}
+	<label>{{:columnName}}</label>
+	<input name="{{:columnName}}" type="number" />
+
+	{{/if}}
+	{{if type == 'nvarchar'}}
+	<label>{{:columnName}}</label>
+	<input name="{{:columnName}}" type="text" />
+
+	{{/if}}
+	{{if type == 'date'}}
+	<label>{{:columnName}}</label>
+	<input name="{{:columnName}}" type="date" />
+
+	{{/if}}
+	{{if type == 'datetime'}}
+	<label>{{:columnName}}</label>
+	<input name="{{:columnName}}" type="date" />
+
+	{{/if}}
+	{{if type == 'int32'}}
+	<label>{{:columnName}}</label>
+	<input name="{{:columnName}}" type="number" />
+
+	{{/if}}
+	{{if type == "uniqueidentifier"}}
+	<label>{{:columnName}}</label>
+	<select name="{{:columnName}}" class="ui dropdown">
+		<option>Select value ...</option>
+	</select>
+
+	{{/if}}
+	{{if type == 'bool'}}
+	<div class="ui checkbox">
+		<input name="{{:columnName}}" type="checkbox" tabindex="0">
+		<label>{{:columnName}}</label>
+
+	</div>
+	{{/if}}
+	{{if type == 'bytes'}}
+	<label>{{:columnName}}</label>
+	<input name="{{:columnName}}" type="file" />
+
+	{{/if}}
+	{{/if}}
+</div>
+{{/for}}

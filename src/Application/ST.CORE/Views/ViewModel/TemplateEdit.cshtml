@@ -1,0 +1,164 @@
+@model ST.Entities.Models.ViewModels.ViewModelFields
+@inject IStringLocalizer Localizer
+
+@{
+	ViewData["Title"] = $"Edit {Model.Name} view model";
+}
+
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/lib/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/addon/hint/show-hint.css" />
+
+<style>
+	#jsonPlace {
+		outline: 1px solid #ccc;
+		padding: 5px;
+		margin: 5px;
+	}
+
+	.string {
+		color: green;
+	}
+
+	.number {
+		color: darkorange;
+	}
+
+	.boolean {
+		color: blue;
+	}
+
+	.null {
+		color: magenta;
+	}
+
+	.key {
+		color: red;
+	}
+</style>
+
+<div class="card card-outline-primary">
+	<div class="card-header">
+		<h4 class="mb-0 text-white">Edit @Model.Name field template value</h4>
+	</div>
+	<div class="card-body">
+		<form asp-action="TemplateEdit" role="form">
+			<div class="form-body">
+				@Html.HiddenFor(x => x.Created)
+				@Html.HiddenFor(x => x.Changed)
+				@Html.HiddenFor(x => x.Id)
+				@Html.HiddenFor(x => x.IsDeleted)
+				@Html.HiddenFor(x => x.Author)
+				@Html.HiddenFor(x => x.ModifiedBy)
+
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="row p-t-20">
+					<div class="col-md-4">
+						<pre id="jsonPlace"></pre>
+					</div>
+					<div class="col-md-8">
+						<div class="form-group">
+							<textarea asp-for="Template" style="height:100em">@Model.Template</textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row button-group">
+				<div class="col-lg-2 col-md-3">
+					<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+				</div>
+				<div class="col-lg-2 col-md-3">
+					<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+				</div>
+				<div class="col-lg-2 col-md-3">
+					<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="~/lib/codemirror/lib/codemirror.js"></script>
+	<script src="~/lib/codemirror/keymap/sublime.js"></script>
+	<script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+	<script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
+	<script src="~/lib/codemirror/mode/css/css.js"></script>
+	<script src="~/lib/codemirror/mode/xml/xml.js"></script>
+	<script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+	<script src="~/lib/codemirror/addon/hint/javascript-hint.js"></script>
+	<script>
+		var orig = CodeMirror.hint.javascript;
+		const obj = load("/PageRender/GetJsonExampleOfEntity?viewModelId=@Model.ViewModelId");
+		CodeMirror.hint.javascript = function (cm) {
+			var inner = orig(cm) || { from: cm.getCursor(), to: cm.getCursor(), list: [] };
+
+			$.each(obj.row, function (index, data) {
+				inner.list.push(index);
+			});
+			//console.log(editor.getLine(cm.getCursor().line));
+			//var A1 = editor.getCursor().line;
+			//var A2 = editor.getCursor().ch;
+
+			//var B1 = editor.findWordAt({ line: A1, ch: A2 }).anchor.ch;
+			//var B2 = editor.findWordAt({ line: A1, ch: A2 }).head.ch;
+
+			//console.log(B1);
+			//console.log(B2);
+
+			//console.log(editor.getRange({ line: A1, ch: B1 }, { line: A1, ch: B2 }));
+			inner.list.push("row");
+
+			return inner;
+		};
+		var editor = CodeMirror.fromTextArea(document.getElementById("Template"),
+			{
+				lineNumbers: true,
+				mode: "javascript",
+				keyMap: "sublime",
+				autoCloseBrackets: true,
+				matchBrackets: true,
+				showCursorWhenSelecting: true,
+				theme: "monokai",
+				tabSize: 2,
+				extraKeys: { "Ctrl-Space": "autocomplete" }
+			});
+
+		editor.on('change', function () {
+			editor.save();
+		});
+
+		editor.setSize(null, 700);
+
+
+		function output(inp) {
+			$("#jsonPlace").html(inp);
+		}
+
+		function syntaxHighlight(json) {
+			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+				var cls = 'number';
+				if (/^"/.test(match)) {
+					if (/:$/.test(match)) {
+						cls = 'key';
+					} else {
+						cls = 'string';
+					}
+				} else if (/true|false/.test(match)) {
+					cls = 'boolean';
+				} else if (/null/.test(match)) {
+					cls = 'null';
+				}
+				return '<span class="' + cls + '">' + match + '</span>';
+			});
+		}
+
+		var str = JSON.stringify(obj, null, 4);
+
+		//output(str);
+		output(syntaxHighlight(str));
+
+	</script>
+}

@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+    <LangVersion>7.3</LangVersion>
+    <Configurations>Debug;Release;Stage</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Authorization\**" />
+    <EmbeddedResource Remove="Authorization\**" />
+    <None Remove="Authorization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20180906094534_Initial.cs" />
+    <Compile Remove="Migrations\20180912181334_Initial.cs" />
+    <Compile Remove="Migrations\20180918134234_Initial.cs" />
+    <Compile Remove="Migrations\20180918210705_Initial.cs" />
+    <Compile Remove="Migrations\20180920074036_Initial.cs" />
+    <Compile Remove="Migrations\20180920135544_Initial.cs" />
+    <Compile Remove="Migrations\20180920140922_Initial.cs" />
+    <Compile Remove="Migrations\20180920142556_Initial.cs" />
+    <Compile Remove="Migrations\20180923211153_Initial.cs" />
+    <Compile Remove="Migrations\20180928113320_Initial.cs" />
+    <Compile Remove="Migrations\20181109121313_Versioning.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+	    <PackageReference Include="Novell.Directory.Ldap.NETStandard2_0" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ST.Audit\ST.Audit.csproj" />
+    <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
+  </ItemGroup>
+
+</Project>

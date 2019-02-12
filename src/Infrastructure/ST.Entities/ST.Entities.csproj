@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>ST.Entities</AssemblyName>
+    <RootNamespace>ST.Entities</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <Configurations>Debug;Release;Stage</Configurations>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Seed\**" />
+    <EmbeddedResource Remove="Seed\**" />
+    <None Remove="Seed\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20180326135542_Initial.cs" />
+    <Compile Remove="Migrations\20180819081246_Initial.cs" />
+    <Compile Remove="Migrations\20181206134738_Initial.cs" />
+    <Compile Remove="Migrations\20181206151101_Initial.cs" />
+    <Compile Remove="Migrations\20181206154728_Initial.cs" />
+    <Compile Remove="Migrations\20181207130417_Initial.cs" />
+    <Compile Remove="Migrations\20181207163519_Initial.cs" />
+    <Compile Remove="Migrations\20181210143637_Initial.cs" />
+    <Compile Remove="Migrations\20181213151250_Initial.cs" />
+    <Compile Remove="Migrations\20181213154344_Initial.cs" />
+    <Compile Remove="Migrations\20181214142944_Initial.cs" />
+    <Compile Remove="Migrations\20181217172204_Initial.cs" />
+    <Compile Remove="Migrations\20181218124907_Initial.cs" />
+    <Compile Remove="Migrations\20181225122220_Initial.cs" />
+    <Compile Remove="Migrations\20190106181633_Initial.cs" />
+    <Compile Remove="Migrations\20190114144934_Initial.cs" />
+    <Compile Remove="Migrations\20190115164528_Initial.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="EntitiesConfiguration.json" />
+    <None Remove="FieldTypes.json" />
+    <None Remove="FormTypes.json" />
+    <None Remove="IdentityConfiguration.json" />
+    <None Remove="NotificationTypes.json" />
+    <None Remove="ProfileEntities.json" />
+    <None Remove="SysEntities.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EntitiesConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotificationTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IdentityConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SysEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
+    <PackageReference Include="ST.BaseBusinessRepository" Version="1.1.4-alpha" />
+    <PackageReference Include="ST.BaseRepository.Abstractions" Version="2.1.2" />
+    <PackageReference Include="ST.EventBus.Core" Version="1.0.3" />
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties SysEntities_1json__JSONSchema="http://json.schemastore.org/asmdef" /></VisualStudio></ProjectExtensions>
+</Project>

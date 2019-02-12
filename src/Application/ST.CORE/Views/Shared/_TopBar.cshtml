@@ -1,0 +1,174 @@
+@using ST.Identity.Data.UserProfiles
+@using ST.Localization
+@using Microsoft.AspNetCore.Http
+@using ST.CORE.Models.LocalizationViewModels
+@using ST.Identity.Abstractions
+@inject IStringLocalizer Localizer
+@inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
+@inject IHttpContextAccessor Accesor
+@inject ILocalService LocalService
+@inject UserManager<ApplicationUser> UserManager
+@{
+	var user = await UserManager.GetUserAsync(User);
+	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
+	Language language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
+	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
+	var sel = new SelectList(languages, "Identifier", "Name");
+}
+<!-- ============================================================== -->
+<!-- Topbar header - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<header class="topbar">
+	<nav class="navbar top-navbar navbar-expand-md navbar-light">
+		<!-- ============================================================== -->
+		<!-- Logo -->
+		<!-- ============================================================== -->
+		<div class="navbar-header">
+			<a class="navbar-brand" style="width:100%" asp-controller="Home" asp-action="Index">
+				<!-- Logo icon -->
+				<b>
+					<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+					<!-- Dark Logo icon -->
+					<img src="~/images/logo-icon.png" alt="homepage" class="dark-logo" />
+					<!-- Light Logo icon -->
+					<img src="~/images/logo-light-icon.png" alt="homepage" class="light-logo" />
+				</b>
+				<!--End Logo icon -->
+				<!-- Logo text -->
+				<span>
+					<!-- dark Logo text -->
+					@*<img src="~/images/logo-text.png" alt="homepage" class="dark-logo" />
+						<!-- Light Logo text -->
+						<img src="~/images/logo-light-text.png" class="light-logo" alt="homepage" />*@
+					<span class="" alt="homepage"><b> @LocalService.GetAppName("core") </b></span>
+				</span>
+			</a>
+		</div>
+		<!-- ============================================================== -->
+		<!-- End Logo -->
+		<!-- ============================================================== -->
+		<div class="navbar-collapse">
+			<!-- ============================================================== -->
+			<!-- toggle and nav items -->
+			<!-- ============================================================== -->
+			<ul class="navbar-nav mr-auto mt-md-0 ">
+				<!-- This is  -->
+				<li class="nav-item">
+					<a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)">
+						<i class="ti-menu"></i>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)">
+						<i class="ti-arrow-circle-left"></i>
+					</a>
+				</li>
+				<!-- ============================================================== -->
+				<!-- Comment -->
+				<!-- ============================================================== -->
+
+			</ul>
+
+
+
+			<!-- ============================================================== -->
+			<!-- User profile and search -->
+			<!-- ============================================================== -->
+			<ul class="navbar-nav my-lg-0">
+				<li class="nav-item hidden-sm-down">
+					<form class="app-search">
+						<input type="text" class="form-control" placeholder="Search for..."> <a class="srh-btn"><i class="ti-search"></i></a>
+					</form>
+				</li>
+				<!--Notification-->
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="mdi mdi-message"></i>
+						<!-- Here is the alarm of new notification-->
+						<div style="display: none" id="notificationAlarm" class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown">
+						<ul>
+							<li>
+								<div class="drop-title">@Localizer["notifications"]</div>
+							</li>
+							<li>
+								<div id="notificationList" class="message-center"></div>
+							</li>
+							<li>
+								<a id="clearNotificationsEvent" class="nav-link text-center" href="javascript:void(0);"> <strong>@Localizer["clear_notifications"]</strong> <i class="fa fa-angle-right"></i> </a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<!-- ============================================================== -->
+				<!-- End Comment -->
+				<!-- ============================================================== -->
+				<!-- ============================================================== -->
+				<!-- Messages -->
+				<!-- ============================================================== -->
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="mdi mdi-email"></i>
+						<div style="display: none" id="notificationEmailAlarm" class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+					</a>
+					<div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown" aria-labelledby="2">
+						<ul>
+							<li>
+								<div class="drop-title">@Localizer["you_have"]<span id="emailNotificationsCounter">0</span>@Localizer["new_messages"]</div>
+							</li>
+							<li>
+								<div id="emailNotificationsContent" class="message-center"></div>
+							</li>
+							<li class="notification-items">
+
+							</li>
+							<li>
+								<a id="SeeAllEmails" class="nav-link text-center" href="javascript:void(0);"> <strong>@Localizer["see_all_e-mails"]</strong> <i class="fa fa-angle-right"></i> </a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				<!-- ============================================================== -->
+				<!-- End Messages -->
+				<!-- ============================================================== -->
+
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="@Url.Action("GetImage", "Users", new {id = user.Id})" alt="@user.UserName" class="profile-pic" /></a>
+					<div class="dropdown-menu dropdown-menu-right animated flipInY">
+						<ul class="dropdown-user">
+							<li>
+								<div class="dw-user-box">
+									<div class="u-img"><img src="@Url.Action("GetImage", "Users", new{user.Id})" alt="@user.UserName"></div>
+									<div class="u-text">
+										<h4>@user.UserName</h4>
+										<p class="text-muted">@user.Email</p><a asp-action="Edit" asp-route-id="@user.Id" asp-controller="Users" class="btn btn-rounded btn-danger btn-sm">@Localizer["view_profile"]</a>
+									</div>
+								</div>
+							</li>
+							<li role="separator" class="divider"></li>
+							<li><a asp-controller="Users" asp-action="Profile"><i class="ti-user"></i> @Localizer["my_profile"]</a></li>
+							<li><a href="#"><i class="ti-email"></i> @Localizer["inbox"]</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#" class="sa-logout"><i class="fa fa-power-off"></i> @Localizer["logout"]</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="flag-icon flag-icon-@((language.Identifier.Equals("en"))? "gb": language.Identifier)"></i></a>
+					<div class="dropdown-menu  dropdown-menu-right animated bounceInDown">
+						@foreach (var lang in languages)
+						{
+							<a asp-action="ChangeLanguage" asp-controller="Localization" asp-route-identifier="@lang.Identifier" class="dropdown-item">
+								<i class="flag-icon flag-icon-@(lang.Identifier.Equals("en")? "gb": lang.Identifier)"></i> @lang.Name
+							</a>
+						}
+					</div>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</header>
+<!-- ============================================================== -->
+<!-- End Topbar header -->
+<!-- ============================================================== -->

@@ -1,0 +1,199 @@
+@{
+	var page = (Page)ViewBag.Page;
+
+	ViewData["Title"] = page.Settings.Title;
+
+	Layout = page.LayoutId == null ? null : "~/Views/Shared/_Layout.cshtml";
+
+	ViewData["layoutId"] = page.LayoutId;
+
+	var cssCode = PageRender.GetPageCss(page.Settings.Name);
+
+	var styles = PageRender.GetPageStyles(page.Id);
+	var scripts = PageRender.GetPageScripts(page.Id);
+}
+
+@if (styles.IsSuccess)
+{
+	@foreach (var style in styles.Result)
+	{
+		@Html.Raw(style.Script)
+	}
+}
+
+@if (!string.IsNullOrEmpty(cssCode))
+{
+	<style>
+		@Html.Raw(cssCode)
+	</style>
+}
+
+@Html.Raw(PageRender.GetPageHtml(page.Settings.Name))
+
+
+@{
+	var jsCode = PageRender.GetPageJavaScript(page.Settings.Name);
+}
+
+@section Scripts
+	{
+	@if (scripts.IsSuccess)
+	{
+		@foreach (var script in scripts.Result)
+		{
+			@Html.Raw(script.Script);
+		}
+	}
+	@if (!string.IsNullOrEmpty(jsCode))
+	{
+		<script>
+			@Html.Raw(jsCode)
+		</script>
+	}
+	<script>
+		var tables = Array.prototype.filter.call(
+			document.getElementsByTagName('table'),
+			function(el) {
+				return el.getAttribute('db-entity') != null && el.getAttribute("db-viewmodel") == null
+			}
+		);
+
+		const form = new Form();
+
+		$.each(tables,
+			function(index, table) {
+				const entityId = $(table).attr("db-entity");
+				var data = load("/PageRender/GetListData",
+					{
+						entityId: entityId
+					});
+				$(table).find("thead").html(null);
+				if (data.is_success) {
+					$.each(data.result[0],
+						function(index, item) {
+							$(table).find("thead").append(`<th>${index}</th>`);
+						});
+					$(table).find("tbody").html(null);
+					$.each(data.result,
+						function(index, item) {
+							let row = "<tr>";
+							$.each(item,
+								function(key, value) {
+									row += `<td>${value}</td>`;
+								});
+							row += "</tr>";
+							$(table).find("tbody").append(row);
+						});
+				}
+			});
+
+		var forms = Array.prototype.filter.call(
+			document.getElementsByTagName('form'),
+			function(el) {
+				return el.getAttribute('db-form') != null;
+			}
+		);
+
+		$.each(forms,
+			function(index, form) {
+				let formId = $(form).attr("db-form");
+				const st = new ST();
+				const id = `render_${st.newGuid()}`;
+				$(form).attr("id", id);
+				$(form).html(null);
+				renderForm(formId, id);
+			});
+
+		function renderForm(formId, place) {
+			let data = form.getFormFronServer(formId);
+
+			if (data != null) {
+				if (data.is_success) {
+					const json = form.cleanJson(data.result);
+
+					try {
+						let formeo = new window.Formeo(
+							{
+								allowEdit: false
+							},
+							JSON.stringify(json));
+
+						const renderContainer = document.querySelector(`#${place}`);
+
+						$(function() {
+							formeo.render(renderContainer);
+							const selects = Array.prototype.filter.call(
+								renderContainer.getElementsByTagName('select'),
+								function(el) {
+									return el.getAttribute('table-field-id') != null;
+								}
+							);
+							populateSelect(selects);
+						});
+
+					} catch (exp) {
+						console.log(exp);
+					}
+
+					$(`#${place}`).on("submit",
+						function() {
+							const st = new ST();
+							const serialized = st.serializeToJson($(`#${place}`));
+
+							const final = {};
+							for (let s in serialized) {
+								if (serialized.hasOwnProperty(s)) {
+									const id = $(`#${place} #${s}`).attr("table-field-id");
+
+									if (id != undefined) {
+										final[id] = serialized[s];
+									} else
+										final[s] = serialized[s];
+								}
+							}
+
+							$.ajax({
+								url: "@Url.Action("PostForm", "PageRender")",
+								type: "post",
+								data: {
+									model: {
+										data: final,
+										formId: formId
+									}
+								},
+								success: function (data) {
+									if (data != null) {
+										if (data.is_success) {
+											location.href = data.result.redirectUrl;
+										}
+									}
+								}
+							});
+							return false;
+						});
+				}
+			} else {
+				console.log("fail");
+			}
+		}
+
+
+		function populateSelect(selects) {
+			$.each(selects,
+				function(index, select) {
+					const fieldId = $(select).attr("table-field-id");
+					$(select).html(null);
+					const req = load("/PageRender/GetInputSelectValues",
+						{
+							fieldId: fieldId
+						});
+					console.log(req);
+					if (req.is_success) {
+						$.each(req.result, function(index, item) {
+							$(select).append(new Option(item.name, item.id));
+						});
+					}
+				});
+		}
+	</script>
+}

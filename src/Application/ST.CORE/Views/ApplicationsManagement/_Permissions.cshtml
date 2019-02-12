@@ -1,0 +1,108 @@
+<div class="tab-pane active" id="permissions" role="tabpanel">
+	<div class="pt-2">
+		<div class="card">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered" width="100%" id="permissionTable">
+						<thead>
+							<tr>
+								<th>Permission Key</th>
+								<th>Permission Name</th>
+								<th>Permission Description</th>
+								<th>Client Name</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- sample modal content -->
+<div id="responsive-modal" class="modal fade" data-url='@Url.Action("_CreatePermission")' tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+	<div id="permissionsModal"></div>
+</div>
+<!-- sample modal content -->
+<div id="editPermission-modal" class="modal fade" data-url='@Url.Action("_EditPermission")' tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+	<div id="editPermissionModal"></div>
+</div>
+
+<!-- /.modal -->
+<script language="javascript" type="text/javascript">
+	function getTokenAntiForgery() {
+		const token = '@Html.AntiForgeryToken()';
+		return $(token).val();
+	}
+	$(document).ready(function($) {
+		const tableId = '#permissionTable';
+		if ($.fn.DataTable.isDataTable(tableId)) {
+			$(tableId).dataTable().fnDestroy();
+			$(tableId).dataTable().empty();
+		}
+
+		$(tableId).DataTable({
+			"processing": true, // for show progress bar
+			"serverSide": true, // for process server side
+			"filter": true, // this is for disable filter (search box)
+			"orderMulti": false, // for disable multiple column at once
+			"destroy": true,
+			"ajax": {
+				"url": '@Url.Action("PermissionList", new {id = ViewBag.ApplicationId})',
+				"type": "POST"
+				//"datatype": "json"
+			},
+			"columns": [
+				{ "data": "permissionKey" },
+				{ "data": "permissionName" },
+				{ "data": "permissionDescription" },
+				{ "data": "clientName" },
+				{
+					"render": function(data, type, full, meta) {
+						return `<button class="btn btn-info btn-sm" onclick=Edit('${full.id}');>Edit</a>`;
+					}
+				}
+			]
+		});
+	});
+
+	function CreateAlert(rowId) {
+		const object = {
+			alertTitle: "Delete this permission?",
+			alertText: "Are you sure that you want to leave this permission?",
+			confirmButtonText: "Yes, delete it!",
+			rowId: rowId,
+			tableId: "#permissionTable",
+			urlForDelete: '@Url.Action("DelletePermission", "ApplicationsManagement")',
+			type: "warning",
+			onDeleteSuccess: "Permission has been deleted.",
+			onDeleteFail: "Something wrong",
+			onServerNoResponse: "Api not respond or not have permissions."
+		};
+		DeleteData(object);
+	}
+
+	$(document).ready(function() {
+		$('#addPermissionBtn').click(function() {
+			const url = $('#responsive-modal').data('url');
+			$.get(url,
+				{ id: @ViewBag.ApplicationId },
+				function(data) {
+					$('#permissionsModal').html(data);
+					$('#responsive-modal').modal('show');
+				});
+		});
+	});
+
+	function Edit(permissionId) {
+		const url = $('#editPermission-modal').data('url');
+		$.get(url,
+			{ id: permissionId },
+			function(data) {
+				$('#editPermissionModal').html(data);
+				$('#editPermission-modal').modal('show');
+			});
+	};
+</script>

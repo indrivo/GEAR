@@ -1,0 +1,131 @@
+{
+  "Id": "D12BDEB9-EC63-4AD6-A9AA-F47D8F1DEE55",
+  "IsLayout": true,
+  "Settings": {
+    "Name": "Layout",
+    "Description": "Default layout",
+    "Title": ""
+  },
+  "Path": "",
+  "IsSystem": true,
+  "PageStyles": [
+    {
+      "Order": 0,
+      "Script": "<link rel=\"stylesheet\" href=\"/lib/jquery.simplePagination/simplePagination.css\" />"
+    },
+    {
+      "Order": 1,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/bootstrap/dist/css/bootstrap.min.css\" />"
+    },
+    {
+      "Order": 2,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/select2/dist/css/select2.min.css\" />"
+    },
+    {
+      "Order": 3,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/datatables/media/css/jquery.dataTables.min.css\" />"
+    },
+    {
+      "Order": 4,
+      "Script": "<link type=\"text/css\" rel=\"stylesheet\" href=\"/lib/sweetalert2/dist/sweetalert2.min.css\" />"
+    },
+    {
+      "Order": 5,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/datatables/media/css/dataTables.bootstrap4.min.css\" />"
+    },
+    {
+      "Order": 6,
+      "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/style.css\" />"
+    },
+    {
+      "Order": 7,
+      "Script": "<link rel=\"stylesheet\" id=\"theme\" type=\"text/css\" href=\"/css/colors/green.css\" />"
+    },
+    {
+      "Order": 8,
+      "Script": "<link href=\"/css/custom-css.css\" rel=\"stylesheet\" />"
+    },
+    {
+      "Order": 9,
+      "Script": "<link href=\"/assets/css/formeo.css\" rel=\"stylesheet\" />"
+    }
+  ],
+  "PageScripts": [
+    {
+      "Order": 0,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/jquery/dist/jquery.js\"></script>"
+    },
+    {
+      "Order": 1,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/tether/dist/js/tether.min.js\"></script>"
+    },
+    {
+      "Order": 2,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/bootstrap/dist/js/bootstrap.bundle.min.js\"></script>"
+    },
+    {
+      "Order": 3,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/jquery-ui/jquery-ui.min.js\"></script>"
+    },
+    {
+      "Order": 4,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/datatables/media/js/jquery.dataTables.min.js\"></script>"
+    },
+    {
+      "Order": 5,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/datatables/media/js/dataTables.bootstrap4.min.js\"></script>"
+    },
+    {
+      "Order": 6,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/jquery-slimscroll/jquery.slimscroll.js\"></script>"
+    },
+    {
+      "Order": 7,
+      "Script": "<script type=\"text/javascript\" src=\"/js/waves.js\"></script>"
+    },
+    {
+      "Order": 8,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/sweetalert2/dist/sweetalert2.min.js\"></script>"
+    },
+    {
+      "Order": 9,
+      "Script": "<script type=\"text/javascript\" src=\"/js/sidebarmenu.js\"></script>"
+    },
+    {
+      "Order": 10,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/select2/dist/js/select2.full.min.js\"></script>"
+    },
+    {
+      "Order": 11,
+      "Script": "<script type=\"text/javascript\" src=\"/lib/sticky-kit/jquery.sticky-kit.js\"></script>"
+    },
+    {
+      "Order": 12,
+      "Script": "<script type=\"text/javascript\" src=\"/js/site.js\"></script>"
+    },
+    {
+      "Order": 13,
+      "Script": "<script src=\"/assets/js/actions.js\"></script>"
+    },
+    {
+      "Order": 14,
+      "Script": "<script src=\"/js/custom.js\"></script>"
+    },
+    {
+      "Order": 15,
+      "Script": "<script src=\"/assets/js/notifications/notificator.js\"></script>"
+    },
+    {
+      "Order": 16,
+      "Script": "<script src=\"/lib/jsrender/jsrender.min.js\"></script>"
+    },
+    {
+      "Order": 17,
+      "Script": "<script src=\"/lib/jsviews/jsviews.min.js\"></script>"
+    },
+    {
+      "Order": 18,
+      "Script": "<script src=\"/js/signalr/dist/browser/signalr.js\"></script>"
+    }
+  ]
+}

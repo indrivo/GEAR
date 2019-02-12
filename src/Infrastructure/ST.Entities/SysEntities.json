@@ -1,0 +1,592 @@
+﻿{
+  "SynchronizeTableViewModels": [
+    {
+      "Name": "Email",
+      "Schema": "systemcore",
+      "Description": "Entity for email",
+      "Fields": [ 
+        {
+          "Name": "Subject",
+          "Description": "email subject field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Message",
+          "Description": "email body field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 4000,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "UserEmailFolders",
+      "Schema": "systemcore",
+      "Description": "Entity for User email folders",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "User email folder name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 100,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "Order",
+          "Description": "Type of email user",
+          "Synchronized": false,
+          "DataType": "int",
+          "AllowNull": false,
+          "TableFieldCode": "01",
+          "Configurations": [
+            {
+              "Value": null,
+              "ConfigCode": "0100"
+            },
+            {
+              "Value": null,
+              "ConfigCode": "0101"
+            }
+          ]
+        },
+        {
+          "Name": "Description",
+          "Description": "User email folder description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "IsSystem",
+          "Description": "Determine if user email folder is default system folder",
+          "Synchronized": false,
+          "DataType": "bool",
+          "AllowNull": false,
+          "TableFieldCode": "40",
+          "Configurations": [
+            {
+              "Value": false,
+              "ConfigCode": "4000"
+            }
+
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "EmailUsers",
+      "Schema": "systemcore",
+      "Description": "Entity for email users",
+      "Fields": [
+        {
+          "Name": "EmailId",
+          "Description": "Id of email",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "Email",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "UserEmailFolderId",
+          "Description": "Id of email folder",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "UserEmailFolders",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "Type",
+          "Description": "Type of email user",
+          "Synchronized": false,
+          "DataType": "int",
+          "AllowNull": false,
+          "TableFieldCode": "01",
+          "Configurations": [
+            {
+              "Value": null,
+              "ConfigCode": "0100"
+            },
+            {
+              "Value": null,
+              "ConfigCode": "0101"
+            }
+          ]
+        },
+        {
+          "Name": "IsRead",
+          "Description": "Determine if email is read by recipient",
+          "Synchronized": false,
+          "DataType": "bool",
+          "AllowNull": false,
+          "TableFieldCode": "40",
+          "Configurations": [
+            {
+              "Value": false,
+              "ConfigCode": "4000"
+            }
+
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Files",
+      "Schema": "systemcore",
+      "Description": "Entity for files",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "Name of the file with no path components",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": false,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 256,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "Description",
+          "Description": "Description of the file",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": false,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 1000,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "Uri",
+          "Description": "The URI to access the file (either local or remote)",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": false,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 512,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "Extension",
+          "Description": "The file's Extension",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": false,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 20,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        },
+        {
+          "Name": "Size",
+          "Description": "The file's size",
+          "Synchronized": false,
+          "DataType": "bigint",
+          "AllowNull": false,
+          "TableFieldCode": "01",
+          "Configurations": [
+            {
+              "Value": null,
+              "ConfigCode": "0100"
+            },
+            {
+              "Value": null,
+              "ConfigCode": "0101"
+            }
+          ]
+        },
+        {
+          "Name": "Hash",
+          "Description": "The file's hash",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": false,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 50,
+              "ConfigCode": "1000"
+            }
+
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Menu",
+      "Schema": "systemcore",
+      "Description": "Entity for menus",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "Menu name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Description",
+          "Description": "Menu description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "MenuItem",
+      "Schema": "systemcore",
+      "Description": "Entity for menu item",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Icon",
+          "Description": "Icon field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "AllowedRoles",
+          "Description": "AllowedRoles field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Translate",
+          "Description": "Translate field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Href",
+          "Description": "href field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "MenuId",
+          "Description": "Id of the menu reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "Menu",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "ParentMenuItemId",
+          "Description": "Id of the parent menu reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "MenuItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "NotificationTypes",
+      "Schema": "systemcore",
+      "Description": "Entity for notification types",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "notification type field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Description",
+          "Description": "notification description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "SystemNotifications",
+      "Schema": "systemcore",
+      "Description": "Entity for notifications",
+      "Fields": [
+        {
+          "Name": "Subject",
+          "Description": "notification subject field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Content",
+          "Description": "notification content field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "NotificationTypeId",
+          "Description": "Id of the notification type reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NotificationTypes",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "UserId",
+          "Description": "User id",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "FileReferences",
+      "Schema": "systemcore",
+      "Description": "File reference for entity",
+      "Fields": []
+    },
+    {
+      "Name": "EntityFiles",
+      "Schema": "systemcore",
+      "Description": "Related entity for files and entities",
+      "Fields": [
+        {
+          "Name": "FileId",
+          "Description": "Id of the file",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "Files",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "FileReferenceId",
+          "Description": "Id of the file reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "FileReferences",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

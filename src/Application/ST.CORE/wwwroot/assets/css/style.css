@@ -1,0 +1,8 @@
+form .box-footer {
+	min-height: 2em;
+}
+
+.form .box-footer .right {
+	position: absolute;
+	right: 0em;
+}

@@ -1,0 +1,135 @@
+@using ST.Identity.Data.UserProfiles
+@using ST.MPass.Gov;
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IMPassService _mpassService
+
+@model ST.CORE.Models.AccountViewModels.LoginViewModel
+
+@{
+	ViewData["Title"] = "Log in";
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/colors/megna-dark.css" />
+</head>
+<body>
+	<!-- ============================================================== -->
+	<!-- Preloader - style you can find in spinners.css -->
+	<!-- ============================================================== -->
+	<div class="preloader">
+		<svg class="circular" viewBox="25 25 50 50">
+			<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+		</svg>
+	</div>
+	<!-- ============================================================== -->
+	<!-- Main wrapper - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<section id="wrapper" class="login-register login-sidebar" style="background-image:url(../images/background/login-register.jpg);">
+		<div class="login-box card">
+			<div class="card-body">
+				<form class="form-horizontal form-material" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+					<a href="javascript:void(0)" class="text-center db"><img src="~/images/logo-icon.png" alt="Home" /><br /><img src="~/images/logo-text.png" alt="Home" /></a>
+
+					<div class="form-group mt-4">
+						<div class="col-xs-12">
+							<input class="form-control" asp-for="Email" placeholder="Username">
+							<span asp-validation-for="Email" class="text-danger"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-xs-12">
+							<input class="form-control" asp-for="Password" placeholder="Password">
+							<span asp-validation-for="Password" class="text-danger"></span>
+
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-12">
+							<div class="checkbox checkbox-primary pull-left p-t-0">
+								<input id="checkbox-signup" asp-for="RememberMe">
+								<label for="checkbox-signup"> Remember me?</label>
+							</div>
+							<br />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-12">
+							<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						</div>
+					</div>
+					<div class="form-group text-center mt-2">
+						<div class="col-xs-12">
+							<button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Log In</button>
+						</div>
+					</div>
+				</form>
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-12 mt-1 text-center">
+						<div class="social">
+							@{
+								var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+								if (loginProviders.Any())
+								{
+									<form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+										<div>
+											<p>
+												@foreach (var provider in loginProviders)
+												{
+													switch (provider.Name)
+													{
+														case "Facebook":
+															<button class="btn btn-facebook waves-effect btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name"> <i aria-hidden="true" class="fa fa-facebook"></i></button>
+															break;
+														case "Google":
+															<button class="btn btn-googleplus waves-effect btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name"> <i aria-hidden="true" class="fa fa-google-plus"></i></button>
+															break;
+														case "LinkedIn":
+															<button class="btn btn-linkedin waves-effect btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name"> <i aria-hidden="true" class="fa fa-linkedin"></i></button>
+															break;
+														default:
+															<button class="btn btn-default btn-circle" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name"> <i aria-hidden="true" class="fa fa-soccer-ball-o"></i></button>
+															break;
+													}
+												}
+											</p>
+										</div>
+									</form>
+								}
+							}
+						</div>
+					</div>
+				</div>
+				<div class="form-group mb-0">
+					<div class="col-sm-12 text-center">
+						<p>Don't have an account? <a asp-action="Register" class="text-primary ml-2"><b>Sign Up</b></a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- ============================================================== -->
+	<!-- End Wrapper -->
+	<!-- ============================================================== -->
+
+	<script src="~/lib/jquery/dist/jquery.js"></script>
+	<script src="~/lib/tether/dist/js/tether.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="~/js/jquery.slimscroll.js"></script>
+	<script src="~/js/waves.js"></script>
+	<script src="~/js/sidebarmenu.js"></script>
+	<script src="~/lib/sticky-kit/jquery.sticky-kit.min.js"></script>
+	<script src="~/js/custom.js"></script>
+
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+</body>
+</html>
+

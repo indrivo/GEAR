@@ -1,0 +1,239 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <LangVersion>7.3</LangVersion>
+    <Version>1.0.1</Version>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Soft-Tehnica</Company>
+    <Product>ISO DMS</Product>
+    <Description>ISO DMS  based BPMN</Description>
+    <Copyright>Soft-tehnica 2019</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="app_offline.htm" />
+    <None Remove="ExtraStatic\modeler.js" />
+    <None Remove="Static\Templates\listDefaultTemplate.html" />
+    <None Remove="Static\Templates\listDefaultTemplate.js" />
+    <None Remove="Static\Templates\Menu\renderMenu.html" />
+    <None Remove="Static\Templates\profilefields.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.0.0" />
+    <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+    <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.3.1" />
+    <PackageReference Include="Consul" Version="0.7.2.6" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" PrivateAssets="All" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.1" />
+    <PackageReference Include="ST.AspNetCore.WebHost.Customization" Version="1.0.0" />
+    <PackageReference Include="ST.Localization" Version="2.0.1" />
+    <PackageReference Include="ST.MPass.Gov" Version="0.1.4-alpha" />
+    <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.HealthChecks.SqlServer" Version="1.0.0" />
+    <PackageReference Include="ST.ServiceDiscovery" Version="1.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="4.0.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Certificates\testmpass.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Certificates\samplempass.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\.bower.json" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\.gitignore" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\bower.json" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\css\bpmn-embedded.css" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\css\bpmn.css" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.eot" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.svg" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.ttf" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.woff" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\diagram-js.css" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-modeler.js" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-modeler.js.map" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-navigated-viewer.js" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-navigated-viewer.js.map" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-viewer.js" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-viewer.js.map" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\LICENSE" />
+    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\README.md" />
+    <Content Include="Static\**\*">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <Content Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <EmbeddedResource Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <None Remove="wwwroot\assets\js\workflow\bower_components\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="bpmConfig.json" />
+    <Content Remove="Static\Embedded Resources\user.jpg" />
+    <Content Remove="Static\Pages\index\index.css" />
+    <Content Remove="Static\Pages\index\index.html" />
+    <Content Remove="Static\Pages\index\index.js" />
+    <Content Remove="Static\Pages\index\settings.json" />
+    <Content Remove="Static\Pages\layout\layout.css" />
+    <Content Remove="Static\Pages\layout\layout.html" />
+    <Content Remove="Static\Pages\layout\layout.js" />
+    <Content Remove="Static\Pages\layout\settings.json" />
+    <Content Remove="Static\Pages\performanceserver\performanceserver.css" />
+    <Content Remove="Static\Pages\performanceserver\performanceserver.js" />
+    <Content Remove="Static\Pages\performanceserver\settings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="bpmConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Embedded Resources\user.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\index\index.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\index\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\index\index.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\index\settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\layout\layout.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\layout\layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\layout\layout.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\layout\settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\performanceserver\settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Views\Account\AccessDenied.cshtml" />
+    <None Include="Views\Account\ConfirmEmail.cshtml" />
+    <None Include="Views\Account\ForgotPassword.cshtml" />
+    <None Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <None Include="Views\Account\Lockout.cshtml" />
+    <None Include="Views\Account\Login.cshtml" />
+    <None Include="Views\Account\LoginWithRecoveryCode.cshtml" />
+    <None Include="Views\Account\Logout.cshtml" />
+    <None Include="Views\Account\Register.cshtml" />
+    <None Include="Views\Account\ResetPassword.cshtml" />
+    <None Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <None Include="Views\Account\SignedOut.cshtml" />
+    <None Include="Views\Groups\Create.cshtml" />
+    <None Include="Views\Groups\Edit.cshtml" />
+    <None Include="Views\Groups\Index.cshtml" />
+    <None Include="Views\Home\Contact.cshtml" />
+    <None Include="Views\Roles\Create.cshtml" />
+    <None Include="Views\Roles\Edit.cshtml" />
+    <None Include="Views\Roles\Index.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_Old_Layout.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Views\Users\Create.cshtml" />
+    <None Include="Views\Users\Delete.cshtml" />
+    <None Include="Views\Users\Edit.cshtml" />
+    <None Include="Views\Users\Index.cshtml" />
+    <None Include="Views\Process\Create.cshtml" />
+    <None Include="Views\Process\Edit.cshtml" />
+    <None Include="Views\Process\Index.cshtml" />
+    <None Include="Views\_ViewImports.cshtml" />
+    <None Include="Views\_ViewStart.cshtml" />
+    <None Include="wwwroot\assets\js\meniu\index.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="menus.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="nlog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Static\Pages\performanceserver\performanceserver.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\BlockCategory\Create.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\BlockCategory\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\BlockCategory\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Blocks\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Menu\EditItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Menu\CreateItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Menu\Create.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Menu\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Menu\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\PageType\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Page\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Page\Layouts.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Page\PageStyles.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\ViewModel\TemplateEdit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties bower_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+  <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
+    <PropertyGroup>
+      <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>
+      <_XdtTransform>$(MSBuildThisFileDirectory)Web.$(Configuration).config</_XdtTransform>
+      <_TargetWebConfig>$(PublishDir)Web.config</_TargetWebConfig>
+    </PropertyGroup>
+    <Exec Command="dotnet transform-xdt --xml &quot;$(_SourceWebConfig)&quot; --transform &quot;$(_XdtTransform)&quot; --output &quot;$(_TargetWebConfig)&quot;" Condition="Exists('$(_XdtTransform)')" />
+  </Target>
+</Project>

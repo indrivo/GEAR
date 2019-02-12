@@ -1,0 +1,47 @@
+@inject IStringLocalizer Localizer
+@using ST.CORE.Models.LocalizationViewModels
+@model ST.CORE.Models.LocalizationViewModels.AddLanguageViewModel
+@{
+	ViewData["Title"] = "Add language";
+}
+
+		<div class="card card-outline-primary">
+			<div class="card-header">
+				<h4 class="mb-0 text-white">@Localizer["add_language"]</h4>
+			</div>
+			<div class="card-body">
+				<form asp-action="AddLanguage" role="form">
+					<div class="form-body">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="row p-t-20">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="Identifier" class="control-label"></label>
+									<input asp-for="Identifier" class="form-control" />
+									<span asp-validation-for="Identifier" class="text-danger"></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="Name" class="control-label"></label>
+									<input asp-for="Name" class="form-control" />
+									<span asp-validation-for="Name" class="text-danger"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+						<button type="reset" class="btn btn-inverse"> @Localizer["reset"]</button>
+						<a asp-action="GetLanguages" class="btn btn-link"> @Localizer["back"]</a>
+					</div>
+				</form>
+			</div>
+		</div>
+
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

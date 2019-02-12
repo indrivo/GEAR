@@ -1,0 +1,16 @@
+{
+  "IsLayout": false,
+  "Settings": {
+    "Name": "Index",
+    "Description": "Index page",
+    "Title": "Index"
+  },
+  "Path": "/index",
+  "IsSystem": true,
+  "PageStyles": [
+
+  ],
+  "PageScripts": [
+
+  ]
+}

@@ -1,0 +1,99 @@
+@using ST.CORE.Models.InstallerModels
+@model ST.CORE.Models.InstallerModels.DbSetupModel
+
+@{
+    ViewData["Title"] = "DbSetup";
+    Layout = "~/Views/Shared/_LayoutInstaller.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ViewData["Title"]</title>
+</head>
+<body>
+
+<div class="ui text  container">
+	<h1 class="ui inverted header">
+		BPM Setup
+	</h1>
+	<form class="ui form" asp-action="Setup">
+		<div id="menuTab">
+			<div class="ui tiny menu">
+				<a class="item" data-tab="one" id="tabOne">
+					Data Base Setup
+				</a>
+				<a class="item" data-tab="two" id="tabTwo">
+					Localization
+				</a>
+				<a class="item" data-tab="three" id="tabThree">
+					Actions
+				</a>
+			</div>
+			<div class="ui transition scale in active  tab segment" data-tab="one" id="itemOne">
+				<div class="ui message">
+					<div class="field">
+						<label>Data Base Name</label>
+						<input asp-for="DbName"  class="form-control"/>
+					</div>
+					<div class="field">
+						<label>Data Base Name Address</label>
+						<input asp-for="DbAdrress" class="form-control"/>
+					</div>
+					<div class="field">
+						<label>User Name</label>
+						<input asp-for="UserName" class="form-control"/>
+					</div>
+					<div class="field">
+						<label>Password</label>
+						<input asp-for="UserPassword" class="form-control"/>
+					</div>
+					<button class="positive ui button" id="startButton">Continue</button>
+				</div>
+			</div>
+			<div class="ui transition scale in  tab segment" data-tab="two" id="itemtwo">
+				@if (@Model.Languages.Any())
+				{
+					for (var i = 0; i < Model.Languages.Count; i++)
+					{
+						var language = Model.Languages[i];
+						@Html.HiddenFor(model => model.Languages[i].Identifier)
+						@Html.HiddenFor(model => model.Languages[i].Name)
+						if (language.Identifier == "en1")
+						{
+							<div class="ui checkbox">
+								@Html.CheckBoxFor(model => model.Languages[i].Selected, new { @disabled = "disabled" })
+								@Html.LabelFor(model=> model.Languages[i].Name, language.Name)
+							</div>
+						}
+						else
+						{
+							<div class="ui checkbox">
+								@Html.CheckBoxFor(model => model.Languages[i].Selected)
+								@Html.LabelFor(model=> model.Languages[i].Name, language.Name)
+							</div>
+						}
+
+
+					}
+				}
+			</div>
+			<div class="ui transition scale in  tab segment" data-tab="three" id="itemthree">
+			</div>
+		</div>
+	</form>
+		
+	@section Scripts {
+		<script>
+			$('#menuTab .menu .item')
+				.tab();
+			$(document).ready(function () {
+
+			});
+
+		</script>
+	}
+
+</div>
+</body>
+</html>

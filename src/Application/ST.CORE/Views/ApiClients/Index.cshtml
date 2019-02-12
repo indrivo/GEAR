@@ -1,0 +1,112 @@
+@using IdentityServer4.EntityFramework.Entities
+@model IEnumerable<Client>
+@{
+	ViewData["Title"] = "Servicii";
+}
+<div class="content_block wow slideInRight">
+	<div class="card z-depth5">
+		<div class="box-header with-border" style="background-color: #F5F5F5;">
+			<h3 class="box-title">Lista de Micro Servicii</h3>
+		</div>
+		<article style="padding:0.3em;">
+			<div class="form-create-button pull-left">
+				<a class="btn btn-default" asp-action="Create" title="Adauga un serviciu nou">
+					<span class="fa fa-plus"></span> Adauga Service
+				</a>
+			</div>
+			<div class="pull-right">
+				<h5 class="list-color-default">@Model.Count() servicii</h5>
+			</div>
+			<br />
+			<br />
+			<div class='box-body no-padding'>
+				<table class='table table-condensed table-list table-responsive'>
+					<tr>
+						<th>client_name</th>
+						<th>client_id</th>
+						<th>allow_offline_access</th>
+						<th>allowed_grant_types</th>
+						<th>allowed_scopes</th>
+					</tr>
+					@foreach (var item in Model)
+					{
+						<tr class='row-list'>
+							<td><code>@item.ClientName</code></td>
+							<td>@item.ClientId</td>
+							<td>
+								@if (@item.AllowOfflineAccess)
+								{
+									<span class="fa fa-check text-success"></span>
+								}
+								else
+								{
+									<span class="fa fa-close text-danger"></span>
+								}
+
+							</td>
+							<td>@string.Join(" ", item.AllowedGrantTypes.Select(c => c.GrantType))</td>
+							<td>
+								<a class="btn btn-warning scopedetails">Scopes</a>
+								<ul class="scopes-content" style="display:none;">
+									@foreach (var scope in item.AllowedScopes.Select(c => c.Scope))
+									{
+										<li>@scope</li>
+									}
+								</ul>
+							</td>
+						</tr>
+					}
+				</table>
+			</div>
+		</article>
+
+	</div>
+</div>
+
+
+
+<div class="modal fade" id="ScopeDetailsModal">
+	<div class="modal-dialog">
+		<div class="modal-content modal-custom">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Scopuri</h4>
+			</div>
+			<div class="modal-body form-create">
+				<!-- form start -->
+				<div class="form-custom">
+					<div class="box-body">
+						<div class="form-group" id="placeScopes">
+
+						</div>
+					</div>
+					<!-- /.box-body -->
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-create-button">
+					<a class="btn btn-default pull-left" data-dismiss="modal">
+						<span class="fa fa-times-circle-o"></span> Inchide
+					</a>
+				</div>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section Scripts{
+	<script>
+		$(".scopedetails").on("click", function () {
+			var scopes = $(this).parent()
+				.find("ul.scopes-content")
+				.html();
+			$("#ScopeDetailsModal").modal("show");
+			$("#placeScopes").html(scopes);
+		});
+	</script>
+}

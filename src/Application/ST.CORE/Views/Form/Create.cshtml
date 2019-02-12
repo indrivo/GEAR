@@ -1,0 +1,69 @@
+@inject IStringLocalizer Localizer
+@{
+	ViewData["Title"] = "Create form";
+	var entities = new SelectList((System.Collections.IEnumerable)ViewData["models"], "Id", "Name", null);
+	var formTypes = new SelectList((System.Collections.IEnumerable)ViewData["formTypes"], "Id", "Name", null);
+}
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card card-outline-info">
+			<div class="card-header">
+				<h4 class="m-b-0 text-white">Add form</h4>
+			</div>
+			<div class="card-body">
+				<form asp-action="Create" role="form">
+					<div class="form-body">
+						<h3 class="card-title">Form info</h3>
+						<hr>
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="row p-t-20">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="table" class="control-label">Select the entity for form generate</label>
+									<select id="table" asp-items="@entities" class="form-control"></select>
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="formType" class="control-label"> Select type</label>
+									<select id="formType" asp-items="@formTypes" class="form-control"></select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row button-group">
+						<div class="col-lg-2 col-md-3">
+							<a id="next" href="#" class="btn btn-block btn-success"> <i class="fa fa-arrow-right"></i> @Localizer["next_step"]</a>
+						</div>
+						<div class="col-lg-2 col-md-3">
+							<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+						</div>
+						<div class="col-lg-2 col-md-3">
+							<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts{
+	<script>
+		$("#next").on("click", function () {
+			const tableId = $("#table option:selected").val();
+			const formTypeId = $("#formType option:selected").val();
+			if (tableId == "") {
+				alert("Select type of Select the entity for form generate");
+			}
+			else if (formTypeId == "") {
+				alert("Selectati type of form");
+			}
+			else {
+				location.href = location.origin + "/Form/Generate?tableId=" + tableId + "&formType=" + formTypeId + " &mode=first";
+			}
+		});
+	</script>
+}

@@ -1,0 +1,94 @@
+@using ST.CORE.Models 
+@{
+	ViewData["Title"] = "Hrm";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card">
+	<div class="card-body">
+		<h4 class="card-title">Changes</h4>
+		<h6 class="card-subtitle">List of changes</h6>
+		<div class="table-responsive">
+			<table class="table table-striped table-bordered" id="tableAudit">
+				<thead>
+					<tr>
+						<th>Changed</th>
+						<th>ModifiedBy</th>
+						<th>TrackEventType</th>
+						<th>Entity Name</th>
+						<th>Version</th>
+						<th style="max-width: 20px">Actions</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+				<tfoot></tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts
+	{
+	<script type="text/javascript" language="javascript">
+		function getTokenAntiForgery() {
+			const token = '@Html.AntiForgeryToken()';
+			return $(token).val();
+		}
+	</script>
+
+	<script language="javascript" type="text/javascript">
+		$(document).ready(function($) {
+			const tableId = '#tableAudit';
+			if ($.fn.DataTable.isDataTable(tableId)) {
+				$(tableId).dataTable().fnDestroy();
+				$(tableId).dataTable().empty();
+			}
+
+			$(tableId).DataTable({
+				processing: true, // for show progress bar
+				serverSide: true, // for process server side
+				filter: true, // this is for disable filter (search box)
+				orderMulti: false, // for disable multiple column at once
+				destroy: true,
+				ajax: {
+					url: '@Url.Action("TrackAuditListHrm")',
+					type: "POST"
+				},
+				columns: [
+					{ data: "changedString" },
+					{ data: "modifiedBy" },
+					{ data: "eventType" },
+					{ data: "entityName" },
+					{ data: "version" },
+					{
+						data: null,
+						render: function(data) {
+							return `<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-warning btn-sm" href="@Url.Action("Versions")?id=${data.id}&stage=@StageEnum.Module.HRM">Versions</a>
+									<a class="btn btn-info btn-sm" href="@Url.Action("Details")?id=${data.id}&stage=@StageEnum.Module.HRM">Details</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=CreateAlert('${data.id
+								}'); >Delete</button>
+									</div>`;
+						}
+					}
+				]
+			});
+		});
+
+		function CreateAlert(rowId) {
+			const object = {
+				alertTitle: "Delete this change?",
+				alertText: "are you sure that you want to leave this change?",
+				confirmButtonText: "Yes, delete it!",
+				rowId: rowId,
+				tableId: "#tableAudit",
+				urlForDelete: '@Url.Action("Delete")',
+				type: "warning",
+				onDeleteSuccess: "Diagram has been deleted.",
+				onDeleteFail: "Something wrong",
+				onServerNoResponse: "Api not respond or not have permissions."
+			};
+			DeleteData(object);
+		}
+	</script>
+}
