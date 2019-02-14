@@ -110,7 +110,7 @@ namespace ST.CORE
 			});
 
 			services.AddDbContextAndIdentity(connectionString, migrationsAssembly, HostingEnvironment)
-				.AddApplicationSpecificServices()
+				.AddApplicationSpecificServices(HostingEnvironment)
 				.AddMPassSigningCredentials(new MPassSigningCredentials
 				{
 					ServiceProviderCertificate =

@@ -13,12 +13,10 @@ using ST.CORE.Models.ProcessViewModels;
 using ST.CORE.ViewModels.Process;
 using ST.Entities.Extensions;
 using ST.Identity.Data;
+using ST.Procesess.Abstraction;
 using ST.Procesess.Data;
 using ST.Procesess.Models;
 using ST.Procesess.Parsers;
-using ST.Procesess.ProcessManagement;
-using ST.Procesess.ProcessManagement.Activities;
-using TheFlow.CoreConcepts;
 
 namespace ST.CORE.Controllers.Processes
 {
@@ -26,7 +24,13 @@ namespace ST.CORE.Controllers.Processes
 	{
 		private IBaseBusinessRepository<ProcessesDbContext> Repository { get; }
 
+		/// <summary>
+		/// Inject process parser
+		/// </summary>
+		private readonly IProcessParser _processParser;
+
 		private ProcessesDbContext Context { get; }
+
 
 		/// <summary>
 		/// Inject logger
@@ -35,13 +39,22 @@ namespace ST.CORE.Controllers.Processes
 
 		private readonly ApplicationDbContext _applicationDbContext;
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="repository"></param>
+		/// <param name="context"></param>
+		/// <param name="logger"></param>
+		/// <param name="applicationDbContext"></param>
+		/// <param name="processParser"></param>
 		public ProcessController(IBaseBusinessRepository<ProcessesDbContext> repository, ProcessesDbContext context,
-			ILogger<ProcessController> logger, ApplicationDbContext applicationDbContext)
+			ILogger<ProcessController> logger, ApplicationDbContext applicationDbContext, IProcessParser processParser)
 		{
 			Repository = repository;
 			Context = context;
 			_logger = logger;
 			_applicationDbContext = applicationDbContext;
+			_processParser = processParser;
 		}
 
 		/// <summary>
@@ -63,9 +76,8 @@ namespace ST.CORE.Controllers.Processes
 				return View(model);
 			}
 			var settings = JsonConvert.DeserializeObject<IEnumerable<Dictionary<string, string>>>(model.DiagramSettings);
-			var parser = new ProcessParser(model.Diagram, settings);
-			var test = parser.GetXSchema;
-			var n = parser.GetProcesses();
+			_processParser.Init(model.Diagram, settings);
+			var processes = _processParser.GetProcesses();
 
 			var newProcessDiagram = new STProcessSchema
 			{

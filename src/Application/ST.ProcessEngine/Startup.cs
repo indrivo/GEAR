@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Core.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Utils;
@@ -48,6 +49,8 @@ namespace ST.ProcessEngine
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //Run background service
             services.AddHostedService<ProcessEngineRunner>();
+            //Use custom cache service
+            services.UseCustomCacheService(HostingEnvironment);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

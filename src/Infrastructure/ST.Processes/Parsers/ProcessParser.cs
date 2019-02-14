@@ -1,5 +1,7 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
+using ST.Identity.Data.Permissions;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Extensions;
 using ST.Procesess.Models;
@@ -12,6 +14,7 @@ namespace ST.Procesess.Parsers
 {
     public class ProcessParser : IProcessParser
     {
+        private readonly RoleManager<ApplicationRole> _roleManager;
         /// <summary>
         /// Xml as string
         /// </summary>
@@ -21,6 +24,16 @@ namespace ST.Procesess.Parsers
         /// </summary>
         private XSchema XSchema { get; set; }
         private IEnumerable<Dictionary<string, string>> XSettings { get; set; }
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="roleManager"></param>
+        public ProcessParser(RoleManager<ApplicationRole> roleManager)
+        {
+            _roleManager = roleManager;
+        }
 
         /// <summary>
         /// Init parser
@@ -108,7 +121,8 @@ namespace ST.Procesess.Parsers
                         var process = new STProcess
                         {
                             Name = xProcess.ID,
-                            ProcessSettings = processSettings.ToStringSettings()
+                            ProcessSettings = processSettings.ToStringSettings(),
+                            ProcessTransitions = new List<STProcessTransition>()
                         };
 
                         var xActors = XSchema.GetActorsFromProcess(xProcess);
@@ -116,6 +130,31 @@ namespace ST.Procesess.Parsers
                         {
                             var actorSettings = XSettings.FirstOrDefault(x => x["id"] == xActor.ID);
                             var actorName = actorSettings?["name"];
+                            if (string.IsNullOrEmpty(actorName)) continue;
+                            var role = _roleManager.Roles.FirstOrDefault(x => x.Name.Equals(actorName));
+                            if (role == null) continue;
+                            var actor = new STTransitionActor
+                            {
+                                Name = xActor.ID,
+                                RoleId = Guid.Parse(role.Id),
+                                ActorSettings = actorSettings.ToStringSettings()
+                            };
+                            var xReferences = xActor.Elements["flowNodeRef"];
+                            foreach (var xReference in xReferences)
+                            {
+                                var xEl = XSchema.Elements.FirstOrDefault(x => x.ID.Equals(xReference.Attributes["Value"]));
+                                if (xEl == null) continue;
+
+                                var transition = new STProcessTransition
+                                {
+                                    Name = xEl.ID,
+                                    Process = process,
+                                    TransitionActors = new List<STTransitionActor> { actor },
+                                    TransitionType = xEl.TypeName.GetTransitionType()
+                                };
+
+                                process.ProcessTransitions.Add(transition);
+                            }
                         }
                     }
                 }

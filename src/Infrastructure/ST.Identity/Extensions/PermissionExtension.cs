@@ -15,13 +15,8 @@ namespace ST.Identity.Extensions
         /// <param name="ip"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthorizationBasedOnCache(this IServiceCollection services, IHostingEnvironment environment, string ip = "127.0.0.1", string instance = "ST.CORE")
+        public static IServiceCollection AddAuthorizationBasedOnCache(this IServiceCollection services)
         {
-            services.AddDistributedRedisCache(opts =>
-            {
-                opts.Configuration = ip;
-                opts.InstanceName = $"{instance}.{environment.EnvironmentName}";
-            });
             services.AddTransient<IPermissionService, PermissionService>();
             return services;
         }

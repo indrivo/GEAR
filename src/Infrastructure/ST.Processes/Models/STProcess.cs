@@ -41,7 +41,7 @@ namespace ST.Procesess.Models
         /// <summary>
         /// Defined process transitions
         /// </summary>
-        public IEnumerable<STProcessTransition> ProcessTransitions { get; set; }
+        public IList<STProcessTransition> ProcessTransitions { get; set; }
         /// <summary>
         /// Store author settings of process
         /// </summary>

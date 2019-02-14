@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
+using Shared.Core.Extensions;
 using Shared.Core.Filters;
 using Shared.Core.Versioning;
 using ST.BaseBusinessRepository;
@@ -160,7 +161,7 @@ namespace ST.CORE.Extensions
 				.AddIdentity<ApplicationUser, ApplicationRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
-			services.AddAuthorizationBasedOnCache(environment);
+			services.AddAuthorizationBasedOnCache();
 			services.AddLdapAuthorization();
 			return services;
 		}
@@ -171,7 +172,7 @@ namespace ST.CORE.Extensions
 		/// </summary>
 		/// <param name="services"></param>
 		/// <returns></returns>
-		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services)
+		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env)
 		{
 			services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
 			services.AddTransient<IEmailSender, EmailSender>();
@@ -183,6 +184,7 @@ namespace ST.CORE.Extensions
 			services.AddTransient<IPageRender, PageRender>();
 			services.AddTransient<IMenuService, MenuService>();
 			services.AddTransient<IProcessParser, ProcessParser>();
+			services.UseCustomCacheService(env);
 			return services;
 		}
 
