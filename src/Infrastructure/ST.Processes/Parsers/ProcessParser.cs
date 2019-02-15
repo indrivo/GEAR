@@ -128,21 +128,23 @@ namespace ST.Procesess.Parsers
                         var xActors = XSchema.GetActorsFromProcess(xProcess);
                         foreach (var xActor in xActors)
                         {
-                            var actorSettings = XSettings.FirstOrDefault(x => x["id"] == xActor.ID);
-                            var actorName = actorSettings?["name"];
-                            if (string.IsNullOrEmpty(actorName)) continue;
-                            var role = _roleManager.Roles.FirstOrDefault(x => x.Name.Equals(actorName));
+                            var actorSettings = XSettings.FirstOrDefault(x => x?["id"] == xActor.ID);
+                            if (!actorSettings.ContainsKey("name")) continue;
+                            var role = _roleManager.Roles.FirstOrDefault(x => x.Name == actorSettings["name"]);
                             if (role == null) continue;
+
+                            //Initiate new actor
                             var actor = new STTransitionActor
                             {
                                 Name = xActor.ID,
                                 RoleId = Guid.Parse(role.Id),
                                 ActorSettings = actorSettings.ToStringSettings()
                             };
-                            var xReferences = xActor.Elements["flowNodeRef"];
+                            //Get actor transitions
+                            var xReferences = xActor.Elements?["flowNodeRef"];
                             foreach (var xReference in xReferences)
                             {
-                                var xEl = XSchema.Elements.FirstOrDefault(x => x.ID.Equals(xReference.Attributes["Value"]));
+                                var xEl = XSchema.Elements.FirstOrDefault(x => x.ID == xReference.Attributes.FirstOrDefault().Value);
                                 if (xEl == null) continue;
 
                                 var transition = new STProcessTransition
@@ -150,16 +152,41 @@ namespace ST.Procesess.Parsers
                                     Name = xEl.ID,
                                     Process = process,
                                     TransitionActors = new List<STTransitionActor> { actor },
-                                    TransitionType = xEl.TypeName.GetTransitionType()
+                                    TransitionType = xEl.TypeName.ToUpperFirstString().GetTransitionType()
                                 };
+
+                                var incomings = xEl.Elements["incoming"];
+
+
+                                var (incomingExist, incomingTransition) = CheckExistentIncoming(process, "");
+
+                                if (incomingExist)
+                                {
+                                    transition.ProcessTransition = incomingTransition;
+                                }
 
                                 process.ProcessTransitions.Add(transition);
                             }
                         }
+                        processes.Add(process);
                     }
                 }
             }
             return processes;
+        }
+
+        /// <summary>
+        /// Check incoming
+        /// </summary>
+        /// <param name="process"></param>
+        /// <param name="elementId"></param>
+        /// <returns></returns>
+        private (bool, STProcessTransition) CheckExistentIncoming(STProcess process, string elementId)
+        {
+            if (!process.ProcessTransitions.Any()) return default;
+            var check = process.ProcessTransitions.FirstOrDefault(x => x.Name == elementId);
+            if (check == null) return default;
+            return (true, check);
         }
     }
 }

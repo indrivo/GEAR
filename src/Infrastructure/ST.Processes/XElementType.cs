@@ -40,6 +40,12 @@ namespace ST.Procesess
             return $"{str[0].ToString().ToUpper()}{str.Substring(1, str.Length - 1)}";
         }
 
+        public static string ToUpperFirstString(this string xString)
+        {
+            var str = xString.ToString();
+            return $"{str[0].ToString().ToUpper()}{str.Substring(1, str.Length - 1)}";
+        }
+
         /// <summary>
         /// Get transition type from XString
         /// </summary>
@@ -47,7 +53,14 @@ namespace ST.Procesess
         /// <returns></returns>
         public static TransitionType GetTransitionType(this XString xString)
         {
-            return Enum.Parse<TransitionType>(xString.ToString());
+            try
+            {
+                return Enum.Parse<TransitionType>(xString.ToString());
+            }
+            catch
+            {
+                return default;
+            }
         }
 
         /// <summary>
@@ -57,7 +70,7 @@ namespace ST.Procesess
         /// <returns></returns>
         public static TransitionType GetTransitionType(this string xString)
         {
-            return Enum.Parse<TransitionType>(xString);
+            return new XString(xString).GetTransitionType();
         }
     }
 
