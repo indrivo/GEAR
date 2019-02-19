@@ -79,6 +79,12 @@ namespace ST.CORE.Controllers.Processes
 			_processParser.Init(model.Diagram, settings);
 			var processes = _processParser.GetProcesses();
 
+			if (!processes.Any())
+			{
+				ModelState.AddModelError(string.Empty, "No identified processes in your diagram, try to modify as system standart");
+				return View(model);
+			}
+
 			var newProcessDiagram = new STProcessSchema
 			{
 				Changed = DateTime.Now,
@@ -92,6 +98,11 @@ namespace ST.CORE.Controllers.Processes
 			try
 			{
 				await Context.ProcessSchemas.AddAsync(newProcessDiagram);
+				foreach (var process in processes)
+				{
+					process.ProcessSchema = newProcessDiagram;
+				}
+				await Context.AddRangeAsync(processes);
 				await Context.SaveChangesAsync();
 			}
 			catch (Exception e)
@@ -103,6 +114,11 @@ namespace ST.CORE.Controllers.Processes
 			return RedirectToAction(nameof(Index));
 		}
 
+		/// <summary>
+		/// Delete process
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
 		[HttpPost]
 		public JsonResult Delete(Guid? id)
 		{

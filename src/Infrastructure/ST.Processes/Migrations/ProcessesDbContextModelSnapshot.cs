@@ -16,9 +16,35 @@ namespace ST.Procesess.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Processes")
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("ST.Procesess.Models.STIncomingTransition", b =>
+                {
+                    b.Property<Guid>("ProcessTransitionId");
+
+                    b.Property<Guid>("IncomingTransitionId");
+
+                    b.HasKey("ProcessTransitionId", "IncomingTransitionId");
+
+                    b.HasIndex("IncomingTransitionId");
+
+                    b.ToTable("IncomingTransitions");
+                });
+
+            modelBuilder.Entity("ST.Procesess.Models.STOutgoingTransition", b =>
+                {
+                    b.Property<Guid>("ProcessTransitionId");
+
+                    b.Property<Guid>("OutgoingTransitionId");
+
+                    b.HasKey("ProcessTransitionId", "OutgoingTransitionId");
+
+                    b.HasIndex("OutgoingTransitionId");
+
+                    b.ToTable("OutGoingTransitions");
+                });
 
             modelBuilder.Entity("ST.Procesess.Models.STProcess", b =>
                 {
@@ -262,6 +288,22 @@ namespace ST.Procesess.Migrations
                     b.HasIndex("ProcessTaskId");
 
                     b.ToTable("UserProcessTasks");
+                });
+
+            modelBuilder.Entity("ST.Procesess.Models.STIncomingTransition", b =>
+                {
+                    b.HasOne("ST.Procesess.Models.STProcessTransition", "IncomingTransition")
+                        .WithMany("IncomingTransitions")
+                        .HasForeignKey("IncomingTransitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Procesess.Models.STOutgoingTransition", b =>
+                {
+                    b.HasOne("ST.Procesess.Models.STProcessTransition", "OutgoingTransition")
+                        .WithMany("OutgoingTransitions")
+                        .HasForeignKey("OutgoingTransitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ST.Procesess.Models.STProcess", b =>

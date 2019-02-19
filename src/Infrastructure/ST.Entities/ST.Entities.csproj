@@ -63,7 +63,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
     <PackageReference Include="ST.BaseBusinessRepository" Version="1.1.4-alpha" />

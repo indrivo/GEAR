@@ -1,5 +1,6 @@
 ﻿using ST.Procesess.Models;
 using ST.Procesess.Models.ParserModels;
+using ST.Procesess.ViewModels;
 using System.Collections.Generic;
 
 namespace ST.Procesess.Abstraction

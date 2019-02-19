@@ -30,6 +30,17 @@ namespace ST.Procesess.Data
         /// Process transitions
         /// </summary>
         public DbSet<STProcessTransition> ProcessTransitions { get; set; }
+
+        /// <summary>
+        /// Outgoing transitions
+        /// </summary>
+        public DbSet<STOutgoingTransition> OutGoingTransitions { get; set; }
+
+        /// <summary>
+        /// Incoming transitions
+        /// </summary>
+        public DbSet<STIncomingTransition> IncomingTransitions { get; set; }
+
         /// <summary>
         /// Transition actors
         /// </summary>
@@ -47,6 +58,12 @@ namespace ST.Procesess.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(ProcessSchema);
+
+            builder.Entity<STIncomingTransition>()
+                .HasKey(x => new { x.ProcessTransitionId, x.IncomingTransitionId });
+
+            builder.Entity<STOutgoingTransition>()
+                .HasKey(x => new { x.ProcessTransitionId, x.OutgoingTransitionId });
 
             builder.Entity<STProcessInstanceHistory>()
                 .HasKey(x => new { x.ProcessTransitionId, x.ProcessInstanceId });

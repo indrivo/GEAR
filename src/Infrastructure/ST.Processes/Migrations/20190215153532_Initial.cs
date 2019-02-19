@@ -141,6 +141,46 @@ namespace ST.Procesess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IncomingTransitions",
+                schema: "Processes",
+                columns: table => new
+                {
+                    ProcessTransitionId = table.Column<Guid>(nullable: false),
+                    IncomingTransitionId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IncomingTransitions", x => new { x.ProcessTransitionId, x.IncomingTransitionId });
+                    table.ForeignKey(
+                        name: "FK_IncomingTransitions_ProcessTransitions_IncomingTransitionId",
+                        column: x => x.IncomingTransitionId,
+                        principalSchema: "Processes",
+                        principalTable: "ProcessTransitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OutGoingTransitions",
+                schema: "Processes",
+                columns: table => new
+                {
+                    ProcessTransitionId = table.Column<Guid>(nullable: false),
+                    OutgoingTransitionId = table.Column<Guid>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutGoingTransitions", x => new { x.ProcessTransitionId, x.OutgoingTransitionId });
+                    table.ForeignKey(
+                        name: "FK_OutGoingTransitions_ProcessTransitions_OutgoingTransitionId",
+                        column: x => x.OutgoingTransitionId,
+                        principalSchema: "Processes",
+                        principalTable: "ProcessTransitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProcessInstanceHistories",
                 schema: "Processes",
                 columns: table => new
@@ -253,6 +293,18 @@ namespace ST.Procesess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_IncomingTransitions_IncomingTransitionId",
+                schema: "Processes",
+                table: "IncomingTransitions",
+                column: "IncomingTransitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutGoingTransitions_OutgoingTransitionId",
+                schema: "Processes",
+                table: "OutGoingTransitions",
+                column: "OutgoingTransitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Processes_IntitialProcessId",
                 schema: "Processes",
                 table: "Processes",
@@ -315,6 +367,14 @@ namespace ST.Procesess.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "IncomingTransitions",
+                schema: "Processes");
+
+            migrationBuilder.DropTable(
+                name: "OutGoingTransitions",
+                schema: "Processes");
+
             migrationBuilder.DropTable(
                 name: "ProcessInstanceHistories",
                 schema: "Processes");

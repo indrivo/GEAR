@@ -1,4 +1,7 @@
 @using ST.CORE.ViewModels.Process
+@using System.Web;
+@using System.IO;
+
 @model CreateProcessViewModel
 
 @{
@@ -52,7 +55,7 @@
 				<hr>
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 				<div class="row pt-2">
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<div class="form-group">
 							<label asp-for="Title" class="control-label"></label>
 							<input asp-for="Title" class="form-control" />
@@ -144,8 +147,21 @@
 	<script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
 	<script src="~/lib/codemirror/mode/css/css.js"></script>
 	<script src="~/lib/codemirror/mode/xml/xml.js"></script>
-	<script type="text/javascript" language="javascript">
-		const initialDiagram = '<?xml version="1.0" encoding="UTF-8"?>' +
+	<script>
+		var tempDiagram = "@Model?.Diagram.ToString()";
+		if (tempDiagram.length > 0) {
+			tempDiagram = tempDiagram.replace(/&lt;/g, "<");
+			tempDiagram = tempDiagram.replace(/&amp;/g, "&");
+			tempDiagram = tempDiagram.replace(/&gt;/g, ">");
+			tempDiagram = tempDiagram.replace(/&quot;/g, "\"");
+			tempDiagram = tempDiagram.replace(/&apos;/g, "'");
+		}
+
+		console.log(tempDiagram);
+		var tempSettings = "@Html.Raw(Model?.DiagramSettings)";
+
+		console.log(tempSettings);
+		const initialDiagram = tempDiagram.length > 0 ? tempDiagram : '<?xml version="1.0" encoding="UTF-8"?>' +
 			'<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
 			'xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" ' +
 			'xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" ' +
@@ -163,6 +179,7 @@
 			'</bpmndi:BPMNPlane>' +
 			'</bpmndi:BPMNDiagram>' +
 			'</bpmn:definitions>';
+
 		var viewer = new BpmnJS({
 			container: '#canvas'
 		});
@@ -296,7 +313,7 @@
 					}
 					return null;
 				},
-				elementsConfigurations: configs,
+				elementsConfigurations: configs
 			},
 			isIdRegistered: function (id) {
 				const match = this.elements.filter((x) => {
@@ -307,9 +324,7 @@
 				}
 				return false;
 			},
-			elements: [
-
-			]
+			elements: tempDiagram.length > 0 ? JSON.parse(tempSettings) : []
 		};
 
 		function loadContent(e) {

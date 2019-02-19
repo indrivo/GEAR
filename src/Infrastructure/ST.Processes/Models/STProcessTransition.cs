@@ -14,12 +14,6 @@ namespace ST.Procesess.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Previous transition
-        /// </summary>
-        public STProcessTransition ProcessTransition { get; set; }
-        public Guid? ProcessTransitionId { get; set; }
-
-        /// <summary>
         /// Transition type
         /// </summary>
         [Required]
@@ -40,10 +34,21 @@ namespace ST.Procesess.Models
         /// Actors who can start this transition
         /// </summary>
         public IEnumerable<STTransitionActor> TransitionActors { get; set; }
+
+        /// <summary>
+        /// Incoming transitions
+        /// </summary>
+        public IList<STIncomingTransition> IncomingTransitions { get; set; } = new List<STIncomingTransition>();
+
+        /// <summary>
+        /// Outgoing transitions
+        /// </summary>
+        public IList<STOutgoingTransition> OutgoingTransitions { get; set; } = new List<STOutgoingTransition>();
     }
 
     public enum TransitionType
     {
+        SequenceFlow,
         Process,
         Lane,
         StartEvent,
