@@ -1,9 +1,8 @@
 ﻿using System;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Option : BaseModel
+    public class Option : ExtendedModel
     {
         public string Label { get; set; }
         public string Value { get; set; }

@@ -2,15 +2,15 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.Identity.Data;
 
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190116190736_Initial")]
+    [Migration("20190220140854_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,14 +18,15 @@ namespace ST.Identity.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Identity")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType");
 
@@ -44,7 +45,8 @@ namespace ST.Identity.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType");
 
@@ -123,6 +125,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<Guid>("RecordId");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("TrackEventType");
 
                     b.Property<string>("TypeFullName");
@@ -154,6 +158,8 @@ namespace ST.Identity.Migrations
                     b.Property<string>("PropertyName");
 
                     b.Property<string>("PropertyType");
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<Guid>("TrackAuditId");
 
@@ -194,13 +200,16 @@ namespace ST.Identity.Migrations
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256);
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex");
+                        .HasName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles");
                 });
@@ -221,6 +230,8 @@ namespace ST.Identity.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
 
@@ -250,6 +261,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("PermissionCode")
                         .IsRequired();
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
 
@@ -286,6 +299,8 @@ namespace ST.Identity.Migrations
                     b.Property<string>("PermissionName")
                         .HasMaxLength(100);
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
@@ -315,6 +330,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("RoleId");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
@@ -343,6 +360,8 @@ namespace ST.Identity.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
 
@@ -414,7 +433,8 @@ namespace ST.Identity.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex");
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -441,6 +461,8 @@ namespace ST.Identity.Migrations
                     b.Property<string>("ProfileName")
                         .IsRequired();
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
@@ -459,6 +481,35 @@ namespace ST.Identity.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("RoleProfiles");
+                });
+
+            modelBuilder.Entity("ST.Organization.Models.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Adress");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("SiteWeb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

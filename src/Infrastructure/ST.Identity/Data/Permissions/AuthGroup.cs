@@ -20,6 +20,9 @@ namespace ST.Identity.Data.Permissions
         [TrackField(Option = TrackFieldOption.Allow)]
         public string Name { get; set; }
 
+        /// <summary>
+        /// User groups
+        /// </summary>
 		public List<UserGroup> UserGroups { get; set; }
-	}
+    }
 }

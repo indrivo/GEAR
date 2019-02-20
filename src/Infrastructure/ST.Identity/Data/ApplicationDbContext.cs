@@ -21,6 +21,7 @@ namespace ST.Identity.Data
         /// Options
         /// </summary>
         private DbContextOptions<ApplicationDbContext> Options { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Constructor

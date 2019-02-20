@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.BaseRepository;
 using ST.Entities.Models.Tables;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Form : BaseModel
+    public class Form : ExtendedModel
     {
         /// <summary>
         /// Form name

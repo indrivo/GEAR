@@ -1,8 +1,7 @@
-﻿using ST.BaseRepository;
-
+﻿
 namespace ST.Entities.Models.Forms
 {
-    public class Meta : BaseModel
+    public class Meta : ExtendedModel
     {
         public string Group { get; set; }
         public string Icon { get; set; }

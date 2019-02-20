@@ -38,5 +38,10 @@ namespace ST.Audit.Models
         /// Version of record
         /// </summary>
         public int Version { get; set; }
+
+        /// <summary>
+        /// Tenant id
+        /// </summary>
+        public Guid? TenantId { get; set; }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using System;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Forms
 {
-    public class DisabledAttr : BaseModel
+    public class DisabledAttr : ExtendedModel
     {
         public string Name { get; set; }
         public Guid ConfigId { get; set; }

@@ -16,9 +16,73 @@ namespace ST.Entities.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Entities")
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid>("RecordId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("TrackEventType");
+
+                    b.Property<string>("TypeFullName");
+
+                    b.Property<string>("UserName");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrackAudits");
+                });
+
+            modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("PropertyName");
+
+                    b.Property<string>("PropertyType");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<Guid>("TrackAuditId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrackAuditId");
+
+                    b.ToTable("TrackAuditDetails");
+                });
 
             modelBuilder.Entity("ST.Entities.Models.Forms.Attrs", b =>
                 {
@@ -39,9 +103,13 @@ namespace ST.Entities.Migrations
 
                     b.Property<bool>("Required");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("Type");
 
                     b.Property<string>("Value");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -70,6 +138,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<Guid?>("RowId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -103,6 +175,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<int>("Order");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.ToTable("ColumnFields");
@@ -135,6 +211,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("ModifiedBy");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.Property<string>("Width");
 
                     b.HasKey("Id");
@@ -160,6 +240,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -202,6 +286,10 @@ namespace ST.Entities.Migrations
                     b.Property<Guid?>("TableFieldId");
 
                     b.Property<string>("Tag");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -247,7 +335,11 @@ namespace ST.Entities.Migrations
 
                     b.Property<Guid>("TableId");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<Guid>("TypeId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -284,6 +376,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.ToTable("FormTypes");
@@ -307,6 +403,10 @@ namespace ST.Entities.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -336,11 +436,15 @@ namespace ST.Entities.Migrations
 
                     b.Property<bool>("Selected");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("TypeLabel");
 
                     b.Property<string>("TypeValue");
 
                     b.Property<string>("Value");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -371,6 +475,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<Guid?>("StageId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -404,6 +512,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<Guid>("RowId");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.ToTable("RowColumns");
@@ -423,6 +535,10 @@ namespace ST.Entities.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -447,6 +563,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<Guid?>("SettingsId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -475,6 +595,10 @@ namespace ST.Entities.Migrations
                     b.Property<Guid>("RowId");
 
                     b.Property<Guid>("StageId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -510,6 +634,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<Guid?>("TableModelId");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BlockCategoryId");
@@ -540,7 +668,11 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("Value");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -567,6 +699,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -600,6 +736,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<Guid?>("SettingsId");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LayoutId");
@@ -632,6 +772,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Script");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PageId");
@@ -662,7 +806,11 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("PhysicPath");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("Title");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -689,6 +837,10 @@ namespace ST.Entities.Migrations
                     b.Property<Guid>("PageId");
 
                     b.Property<string>("Script");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -719,6 +871,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.ToTable("PageTypes");
@@ -740,6 +896,10 @@ namespace ST.Entities.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -768,6 +928,10 @@ namespace ST.Entities.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -872,6 +1036,10 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.ToTable("Table");
@@ -909,6 +1077,10 @@ namespace ST.Entities.Migrations
                     b.Property<Guid>("TableFieldTypeId");
 
                     b.Property<Guid>("TableId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -979,6 +1151,14 @@ namespace ST.Entities.Migrations
                     b.HasIndex("ViewModelId");
 
                     b.ToTable("ViewModelFields");
+                });
+
+            modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
+                {
+                    b.HasOne("ST.Audit.Models.TrackAudit")
+                        .WithMany("AuditDetailses")
+                        .HasForeignKey("TrackAuditId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ST.Entities.Models.Forms.Column", b =>

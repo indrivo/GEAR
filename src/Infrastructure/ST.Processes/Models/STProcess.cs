@@ -1,4 +1,4 @@
-﻿using ST.BaseRepository;
+﻿using ST.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
-    public class STProcess : BaseModel
+    public class STProcess : ExtendedModel
     {
         /// <summary>
         /// Name of process

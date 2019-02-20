@@ -1,6 +1,6 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ST.Identity.Migrations
 {
@@ -23,6 +23,7 @@ namespace ST.Identity.Migrations
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -42,6 +43,7 @@ namespace ST.Identity.Migrations
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     PermissionName = table.Column<string>(maxLength: 100, nullable: true),
                     ClientId = table.Column<int>(nullable: false),
                     Description = table.Column<string>(maxLength: 300, nullable: true),
@@ -64,6 +66,7 @@ namespace ST.Identity.Migrations
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     ProfileName = table.Column<string>(nullable: false),
                     IsSystem = table.Column<bool>(nullable: false),
                     EntityId = table.Column<Guid>(nullable: false)
@@ -89,11 +92,33 @@ namespace ST.Identity.Migrations
                     ClientId = table.Column<int>(nullable: false),
                     Title = table.Column<string>(nullable: true),
                     IsNoEditable = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(maxLength: 256, nullable: true)
+                    Name = table.Column<string>(maxLength: 256, nullable: true),
+                    TenantId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tenants",
+                schema: "Identity",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Author = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: true),
+                    Changed = table.Column<DateTime>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    SiteWeb = table.Column<string>(nullable: true),
+                    Adress = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,7 +136,8 @@ namespace ST.Identity.Migrations
                     TrackEventType = table.Column<int>(nullable: false),
                     RecordId = table.Column<Guid>(nullable: false),
                     TypeFullName = table.Column<string>(nullable: true),
-                    Version = table.Column<int>(nullable: false)
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -164,6 +190,7 @@ namespace ST.Identity.Migrations
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     GroupId = table.Column<Guid>(nullable: false),
                     AuthGroupId = table.Column<Guid>(nullable: true),
                     PermissionCode = table.Column<string>(nullable: false)
@@ -186,7 +213,7 @@ namespace ST.Identity.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -215,6 +242,7 @@ namespace ST.Identity.Migrations
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     RoleId = table.Column<string>(nullable: true),
                     PermissionCode = table.Column<string>(nullable: false),
                     PermissionId = table.Column<Guid>(nullable: false)
@@ -279,7 +307,8 @@ namespace ST.Identity.Migrations
                     TrackAuditId = table.Column<Guid>(nullable: false),
                     PropertyName = table.Column<string>(nullable: true),
                     PropertyType = table.Column<string>(nullable: true),
-                    Value = table.Column<string>(nullable: true)
+                    Value = table.Column<string>(nullable: true),
+                    TenantId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -299,7 +328,7 @@ namespace ST.Identity.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -329,7 +358,8 @@ namespace ST.Identity.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    Version = table.Column<int>(nullable: false)
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -456,7 +486,8 @@ namespace ST.Identity.Migrations
                 schema: "Identity",
                 table: "Roles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrackAuditDetails_TrackAuditId",
@@ -499,7 +530,8 @@ namespace ST.Identity.Migrations
                 schema: "Identity",
                 table: "Users",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -518,6 +550,10 @@ namespace ST.Identity.Migrations
 
             migrationBuilder.DropTable(
                 name: "RoleProfiles",
+                schema: "Identity");
+
+            migrationBuilder.DropTable(
+                name: "Tenants",
                 schema: "Identity");
 
             migrationBuilder.DropTable(

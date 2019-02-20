@@ -1,9 +1,8 @@
 ﻿using System;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Notifications
 {
-    public class SystemNotifications : BaseModel
+    public class SystemNotifications : ExtendedModel
     {
         public string Subject { get; set; }
         public string Content { get; set; }

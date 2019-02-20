@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Tables
 {
-    public class TableModel : BaseModel
+    public class TableModel : ExtendedModel
     {
         /// <summary>
         /// Name of TableModel

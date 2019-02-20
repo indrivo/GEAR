@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Tables
 {
-    public class TableModelFields : BaseModel
+    public class TableModelFields : ExtendedModel
     {
         /// <summary>
         /// AllowNull

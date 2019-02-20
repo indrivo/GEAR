@@ -1,11 +1,12 @@
 ﻿using ST.BaseRepository;
+using ST.Entities.Models;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
-    public class STProcessTask : BaseModel
+    public class STProcessTask : ExtendedModel
     {
         /// <summary>
         /// Name of task

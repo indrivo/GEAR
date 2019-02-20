@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
+using ST.Organization.Models;
 
 namespace ST.Identity.Data.Permissions
 {
@@ -84,5 +85,10 @@ namespace ST.Identity.Data.Permissions
         /// </summary>
 	    [TrackField(Option = TrackFieldOption.Allow)]
         public override string Name { get; set; }
-	}
+
+        /// <summary>
+        /// Tenant id
+        /// </summary>
+        public Guid? TenantId { get; set; }
+    }
 }

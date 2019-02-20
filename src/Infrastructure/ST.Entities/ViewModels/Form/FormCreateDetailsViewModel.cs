@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ST.Entities.Models;
+using System;
 
 namespace ST.Entities.ViewModels.Form
 {
-    public class FormCreateDetailsViewModel : ST.BaseRepository.BaseModel
+    public class FormCreateDetailsViewModel : ExtendedModel
     {
         /// <summary>
         /// Form name

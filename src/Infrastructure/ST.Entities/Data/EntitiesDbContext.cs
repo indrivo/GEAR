@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using ST.Audit.Contexts;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Pages;
 using ST.Entities.Models.RenderTemplates;
@@ -10,7 +11,7 @@ using ST.Entities.Services.Abstraction;
 
 namespace ST.Entities.Data
 {
-    public class EntitiesDbContext : DbContext
+    public class EntitiesDbContext : TrackerDbContext
     {
         /// <summary>
         /// Schema

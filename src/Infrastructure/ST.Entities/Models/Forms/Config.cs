@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Config : BaseModel
+    public class Config : ExtendedModel
     {
         public bool Fieldset { get; set; }
         public string Legend { get; set; }

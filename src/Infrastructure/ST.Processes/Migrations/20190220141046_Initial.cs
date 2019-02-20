@@ -21,6 +21,7 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Diagram = table.Column<string>(nullable: false),
                     Description = table.Column<string>(maxLength: 50, nullable: true),
                     Synchronized = table.Column<bool>(nullable: false),
@@ -41,6 +42,29 @@ namespace ST.Procesess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrackAudits",
+                schema: "Processes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Author = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: true),
+                    Changed = table.Column<DateTime>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    UserName = table.Column<string>(nullable: true),
+                    TrackEventType = table.Column<int>(nullable: false),
+                    RecordId = table.Column<Guid>(nullable: false),
+                    TypeFullName = table.Column<string>(nullable: true),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrackAudits", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Processes",
                 schema: "Processes",
                 columns: table => new
@@ -51,6 +75,7 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     ProcessSchemaId = table.Column<Guid>(nullable: false),
                     Version = table.Column<int>(nullable: false),
@@ -77,6 +102,35 @@ namespace ST.Procesess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrackAuditDetails",
+                schema: "Processes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Author = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: true),
+                    Changed = table.Column<DateTime>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    TrackAuditId = table.Column<Guid>(nullable: false),
+                    PropertyName = table.Column<string>(nullable: true),
+                    PropertyType = table.Column<string>(nullable: true),
+                    Value = table.Column<string>(nullable: true),
+                    TenantId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrackAuditDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrackAuditDetails_TrackAudits_TrackAuditId",
+                        column: x => x.TrackAuditId,
+                        principalSchema: "Processes",
+                        principalTable: "TrackAudits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProcessInstances",
                 schema: "Processes",
                 columns: table => new
@@ -87,6 +141,8 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     StartedBy = table.Column<Guid>(nullable: false),
                     ProcessId = table.Column<Guid>(nullable: false),
                     InstanceState = table.Column<int>(nullable: false),
@@ -115,8 +171,9 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: false),
-                    ProcessTransitionId = table.Column<Guid>(nullable: true),
                     TransitionType = table.Column<int>(nullable: false),
                     ProcessId = table.Column<Guid>(nullable: false),
                     TransitionSettings = table.Column<string>(nullable: true)
@@ -131,13 +188,6 @@ namespace ST.Procesess.Migrations
                         principalTable: "Processes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProcessTransitions_ProcessTransitions_ProcessTransitionId",
-                        column: x => x.ProcessTransitionId,
-                        principalSchema: "Processes",
-                        principalTable: "ProcessTransitions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -219,6 +269,8 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     ProcessTaskState = table.Column<int>(nullable: false),
@@ -249,6 +301,8 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     RoleId = table.Column<Guid>(nullable: false),
                     ProcessTransitionId = table.Column<Guid>(nullable: false),
@@ -277,6 +331,8 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     ProcessTaskId = table.Column<Guid>(nullable: false),
                     UserId = table.Column<Guid>(nullable: false)
                 },
@@ -347,10 +403,10 @@ namespace ST.Procesess.Migrations
                 column: "ProcessId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProcessTransitions_ProcessTransitionId",
+                name: "IX_TrackAuditDetails_TrackAuditId",
                 schema: "Processes",
-                table: "ProcessTransitions",
-                column: "ProcessTransitionId");
+                table: "TrackAuditDetails",
+                column: "TrackAuditId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TransitionActors_ProcessTransitionId",
@@ -380,6 +436,10 @@ namespace ST.Procesess.Migrations
                 schema: "Processes");
 
             migrationBuilder.DropTable(
+                name: "TrackAuditDetails",
+                schema: "Processes");
+
+            migrationBuilder.DropTable(
                 name: "TransitionActors",
                 schema: "Processes");
 
@@ -389,6 +449,10 @@ namespace ST.Procesess.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProcessInstances",
+                schema: "Processes");
+
+            migrationBuilder.DropTable(
+                name: "TrackAudits",
                 schema: "Processes");
 
             migrationBuilder.DropTable(
