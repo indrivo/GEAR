@@ -37,6 +37,9 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
+		/// <summary>
+		/// Inject App Context
+		/// </summary>
 		private readonly ApplicationDbContext _context;
 
 		/// <summary>
@@ -48,16 +51,17 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="context"></param>
 		/// <param name="env"></param>
 		/// <param name="logger"></param>
+		/// <param name="appContext"></param>
 		public TableController(ApplicationDbContext contextApp, IBaseBusinessRepository<EntitiesDbContext> repository,
 			IConfiguration configuration, EntitiesDbContext context, IHostingEnvironment env,
-			ILogger<TableController> logger, ApplicationDbContext context1)
+			ILogger<TableController> logger, ApplicationDbContext appContext)
 		{
 			ContextApp = contextApp;
 			Configuration = configuration;
 			Repository = repository;
 			Context = context;
 			_logger = logger;
-			_context = context1;
+			_context = appContext;
 			ConnectionString = Entities.Utils.ConnectionString.Get(configuration, env);
 		}
 
@@ -96,7 +100,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			return ConnectionString.Item1.Equals(DbProviderType.MsSqlServer) ?
 															new TablesService(Repository)
-															: ConnectionString.Item1.Equals(DbProviderType.PostgreSQL)
+															: ConnectionString.Item1.Equals(DbProviderType.PostgreSql)
 															? new NpgTablesService(Repository)
 															: null;
 		}
@@ -131,14 +135,7 @@ namespace ST.CORE.Controllers.Entity
 						ITablesService sqlService = GetSqlService();
 						var response = sqlService.CreateSqlTable(resultModel, ConnectionString.Item2);
 						if (response.Result)
-						{
-							EntityStorage.DynamicEntities.Add(new Entities.Services.Entity
-							{
-								Name = m.Name,
-								Description = m.Description
-							});
 							return RedirectToAction("Edit", "Table", new { id = table.Result, tab = "one" });
-						}
 
 						return View(model);
 					}

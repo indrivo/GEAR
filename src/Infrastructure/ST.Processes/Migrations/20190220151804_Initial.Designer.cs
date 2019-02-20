@@ -10,7 +10,7 @@ using ST.Procesess.Data;
 namespace ST.Procesess.Migrations
 {
     [DbContext(typeof(ProcessesDbContext))]
-    [Migration("20190220141046_Initial")]
+    [Migration("20190220151804_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

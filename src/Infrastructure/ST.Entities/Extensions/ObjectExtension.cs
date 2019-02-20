@@ -221,15 +221,7 @@ namespace ST.Entities.Extensions
             var entity = conf.Object.GetType().Name;
             return new ObjectService(entity).ParseObject(obj);
         }
-        /// <summary>
-        /// Add entity to entity storage
-        /// </summary>
-        /// <param name="entity"></param>
-        public static void AddEntityToStorage(this SynchronizeTableViewModel entity)
-        {
-            var ent = new Entity { Name = entity.Name, Description = entity.Description };
-            EntityStorage.DynamicEntities.Add(ent);
-        }
+
         /// <summary>
         /// Get Entity Id
         /// </summary>

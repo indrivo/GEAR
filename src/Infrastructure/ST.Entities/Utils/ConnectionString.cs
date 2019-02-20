@@ -22,20 +22,11 @@ namespace ST.Entities.Utils
             {
                 connectionString = postgreSettings
                     .GetValue<string>("ConnectionString");
-                dbType = DbProviderType.PostgreSQL;
+                dbType = DbProviderType.PostgreSql;
             }
             else
             {
-                connectionString = configuration.GetConnectionString("DevelopmentConnection");
-                if (env.IsProduction())
-                {
-                    connectionString = configuration.GetConnectionString("ProductionConnection");
-                }
-
-                if (env.IsEnvironment("Stage"))
-                {
-                    connectionString = configuration.GetConnectionString("StageConnection");
-                }
+                connectionString = configuration.GetConnectionString("MSSQLConnection");
                 dbType = DbProviderType.MsSqlServer;
             }
 
@@ -44,6 +35,6 @@ namespace ST.Entities.Utils
     }
     public enum DbProviderType
     {
-        MsSqlServer, PostgreSQL
+        MsSqlServer, PostgreSql
     }
 }

@@ -14,7 +14,7 @@ namespace ST.Entities.Extensions
         public static DbContextOptionsBuilder GetDefaultOptions(this DbContextOptionsBuilder options, (DbProviderType, string) connectionString)
         {
             var (dbType, connection) = connectionString;
-            if (dbType == DbProviderType.PostgreSQL)
+            if (dbType == DbProviderType.PostgreSql)
             {
                 options.UseNpgsql(connection);
             }

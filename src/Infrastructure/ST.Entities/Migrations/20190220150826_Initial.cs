@@ -529,6 +529,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     TableModelId = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
@@ -875,6 +877,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     ViewModelId = table.Column<Guid>(nullable: false),
                     TableModelFieldsId = table.Column<Guid>(nullable: true),
@@ -1056,6 +1060,12 @@ namespace ST.Entities.Migrations
                 column: "BlockId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlockCategories_TenantId",
+                schema: "Entities",
+                table: "BlockCategories",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Blocks_BlockCategoryId",
                 schema: "Entities",
                 table: "Blocks",
@@ -1066,6 +1076,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "Blocks",
                 column: "TableModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Blocks_TenantId",
+                schema: "Entities",
+                table: "Blocks",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Columns_ConfigId",
@@ -1090,6 +1106,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "DisabledAttrs",
                 column: "ConfigId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EntityTypes_TenantId",
+                schema: "Entities",
+                table: "EntityTypes",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fields_AttrsId",
@@ -1140,6 +1162,12 @@ namespace ST.Entities.Migrations
                 column: "TableId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Forms_TenantId",
+                schema: "Entities",
+                table: "Forms",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Forms_TypeId",
                 schema: "Entities",
                 table: "Forms",
@@ -1168,6 +1196,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "Pages",
                 column: "SettingsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pages_TenantId",
+                schema: "Entities",
+                table: "Pages",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PageScripts_PageId",
@@ -1218,6 +1252,12 @@ namespace ST.Entities.Migrations
                 column: "SettingsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Table_TenantId",
+                schema: "Entities",
+                table: "Table",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TableFieldConfigs_TableFieldTypeId",
                 schema: "Entities",
                 table: "TableFieldConfigs",
@@ -1242,6 +1282,12 @@ namespace ST.Entities.Migrations
                 column: "TableId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TableFields_TenantId",
+                schema: "Entities",
+                table: "TableFields",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TableFieldTypes_TableFieldGroupsId",
                 schema: "Entities",
                 table: "TableFieldTypes",
@@ -1260,6 +1306,12 @@ namespace ST.Entities.Migrations
                 column: "TableModelFieldsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ViewModelFields_TenantId",
+                schema: "Entities",
+                table: "ViewModelFields",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ViewModelFields_ViewModelId",
                 schema: "Entities",
                 table: "ViewModelFields",
@@ -1270,6 +1322,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "ViewModels",
                 column: "TableModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViewModels_TenantId",
+                schema: "Entities",
+                table: "ViewModels",
+                column: "TenantId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

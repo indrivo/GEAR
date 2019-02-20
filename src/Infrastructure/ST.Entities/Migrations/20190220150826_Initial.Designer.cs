@@ -10,7 +10,7 @@ using ST.Entities.Data;
 namespace ST.Entities.Migrations
 {
     [DbContext(typeof(EntitiesDbContext))]
-    [Migration("20190220140932_Initial")]
+    [Migration("20190220150826_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -349,6 +349,8 @@ namespace ST.Entities.Migrations
 
                     b.HasIndex("TableId");
 
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("TypeId");
 
                     b.ToTable("Forms");
@@ -646,6 +648,8 @@ namespace ST.Entities.Migrations
 
                     b.HasIndex("TableModelId");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("Blocks");
                 });
 
@@ -708,6 +712,8 @@ namespace ST.Entities.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("BlockCategories");
                 });
 
@@ -749,6 +755,8 @@ namespace ST.Entities.Migrations
                     b.HasIndex("PageTypeId");
 
                     b.HasIndex("SettingsId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Pages");
                 });
@@ -937,6 +945,8 @@ namespace ST.Entities.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("EntityTypes");
                 });
 
@@ -1044,6 +1054,8 @@ namespace ST.Entities.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("Table");
                 });
 
@@ -1090,6 +1102,8 @@ namespace ST.Entities.Migrations
 
                     b.HasIndex("TableId");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("TableFields");
                 });
 
@@ -1112,9 +1126,15 @@ namespace ST.Entities.Migrations
 
                     b.Property<Guid>("TableModelId");
 
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TableModelId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("ViewModels");
                 });
@@ -1142,13 +1162,19 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Template");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("Translate");
+
+                    b.Property<int>("Version");
 
                     b.Property<Guid>("ViewModelId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TableModelFieldsId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("ViewModelId");
 

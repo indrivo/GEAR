@@ -66,17 +66,18 @@ namespace ST.Entities.Services
             }
             else
             {
-                // Empty querry
+                // Empty query
                 return returnModel;
             }
         }
 
         /// <inheritdoc />
         /// <summary>
-        /// Check colum values
+        /// Check column values
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
         public virtual ResultModel<bool> CheckColumnValues(string connectionString, string tableName, string tableSchema, string columnName)

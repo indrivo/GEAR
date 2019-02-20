@@ -10,7 +10,7 @@ using ST.Identity.Data;
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190220140854_Initial")]
+    [Migration("20190220151212_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -211,6 +211,8 @@ namespace ST.Identity.Migrations
                         .HasName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("Roles");
                 });
 
@@ -236,6 +238,8 @@ namespace ST.Identity.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("AuthGroups");
                 });
@@ -304,6 +308,8 @@ namespace ST.Identity.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Permissions");
                 });
@@ -419,6 +425,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("SecurityStamp");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
@@ -435,6 +443,8 @@ namespace ST.Identity.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Users");
                 });
@@ -466,6 +476,8 @@ namespace ST.Identity.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Profiles");
                 });

@@ -90,7 +90,7 @@ namespace ST.CORE
 		{
 			var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
 
-			var migrationsAssembly = typeof(Identity.Constants).GetTypeInfo().Assembly.GetName().Name;
+			var migrationsAssembly = typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
 
 			services.Configure<SecurityStampValidatorOptions>(options =>
 			{
@@ -135,8 +135,6 @@ namespace ST.CORE
 
 					checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
 				});
-
-			services.AddAdditionalAuthetificationProviders(Configuration);
 
 			services.AddApiVersioning(options =>
 			{

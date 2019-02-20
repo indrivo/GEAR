@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ST.Entities.Models.ViewModels
 {
-    public class ViewModel : BaseModel
+    public class ViewModel : ExtendedModel
     {
         public TableModel TableModel { get; set; }
         public Guid TableModelId { get; set; }
@@ -13,7 +13,7 @@ namespace ST.Entities.Models.ViewModels
         public IEnumerable<ViewModelFields> ViewModelFields { get; set; }
     }
 
-    public class ViewModelFields : BaseModel
+    public class ViewModelFields : ExtendedModel
     {
         public string Name { get; set; }
         public Guid ViewModelId { get; set; }

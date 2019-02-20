@@ -2,7 +2,6 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
-using ST.Organization.Models;
 
 namespace ST.Identity.Data.Permissions
 {
@@ -12,33 +11,33 @@ namespace ST.Identity.Data.Permissions
     /// </summary>
     [TrackEntity(Option = TrackEntityOption.Selected)]
     public class ApplicationRole : IdentityRole<string>
-	{
-		/// <inheritdoc />
-		/// <summary>
-		/// Constructs a new <see cref="T:ST.Identity.Data.Permissions.ApplicationRole" /> object that
-		/// has no name
-		/// </summary>
-		/// <returns></returns>
-		public ApplicationRole() => Id = Guid.NewGuid().ToString();
+    {
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructs a new <see cref="T:ST.Identity.Data.Permissions.ApplicationRole" /> object that
+        /// has no name
+        /// </summary>
+        /// <returns></returns>
+        public ApplicationRole() => Id = Guid.NewGuid().ToString();
 
-		/// <inheritdoc />
-		/// <summary>
-		/// Constructs a new ApplicationRole object with the
-		/// specified name
-		/// </summary>
-		/// <param name="roleName">Name of the role e.g. Admin</param>
-		/// <returns>A new ApplicationRole Instance</returns>
-		public ApplicationRole(string roleName) : this() => Name = roleName;
+        /// <inheritdoc />
+        /// <summary>
+        /// Constructs a new ApplicationRole object with the
+        /// specified name
+        /// </summary>
+        /// <param name="roleName">Name of the role e.g. Admin</param>
+        /// <returns>A new ApplicationRole Instance</returns>
+        public ApplicationRole(string roleName) : this() => Name = roleName;
 
-		/// <summary>
-		/// Implicit conversion operator to convert a string object
-		/// that represents the Role Name, to an actual ApplicationRole Object
-		/// </summary>
-		/// <param name="roleName">Name of the role</param>
-		public static implicit operator ApplicationRole(string roleName) => new ApplicationRole
-		{
-			Name = roleName
-		};
+        /// <summary>
+        /// Implicit conversion operator to convert a string object
+        /// that represents the Role Name, to an actual ApplicationRole Object
+        /// </summary>
+        /// <param name="roleName">Name of the role</param>
+        public static implicit operator ApplicationRole(string roleName) => new ApplicationRole
+        {
+            Name = roleName
+        };
         /// <summary>
         /// Stores Id of the User that created the object
         /// </summary>

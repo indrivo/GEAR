@@ -171,7 +171,8 @@ namespace ST.Identity.Migrations
                     IsEditable = table.Column<bool>(nullable: false),
                     ModifiedBy = table.Column<string>(nullable: true),
                     UserPhoto = table.Column<byte[]>(nullable: true),
-                    AuthenticationType = table.Column<int>(nullable: false)
+                    AuthenticationType = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -452,10 +453,28 @@ namespace ST.Identity.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuthGroups_TenantId",
+                schema: "Identity",
+                table: "AuthGroups",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupPermissions_AuthGroupId",
                 schema: "Identity",
                 table: "GroupPermissions",
                 column: "AuthGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Permissions_TenantId",
+                schema: "Identity",
+                table: "Permissions",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Profiles_TenantId",
+                schema: "Identity",
+                table: "Profiles",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
@@ -488,6 +507,12 @@ namespace ST.Identity.Migrations
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_TenantId",
+                schema: "Identity",
+                table: "Roles",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrackAuditDetails_TrackAuditId",
@@ -532,6 +557,12 @@ namespace ST.Identity.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId",
+                schema: "Identity",
+                table: "Users",
+                column: "TenantId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
