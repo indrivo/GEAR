@@ -37,7 +37,7 @@ namespace ST.Procesess.Models
         /// </summary>
         [Required]
         [DefaultValue(1)]
-        public int Version { get; set; }
+        public new int Version { get; set; }
 
         /// <summary>
         /// Reference to initial schema with version 1

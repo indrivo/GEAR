@@ -25,7 +25,7 @@ namespace ST.Procesess.Models
         /// </summary>
         [DefaultValue(1)]
         [Required]
-        public int Version { get; set; }
+        public new int Version { get; set; }
 
         /// <summary>
         /// Initial Process with version 1

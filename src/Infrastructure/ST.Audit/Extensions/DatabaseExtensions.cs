@@ -43,9 +43,9 @@ namespace ST.Audit.Extensions
         /// <returns></returns>
         public static T EnableTracking<T>(this T context) where T : TrackerDbContext
         {
-            context.ChangeTracker.Tracked += async (sender, eventArgs) =>
-            {
-                var model = Track(eventArgs);
+            context.ChangeTracker.Tracked += (sender, eventArgs) =>
+           {
+               var model = Track(eventArgs);
 
                 //if (model.Item1 == null) return;
                 //await context.AddAsync(model.Item1);
