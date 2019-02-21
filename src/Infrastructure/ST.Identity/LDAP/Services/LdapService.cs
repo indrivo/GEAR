@@ -390,7 +390,7 @@ namespace ST.Identity.LDAP.Services
         /// <param name="objectCategory"></param>
         /// <param name="objectClass"></param>
         /// <returns></returns>
-        private ICollection<ILdapEntry> GetChildren(string searchBase, string groupDistinguishedName = null,
+        private IEnumerable<ILdapEntry> GetChildren(string searchBase, string groupDistinguishedName = null,
             string objectCategory = "*", string objectClass = "*")
         {
             var allChildren = new Collection<ILdapEntry>();
