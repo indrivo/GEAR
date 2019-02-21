@@ -1,4 +1,4 @@
-﻿using ST.BaseRepository;
+﻿using ST.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
-    public class STProcess : BaseModel
+    public class STProcess : ExtendedModel
     {
         /// <summary>
         /// Name of process
@@ -25,7 +25,7 @@ namespace ST.Procesess.Models
         /// </summary>
         [DefaultValue(1)]
         [Required]
-        public int Version { get; set; }
+        public new int Version { get; set; }
 
         /// <summary>
         /// Initial Process with version 1

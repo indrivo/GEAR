@@ -59,5 +59,10 @@ namespace ST.Identity.Data.UserProfiles
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public AuthenticationType AuthenticationType { get; set; }
+
+        /// <summary>
+        /// Tenant id
+        /// </summary>
+        public Guid? TenantId { get; set; }
     }
 }

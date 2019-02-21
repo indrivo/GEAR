@@ -17,7 +17,7 @@ namespace ST.Identity.Migrations
             modelBuilder
                 .HasDefaultSchema("Identity")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -121,6 +121,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<Guid>("RecordId");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("TrackEventType");
 
                     b.Property<string>("TypeFullName");
@@ -152,6 +154,8 @@ namespace ST.Identity.Migrations
                     b.Property<string>("PropertyName");
 
                     b.Property<string>("PropertyType");
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<Guid>("TrackAuditId");
 
@@ -192,6 +196,8 @@ namespace ST.Identity.Migrations
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256);
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<string>("Title");
 
                     b.HasKey("Id");
@@ -199,6 +205,8 @@ namespace ST.Identity.Migrations
                     b.HasIndex("NormalizedName")
                         .IsUnique()
                         .HasName("RoleNameIndex");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Roles");
                 });
@@ -220,9 +228,13 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("AuthGroups");
                 });
@@ -248,6 +260,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("PermissionCode")
                         .IsRequired();
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
 
@@ -284,9 +298,13 @@ namespace ST.Identity.Migrations
                     b.Property<string>("PermissionName")
                         .HasMaxLength(100);
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Permissions");
                 });
@@ -312,6 +330,8 @@ namespace ST.Identity.Migrations
                     b.Property<Guid>("PermissionId");
 
                     b.Property<string>("RoleId");
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
 
@@ -341,6 +361,8 @@ namespace ST.Identity.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
 
                     b.Property<int>("Version");
 
@@ -398,6 +420,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("SecurityStamp");
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
@@ -413,6 +437,8 @@ namespace ST.Identity.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasName("UserNameIndex");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Users");
                 });
@@ -439,9 +465,13 @@ namespace ST.Identity.Migrations
                     b.Property<string>("ProfileName")
                         .IsRequired();
 
+                    b.Property<Guid?>("TenantId");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Profiles");
                 });
@@ -457,6 +487,38 @@ namespace ST.Identity.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("RoleProfiles");
+                });
+
+            modelBuilder.Entity("ST.Organization.Models.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("MachineName")
+                        .IsRequired();
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("SiteWeb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -70,5 +70,9 @@
     <PackageReference Include="ST.BaseRepository.Abstractions" Version="2.1.2" />
     <PackageReference Include="ST.EventBus.Core" Version="1.0.3" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ST.Audit\ST.Audit.csproj" />
+    <ProjectReference Include="..\ST.Organization\ST.Organization.csproj" />
+  </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties SysEntities_1json__JSONSchema="http://json.schemastore.org/asmdef" /></VisualStudio></ProjectExtensions>
 </Project>

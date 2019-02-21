@@ -9,6 +9,7 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.Entities.Controls.Querry;
 using ST.Entities.Data;
+using ST.Entities.Models;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.ViewModels.Table;
@@ -65,17 +66,18 @@ namespace ST.Entities.Services
             }
             else
             {
-                // Empty querry
+                // Empty query
                 return returnModel;
             }
         }
 
         /// <inheritdoc />
         /// <summary>
-        /// Check colum values
+        /// Check column values
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
         public virtual ResultModel<bool> CheckColumnValues(string connectionString, string tableName, string tableSchema, string columnName)
@@ -317,7 +319,7 @@ namespace ST.Entities.Services
         {
             var result = new SynchronizeTableViewModel();
             var fields = new List<CreateTableFieldViewModel>();
-            var baseProps = typeof(BaseModel).GetProperties().Select(x => x.Name);
+            var baseProps = typeof(ExtendedModel).GetProperties().Select(x => x.Name);
             var entity = prop.PropertyType.GenericTypeArguments[0];
             //if (entity.BaseType != typeof(BaseModel) || entity.BaseType != typeof(ExtendedModel)) continue;
             result.Name = prop.Name;

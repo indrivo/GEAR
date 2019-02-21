@@ -57,7 +57,7 @@ namespace ST.Identity.Data
                 await context.SaveChangesAsync();
             }
 
-            //Seed permmisions
+            //Seed permissions
             if (!applicationDbContext.Permissions.Any())
             {
                 var clients = context.Clients.ToList();
@@ -121,12 +121,10 @@ namespace ST.Identity.Data
         {
             var configs = configuration.GetSection("WebClients");
             var clientSection = configs.GetSection(sectionName);
-            var identifiedSection = env.IsDevelopment() ? clientSection.GetSection("Dev") :
-                env.IsEnvironment("Stage") ? clientSection.GetSection("Stage") : clientSection.GetSection("Prod");
             var uri = string.Empty;
-            if (identifiedSection != null)
+            if (clientSection != null)
             {
-                uri = identifiedSection.GetChildren().FirstOrDefault()?.Value;
+                uri = clientSection.GetChildren().FirstOrDefault()?.Value;
             }
 
             return uri;

@@ -1,8 +1,7 @@
-﻿using ST.BaseRepository;
-
+﻿
 namespace ST.Entities.Models.Forms
 {
-    public class Settings : BaseModel
+    public class Settings : ExtendedModel
     {
     }
 }

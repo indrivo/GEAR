@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ST.BaseRepository;
 using ST.Entities.Models.Tables;
 
 namespace ST.Entities.Models.Pages
 {
-    public class Page : BaseModel
+    public class Page : ExtendedModel
     {
         public PageType PageType { get; set; }
         public Guid PageTypeId { get; set; }
@@ -28,21 +27,21 @@ namespace ST.Entities.Models.Pages
         int Order { get; set; }
     }
 
-    public class PageScript : BaseModel, IPageItem
+    public class PageScript : ExtendedModel, IPageItem
     {
         public Guid PageId { get; set; }
         public string Script { get; set; }
         public int Order { get; set; }
     }
 
-    public class PageStyle : BaseModel, IPageItem
+    public class PageStyle : ExtendedModel, IPageItem
     {
         public Guid PageId { get; set; }
         public string Script { get; set; }
         public int Order { get; set; }
     }
 
-    public class PageSettings : BaseModel
+    public class PageSettings : ExtendedModel
     {
         public string Name { get; set; }
         public string Title { get; set; }
@@ -52,7 +51,7 @@ namespace ST.Entities.Models.Pages
     }
 
 
-    public class PageType : BaseModel
+    public class PageType : ExtendedModel
     {
         [Required]
         public string Name { get; set; }
@@ -60,13 +59,13 @@ namespace ST.Entities.Models.Pages
         public bool IsSystem { get; set; }
     }
 
-    public class BlockCategory : BaseModel
+    public class BlockCategory : ExtendedModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
     }
 
-    public class Block : BaseModel
+    public class Block : ExtendedModel
     {
         public virtual string Name { get; set; }
         public string Description { get; set; }
@@ -80,7 +79,7 @@ namespace ST.Entities.Models.Pages
         public TableModel TableModel { get; set; }
     }
 
-    public class BlockAttribute : BaseModel
+    public class BlockAttribute : ExtendedModel
     {
         public string Name { get; set; }
         public string Value { get; set; }

@@ -82,6 +82,7 @@
     <None Remove="wwwroot\assets\js\workflow\bower_components\**" />
   </ItemGroup>
   <ItemGroup>
+    <Content Remove="appsettings.Stage.json" />
     <Content Remove="bpmConfig.json" />
     <Content Remove="Static\Embedded Resources\user.jpg" />
     <Content Remove="Static\Pages\index\index.css" />
@@ -138,6 +139,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="appsettings.Stage.json" />
     <None Include="Views\Account\AccessDenied.cshtml" />
     <None Include="Views\Account\ConfirmEmail.cshtml" />
     <None Include="Views\Account\ForgotPassword.cshtml" />

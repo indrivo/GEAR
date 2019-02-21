@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Core.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Utils;
 using ST.Identity.Data;
+using ST.Identity.Extensions;
 using ST.Procesess.Data;
 using ST.ProcessEngine.Services.HostedServices;
 

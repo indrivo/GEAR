@@ -12,6 +12,7 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Models.RolesViewModels;
 using ST.Identity.Models.UserViewModels;
+using ST.Organization;
 
 namespace ST.Identity.Data
 {
@@ -70,6 +71,7 @@ namespace ST.Identity.Data
                     if (exists) continue;
                     role.Created = DateTime.Now;
                     role.Changed = DateTime.Now;
+                    role.TenantId = DefaultTenantSettings.TenantId;
                     await roleManager.CreateAsync(role);
                     await context.SaveChangesAsync();
                 }
@@ -84,6 +86,7 @@ namespace ST.Identity.Data
                     if (context.AuthGroups.Any(x => x.Name.Equals(item.Name))) continue;
                     item.Created = DateTime.Now;
                     item.Changed = DateTime.Now;
+                    item.TenantId = DefaultTenantSettings.TenantId;
                     context.AuthGroups.Add(item);
                     context.SaveChanges();
                 }
@@ -104,6 +107,7 @@ namespace ST.Identity.Data
                     user.Created = DateTime.Now;
                     user.Changed = DateTime.Now;
                     user.AuthenticationType = AuthenticationType.Local;
+                    user.TenantId = DefaultTenantSettings.TenantId;
                     var result = await userManager.CreateAsync(user);
                     if (!result.Succeeded) continue;
                     if (entity.ApplicationRoles.Any())
@@ -116,7 +120,8 @@ namespace ST.Identity.Data
                         var userGroup = new UserGroup
                         {
                             UserId = user.Id,
-                            AuthGroupId = group.Id
+                            AuthGroupId = group.Id,
+                            TenantId = DefaultTenantSettings.TenantId
                         };
                         context.UserGroups.Add(userGroup);
                     }
@@ -130,6 +135,7 @@ namespace ST.Identity.Data
                 foreach (var item in entity.Profiles)
                 {
                     if (context.Profiles.Any(x => x.ProfileName == item.ProfileName)) continue;
+                    item.TenantId = DefaultTenantSettings.TenantId;
                     context.Profiles.Add(item);
                     context.SaveChanges();
                 }

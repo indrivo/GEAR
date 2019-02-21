@@ -1,11 +1,11 @@
-﻿using ST.BaseRepository;
+﻿using ST.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
-    public class STProcessTransition : BaseModel
+    public class STProcessTransition : ExtendedModel
     {
         /// <summary>
         /// Name of transition

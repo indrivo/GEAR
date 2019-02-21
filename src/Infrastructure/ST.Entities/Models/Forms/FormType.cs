@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Forms
 {
-    public class FormType : BaseModel
+    public class FormType : ExtendedModel
     {
         public string Name { get; set; }
         public string Description { get; set; }

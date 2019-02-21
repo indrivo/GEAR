@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using ST.Audit.Contexts;
+using ST.Entities.Extensions;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Pages;
 using ST.Entities.Models.RenderTemplates;
 using ST.Entities.Models.Tables;
 using ST.Entities.Models.ViewModels;
-using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
 
 namespace ST.Entities.Data
 {
-    public class EntitiesDbContext : DbContext
+    public class EntitiesDbContext : TrackerDbContext
     {
         /// <summary>
         /// Schema
@@ -25,7 +25,7 @@ namespace ST.Entities.Data
         public EntitiesDbContext(DbContextOptions<EntitiesDbContext> options)
                     : base(options)
         {
-            EntityStorage.EntityContext = this;
+
         }
 
         #region Table
@@ -74,15 +74,7 @@ namespace ST.Entities.Data
         public DbSet<ViewModelFields> ViewModelFields { get; set; }
         #endregion
 
-
-        /// <summary>
-        /// Entity Service
-        /// </summary>
-        public IDynamicEntityDataService EntityService
-        {
-            get => new DynamicEntityDataService(this);
-        }
-
+        /// <inheritdoc />
         /// <summary>
         /// On model creating
         /// </summary>
@@ -97,6 +89,7 @@ namespace ST.Entities.Data
             builder.Entity<TableModelFields>().HasOne(typeof(TableFieldTypes), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Field>().HasOne(model => model.TableField).WithMany().HasForeignKey(model => model.TableFieldId).OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Form>().HasOne(model => model.Type).WithMany().HasForeignKey(model => model.TypeId).OnDelete(DeleteBehavior.Restrict);
+            builder.RegisterIndexes();
         }
     }
 
@@ -111,7 +104,7 @@ namespace ST.Entities.Data
         public EntitiesDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<EntitiesDbContext>();
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=BPM.DEV;Trusted_Connection=True;");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
             return new EntitiesDbContext(optionsBuilder.Options);
         }
     }

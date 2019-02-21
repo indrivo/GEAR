@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Shared.Core.Services.Abstractions;
 using System.Text;
 using System.Threading.Tasks;
+using ST.Identity.Services.Abstractions;
 
-namespace Shared.Core.Services
+namespace ST.Identity.Services
 {
     public class CacheService : ICacheService
     {
@@ -29,7 +29,7 @@ namespace Shared.Core.Services
         /// <param name="key"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<bool> Set<TObject>(string key, TObject obj) where TObject : class
+        public async Task<bool> Set<TObject>(string key, TObject obj) where TObject : class, ICacheModel
         {
             try
             {
@@ -43,21 +43,22 @@ namespace Shared.Core.Services
             }
         }
 
-
         /// <summary>
         /// Get value by key
         /// </summary>
         /// <typeparam name="TObject"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<TObject> Get<TObject>(string key) where TObject : class
+        public async Task<TObject> Get<TObject>(string key) where TObject : class, ICacheModel
         {
             try
             {
                 var value = await _cache.GetAsync(key);
-                if (value.Length == 0) return default;
+                if (value == null || value.Length == 0) return default;
                 var str = Encoding.UTF8.GetString(value);
-                return JsonConvert.DeserializeObject<TObject>(str);
+                var data = JsonConvert.DeserializeObject<TObject>(str);
+                data.IsSuccess = true;
+                return data;
             }
             catch
             {

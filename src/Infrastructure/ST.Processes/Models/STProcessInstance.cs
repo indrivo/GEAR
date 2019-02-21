@@ -1,10 +1,11 @@
 ﻿using ST.BaseRepository;
+using ST.Entities.Models;
 using System;
 using System.ComponentModel;
 
 namespace ST.Procesess.Models
 {
-    public class STProcessInstance : BaseModel
+    public class STProcessInstance : ExtendedModel
     {
         /// <summary>
         /// Get user who was started this instance 

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.BaseRepository;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Row : BaseModel
+    public class Row : ExtendedModel
     {
         public IEnumerable<Column> Columns { get; set; }
         public Config Config { get; set; }

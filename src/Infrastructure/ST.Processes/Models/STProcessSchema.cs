@@ -1,11 +1,12 @@
 ﻿using ST.BaseRepository;
+using ST.Entities.Models;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
-    public class STProcessSchema : BaseModel
+    public class STProcessSchema : ExtendedModel
     {
         /// <summary>
         /// Store Xml schema
@@ -36,7 +37,7 @@ namespace ST.Procesess.Models
         /// </summary>
         [Required]
         [DefaultValue(1)]
-        public int Version { get; set; }
+        public new int Version { get; set; }
 
         /// <summary>
         /// Reference to initial schema with version 1

@@ -4,14 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +23,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
-using Shared.Core.Extensions;
 using Shared.Core.Filters;
 using Shared.Core.Versioning;
 using ST.BaseBusinessRepository;
@@ -42,6 +37,7 @@ using ST.Entities.Utils;
 using ST.Files.Abstraction;
 using ST.Files.Providers;
 using ST.Files.Services;
+using ST.Identity;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
@@ -55,7 +51,7 @@ using ST.Notifications.Services;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Parsers;
 using Swashbuckle.AspNetCore.Swagger;
-using constants = ST.Identity.Constants;
+using constants = ST.Identity.DbSchemaNameConstants;
 
 namespace ST.CORE.Extensions
 {
@@ -79,7 +75,7 @@ namespace ST.CORE.Extensions
 					options.DefaultSchema = constants.DEFAULT_SCHEMA;
 					options.ConfigureDbContext = builder =>
 					{
-						if (connectionString.Item1 == DbProviderType.PostgreSQL)
+						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							builder.UseNpgsql(connectionString.Item2, opts =>
 							{
@@ -104,7 +100,7 @@ namespace ST.CORE.Extensions
 					options.DefaultSchema = constants.DEFAULT_SCHEMA;
 					options.ConfigureDbContext = builder =>
 					{
-						if (connectionString.Item1 == DbProviderType.PostgreSQL)
+						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							builder.UseNpgsql(connectionString.Item2, opts =>
 							{
@@ -141,7 +137,7 @@ namespace ST.CORE.Extensions
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 					{
-						if (connectionString.Item1 == DbProviderType.PostgreSQL)
+						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							options.UseNpgsql(connectionString.Item2, opts =>
 							{
@@ -171,6 +167,7 @@ namespace ST.CORE.Extensions
 		/// Add services relative to this application
 		/// </summary>
 		/// <param name="services"></param>
+		/// <param name="env"></param>
 		/// <returns></returns>
 		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env)
 		{
@@ -198,17 +195,8 @@ namespace ST.CORE.Extensions
 		public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services,
 			IHostingEnvironment env, IConfiguration configuration)
 		{
-			var authority = configuration.GetSection("WebClientsWebClients").GetSection("CORE");
-			var uri = authority.GetSection("Dev").GetValue<string>("uri");
-			if (env.IsProduction())
-			{
-				uri = authority.GetSection("Prod").GetValue<string>("uri");
-			}
-
-			if (env.IsEnvironment("Stage"))
-			{
-				uri = authority.GetSection("Stage").GetValue<string>("uri");
-			}
+			var authority = configuration.GetSection("WebClients").GetSection("CORE");
+			var uri = authority.GetValue<string>("uri");
 
 			services.AddAuthentication()
 				.AddJwtBearer(opts =>
@@ -218,56 +206,6 @@ namespace ST.CORE.Extensions
 					opts.RequireHttpsMetadata = false;
 				});
 			services.AddAuthorization();
-			return services;
-		}
-
-		/// <summary>
-		/// Add Additional Authetification Providers
-		/// </summary>
-		/// <param name="services"></param>
-		/// <param name="configuration"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddAdditionalAuthetificationProviders(this IServiceCollection services, IConfiguration configuration)
-		{
-			services.AddAuthentication(options => { })
-				.AddFacebook(options =>
-				{
-					options.AppId = configuration["Secrets:Facebook:AppId"];
-					options.AppSecret = configuration["Secrets:Facebook:AppSecret"];
-				})
-				.AddGoogle(options =>
-				{
-					options.ClientId = configuration["Secrets:Google:ClientId"];
-					options.ClientSecret = configuration["Secrets:Google:ClientSecret"];
-					options.Events.OnCreatingTicket = context =>
-					{
-						context.Identity.AddClaim(new Claim("image",
-						context.User.GetValue("image").SelectToken("url").ToString()));
-						return Task.CompletedTask;
-					};
-				})
-				.AddLinkedIn(options =>
-				{
-					options.ClientId = configuration["Secrets:LinkedIn:ClientId"];
-					options.ClientSecret = configuration["Secrets:LinkedIn:ClientSecret"];
-					options.Scope.Add("r_basicprofile");
-					options.Scope.Add("r_emailaddress");
-					options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id", ClaimValueTypes.String);
-					options.ClaimActions.MapJsonKey(ClaimTypes.Name, "formattedName", ClaimValueTypes.String);
-					options.ClaimActions.MapJsonKey(ClaimTypes.Email, "emailAddress", ClaimValueTypes.Email);
-					options.ClaimActions.MapJsonKey(ClaimTypes.Uri, "pictureUrl", ClaimValueTypes.String);
-
-					options.Events = new OAuthEvents
-					{
-						OnRemoteFailure = loginFailureHandler =>
-						{
-							options.StateDataFormat.Unprotect(loginFailureHandler.Request.Query["state"]);
-							loginFailureHandler.Response.Redirect("/Account/login");
-							loginFailureHandler.HandleResponse();
-							return Task.FromResult(0);
-						}
-					};
-				});
 			return services;
 		}
 
@@ -338,9 +276,7 @@ namespace ST.CORE.Extensions
 			//services.AddConsulServiceDiscovery(Configuration);
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 			var confAuth = configuration.GetSection("WebClients").GetSection("CORE");
-			var authUrl = env.IsDevelopment()
-				? confAuth.GetSection("Dev").GetValue<string>("uri")
-				: confAuth.GetSection("Prod").GetValue<string>("uri");
+			var authUrl = confAuth.GetValue<string>("uri");
 			services.AddSwaggerGen(options =>
 			{
 				options.DocInclusionPredicate(SwaggerVersioning.DocInclusionPredicate);
@@ -458,7 +394,15 @@ namespace ST.CORE.Extensions
 			if (int.TryParse(configuration["HealthCheck:Timeout"], out var minutesParsed))
 				minutes = minutesParsed;
 			//Enable CORS before calling app.UseMvc() and app.UseStaticFiles()
-			var isConfiguration = configuration.GetValue<bool>("IsConfigurated");
+			var isConfigurated = configuration.GetValue<bool>("IsConfigurated");
+			var multiTenantTemplate = isConfigurated
+				? "{tenant}/{controller=Home}/{action=Index}"
+				: "{controller=Installer}/{action=Index}";
+
+			var singleTenantTemplate = isConfigurated
+				? "{controller=Home}/{action=Index}"
+				: "{controller=Installer}/{action=Index}";
+
 			app.UseCors("CorsPolicy")
 				.UseStaticFiles()
 				.UseSession()
@@ -466,11 +410,17 @@ namespace ST.CORE.Extensions
 				.UseIdentityServer()
 				.UseMvc(routes =>
 				{
+					//routes.MapRoute(
+					//	name: "multi-tenant",
+					//	template: multiTenantTemplate,
+					//	defaults: multiTenantTemplate,
+					//	constraints: new { tenant = new TenantRouteConstraint() }
+					//	);
+
 					routes.MapRoute(
-						name: "default",
-						template: isConfiguration
-							? "{controller=Home}/{action=Index}"
-							: "{controller=Installer}/{action=Index}");
+						name: "single-tenant",
+						template: singleTenantTemplate
+					);
 				})
 				.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
 			return app;

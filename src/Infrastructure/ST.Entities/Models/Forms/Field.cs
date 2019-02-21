@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.BaseRepository;
 using ST.Entities.Models.Tables;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Field : BaseModel
+    public class Field : ExtendedModel
     {
         public string Tag { get; set; }
         public Attrs Attrs { get; set; }

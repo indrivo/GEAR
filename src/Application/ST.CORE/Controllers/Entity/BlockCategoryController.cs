@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
@@ -8,25 +9,14 @@ using ST.CORE.Models;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;
+using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
 
 namespace ST.CORE.Controllers.Entity
 {
-	public class BlockCategoryController : Controller
+	public class BlockCategoryController : BaseController
 	{
-		/// <summary>
-		/// Context
-		/// </summary>
-		private readonly EntitiesDbContext _context;
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		public BlockCategoryController(EntitiesDbContext context)
-		{
-			_context = context;
-		}
-
 		/// <summary>
 		/// Load page types with ajax
 		/// </summary>
@@ -162,6 +152,10 @@ namespace ST.CORE.Controllers.Entity
 			}
 
 			return Json(new { message = "Fail to delete block category!", success = false });
+		}
+
+		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager) : base(context, applicationDbContext, userManager, roleManager)
+		{
 		}
 	}
 }

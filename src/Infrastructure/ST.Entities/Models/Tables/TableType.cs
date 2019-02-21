@@ -1,8 +1,7 @@
-﻿using ST.BaseRepository;
-
+﻿
 namespace ST.Entities.Models.Tables
 {
-    public class EntityType : BaseModel
+    public class EntityType : ExtendedModel
     {
         /// <summary>
         /// Name of Schema

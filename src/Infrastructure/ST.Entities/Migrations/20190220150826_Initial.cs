@@ -21,6 +21,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     ClassName = table.Column<string>(nullable: true),
                     Required = table.Column<bool>(nullable: false),
                     Type = table.Column<string>(nullable: true),
@@ -42,6 +44,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
                 },
@@ -61,6 +65,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     ColumnId = table.Column<Guid>(nullable: false),
                     FieldId = table.Column<Guid>(nullable: false),
                     Order = table.Column<int>(nullable: false)
@@ -81,6 +87,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Fieldset = table.Column<bool>(nullable: false),
                     Legend = table.Column<string>(nullable: true),
                     InputGroup = table.Column<bool>(nullable: false),
@@ -105,6 +113,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     MachineName = table.Column<string>(nullable: true),
                     IsSystem = table.Column<bool>(nullable: false),
@@ -126,6 +136,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Code = table.Column<string>(type: "char(4)", nullable: true),
@@ -147,6 +159,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Group = table.Column<string>(nullable: true),
                     Icon = table.Column<string>(nullable: true)
                 },
@@ -166,6 +180,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -188,6 +204,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     IsSystem = table.Column<bool>(nullable: false)
@@ -208,6 +226,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     RowId = table.Column<Guid>(nullable: false),
                     ColumnId = table.Column<Guid>(nullable: false)
                 },
@@ -226,7 +246,9 @@ namespace ST.Entities.Migrations
                     Created = table.Column<DateTime>(nullable: false),
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false)
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -244,6 +266,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     StageId = table.Column<Guid>(nullable: false),
                     RowId = table.Column<Guid>(nullable: false)
                 },
@@ -263,6 +287,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     EntityType = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -299,11 +325,36 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Content = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Templates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrackAudits",
+                schema: "Entities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Author = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: true),
+                    Changed = table.Column<DateTime>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    UserName = table.Column<string>(nullable: true),
+                    TrackEventType = table.Column<int>(nullable: false),
+                    RecordId = table.Column<Guid>(nullable: false),
+                    TypeFullName = table.Column<string>(nullable: true),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrackAudits", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -317,6 +368,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     ConfigId = table.Column<Guid>(nullable: false)
                 },
@@ -343,6 +396,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     PageTypeId = table.Column<Guid>(nullable: false),
                     SettingsId = table.Column<Guid>(nullable: true),
                     Path = table.Column<string>(nullable: true),
@@ -387,6 +442,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     BlockCategoryId = table.Column<Guid>(nullable: false),
@@ -425,6 +482,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     TableId = table.Column<Guid>(nullable: false),
@@ -470,6 +529,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     TableModelId = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
@@ -509,6 +570,35 @@ namespace ST.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TrackAuditDetails",
+                schema: "Entities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Author = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: true),
+                    Changed = table.Column<DateTime>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    TrackAuditId = table.Column<Guid>(nullable: false),
+                    PropertyName = table.Column<string>(nullable: true),
+                    PropertyType = table.Column<string>(nullable: true),
+                    Value = table.Column<string>(nullable: true),
+                    TenantId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrackAuditDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TrackAuditDetails_TrackAudits_TrackAuditId",
+                        column: x => x.TrackAuditId,
+                        principalSchema: "Entities",
+                        principalTable: "TrackAudits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PageScripts",
                 schema: "Entities",
                 columns: table => new
@@ -519,6 +609,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     PageId = table.Column<Guid>(nullable: false),
                     Script = table.Column<string>(nullable: true),
                     Order = table.Column<int>(nullable: false)
@@ -546,6 +638,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     PageId = table.Column<Guid>(nullable: false),
                     Script = table.Column<string>(nullable: true),
                     Order = table.Column<int>(nullable: false)
@@ -573,6 +667,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Value = table.Column<string>(nullable: true),
                     DefaultValue = table.Column<string>(nullable: true),
@@ -601,6 +697,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     SettingsId = table.Column<Guid>(nullable: true),
                     FormId = table.Column<Guid>(nullable: false)
                 },
@@ -658,6 +756,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     AllowNull = table.Column<bool>(nullable: false),
                     DataType = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -698,6 +798,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     ConfigId = table.Column<Guid>(nullable: false),
                     AttrsId = table.Column<Guid>(nullable: false),
                     FormId = table.Column<Guid>(nullable: false),
@@ -775,6 +877,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     ViewModelId = table.Column<Guid>(nullable: false),
                     TableModelFieldsId = table.Column<Guid>(nullable: true),
@@ -812,6 +916,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     ConfigId = table.Column<Guid>(nullable: false),
                     ClassName = table.Column<string>(nullable: true),
                     FormId = table.Column<Guid>(nullable: false),
@@ -854,6 +960,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Tag = table.Column<string>(nullable: true),
                     AttrsId = table.Column<Guid>(nullable: false),
                     ConfigId = table.Column<Guid>(nullable: false),
@@ -923,6 +1031,8 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    Version = table.Column<int>(nullable: false),
+                    TenantId = table.Column<Guid>(nullable: true),
                     Label = table.Column<string>(nullable: true),
                     Value = table.Column<string>(nullable: true),
                     Selected = table.Column<bool>(nullable: false),
@@ -950,6 +1060,12 @@ namespace ST.Entities.Migrations
                 column: "BlockId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BlockCategories_TenantId",
+                schema: "Entities",
+                table: "BlockCategories",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Blocks_BlockCategoryId",
                 schema: "Entities",
                 table: "Blocks",
@@ -960,6 +1076,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "Blocks",
                 column: "TableModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Blocks_TenantId",
+                schema: "Entities",
+                table: "Blocks",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Columns_ConfigId",
@@ -984,6 +1106,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "DisabledAttrs",
                 column: "ConfigId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EntityTypes_TenantId",
+                schema: "Entities",
+                table: "EntityTypes",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fields_AttrsId",
@@ -1034,6 +1162,12 @@ namespace ST.Entities.Migrations
                 column: "TableId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Forms_TenantId",
+                schema: "Entities",
+                table: "Forms",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Forms_TypeId",
                 schema: "Entities",
                 table: "Forms",
@@ -1062,6 +1196,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "Pages",
                 column: "SettingsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pages_TenantId",
+                schema: "Entities",
+                table: "Pages",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PageScripts_PageId",
@@ -1112,6 +1252,12 @@ namespace ST.Entities.Migrations
                 column: "SettingsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Table_TenantId",
+                schema: "Entities",
+                table: "Table",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TableFieldConfigs_TableFieldTypeId",
                 schema: "Entities",
                 table: "TableFieldConfigs",
@@ -1136,16 +1282,34 @@ namespace ST.Entities.Migrations
                 column: "TableId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TableFields_TenantId",
+                schema: "Entities",
+                table: "TableFields",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TableFieldTypes_TableFieldGroupsId",
                 schema: "Entities",
                 table: "TableFieldTypes",
                 column: "TableFieldGroupsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TrackAuditDetails_TrackAuditId",
+                schema: "Entities",
+                table: "TrackAuditDetails",
+                column: "TrackAuditId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ViewModelFields_TableModelFieldsId",
                 schema: "Entities",
                 table: "ViewModelFields",
                 column: "TableModelFieldsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViewModelFields_TenantId",
+                schema: "Entities",
+                table: "ViewModelFields",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ViewModelFields_ViewModelId",
@@ -1158,6 +1322,12 @@ namespace ST.Entities.Migrations
                 schema: "Entities",
                 table: "ViewModels",
                 column: "TableModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ViewModels_TenantId",
+                schema: "Entities",
+                table: "ViewModels",
+                column: "TenantId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -1207,6 +1377,10 @@ namespace ST.Entities.Migrations
                 schema: "Entities");
 
             migrationBuilder.DropTable(
+                name: "TrackAuditDetails",
+                schema: "Entities");
+
+            migrationBuilder.DropTable(
                 name: "ViewModelFields",
                 schema: "Entities");
 
@@ -1224,6 +1398,10 @@ namespace ST.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "TableFieldConfigs",
+                schema: "Entities");
+
+            migrationBuilder.DropTable(
+                name: "TrackAudits",
                 schema: "Entities");
 
             migrationBuilder.DropTable(

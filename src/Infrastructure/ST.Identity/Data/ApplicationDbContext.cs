@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Audit.Contexts;
-using ST.Entities.Services;
+using ST.Identity.Extensions;
 
 namespace ST.Identity.Data
 {
@@ -21,12 +21,12 @@ namespace ST.Identity.Data
         /// Options
         /// </summary>
         private DbContextOptions<ApplicationDbContext> Options { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        // ReSharper disable once SuggestBaseTypeForParameter
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -46,12 +46,6 @@ namespace ST.Identity.Data
         #endregion Permissions Store
 
         /// <summary>
-        /// Dynamic Entities
-        /// </summary>
-        public readonly Dictionary<string, Entity> Entities =
-            EntityStorage.DynamicEntities.ToDictionary(x => x.Name, x => x);
-
-        /// <summary>
         /// On model creating
         /// </summary>
         /// <param name="builder"></param>
@@ -68,6 +62,7 @@ namespace ST.Identity.Data
             builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
             builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
 
+
             builder.Entity<RoleProfile>().HasKey(ug => new { ug.ApplicationRoleId, ug.ProfileId });
 
             builder.Entity<UserGroup>()
@@ -82,6 +77,8 @@ namespace ST.Identity.Data
                 .HasOne(ug => ug.AuthGroup)
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
+
+            builder.RegisterIndexes();
         }
     }
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
@@ -94,7 +91,7 @@ namespace ST.Identity.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=BPM.DEV;Trusted_Connection=True;");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
             return new ApplicationDbContext(optionsBuilder.Options);
         }
     }

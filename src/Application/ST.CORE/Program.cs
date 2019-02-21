@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using ST.CORE.Extensions;
 using ST.CORE.Extensions.Installer;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Identity.Data;
 using ST.Procesess.Data;
@@ -38,10 +37,6 @@ namespace ST.CORE
 				   {
 					   foreach (var ent in entity.SynchronizeTableViewModels)
 					   {
-						   if (EntityStorage.DynamicEntities.FirstOrDefault(x => x.Name.Equals(ent.Name)) == null)
-						   {
-							   ent.AddEntityToStorage();
-						   }
 						   if (!context.Table.Any(s => s.Name == ent.Name))
 						   {
 							   IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent);
@@ -54,11 +49,6 @@ namespace ST.CORE
 
 				   foreach (var ent in entities)
 				   {
-					   if (EntityStorage.DynamicEntities.FirstOrDefault(x => x.Name.Equals(ent.Name)) == null)
-					   {
-						   ent.AddEntityToStorage();
-					   }
-
 					   if (!context.Table.Any(s => s.Name == ent.Name))
 					   {
 						   IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent);
@@ -73,11 +63,6 @@ namespace ST.CORE
 				   {
 					   foreach (var ent in entityProfiles.SynchronizeTableViewModels)
 					   {
-						   if (EntityStorage.DynamicEntities.FirstOrDefault(x => x.Name.Equals(ent.Name)) == null)
-						   {
-							   ent.AddEntityToStorage();
-						   }
-
 						   if (!context.Table.Any(s => s.Name == ent.Name))
 						   {
 							   IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent);
