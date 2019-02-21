@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.Identity.Data;
 
 namespace ST.Identity.Migrations
@@ -16,15 +16,14 @@ namespace ST.Identity.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Identity")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -43,8 +42,7 @@ namespace ST.Identity.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -206,8 +204,7 @@ namespace ST.Identity.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.HasIndex("TenantId");
 
@@ -439,8 +436,7 @@ namespace ST.Identity.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.HasIndex("TenantId");
 
@@ -498,7 +494,7 @@ namespace ST.Identity.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Adress");
+                    b.Property<string>("Address");
 
                     b.Property<string>("Author");
 
@@ -509,6 +505,9 @@ namespace ST.Identity.Migrations
                     b.Property<string>("Description");
 
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("MachineName")
+                        .IsRequired();
 
                     b.Property<string>("ModifiedBy");
 

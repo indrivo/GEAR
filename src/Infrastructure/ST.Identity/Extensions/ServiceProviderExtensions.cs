@@ -1,10 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Core.Services;
-using Shared.Core.Services.Abstractions;
+using ST.Identity.Services;
+using ST.Identity.Services.Abstractions;
 
-namespace Shared.Core.Extensions
+namespace ST.Identity.Extensions
 {
     public static class ServiceProviderExtensions
     {

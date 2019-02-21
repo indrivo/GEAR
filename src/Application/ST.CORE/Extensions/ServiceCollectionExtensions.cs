@@ -23,7 +23,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
-using Shared.Core.Extensions;
 using Shared.Core.Filters;
 using Shared.Core.Versioning;
 using ST.BaseBusinessRepository;
@@ -38,6 +37,7 @@ using ST.Entities.Utils;
 using ST.Files.Abstraction;
 using ST.Files.Providers;
 using ST.Files.Services;
+using ST.Identity;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
@@ -167,6 +167,7 @@ namespace ST.CORE.Extensions
 		/// Add services relative to this application
 		/// </summary>
 		/// <param name="services"></param>
+		/// <param name="env"></param>
 		/// <returns></returns>
 		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env)
 		{
@@ -393,7 +394,15 @@ namespace ST.CORE.Extensions
 			if (int.TryParse(configuration["HealthCheck:Timeout"], out var minutesParsed))
 				minutes = minutesParsed;
 			//Enable CORS before calling app.UseMvc() and app.UseStaticFiles()
-			var isConfiguration = configuration.GetValue<bool>("IsConfigurated");
+			var isConfigurated = configuration.GetValue<bool>("IsConfigurated");
+			var multiTenantTemplate = isConfigurated
+				? "{tenant}/{controller=Home}/{action=Index}"
+				: "{controller=Installer}/{action=Index}";
+
+			var singleTenantTemplate = isConfigurated
+				? "{controller=Home}/{action=Index}"
+				: "{controller=Installer}/{action=Index}";
+
 			app.UseCors("CorsPolicy")
 				.UseStaticFiles()
 				.UseSession()
@@ -401,11 +410,17 @@ namespace ST.CORE.Extensions
 				.UseIdentityServer()
 				.UseMvc(routes =>
 				{
+					//routes.MapRoute(
+					//	name: "multi-tenant",
+					//	template: multiTenantTemplate,
+					//	defaults: multiTenantTemplate,
+					//	constraints: new { tenant = new TenantRouteConstraint() }
+					//	);
+
 					routes.MapRoute(
-						name: "default",
-						template: isConfiguration
-							? "{controller=Home}/{action=Index}"
-							: "{controller=Installer}/{action=Index}");
+						name: "single-tenant",
+						template: singleTenantTemplate
+					);
 				})
 				.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
 			return app;

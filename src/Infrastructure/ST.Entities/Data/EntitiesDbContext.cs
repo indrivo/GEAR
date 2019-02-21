@@ -74,6 +74,7 @@ namespace ST.Entities.Data
         public DbSet<ViewModelFields> ViewModelFields { get; set; }
         #endregion
 
+        /// <inheritdoc />
         /// <summary>
         /// On model creating
         /// </summary>
@@ -103,7 +104,7 @@ namespace ST.Entities.Data
         public EntitiesDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<EntitiesDbContext>();
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=BPM.DEV;Trusted_Connection=True;");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
             return new EntitiesDbContext(optionsBuilder.Options);
         }
     }

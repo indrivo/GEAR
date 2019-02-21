@@ -11,7 +11,7 @@ namespace ST.Entities.Models.Pages
         public string Description { get; set; }
     }
 
-    public class MenuItem : BaseModel
+    public class MenuItem : ExtendedModel
     {
         [Required]
         public string Name { get; set; }

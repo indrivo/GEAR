@@ -51,6 +51,12 @@ namespace ST.Entities.Controls.Builders
                     Name = "IsDeleted",
                     DataType = "bit",
                     AllowNull = true
+                },
+                new BaseModelVieModel
+                {
+                    Name = "TenantId",
+                    DataType = "uniqueidentifier",
+                    AllowNull = true
                 }
             };
             if (entityType == "Profile")
