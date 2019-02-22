@@ -14,19 +14,6 @@
       "ClientId": "1",
       "Author": "System"
     },
-    {
-      "Name": "Manager",
-      "IsNoEditable": true,
-      "Title": "The manager role.",
-      "ClientId": "1",
-      "Author": "System",
-      "Permissions": [
-        "Hrm_EmployeeRead",
-        "Hrm_LeaveCreate",
-        "Hrm_LeaveUpdate",
-        "Hrm_LeaveDelete"
-      ]
-    },
     /*ISODMS Roles*/
 
     // 1)  Super admin - Administrator al platformei cu capacitați de administrare peste toate companiile definite

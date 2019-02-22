@@ -115,6 +115,8 @@ namespace ST.Identity.Data.Permissions
             public const string BpmRiskUpdate = "Core_RiskUpdate";
             public const string BpmRiskRead = "Core_RiskRead";
             public const string BpmRiskDelete = "Core_RiskDelete";
+            public const string BpmRiskAssetUpdate = "Core_RiskAssetUpdate";
+            public const string BpmRiskAssetRead = "Core_RiskAssetRead";
 
             #endregion
 
