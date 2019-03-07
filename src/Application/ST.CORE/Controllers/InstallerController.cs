@@ -84,13 +84,19 @@ namespace ST.CORE.Controllers
 					: settings.ConnectionStrings.MSSQLConnection;
 			}
 
-			model.SysAdminProfile = new SetupProfileModel {
+			model.SysAdminProfile = new SetupProfileModel
+			{
 				FirstName = "admin",
 				Email = "admin@admin.com",
 				LastName = "admin",
 				Password = "admin",
 				ConfirmPassword = "admin",
 				UserName = "admin"
+			};
+
+			model.Organization = new SetupOrganizationViewModel
+			{
+				Name = "Indrivo"
 			};
 
 			return View(model);
