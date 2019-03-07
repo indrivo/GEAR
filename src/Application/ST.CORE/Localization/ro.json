@@ -101,5 +101,12 @@
   "my_profile": "Profilul Meu",
   "inbox": "Mesaje primite",
   "service_panel": "Panoul de Service",
-  "audit": "Audit"
+  "audit": "Audit",
+  "system_description": "Obiectivul principal al BPMN este de a oferi o notație ușor de înțeles de către toți utilizatorii de afaceri, de la analiștii de afaceri care creează proiectele inițiale ale proceselor, de la dezvoltatorii tehnici responsabili pentru implementarea tehnologiei care va efectua aceste procese și, pentru oamenii de afaceri care vor gestiona și monitoriza aceste procese. Astfel, BPMN creează o punte standardizată pentru decalajul dintre proiectarea proceselor de afaceri și implementarea procesului.BPMN va promova, de asemenea, capabilitățile notițelor tradiționale ale proceselor de afaceri prin manipularea în mod inerent a conceptelor proceselor B2B, cum ar fi procesele publice și private, precum și modelarea avansată concepte de entități și procese",
+  "installer_welcome": "Bine ați venit la instalatorul GEAR BPM",
+  "installer_go_to_installation": "Mergi la instalare",
+  "welcome": "Bine ati venit",
+  "confirm_select_language": "Da, alegeți această limbă!",
+  "select_language": "Selecteaza limba",
+  "system_setup": "Configurarea sistemului"
 }

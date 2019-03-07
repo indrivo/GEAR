@@ -24,7 +24,7 @@
         "ModifiedBy": null,
         "Changed": "2019-01-29T07:59:12.6160762Z",
         "IsDeleted": false,
-        "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+        "AllowedRoles": "Administrator#"
       }
     ],
     "Name": "Apps",
@@ -39,7 +39,7 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6156876Z",
     "IsDeleted": false,
-    "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+    "AllowedRoles": "Administrator#"
   },
   {
     "SubItems": [
@@ -59,7 +59,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162507Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           }
         ],
         "Name": "Applications",
@@ -74,7 +74,7 @@
         "ModifiedBy": null,
         "Changed": "2019-01-29T07:59:12.6162491Z",
         "IsDeleted": false,
-        "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+        "AllowedRoles": "Administrator#"
       },
       {
         "SubItems": [
@@ -92,7 +92,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162538Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": null,
@@ -108,7 +108,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162552Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": null,
@@ -124,7 +124,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162563Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": null,
@@ -140,7 +140,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162575Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           }
         ],
         "Name": "People",
@@ -155,7 +155,7 @@
         "ModifiedBy": null,
         "Changed": "2019-01-29T07:59:12.6162526Z",
         "IsDeleted": false,
-        "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+        "AllowedRoles": "Administrator#"
       },
       {
         "SubItems": [
@@ -175,7 +175,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162614Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -191,7 +191,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162625Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -207,7 +207,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162636Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               }
             ],
             "Name": "Entities",
@@ -222,7 +222,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162602Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": [
@@ -240,7 +240,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162657Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -256,7 +256,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162669Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -272,7 +272,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162684Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -288,7 +288,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162694Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -304,7 +304,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162704Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -320,7 +320,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162718Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -336,7 +336,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162728Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               }
             ],
             "Name": "Appearance",
@@ -351,7 +351,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162647Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           }
         ],
         "Name": "Structure",
@@ -366,7 +366,7 @@
         "ModifiedBy": null,
         "Changed": "2019-01-29T07:59:12.616259Z",
         "IsDeleted": false,
-        "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+        "AllowedRoles": "Administrator#"
       },
       {
         "SubItems": [
@@ -386,7 +386,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162762Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               },
               {
                 "SubItems": null,
@@ -402,7 +402,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162881Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               }
             ],
             "Name": "Localization",
@@ -417,7 +417,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162752Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": [
@@ -435,7 +435,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162906Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               }
             ],
             "Name": "Logs",
@@ -450,7 +450,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162896Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": null,
@@ -466,7 +466,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162918Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           },
           {
             "SubItems": null,
@@ -482,7 +482,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162918Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           }
         ],
         "Name": "Configuration",
@@ -497,7 +497,7 @@
         "ModifiedBy": null,
         "Changed": "2019-01-29T07:59:12.6162739Z",
         "IsDeleted": false,
-        "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+        "AllowedRoles": "Administrator#"
       },
       {
         "SubItems": [
@@ -517,7 +517,7 @@
                 "ModifiedBy": null,
                 "Changed": "2019-01-29T07:59:12.6162951Z",
                 "IsDeleted": false,
-                "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+                "AllowedRoles": "Administrator#"
               }
             ],
             "Name": "Audit",
@@ -532,7 +532,7 @@
             "ModifiedBy": null,
             "Changed": "2019-01-29T07:59:12.6162942Z",
             "IsDeleted": false,
-            "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+            "AllowedRoles": "Administrator#"
           }
         ],
         "Name": "Reports",
@@ -547,7 +547,7 @@
         "ModifiedBy": null,
         "Changed": "2019-01-29T07:59:12.6162931Z",
         "IsDeleted": false,
-        "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+        "AllowedRoles": "Administrator#"
       }
     ],
     "Name": "Administration",
@@ -562,6 +562,6 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6162462Z",
     "IsDeleted": false,
-    "AllowedRoles": "Administrator#Authenticated User#Anonymous User"
+    "AllowedRoles": "Administrator#"
   }
 ]

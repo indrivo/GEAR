@@ -1,16 +1,16 @@
-using Mapster;
-using ST.Entities.Models.Pages;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ST.Entities.Services.Abstraction;
-using System.IO;
+using Mapster;
 using ST.Entities.Extensions;
+using ST.Entities.Models.Pages;
+using ST.Entities.Services.Abstraction;
 
-namespace ST.CORE.Extensions.Installer
+namespace ST.CORE.Installation
 {
-	public static class MenuSyncExtension
+	public static class MenuSync
 	{
 		/// <summary>
 		/// Navbar id

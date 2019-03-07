@@ -12,10 +12,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Shared.Core.Versioning;
 using ST.CORE.Extensions;
-using ST.CORE.Extensions.Installer;
+using ST.CORE.Installation;
+using ST.CORE.LoggerTargets;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
-using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
 using ST.Identity.Extensions;
@@ -88,8 +88,6 @@ namespace ST.CORE
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
-			var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
-
 			var migrationsAssembly = typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
 
 			services.Configure<SecurityStampValidatorOptions>(options =>
@@ -102,14 +100,14 @@ namespace ST.CORE
 			services.AddStLocalization(Configuration);
 			services.AddDbContext<EntitiesDbContext>(options =>
 			{
-				options = options.GetDefaultOptions(connectionString);
+				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
-				options = options.GetDefaultOptions(connectionString);
+				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 
-			services.AddDbContextAndIdentity(connectionString, migrationsAssembly, HostingEnvironment)
+			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
 				.AddApplicationSpecificServices(HostingEnvironment)
 				.AddMPassSigningCredentials(new MPassSigningCredentials
 				{
@@ -118,7 +116,7 @@ namespace ST.CORE
 					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 				})
 				.AddMvc();
-
+			var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
 			services.AddDistributedMemoryCache()
 				.AddSession(opts =>
 				{
@@ -126,14 +124,14 @@ namespace ST.CORE
 					opts.Cookie.Name = ".ST.CORE.Data";
 				})
 				.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-				.AddIdentityServer(connectionString, migrationsAssembly)
+				.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
 				.AddHealthChecks(checks =>
 				{
 					var minutes = 1;
 					if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
 						minutes = minutesParsed;
 
-					checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
+					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
 				});
 
 			services.AddApiVersioning(options =>
@@ -151,11 +149,11 @@ namespace ST.CORE
 
 			//Register dynamic table repository
 			services.RegisterDynamicDataServices();
-			//Add signalar
+			//Add signaler
 			services.AddStSignalR();
 
 			//Run background service
-			//services.AddHostedService<HostedTimeService>();
+			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
 			//Register dependencies
@@ -171,13 +169,14 @@ namespace ST.CORE
 			   .GetRequiredService<IServiceScopeFactory>()
 			   .CreateScope())
 			{
-				var dataService = serviceScope.ServiceProvider.GetService<IDynamicEntityDataService>();
-				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
-				await permissionService.RefreshCache();
-				await EntitiesDbContextSeed.SeedNotificationTypesAsync(dataService);
+				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
+				var isConfigured = Application.IsConfigured(env);
 
-				//Sync default menus
-				await MenuSyncExtension.SyncMenuItems(dataService);
+				if (isConfigured)
+				{
+					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
+					await permissionService.RefreshCache();
+				}
 			}
 		}
 	}

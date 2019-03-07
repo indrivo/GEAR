@@ -23,7 +23,7 @@ namespace ST.Identity
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
             var site = values[routeKey]?.ToString();
-            if (site == "rtn" || site == "Handler") return false;
+            if (site == "rtn" || site == "Handler" || site == "StaticFile") return false;
             var cacheService = httpContext.RequestServices.GetService<ICacheService>();
             try
             {

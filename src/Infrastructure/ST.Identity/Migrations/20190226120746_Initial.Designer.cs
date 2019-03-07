@@ -10,7 +10,7 @@ using ST.Identity.Data;
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190221135340_Initial")]
+    [Migration("20190226120746_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

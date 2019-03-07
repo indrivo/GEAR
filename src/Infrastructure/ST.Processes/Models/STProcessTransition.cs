@@ -1,10 +1,13 @@
-﻿using ST.Entities.Models;
+﻿using ST.Audit.Attributes;
+using ST.Audit.Enums;
+using ST.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class STProcessTransition : ExtendedModel
     {
         /// <summary>

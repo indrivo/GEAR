@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
+using Npgsql;
 using ST.Entities.Constants;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Models.Tables;
@@ -103,13 +105,13 @@ namespace ST.Entities.Controls.Querry
 
             if (field.Parameter == FieldType.EntityReference || field.Parameter == FieldType.File)
             {
-                var foreingTableName =
+                var foreignTableName =
                     field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
                 var foreignSchemaTableName = field.Configurations.FirstOrDefault(x => x.ConfigCode == "9999")?.Value;
-                var constraintName = foreingTableName + "_" + field.Name;
-                if (foreingTableName != null)
+                var constraintName = foreignTableName + "_" + field.Name;
+                if (foreignTableName != null)
                     sql.AppendFormat(" ,ADD CONSTRAINT FK_{0} FOREIGN KEY (\"{3}\") REFERENCES \"{4}\".\"{1}\"({2})", constraintName,
-                        foreingTableName, "\"Id\"", field.Name, foreignSchemaTableName);
+                        foreignTableName, "\"Id\"", field.Name, foreignSchemaTableName);
             }
 
             sql.AppendFormat("{0}", alterSql.ToString());
@@ -318,6 +320,39 @@ namespace ST.Entities.Controls.Querry
         public static string GetDbSchemesSqlScript()
         {
             return "SELECT \"schema_name\" FROM \"information_schema\".schemata";
+        }
+
+        /// <summary>
+        /// Check if Npg server is available
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public static (bool, string) IsNpgServerConnected(string connectionString)
+        {
+            using (var connection = new NpgsqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    return (true, "");
+                }
+                catch (Exception e)
+                {
+                    if (e.Data.Contains("SqlState"))
+                    {
+                        if (e.Data["SqlState"].ToString() == "3D000")
+                        {
+                            return (true, "");
+                        }
+                    }
+                    return (false, e.ToString());
+                }
+                finally
+                {
+                    // not really necessary
+                    connection.Close();
+                }
+            }
         }
     }
 }

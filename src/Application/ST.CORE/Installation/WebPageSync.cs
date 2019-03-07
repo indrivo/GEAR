@@ -1,5 +1,3 @@
-using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,10 +5,12 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ST.Entities.Data;
+using ST.Entities.Models.Pages;
 
-namespace ST.CORE.Extensions.Installer
+namespace ST.CORE.Installation
 {
-	public static class WebPageSyncExtension
+	public static class WebPageSync
 	{
 		/// <summary>
 		/// page types
@@ -49,7 +49,7 @@ namespace ST.CORE.Extensions.Installer
 		/// Default Page Sync
 		/// </summary>
 		/// <param name="context"></param>
-		public static void SyncWebPages(this EntitiesDbContext context, IServiceProvider services)
+		public static void SyncWebPages(EntitiesDbContext context)
 		{
 			//Add page types
 			if (!context.PageTypes.Any())

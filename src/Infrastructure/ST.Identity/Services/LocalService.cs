@@ -27,5 +27,28 @@ namespace ST.Identity.Services
 
             return result;
         }
+
+        /// <summary>
+        /// Set new app name
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="name"></param>
+        public void SetAppName(string app, string name)
+        {
+            var appData = _context.Clients.FirstOrDefault(x => x.ClientId.Equals(name));
+            if (appData != null)
+            {
+                try
+                {
+                    appData.ClientName = name;
+                    _context.Clients.Update(appData);
+                    _context.SaveChanges();
+                }
+                catch
+                {
+                    //Ignore
+                }
+            }
+        } 
     }
 }

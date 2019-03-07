@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Extensions.Installer;
 using ST.CORE.Models;
 using ST.CORE.Models.UserViewModels;
 using ST.Entities.Data;
@@ -414,7 +413,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
+		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
 		public async Task<IActionResult> Edit(string id)
 		{
 			if (id == null)
@@ -465,7 +464,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <returns></returns>
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
+		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
 		public async Task<IActionResult> Edit([FromServices] SignInManager<ApplicationUser> signInManager, string id,
 			UpdateUserViewModel model)
 		{
@@ -742,25 +741,6 @@ namespace ST.CORE.Controllers.Identity
 		private bool IsCurrentUser(string id)
 		{
 			return id.Equals(User.Identity.Name);
-		}
-
-		/// <summary>
-		/// Bpm install
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		[Route("api/[controller]/[action]")]
-		[HttpGet]
-		[Produces("application/json", Type = typeof(ResultModel))]
-		public JsonResult InstallBpm([Required] bool value)
-		{
-			ProgramExtension.AddMigrations();
-			ProgramExtension.CreateDynamicTables();
-			return Json(new ResultModel
-			{
-				IsSuccess = true,
-				Result = true
-			});
 		}
 
 		/// <summary>

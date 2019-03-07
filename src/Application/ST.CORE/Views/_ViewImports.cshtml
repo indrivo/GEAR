@@ -4,7 +4,16 @@
 @using Microsoft.Extensions.Options
 @using ST.CORE.Services.Abstraction
 @using ST.Entities.Models.Pages
+@using ST.CORE.Installation
+@using ST.CORE;
+
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper ST.CORE.TagHelpers.ApplicationTagHelper, ST.CORE
+@addTagHelper ST.CORE.TagHelpers.LayoutCssCodeTagHelper, ST.CORE
+@addTagHelper ST.CORE.TagHelpers.LayoutJsCodeTagHelper, ST.CORE
+@addTagHelper ST.CORE.TagHelpers.LayoutJsScriptsTagHelper, ST.CORE
+@addTagHelper ST.CORE.TagHelpers.LayoutCssScriptsTagHelper, ST.CORE
+@addTagHelper ST.CORE.TagHelpers.ListTagHelper, ST.CORE
 
 @inject IPageRender PageRender

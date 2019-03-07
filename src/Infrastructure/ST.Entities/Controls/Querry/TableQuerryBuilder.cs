@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using ST.Entities.Constants;
 using ST.Entities.Controls.Builders;
@@ -330,6 +332,32 @@ namespace ST.Entities.Controls.Querry
         public static string GetDbSchemesSqlScript()
         {
             return "SELECT schema_name FROM information_schema.schemata";
+        }
+
+        /// <summary>
+        /// Check if Sql server is available
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public static (bool, string) IsSqlServerConnected(string connectionString)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    return (true, "");
+                }
+                catch (Exception e)
+                {
+                    return (false, e.ToString());
+                }
+                finally
+                {
+                    // not really necessary
+                    connection.Close();
+                }
+            }
         }
     }
 }

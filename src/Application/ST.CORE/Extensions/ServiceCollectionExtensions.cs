@@ -9,7 +9,7 @@ using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -26,7 +26,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Shared.Core.Filters;
 using Shared.Core.Versioning;
 using ST.BaseBusinessRepository;
-using ST.CORE.Extensions.Installer;
+using ST.CORE.Installation;
 using ST.CORE.Models.LocalizationViewModels;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
@@ -37,7 +37,6 @@ using ST.Entities.Utils;
 using ST.Files.Abstraction;
 using ST.Files.Providers;
 using ST.Files.Services;
-using ST.Identity;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
@@ -46,6 +45,7 @@ using ST.Identity.Extensions;
 using ST.Localization;
 using ST.MPass.Gov;
 using ST.Notifications.Abstraction;
+using ST.Notifications.Hubs;
 using ST.Notifications.Providers;
 using ST.Notifications.Services;
 using ST.Procesess.Abstraction;
@@ -64,7 +64,7 @@ namespace ST.CORE.Extensions
 		/// <param name="connectionString"></param>
 		/// <param name="migrationsAssembly"></param>
 		/// <returns></returns>
-		public static IServiceCollection AddIdentityServer(this IServiceCollection services, (DbProviderType, string) connectionString,
+		public static IServiceCollection AddIdentityServer(this IServiceCollection services, IConfiguration configuration, IHostingEnvironment hostingEnvironment,
 			string migrationsAssembly)
 		{
 			services.AddIdentityServer(x => x.IssuerUri = "null")
@@ -75,6 +75,7 @@ namespace ST.CORE.Extensions
 					options.DefaultSchema = constants.DEFAULT_SCHEMA;
 					options.ConfigureDbContext = builder =>
 					{
+						var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
 						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							builder.UseNpgsql(connectionString.Item2, opts =>
@@ -100,6 +101,7 @@ namespace ST.CORE.Extensions
 					options.DefaultSchema = constants.DEFAULT_SCHEMA;
 					options.ConfigureDbContext = builder =>
 					{
+						var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
 						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							builder.UseNpgsql(connectionString.Item2, opts =>
@@ -133,10 +135,11 @@ namespace ST.CORE.Extensions
 		/// <param name="environment"></param>
 		/// <returns></returns>
 		public static IServiceCollection AddDbContextAndIdentity(this IServiceCollection services,
-			(DbProviderType, string) connectionString, string migrationsAssembly, IHostingEnvironment environment)
+			IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly, IHostingEnvironment environment)
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 					{
+						var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
 						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							options.UseNpgsql(connectionString.Item2, opts =>
@@ -348,6 +351,12 @@ namespace ST.CORE.Extensions
 				.DependsOn(Dependency.OnComponent<INotificationProvider, DbNotificationProvider>()));
 			castleContainer.Register(Component.For<Notificator>().Named("Email")
 				.DependsOn(Dependency.OnComponent<INotificationProvider, EmailNotificationProvider>()));
+			//Register notifier 
+			castleContainer.Register(Component.For<INotify>().ImplementedBy<Notify>());
+
+			//Dynamic data service
+			castleContainer.Register(Component.For<IDynamicEntityDataService>()
+				.ImplementedBy<DynamicEntityDataService>());
 
 			//Files
 			var fileConfig = new FileConfig { DbContext = formsContext, WebRootPath = env.WebRootPath };
@@ -410,19 +419,14 @@ namespace ST.CORE.Extensions
 				.UseIdentityServer()
 				.UseMvc(routes =>
 				{
-					//routes.MapRoute(
-					//	name: "multi-tenant",
-					//	template: multiTenantTemplate,
-					//	defaults: multiTenantTemplate,
-					//	constraints: new { tenant = new TenantRouteConstraint() }
-					//	);
-
 					routes.MapRoute(
-						name: "single-tenant",
-						template: singleTenantTemplate
-					);
-				})
-				.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
+						name: "multi-tenant",
+						template: singleTenantTemplate,
+						defaults: singleTenantTemplate
+						//constraints: new { tenant = new TenantRouteConstraint() }
+						);
+				});
+			//.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
 			return app;
 		}
 

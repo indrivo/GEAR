@@ -1,95 +1,192 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+using System;
 using System.Threading.Tasks;
-using Mapster;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ST.CORE.Extensions.Installer;
+using ST.CORE.Installation;
 using ST.CORE.Models.InstallerModels;
+using ST.Entities.Controls.Querry;
+using ST.Entities.Utils;
+using ST.Identity.Abstractions;
+using ST.Identity.Data;
+using ST.Identity.Data.UserProfiles;
+using ST.Identity.LDAP.Services;
+using ST.Organization;
+using ST.Organization.Models;
+using ST.Organization.Utils;
 
 namespace ST.CORE.Controllers
 {
 	public class InstallerController : Controller
 	{
-		private const string Filepath = "appsettings.json";
-		private const string FilepathInitial = "InitialSetting.json";
+		/// <summary>
+		/// Inject hosting env
+		/// </summary>
+		private readonly IHostingEnvironment _hostingEnvironment;
 
-		public async Task<IActionResult> Setup()
+		/// <summary>
+		/// Inject application context
+		/// </summary>
+		private readonly ApplicationDbContext _applicationDbContext;
+		/// <summary>
+		/// Inject Ldap User Manager
+		/// </summary>
+		private readonly LdapUserManager _ldapUserManager;
+
+		private readonly ILocalService _localService;
+
+		/// <summary>
+		/// Inject SignIn Manager
+		/// </summary>
+		private readonly SignInManager<ApplicationUser> _signInManager;
+
+		/// <summary>
+		/// Inject permmision service
+		/// </summary>
+		private readonly IPermissionService _permissionService;
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="hostingEnvironment"></param>
+		/// <param name="applicationDbContext"></param>
+		/// <param name="ldapUserManager"></param>
+		/// <param name="signInManager"></param>
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, LdapUserManager ldapUserManager, SignInManager<ApplicationUser> signInManager)
 		{
-			var model = new DbSetupModel();
-			using (var r = new StreamReader(FilepathInitial))
+			_hostingEnvironment = hostingEnvironment;
+			_applicationDbContext = applicationDbContext;
+			_ldapUserManager = ldapUserManager;
+			_signInManager = signInManager;
+			_localService = localService;
+			_permissionService = permissionService;
+		}
+
+		/// <summary>
+		/// Load setup page
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult Setup()
+		{
+			var model = new SetupModel();
+			var settings = Application.Settings(_hostingEnvironment);
+			if (settings != null)
 			{
-				var json = await r.ReadToEndAsync();
-				var jobject = JsonConvert.DeserializeObject<AppSettingsModel.RootObject>(json);
-				model.Languages = jobject.LocalizationConfig.Languages.Adapt<List<LanguageSetup>>();
-				model.Languages.Single(x => x.Identifier == "en").Selected = true;
-				// Temporary default configuration
-				model.DbAdrress = "192.168.1.209";
-				model.DbName = "BTMS";
-				model.UserName = "sa";
-				model.UserPassword = "Soft-Tehnica2017";
+				model.DataBaseType = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
+					? DbProviderType.PostgreSql
+					: DbProviderType.MsSqlServer;
+
+				model.DatabaseConnectionString = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
+					? settings.ConnectionStrings.PostgreSQL.ConnectionString
+					: settings.ConnectionStrings.MSSQLConnection;
 			}
+
+			model.SysAdminProfile = new SetupProfileModel {
+				FirstName = "admin",
+				Email = "admin@admin.com",
+				LastName = "admin",
+				Password = "admin",
+				ConfirmPassword = "admin",
+				UserName = "admin"
+			};
 
 			return View(model);
 		}
 
+		/// <summary>
+		/// Complete installation of system
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
 		[HttpPost]
-		public async Task<IActionResult> Setup(DbSetupModel model)
+		public async Task<IActionResult> Setup(SetupModel model)
 		{
-			var settings = new AppSettingsModel
+			var settings = Application.Settings(_hostingEnvironment);
+
+			if (model.DataBaseType == DbProviderType.MsSqlServer)
 			{
-				RootObjects = new AppSettingsModel.RootObject
+				var (isConnected, error) = TableQuerryBuilder.IsSqlServerConnected(model.DatabaseConnectionString);
+				if (!isConnected)
 				{
-					ConnectionStrings = new AppSettingsModel.ConnectionStrings(),
-					Logging = new AppSettingsModel.Logging
-					{
-						LogLevel = new AppSettingsModel.LogLevel()
-					},
-					HealthCheck = new AppSettingsModel.HealthCheck(),
-					LocalizationConfig = new AppSettingsModel.LocalizationConfig(),
-					IsConfigurated = true
+					ModelState.AddModelError(string.Empty, error);
+					return View(model);
 				}
+
+				settings.ConnectionStrings.PostgreSQL.UsePostgreSQL = false;
+				settings.ConnectionStrings.MSSQLConnection = model.DatabaseConnectionString;
+			}
+			else
+			{
+				var (isConnected, error) = NpgTableQuerryBuilder.IsNpgServerConnected(model.DatabaseConnectionString);
+				if (!isConnected)
+				{
+					ModelState.AddModelError(string.Empty, error);
+					return View(model);
+				}
+				settings.ConnectionStrings.PostgreSQL.UsePostgreSQL = true;
+				settings.ConnectionStrings.PostgreSQL.ConnectionString = model.DatabaseConnectionString;
+			}
+
+			var tenantMachineName = TenantUtils.GetTenantMachineName(model.Organization.Name);
+			if (string.IsNullOrEmpty(tenantMachineName))
+			{
+				ModelState.AddModelError(string.Empty, "Invalid name for organization");
+				return View(model);
+			}
+			settings.IsConfigurated = true;
+			var result = JsonConvert.SerializeObject(settings);
+			await System.IO.File.WriteAllTextAsync(Application.AppSettingsFilepath(_hostingEnvironment), result);
+			Application.InitMigrations(new string[] { });
+
+			await _permissionService.RefreshCache();
+
+			var tenantExist =
+				await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == DefaultTenantSettings.TenantId);
+			if (tenantExist)
+			{
+				ModelState.AddModelError(string.Empty, "Invalid name for organization because is used for another organization or organization was configured");
+				return View(model);
+			}
+
+			var tenant = new Tenant
+			{
+				Id = DefaultTenantSettings.TenantId,
+				Name = model.Organization.Name,
+				MachineName = tenantMachineName,
+				Created = DateTime.Now,
+				Changed = DateTime.Now,
+				SiteWeb = model.Organization.SiteWeb,
+				Author = "System"
 			};
-			var connectionString = new StringBuilder();
-			connectionString.AppendFormat(
-				"Server={0};Database={1}.db;Trusted_Connection=False;User Id={2};Password={3};MultipleActiveResultSets=true",
-				model.DbAdrress, model.DbName, model.UserName, model.UserPassword);
-			settings.RootObjects.ConnectionStrings.DefaultConnection = connectionString.ToString();
-			settings.RootObjects.Logging.IncludeScopes = false;
-			settings.RootObjects.Logging.LogLevel.Default = "Warning";
-			settings.RootObjects.HealthCheck.Path = "/health";
-			settings.RootObjects.HealthCheck.Timeout = 3;
-			settings.RootObjects.LocalizationConfig.DefaultLanguage = "en";
-			settings.RootObjects.LocalizationConfig.Path = "Localization";
-			settings.RootObjects.LocalizationConfig.SessionStoreKeyName = "lang";
-			settings.RootObjects.LocalizationConfig.Languages = new List<AppSettingsModel.Language>();
 
-			foreach (var item in model.Languages)
-			{
-				if (item.Selected)
-				{
-					settings.RootObjects.LocalizationConfig.Languages.Add(new AppSettingsModel.Language
-					{
-						Name = item.Name,
-						Identifier = item.Identifier
-					});
-				}
-			}
+			//Set user settings
+			var superUser = await _applicationDbContext.Users.FirstOrDefaultAsync();
+			superUser.UserName = model.SysAdminProfile.UserName;
+			superUser.Email = model.SysAdminProfile.Email;
+			var hasher = new PasswordHasher<ApplicationUser>();
+			var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);
+			superUser.PasswordHash = hashedPassword;
+			_applicationDbContext.Update(superUser);
+			await _applicationDbContext.Tenants.AddAsync(tenant);
+			await _applicationDbContext.SaveChangesAsync();
 
-			string result;
-			using (new StreamReader(Filepath))
-			{
-				result = JsonConvert.SerializeObject(settings.RootObjects);
-			}
+			_localService.SetAppName("core", model.SiteName);
 
-			await System.IO.File.WriteAllTextAsync(Filepath, result);
-			ProgramExtension.AddMigrations();
-			ProgramExtension.CreateDynamicTables();
+			tenant.CreateDynamicTables();
+
+			await Application.SeedDynamicDataAsync();
+			//sign in user
+			await _signInManager.SignInAsync(superUser, true);
 			return RedirectToAction("Index", "Home");
 		}
 
+		/// <summary>
+		/// Load welcome page
+		/// </summary>
+		/// <returns></returns>
 		public IActionResult Index()
 		{
 			return View();

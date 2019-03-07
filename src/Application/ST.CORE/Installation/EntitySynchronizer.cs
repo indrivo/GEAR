@@ -5,13 +5,14 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ST.BaseBusinessRepository;
+using ST.BaseRepository;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.ViewModels.Table;
 
-namespace ST.CORE.Extensions.Installer
+namespace ST.CORE.Installation
 {
 	public class EntitySynchronizer
 	{
@@ -31,21 +32,26 @@ namespace ST.CORE.Extensions.Installer
 		private static IConfiguration Configuration { get; set; }
 
 
-		public void SynchronizeEntities(SynchronizeTableViewModel tableModel)
+		/// <summary>
+		/// Sync entities
+		/// </summary>
+		/// <param name="tableModel"></param>
+		/// <param name="schema"></param>
+		public void SynchronizeEntities(SynchronizeTableViewModel tableModel, string schema = null)
 		{
-			var m = new TableModel
+			var table = new TableModel
 			{
 				Name = tableModel.Name,
-				EntityType = tableModel.Schema,
+				EntityType = schema ?? tableModel.Schema,
 				Description = tableModel.Description,
 				IsSystem = tableModel.IsSystem,
 				IsPartOfDbContext = tableModel.IsStaticFromEntityFramework
 			};
 			try
 			{
-				_context.Table.Add(m);
+				_context.Table.Add(table);
 				_context.SaveChanges();
-				CompleteSyncEntity(tableModel, m);
+				CompleteSyncEntity(tableModel, table);
 			}
 			catch (Exception ex)
 			{
@@ -57,13 +63,13 @@ namespace ST.CORE.Extensions.Installer
 		/// Complete sync entity
 		/// </summary>
 		/// <param name="tableModel"></param>
-		/// <param name="m"></param>
-		private void CompleteSyncEntity(SynchronizeTableViewModel tableModel, TableModel m)
+		/// <param name="table"></param>
+		private void CompleteSyncEntity(SynchronizeTableViewModel tableModel, TableModel table)
 		{
 			var resultModel = _repository
-					.GetAllIncluding<TableModel>(x => x.Include(s => s.TableFields), x => x.Id == m.Id).AsNoTracking()
+					.GetAllIncluding<TableModel>(x => x.Include(s => s.TableFields), x => x.Id == table.Id).AsNoTracking()
 					.FirstOrDefault();
-			if (resultModel != null)
+			if (resultModel == null) return;
 			{
 				if (tableModel.IsStaticFromEntityFramework)
 				{
@@ -108,52 +114,60 @@ namespace ST.CORE.Extensions.Installer
 				else
 				{
 					ITablesService sqlService = _context.Database.IsNpgsql()
-											? new NpgTablesService(repository: _repository) : _context.Database.IsSqlServer()
-											? new TablesService(repository: _repository) : null;
+						? new NpgTablesService(repository: _repository) : _context.Database.IsSqlServer()
+							? new TablesService(repository: _repository) : null;
 
+					if (sqlService == null) return;
 					var response = sqlService.CreateSqlTable(table: resultModel, connectionString: _connectionString);
-					if (response.Result)
+					if (!response.Result) return;
+					// Add
+					var fieldTypeList = _context.TableFieldTypes.ToList();
+					var fieldConfigList = _context.TableFieldConfigs.ToList();
+					//
+					foreach (var item in tableModel.Fields)
 					{
-						// Add
-						var fieldTypeList = _context.TableFieldTypes.ToList();
-						var fieldConfigList = _context.TableFieldConfigs.ToList();
-						//
-						foreach (var item in tableModel.Fields)
+						foreach (var configViewModel in item.Configurations)
 						{
-							foreach (var configViewModel in item.Configurations)
+							configViewModel.Name = fieldConfigList.Single(x => x.Code == configViewModel.ConfigCode).Name;
+
+							if (configViewModel.ConfigCode == "9999")
 							{
-								configViewModel.Name = fieldConfigList.Single(x => x.Code == configViewModel.ConfigCode).Name;
-							}
-							var insertField = sqlService.AddFieldSql(item, tableModel.Name, _connectionString, true, tableModel.Schema);
-							// Save field model in the dataBase
-							if (insertField.Result)
-							{
-								var configValues = new List<TableFieldConfigValues>();
-								var fieldTypeId = fieldTypeList.Single(x => x.Code == item.TableFieldCode).Id;
-								var model = new TableModelFields
+								if (configViewModel.Value == "systemcore")
 								{
-									DataType = item.DataType,
-									TableId = resultModel.Id,
-									Description = item.Description,
-									Name = item.Name,
-									AllowNull = item.AllowNull,
-									Synchronized = true,
-									TableFieldTypeId = fieldTypeId,
-								};
-								foreach (var configItem in item.Configurations)
-								{
-									var configId = fieldConfigList.Single(x => x.Code == configItem.ConfigCode).Id;
-									configValues.Add(new TableFieldConfigValues
-									{
-										TableFieldConfigId = configId,
-										TableModelFieldId = model.Id,
-										Value = configItem.Value,
-									});
+									configViewModel.Value = table.EntityType;
 								}
-								model.TableFieldConfigValues = configValues;
-								_context.TableFields.Add(model);
-								_context.SaveChanges();
 							}
+						}
+
+						var insertField = sqlService.AddFieldSql(item, tableModel.Name, _connectionString, true, table.EntityType);
+						// Save field model in the dataBase
+						if (!insertField.Result) continue;
+						{
+							var configValues = new List<TableFieldConfigValues>();
+							var fieldTypeId = fieldTypeList.Single(x => x.Code == item.TableFieldCode).Id;
+							var model = new TableModelFields
+							{
+								DataType = item.DataType,
+								TableId = resultModel.Id,
+								Description = item.Description,
+								Name = item.Name,
+								AllowNull = item.AllowNull,
+								Synchronized = true,
+								TableFieldTypeId = fieldTypeId,
+							};
+							foreach (var configItem in item.Configurations)
+							{
+								var configId = fieldConfigList.Single(x => x.Code == configItem.ConfigCode).Id;
+								configValues.Add(new TableFieldConfigValues
+								{
+									TableFieldConfigId = configId,
+									TableModelFieldId = model.Id,
+									Value = configItem.Value,
+								});
+							}
+							model.TableFieldConfigValues = configValues;
+							_context.TableFields.Add(model);
+							_context.SaveChanges();
 						}
 					}
 				}

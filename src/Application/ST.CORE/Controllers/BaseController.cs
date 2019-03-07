@@ -17,29 +17,29 @@ namespace ST.CORE.Controllers
 		/// <summary>
 		/// Entity DbContext
 		/// </summary>
-		protected readonly EntitiesDbContext _context;
+		protected readonly EntitiesDbContext Context;
 
 		/// <summary>
 		/// Application DbContext 
 		/// </summary>
-		protected readonly ApplicationDbContext _applicationDbContext;
+		protected readonly ApplicationDbContext ApplicationDbContext;
 
 		/// <summary>
 		/// Inject UserManager
 		/// </summary>
-		protected readonly UserManager<ApplicationUser> _userManager;
+		protected readonly UserManager<ApplicationUser> UserManager;
 
 		/// <summary>
 		/// Inject RoleManager
 		/// </summary>
-		protected readonly RoleManager<ApplicationRole> _roleManager;
+		protected readonly RoleManager<ApplicationRole> RoleManager;
 
 		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
 		{
-			_context = context;
-			_applicationDbContext = applicationDbContext;
-			_userManager = userManager;
-			_roleManager = roleManager;
+			Context = context;
+			ApplicationDbContext = applicationDbContext;
+			UserManager = userManager;
+			RoleManager = roleManager;
 		}
 
 
@@ -49,7 +49,7 @@ namespace ST.CORE.Controllers
 		/// <returns></returns>
 		protected async Task<ApplicationUser> GetCurrentUserAsync()
 		{
-			return await _userManager.GetUserAsync(User);
+			return await UserManager.GetUserAsync(User);
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace ST.CORE.Controllers
 		{
 			var user = await GetCurrentUserAsync();
 			if (user == null) return default;
-			return await _applicationDbContext.Tenants.FirstOrDefaultAsync(x => x.Id == user.TenantId);
+			return await ApplicationDbContext.Tenants.FirstOrDefaultAsync(x => x.Id == user.TenantId);
 		}
 	}
 }

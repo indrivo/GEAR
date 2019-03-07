@@ -114,10 +114,18 @@ namespace ST.Audit.Extensions
                 var model = Track(eventArgs);
                 if (model.Item1 == null) return;
                 await context.AddAsync(model.Item1);
-                var check = context.Find(model.Item2.GetType(), ((BaseModel)model.Item2).Id);
-                if (check != null && eventArgs.Entry.State.Equals(EntityState.Unchanged))
+                try
                 {
-                    context.Update(model.Item2);
+                    var objId = Guid.Parse(((dynamic)model.Item2).Id.ToString());
+                    var check = context.Find(model.Item2.GetType(), objId);
+                    if (check != null && eventArgs.Entry.State.Equals(EntityState.Unchanged))
+                    {
+                        context.Update(model.Item2);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                 }
             };
             return context;

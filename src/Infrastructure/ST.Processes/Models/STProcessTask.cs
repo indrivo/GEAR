@@ -1,4 +1,5 @@
-﻿using ST.BaseRepository;
+﻿using ST.Audit.Attributes;
+using ST.Audit.Enums;
 using ST.Entities.Models;
 using System;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ST.Procesess.Models
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class STProcessTask : ExtendedModel
     {
         /// <summary>

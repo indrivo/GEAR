@@ -6,7 +6,7 @@ using System.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
@@ -26,21 +26,64 @@ namespace ST.Identity.Extensions
         {
             app.Use(async (ctx, next) =>
             {
-                await next();
-
-                var isClientUrl = ctx.ParseClientRequest();
-                if (isClientUrl) await next();
-                else if (ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+                var env = ctx.RequestServices.GetRequiredService<IConfiguration>();
+                var isConfigured = env.GetValue<bool>("IsConfigurated");
+                if (!isConfigured)
                 {
-                    //Re-execute the request so the user gets the error page
-                    var originalPath = ctx.Request.Path.Value;
-                    ctx.Items["originalPath"] = originalPath;
-                    ctx.Request.Path = "/Handler/NotFound";
+                    if (ctx.Request.Cookies.Count >= 2)
+                    {
+                        foreach (var cookie in ctx.Request.Cookies.Keys)
+                        {
+                            //if (cookie != ".ST.CORE.Data")
+                            ctx.Response.Cookies.Delete(cookie);
+                        }
+                    }
+                    if (ctx.Request.Path.Value != "/"
+                    && ExcludeAssets(ctx.Request.Path.Value)
+                    && !(ctx.Request.Path.Value.ToString().ToLower().StartsWith("/installer")))
+                    {
+                        var originalPath = ctx.Request.Path.Value;
+                        ctx.Items["originalPath"] = originalPath;
+                        ctx.Request.Path = "/Installer";
+                        await next();
+                    }
+                    else
+                        await next();
+                }
+                else
+                {
                     await next();
+                    var isClientUrl = ctx.ParseClientRequest();
+                    if (isClientUrl) await next();
+                    else if (ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+                    {
+                        //Re-execute the request so the user gets the error page
+                        var originalPath = ctx.Request.Path.Value;
+                        ctx.Items["originalPath"] = originalPath;
+                        ctx.Request.Path = "/Handler/NotFound";
+                        await next();
+                    }
                 }
             });
 
             return app;
+        }
+
+        /// <summary>
+        /// Exclude assets
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static bool ExcludeAssets(string value)
+        {
+            return !value.StartsWith("/css")
+                && !value.StartsWith("/lib")
+                && !value.StartsWith("/assets")
+                && !value.StartsWith("/js")
+                && !value.StartsWith("/PageRender")
+                && !value.StartsWith("/Localization")
+                && !value.StartsWith("/favicon.ico")
+                && !value.StartsWith("/images");
         }
 
         /// <summary>

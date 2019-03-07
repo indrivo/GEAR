@@ -1,25 +1,120 @@
+@using ST.Localization
+@using Microsoft.AspNetCore.Http
+@using ST.CORE.Models.LocalizationViewModels
+@using ST.Identity.Abstractions
+
+@inject ILocalService LocalService
+@inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
+@inject IHttpContextAccessor Accesor
+@inject IStringLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_LayoutInstaller.cshtml";
+	Layout = null;
+	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
+	Language language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
+	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 }
 
 <!DOCTYPE html>
+
 <html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>@Localizer["welcome"]</title>
+	<link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/colors/megna-dark.css" />
+	<link type="text/css" rel="stylesheet" href="~/lib/sweetalert2/dist/sweetalert2.min.css" />
+</head>
 <body>
+	<!-- ============================================================== -->
+	<!-- Preloader - style you can find in spinners.css -->
+	<!-- ============================================================== -->
+	<div class="preloader">
+		<svg class="circular" viewBox="25 25 50 50">
+			<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+		</svg>
+	</div>
+	<!-- ============================================================== -->
+	<!-- Main wrapper - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<section id="wrapper" class="login-register" style="background-image:url(../images/background/login-register.jpg);">
+		<div class="login-box card" style="width: 50%; margin-top: -7em; margin-right: 4em">
+			<div class="card-body">
+				<h3>@Localizer["installer_welcome"]</h3>
+				<p style="font-size: 16px">
+					@Localizer["system_description"]
+				</p>
+				<a asp-action="Setup" asp-controller="Installer" class="positive ui button" id="startButton">
+					@Localizer["installer_go_to_installation"]
+				</a>
+			</div>
+		</div>
 
-        <div class="ui text container"  id="div1">
-            <h1 class="ui inverted header">
-                BPM Installer
-            </h1>
-            <p style="font-size: 12px">
-                The primary goal of BPMN is to provide a notation that is readily understandable by all business users, from the business analysts who create the initial drafts of the processes, to the technical developers responsible for implementing the technology that will perform those processes, and finally, to the business people who will manage and monitor those processes. Thus, BPMN creates a standardized bridge for the gap between the business process design and process implementation.BPMN will also advance the capabilities of traditional business process notations by inherently handling B2B business process concepts, such as public and private processes , as well as advanced modeling concepts of entities and processes
-            </p>
-            <a asp-action="Setup" asp-controller="Installer" class="positive ui button" id="startButton">
-                Start
-            </a>
-        </div>
+		<div class="card" style="max-width: 6em; margin: 1em; position: absolute; top: 0; left: 0;">
+			<div class="card-body">
+				<span id="languageChange" style="cursor: pointer;">
+					<i class="flag-icon flag-icon-@((language.Identifier.Equals("en"))? "gb": language.Identifier)"></i>
+					@language.Identifier.ToUpper()
+				</span>
+			</div>
+		</div>
+	</section>
+	<!-- ============================================================== -->
+	<!-- End Wrapper -->
+	<!-- ============================================================== -->
 
+	<script src="~/lib/jquery/dist/jquery.js"></script>
+	<script src="~/lib/tether/dist/js/tether.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="~/js/jquery.slimscroll.js"></script>
+	<script src="~/js/waves.js"></script>
+	<script src="~/js/sidebarmenu.js"></script>
+	<script src="~/lib/sticky-kit/jquery.sticky-kit.min.js"></script>
+	<script type="text/javascript" src="~/lib/sweetalert2/dist/sweetalert2.min.js"></script>
+	<script src="~/js/custom.js"></script>
+	<script>
+		window.load = function (uri, data = null, type = "get") {
+			try {
+				const url = new URL(location.href);
+				uri = `${url.origin}${uri}`;
+
+				const req = $.ajax({
+					url: uri,
+					type: type,
+					data: data,
+					async: false
+				});
+				return JSON.parse(req.responseText);
+			} catch (exp) {
+				console.log(exp);
+				return null;
+			}
+		};
+		$(document).ready(function () {
+			$('#languageChange').click(function () {
+				const lang = load("/PageRender/GetLanguages");
+				const model = {};
+
+				$.each(lang, function (index, item) {
+					model[item.identifier] = item.name;
+				});
+				swal({
+					title: "@Localizer["select_language"]",
+					input: 'select',
+					inputOptions: model,
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "@Localizer["confirm_select_language"]"
+				}).then((result) => {
+					if (result.value) {
+						location.href = `/Localization/ChangeLanguage?identifier=${result.value}`;
+					};
+				});
+			});
+		});
+	</script>
 </body>
 </html>
 

@@ -160,7 +160,6 @@
     <None Include="Views\Roles\Edit.cshtml" />
     <None Include="Views\Roles\Index.cshtml" />
     <None Include="Views\Shared\Error.cshtml" />
-    <None Include="Views\Shared\_Old_Layout.cshtml" />
     <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
     <None Include="Views\Users\Create.cshtml" />
     <None Include="Views\Users\Delete.cshtml" />

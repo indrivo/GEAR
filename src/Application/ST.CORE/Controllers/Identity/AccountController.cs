@@ -56,6 +56,9 @@ namespace ST.CORE.Controllers.Identity
 		/// </summary>
 		private readonly IMPassService _mpassService;
 		private readonly IMPassSigningCredentialsStore _mpassSigningCredentialStore;
+		/// <summary>
+		/// Inject SignIn Manager
+		/// </summary>
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IHttpContextAccessor _httpContextAccesor;

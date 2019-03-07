@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using ST.Audit.Attributes;
+using ST.Audit.Enums;
 using ST.Entities.Models.Tables;
 
 namespace ST.Entities.Models.Pages
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class Page : ExtendedModel
     {
         public PageType PageType { get; set; }
@@ -27,6 +30,7 @@ namespace ST.Entities.Models.Pages
         int Order { get; set; }
     }
 
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class PageScript : ExtendedModel, IPageItem
     {
         public Guid PageId { get; set; }
@@ -34,6 +38,7 @@ namespace ST.Entities.Models.Pages
         public int Order { get; set; }
     }
 
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class PageStyle : ExtendedModel, IPageItem
     {
         public Guid PageId { get; set; }
@@ -41,6 +46,7 @@ namespace ST.Entities.Models.Pages
         public int Order { get; set; }
     }
 
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class PageSettings : ExtendedModel
     {
         public string Name { get; set; }
@@ -50,7 +56,7 @@ namespace ST.Entities.Models.Pages
         public string PhysicPath { get; set; }
     }
 
-
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class PageType : ExtendedModel
     {
         [Required]
@@ -59,12 +65,14 @@ namespace ST.Entities.Models.Pages
         public bool IsSystem { get; set; }
     }
 
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class BlockCategory : ExtendedModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
     }
 
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class Block : ExtendedModel
     {
         public virtual string Name { get; set; }
@@ -79,6 +87,7 @@ namespace ST.Entities.Models.Pages
         public TableModel TableModel { get; set; }
     }
 
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class BlockAttribute : ExtendedModel
     {
         public string Name { get; set; }
