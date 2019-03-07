@@ -34,17 +34,17 @@ namespace ST.ProcessEngine
             var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
             services.AddDbContext<EntitiesDbContext>(options =>
             {
-                options = options.GetDefaultOptions(connectionString);
+                options = options.GetDefaultOptions(Configuration, HostingEnvironment);
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options = options.GetDefaultOptions(connectionString);
+                options = options.GetDefaultOptions(Configuration, HostingEnvironment);
             });
 
             services.AddDbContext<ProcessesDbContext>(options =>
             {
-                options = options.GetDefaultOptions(connectionString);
+                options = options.GetDefaultOptions(Configuration, HostingEnvironment);
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //Run background service
