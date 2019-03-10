@@ -45,24 +45,32 @@ namespace ST.CORE.Installation
 			{
 				foreach (var item in GetMenus())
 				{
+					item.Created = DateTime.Now;
+					item.Changed = DateTime.Now;
 					var res = await service.AddSystem(item.Adapt<MenuItem>());
 					if (!res.IsSuccess) continue;
 					foreach (var i in item.SubItems)
 					{
 						var obj = i.Adapt<MenuItem>();
 						obj.ParentMenuItemId = res.Result;
+						obj.Created = DateTime.Now;
+						obj.Changed = DateTime.Now;
 						var r = await service.AddSystem(obj);
 						if (!r.IsSuccess || i.SubItems == null) continue;
 						foreach (var j in i.SubItems)
 						{
 							var ob = j.Adapt<MenuItem>();
 							ob.ParentMenuItemId = r.Result;
+							ob.Created = DateTime.Now;
+							ob.Changed = DateTime.Now;
 							var r1 = await service.AddSystem(ob);
 							if (!r1.IsSuccess || j.SubItems == null) continue;
 							foreach (var m in j.SubItems)
 							{
 								var ob1 = m.Adapt<MenuItem>();
 								ob1.ParentMenuItemId = r1.Result;
+								ob1.Created = DateTime.Now;
+								ob1.Changed = DateTime.Now;
 								await service.AddSystem(ob1);
 							}
 						}

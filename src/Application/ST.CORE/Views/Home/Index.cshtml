@@ -1,118 +1,119 @@
 @using ST.Identity.Data.UserProfiles
+@inject UserManager<ApplicationUser> userManager
 @inject IStringLocalizer Localizer
 @{
 	ViewData["Title"] = Localizer["title_home"];
-	var user = ViewBag.User as ApplicationUser;
+	var user = await userManager.GetUserAsync(User);
 }
 
 <link rel="stylesheet" type="text/css" href="~/lib/chartist/dist/chartist.css" />
 <link rel="stylesheet" type="text/css" href="~/lib/chartist-plugin-tooltip/dist/chartist-plugin-tooltip.css" />
 
 <div class="row">
-    <!-- Column -->
-    <div class="col-md-6 col-lg-3 col-xlg-3">
-        <div class="card card-inverse card-info">
-            <div class="box bg-info text-center">
-                <h1 class="font-light text-white">@ViewBag.TotalSessions</h1>
-                <h6 class="text-white">Sessions</h6>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <div class="col-md-6 col-lg-3 col-xlg-3">
-        <div class="card card-primary card-inverse">
-            <div class="box text-center">
-                <h1 class="font-light text-white">@ViewBag.TotalUsers</h1>
-                <h6 class="text-white">Users</h6>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <div class="col-md-6 col-lg-3 col-xlg-3">
-        <div class="card card-inverse card-success">
-            <div class="box text-center">
-                <h1 class="font-light text-white">0</h1>
-                <h6 class="text-white">Page Views</h6>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <div class="col-md-6 col-lg-3 col-xlg-3">
-        <div class="card card-inverse card-warning">
-            <div class="box text-center">
-                <h1 class="font-light text-white">0%</h1>
-                <h6 class="text-white">Bounce Rate</h6>
-            </div>
-        </div>
-    </div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-inverse card-info">
+			<div class="box bg-info text-center">
+				<h1 class="font-light text-white">@ViewBag.TotalSessions</h1>
+				<h6 class="text-white">Sessions</h6>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-primary card-inverse">
+			<div class="box text-center">
+				<h1 class="font-light text-white">@ViewBag.TotalUsers</h1>
+				<h6 class="text-white">Users</h6>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-inverse card-success">
+			<div class="box text-center">
+				<h1 class="font-light text-white">0</h1>
+				<h6 class="text-white">Page Views</h6>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-inverse card-warning">
+			<div class="box text-center">
+				<h1 class="font-light text-white">0%</h1>
+				<h6 class="text-white">Bounce Rate</h6>
+			</div>
+		</div>
+	</div>
 </div>
 <!-- Row -->
 <div class="row">
-    <!-- Column -->
-    <div class="col-12">
-        <div class="card">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="p-3">
-                        <h2 class="font-medium text-inverse">Welcome @user?.UserName</h2>
-                        <h6 class="card-subtitle">you have 4 new messages</h6>
-                        <div class="message-box m-t-30">
-                            <div class="message-widget">
-                                <!-- Message -->
-                                <a href="#">
-                                    <div class="user-img"> <img src="~/images/users/1.jpg" alt="user" class="img-circle"> <span class="profile-status online pull-right"></span> </div>
-                                    <div class="mail-contnet">
-                                        <h5>Pavan kumar</h5> <span class="mail-desc">Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been.</span> <span class="time">9:30 AM</span>
-                                    </div>
-                                </a>
-                                <!-- Message -->
-                                <a href="#">
-                                    <div class="user-img"> <img src="~/images/users/2.jpg" alt="user" class="img-circle"> <span class="profile-status busy pull-right"></span> </div>
-                                    <div class="mail-contnet">
-                                        <h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span> <span class="time">9:10 AM</span>
-                                    </div>
-                                </a>
-                                <!-- Message -->
-                                <a href="#">
-                                    <div class="user-img"> <span class="round">A</span> <span class="profile-status away pull-right"></span> </div>
-                                    <div class="mail-contnet">
-                                        <h5>Arijit Sinh</h5> <span class="mail-desc">Simply dummy text of the printing and typesetting industry.</span> <span class="time">9:08 AM</span>
-                                    </div>
-                                </a>
-                                <!-- Message -->
-                                <a href="#">
-                                    <div class="user-img"> <img src="~/images/users/4.jpg" alt="user" class="img-circle"> <span class="profile-status offline pull-right"></span> </div>
-                                    <div class="mail-contnet">
-                                        <h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span class="time">9:02 AM</span>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-8 border-left">
-	                <div class="card-body">
-		                <div class="d-flex no-block align-items-center">
-			                <h4 class="font-medium text-inverse">Product Calculation</h4>
-			                <div class="ml-auto">
-				                <ul class="list-inline">
-					                <li class="p-l-0">
-						                <h6 class="text-muted"><i class="fa fa-circle mr-2 text-success"></i>2016</h6>
-					                </li>
-					                <li>
-						                <h6 class="text-muted"><i class="fa fa-circle mr-2 text-info"></i>2017</h6>
-					                </li>
-				                </ul>
-			                </div>
-		                </div>
+	<!-- Column -->
+	<div class="col-12">
+		<div class="card">
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="p-3">
+						<h2 class="font-medium text-inverse">Welcome @user?.UserName</h2>
+						<h6 class="card-subtitle">you have 4 new messages</h6>
+						<div class="message-box m-t-30">
+							<div class="message-widget">
+								<!-- Message -->
+								<a href="#">
+									<div class="user-img"> <img src="~/images/users/1.jpg" alt="user" class="img-circle"> <span class="profile-status online pull-right"></span> </div>
+									<div class="mail-contnet">
+										<h5>Pavan kumar</h5> <span class="mail-desc">Lorem Ipsum is simply dummy text of the printing and type setting industry. Lorem Ipsum has been.</span> <span class="time">9:30 AM</span>
+									</div>
+								</a>
+								<!-- Message -->
+								<a href="#">
+									<div class="user-img"> <img src="~/images/users/2.jpg" alt="user" class="img-circle"> <span class="profile-status busy pull-right"></span> </div>
+									<div class="mail-contnet">
+										<h5>Sonu Nigam</h5> <span class="mail-desc">I've sung a song! See you at</span> <span class="time">9:10 AM</span>
+									</div>
+								</a>
+								<!-- Message -->
+								<a href="#">
+									<div class="user-img"> <span class="round">A</span> <span class="profile-status away pull-right"></span> </div>
+									<div class="mail-contnet">
+										<h5>Arijit Sinh</h5> <span class="mail-desc">Simply dummy text of the printing and typesetting industry.</span> <span class="time">9:08 AM</span>
+									</div>
+								</a>
+								<!-- Message -->
+								<a href="#">
+									<div class="user-img"> <img src="~/images/users/4.jpg" alt="user" class="img-circle"> <span class="profile-status offline pull-right"></span> </div>
+									<div class="mail-contnet">
+										<h5>Pavan kumar</h5> <span class="mail-desc">Just see the my admin!</span> <span class="time">9:02 AM</span>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-8 border-left">
+					<div class="card-body">
+						<div class="d-flex no-block align-items-center">
+							<h4 class="font-medium text-inverse">Product Calculation</h4>
+							<div class="ml-auto">
+								<ul class="list-inline">
+									<li class="p-l-0">
+										<h6 class="text-muted"><i class="fa fa-circle mr-2 text-success"></i>2016</h6>
+									</li>
+									<li>
+										<h6 class="text-muted"><i class="fa fa-circle mr-2 text-info"></i>2017</h6>
+									</li>
+								</ul>
+							</div>
+						</div>
 
-		                <div class="total-revenue4" style="height: 350px;"></div>
-	                </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
+						<div class="total-revenue4" style="height: 350px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
 </div>
 
 

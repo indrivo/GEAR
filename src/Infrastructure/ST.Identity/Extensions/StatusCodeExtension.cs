@@ -74,7 +74,7 @@ namespace ST.Identity.Extensions
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static bool ExcludeAssets(string value)
+        public static bool ExcludeAssets(string value)
         {
             return !value.StartsWith("/css")
                 && !value.StartsWith("/lib")

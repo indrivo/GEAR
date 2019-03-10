@@ -4,6 +4,7 @@ using System.Linq;
 using ST.BaseBusinessRepository;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
+using ST.Entities.Extensions;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Entities.ViewModels.Table;
 using ST.Notifications.Abstraction;
@@ -18,6 +19,16 @@ namespace ST.Notifications.Providers
         private readonly DbNotificationConfig _config;
 
         /// <summary>
+        /// Get entity schema
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private static string GetEntitySchema(string entity)
+        {
+            return IoC.Resolve<EntitiesDbContext>().Table.FirstOrDefault(x => x.Name == entity)?.EntityType;
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="config"></param>
@@ -26,12 +37,12 @@ namespace ST.Notifications.Providers
             _config = config;
             _config.Tables = new Dictionary<string, TableConfigViewModel>
             {
-                {Tables.Email, new TableConfigViewModel {Name = Tables.Email, Schema = "indrivo"}},
+                {Tables.Email, new TableConfigViewModel {Name = Tables.Email, Schema = GetEntitySchema(Tables.Email)}},
                 {
                     Tables.UserEmailFolders,
-                    new TableConfigViewModel {Name =  Tables.UserEmailFolders, Schema = "indrivo"}
+                    new TableConfigViewModel {Name =  Tables.UserEmailFolders, Schema = GetEntitySchema(Tables.UserEmailFolders)}
                 },
-                {Tables.EmailUsers, new TableConfigViewModel {Name = Tables.EmailUsers, Schema = "indrivo"}}
+                {Tables.EmailUsers, new TableConfigViewModel {Name = Tables.EmailUsers, Schema = GetEntitySchema(Tables.EmailUsers)}}
             };
         }
 

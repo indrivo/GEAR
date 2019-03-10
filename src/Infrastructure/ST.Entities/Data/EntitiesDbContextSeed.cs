@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,7 +63,14 @@ namespace ST.Entities.Data
                     if (!context.TableFieldGroups.Any())
                     {
                         context.TableFieldGroups.AddRange(entity.TableFieldGroups);
-                        await context.SaveChangesAsync();
+                        try
+                        {
+                            await context.SaveChangesAsync();
+                        }
+                        catch(Exception ex)
+                        {
+                            Debug.WriteLine(ex);
+                        }
                     }
                 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -72,7 +73,7 @@ namespace ST.Identity.Data
                     role.Created = DateTime.Now;
                     role.Changed = DateTime.Now;
                     role.TenantId = DefaultTenantSettings.TenantId;
-                    await roleManager.CreateAsync(role);
+                    await roleManager.CreateAsync(role.Adapt<ApplicationRole>());
                     await context.SaveChangesAsync();
                 }
                 logger.LogInformation("Roles are synchronized with database");
@@ -112,7 +113,7 @@ namespace ST.Identity.Data
                     if (!result.Succeeded) continue;
                     if (entity.ApplicationRoles.Any())
                     {
-                        await userManager.AddToRolesAsync(user, entity.ApplicationRoles.Select(x => x.Name));
+                        await userManager.AddToRolesAsync(user.Adapt<ApplicationUser>(), entity.ApplicationRoles.Select(x => x.Name));
                     }
 
                     if (group != null)

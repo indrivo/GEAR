@@ -80,7 +80,7 @@
 			<div class="card-body">
 				<h3 style="padding: 1em;">@Localizer["installer_welcome"]</h3>
 				<!-- row -->
-				<form asp-action="Setup" class="row">
+				<form id="setupForm" asp-action="Setup" class="row">
 					<div class="col-md-12">
 						<div class="card">
 							<div class="card-body" style="height: 40em;">
@@ -308,7 +308,7 @@
 							<h3 style="margin-left: 2em;">Install system</h3>
 							<div class="col-md-12">
 								<div style="display:none;" class="lds-ring"><div></div><div></div><div></div><div></div></div>
-								<button onsubmit="onSubmit()" style="margin-left: 40em; margin-top: -4em;" type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Install</button>
+								<button id="submitButton" style="margin-left: 40em; margin-top: -4em;" type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Install</button>
 							</div>
 						</div>
 					</div>
@@ -332,10 +332,10 @@
 	<script type="text/javascript" src="~/lib/sweetalert2/dist/sweetalert2.min.js"></script>
 	<script src="~/js/custom.js"></script>
 	<script>
-		function onSubmit() {
-			$(this).toggle();
+		$("#setupForm").on("submit", function () {
+			$("#submitButton").toggle();
 			$(".lds-ring").toggle();
-		}
+		});
 	</script>
 	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 </body>

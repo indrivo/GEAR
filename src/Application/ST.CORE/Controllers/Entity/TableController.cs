@@ -262,7 +262,7 @@ namespace ST.CORE.Controllers.Entity
 		}
 
 		/// <summary>
-		/// Get view for add fields
+		/// Get view for add field
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="type"></param>
@@ -276,20 +276,15 @@ namespace ST.CORE.Controllers.Entity
 			var configurations = new List<FieldConfigViewModel>();
 			foreach (var item in fieldTypeConfig)
 			{
-				configurations.Add(new FieldConfigViewModel
-				{
-					Name = item.Name,
-					Type = item.Type,
-					ConfigId = item.Id,
-					Description = item.Description
-				});
-			}
-
-			var selectList = new List<string>();
-			foreach (var item in entitiesList)
-			{
-				//selectList.Add(item.EntityType + "." + item.Name);
-				selectList.Add(item.Name);
+				if (item.Code != "9999")
+					configurations.Add(new FieldConfigViewModel
+					{
+						Name = item.Name,
+						Type = item.Type,
+						ConfigId = item.Id,
+						Description = item.Description,
+						ConfigCode = item.Code
+					});
 			}
 
 			var model = new CreateTableFieldViewModel
@@ -299,27 +294,55 @@ namespace ST.CORE.Controllers.Entity
 				TableFieldTypeId = fieldType.Id,
 				DataType = fieldType.DataType,
 				Parameter = type,
-				EntitiesList = selectList
+				EntitiesList = entitiesList.Select(x => x.Name).ToList()
 			};
 
 			return View(model);
 		}
 
 		/// <summary>
-		/// Create a field
+		/// Add new field to entity
 		/// </summary>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult AddField(CreateTableFieldViewModel field)
+		public async Task<IActionResult> AddField(CreateTableFieldViewModel field)
 		{
-			var tableName = Context.Table.FirstOrDefault(x => x.Id == field.TableId)?.Name;
-			var schema = Context.Table.FirstOrDefault(x => x.Id == field.TableId)?.EntityType;
-			if (tableName == null) return View();
+			var entitiesList = await Repository.GetAll<TableModel>().ToListAsync();
+			var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
+			var tableName = table?.Name;
+			var schema = table?.EntityType;
+			field.EntitiesList = entitiesList.Select(x => x.Name).ToList();
+			if (table == null)
+			{
+				ModelState.AddModelError(Guid.NewGuid().ToString(), "Table not found");
+				return View(field);
+			}
+			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == field.TableFieldTypeId).Select(item => new FieldConfigViewModel
+			{
+				Name = item.Name,
+				Type = item.Type,
+				ConfigId = item.Id,
+				Description = item.Description,
+				ConfigCode = item.Code
+			}).ToList();
+
+			if (field.Parameter == FieldType.EntityReference)
+			{
+				var foreignSchema = fieldTypeConfig.FirstOrDefault(x => x.ConfigCode == "9999");
+				var foreignTable = Context.Table.FirstOrDefault(x => x.Name == field.Configurations.FirstOrDefault(y => y.Name == FieldConfig.ForeingTable).Value);
+				foreignSchema.Value = foreignTable.EntityType;
+				field.Configurations.Add(foreignSchema);
+			}
+
 			ITablesService sqlService = GetSqlService();
 			field = field.CreateSqlField(ConnectionString);
 			var insertField = sqlService.AddFieldSql(field, tableName, ConnectionString.Item2, true, schema);
 			// Save field model in the dataBase
-			if (!insertField.Result) return View();
+			if (!insertField.Result)
+			{
+				ModelState.AddModelError(string.Empty, "Fail to apply changes to database!");
+				return View(field);
+			}
 			var configValues = new List<TableFieldConfigValues>();
 			var model = new TableModelFields
 			{
@@ -343,8 +366,14 @@ namespace ST.CORE.Controllers.Entity
 			}
 
 			model.TableFieldConfigValues = configValues;
-			var table = Repository.Add<TableModelFields, TableModelFields>(model);
-			return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
+			var req = Repository.Add<TableModelFields, TableModelFields>(model);
+			if (req.IsSuccess)
+				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
+			else
+			{
+				ModelState.AddModelError(string.Empty, "Fail to apply changes to database!");
+				return View(field);
+			}
 		}
 
 		/// <summary>

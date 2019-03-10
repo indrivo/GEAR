@@ -82,7 +82,7 @@ namespace ST.CORE
 			// Uses default files as index.html.
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
-			app.UseStSignalR();
+			app.UseSignalR();
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
@@ -97,7 +97,7 @@ namespace ST.CORE
 			});
 			services.AddConfiguredCors();
 
-			services.AddStLocalization(Configuration);
+			services.AddLocalization(Configuration);
 			services.AddDbContext<EntitiesDbContext>(options =>
 			{
 				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
@@ -150,7 +150,7 @@ namespace ST.CORE
 			//Register dynamic table repository
 			services.RegisterDynamicDataServices();
 			//Add signaler
-			services.AddStSignalR();
+			SignlarExtensions.AddSignalR(services);
 
 			//Run background service
 			services.AddHostedService<HostedTimeService>();
