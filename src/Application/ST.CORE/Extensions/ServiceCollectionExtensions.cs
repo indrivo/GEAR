@@ -7,7 +7,6 @@ using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +30,7 @@ using ST.CORE.Models.LocalizationViewModels;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
 using ST.Entities.Data;
+using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
@@ -42,16 +42,19 @@ using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Extensions;
+using ST.Identity.Services;
+using ST.Identity.Services.Abstractions;
 using ST.Localization;
 using ST.MPass.Gov;
 using ST.Notifications.Abstraction;
-using ST.Notifications.Hubs;
 using ST.Notifications.Providers;
 using ST.Notifications.Services;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Parsers;
 using Swashbuckle.AspNetCore.Swagger;
 using constants = ST.Identity.DbSchemaNameConstants;
+using Identity_IProfileService = IdentityServer4.Services.IProfileService;
+using Identity_ProfileService = ST.CORE.Services.ProfileService;
 
 namespace ST.CORE.Extensions
 {
@@ -122,7 +125,7 @@ namespace ST.CORE.Extensions
 						}
 					};
 				})
-				.Services.AddTransient<IProfileService, ProfileService>();
+				.Services.AddTransient<Identity_IProfileService, Identity_ProfileService>();
 			return services;
 		}
 
@@ -184,6 +187,8 @@ namespace ST.CORE.Extensions
 			services.AddTransient<IPageRender, PageRender>();
 			services.AddTransient<IMenuService, MenuService>();
 			services.AddTransient<IProcessParser, ProcessParser>();
+			services.AddTransient<IOrganizationService, OrganizationService>();
+			services.AddTransient<IProfileService, Identity.Services.ProfileService>();
 			services.UseCustomCacheService(env);
 			return services;
 		}
@@ -218,7 +223,7 @@ namespace ST.CORE.Extensions
 		/// <param name="services"></param>
 		/// <param name="configuration"></param>
 		/// <returns></returns>
-		public static IServiceCollection AddStLocalization(this IServiceCollection services,
+		public static IServiceCollection AddLocalization(this IServiceCollection services,
 			IConfiguration configuration)
 		{
 			services.AddTransient<IStringLocalizer, JsonStringLocalizer>();
@@ -416,16 +421,18 @@ namespace ST.CORE.Extensions
 				.UseStaticFiles()
 				.UseSession()
 				.UseAuthentication()
-				.UseIdentityServer()
-				.UseMvc(routes =>
-				{
-					routes.MapRoute(
-						name: "multi-tenant",
-						template: singleTenantTemplate,
-						defaults: singleTenantTemplate
-						//constraints: new { tenant = new TenantRouteConstraint() }
-						);
-				});
+				.UseIdentityServer();
+
+			app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+					name: "multi-tenant",
+					template: singleTenantTemplate,
+					defaults: singleTenantTemplate
+					//constraints: new { tenant = new TenantRouteConstraint() }
+					);
+			});
+
 			//.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
 			return app;
 		}

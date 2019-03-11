@@ -7,6 +7,8 @@ using ST.Entities.Data;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
 using ST.Organization.Models;
 
 namespace ST.CORE.Controllers
@@ -14,6 +16,14 @@ namespace ST.CORE.Controllers
 	[Authorize]
 	public class BaseController : Controller
 	{
+		/// <summary>
+		/// Inject organization service
+		/// </summary>
+		protected readonly IOrganizationService OrganizationService;
+		/// <summary>
+		/// Inject notifier
+		/// </summary>
+		protected readonly INotify Notify;
 		/// <summary>
 		/// Entity DbContext
 		/// </summary>
@@ -34,12 +44,14 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		protected readonly RoleManager<ApplicationRole> RoleManager;
 
-		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService)
 		{
 			Context = context;
 			ApplicationDbContext = applicationDbContext;
 			UserManager = userManager;
 			RoleManager = roleManager;
+			Notify = notify;
+			OrganizationService = organizationService;
 		}
 
 

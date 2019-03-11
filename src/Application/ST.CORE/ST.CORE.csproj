@@ -23,8 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.0.1" />
-    <PackageReference Include="Castle.Windsor" Version="5.0.0" />
-    <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.3.1" />
     <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
@@ -192,6 +190,9 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\BlockCategory\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Tenant\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Blocks\Edit.cshtml">

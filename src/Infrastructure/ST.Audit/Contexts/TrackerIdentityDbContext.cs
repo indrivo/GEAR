@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
@@ -48,6 +49,28 @@ namespace ST.Audit.Contexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+        }
+
+        /// <summary>
+        /// On update object
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override EntityEntry Update(object entity)
+        {
+            Entry(entity).State = EntityState.Modified;
+            return base.Update(entity);
+        }
+
+        /// <summary>
+        /// On update
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
+        {
+            return base.Update(entity);
         }
     }
 }

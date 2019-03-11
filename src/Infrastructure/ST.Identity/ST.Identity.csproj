@@ -41,4 +41,8 @@
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\ProfileModels\" />
+  </ItemGroup>
+
 </Project>

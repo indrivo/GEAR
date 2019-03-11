@@ -2,7 +2,7 @@
 @model ST.Entities.ViewModels.Table.CreateTableFieldViewModel
 
 @{
-	ViewData["Title"] = "AddField";
+	ViewData["Title"] = "Add Field";
 
 }
 
@@ -60,87 +60,90 @@
 						<hr />
 						<div class="row">
 							<div id="renderedFields" class="col-md-6">
-								@if (Model.Configurations.Any())
+								@if (Model != null && Model.Configurations.Any())
 								{
 									var i = 0;
 									foreach (var item in Model.Configurations)
 									{
-										if (Model.Parameter == FieldType.EntityReference)
+										if (true)
 										{
-											<div class="form-group">
-												<label class="control-label">@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></label>
-												<select asp-for="@item.Value" name="Configurations[@i].Value" asp-items="@(new SelectList(Model.EntitiesList))" class="form-control"></select>
+											if (Model.Parameter == FieldType.EntityReference)
+											{
+												<div class="form-group">
+													<label class="control-label">@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></label>
+													<select asp-for="@item.Value" name="Configurations[@i].Value" asp-items="@(new SelectList(Model.EntitiesList))" class="form-control"></select>
+													<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
+													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+												</div>
+											}
+											else if (Model.Parameter == FieldType.File && item.Name == "ForeingTable")
+											{
 												<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
 												<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
-											</div>
-										}
-										else if (Model.Parameter == FieldType.File && item.Name == "ForeingTable")
-										{
-											<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
-											<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
-										}
-										else
-										{
-											<div class="form-group">
-												<label class="control-label">@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></label>
-												@switch (item.Type)
-												{
-													case "int":
-													case "decimal":
+											}
+											else
+											{
+												<div class="form-group">
+													<label class="control-label">@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></label>
+													@switch (item.Type)
+													{
+														case "int":
+														case "decimal":
 
-														var value = string.Empty;
-														switch (item.Name)
-														{
-															case "Scale":
-																{
-																	value = "2";
-																}
-																break;
-															case "Precision":
-																{
-																	value = "18";
-																}
-																break;
-															default:
-																break;
-														}
-														<input name="Configurations[@i].Value" value="@value" type="number" class="form-control" />
+															var value = string.Empty;
+															switch (item.Name)
+															{
+																case "Scale":
+																	{
+																		value = "2";
+																	}
+																	break;
+																case "Precision":
+																	{
+																		value = "18";
+																	}
+																	break;
+																default:
+																	break;
+															}
+															<input name="Configurations[@i].Value" value="@value" type="number" class="form-control" />
 
-														break;
-													case "string":
-														<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
-														break;
-													case "bool":
-														<div class="form-group">
-															<div class="checkbox checkbox-success">
-																<input type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked"/>
-																<label for="@Model.AllowNull">Set default value true or false.</label>
+															break;
+														case "string":
+															<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
+															break;
+														case "bool":
+															<div class="form-group">
+																<div class="checkbox checkbox-success">
+																	<input type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked" />
+																	<label for="@Model.AllowNull">Set default value true or false.</label>
+																</div>
+
 															</div>
+															break;
+														case "char":
+															<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="1" class="form-control" />
+															break;
+														case "time":
+														case "datetime":
+														case "date":
+															<div class="form-group">
+																<div class="checkbox checkbox-success">
+																	<input type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked" />
+																	<label for="@Model.AllowNull">Set default value current date or time.</label>
+																</div>
 
-														</div>
-														break;
-													case "char":
-														<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="1" class="form-control" />
-														break;
-													case "time":
-													case "datetime":
-													case "date":
-														<div class="form-group">
-															<div class="checkbox checkbox-success">
-																<input type="checkbox" name="Configurations[@i].Value" value="@item.Value"  class="form-control" checked="checked"/>
-																<label for="@Model.AllowNull">Set default value current date or time.</label>
 															</div>
-					
-														</div>
-														break;
-													default:
-														<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
-														break;
+															break;
+														default:
+															<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
+															break;
 
-												}
-												<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
-												<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
-											</div>
+													}
+													<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
+													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+												</div>
+											}
 										}
 										i++;
 									}

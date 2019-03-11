@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.CORE.Extensions;
 using ST.CORE.Models.NotificationsViewModels;
+using ST.Entities.Extensions;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstraction;
@@ -22,14 +23,14 @@ namespace ST.CORE.Controllers.Messaging
 	public class EmailController : Controller
 	{
 		private UserManager<ApplicationUser> UserManager { get; }
-		
+
 		private ILogger<EmailController> Logger { get; }
 
 		private INotificationHub NotificationHub { get; }
 
 		private readonly IHubContext<NotificationsHub> _hubContext;
 
-		private static Notificator Notificator1 { get; } = IoC.Resolve<Notificator>();
+		private static Notificator Notificator { get; } = IoC.Resolve<Notificator>();
 
 		/// <summary>
 		/// Constructor
@@ -53,7 +54,7 @@ namespace ST.CORE.Controllers.Messaging
 		/// <returns></returns>
 		public async Task<IActionResult> Index()
 		{
-			await _hubContext.Clients.All.SendCoreAsync(SignalrSendMethods.SendClientNotification, new []{"test"});
+			await _hubContext.Clients.All.SendCoreAsync(SignalrSendMethods.SendClientNotification, new[] { "test" });
 			return View();
 		}
 
@@ -108,7 +109,7 @@ namespace ST.CORE.Controllers.Messaging
 			};
 			NotificationHub.SentEmailNotification(webNotification);
 
-			var response = Notificator1.Create(notificationModel);
+			var response = Notificator.Create(notificationModel);
 			if (response.IsSuccess)
 				return RedirectToAction("Index", "Email", new { page = 1, perPage = 10, mode = true });
 			foreach (var error in response.Errors)
@@ -128,7 +129,7 @@ namespace ST.CORE.Controllers.Messaging
 		public async Task<JsonResult> GetFolders()
 		{
 			var userCur = await UserManager.GetUserAsync(HttpContext.User);
-			var folders = Notificator1.GetUserFolders(userCur.Id, true);
+			var folders = Notificator.GetUserFolders(userCur.Id, true);
 			return Json(folders);
 		}
 
@@ -142,7 +143,7 @@ namespace ST.CORE.Controllers.Messaging
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		public JsonResult MoveToFolder([Required] Guid folderId, [Required] Guid notificationId)
 		{
-			var response = Notificator1.ChangeFolder(new EntityViewModel
+			var response = Notificator.ChangeFolder(new EntityViewModel
 			{
 				Values = new List<Dictionary<string, object>>
 				{
@@ -165,7 +166,7 @@ namespace ST.CORE.Controllers.Messaging
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		public JsonResult MarkAsRead([Required] Guid notificationId)
 		{
-			var response = Notificator1.MarkAsRead(new List<Guid> { notificationId });
+			var response = Notificator.MarkAsRead(new List<Guid> { notificationId });
 			return Json(response);
 		}
 
@@ -179,7 +180,7 @@ namespace ST.CORE.Controllers.Messaging
 		public async Task<JsonResult> GetListByFolderId([Required] Guid folderId, [Required] int page)
 		{
 			var userCur = await UserManager.GetUserAsync(HttpContext.User);
-			var response = Notificator1.ListNotificationsByFolder(new EntityViewModel
+			var response = Notificator.ListNotificationsByFolder(new EntityViewModel
 			{
 				Fields = new List<EntityFieldsViewModel>
 				{
@@ -223,7 +224,7 @@ namespace ST.CORE.Controllers.Messaging
 		public async Task<JsonResult> GetUnreadListByFolderId([Required] Guid folderId)
 		{
 			var userCur = await UserManager.GetUserAsync(HttpContext.User);
-			var response = Notificator1.ListNotificationsByFolder(new EntityViewModel
+			var response = Notificator.ListNotificationsByFolder(new EntityViewModel
 			{
 				Fields = new List<EntityFieldsViewModel>
 				{
@@ -266,7 +267,7 @@ namespace ST.CORE.Controllers.Messaging
 		{
 			var count = 0;
 			var userCur = await UserManager.GetUserAsync(HttpContext.User);
-			var response = Notificator1.ListNotificationsByFolder(new EntityViewModel
+			var response = Notificator.ListNotificationsByFolder(new EntityViewModel
 			{
 				Fields = new List<EntityFieldsViewModel>
 				{
@@ -302,7 +303,7 @@ namespace ST.CORE.Controllers.Messaging
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		public JsonResult RestoreFromTrash([Required] Guid notificationId)
 		{
-			var response = Notificator1.RestoreFromTrash(new List<Guid> { notificationId });
+			var response = Notificator.RestoreFromTrash(new List<Guid> { notificationId });
 			return Json(response);
 		}
 
@@ -314,7 +315,7 @@ namespace ST.CORE.Controllers.Messaging
 		public IActionResult GetMessageById(Guid id)
 		{
 			ViewBag.NotificationId = id;
-			var message = Notificator1.GetNotificationById(id);
+			var message = Notificator.GetNotificationById(id);
 			if (message.IsSuccess)
 			{
 				return View(message);

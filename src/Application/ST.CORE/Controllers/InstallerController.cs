@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -8,11 +9,15 @@ using Newtonsoft.Json;
 using ST.CORE.Installation;
 using ST.CORE.Models.InstallerModels;
 using ST.Entities.Controls.Querry;
+using ST.Entities.Models.Notifications;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
+using ST.Identity.CacheModels;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
 using ST.Organization;
 using ST.Organization.Models;
 using ST.Organization.Utils;
@@ -48,13 +53,32 @@ namespace ST.CORE.Controllers
 		private readonly IPermissionService _permissionService;
 
 		/// <summary>
+		/// Inject cache service
+		/// </summary>
+		private readonly ICacheService _cacheService;
+
+		/// <summary>
+		/// Inject notifier
+		/// </summary>
+		private readonly INotify _notify;
+
+		/// <summary>
+		/// Is system configured
+		/// </summary>
+		private readonly bool IsConfigured;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="hostingEnvironment"></param>
+		/// <param name="localService"></param>
+		/// <param name="permissionService"></param>
 		/// <param name="applicationDbContext"></param>
 		/// <param name="ldapUserManager"></param>
 		/// <param name="signInManager"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, LdapUserManager ldapUserManager, SignInManager<ApplicationUser> signInManager)
+		/// <param name="notify"></param>
+		/// <param name="cacheService"></param>
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, LdapUserManager ldapUserManager, SignInManager<ApplicationUser> signInManager, INotify notify, ICacheService cacheService)
 		{
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
@@ -62,6 +86,9 @@ namespace ST.CORE.Controllers
 			_signInManager = signInManager;
 			_localService = localService;
 			_permissionService = permissionService;
+			_cacheService = cacheService;
+			_notify = notify;
+			IsConfigured = Application.IsConfigured(_hostingEnvironment);
 		}
 
 		/// <summary>
@@ -71,6 +98,7 @@ namespace ST.CORE.Controllers
 		[HttpGet]
 		public IActionResult Setup()
 		{
+			if (IsConfigured) return RedirectToAction("Index", "Home");
 			var model = new SetupModel();
 			var settings = Application.Settings(_hostingEnvironment);
 			if (settings != null)
@@ -143,7 +171,7 @@ namespace ST.CORE.Controllers
 				return View(model);
 			}
 			settings.IsConfigurated = true;
-			var result = JsonConvert.SerializeObject(settings);
+			var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
 			await System.IO.File.WriteAllTextAsync(Application.AppSettingsFilepath(_hostingEnvironment), result);
 			Application.InitMigrations(new string[] { });
 
@@ -168,22 +196,44 @@ namespace ST.CORE.Controllers
 				Author = "System"
 			};
 
+			//Register new tenant to cache
+			await _cacheService.Set($"_tenant_{tenant.MachineName}", new TenantSettings
+			{
+				AllowAccess = true,
+				TenantId = tenant.Id,
+				TenantName = tenant.MachineName
+			});
+
 			//Set user settings
 			var superUser = await _applicationDbContext.Users.FirstOrDefaultAsync();
-			superUser.UserName = model.SysAdminProfile.UserName;
-			superUser.Email = model.SysAdminProfile.Email;
-			var hasher = new PasswordHasher<ApplicationUser>();
-			var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);
-			superUser.PasswordHash = hashedPassword;
-			_applicationDbContext.Update(superUser);
+			if (superUser != null)
+			{
+				superUser.UserName = model.SysAdminProfile.UserName;
+				superUser.Email = model.SysAdminProfile.Email;
+				var hasher = new PasswordHasher<ApplicationUser>();
+				var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);
+				superUser.PasswordHash = hashedPassword;
+				await _signInManager.UserManager.UpdateAsync(superUser);
+			}
 			await _applicationDbContext.Tenants.AddAsync(tenant);
+
+			//Update super user information
 			await _applicationDbContext.SaveChangesAsync();
 
+			//For core change name as installer change
 			_localService.SetAppName("core", model.SiteName);
 
+			//Create dynamic tables
 			tenant.CreateDynamicTables();
 
 			await Application.SeedDynamicDataAsync();
+			//Send welcome message to user
+			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id) }, new SystemNotifications
+			{
+				Content = $"Welcome to Gear Bpm {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
+				Subject = "Info",
+				NotificationTypeId = NotificationType.Info
+			});
 			//sign in user
 			await _signInManager.SignInAsync(superUser, true);
 			return RedirectToAction("Index", "Home");
@@ -195,6 +245,7 @@ namespace ST.CORE.Controllers
 		/// <returns></returns>
 		public IActionResult Index()
 		{
+			if (IsConfigured) return RedirectToAction("Index", "Home");
 			return View();
 		}
 	}

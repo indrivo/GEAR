@@ -1,28 +1,10 @@
 ﻿{
   "EntityTypes": [
     {
-      "Description": "System entities type",
-      "IsSystem": true,
-      "MachineName": "System",
-      "Name": "system"
-    },
-    {
       "Description": "Profile entities type",
       "MachineName": "Profile",
       "Name": "profile",
       "IsSystem": true
-    },
-    {
-      "Description": "Classifier entities type",
-      "IsSystem": true,
-      "MachineName": "Classifier",
-      "Name": "classifier"
-    },
-    {
-      "Description": "Project management entities type",
-      "IsSystem": true,
-      "MachineName": "PM",
-      "Name": "pm"
     }
   ]
 }

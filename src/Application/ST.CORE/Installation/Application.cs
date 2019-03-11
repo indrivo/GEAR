@@ -13,6 +13,7 @@ using ST.CORE.Extensions;
 using ST.CORE.Extensions.Installer;
 using ST.CORE.Models.InstallerModels;
 using ST.Entities.Data;
+using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
@@ -164,7 +165,7 @@ namespace ST.CORE.Installation
 			{
 				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
 				{
-					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, schemaName);
+					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, ent.Schema);
 				}
 			}
 		}

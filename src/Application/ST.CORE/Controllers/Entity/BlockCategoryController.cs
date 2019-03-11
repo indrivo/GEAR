@@ -12,24 +12,17 @@ using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers.Entity
 {
 	public class BlockCategoryController : BaseController
 	{
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="applicationDbContext"></param>
-		/// <param name="userManager"></param>
-		/// <param name="roleManager"></param>
-		public BlockCategoryController(EntitiesDbContext context,
-									   ApplicationDbContext applicationDbContext,
-									   UserManager<ApplicationUser> userManager,
-									   RoleManager<ApplicationRole> roleManager) : base(context, applicationDbContext, userManager, roleManager)
+		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService)
 		{
 		}
+
 		/// <summary>
 		/// Load page types with ajax
 		/// </summary>
@@ -83,6 +76,7 @@ namespace ST.CORE.Controllers.Entity
 			{
 				Context.BlockCategories.Add(model);
 				Context.SaveChanges();
+
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)

@@ -473,7 +473,6 @@ namespace ST.CORE.Controllers.Identity
 				return NotFound();
 			}
 
-
 			if (!ModelState.IsValid)
 			{
 				var applicationUser = await Context.Users.SingleOrDefaultAsync(m => m.Id == id);

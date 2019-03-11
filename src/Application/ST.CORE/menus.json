@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Soft-Tehnica
+ * Copyright © 2019 Indrivo
  *
  * This file is for seed menu items
  *
@@ -17,13 +17,8 @@
         "Translate": null,
         "Icon": null,
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "ParentMenuItemId": null,
-        "Id": "11e3b89d-2e51-4857-98e6-352ead5a201f",
+
         "Author": "system",
-        "Created": "2019-01-29T07:59:12.6160761Z",
-        "ModifiedBy": null,
-        "Changed": "2019-01-29T07:59:12.6160762Z",
-        "IsDeleted": false,
         "AllowedRoles": "Administrator#"
       }
     ],
@@ -32,13 +27,8 @@
     "Translate": "apps",
     "Icon": "mdi mdi-bullseye",
     "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-    "ParentMenuItemId": null,
-    "Id": "2ffb7d0a-14a9-4e1c-9b36-37ff0ff02d93",
+
     "Author": "system",
-    "Created": "2019-01-29T07:59:12.6156875Z",
-    "ModifiedBy": null,
-    "Changed": "2019-01-29T07:59:12.6156876Z",
-    "IsDeleted": false,
     "AllowedRoles": "Administrator#"
   },
   {
@@ -52,13 +42,7 @@
             "Translate": "apps_management",
             "Icon": null,
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "40862416-273c-4c1d-8e65-1c1d73db0e08",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162506Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162507Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           }
         ],
@@ -67,13 +51,7 @@
         "Translate": null,
         "Icon": "mdi mdi-apple",
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "ParentMenuItemId": null,
-        "Id": "9c90e6ce-2a16-4a94-a8fd-03197e186d92",
         "Author": "system",
-        "Created": "2019-01-29T07:59:12.616249Z",
-        "ModifiedBy": null,
-        "Changed": "2019-01-29T07:59:12.6162491Z",
-        "IsDeleted": false,
         "AllowedRoles": "Administrator#"
       },
       {
@@ -85,13 +63,7 @@
             "Translate": "",
             "Icon": null,
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "ada88ab9-5f73-4903-968c-ba3cd4bcb3c0",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162538Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162538Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           },
           {
@@ -101,13 +73,17 @@
             "Translate": "",
             "Icon": null,
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "267267ca-85ee-4c77-a6a4-e18fe5e60011",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162551Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162552Z",
-            "IsDeleted": false,
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "SubItems": null,
+            "Name": "Tenants",
+            "Href": "/Tenant",
+            "Translate": "",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
             "AllowedRoles": "Administrator#"
           },
           {
@@ -117,13 +93,7 @@
             "Translate": "",
             "Icon": null,
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "a43c2fc5-0a96-4a33-83ce-7046dfb797fb",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162563Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162563Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           },
           {
@@ -133,13 +103,7 @@
             "Translate": "",
             "Icon": null,
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
             "Id": "63fa0f20-39db-4506-8e18-4e87458ee591",
-            "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162574Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162575Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           }
         ],
@@ -148,13 +112,7 @@
         "Translate": null,
         "Icon": "mdi mdi-alert",
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "ParentMenuItemId": null,
-        "Id": "76853de1-8f35-458a-9c61-fe0be3f42d32",
         "Author": "system",
-        "Created": "2019-01-29T07:59:12.6162526Z",
-        "ModifiedBy": null,
-        "Changed": "2019-01-29T07:59:12.6162526Z",
-        "IsDeleted": false,
         "AllowedRoles": "Administrator#"
       },
       {
@@ -168,13 +126,7 @@
                 "Translate": "table",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "bfd36beb-1fd9-4494-b157-f9e92466b6d2",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162613Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162614Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -184,13 +136,7 @@
                 "Translate": "entity_type",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "c7504997-d121-4a7b-ae27-b594e121abf2",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162624Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162625Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -200,13 +146,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "dcc2ea92-3b59-47f1-bec7-e62ed5d2a14a",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162636Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162636Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               }
             ],
@@ -215,13 +155,7 @@
             "Translate": null,
             "Icon": "mdi mdi-table",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "04b5c76e-caab-419c-b2b5-a18473b77f9c",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162601Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162602Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           },
           {
@@ -233,13 +167,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "81790906-939d-4933-995d-affc96b473af",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162656Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162657Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -249,13 +177,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "6053752d-cde8-49d4-ad45-cf03fd1a32b2",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162669Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162669Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -265,13 +187,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "eb73dc59-ff17-4ae0-b29e-3ec25c8f08bb",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162684Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162684Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -281,13 +197,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "08471238-0ae0-4092-818c-f42861ee7acf",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162694Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162694Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -297,13 +207,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "c50c696f-660f-400f-9adf-74d5f96d3b97",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162704Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162704Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -313,13 +217,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "ff8e58f3-f647-4569-a84f-64621259381c",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162718Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162718Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -329,13 +227,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "273e960a-4092-4171-a301-57f1ca72762e",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162727Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162728Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               }
             ],
@@ -344,13 +236,7 @@
             "Translate": null,
             "Icon": "mdi mdi-file",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "dc0f8bcb-c665-4ad2-9518-b13870e019c3",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162646Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162647Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           }
         ],
@@ -359,13 +245,7 @@
         "Translate": null,
         "Icon": "mdi mdi-calendar",
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "ParentMenuItemId": null,
-        "Id": "feaf41b6-f0a0-490d-a61d-a79709282d61",
         "Author": "system",
-        "Created": "2019-01-29T07:59:12.6162589Z",
-        "ModifiedBy": null,
-        "Changed": "2019-01-29T07:59:12.616259Z",
-        "IsDeleted": false,
         "AllowedRoles": "Administrator#"
       },
       {
@@ -379,13 +259,7 @@
                 "Translate": "languages",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "4b1fd136-3a4a-4f6f-97d6-f072ade2966f",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162761Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162762Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               },
               {
@@ -395,13 +269,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "bde1789e-fe3b-4981-b2cb-d53c0d33e24f",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162881Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162881Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               }
             ],
@@ -410,13 +278,7 @@
             "Translate": "localization",
             "Icon": "mdi mdi-transcribe",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "736668c5-4171-4c5c-9756-9be376144662",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162751Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162752Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           },
           {
@@ -428,13 +290,7 @@
                 "Translate": "",
                 "Icon": null,
                 "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "50213fc1-19f4-444c-8b1a-91a7a4a2c396",
                 "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162906Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162906Z",
-                "IsDeleted": false,
                 "AllowedRoles": "Administrator#"
               }
             ],
@@ -443,13 +299,7 @@
             "Translate": "",
             "Icon": "mdi mdi-transcribe",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "bbf447e9-feaf-41d6-a32c-9c5043264059",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162896Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162896Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           },
           {
@@ -459,13 +309,7 @@
             "Translate": "",
             "Icon": "mdi mdi-dice-2",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "e819c82f-e82f-4c00-a069-a1e0a3cafbda",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162918Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162918Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           },
           {
@@ -475,13 +319,7 @@
             "Translate": "",
             "Icon": "mdi mdi-dice-2",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "7693a349-cc5d-4eb3-927d-6d967eaa2b45",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162918Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162918Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           }
         ],
@@ -490,48 +328,19 @@
         "Translate": null,
         "Icon": "mdi mdi-contain",
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "ParentMenuItemId": null,
-        "Id": "50fc3586-264c-4621-9460-e6c0873c14b9",
         "Author": "system",
-        "Created": "2019-01-29T07:59:12.6162739Z",
-        "ModifiedBy": null,
-        "Changed": "2019-01-29T07:59:12.6162739Z",
-        "IsDeleted": false,
         "AllowedRoles": "Administrator#"
       },
       {
         "SubItems": [
           {
-            "SubItems": [
-              {
-                "SubItems": null,
-                "Name": "Audit CORE",
-                "Href": "/Audit",
-                "Translate": "",
-                "Icon": null,
-                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "ParentMenuItemId": null,
-                "Id": "1526c3eb-8a57-4975-aaf5-7f35582444c0",
-                "Author": "system",
-                "Created": "2019-01-29T07:59:12.6162951Z",
-                "ModifiedBy": null,
-                "Changed": "2019-01-29T07:59:12.6162951Z",
-                "IsDeleted": false,
-                "AllowedRoles": "Administrator#"
-              }
-            ],
+            "SubItems": null,
             "Name": "Audit",
-            "Href": null,
+            "Href": "/Audit",
             "Translate": "",
             "Icon": "mdi mdi-transcribe",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-            "ParentMenuItemId": null,
-            "Id": "848a7de4-a13b-4fed-af22-cb252fe47845",
             "Author": "system",
-            "Created": "2019-01-29T07:59:12.6162941Z",
-            "ModifiedBy": null,
-            "Changed": "2019-01-29T07:59:12.6162942Z",
-            "IsDeleted": false,
             "AllowedRoles": "Administrator#"
           }
         ],
@@ -540,13 +349,7 @@
         "Translate": null,
         "Icon": "mdi mdi-file-document",
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "ParentMenuItemId": null,
-        "Id": "8900312b-e5e8-4fb6-a40b-bea23335766d",
         "Author": "system",
-        "Created": "2019-01-29T07:59:12.6162931Z",
-        "ModifiedBy": null,
-        "Changed": "2019-01-29T07:59:12.6162931Z",
-        "IsDeleted": false,
         "AllowedRoles": "Administrator#"
       }
     ],
@@ -555,13 +358,7 @@
     "Translate": null,
     "Icon": "mdi mdi-alert",
     "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-    "ParentMenuItemId": null,
-    "Id": "5fc78c86-ea70-4d77-bbc2-e0306b3027c8",
     "Author": "system",
-    "Created": "2019-01-29T07:59:12.6162461Z",
-    "ModifiedBy": null,
-    "Changed": "2019-01-29T07:59:12.6162462Z",
-    "IsDeleted": false,
     "AllowedRoles": "Administrator#"
   }
 ]

@@ -1,45 +1,67 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
+using ST.CORE.Installation;
 using ST.CORE.Models;
+using ST.Entities.Data;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Organization.Models;
+using ST.Organization.Utils;
+using ST.Organization.ViewModels;
 
 namespace ST.CORE.Controllers.Identity
 {
 	/// <inheritdoc />
 	/// <summary>
-	/// Schema manipulation
+	/// Tenant manipulation
 	/// </summary>
 	[Authorize]
 	public class TenantController : Controller
 	{
+		/// <summary>
+		/// Inject context
+		/// </summary>
 		private ApplicationDbContext Context { get; }
 
+		private readonly EntitiesDbContext _entitiesDbContext;
+
+		/// <summary>
+		/// Inject Bussiness repository
+		/// </summary>
 		private IBaseBusinessRepository<ApplicationDbContext> Repository { get; }
+
 		/// <summary>
 		/// Inject logger
 		/// </summary>
 		private readonly ILogger<TenantController> _logger;
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="repository"></param>
+		/// <param name="configuration"></param>
+		/// <param name="context"></param>
+		/// <param name="logger"></param>
 		public TenantController(IBaseBusinessRepository<ApplicationDbContext> repository, IConfiguration configuration,
-			ApplicationDbContext context, ILogger<TenantController> logger)
+			ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext)
 		{
 			Repository = repository;
 			Context = context;
 			_logger = logger;
+			_entitiesDbContext = entitiesDbContext;
 		}
 
 		/// <summary>
-		/// List with schemas
+		/// List with tenants
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
@@ -49,6 +71,15 @@ namespace ST.CORE.Controllers.Identity
 			return View();
 		}
 
+		/// <summary>
+		/// Get ordered list
+		/// </summary>
+		/// <param name="search"></param>
+		/// <param name="sortOrder"></param>
+		/// <param name="start"></param>
+		/// <param name="length"></param>
+		/// <param name="totalCount"></param>
+		/// <returns></returns>
 		private List<Tenant> GetOrderFiltered(string search, string sortOrder, int start, int length,
 			out int totalCount)
 		{
@@ -107,6 +138,11 @@ namespace ST.CORE.Controllers.Identity
 			return result.ToList();
 		}
 
+		/// <summary>
+		/// Get list
+		/// </summary>
+		/// <param name="param"></param>
+		/// <returns></returns>
 		[HttpPost]
 		public JsonResult OrderList(DTParameters param)
 		{
@@ -126,7 +162,7 @@ namespace ST.CORE.Controllers.Identity
 		}
 
 		/// <summary>
-		/// View for create a schema
+		/// View for create a tenant
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
@@ -134,18 +170,47 @@ namespace ST.CORE.Controllers.Identity
 		public IActionResult Create() => View();
 
 		/// <summary>
-		/// Add new schema
+		/// Add new tenant
 		/// </summary>
-		/// <param name="model"></param>
+		/// <param name="data"></param>
 		/// <returns></returns>
 		[HttpPost]
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
-		public IActionResult Create(Tenant model)
+		public IActionResult Create(CreateTenantViewModel data)
 		{
-			if (!ModelState.IsValid) return View(model);
+			if (!ModelState.IsValid) return View(data);
+			var tenantMachineName = TenantUtils.GetTenantMachineName(data.Name);
+			if (string.IsNullOrEmpty(tenantMachineName))
+			{
+				ModelState.AddModelError(string.Empty, "Invalid name for tenant");
+				return View(data);
+			}
+			var model = data.Adapt<Tenant>();
+			model.MachineName = tenantMachineName;
+			var check = Context.Tenants.FirstOrDefault(x => x.MachineName == tenantMachineName);
+			if (check != null)
+			{
+				ModelState.AddModelError(string.Empty, "Tenant exists");
+				return View(data);
+			}
 			var response = Repository.Add<Tenant, Tenant>(model);
 			if (response.IsSuccess)
 			{
+				if (!_entitiesDbContext.EntityTypes.Any(x => x.MachineName == tenantMachineName))
+				{
+					_entitiesDbContext.EntityTypes.Add(new Entities.Models.Tables.EntityType
+					{
+						MachineName = tenantMachineName,
+						Author = "System",
+						Created = DateTime.Now,
+						Changed = DateTime.Now,
+						Name = tenantMachineName,
+						Description = $"Generated schema on created {data.Name} tenant"
+					});
+					_entitiesDbContext.SaveChanges();
+				}
+				model.CreateDynamicTables();
+
 				return RedirectToAction(nameof(Index), "Tenant");
 			}
 			else
@@ -155,12 +220,12 @@ namespace ST.CORE.Controllers.Identity
 					ModelState.AddModelError(e.Key, e.Message);
 				}
 
-				return View(model);
+				return View(data);
 			}
 		}
 
 		/// <summary>
-		/// Get schema by id
+		/// Get tenant by id
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
@@ -178,7 +243,7 @@ namespace ST.CORE.Controllers.Identity
 		}
 
 		/// <summary>
-		/// Update schema model
+		/// Update tenant model
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -223,7 +288,6 @@ namespace ST.CORE.Controllers.Identity
 			{
 				return Json(new { success = false, message = "Tenant not found" });
 			}
-
 
 			try
 			{

@@ -52,6 +52,7 @@ namespace ST.Procesess.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    DatabaseContextName = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(nullable: true),
                     TrackEventType = table.Column<int>(nullable: false),
                     RecordId = table.Column<Guid>(nullable: false),
@@ -250,7 +251,7 @@ namespace ST.Procesess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProcessInstanceHistories_ProcessTransitions_ProcessTransitionId",
+                        name: "FK_ProcessInstanceHistories_ProcessTransitions_ProcessTransiti~",
                         column: x => x.ProcessTransitionId,
                         principalSchema: "Processes",
                         principalTable: "ProcessTransitions",

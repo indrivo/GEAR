@@ -2,7 +2,7 @@
   "SynchronizeTableViewModels": [
     {
       "Name": "Email",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for email",
       "Fields": [
         {
@@ -38,7 +38,7 @@
     },
     {
       "Name": "UserEmailFolders",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for User email folders",
       "Fields": [
         {
@@ -108,7 +108,7 @@
     },
     {
       "Name": "EmailUsers",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for email users",
       "Fields": [
         {
@@ -186,7 +186,7 @@
     },
     {
       "Name": "Files",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for files",
       "Fields": [
         {
@@ -286,7 +286,7 @@
     },
     {
       "Name": "Menu",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for menus",
       "Fields": [
         {
@@ -321,7 +321,7 @@
     },
     {
       "Name": "MenuItem",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for menu item",
       "Fields": [
         {
@@ -436,7 +436,7 @@
     },
     {
       "Name": "NotificationTypes",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for notification types",
       "Fields": [
         {
@@ -471,7 +471,7 @@
     },
     {
       "Name": "SystemNotifications",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Entity for notifications",
       "Fields": [
         {
@@ -539,13 +539,13 @@
     },
     {
       "Name": "FileReferences",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "File reference for entity",
       "Fields": []
     },
     {
       "Name": "EntityFiles",
-      "Schema": "systemcore",
+      "Schema": "systemcore",  //override by installer 
       "Description": "Related entity for files and entities",
       "Fields": [
         {
