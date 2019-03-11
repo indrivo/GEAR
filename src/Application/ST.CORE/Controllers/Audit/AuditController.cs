@@ -6,7 +6,9 @@ using ST.Audit.Models;
 using ST.CORE.Attributes;
 using ST.CORE.Models;
 using ST.CORE.Models.AuditViewModels;
+using ST.Entities.Data;
 using ST.Identity.Data;
+using ST.Procesess.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,15 +24,26 @@ namespace ST.CORE.Controllers.Audit
 		/// </summary>
 		private readonly ApplicationDbContext _context;
 
+		/// <summary>
+		/// Inject entities db context
+		/// </summary>
+		private readonly EntitiesDbContext _entitiesDb;
+
+		/// <summary>
+		/// Inject processes db context
+		/// </summary>
+		private readonly ProcessesDbContext _processesDbContext;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="hrmDbContext"></param>
-		public AuditController(ApplicationDbContext context)
+		public AuditController(ApplicationDbContext context, EntitiesDbContext entitiesDb, ProcessesDbContext processesDbContext)
 		{
 			_context = context;
+			_entitiesDb = entitiesDb;
+			_processesDbContext = processesDbContext;
 		}
 
 		/// <summary>
@@ -61,10 +74,17 @@ namespace ST.CORE.Controllers.Audit
 		/// <param name="totalCount"></param>
 		/// <param name="context"></param>
 		/// <returns></returns>
-		private List<TrackAudit> GetTrackAuditFiltered<T>(string search, string sortOrder, int start, int length,
-			out int totalCount, T context) where T : ITrackerDbContext
+		private List<TrackAudit> GetTrackAuditFiltered(string search, string sortOrder, int start, int length,
+			out int totalCount)
 		{
-			var data = context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var data = new List<TrackAudit>();
+			var coreData = _context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var processData = _processesDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var entityData = _entitiesDb.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+
+			data.AddRange(coreData);
+			data.AddRange(processData);
+			data.AddRange(entityData);
 
 			var result = data.Where(x =>
 				search == null || x.Author != null && x.Author.ToLower().Contains(search.ToLower()) ||
@@ -143,7 +163,7 @@ namespace ST.CORE.Controllers.Audit
 		public JsonResult TrackAuditList(DTParameters param)
 		{
 			var filtered = GetTrackAuditFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
-				out var totalCount, _context);
+				out var totalCount);
 			var trackAuditsList = filtered.Select(o => new TrackAuditsListViewModel
 			{
 				Id = o.Id,
