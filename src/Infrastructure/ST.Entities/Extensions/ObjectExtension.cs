@@ -6,7 +6,6 @@ using Mapster;
 using ST.BaseBusinessRepository;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services;
-using ST.Entities.ViewModels.Table;
 
 namespace ST.Entities.Extensions
 {

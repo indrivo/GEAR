@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
@@ -40,5 +42,27 @@ namespace ST.Audit.Contexts
             base.OnModelCreating(builder);
         }
 
+        /// <summary>
+        /// On update object
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override EntityEntry Update(object entity)
+        {
+            Entry(entity).State = EntityState.Modified;
+            return base.Update(entity);
+        }
+
+        /// <summary>
+        /// On update
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
+        {
+            Entry(entity).State = EntityState.Modified;
+            return base.Update(entity);
+        }
     }
 }

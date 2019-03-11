@@ -14,6 +14,209 @@
       "ClientId": "1",
       "Author": "System"
     },
+    /*ISODMS Roles*/
+
+    // 1)  Super admin - Administrator al platformei cu capacitați de administrare peste toate companiile definite
+    {
+      "Name": "Super admin",
+      "IsNoEditable": true,
+      "Title": "The system administrator role.",
+      "ClientId": "1",
+      "Author": "System"
+    },
+    // 2)  Administrator distribuitor - Administrator alocat unui distribuitor cu capacitați de administrare a tuturor companiilor create de ele
+    {
+      "Name": "Administrator distribuitor",
+      "IsNoEditable": true,
+      "Title": "The system administrator role.",
+      "ClientId": "1",
+      "Author": "System"
+    },
+    // 3)  Company Administrator  - Administrator al fiecărei companii cu drepturi de administrare deplina doar pe compania sa
+    {
+      "Name": "Company Administrator",
+      "IsNoEditable": true,
+      "Title": "The company administrator role.",
+      "ClientId": "1",
+      "Author": "System",
+      "Permissions": [
+        "Core_RequirementCreate",
+        "Core_RequirementUpdate",
+        "Core_RequirementRead",
+        "Core_ObjectiveCreate",
+        "Core_ObjectiveUpdate",
+        "Core_ObjectiveRead",
+        "Core_AssetCreate",
+        "Core_AssetUpdate",
+        "Core_AssetRead",
+        "Core_RiskCreate",
+        "Core_RiskAssetUpdate",
+        "Core_RiskAssetRead",
+        "Core_CheckCreate",
+        "Core_CheckUpdate",
+        "Core_CheckRead",
+        "Core_KPICreate",
+        "Core_KPIUpdate",
+        "Core_KPIRead",
+        "Core_InternalAuditCreate",
+        "Core_InternalAuditUpdate",
+        "Core_InternalAuditRead",
+        "Core_ExternalAuditCreate",
+        "Core_ExternalAuditUpdate",
+        "Core_ExternalAuditRead",
+        "Core_ManagementAnalysisCreate",
+        "Core_ManagementAnalysisUpdate",
+        "Core_ManagementAnalysisRead",
+        "Core_ActionPlanCreate",
+        "Core_ActionPlanUpdate",
+        "Core_ActionPlanRead",
+        "Core_DocumentsCreate",
+        "Core_DocumentsUpdate",
+        "Core_DocumentsRead",
+        "Core_RangeCreate",
+        "Core_RangeUpdate",
+        "Core_RangeRead",
+        "Core_InternalAuditPlanCreate",
+        "Core_InternalAuditPlanUpdate",
+        "Core_InternalAuditPlanRead",
+        "Core_ExternalAuditPlanCreate",
+        "Core_ExternalAuditPlanUpdate",
+        "Core_ExternalAuditPlanRead",
+        "Core_ReportsCreate",
+        "Core_ReportsUpdate",
+        "Core_ReportsRead",
+        "Core_DashBoardCreate",
+        "Core_DashBoardUpdate",
+        "Core_DashBoardRead",
+        "Core_AdministrationCreate",
+        "Core_AdministrationUpdate",
+        "Core_AdministrationRead"
+      ]
+    },
+
+    // 4)  Manager SMSI  - Utilizator cu drepturi depline de operare si configurare a sistemului
+    {
+      "Name": "Manager SMSI",
+      "IsNoEditable": true,
+      "Title": "The manager SMSI role.",
+      "ClientId": "1",
+      "Author": "System",
+      "Permissions": [
+        "Core_RequirementCreate",
+        "Core_RequirementUpdate",
+        "Core_RequirementRead",
+        "Core_ObjectiveCreate",
+        "Core_ObjectiveUpdate",
+        "Core_ObjectiveRead",
+        "Core_AssetCreate",
+        "Core_AssetUpdate",
+        "Core_AssetRead",
+        "Core_RiskCreate",
+        "Core_RiskAssetUpdate",
+        "Core_RiskAssetRead",
+        "Core_CheckCreate",
+        "Core_CheckUpdate",
+        "Core_CheckRead",
+        "Core_KPICreate",
+        "Core_KPIUpdate",
+        "Core_KPIRead",
+        "Core_InternalAuditRead",
+        "Core_ExternalAuditRead",
+        "Core_ManagementAnalysisCreate",
+        "Core_ManagementAnalysisUpdate",
+        "Core_ManagementAnalysisRead",
+        "Core_ActionPlanCreate",
+        "Core_ActionPlanUpdate",
+        "Core_ActionPlanRead",
+        "Core_DocumentsCreate",
+        "Core_DocumentsUpdate",
+        "Core_DocumentsRead",
+        "Core_RangeCreate",
+        "Core_RangeUpdate",
+        "Core_RangeRead",
+        "Core_InternalAuditPlanCreate",
+        "Core_InternalAuditPlanUpdate",
+        "Core_InternalAuditPlanRead",
+        "Core_ExternalAuditPlanCreate",
+        "Core_ExternalAuditPlanUpdate",
+        "Core_ExternalAuditPlanRead",
+        "Core_ReportsCreate",
+        "Core_ReportsUpdate",
+        "Core_ReportsRead",
+        "Core_DashBoardCreate",
+        "Core_DashBoardUpdate",
+        "Core_DashBoardRead",
+        "Core_AdministrationCreate",
+        "Core_AdministrationUpdate",
+        "Core_AdministrationRead"
+      ]
+    },
+
+    // 5)  Internal Auditor  - Utilizator intern cu drepturi de editare doar in meniul audit intern si drepturi de vizualizare in toata aplicația
+    {
+      "Name": "Internal Auditor",
+      "IsNoEditable": true,
+      "Title": "The internal auditor role.",
+      "ClientId": "1",
+      "Author": "System",
+      "Permissions": [
+        "Core_RequirementRead",
+        "Core_ObjectiveRead",
+        "Core_AssetRead",
+        "Core_RiskAssetRead",
+        "Core_CheckRead",
+        "Core_KPIRead",
+        "Core_InternalAuditRead",
+        "Core_InternalAuditCreate",
+        "Core_InternalAuditUpdate",
+        "Core_ExternalAuditRead",
+        "Core_ManagementAnalysisRead",
+        "Core_ActionPlanRead",
+        "Core_DocumentsRead",
+        "Core_RangeRead",
+        "Core_InternalAuditPlanRead",
+        "Core_InternalAuditPlanCreate",
+        "Core_InternalAuditPlanUpdate",
+        "Core_ExternalAuditPlanRead",
+        "Core_ReportsRead",
+        "Core_DashBoardRead",
+        "Core_AdministrationRead"
+      ]
+    },
+
+    // 6)  External Auditor  - Utilizator extern cu drepturi de editare doar in meniul audit extern si drepturi de vizualizare in toata aplicația
+    {
+      "Name": "External Auditor",
+      "IsNoEditable": true,
+      "Title": "The external auditor role.",
+      "ClientId": "1",
+      "Author": "System",
+      "Permissions": [
+        "Core_RequirementRead",
+        "Core_ObjectiveRead",
+        "Core_AssetRead",
+        "Core_RiskAssetRead",
+        "Core_CheckRead",
+        "Core_KPIRead",
+        "Core_InternalAuditRead",
+        "Core_ExternalAuditCreate",
+        "Core_ExternalAuditUpdate",
+        "Core_ExternalAuditRead",
+        "Core_ManagementAnalysisRead",
+        "Core_ActionPlanRead",
+        "Core_DocumentsRead",
+        "Core_RangeRead",
+        "Core_InternalAuditPlanRead",
+        "Core_ExternalAuditPlanRead",
+        "Core_ExternalAuditPlanCreate",
+        "Core_ExternalAuditPlanUpdate",
+        "Core_ReportsRead",
+        "Core_DashBoardRead",
+        "Core_AdministrationRead"
+      ]
+    },
+
+    // 7)  Manager  - Utilizator intern cu acces limitat la editare dar cu drepturi depline de vizualizare
     {
       "Name": "Manager",
       "IsNoEditable": true,
@@ -21,12 +224,23 @@
       "ClientId": "1",
       "Author": "System",
       "Permissions": [
-        "Hrm_EmployeeRead",
-        "Hrm_LeaveCreate",
-        "Hrm_LeaveUpdate",
-        "Hrm_LeaveDelete"
+        "Core_ActionPlanRead",
+        "Core_DocumentsRead"
+      ]
+    },
+    // 8)  User  - Utilizator intern cu acces limitat doar pentru a edita task-urile care i-au fost alocate
+    {
+      "Name": "User",
+      "IsNoEditable": true,
+      "Title": "The manager role.",
+      "ClientId": "1",
+      "Author": "System",
+      "Permissions": [
+        "Core_ActionPlanRead",
+        "Core_DocumentsRead"
       ]
     }
+    /**************/
   ],
   "Groups": [
     {

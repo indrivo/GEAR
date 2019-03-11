@@ -1,7 +1,10 @@
-﻿using System;
+﻿using ST.Audit.Attributes;
+using ST.Audit.Enums;
+using System;
 
 namespace ST.Entities.Models.Tables
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class TableFieldConfigValues
     {
         /// <summary>

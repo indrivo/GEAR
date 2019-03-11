@@ -1,17 +1,12 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using ST.Notifications.Abstraction;
 using ST.Notifications.Hubs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NLog;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using System.Diagnostics;
 
 namespace ST.CORE.LoggerTargets
 {
@@ -58,7 +53,7 @@ namespace ST.CORE.LoggerTargets
 		{
 			_logger.LogInformation("Timed Background Service is starting.");
 
-			_timer = new Timer(SendLogs, null, TimeSpan.Zero,
+			_timer = new Timer(Execute, null, TimeSpan.Zero,
 				TimeSpan.FromSeconds(6));
 
 			return Task.CompletedTask;
@@ -68,43 +63,12 @@ namespace ST.CORE.LoggerTargets
 		/// Send logs
 		/// </summary>
 		/// <param name="state"></param>
-		private async void SendLogs(object state)
+		private void Execute(object state)
 		{
-			try
-			{
-				if (!LoggerTarget.Logs.Any()) return;
-				await SendToBrowserAsync(LoggerTarget.Logs.ToList());
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex);
-			}
+			//Some actions
 		}
 
-		/// <summary>
-		/// Send logs
-		/// </summary>
-		/// <param name="logs"></param>
-		/// <returns></returns>
-		private async Task SendToBrowserAsync(IEnumerable<LogEventInfo> logs)
-		{
-			try
-			{
-				await _hubContext.Clients.All.SendAsync(SignalrSendMethods.SendLog, JsonConvert.SerializeObject(logs.Select(x => new
-				{
-					x.Message,
-					x.Level
-				}).ToList()));
-				LoggerTarget.Logs.Clear();
-				//_logger.LogError("Fail \n error");
-				//_logger.LogWarning("Fail \n warn");
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-			}
-		}
-
+		/// <inheritdoc />
 		/// <summary>
 		/// Stop async
 		/// </summary>
@@ -119,6 +83,7 @@ namespace ST.CORE.LoggerTargets
 			return Task.CompletedTask;
 		}
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Dispose timer
 		/// </summary>
@@ -126,6 +91,5 @@ namespace ST.CORE.LoggerTargets
 		{
 			_timer?.Dispose();
 		}
-
 	}
 }

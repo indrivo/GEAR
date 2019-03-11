@@ -5,7 +5,6 @@ using ST.Audit.Attributes;
 using ST.Audit.Contexts;
 using ST.Audit.Enums;
 using ST.Audit.Models;
-using ST.BaseRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,56 +42,34 @@ namespace ST.Audit.Extensions
         /// <returns></returns>
         public static T EnableTracking<T>(this T context) where T : TrackerDbContext
         {
-            context.ChangeTracker.Tracked += (sender, eventArgs) =>
+            context.ChangeTracker.Tracked += async (sender, eventArgs) =>
            {
-               var model = Track(eventArgs);
+               if (eventArgs.Entry.State == EntityState.Unchanged) return;
+               var (audit, entry) = Track(eventArgs);
 
-                //if (model.Item1 == null) return;
-                //await context.AddAsync(model.Item1);
-                //var job = model.Item2.GetType().GetProperty("Id").GetValue(model.Item2).ToString().ToGuid();
-                //var check = context.Find(model.Item2.GetType(), job);
-                //if (check != null && eventArgs.Entry.State.Equals(EntityState.Unchanged))
-                //{
-                //    try
-                //    {
-                //        context.Update(model.Item2);
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        Console.WriteLine(e);
-                //    }
-                //}
-            };
+               if (audit == null) return;
+               await context.AddAsync(audit);
+               var propId = entry.GetType().GetProperty("Id");
+               if (propId != null)
+               {
+                   var objId = propId.GetValue(entry).ToString().ToGuid();
+                   var check = context.Find(entry.GetType(), objId);
+                   if (check != null)
+                   {
+                       try
+                       {
+                           // context.Attach(entry);
+                       }
+                       catch (Exception e)
+                       {
+                           Console.WriteLine(e);
+                       }
+                   }
+               }
+           };
 
             return context;
         }
-        /// <summary>
-        /// Compare prev and next value
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        //private static (bool, EntityState) Compare(EntityEntryEventArgs data)
-        //{
-        //	var match = false;
-        //	var state = EntityState.Unchanged;
-        //	try
-        //	{
-        //		var prev = data.Entry.OriginalValues;
-        //		foreach (var prop in prev.Properties)
-        //		{
-        //			var obj1 = prop.PropertyInfo.GetValue(prev.ToObject());
-        //			var obj2 = data.Entry.Entity.GetType().GetProperty(prop.PropertyInfo.Name).GetValue(data.Entry.Entity);
-        //			if (obj1 == obj2) continue;
-        //			match = true;
-        //			state = EntityState.Modified;
-        //		}
-        //	}
-        //	catch (Exception e)
-        //	{
-        //		Console.WriteLine(e);
-        //	}
-        //	return (match, state);
-        //}
 
         /// <summary>
         /// Audit tracker for Identity context
@@ -111,13 +88,30 @@ namespace ST.Audit.Extensions
         {
             context.ChangeTracker.Tracked += async (sender, eventArgs) =>
             {
-                var model = Track(eventArgs);
-                if (model.Item1 == null) return;
-                await context.AddAsync(model.Item1);
-                var check = context.Find(model.Item2.GetType(), ((BaseModel)model.Item2).Id);
-                if (check != null && eventArgs.Entry.State.Equals(EntityState.Unchanged))
+                if (eventArgs.Entry.Entity.GetType().Name == "ApplicationRole")
                 {
-                    context.Update(model.Item2);
+                    var v = 5;
+                }
+                if (eventArgs.Entry.State == EntityState.Unchanged) return;
+
+                var (audit, entry) = Track(eventArgs);
+                if (audit == null) return;
+                await context.AddAsync(audit);
+                try
+                {
+                    var objId = ((dynamic)entry).Id;
+                    if (objId != null)
+                    {
+                        var check = context.Find(entry.GetType(), objId);
+                        if (check != null)
+                        {
+                            //context.Attach(entry);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                 }
             };
             return context;
@@ -130,15 +124,12 @@ namespace ST.Audit.Extensions
         /// <returns></returns>
         private static (TrackAudit, object) Track(EntityEntryEventArgs eventArgs)
         {
+            //If is trackable entity return
+            if (eventArgs.Entry.Entity is TrackAudit || eventArgs.Entry.Entity is TrackAuditDetails) return (null, null);
 
-            if (eventArgs.Entry.Context.GetType().ToString().Equals("ST.Identity.Data.ApplicationDbContext"))
-            {
-                if (eventArgs.Entry.State.Equals(EntityState.Unchanged)) return (null, null);
-            }
+            var (isTrackable, trackOption) = IsTrackable(eventArgs.Entry.Entity.GetType());
 
-            var bind = IsTrackable(eventArgs.Entry.Entity.GetType());
-
-            if (!bind.Item1) return (null, null);
+            if (!isTrackable) return (null, null);
             try
             {
                 dynamic entry = eventArgs.Entry.Entity;
@@ -150,7 +141,8 @@ namespace ST.Audit.Extensions
                     Author = "System",
                     ModifiedBy = "System",
                     Version = 1,
-                    TrackEventType = GetRecordState(eventArgs.Entry.State)
+                    TrackEventType = GetRecordState(eventArgs.Entry.State),
+                    DatabaseContextName = eventArgs.Entry.Context.GetType().FullName
                 };
                 var currentVersion = Convert.ToInt32(eventArgs.Entry.Entity.GetType().GetProperty("Version")?.GetValue(eventArgs.Entry.Entity).ToString());
                 var propertyId = eventArgs.Entry.Entity.GetType().GetProperty("Id");
@@ -165,6 +157,12 @@ namespace ST.Audit.Extensions
                     }
                 }
 
+                var tenantIdProp = eventArgs.Entry.Entity.GetType().GetProperty("TenantId");
+                if (tenantIdProp != null)
+                {
+                    audit.TenantId = tenantIdProp.GetValue(eventArgs.Entry.Entity)?.ToString()?.ToGuid();
+                }
+
                 var auditDetails = new List<TrackAuditDetails>();
 
                 var propertyUserName = eventArgs.Entry.Entity.GetType().GetProperty("ModifiedBy");
@@ -173,7 +171,7 @@ namespace ST.Audit.Extensions
                     audit.UserName = propertyUserName.GetValue(eventArgs.Entry.Entity)?.ToString();
                 }
 
-                if (bind.Item2.Equals(TrackEntityOption.Selected))
+                if (trackOption.Equals(TrackEntityOption.Selected))
                 {
                     auditDetails.AddRange(eventArgs.Entry.Entity.GetType().GetProperties().Where(IsFieldTrackable)
                         .Select(x => new TrackAuditDetails

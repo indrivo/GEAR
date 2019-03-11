@@ -1,9 +1,12 @@
-﻿using System;
+﻿using ST.Audit.Attributes;
+using ST.Audit.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ST.Entities.Models.Tables
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class TableFieldTypes
     {
         /// <summary>

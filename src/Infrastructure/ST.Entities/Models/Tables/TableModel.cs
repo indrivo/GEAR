@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using ST.Audit.Attributes;
+using ST.Audit.Enums;
+using System.Collections.Generic;
 
 namespace ST.Entities.Models.Tables
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class TableModel : ExtendedModel
     {
         /// <summary>

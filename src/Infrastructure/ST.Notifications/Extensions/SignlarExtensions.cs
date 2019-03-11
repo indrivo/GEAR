@@ -14,7 +14,7 @@ namespace ST.Notifications.Extensions
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseStSignalR(this IApplicationBuilder app)
+        public static IApplicationBuilder UseSignalR(this IApplicationBuilder app)
         {
             app.UseSignalR(routes =>
             {
@@ -31,7 +31,7 @@ namespace ST.Notifications.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddStSignalR(this IServiceCollection services)
+        public static IServiceCollection AddSignalR(this IServiceCollection services)
         {
             services.AddSignalR(options =>
             {

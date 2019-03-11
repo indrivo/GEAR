@@ -1,99 +1,342 @@
 @using ST.CORE.Models.InstallerModels
-@model ST.CORE.Models.InstallerModels.DbSetupModel
+@using ST.Entities.Utils
+@model ST.CORE.Models.InstallerModels.SetupModel
+
+@inject IStringLocalizer Localizer
 
 @{
-    ViewData["Title"] = "DbSetup";
-    Layout = "~/Views/Shared/_LayoutInstaller.cshtml";
+	Layout = null;
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-	<title>ViewData["Title"]</title>
+	<meta name="viewport" content="width=device-width" />
+	<title>@Localizer["system_setup"]</title>
+	<link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/colors/megna-dark.css" />
+	<link rel="stylesheet" type="text/css" href="~/lib/codemirror/lib/codemirror.css" />
+	<link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/loader-installer.css" />
+
+	<style>
+		.select-error {
+			color: red;
+		}
+
+		.select-warn {
+			color: orange;
+		}
+
+		.select-info {
+			color: green;
+		}
+
+		.select-trace {
+			color: white;
+		}
+
+		.tab-pane .p-20 {
+			overflow-y: auto;
+			overflow-x: hidden;
+			max-height: 30em;
+		}
+
+			.tab-pane .p-20::-webkit-scrollbar-track {
+				-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+				background-color: #F5F5F5;
+				border-radius: 15px;
+			}
+
+			.tab-pane .p-20::-webkit-scrollbar {
+				width: 10px;
+				background-color: #F5F5F5;
+			}
+
+			.tab-pane .p-20::-webkit-scrollbar-thumb {
+				background-color: #009efb;
+				border: 2px solid #009efb;
+				border-radius: 15px;
+			}
+	</style>
 </head>
 <body>
+	<!-- ============================================================== -->
+	<!-- Preloader - style you can find in spinners.css -->
+	<!-- ============================================================== -->
+	<div class="preloader">
+		<svg class="circular" viewBox="25 25 50 50">
+			<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+		</svg>
+	</div>
 
-<div class="ui text  container">
-	<h1 class="ui inverted header">
-		BPM Setup
-	</h1>
-	<form class="ui form" asp-action="Setup">
-		<div id="menuTab">
-			<div class="ui tiny menu">
-				<a class="item" data-tab="one" id="tabOne">
-					Data Base Setup
-				</a>
-				<a class="item" data-tab="two" id="tabTwo">
-					Localization
-				</a>
-				<a class="item" data-tab="three" id="tabThree">
-					Actions
-				</a>
-			</div>
-			<div class="ui transition scale in active  tab segment" data-tab="one" id="itemOne">
-				<div class="ui message">
-					<div class="field">
-						<label>Data Base Name</label>
-						<input asp-for="DbName"  class="form-control"/>
-					</div>
-					<div class="field">
-						<label>Data Base Name Address</label>
-						<input asp-for="DbAdrress" class="form-control"/>
-					</div>
-					<div class="field">
-						<label>User Name</label>
-						<input asp-for="UserName" class="form-control"/>
-					</div>
-					<div class="field">
-						<label>Password</label>
-						<input asp-for="UserPassword" class="form-control"/>
-					</div>
-					<button class="positive ui button" id="startButton">Continue</button>
-				</div>
-			</div>
-			<div class="ui transition scale in  tab segment" data-tab="two" id="itemtwo">
-				@if (@Model.Languages.Any())
-				{
-					for (var i = 0; i < Model.Languages.Count; i++)
-					{
-						var language = Model.Languages[i];
-						@Html.HiddenFor(model => model.Languages[i].Identifier)
-						@Html.HiddenFor(model => model.Languages[i].Name)
-						if (language.Identifier == "en1")
-						{
-							<div class="ui checkbox">
-								@Html.CheckBoxFor(model => model.Languages[i].Selected, new { @disabled = "disabled" })
-								@Html.LabelFor(model=> model.Languages[i].Name, language.Name)
+
+	<!-- ============================================================== -->
+	<!-- Main wrapper - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<section id="wrapper" class="login-register" style="background-image:url(../images/background/login-register.jpg);">
+		<div class="login-box card" style="width: 70%; margin-top: -7em;">
+			<div class="card-body">
+				<h3 style="padding: 1em;">@Localizer["installer_welcome"]</h3>
+				<!-- row -->
+				<form id="setupForm" asp-action="Setup" class="row">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-body" style="height: 40em;">
+								<h4 class="card-title">Installer</h4>
+								<h6 class="card-subtitle">This installer allows you to configure system components.</h6>
+								<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+								<!-- Nav tabs -->
+								<div class="vtabs">
+									<ul class="nav nav-tabs tabs-vertical" role="tablist">
+										<li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#profile" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Choose profile</span> </a> </li>
+										<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#database" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Set up database</span></a> </li>
+										<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#site" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Configure site</span></a> </li>
+									</ul>
+									<!-- Tab panes -->
+									<div class="tab-content">
+										<div class="tab-pane active" id="profile" role="tabpanel">
+											<div class="p-20">
+												<div class="row">
+													<div class="form-body">
+														<h3 class="card-title">Choose profile</h3>
+														<hr>
+														<h3 class="box-title m-t-40">Super admin Info</h3>
+														<div class="row p-t-20">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">User Name</label>
+																	<input asp-for="SysAdminProfile.UserName" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.UserName" class="text-danger"></span>
+																	<small class="form-control-feedback"> This is user name of user </small>
+																</div>
+															</div>
+														</div>
+														<div class="row p-t-20">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">Email</label>
+																	<input asp-for="SysAdminProfile.Email" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.Email" class="text-danger"></span>
+																	<small class="form-control-feedback"> This is email of user </small>
+																</div>
+															</div>
+														</div>
+														<div class="row p-t-20">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">Password</label>
+																	<input asp-for="SysAdminProfile.Password" value="admin" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.Password" class="text-danger"></span>
+																	<small class="form-control-feedback"> This is password of user </small>
+																</div>
+															</div>
+														</div>
+														<div class="row p-t-20">
+															<div class="col-md-12">
+																<div class="form-group">
+																	<label class="control-label">Confirm Password</label>
+																	<input asp-for="SysAdminProfile.ConfirmPassword" value="admin" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.ConfirmPassword" class="text-danger"></span>
+																	<small class="form-control-feedback"> This is passowrd of user </small>
+																</div>
+															</div>
+														</div>
+														<div class="row p-t-20">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label class="control-label">First Name</label>
+																	<input asp-for="SysAdminProfile.FirstName" value="admin" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.FirstName" class="text-danger"></span>
+																	<small class="form-control-feedback"> This is first name of user </small>
+																</div>
+															</div>
+															<!--/span-->
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label class="control-label">Last Name</label>
+																	<input asp-for="SysAdminProfile.LastName" value="admin" class="form-control form-control-danger">
+																	<span asp-validation-for="SysAdminProfile.LastName" class="text-danger"></span>
+																	<small class="form-control-feedback"> This is the last name of user </small>
+																</div>
+															</div>
+															<!--/span-->
+														</div>
+														<!--/row-->
+														<div class="row">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label class="control-label">Gender</label>
+																	<select asp-for="SysAdminProfile.Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-control custom-select"></select>
+																	<span asp-validation-for="SysAdminProfile.Gender" class="text-danger"></span>
+																	<small class="form-control-feedback"> Select your gender </small>
+																</div>
+															</div>
+															<!--/span-->
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label class="control-label">Date of Birth</label>
+																	<input asp-for="SysAdminProfile.BirthDate" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.BirthDate" class="text-danger"></span>
+																</div>
+															</div>
+															<!--/span-->
+														</div>
+														<!--/row-->
+
+														<h3 class="box-title m-t-40">Super admin Address</h3>
+														<hr>
+														<div class="row">
+															<div class="col-md-12 ">
+																<div class="form-group">
+																	<label>Street</label>
+																	<input asp-for="SysAdminProfile.Street" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.Street" class="text-danger"></span>
+																</div>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>City</label>
+																	<input asp-for="SysAdminProfile.City" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.City" class="text-danger"></span>
+																</div>
+															</div>
+															<!--/span-->
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>State</label>
+																	<input asp-for="SysAdminProfile.State" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.State" class="text-danger"></span>
+																</div>
+															</div>
+															<!--/span-->
+														</div>
+														<!--/row-->
+														<div class="row">
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>Postal Code</label>
+																	<input asp-for="SysAdminProfile.PostalCode" class="form-control">
+																	<span asp-validation-for="SysAdminProfile.PostalCode" class="text-danger"></span>
+																</div>
+															</div>
+															<!--/span-->
+															<div class="col-md-6">
+																<div class="form-group">
+																	<label>Country</label>
+																	<select asp-for="SysAdminProfile.Country" class="form-control custom-select">
+																		<option>--Select your Country--</option>
+																		<option>Moldova</option>
+																		<option>Romania</option>
+																		<option>India</option>
+																		<option>Sri Lanka</option>
+																		<option>USA</option>
+																	</select>
+																	<span asp-validation-for="SysAdminProfile.Country" class="text-danger"></span>
+																</div>
+															</div>
+															<!--/span-->
+														</div>
+														<h3 class="box-title m-t-40">Default Organization</h3>
+														<hr>
+														<div class="row">
+															<div class="col-md-12 ">
+																<div class="form-group">
+																	<label>Organization Name</label>
+																	<input asp-for="Organization.Name" class="form-control">
+																	<span asp-validation-for="Organization.Name" class="text-danger"></span>
+																</div>
+															</div>
+														</div>
+														<div class="row">
+															<div class="col-md-12 ">
+																<div class="form-group">
+																	<label>Site Web</label>
+																	<input asp-for="Organization.SiteWeb" class="form-control">
+																	<span asp-validation-for="Organization.SiteWeb" class="text-danger"></span>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="tab-pane p-20" id="database" role="tabpanel">
+											<h3>Set up database</h3>
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group col-md-6">
+														<label style="font-size: 1em;">MSSQL</label>
+														<input asp-for="DataBaseType" value="@DbProviderType.MsSqlServer" style="height: 1.2em;" type="radio" class="form-control">
+													</div>
+													<div class="form-group col-md-6">
+														<label style="font-size: 1em;">POSTGRESQL</label>
+														<input asp-for="DataBaseType" value="@DbProviderType.PostgreSql" style="height: 1.2em;" type="radio" class="form-control">
+													</div>
+												</div>
+												<div class="col-md-12">
+													<div class="form-group">
+														<label>Database connection</label>
+														<input asp-for="DatabaseConnectionString" class="form-control">
+														<span asp-validation-for="DatabaseConnectionString" class="text-danger"></span>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="tab-pane p-20" id="site" role="tabpanel">
+											<h3>Configure site</h3>
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<label>Site Name</label>
+														<input asp-for="SiteName" class="form-control">
+														<span asp-validation-for="SiteName" class="text-danger"></span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
-						}
-						else
-						{
-							<div class="ui checkbox">
-								@Html.CheckBoxFor(model => model.Languages[i].Selected)
-								@Html.LabelFor(model=> model.Languages[i].Name, language.Name)
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<h3 style="margin-left: 2em;">Install system</h3>
+							<div class="col-md-12">
+								<div style="display:none;" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+								<button id="submitButton" style="margin-left: 40em; margin-top: -4em;" type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Install</button>
 							</div>
-						}
-
-
-					}
-				}
-			</div>
-			<div class="ui transition scale in  tab segment" data-tab="three" id="itemthree">
+						</div>
+					</div>
+				</form>
+				<!-- row -->
 			</div>
 		</div>
-	</form>
-		
-	@section Scripts {
-		<script>
-			$('#menuTab .menu .item')
-				.tab();
-			$(document).ready(function () {
+	</section>
 
-			});
+	<!-- ============================================================== -->
+	<!-- End Wrapper -->
+	<!-- ============================================================== -->
 
-		</script>
-	}
-
-</div>
+	<script src="~/lib/jquery/dist/jquery.js"></script>
+	<script src="~/lib/tether/dist/js/tether.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+	<script src="~/js/jquery.slimscroll.js"></script>
+	<script src="~/js/waves.js"></script>
+	<script src="~/js/sidebarmenu.js"></script>
+	<script src="~/lib/sticky-kit/jquery.sticky-kit.min.js"></script>
+	<script type="text/javascript" src="~/lib/sweetalert2/dist/sweetalert2.min.js"></script>
+	<script src="~/js/custom.js"></script>
+	<script>
+		$("#setupForm").on("submit", function () {
+			$("#submitButton").toggle();
+			$(".lds-ring").toggle();
+		});
+	</script>
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 </body>
 </html>

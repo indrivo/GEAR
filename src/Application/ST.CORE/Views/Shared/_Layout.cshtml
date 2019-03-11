@@ -3,7 +3,6 @@
 @using Microsoft.AspNetCore.Http
 @using ST.CORE.Models.LocalizationViewModels
 @using ST.Identity.Abstractions
-@using ST.CORE.Extensions.Installer;
 
 
 @inject UserManager<ApplicationUser> UserManager
@@ -19,12 +18,9 @@
 	var layoutId = (Guid?)ViewData["layoutId"];
 	if (layoutId == null)
 	{
-		layoutId = WebPageSyncExtension.Layouts[0];
+		layoutId = WebPageSync.Layouts[0];
 	}
 
-	var cssCode = PageRender.GetLayoutCss(layoutId);
-	var styles = PageRender.GetPageStyles(layoutId.Value);
-	var scripts = PageRender.GetPageScripts(layoutId.Value);
 	var user = await UserManager.GetUserAsync(User);
 	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
 	Language language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
@@ -39,20 +35,10 @@
 				margin: 0px;
 			}
 		</style>
-		@if (!string.IsNullOrEmpty(cssCode))
-		{
-			<style>
-			@Html.Raw(cssCode)
-			</style>
-		}
-		<title>@ViewData["Title"] - Client</title>
-		@if (styles.IsSuccess)
-		{
-			@foreach (var style in styles.Result)
-			{
-				@Html.Raw(style.Script)
-			}
-		}
+		<title>@ViewData["Title"] - Gear</title>
+		<layout-css-code layout-id="@layoutId"></layout-css-code>
+		<application-styles layout-id="@layoutId"></application-styles>
+
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
@@ -61,25 +47,11 @@
 		<![endif]-->
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
+		<application layout-id="@layoutId">
+			@RenderBody()
+		</application>
 
-		@{
-			var htmlCode = PageRender.GetLayoutHtml(layoutId);
-			var jsCode = PageRender.GetLayoutJavaScript(layoutId);
-		}
-
-		@Html.Raw(htmlCode.Item1)
-
-		@RenderBody()
-
-		@Html.Raw(htmlCode.Item2)
-
-		@if (scripts.IsSuccess)
-		{
-			@foreach (var script in scripts.Result)
-			{
-				@Html.Raw(script.Script);
-			}
-		}
+		<application-scripts layout-id="@layoutId"></application-scripts>
 
 		<script>
 			window.load = function (uri, data = null, type = "get") {
@@ -135,12 +107,7 @@
 			localStorage.setItem("settings", JSON.stringify(settings));
 
 		</script>
-		@if (!string.IsNullOrEmpty(jsCode))
-		{
-			<script>
-				@Html.Raw(jsCode)
-			</script>
-		}
+		<layout-js-code layout-id="@layoutId"></layout-js-code>
 
 		<script src="~/assets/js/form/formeo.min.js"></script>
 		<script src="~/assets/js/form/form-generate.js" asp-append-version="true"></script>

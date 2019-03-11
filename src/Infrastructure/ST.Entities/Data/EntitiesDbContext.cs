@@ -93,6 +93,9 @@ namespace ST.Entities.Data
         }
     }
 
+    /// <summary>
+    /// Context factory design
+    /// </summary>
     public class EntitiesDbContextFactory : IDesignTimeDbContextFactory<EntitiesDbContext>
     {
         /// <inheritdoc />

@@ -1,7 +1,7 @@
 using System;
 using Castle.Windsor;
 
-namespace ST.CORE.Extensions
+namespace ST.Entities.Extensions
 {
 	public sealed class IoC
 	{

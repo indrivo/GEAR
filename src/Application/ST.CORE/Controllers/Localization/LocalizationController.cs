@@ -84,6 +84,7 @@ namespace ST.CORE.Controllers.Localization
 		/// <param name="identifier"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public IActionResult ChangeLanguage(string identifier)
 		{
 			if (!string.IsNullOrEmpty(identifier))

@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using ST.Audit.Attributes;
+using ST.Audit.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ST.Entities.Models.Forms
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class FormType : ExtendedModel
     {
         public string Name { get; set; }

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Extensions.Installer;
+using ST.CORE.Installation;
 using ST.CORE.Models;
 using ST.CORE.Models.LocalizationViewModels;
 using ST.CORE.Services.Abstraction;
@@ -364,7 +364,7 @@ namespace ST.CORE.Controllers.Render
 		{
 			if (menuId == null)
 			{
-				menuId = MenuSyncExtension.NavBarId;
+				menuId = MenuSync.NavBarId;
 			}
 
 			var user = await _userManager.GetUserAsync(User);

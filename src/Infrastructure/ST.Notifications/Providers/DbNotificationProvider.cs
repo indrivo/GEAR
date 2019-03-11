@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
+using ST.Entities.Extensions;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Entities.ViewModels.Table;
 using ST.Notifications.Abstraction;
@@ -19,6 +19,16 @@ namespace ST.Notifications.Providers
         private readonly DbNotificationConfig _config;
 
         /// <summary>
+        /// Get entity schema
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private static string GetEntitySchema(string entity)
+        {
+            return IoC.Resolve<EntitiesDbContext>().Table.FirstOrDefault(x => x.Name == entity)?.EntityType;
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="config"></param>
@@ -27,12 +37,12 @@ namespace ST.Notifications.Providers
             _config = config;
             _config.Tables = new Dictionary<string, TableConfigViewModel>
             {
-                {Tables.Email, new TableConfigViewModel {Name = Tables.Email, Schema = "systemcore"}},
+                {Tables.Email, new TableConfigViewModel {Name = Tables.Email, Schema = GetEntitySchema(Tables.Email)}},
                 {
                     Tables.UserEmailFolders,
-                    new TableConfigViewModel {Name =  Tables.UserEmailFolders, Schema = "systemcore"}
+                    new TableConfigViewModel {Name =  Tables.UserEmailFolders, Schema = GetEntitySchema(Tables.UserEmailFolders)}
                 },
-                {Tables.EmailUsers, new TableConfigViewModel {Name = Tables.EmailUsers, Schema = "systemcore"}}
+                {Tables.EmailUsers, new TableConfigViewModel {Name = Tables.EmailUsers, Schema = GetEntitySchema(Tables.EmailUsers)}}
             };
         }
 
@@ -324,22 +334,29 @@ namespace ST.Notifications.Providers
             if (returnModel.Result.Values == null) return returnModel;
             foreach (var value in returnModel.Result.Values)
             {
-                var tableUsers = new EntityViewModel
+                try
                 {
-                    TableSchema = _config.Tables["EmailUsers"].Schema,
-                    TableName = _config.Tables["EmailUsers"].Name,
-                    HasConfig = true,
-                    Fields = new List<EntityFieldsViewModel>
+                    var tableUsers = new EntityViewModel
+                    {
+                        TableSchema = _config.Tables["EmailUsers"].Schema,
+                        TableName = _config.Tables["EmailUsers"].Name,
+                        HasConfig = true,
+                        Fields = new List<EntityFieldsViewModel>
                     {
                         new EntityFieldsViewModel {ColumnName = "UserEmailFolderId"}
                     },
-                    Values = new List<Dictionary<string, object>>
+                        Values = new List<Dictionary<string, object>>
                     {
                         new Dictionary<string, object> {{"UserEmailFolderId", value["Id"]}}
                     }
-                };
-                var count = _config.DbContext.GetCountByParameter(tableUsers);
-                value.Add("Count", count.Result.Values[0].FirstOrDefault());
+                    };
+                    var count = _config.DbContext.GetCountByParameter(tableUsers);
+                    value.Add("Count", count.Result.Values[0].FirstOrDefault());
+                }
+                catch
+                {
+                    //Ignore
+                }
             }
 
             return returnModel;
@@ -677,8 +694,6 @@ namespace ST.Notifications.Providers
         /// <returns></returns>
         public ResultModel<EntityViewModel> ListSentNotifications(EntityViewModel model)
         {
-            var finalResultList = new List<Dictionary<string, object>>();
-
             model.TableSchema = _config.Tables["Email"].Schema;
             model.TableName = _config.Tables["Email"].Name;
 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using ST.Audit.Contexts;
 using ST.Procesess.Models;
 
@@ -80,6 +81,21 @@ namespace ST.Procesess.Data
                 .WithMany()
                 .HasForeignKey(x => x.ProcessInstanceId)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
+    }
+
+    public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ProcessesDbContext>
+    {
+        /// <summary>
+        /// For creating migrations
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public ProcessesDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<ProcessesDbContext>();
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
+            return new ProcessesDbContext(optionsBuilder.Options);
         }
     }
 }

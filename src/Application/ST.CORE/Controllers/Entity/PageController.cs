@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Extensions.Installer;
+using ST.CORE.Installation;
 using ST.CORE.Models;
 using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels.Pages;
@@ -264,7 +264,7 @@ namespace ST.CORE.Controllers.Entity
 					Description = model.Description,
 					Title = model.Title
 				},
-				IsLayout = model.PageTypeId == WebPageSyncExtension.PageTypes[0].Id
+				IsLayout = model.PageTypeId == WebPageSync.PageTypes[0].Id
 			};
 
 			try
@@ -602,8 +602,8 @@ namespace ST.CORE.Controllers.Entity
 				Id = pageId,
 				Created = DateTime.Now,
 				Changed = DateTime.Now,
-				PageTypeId = WebPageSyncExtension.PageTypes[1].Id,
-				LayoutId = WebPageSyncExtension.Layouts[0],
+				PageTypeId = WebPageSync.PageTypes[1].Id,
+				LayoutId = WebPageSync.Layouts[0],
 				Path = $"/{name}",
 				Settings = new PageSettings
 				{

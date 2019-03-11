@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using ST.Audit.Attributes;
+using ST.Audit.Enums;
 using ST.Entities.Models.Tables;
 
 namespace ST.Entities.Models.Forms
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class Field : ExtendedModel
     {
         public string Tag { get; set; }

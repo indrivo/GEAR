@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ST.Entities.Utils;
 
 namespace ST.Entities.Extensions
@@ -11,8 +13,9 @@ namespace ST.Entities.Extensions
         /// <param name="options"></param>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        public static DbContextOptionsBuilder GetDefaultOptions(this DbContextOptionsBuilder options, (DbProviderType, string) connectionString)
+        public static DbContextOptionsBuilder GetDefaultOptions(this DbContextOptionsBuilder options, IConfiguration Configuration, IHostingEnvironment HostingEnvironment)
         {
+            var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
             var (dbType, connection) = connectionString;
             if (dbType == DbProviderType.PostgreSql)
             {

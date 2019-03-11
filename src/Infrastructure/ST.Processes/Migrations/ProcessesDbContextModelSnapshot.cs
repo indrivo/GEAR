@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.Procesess.Data;
 
 namespace ST.Procesess.Migrations
@@ -16,9 +16,9 @@ namespace ST.Procesess.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Processes")
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
                 {
@@ -30,6 +30,8 @@ namespace ST.Procesess.Migrations
                     b.Property<DateTime>("Changed");
 
                     b.Property<DateTime>("Created");
+
+                    b.Property<string>("DatabaseContextName");
 
                     b.Property<bool>("IsDeleted");
 

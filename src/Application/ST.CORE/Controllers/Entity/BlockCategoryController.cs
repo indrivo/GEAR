@@ -12,11 +12,17 @@ using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers.Entity
 {
 	public class BlockCategoryController : BaseController
 	{
+		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService)
+		{
+		}
+
 		/// <summary>
 		/// Load page types with ajax
 		/// </summary>
@@ -26,7 +32,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = _context.Filter<BlockCategory>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = Context.Filter<BlockCategory>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount);
 
@@ -68,8 +74,9 @@ namespace ST.CORE.Controllers.Entity
 		{
 			try
 			{
-				_context.BlockCategories.Add(model);
-				_context.SaveChanges();
+				Context.BlockCategories.Add(model);
+				Context.SaveChanges();
+
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
@@ -89,7 +96,7 @@ namespace ST.CORE.Controllers.Entity
 		public IActionResult Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = _context.BlockCategories.FirstOrDefault(x => x.Id.Equals(id));
+			var model = Context.BlockCategories.FirstOrDefault(x => x.Id.Equals(id));
 			if (model == null) return NotFound();
 
 			return View(model);
@@ -104,7 +111,7 @@ namespace ST.CORE.Controllers.Entity
 		public IActionResult Edit(BlockCategory model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = _context.BlockCategories.FirstOrDefault(x => x.Id.Equals(model.Id));
+			var dataModel = Context.BlockCategories.FirstOrDefault(x => x.Id.Equals(model.Id));
 
 			if (dataModel == null) return NotFound();
 
@@ -114,8 +121,8 @@ namespace ST.CORE.Controllers.Entity
 			dataModel.Changed = DateTime.Now;
 			try
 			{
-				_context.BlockCategories.Update(dataModel);
-				_context.SaveChanges();
+				Context.BlockCategories.Update(dataModel);
+				Context.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
@@ -137,13 +144,13 @@ namespace ST.CORE.Controllers.Entity
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete block category!", success = false });
-			var page = _context.BlockCategories.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var page = Context.BlockCategories.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (page == null) return Json(new { message = "Fail to delete block category!", success = false });
 
 			try
 			{
-				_context.BlockCategories.Remove(page);
-				_context.SaveChanges();
+				Context.BlockCategories.Remove(page);
+				Context.SaveChanges();
 				return Json(new { message = "Block category was delete with success!", success = true });
 			}
 			catch (Exception e)
@@ -152,10 +159,6 @@ namespace ST.CORE.Controllers.Entity
 			}
 
 			return Json(new { message = "Fail to delete block category!", success = false });
-		}
-
-		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager) : base(context, applicationDbContext, userManager, roleManager)
-		{
 		}
 	}
 }
