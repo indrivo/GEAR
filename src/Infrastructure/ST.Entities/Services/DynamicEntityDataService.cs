@@ -422,7 +422,8 @@ namespace ST.Entities.Services
         public async Task<ResultModel<Guid>> Update<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name))?.EntityType;
+            var schema = _context.Table.Where(x => x.Name.ToLower().Equals(typeof(TEntity).Name.ToLower())).FirstOrDefault()?.EntityType;
+            //var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name))?.EntityType;
             var table = await Create<TEntity>(schema);
 
             table.Values = new List<Dictionary<string, object>> { model };

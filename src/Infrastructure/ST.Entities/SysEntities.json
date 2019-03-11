@@ -4,7 +4,7 @@
       "Name": "Email",
       "Schema": "systemcore",
       "Description": "Entity for email",
-      "Fields": [ 
+      "Fields": [
         {
           "Name": "Subject",
           "Description": "email subject field",
@@ -587,6 +587,384 @@
           ]
         }
       ]
+    },
+    {
+      "Name": "Nomenclator",
+      "Schema": "systemcore",
+      "Description": "Entity for nomenclators",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "Nomenclator name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Description",
+          "Description": "Nomenclator description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "NomenclatorItem",
+      "Schema": "systemcore",
+      "Description": "Entity for Nomenclator item",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "NomenclatorId",
+          "Description": "Id of the Nomenclator reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "Nomenclator",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "ParentId",
+          "Description": "Id of the Nomenclator reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "DependencyId",
+          "Description": "Id of the NomenclatorItem reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "RefId",
+          "Description": "Id of the Nomenclator reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "KPI",
+      "Schema": "systemcore",
+      "Description": "Entity for KPI item",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": false,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "Description",
+          "Description": "description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "CategoryId",
+          "Description": "Id of the Category reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "CalculationMethod",
+          "Description": "Calculation Method field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "PeriodId",
+          "Description": "Id of the Calculation period reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "MeasurementUnitId",
+          "Description": "Id of the Measurement Unit reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "ProcentGoal",
+          "Description": "Procent Goal description field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "BoolGoal",
+          "Description": "",
+          "Synchronized": false,
+          "DataType": "bool",
+          "AllowNull": true,
+          "TableFieldCode": "40",
+          "Configurations": [
+            {
+              "Value": false,
+              "ConfigCode": "4000"
+            }
+          ]
+        },
+        {
+          "Name": "IntGoal",
+          "Description": "",
+          "Synchronized": false,
+          "DataType": "int",
+          "AllowNull": true,
+          "TableFieldCode": "01",
+          "Configurations": [
+            {
+              "Value": null,
+              "ConfigCode": "0100"
+            },
+            {
+              "Value": null,
+              "ConfigCode": "0101"
+            }
+          ]
+        },
+        {
+          "Name": "FulfillmentCriterionId",
+          "Description": "Id of the Fulfillment Criterion reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "Status",
+          "Description": "",
+          "Synchronized": false,
+          "DataType": "bool",
+          "AllowNull": false,
+          "TableFieldCode": "40",
+          "Configurations": [
+            {
+              "Value": false,
+              "ConfigCode": "4000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "Request",
+      "Schema": "systemcore",
+      "Description": "Cerința parții interesate",
+      "Fields": [
+        {
+          "Name": "InterestedPartId",
+          "Description": "Id of the Interested Part reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "RequestId",
+          "Description": "Id of the request reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "Comments",
+          "Description": "comments field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
     }
+
+
   ]
 }

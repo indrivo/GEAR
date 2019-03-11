@@ -1,0 +1,152 @@
+@model ST.Entities.Models.Pages.MenuItem
+@inject IStringLocalizer Localizer
+
+@{
+	ViewData["Title"] = "Edit menu item";
+}
+
+<div class="card card-outline-primary">
+	<div class="card-header">
+		<h4 class="mb-0 text-white">Edit menu </h4>
+	</div>
+	<div class="card-body">
+		<form asp-action="EditItem" role="form">
+			<input type="hidden" name="MenuId" value="@Model.MenuId" />
+			<input type="hidden" name="ParentMenuItemId" value="@Model.ParentMenuItemId" />
+			@Html.HiddenFor(x => x.Id)
+			@Html.HiddenFor(x => x.Changed)
+			@Html.HiddenFor(x => x.Created)
+			@Html.HiddenFor(x => x.Author)
+			@Html.HiddenFor(x => x.ModifiedBy)
+			@Html.HiddenFor(x => x.AllowedRoles)
+			<div class="form-body">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="row p-t-20">
+					<div class="col-md-12">
+						<div class="form-group">
+							<label class="control-label" asp-for="Name"></label>
+							<input class="form-control" type="text" asp-for="Name" />
+							<span asp-validation-for="Name" class="text-danger"></span><br />
+							<small>Name of the menu</small>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div class="form-group">
+							<label class="control-label" asp-for="Href"></label>
+							<input class="form-control" type="text" asp-for="Href" />
+							<span asp-validation-for="Href" class="text-danger"></span><br />
+							<small>Href of the menu</small>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="Routes" class="control-label">Select a route</label>
+							<select id="Routes" asp-items="new SelectList(ViewBag.Routes as IEnumerable<string>)" class="form-control"></select>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<i id="iconView" class=""></i>
+							<label class="control-label" asp-for="Icon"></label>
+							<select class="form-control" asp-for="Icon"></select>
+							<span asp-validation-for="Icon" class="text-danger"></span><br />
+							<small>Icon of the menu</small>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="Translate" class="control-label">Select the translate key</label>
+							<select asp-for="Translate" class="form-control">
+								<option>none</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row button-group">
+				<div class="col-lg-2 col-md-3">
+					<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+				</div>
+				<div class="col-lg-2 col-md-3">
+					<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+				</div>
+				<div class="col-lg-2 col-md-3">
+					<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script>
+		const trans = load("/PageRender/GetTranslations");
+		const options = $("#Translate");
+		$.each(trans, function (index, data) {
+			options.append(new Option(data, index));
+		});
+		options.val("@Model.Translate");
+		$("#MenuId").val("@ViewBag.MenuId");
+		$("#ParentMenuItemId").val("@ViewBag.ParentId");
+
+		$("#Routes").on("change", function () {
+			const selected = $(this).find(":checked");
+			$("#Href").val(selected.val());
+		});
+
+
+
+
+
+		var icons = function () {
+			var get = $.ajax({
+				url:
+					"https://gist.githubusercontent.com/migliori/60154172ba0eea70e3c0dd4c3b5d82d0/raw/366789b2d001a99f5f41f1ceab980d991de059c3/fontawesome-icons-with-categories.json",
+				type: "get",
+				async: false,
+				success: function (data) {
+					return data;
+				},
+				error: function () {
+					return [];
+				}
+			});
+
+			try {
+				const all = JSON.parse(get.responseText);
+				let result = [];
+				for (let cat in all) {
+					for (let item in all[cat]) {
+						result.push(all[cat][item]);
+					}
+				}
+				result = result.map(function (x) { return x.replace("far ", "fa "); });
+				result = result.map(function (x) { return x.replace("fas ", "fa "); });
+				result = result.map(function (x) { return x.replace("fab ", "fa "); });
+				return result;
+			} catch (e) {
+				return [];
+			}
+		};
+		const opt = $("#Icon");
+		$.each(icons(), function () {
+			opt.append(new Option(this, this));
+		});
+
+		opt.val("@Model.Icon");
+
+		$("#iconView").attr("class", opt.val());
+
+		$("#Icon").on("change", function () {
+			const selected = $(this).find(":checked");
+			$("#iconView").attr("class", selected.val());
+		});
+
+
+	</script>
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

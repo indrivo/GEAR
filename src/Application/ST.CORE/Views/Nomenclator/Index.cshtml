@@ -1,20 +1,20 @@
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = "Menus";
+	ViewData["Title"] = "Nomenclators";
 }
 <div class="card">
 	<div class="card-body">
 		<h4 class="card-title">Page Types</h4>
-		<h6 class="card-subtitle">List of menu</h6>
+		<h6 class="card-subtitle">List of nomenclators</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
 					<div class="mr-auto">
 						<div class="form-group">
 							<a asp-action="Create" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add menu
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add nomenclator
 							</a>
-							<small>New menu will be added.</small>
+							<small>New nomenclator will be added.</small>
 						</div>
 					</div>
 				</div>
@@ -63,8 +63,6 @@
 				"ajax": {
 					"url": '@Url.Action("LoadPages")',
 					"type": "POST"
-					
-
 				},
 				"columns": [
 					{ "data": "name" },
@@ -77,7 +75,7 @@
 						data: null,
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-warning btn-sm" href="@Url.Action("GetMenu")?menuId=${row.id}">Items</a>
+									<a class="btn btn-warning btn-sm" href="@Url.Action("GetNomenclator")?nomenclatorId=${row.id}">Items</a>
 									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
 								}'); >Delete</button>
@@ -90,14 +88,14 @@
 
 		function createAlert(rowId) {
 			const object = {
-				alertTitle: "Delete this menu?",
-				alertText: "Are you sure that you want to leave this menu?",
+				alertTitle: "Delete this nomenclator?",
+				alertText: "Are you sure that you want to leave this nomenclator?",
 				confirmButtonText: "Yes, delete it!",
 				rowId: rowId,
 				tableId: "#pageTable",
 				urlForDelete: '@Url.Action("Delete")',
 				type:"warning",
-				onDeleteSuccess: "Menu has been deleted.",
+				onDeleteSuccess: "Nomenclator has been deleted.",
 				onDeleteFail: "Something wrong",
 				onServerNoResponse:"Api not respond or not have permissions."
 			};
