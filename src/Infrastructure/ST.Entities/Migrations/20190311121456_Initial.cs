@@ -345,6 +345,7 @@ namespace ST.Entities.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     Changed = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    DatabaseContextName = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(nullable: true),
                     TrackEventType = table.Column<int>(nullable: false),
                     RecordId = table.Column<Guid>(nullable: false),

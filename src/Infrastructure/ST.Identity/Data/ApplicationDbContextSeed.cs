@@ -98,7 +98,7 @@ namespace ST.Identity.Data
             if (entity.ApplicationUsers.Any())
             {
                 var group = context.AuthGroups.FirstOrDefault();
-                foreach (var user in entity.ApplicationUsers)
+                foreach (var user in entity.ApplicationUsers.Select(x => x.Adapt<ApplicationUser>()).ToList())
                 {
                     var exists = await userManager.FindByNameAsync(user.UserName);
                     if (exists != null) continue;
@@ -113,7 +113,7 @@ namespace ST.Identity.Data
                     if (!result.Succeeded) continue;
                     if (entity.ApplicationRoles.Any())
                     {
-                        await userManager.AddToRolesAsync(user.Adapt<ApplicationUser>(), entity.ApplicationRoles.Select(x => x.Name));
+                        await userManager.AddToRolesAsync(user, entity.ApplicationRoles.Select(x => x.Name));
                     }
 
                     if (group != null)

@@ -10,6 +10,11 @@ namespace ST.Audit.Models
     public class TrackAudit : BaseModel
     {
         /// <summary>
+        /// Context
+        /// </summary>
+        public string DatabaseContextName { get; set; }
+
+        /// <summary>
         /// UserName
         /// </summary>
         public string UserName { get; set; }

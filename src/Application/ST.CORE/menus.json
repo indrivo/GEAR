@@ -334,20 +334,9 @@
       {
         "SubItems": [
           {
-            "SubItems": [
-              {
-                "SubItems": null,
-                "Name": "Audit CORE",
-                "Href": "/Audit",
-                "Translate": "",
-                "Icon": null,
-                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-                "Author": "system",
-                "AllowedRoles": "Administrator#"
-              }
-            ],
+            "SubItems": null,
             "Name": "Audit",
-            "Href": null,
+            "Href": "/Audit",
             "Translate": "",
             "Icon": "mdi mdi-transcribe",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",

@@ -5,7 +5,6 @@ using ST.Audit.Attributes;
 using ST.Audit.Contexts;
 using ST.Audit.Enums;
 using ST.Audit.Models;
-using ST.BaseRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,7 +88,12 @@ namespace ST.Audit.Extensions
         {
             context.ChangeTracker.Tracked += async (sender, eventArgs) =>
             {
+                if (eventArgs.Entry.Entity.GetType().Name == "ApplicationRole")
+                {
+                    var v = 5;
+                }
                 if (eventArgs.Entry.State == EntityState.Unchanged) return;
+
                 var (audit, entry) = Track(eventArgs);
                 if (audit == null) return;
                 await context.AddAsync(audit);
@@ -137,7 +141,8 @@ namespace ST.Audit.Extensions
                     Author = "System",
                     ModifiedBy = "System",
                     Version = 1,
-                    TrackEventType = GetRecordState(eventArgs.Entry.State)
+                    TrackEventType = GetRecordState(eventArgs.Entry.State),
+                    DatabaseContextName = eventArgs.Entry.Context.GetType().FullName
                 };
                 var currentVersion = Convert.ToInt32(eventArgs.Entry.Entity.GetType().GetProperty("Version")?.GetValue(eventArgs.Entry.Entity).ToString());
                 var propertyId = eventArgs.Entry.Entity.GetType().GetProperty("Id");
@@ -150,6 +155,12 @@ namespace ST.Audit.Extensions
                     {
                         versionProperty.SetValue(entry, audit.Version);
                     }
+                }
+
+                var tenantIdProp = eventArgs.Entry.Entity.GetType().GetProperty("TenantId");
+                if (tenantIdProp != null)
+                {
+                    audit.TenantId = tenantIdProp.GetValue(eventArgs.Entry.Entity)?.ToString()?.ToGuid();
                 }
 
                 var auditDetails = new List<TrackAuditDetails>();

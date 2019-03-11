@@ -10,7 +10,7 @@ using ST.Identity.Data;
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190226120746_Initial")]
+    [Migration("20190311121617_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,6 +116,8 @@ namespace ST.Identity.Migrations
                     b.Property<DateTime>("Changed");
 
                     b.Property<DateTime>("Created");
+
+                    b.Property<string>("DatabaseContextName");
 
                     b.Property<bool>("IsDeleted");
 

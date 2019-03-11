@@ -115,6 +115,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<DateTime>("Created");
 
+                    b.Property<string>("DatabaseContextName");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
