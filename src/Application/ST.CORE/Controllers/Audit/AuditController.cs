@@ -55,14 +55,6 @@ namespace ST.CORE.Controllers.Audit
 			return View();
 		}
 
-		/// <summary>
-		/// Get list of audit Hrm
-		/// </summary>
-		/// <returns></returns>
-		public IActionResult Hrm()
-		{
-			return View();
-		}
 
 		/// <summary>
 		/// Filter list
@@ -196,34 +188,18 @@ namespace ST.CORE.Controllers.Audit
 		/// <param name="stage"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> Details(Guid? id, StageEnum.Module stage)
+		public async Task<IActionResult> Details(Guid? id, string contextName)
 		{
 			if (id == null)
 			{
 				return NotFound();
 			}
 
-			TrackAudit track;
-			var enumViewModel = new TrackAuditEnumViewModel();
-			switch (stage)
-			{
-				case StageEnum.Module.BSC:
-					return NotFound();
-
-				case StageEnum.Module.CORE:
-					track = await GetTrackDetails(id, _context);
-					enumViewModel.ActionUrl = "Index";
-					break;
-
-				default:
-					track = null;
-					break;
-			}
+			TrackAudit track = await GetTrackDetails(id, _context);
 
 			if (track == null) return NotFound();
 
-			enumViewModel.Track = track;
-			return View(enumViewModel);
+			return View(track);
 		}
 
 		/// <summary>
@@ -233,24 +209,14 @@ namespace ST.CORE.Controllers.Audit
 		/// <param name="stage"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Versions(Guid? id, StageEnum.Module stage)
+		public IActionResult Versions(Guid? id, string contextName)
 		{
 			if (id == null)
 			{
 				return NotFound();
 			}
 
-			List<TrackAudit> listTrack;
-			switch (stage)
-			{
-				case StageEnum.Module.CORE:
-					listTrack = GetTrackVersions(id, _context);
-					break;
-
-				default:
-					return NotFound();
-
-			}
+			List<TrackAudit>  listTrack = GetTrackVersions(id, _context);
 
 			return View(listTrack);
 		}

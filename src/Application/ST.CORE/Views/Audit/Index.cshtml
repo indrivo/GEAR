@@ -65,8 +65,8 @@
 						data: null,
 						render: function(data) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-warning btn-sm" href="@Url.Action("Versions")?id=${data.id}&stage=@StageEnum.Module.CORE">Versions</a>
-									<a class="btn btn-info btn-sm" href="@Url.Action("Details")?id=${data.id}&stage=@StageEnum.Module.CORE">Details</a>
+									<a class="btn btn-warning btn-sm" href="@Url.Action("Versions")?id=${data.id}&context=${data.databaseContextName}">Versions</a>
+									<a class="btn btn-info btn-sm" href="@Url.Action("Details")?id=${data.id}&context=${data.databaseContextName}">Details</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=CreateAlert('${data.id
 								}'); >Delete</button>
 									</div>`;

@@ -88,10 +88,6 @@ namespace ST.Audit.Extensions
         {
             context.ChangeTracker.Tracked += async (sender, eventArgs) =>
             {
-                if (eventArgs.Entry.Entity.GetType().Name == "ApplicationRole")
-                {
-                    var v = 5;
-                }
                 if (eventArgs.Entry.State == EntityState.Unchanged) return;
 
                 var (audit, entry) = Track(eventArgs);
@@ -133,6 +129,7 @@ namespace ST.Audit.Extensions
             try
             {
                 dynamic entry = eventArgs.Entry.Entity;
+                var contextName = eventArgs.Entry.Context.GetType().FullName;
                 var audit = new TrackAudit
                 {
                     TypeFullName = eventArgs.Entry.Entity.GetType().FullName,
@@ -142,7 +139,7 @@ namespace ST.Audit.Extensions
                     ModifiedBy = "System",
                     Version = 1,
                     TrackEventType = GetRecordState(eventArgs.Entry.State),
-                    DatabaseContextName = eventArgs.Entry.Context.GetType().FullName
+                    DatabaseContextName = contextName
                 };
                 var currentVersion = Convert.ToInt32(eventArgs.Entry.Entity.GetType().GetProperty("Version")?.GetValue(eventArgs.Entry.Entity).ToString());
                 var propertyId = eventArgs.Entry.Entity.GetType().GetProperty("Id");
