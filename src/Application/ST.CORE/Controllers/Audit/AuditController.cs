@@ -168,7 +168,8 @@ namespace ST.CORE.Controllers.Audit
 				IsDeleted = o.IsDeleted,
 				TrackEventType = o.TrackEventType,
 				Version = o.Version,
-				EventType = o.TrackEventType.ToString()
+				EventType = o.TrackEventType.ToString(),
+				DatabaseContextName = o.DatabaseContextName
 			});
 
 			var finalResult = new DTResult<TrackAuditsListViewModel>
@@ -185,17 +186,31 @@ namespace ST.CORE.Controllers.Audit
 		/// Get details audit
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="stage"></param>
+		/// <param name="contextName"></param>
 		/// <returns></returns>
 		[HttpGet]
 		public async Task<IActionResult> Details(Guid? id, string contextName)
 		{
-			if (id == null)
+			if (id == null && string.IsNullOrEmpty(contextName))
 			{
 				return NotFound();
 			}
 
-			TrackAudit track = await GetTrackDetails(id, _context);
+			dynamic dbContext = null;
+			if (typeof(ApplicationDbContext).FullName == contextName)
+			{
+				dbContext = _context;
+			}
+			else if (typeof(EntitiesDbContext).FullName == contextName)
+			{
+				dbContext = _entitiesDb;
+			}
+			else if (typeof(ProcessesDbContext).FullName == contextName)
+			{
+				dbContext = _processesDbContext;
+			}
+
+			TrackAudit track = await GetTrackDetails(id, dbContext);
 
 			if (track == null) return NotFound();
 
@@ -211,12 +226,25 @@ namespace ST.CORE.Controllers.Audit
 		[HttpGet]
 		public IActionResult Versions(Guid? id, string contextName)
 		{
-			if (id == null)
+			if (id == null && string.IsNullOrEmpty(contextName))
 			{
 				return NotFound();
 			}
+			dynamic dbContext = null;
+			if (typeof(ApplicationDbContext).FullName == contextName)
+			{
+				dbContext = _context;
+			}
+			else if (typeof(EntitiesDbContext).FullName == contextName)
+			{
+				dbContext = _entitiesDb;
+			}
+			else if (typeof(ProcessesDbContext).FullName == contextName)
+			{
+				dbContext = _processesDbContext;
+			}
 
-			List<TrackAudit>  listTrack = GetTrackVersions(id, _context);
+			List<TrackAudit> listTrack = GetTrackVersions(id, dbContext);
 
 			return View(listTrack);
 		}
