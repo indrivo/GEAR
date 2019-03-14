@@ -31,6 +31,11 @@ namespace ST.CORE
 	public class Startup
 	{
 		/// <summary>
+		/// Cookie name
+		/// </summary>
+		private const string CookieName = ".ST.ISO.Data";
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="configuration"></param>
@@ -121,7 +126,7 @@ namespace ST.CORE
 				.AddSession(opts =>
 				{
 					opts.Cookie.HttpOnly = true;
-					opts.Cookie.Name = ".ST.CORE.Data";
+					opts.Cookie.Name = CookieName;
 				})
 				.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
@@ -159,6 +164,7 @@ namespace ST.CORE
 			//Register dependencies
 			return services.AddWindsorContainers();
 		}
+
 		/// <summary>
 		/// On application start
 		/// </summary>

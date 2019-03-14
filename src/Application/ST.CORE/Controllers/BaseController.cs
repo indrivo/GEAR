@@ -1,8 +1,11 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
@@ -10,6 +13,7 @@ using ST.Identity.Data.UserProfiles;
 using ST.Identity.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Organization.Models;
+using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers
 {
@@ -40,11 +44,25 @@ namespace ST.CORE.Controllers
 		protected readonly UserManager<ApplicationUser> UserManager;
 
 		/// <summary>
+		/// Inject processes db context
+		/// </summary>
+		protected readonly ProcessesDbContext ProcessesDbContext;
+
+		/// <summary>
 		/// Inject RoleManager
 		/// </summary>
 		protected readonly RoleManager<ApplicationRole> RoleManager;
 
-		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService)
+
+		/// <summary>
+		/// Tenant id
+		/// </summary>
+		protected Guid? CurrentUserTenantId
+		{
+			get => User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+		}
+
+		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext)
 		{
 			Context = context;
 			ApplicationDbContext = applicationDbContext;
@@ -52,6 +70,7 @@ namespace ST.CORE.Controllers
 			RoleManager = roleManager;
 			Notify = notify;
 			OrganizationService = organizationService;
+			ProcessesDbContext = processesDbContext;
 		}
 
 

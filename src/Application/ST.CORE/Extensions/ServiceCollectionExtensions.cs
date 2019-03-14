@@ -361,7 +361,8 @@ namespace ST.CORE.Extensions
 
 			//Dynamic data service
 			castleContainer.Register(Component.For<IDynamicEntityDataService>()
-				.ImplementedBy<DynamicEntityDataService>());
+				.ImplementedBy<DynamicEntityDataService>()
+				.DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
 			//Files
 			var fileConfig = new FileConfig { DbContext = formsContext, WebRootPath = env.WebRootPath };

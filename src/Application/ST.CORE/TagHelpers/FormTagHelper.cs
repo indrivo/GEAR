@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using ST.Entities.Data;
+using ST.Entities.Models.Tables;
 using ST.Identity.Data.UserProfiles;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ST.CORE.TagHelpers
@@ -13,6 +16,10 @@ namespace ST.CORE.TagHelpers
 	[HtmlTargetElement("dform")]
 	public class FormTagHelper : TagHelper
 	{
+		/// <summary>
+		/// Inject localizer
+		/// </summary>
+		private readonly IStringLocalizer _localizer;
 		/// <summary>
 		/// Inject context
 		/// </summary>
@@ -28,19 +35,46 @@ namespace ST.CORE.TagHelpers
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
 		/// <summary>
+		/// Title
+		/// </summary>
+		public string Title { get; set; }
+
+		/// <summary>
 		/// Entity id
 		/// </summary>
-		public Guid? EntityId { get; set; }
+		public Guid? EntityId { get; set; } = null;
 
 		/// <summary>
 		/// Form Id
 		/// </summary>
-		public Guid? FormId { get; set; }
+		public Guid? FormId { get; set; } = null;
 
 		/// <summary>
 		/// Entity name
 		/// </summary>
-		public string EntityName { get; set; }
+		public string EntityName { get; set; } = null;
+
+
+		/// <summary>
+		/// Form Style
+		/// </summary>
+		public FormStyle FormStyle { get; set; } = FormStyle.StandartTemplate;
+
+
+		/// <summary>
+		/// Object on edit
+		/// </summary>
+		public object AspFor { get; set; }
+
+		/// <summary>
+		/// Action
+		/// </summary>
+		public string AspAction { get; set; } = null;
+
+		/// <summary>
+		/// Controller
+		/// </summary>
+		public string AspController { get; set; } = null;
 
 
 		/// <summary>
@@ -49,12 +83,14 @@ namespace ST.CORE.TagHelpers
 		/// <param name="dbContext"></param>
 		/// <param name="httpContextAccessor"></param>
 		/// <param name="userManager"></param>
-		public FormTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
+		public FormTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IStringLocalizer localizer)
 		{
 			_dbContext = dbContext;
 			_userManager = userManager;
 			_httpContextAccessor = httpContextAccessor;
+			_localizer = localizer;
 		}
+
 		/// <summary>
 		/// Get html data
 		/// </summary>
@@ -65,9 +101,97 @@ namespace ST.CORE.TagHelpers
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
 			var childs = (await output.GetChildContentAsync()).GetContent();
+			var body = await PerformTemplate();
+			output.Content.SetHtmlContent(body.ToString());
+		}
 
+		/// <summary>
+		/// Get Input Body
+		/// </summary>
+		/// <param name="field"></param>
+		/// <returns></returns>
+		private async Task<string> GetInputBody(TableModelFields field)
+		{
+			var configurations = _dbContext.TableFieldConfigValues
+				.Include(x => x.TableFieldConfig)
+				.Where(x => x.TableModelFieldId == field.Id).ToList();
 
-			output.Content.SetHtmlContent("");
+			var content = string.Empty;
+			switch (field.DataType)
+			{
+				case "nvarchar":
+					{
+						content = FormField.GetInputTextField(field.Id.ToString());
+					}
+					break;
+			}
+			return content;
+		}
+
+		/// <summary>
+		/// Get system fields
+		/// </summary>
+		/// <param name="table"></param>
+		/// <returns></returns>
+		private string GetSystemFields(TableModel table)
+		{
+			var builder = new StringBuilder();
+			builder.Append(FormField.GetHiddenField(nameof(TableModel), table.Id.ToString()));
+			builder.Append(FormField.GetHiddenField("__form_token__", Guid.NewGuid().ToString()));
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Get table field html body
+		/// </summary>
+		/// <param name="field"></param>
+		/// <returns></returns>
+		private async Task<string> GetTableFieldBody(TableModelFields field)
+		{
+			return string.Format(FormField._fieldBodyTemplate, field.Id, await GetInputBody(field), field.Description, field.DisplayName ?? field.Name);
+		}
+
+		/// <summary>
+		/// Perform fields
+		/// </summary>
+		/// <returns></returns>
+		private async Task<string> PerformFields()
+		{
+			var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+			var builder = new StringBuilder();
+			if ((EntityName != null) || (EntityId != null && EntityId != Guid.Empty))
+			{
+				var table = _dbContext.Table.Include(x => x.TableFields)
+					.FirstOrDefault(x => ((!string.IsNullOrEmpty(EntityName) && x.Name == EntityName)
+					|| (EntityId != null && EntityId != Guid.Empty && x.Id == EntityId)) && x.TenantId == user.TenantId);
+
+				if (table != null)
+				{
+					foreach (var field in table.TableFields)
+					{
+						builder.Append(await GetTableFieldBody(field));
+					}
+					builder.Append(GetSystemFields(table));
+				}
+			}
+			else if (FormId != null && FormId != Guid.Empty)
+			{
+
+			}
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Perform template
+		/// </summary>
+		/// <returns></returns>
+		private async Task<StringBuilder> PerformTemplate()
+		{
+			var builder = new StringBuilder();
+			var template = FormUtil.GetFormBodyByFormStyle(FormStyle);
+			var fields = await PerformFields();
+			builder.AppendFormat(template, Title, fields, _localizer["save"], _localizer["reset"], _localizer["back"]);
+			return builder;
 		}
 	}
 }

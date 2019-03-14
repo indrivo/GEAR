@@ -45,12 +45,11 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[Authorize]
-		public async Task<IActionResult> Index()
+		public IActionResult Index()
 		{
 			var list = _context.GetTrackedEntities();
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
 			ViewBag.TotalSessions = _hub.GetSessionsCount();
-			//ViewBag.User = await _userManager.GetUserAsync(User);
 			return View("Index");
 		}
 

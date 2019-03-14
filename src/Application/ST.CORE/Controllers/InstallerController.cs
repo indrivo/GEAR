@@ -9,7 +9,9 @@ using Newtonsoft.Json;
 using ST.CORE.Installation;
 using ST.CORE.Models.InstallerModels;
 using ST.Entities.Controls.Querry;
+using ST.Entities.Data;
 using ST.Entities.Models.Notifications;
+using ST.Entities.Models.Tables;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
 using ST.Identity.CacheModels;
@@ -32,6 +34,11 @@ namespace ST.CORE.Controllers
 		private readonly IHostingEnvironment _hostingEnvironment;
 
 		/// <summary>
+		/// Inject entity db context
+		/// </summary>
+		private readonly EntitiesDbContext _entitiesDbContext;
+
+		/// <summary>
 		/// Inject application context
 		/// </summary>
 		private readonly ApplicationDbContext _applicationDbContext;
@@ -40,6 +47,9 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		private readonly LdapUserManager _ldapUserManager;
 
+		/// <summary>
+		/// Inject local service
+		/// </summary>
 		private readonly ILocalService _localService;
 
 		/// <summary>
@@ -78,8 +88,10 @@ namespace ST.CORE.Controllers
 		/// <param name="signInManager"></param>
 		/// <param name="notify"></param>
 		/// <param name="cacheService"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, LdapUserManager ldapUserManager, SignInManager<ApplicationUser> signInManager, INotify notify, ICacheService cacheService)
+		/// <param name="entitiesDbContext"></param>
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, LdapUserManager ldapUserManager, SignInManager<ApplicationUser> signInManager, INotify notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext)
 		{
+			_entitiesDbContext = entitiesDbContext;
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_ldapUserManager = ldapUserManager;
@@ -220,6 +232,11 @@ namespace ST.CORE.Controllers
 			//Update super user information
 			await _applicationDbContext.SaveChangesAsync();
 
+			await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
+			{
+
+			});
+
 			//For core change name as installer change
 			_localService.SetAppName("core", model.SiteName);
 
@@ -234,6 +251,7 @@ namespace ST.CORE.Controllers
 				Subject = "Info",
 				NotificationTypeId = NotificationType.Info
 			});
+
 			//sign in user
 			await _signInManager.SignInAsync(superUser, true);
 			return RedirectToAction("Index", "Home");

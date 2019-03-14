@@ -137,7 +137,9 @@ namespace ST.CORE.Installation
 		/// <summary>
 		/// Create dynamic tables
 		/// </summary>
-		public static void CreateDynamicTables(string schemaName = null)
+		/// <param name="tenantId"></param>
+		/// <param name="schemaName"></param>
+		public static void CreateDynamicTables(Guid tenantId, string schemaName = null)
 		{
 			var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
 			{
@@ -150,9 +152,9 @@ namespace ST.CORE.Installation
 				if (item.SynchronizeTableViewModels == null) continue;
 				foreach (var ent in item.SynchronizeTableViewModels)
 				{
-					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
+					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
 					{
-						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, schemaName);
+						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, schemaName);
 					}
 				}
 			}
@@ -162,9 +164,9 @@ namespace ST.CORE.Installation
 
 			foreach (var ent in entities)
 			{
-				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
+				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
 				{
-					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, ent.Schema);
+					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
 				}
 			}
 		}
@@ -175,7 +177,7 @@ namespace ST.CORE.Installation
 		/// <param name="tenant"></param>
 		public static void CreateDynamicTables(this Tenant tenant)
 		{
-			CreateDynamicTables(tenant?.MachineName);
+			CreateDynamicTables(tenant.Id, tenant?.MachineName);
 		}
 
 		/// <summary>

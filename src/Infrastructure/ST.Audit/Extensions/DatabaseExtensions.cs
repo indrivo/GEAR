@@ -7,6 +7,7 @@ using ST.Audit.Enums;
 using ST.Audit.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -14,6 +15,88 @@ namespace ST.Audit.Extensions
 {
     public static class DatabaseExtensions
     {
+        public static TrackAudit GetTrackAuditFromDictionary(this Dictionary<string, object> keys,
+            string contextName, Guid? tenantId, Type objectType, TrackEventType eventType)
+        {
+            if (keys == null) return null;
+            var details = new List<TrackAuditDetails>();
+            var audit = new TrackAudit
+            {
+                Created = DateTime.Now,
+                Changed = DateTime.Now,
+                DatabaseContextName = contextName,
+                TenantId = tenantId,
+                TypeFullName = objectType.FullName,
+                TrackEventType = eventType,
+                Version = 1
+            };
+
+            if (keys.ContainsKey("Id"))
+            {
+                audit.RecordId = keys["Id"].ToString().ToGuid();
+            }
+
+            if (eventType == TrackEventType.Updated)
+            {
+                if (keys.ContainsKey("Version"))
+                {
+                    try
+                    {
+                        var version = Convert.ToInt32(keys["Version"]);
+                        audit.Version = ++version;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex);
+                    }
+                }
+            }
+
+            foreach (var prop in keys)
+            {
+                try
+                {
+                    var detailObject = new TrackAuditDetails
+                    {
+                        PropertyName = prop.Key,
+                        PropertyType = prop.Value?.GetType().FullName,
+                        Value = prop.Value?.ToString(),
+                        TenantId = tenantId
+                    };
+
+                    details.Add(detailObject);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+            }
+            audit.AuditDetailses = details;
+            return audit;
+        }
+
+        /// <summary>
+        /// Store audit in context
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="audit"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static bool Store<TContext>(this TrackAudit audit, TContext context) where TContext : TrackerDbContext
+        {
+            try
+            {
+                context.Add(audit);
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return false;
+            }
+        }
+
         /// <summary>
         /// Get tracked entities
         /// </summary>

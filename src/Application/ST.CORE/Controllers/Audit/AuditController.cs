@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Interfaces;
@@ -8,6 +9,10 @@ using ST.CORE.Models;
 using ST.CORE.Models.AuditViewModels;
 using ST.Entities.Data;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 using System;
 using System.Collections.Generic;
@@ -17,33 +22,10 @@ using System.Threading.Tasks;
 namespace ST.CORE.Controllers.Audit
 {
 	[Authorize]
-	public class AuditController : Controller
+	public class AuditController : BaseController
 	{
-		/// <summary>
-		/// Inject Application Db Context
-		/// </summary>
-		private readonly ApplicationDbContext _context;
-
-		/// <summary>
-		/// Inject entities db context
-		/// </summary>
-		private readonly EntitiesDbContext _entitiesDb;
-
-		/// <summary>
-		/// Inject processes db context
-		/// </summary>
-		private readonly ProcessesDbContext _processesDbContext;
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="hrmDbContext"></param>
-		public AuditController(ApplicationDbContext context, EntitiesDbContext entitiesDb, ProcessesDbContext processesDbContext)
+		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			_context = context;
-			_entitiesDb = entitiesDb;
-			_processesDbContext = processesDbContext;
 		}
 
 		/// <summary>
@@ -70,9 +52,9 @@ namespace ST.CORE.Controllers.Audit
 			out int totalCount)
 		{
 			var data = new List<TrackAudit>();
-			var coreData = _context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
-			var processData = _processesDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
-			var entityData = _entitiesDb.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var coreData = ApplicationDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var processData = ProcessesDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var entityData = Context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
 
 			data.AddRange(coreData);
 			data.AddRange(processData);
@@ -199,15 +181,15 @@ namespace ST.CORE.Controllers.Audit
 			dynamic dbContext = null;
 			if (typeof(ApplicationDbContext).FullName == contextName)
 			{
-				dbContext = _context;
+				dbContext = ApplicationDbContext;
 			}
 			else if (typeof(EntitiesDbContext).FullName == contextName)
 			{
-				dbContext = _entitiesDb;
+				dbContext = Context;
 			}
 			else if (typeof(ProcessesDbContext).FullName == contextName)
 			{
-				dbContext = _processesDbContext;
+				dbContext = ProcessesDbContext;
 			}
 
 			TrackAudit track = await GetTrackDetails(id, dbContext);
@@ -233,15 +215,15 @@ namespace ST.CORE.Controllers.Audit
 			dynamic dbContext = null;
 			if (typeof(ApplicationDbContext).FullName == contextName)
 			{
-				dbContext = _context;
+				dbContext = ApplicationDbContext;
 			}
 			else if (typeof(EntitiesDbContext).FullName == contextName)
 			{
-				dbContext = _entitiesDb;
+				dbContext = Context;
 			}
 			else if (typeof(ProcessesDbContext).FullName == contextName)
 			{
-				dbContext = _processesDbContext;
+				dbContext = ProcessesDbContext;
 			}
 
 			List<TrackAudit> listTrack = GetTrackVersions(id, dbContext);
