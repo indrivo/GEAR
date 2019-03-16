@@ -19,7 +19,7 @@
 					</div>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered" id="pageTable">
+			<table class="table table-striped table-bordered" id="dfTable">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -47,62 +47,62 @@
 		}
 	</script>
 	<script type="text/javascript" language="javascript">
-		$(document).ready(function ($) {
+		$(document).ready(function($) {
 			const ent = load("/PageRender/GetEntities");
-			const model = { };
+			const model = {};
 
-			$.each(ent, function (index, item) {
-				model[item.id] = item.name;
-			});
+			$.each(ent,
+				function(index, item) {
+					model[item.id] = item.name;
+				});
 
-			$("#addViewModel").on("click", function () {
-				swal({
-					title: 'Select Entity',
-					input: 'select',
-					inputOptions: model,
-					inputPlaceholder: 'required',
-					showCancelButton: true,
-					inputValidator: function (value) {
-						return new Promise(function (resolve, reject) {
-							if (value !== '') {
-								resolve();
-							} else {
-								reject('You need to select an entity!');
-							}
-						});
-					}
-				}).then(function (result) {
-					if (result.value) {
-						$.ajax({
-							url: "@Url.Action("GenerateViewModel")",
-							type: "post",
-							data: {
-								entityId: result.value
-							},
-							success: function (data) {
-								if (!data) {
+			$("#addViewModel").on("click",
+				function() {
+					swal({
+						title: 'Select Entity',
+						input: 'select',
+						inputOptions: model,
+						inputPlaceholder: 'required',
+						showCancelButton: true,
+						inputValidator: function(value) {
+							return new Promise(function(resolve, reject) {
+								if (value !== '') {
+									resolve();
+								} else {
+									reject('You need to select an entity!');
+								}
+							});
+						}
+					}).then(function(result) {
+						if (result.value) {
+							$.ajax({
+								url: "@Url.Action("GenerateViewModel")",
+								type: "post",
+								data: {
+									entityId: result.value
+								},
+								success: function(data) {
+									if (!data) {
+										swal("Fail!", "Internal server error", "error");
+									} else if (data.is_success) {
+										location.href = `/ViewModel/OrderFields?id=${data.result}`;
+									}
+								},
+								error: function() {
 									swal("Fail!", "Internal server error", "error");
 								}
-								else
-									if (data.is_success) {
-										location.href = `/ViewModel/OrderFields?id=${data.result}`;
-								}
-							},
-							error: function () {
-								swal("Fail!", "Internal server error", "error");
-							}
-						});
-					}
+							});
+						}
+					});
 				});
-			});
 
-			const tableId = '#pageTable';
+			const tableId = '#dfTable';
 			if ($.fn.DataTable.isDataTable(tableId)) {
-				alert();
 				$(tableId).dataTable().fnDestroy();
 				$(tableId).dataTable().empty();
 			}
 			$(tableId).DataTable({
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)
@@ -124,15 +124,17 @@
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields")?id=${row.id}">Order Fields</a>
+									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields")?id=${row.id
+								}">Order Fields</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
 								}'); >Delete</button>
 									</div>`;
 						}
 					}
 				]
-			});
+			});		
 		});
+
 
 		function createAlert(rowId) {
 			const object = {
@@ -142,10 +144,10 @@
 				rowId: rowId,
 				tableId: "#pageTable",
 				urlForDelete: '@Url.Action("Delete")',
-				type:"warning",
+				type: "warning",
 				onDeleteSuccess: "View model has been deleted.",
 				onDeleteFail: "Something wrong",
-				onServerNoResponse:"Api not respond or not have permissions."
+				onServerNoResponse: "Api not respond or not have permissions."
 			};
 			DeleteData(object);
 		}

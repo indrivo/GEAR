@@ -16,6 +16,7 @@ using ST.Entities.Utils;
 using Microsoft.AspNetCore.Http;
 using ST.Audit.Extensions;
 using ST.Audit.Enums;
+using ST.Organization;
 
 namespace ST.Entities.Services
 {
@@ -50,7 +51,10 @@ namespace ST.Entities.Services
         /// </summary>
         private Guid? CurrentUserTenantId
         {
-            get => _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+            get
+            {
+                return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid() ?? DefaultTenantSettings.TenantId;
+            }
         }
 
 
@@ -74,6 +78,7 @@ namespace ST.Entities.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get filtered data list
         /// </summary>
@@ -190,6 +195,7 @@ namespace ST.Entities.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get first or default
         /// </summary>
@@ -202,14 +208,13 @@ namespace ST.Entities.Services
             //TODO: Parse NodeType.Constant of expression for get sql where query
             //var where = translator.Translate(predicate);
             var allCheck = await GetAll<TEntity, TEntity>(predicate?.Compile());
-            if (allCheck.IsSuccess)
-            {
-                result.IsSuccess = true;
-                result.Result = allCheck.Result.FirstOrDefault();
-            }
+            if (!allCheck.IsSuccess) return result;
+            result.IsSuccess = true;
+            result.Result = allCheck.Result.FirstOrDefault();
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get last element
         /// </summary>
@@ -222,11 +227,9 @@ namespace ST.Entities.Services
             var translator = new QueryTranslator();
             //TODO: Parse NodeType.Constant of expression for get sql where query
             var allCheck = await GetAll<TEntity, TEntity>(predicate?.Compile());
-            if (allCheck.IsSuccess)
-            {
-                result.IsSuccess = true;
-                result.Result = allCheck.Result.LastOrDefault();
-            }
+            if (!allCheck.IsSuccess) return result;
+            result.IsSuccess = true;
+            result.Result = allCheck.Result.LastOrDefault();
             return result;
         }
 
@@ -345,10 +348,10 @@ namespace ST.Entities.Services
             }
             table.Values = new List<Dictionary<string, object>> { model };
             result = _context.Insert(table);
-            if (result.IsSuccess)
-            {
-                if (audit != null) audit.Store(_context);
-            }
+            if (!result.IsSuccess) return result;
+            if (audit == null) return result;
+            audit.RecordId = result.Result;
+            audit?.Store(_context);
             return result;
         }
 
@@ -371,6 +374,7 @@ namespace ST.Entities.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Add range
         /// </summary>
@@ -433,6 +437,11 @@ namespace ST.Entities.Services
             if (!req.IsSuccess || !req.Result) return result;
             result.IsSuccess = true;
             result.Result = Guid.Parse(model["Id"].ToString());
+            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
+                typeof(TEntity), TrackEventType.Updated);
+
+            audit.RecordId = result.Result;
+            audit?.Store(_context);
             return result;
         }
 
@@ -579,22 +588,27 @@ namespace ST.Entities.Services
             var type = typeof(T);
             var obj = Activator.CreateInstance(type);
             if (dict == null) return (T)obj;
-            foreach (var kv in dict)
+            foreach (var (key, value) in dict)
             {
                 try
                 {
-                    var fieldType = type.GetProperties().FirstOrDefault(x => x.Name.Equals(kv.Key))?.PropertyType;
+                    var fieldType = type.GetProperties().FirstOrDefault(x => x.Name.Equals(key))?.PropertyType;
 
-                    switch (fieldType.Name)
+                    switch (fieldType?.Name)
                     {
                         case "Guid":
                             {
-                                type.GetProperty(kv.Key).SetValue(obj, kv.Value);
+                                type.GetProperty(key).SetValue(obj, value);
                             }
                             break;
                         case "String":
                             {
-                                type.GetProperty(kv.Key).SetValue(obj, kv.Value.ToString());
+                                type.GetProperty(key).SetValue(obj, value.ToString());
+                            }
+                            break;
+                        case "Int32":
+                            {
+                                type.GetProperty(key).SetValue(obj, Convert.ToInt32(value.ToString()));
                             }
                             break;
                         case "Nullable`1":
@@ -609,9 +623,9 @@ namespace ST.Entities.Services
 
                                             case "Guid":
                                                 {
-                                                    type.GetProperty(kv.Key).SetValue(obj,
-                                                        DBNull.Value.Equals(kv.Value) ? default(Nullable)
-                                                        : kv.Value);
+                                                    type.GetProperty(key).SetValue(obj,
+                                                        DBNull.Value.Equals(value) ? default(Nullable)
+                                                        : value);
                                                 }
                                                 break;
                                         }
@@ -619,12 +633,12 @@ namespace ST.Entities.Services
                                 }
                                 else
                                 {
-                                    type.GetProperty(kv.Key).SetValue(obj, default(Nullable));
+                                    type.GetProperty(key).SetValue(obj, default(Nullable));
                                 }
                             }
                             break;
                         default:
-                            type.GetProperty(kv.Key).SetValue(obj, kv.Value);
+                            type.GetProperty(key).SetValue(obj, value);
                             break;
                     }
                 }

@@ -13,6 +13,7 @@
 			<table class="table table-striped table-bordered" id="tableAudit">
 				<thead>
 					<tr>
+						<th>Record Id</th>
 						<th>Changed</th>
 						<th>ModifiedBy</th>
 						<th>TrackEventType</th>
@@ -46,6 +47,7 @@
 			}
 
 			$(tableId).DataTable({
+				dom: '<"CustomizeColumns">lBfrtip',
 				processing: true, // for show progress bar
 				serverSide: true, // for process server side
 				filter: true, // this is for disable filter (search box)
@@ -56,6 +58,7 @@
 					type: "POST"
 				},
 				columns: [
+					{ data: "recordId" },
 					{ data: "changedString" },
 					{ data: "modifiedBy" },
 					{ data: "eventType" },

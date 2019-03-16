@@ -17,7 +17,6 @@ using ST.Identity.Abstractions;
 using ST.Identity.CacheModels;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.LDAP.Services;
 using ST.Identity.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Organization;
@@ -42,10 +41,6 @@ namespace ST.CORE.Controllers
 		/// Inject application context
 		/// </summary>
 		private readonly ApplicationDbContext _applicationDbContext;
-		/// <summary>
-		/// Inject Ldap User Manager
-		/// </summary>
-		private readonly LdapUserManager _ldapUserManager;
 
 		/// <summary>
 		/// Inject local service
@@ -58,7 +53,7 @@ namespace ST.CORE.Controllers
 		private readonly SignInManager<ApplicationUser> _signInManager;
 
 		/// <summary>
-		/// Inject permmision service
+		/// Inject permission service
 		/// </summary>
 		private readonly IPermissionService _permissionService;
 
@@ -75,7 +70,7 @@ namespace ST.CORE.Controllers
 		/// <summary>
 		/// Is system configured
 		/// </summary>
-		private readonly bool IsConfigured;
+		private readonly bool _isConfigured;
 
 		/// <summary>
 		/// Constructor
@@ -84,23 +79,21 @@ namespace ST.CORE.Controllers
 		/// <param name="localService"></param>
 		/// <param name="permissionService"></param>
 		/// <param name="applicationDbContext"></param>
-		/// <param name="ldapUserManager"></param>
 		/// <param name="signInManager"></param>
 		/// <param name="notify"></param>
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, LdapUserManager ldapUserManager, SignInManager<ApplicationUser> signInManager, INotify notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext)
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
-			_ldapUserManager = ldapUserManager;
 			_signInManager = signInManager;
 			_localService = localService;
 			_permissionService = permissionService;
 			_cacheService = cacheService;
 			_notify = notify;
-			IsConfigured = Application.IsConfigured(_hostingEnvironment);
+			_isConfigured = Application.IsConfigured(_hostingEnvironment);
 		}
 
 		/// <summary>
@@ -110,7 +103,7 @@ namespace ST.CORE.Controllers
 		[HttpGet]
 		public IActionResult Setup()
 		{
-			if (IsConfigured) return RedirectToAction("Index", "Home");
+			if (_isConfigured) return RedirectToAction("Index", "Home");
 			var model = new SetupModel();
 			var settings = Application.Settings(_hostingEnvironment);
 			if (settings != null)
@@ -232,10 +225,19 @@ namespace ST.CORE.Controllers
 			//Update super user information
 			await _applicationDbContext.SaveChangesAsync();
 
+			//Seed entity 
 			await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
 			{
-
+				Changed = DateTime.Now,
+				Created = DateTime.Now,
+				IsSystem = true,
+				Author = superUser?.Id,
+				MachineName = tenant.MachineName,
+				Name = tenant.MachineName,
+				TenantId = tenant.Id
 			});
+
+			await _entitiesDbContext.SaveChangesAsync();
 
 			//For core change name as installer change
 			_localService.SetAppName("core", model.SiteName);
@@ -263,7 +265,7 @@ namespace ST.CORE.Controllers
 		/// <returns></returns>
 		public IActionResult Index()
 		{
-			if (IsConfigured) return RedirectToAction("Index", "Home");
+			if (_isConfigured) return RedirectToAction("Index", "Home");
 			return View();
 		}
 	}

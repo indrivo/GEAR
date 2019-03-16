@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Sentry;
 using ST.CORE.Extensions;
 using ST.CORE.Models.InstallerModels;
 using ST.Entities.Data;
@@ -120,7 +121,10 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			BuildWebHost(args).Run();
+			using (SentrySdk.Init("https://165261edc4874a38b9d0a8c7f67509d3@sentry.io/1416303"))
+			{
+				BuildWebHost(args).Run();
+			}
 		}
 
 		/// <summary>

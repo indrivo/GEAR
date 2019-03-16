@@ -46,7 +46,6 @@ namespace ST.CORE.Controllers.Audit
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <param name="totalCount"></param>
-		/// <param name="context"></param>
 		/// <returns></returns>
 		private List<TrackAudit> GetTrackAuditFiltered(string search, string sortOrder, int start, int length,
 			out int totalCount)
@@ -151,7 +150,8 @@ namespace ST.CORE.Controllers.Audit
 				TrackEventType = o.TrackEventType,
 				Version = o.Version,
 				EventType = o.TrackEventType.ToString(),
-				DatabaseContextName = o.DatabaseContextName
+				DatabaseContextName = o.DatabaseContextName,
+				RecordId = o.RecordId
 			});
 
 			var finalResult = new DTResult<TrackAuditsListViewModel>

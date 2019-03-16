@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Organization.Models;
 
 namespace ST.CORE.Models.UserViewModels
 {
@@ -51,5 +53,16 @@ namespace ST.CORE.Models.UserViewModels
 
 		[Display(Name = "User Photo")]
 		public IFormFile UserPhoto { get; set; }
+
+		/// <summary>
+		/// List with tenants
+		/// </summary>
+		public IEnumerable<Tenant> Tenants { get; set; }
+
+		/// <summary>
+		/// User organization
+		/// </summary>
+		[Display(Name = "Select user organization")]
+		public Guid? TenantId { get; set; }
 	}
 }

@@ -37,6 +37,7 @@ $(document).ready(function ($) {
 	}
 
 	$(tableId).DataTable({
+		dom: '<"CustomizeColumns">lBfrtip',
 		"processing": true, // for show progress bar
 		"serverSide": true, // for process server side
 		"filter": true, // this is for disable filter (search box)

@@ -15,7 +15,6 @@ using ST.CORE.Attributes;
 using ST.CORE.Models;
 using ST.CORE.Models.UserViewModels;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Attributes;
@@ -122,7 +121,8 @@ namespace ST.CORE.Controllers.Identity
 			var model = new CreateUserViewModel
 			{
 				Roles = RoleManager.Roles.AsEnumerable(),
-				Groups = Context.AuthGroups.AsEnumerable()
+				Groups = Context.AuthGroups.AsEnumerable(),
+				Tenants = Context.Tenants.AsEnumerable()
 			};
 			return View(model);
 		}
@@ -140,6 +140,7 @@ namespace ST.CORE.Controllers.Identity
 			model.Roles = RoleManager.Roles.AsEnumerable();
 			model.Groups = Repository.GetAll<AuthGroup>();
 			model.Profiles = new List<EntityViewModel>();
+			model.Tenants = Context.Tenants.AsEnumerable();
 
 			if (!ModelState.IsValid)
 			{
@@ -155,7 +156,8 @@ namespace ST.CORE.Controllers.Identity
 				IsDeleted = model.IsDeleted,
 				Author = User.Identity.Name,
 				AuthenticationType = model.AuthenticationType,
-				IsEditable = true
+				IsEditable = true,
+				TenantId = model.TenantId
 			};
 
 			if (model.UserPhoto != null)
