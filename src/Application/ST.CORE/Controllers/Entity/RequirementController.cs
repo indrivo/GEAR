@@ -12,15 +12,14 @@ using ST.CORE.Models;
 using ST.CORE.Models.RoleViewModels;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
-
-using ST.Entities.Models.Request;
 using ST.Entities.Models.Nomenclator;
 using ST.Entities.Models.Pages;
 using ST.Entities.Services.Abstraction;
+using ST.Entities.Models.Requirement;
 
 namespace ST.CORE.Controllers.Entity
 {
-	public class RequestController : Controller
+	public class RequirementController : Controller
 	{
 		/// <summary>
 		/// Context
@@ -37,7 +36,7 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="dataService"></param>
-		public RequestController(EntitiesDbContext context, IDynamicEntityDataService dataService)
+		public RequirementController(EntitiesDbContext context, IDynamicEntityDataService dataService)
 		{
 			_context = context;
 			_dataService = dataService;
@@ -68,7 +67,7 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public async Task<IActionResult> Create(Request model)
+		public async Task<IActionResult> Create(Requirement model)
 		{
 			if (model != null)
 			{
@@ -276,24 +275,24 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public async Task<JsonResult> LoadPages(DTParameters param)
 		{
-			var filtered = await _dataService.Filter<Request>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = await _dataService.Filter<Requirement>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length);
-			var viewModel = filtered.Item1.To<object, List<UpdateRequestViewModel>>();
-			foreach (var item in viewModel)
-			{
-				var ipId= await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.InterestedPartId);
-				if (ipId.IsSuccess)
-				{
-					item.SelectedInterestedPart = ipId.Result.Name;
-				}
+			var viewModel = filtered.Item1.To<object, List<UpdateRequirementViewModel>>();
+			//foreach (var item in viewModel)
+			//{
+			//	var ipId= await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.InterestedPartId);
+			//	if (ipId.IsSuccess)
+			//	{
+			//		item.SelectedInterestedPart = ipId.Result.Name;
+			//	}
 
-				var rId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.RequestId);
-				if (rId.IsSuccess)
-				{
-					item.SelectedRequest = rId.Result.Name;
-				}				
-			}
-			var finalResult = new DTResult<UpdateRequestViewModel>
+			//	var rId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.RequirementId);
+			//	if (rId.IsSuccess)
+			//	{
+			//		item.SelectedRequirement = rId.Result.Name;
+			//	}				
+			//}
+			var finalResult = new DTResult<UpdateRequirementViewModel>
 			{
 				draw = param.Draw,
 				data = viewModel,

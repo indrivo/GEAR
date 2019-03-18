@@ -56,9 +56,28 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
-			return View();
+			var model = new UpdateKPIViewModel();
+			var measurementsItemsCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
+			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _dataService.Table("NomMeasurement").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
+
+			var calculationPeriodCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Calculation period Category");
+			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _dataService.Table("NomPeriod").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
+
+			var kPICategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "KPI Category");
+			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _dataService.Table("NomKPICategory").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
+
+			var selectedMeasurementItem = viewMeasurementUnits.Result.Where(x => x.Id == model.MeasurementUnitId).FirstOrDefault();
+			var fulfillmentCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
+			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id) : null);
+
+			model.MeasurementUnits = (viewMeasurementUnits.IsSuccess == true) ? viewMeasurementUnits.Result.To<object, IEnumerable<NomMeasurement>>() : null;
+			model.NomPeriod = (viewCalculationPeriodUnits.IsSuccess == true) ? viewCalculationPeriodUnits.Result.To<object, IEnumerable<NomPeriod>>() : null;
+			model.NomKPICategory = (viewKPICategoryUnits.IsSuccess == true) ? viewKPICategoryUnits.Result.To<object, IEnumerable<NomKPICategory>>() : null;
+			model.NomFulfillment = (viewFulfillmentCategoryUnits.IsSuccess == true) ? viewFulfillmentCategoryUnits.Result.To<object, IEnumerable<NomFulfillment>>() : null;
+
+			return View(model);
 		}
 
 		/// <summary>
@@ -92,24 +111,24 @@ namespace ST.CORE.Controllers.Entity
 			var model = await _dataService.GetByIdSystem<KPI, UpdateKPIViewModel>(id);
 
 			var measurementsItemsCategory= await  _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
-			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
+			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _dataService.Table("NomMeasurement").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
 
 
 			var calculationPeriodCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Calculation period Category");
-			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
+			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _dataService.Table("NomPeriod").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
 
 			var kPICategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "KPI Category");
-			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
+			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _dataService.Table("NomKPICategory").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
 
 			var selectedMeasurementItem = viewMeasurementUnits.Result.Where(x => x.Id == model.Result.MeasurementUnitId).FirstOrDefault();
 			var fulfillmentCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
-			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id  & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id ) : null);
+			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id  & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id ) : null);
 			
 
-			model.Result.MeasurementUnits = (viewMeasurementUnits.IsSuccess == true) ? viewMeasurementUnits.Result.To<object, IEnumerable<NomenclatorItem>>() : null;
-			model.Result.Periods = (viewCalculationPeriodUnits.IsSuccess == true) ? viewCalculationPeriodUnits.Result.To<object, IEnumerable<NomenclatorItem>>() : null;
-			model.Result.Categories = (viewKPICategoryUnits.IsSuccess == true) ? viewKPICategoryUnits.Result.To<object, IEnumerable<NomenclatorItem>>() : null;
-			model.Result.FulfillmentCriterion = (viewFulfillmentCategoryUnits.IsSuccess == true) ? viewFulfillmentCategoryUnits.Result.To<object, IEnumerable<NomenclatorItem>>() : null;
+			model.Result.MeasurementUnits = (viewMeasurementUnits.IsSuccess == true) ? viewMeasurementUnits.Result.To<object, IEnumerable<NomMeasurement>>() : null;
+			model.Result.NomPeriod = (viewCalculationPeriodUnits.IsSuccess == true) ? viewCalculationPeriodUnits.Result.To<object, IEnumerable<NomPeriod>>() : null;
+			model.Result.NomKPICategory = (viewKPICategoryUnits.IsSuccess == true) ? viewKPICategoryUnits.Result.To<object, IEnumerable<NomKPICategory>>() : null;
+			model.Result.NomFulfillment = (viewFulfillmentCategoryUnits.IsSuccess == true) ? viewFulfillmentCategoryUnits.Result.To<object, IEnumerable<NomFulfillment>>() : null;
 
 			if (!model.IsSuccess) return NotFound();
 
@@ -280,25 +299,25 @@ namespace ST.CORE.Controllers.Entity
 			var viewModel = filtered.Item1.To<object, List<UpdateKPIViewModel>>();
 			foreach (var item in viewModel)
 			{
-				var muId= await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.MeasurementUnitId);
+				var muId= await _dataService.GetByIdSystem<NomMeasurement, NomMeasurement>(item.MeasurementUnitId);
 				if (muId.IsSuccess)
 				{
 					item.SelectedMeasurementUnit = muId.Result.Name;
 				}
 
-				var cId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.CategoryId);
+				var cId = await _dataService.GetByIdSystem<NomKPICategory, NomKPICategory>(item.CategoryId);
 				if (cId.IsSuccess)
 				{
 					item.SelectedCategory = cId.Result.Name;
 				}
 
-				var pId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.PeriodId);
+				var pId = await _dataService.GetByIdSystem<NomPeriod, NomPeriod>(item.PeriodId);
 				if (pId.IsSuccess)
 				{
 					item.SelectedPeriod = pId.Result.Name;
 				}
 
-				var fId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.FulfillmentCriterionId);
+				var fId = await _dataService.GetByIdSystem<NomFulfillment, NomFulfillment>(item.FulfillmentCriterionId);
 				if (fId.IsSuccess)
 				{
 					item.SelectedFulfillmentCriterion = fId.Result.Name;

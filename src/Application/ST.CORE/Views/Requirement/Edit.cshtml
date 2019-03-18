@@ -46,10 +46,10 @@
 						</div>
 					</div>
 
-					<div class="col-md-12">
+					@*<div class="col-md-12">
 						<div class="form-group">
 							<label asp-for="PeriodId"></label>
-							<select asp-for="PeriodId" asp-items="@(new SelectList(Model.NomPeriod, "Id", "Name" ))" class="form-control"></select>
+							<select asp-for="PeriodId" asp-items="@(new SelectList(Model.Periods, "Id", "Name" ))" class="form-control"></select>
 							<span asp-validation-for="PeriodId" class="text-danger"></span>
 						</div>
 					</div>
@@ -57,7 +57,7 @@
 					<div class="col-md-12">
 						<div class="form-group">
 							<label asp-for="CategoryId"></label>
-							<select asp-for="CategoryId" asp-items="@(new SelectList(Model.NomKPICategory, "Id", "Name" ))" class="form-control"></select>
+							<select asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories, "Id", "Name" ))" class="form-control"></select>
 							<span asp-validation-for="CategoryId" class="text-danger"></span>
 						</div>
 					</div>
@@ -65,10 +65,10 @@
 					<div class="col-md-12">
 						<div class="form-group">
 							<label asp-for="FulfillmentCriterionId"></label>
-							<select asp-for="FulfillmentCriterionId" asp-items="@(new SelectList(Model.NomFulfillment, "Id", "Name" ))" id="ddl2" class="form-control"></select>
+							<select asp-for="FulfillmentCriterionId" asp-items="@(new SelectList(Model.FulfillmentCriterion, "Id", "Name" ))" id="ddl2" class="form-control"></select>
 							<span asp-validation-for="FulfillmentCriterionId" class="text-danger"></span>
 						</div>
-					</div>
+					</div>*@
 
 					<div class="col-md-12">
 						<div class="form-group">

@@ -11,10 +11,10 @@ namespace ST.CORE.Models.RoleViewModels
 {
 	public class UpdateKPIViewModel: KPI
 	{
-		public IEnumerable<NomenclatorItem> MeasurementUnits { get; set; }
-		public IEnumerable<NomenclatorItem> FulfillmentCriterion { get; set; }
-		public IEnumerable<NomenclatorItem> Periods { get; set; }
-		public IEnumerable<NomenclatorItem> Categories { get; set; }
+		public IEnumerable<NomMeasurement> MeasurementUnits { get; set; }
+		public IEnumerable<NomPeriod> NomPeriod { get; set; }
+		public IEnumerable<NomKPICategory> NomKPICategory { get; set; }
+		public IEnumerable<NomFulfillment> NomFulfillment { get; set; }
 
 		[Display(Name = "Measurement Unit")]
 		public string SelectedMeasurementUnit { get; set; }
@@ -27,3 +27,5 @@ namespace ST.CORE.Models.RoleViewModels
 		
 	}
 }
+
+

@@ -217,11 +217,16 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public async Task<JsonResult> LoadNomenclatorItems(DTParameters param, Guid nomenclatorId, Guid? parentId = null)
 		{
-			
-			var filtered = await _dataService.Filter<NomenclatorItem>(param.Search.Value, param.SortOrder, param.Start,
-				param.Length, x => x.NomenclatorId.Equals(nomenclatorId) && x.ParentId.Equals(parentId));
 
-			var finalResult = new DTResult<NomenclatorItem>
+			var nomenclature = await _dataService.GetByIdSystem<Nomenclator, Nomenclator>(nomenclatorId);
+			
+				var filtered = await _dataService.Filter(nomenclature.Result.MachineName, param.Search.Value, param.SortOrder, param.Start,
+				param.Length,x => ((dynamic)x).ParentId.Equals((parentId==null)?Guid.Empty:parentId));// ,x => ((dynamic)x).ParentId.Equals(parentId)
+
+			 //var filtered = await _dataService.Filter<NomenclatorItem>(param.Search.Value, param.SortOrder, param.Start,
+			 //	param.Length, x => x.NomenclatorId.Equals(nomenclatorId) && x.ParentId.Equals(parentId));
+
+			var finalResult = new DTResult<dynamic>
 			{
 				draw = param.Draw,
 				data = filtered.Item1,

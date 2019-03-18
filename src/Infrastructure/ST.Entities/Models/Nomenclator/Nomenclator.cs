@@ -15,6 +15,10 @@ namespace ST.Entities.Models.Nomenclator
     {
         [Required]
         public string Name { get; set; }
+
+        [Required]
+        public string MachineName { get; set; }
+
         public string Description { get; set; }
     }
     public class NomenclatorItem : ExtendedModel
@@ -26,5 +30,24 @@ namespace ST.Entities.Models.Nomenclator
         public Guid? DependencyId { get; set; } // ref to other nomenc. Used for view in one dropbox elements depending from result in other dropbox 
         public Guid? RefId { get; set; } // ref to other nomenc. used for show value from other nomenc. 
     }
+
+    public class NomKPICategory : ExtendedModel 
+    {
+        [Required]
+        public string Name { get; set; }
+        public Guid NomenclatorId { get; set; }
+        public Guid? ParentId { get; set; }
+        public Guid? DependencyId { get; set; } // ref to other nomenc. Used for view in one dropbox elements depending from result in other dropbox 
+        public Guid? RefId { get; set; } // ref to other nomenc. used for show value from other nomenc. 
+    }
+
+    public class NomMeasurement : NomenclatorItem
+    {}
+    public class NomType : NomenclatorItem
+    { }
+    public class NomPeriod : NomenclatorItem
+    { }
+    public class NomFulfillment : NomenclatorItem
+    { }
 
 }

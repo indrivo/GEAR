@@ -1,14 +1,14 @@
-@model ST.Entities.Models.Nomenclator.Nomenclator
+@model ST.CORE.Models.RoleViewModels.UpdateKPIViewModel
 @inject IStringLocalizer Localizer
 
 @{
-	ViewData["Title"] = "Create new nomenclator";
+	ViewData["Title"] = "Create new KPI";
 }
 
 
 <div class="card card-outline-primary">
 	<div class="card-header">
-		<h4 class="mb-0 text-white">Add Nomenclator </h4>
+		<h4 class="mb-0 text-white">Add KPI </h4>
 	</div>
 	<div class="card-body">
 		<form asp-action="Create" role="form">
@@ -20,7 +20,7 @@
 							<label class="control-label" asp-for="Name"></label>
 							<input class="form-control" type="text" asp-for="Name" />
 							<span asp-validation-for="Name" class="text-danger"></span><br />
-							<small>Name of the menu</small>
+							<small>Name of the KPI</small>
 						</div>
 					</div>
 					<div class="col-md-12">
@@ -28,9 +28,88 @@
 							<label class="control-label" asp-for="Description"></label>
 							<input class="form-control" type="text" asp-for="Description" />
 							<span asp-validation-for="Description" class="text-danger"></span><br />
-							<small>Description of the menu</small>
+							<small>Description of the KPI</small>
 						</div>
 					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label asp-for="MeasurementUnitId"></label>
+							<select asp-for="MeasurementUnitId" asp-items="@(new SelectList(Model.MeasurementUnits, "Id", "Name" ))" class="form-control" id="ddl"></select> @*onchange="configureDropDownLists(this,document.getElementById('ddl2'))"*@
+							<span asp-validation-for="MeasurementUnitId" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label asp-for="PeriodId"></label>
+							<select asp-for="PeriodId" asp-items="@(new SelectList(Model.NomPeriod, "Id", "Name" ))" class="form-control"></select>
+							<span asp-validation-for="PeriodId" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label asp-for="CategoryId"></label>
+							<select asp-for="CategoryId" asp-items="@(new SelectList(Model.NomKPICategory, "Id", "Name" ))" class="form-control"></select>
+							<span asp-validation-for="CategoryId" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label asp-for="FulfillmentCriterionId"></label>
+							<select asp-for="FulfillmentCriterionId" asp-items="@(new SelectList(Model.NomFulfillment, "Id", "Name" ))" id="ddl2" class="form-control"></select>
+							<span asp-validation-for="FulfillmentCriterionId" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label class="control-label" asp-for="ProcentGoal"></label>
+							<input class="form-control" type="text" asp-for="ProcentGoal" />
+							<span asp-validation-for="ProcentGoal" class="text-danger"></span><br />
+							<small>Set the procent goal</small>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label class="control-label" asp-for="BoolGoal"></label>
+							<input class="form-control" type="text" asp-for="BoolGoal" />
+							<span asp-validation-for="BoolGoal" class="text-danger"></span><br />
+							<small>Set the true/false</small>
+						</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<label class="control-label" asp-for="IntGoal"></label>
+							<input class="form-control" type="text" asp-for="IntGoal" />
+							<span asp-validation-for="IntGoal" class="text-danger"></span><br />
+							<small>Set the Number</small>
+						</div>
+					</div>
+
+					@*<div class="col-md-12">
+				<div class="form-group">
+					<label class="control-label" asp-for="Status"></label>
+					<input class="form-control" type="text" asp-for="Status" />
+					<span asp-validation-for="Status" class="text-danger"></span><br />
+					<small>Set the status</small>
+				</div>
+			</div>*@
+
+
+					<div class="col-md-12">
+						<div class="form-group">
+							<div class="checkbox checkbox-success form-group">
+								<input asp-for="Status" />
+								<label asp-for="Status"></label>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 			<div class="row button-group">
