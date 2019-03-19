@@ -1,6 +1,7 @@
 ﻿using ST.BaseRepository;
 using ST.Entities.Models;
 using System;
+using ST.Audit.Models;
 
 namespace ST.Procesess.Models
 {

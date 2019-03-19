@@ -64,7 +64,6 @@
 	<script src="~/assets/js/builder/drag-and-drop-list.js"></script>
 	<script>
 		function evt1() {
-			alert("f0");
 			const t = $(this).parent().children()[0];
 			const val = $(t).text().replace(/"/gi, "'");
 			$(t).replaceWith(`<input class="form-control" value="${val}" style="width: 80%;" type="text"/>`);

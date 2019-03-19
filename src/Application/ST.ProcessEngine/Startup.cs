@@ -50,7 +50,7 @@ namespace ST.ProcessEngine
             //Run background service
             services.AddHostedService<ProcessEngineRunner>();
             //Use custom cache service
-            services.UseCustomCacheService(HostingEnvironment);
+            services.UseCustomCacheService(HostingEnvironment, "127.0.0.1", "ST.ISO");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

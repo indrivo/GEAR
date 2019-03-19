@@ -1,4 +1,5 @@
 using System;
+using ST.Audit.Models;
 using ST.Entities.Models;
 
 namespace ST.Identity.Data.Permissions

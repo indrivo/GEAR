@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,10 @@ using ST.Entities.ViewModels.Table;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -29,49 +34,21 @@ namespace ST.CORE.Controllers.Entity
 	/// <summary>
 	/// Forms manipulation
 	/// </summary>
-	[Authorize]
-	public class TableController : Controller
+	public class TableController : BaseController
 	{
 		/// <summary>
 		/// Inject logger
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
-		/// <summary>
-		/// Inject App Context
-		/// </summary>
-		private readonly ApplicationDbContext _context;
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="contextApp"></param>
-		/// <param name="repository"></param>
-		/// <param name="configuration"></param>
-		/// <param name="context"></param>
-		/// <param name="env"></param>
-		/// <param name="logger"></param>
-		/// <param name="appContext"></param>
-		public TableController(ApplicationDbContext contextApp, IBaseBusinessRepository<EntitiesDbContext> repository,
-			IConfiguration configuration, EntitiesDbContext context, IHostingEnvironment env,
-			ILogger<TableController> logger, ApplicationDbContext appContext)
+		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			ContextApp = contextApp;
-			Configuration = configuration;
-			Repository = repository;
-			Context = context;
 			_logger = logger;
-			_context = appContext;
+			Repository = repository;
 			ConnectionString = Entities.Utils.ConnectionString.Get(configuration, env);
 		}
 
-		private static IConfiguration Configuration { get; set; }
-
 		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
-
-		private EntitiesDbContext Context { get; }
-
-		private ApplicationDbContext ContextApp { get; }
 
 		private (DbProviderType, string) ConnectionString { get; set; }
 
@@ -113,38 +90,29 @@ namespace ST.CORE.Controllers.Entity
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableCreate)]
 		public async Task<IActionResult> Create(CreateTableViewModel model)
 		{
-			if (ModelState.IsValid)
+			if (!ModelState.IsValid) return View(model);
+			var entityType =
+				await Context.EntityTypes.FirstOrDefaultAsync(x => x.Id == Guid.Parse(model.SelectedTypeId));
+			if (entityType == null) return View(model);
 			{
-				var entityType =
-					await Context.EntityTypes.FirstOrDefaultAsync(x => x.Id == Guid.Parse(model.SelectedTypeId));
-				if (entityType != null)
+				var m = new CreateTableViewModel
 				{
-					var m = new CreateTableViewModel
-					{
-						Name = model.Name,
-						EntityType = entityType.Name,
-						Description = model.Description
-					};
-					var table = Repository.Add<TableModel, CreateTableViewModel>(m);
+					Name = model.Name,
+					EntityType = entityType.Name,
+					Description = model.Description,
+					TenantId = CurrentUserTenantId
+				};
+				var table = Repository.Add<TableModel, CreateTableViewModel>(m);
 
-					if (table.IsSuccess)
-					{
-						var resultModel = await Repository
-							.GetAllIncluding<TableModel>(x => x.Include(s => s.TableFields), x => x.Id == table.Result)
-							.AsNoTracking().FirstOrDefaultAsync();
-						ITablesService sqlService = GetSqlService();
-						var response = sqlService.CreateSqlTable(resultModel, ConnectionString.Item2);
-						if (response.Result)
-							return RedirectToAction("Edit", "Table", new { id = table.Result, tab = "one" });
+				if (!table.IsSuccess) return View(model);
+				var resultModel = await Repository
+					.GetAllIncluding<TableModel>(x => x.Include(s => s.TableFields), x => x.Id == table.Result)
+					.AsNoTracking().FirstOrDefaultAsync();
+				var sqlService = GetSqlService();
+				var response = sqlService.CreateSqlTable(resultModel, ConnectionString.Item2);
+				if (response.Result)
+					return RedirectToAction("Edit", "Table", new { id = table.Result, tab = "one" });
 
-						return View(model);
-					}
-				}
-
-				return View(model);
-			}
-			else
-			{
 				return View(model);
 			}
 		}
@@ -207,20 +175,15 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Guid id, string tab)
 		{
 			var model = Repository.GetById<TableModel, UpdateTableViewModel>(id);
-			if (model.IsSuccess)
-			{
-				model.Result.TableFields = Repository.GetAll<TableModelFields>(x => x.TableId == id);
-				if (model.Result.ModifiedBy != null)
-					model.Result.ModifiedBy = ContextApp.Users
-						.SingleOrDefaultAsync(m => m.Id == model.Result.ModifiedBy).Result.NormalizedUserName.ToLower();
-				model.Result.Groups = await Context.TableFieldGroups.Include(s => s.TableFieldTypes).ToListAsync();
-				model.Result.TabName = tab;
-				return View(model.Result);
-			}
-			else
-			{
-				return RedirectToAction("Index", "Table", new { page = 1, perPage = 10 });
-			}
+			if (!model.IsSuccess) return RedirectToAction("Index", "Table", new {page = 1, perPage = 10});
+			model.Result.TableFields = Repository.GetAll<TableModelFields>(x => x.TableId == id);
+			if (model.Result.ModifiedBy != null)
+				model.Result.ModifiedBy = ApplicationDbContext.Users
+					.SingleOrDefaultAsync(m => m.Id == model.Result.ModifiedBy).Result.NormalizedUserName.ToLower();
+			model.Result.Groups = await Context.TableFieldGroups.Include(s => s.TableFieldTypes).ToListAsync();
+			model.Result.TabName = tab;
+			return View(model.Result);
+
 		}
 
 		/// <summary>
@@ -562,7 +525,7 @@ namespace ST.CORE.Controllers.Entity
 			else
 			{
 				var isUsedForms = Context.Forms.Any(x => x.TableId == id);
-				var isUsedProfiles = ContextApp.Profiles.Any(x => x.EntityId == id);
+				var isUsedProfiles = ApplicationDbContext.Profiles.Any(x => x.EntityId == id);
 				if (isUsedForms || isUsedProfiles)
 				{
 					return Json(new { success = false, message = "Table is used" });

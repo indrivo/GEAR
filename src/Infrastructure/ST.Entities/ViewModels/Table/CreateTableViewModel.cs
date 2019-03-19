@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Entities.Models.Tables;
@@ -20,5 +21,6 @@ namespace ST.Entities.ViewModels.Table
         public IEnumerable<TableModelFields> TableFields { get; set; }
 
         public string Description { get; set; }
+        public  Guid? TenantId { get; set; }
     }
 }

@@ -126,6 +126,10 @@
     {
       "Order": 18,
       "Script": "<script src=\"/js/signalr/dist/browser/signalr.js\"></script>"
+    },
+    {
+      "Order": 19,
+      "Script": "<script src=\"/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js\"></script>"
     }
   ]
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Interfaces;
@@ -6,7 +7,13 @@ using ST.Audit.Models;
 using ST.CORE.Attributes;
 using ST.CORE.Models;
 using ST.CORE.Models.AuditViewModels;
+using ST.Entities.Data;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +21,10 @@ using System.Threading.Tasks;
 
 namespace ST.CORE.Controllers.Audit
 {
-	[Authorize]
-	public class AuditController : Controller
+	public class AuditController : BaseController
 	{
-		/// <summary>
-		/// Inject Application Db Context
-		/// </summary>
-		private readonly ApplicationDbContext _context;
-
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="hrmDbContext"></param>
-		public AuditController(ApplicationDbContext context)
+		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			_context = context;
 		}
 
 		/// <summary>
@@ -42,14 +36,6 @@ namespace ST.CORE.Controllers.Audit
 			return View();
 		}
 
-		/// <summary>
-		/// Get list of audit Hrm
-		/// </summary>
-		/// <returns></returns>
-		public IActionResult Hrm()
-		{
-			return View();
-		}
 
 		/// <summary>
 		/// Filter list
@@ -59,12 +45,18 @@ namespace ST.CORE.Controllers.Audit
 		/// <param name="start"></param>
 		/// <param name="length"></param>
 		/// <param name="totalCount"></param>
-		/// <param name="context"></param>
 		/// <returns></returns>
-		private List<TrackAudit> GetTrackAuditFiltered<T>(string search, string sortOrder, int start, int length,
-			out int totalCount, T context) where T : ITrackerDbContext
+		private List<TrackAudit> GetTrackAuditFiltered(string search, string sortOrder, int start, int length,
+			out int totalCount)
 		{
-			var data = context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var data = new List<TrackAudit>();
+			var coreData = ApplicationDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var processData = ProcessesDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var entityData = Context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+
+			data.AddRange(coreData);
+			data.AddRange(processData);
+			data.AddRange(entityData);
 
 			var result = data.Where(x =>
 				search == null || x.Author != null && x.Author.ToLower().Contains(search.ToLower()) ||
@@ -143,7 +135,7 @@ namespace ST.CORE.Controllers.Audit
 		public JsonResult TrackAuditList(DTParameters param)
 		{
 			var filtered = GetTrackAuditFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
-				out var totalCount, _context);
+				out var totalCount);
 			var trackAuditsList = filtered.Select(o => new TrackAuditsListViewModel
 			{
 				Id = o.Id,
@@ -156,7 +148,9 @@ namespace ST.CORE.Controllers.Audit
 				IsDeleted = o.IsDeleted,
 				TrackEventType = o.TrackEventType,
 				Version = o.Version,
-				EventType = o.TrackEventType.ToString()
+				EventType = o.TrackEventType.ToString(),
+				DatabaseContextName = o.DatabaseContextName,
+				RecordId = o.RecordId
 			});
 
 			var finalResult = new DTResult<TrackAuditsListViewModel>
@@ -173,37 +167,35 @@ namespace ST.CORE.Controllers.Audit
 		/// Get details audit
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="stage"></param>
+		/// <param name="contextName"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<IActionResult> Details(Guid? id, StageEnum.Module stage)
+		public async Task<IActionResult> Details(Guid? id, string contextName)
 		{
-			if (id == null)
+			if (id == null && string.IsNullOrEmpty(contextName))
 			{
 				return NotFound();
 			}
 
-			TrackAudit track;
-			var enumViewModel = new TrackAuditEnumViewModel();
-			switch (stage)
+			dynamic dbContext = null;
+			if (typeof(ApplicationDbContext).FullName == contextName)
 			{
-				case StageEnum.Module.BSC:
-					return NotFound();
-
-				case StageEnum.Module.CORE:
-					track = await GetTrackDetails(id, _context);
-					enumViewModel.ActionUrl = "Index";
-					break;
-
-				default:
-					track = null;
-					break;
+				dbContext = ApplicationDbContext;
 			}
+			else if (typeof(EntitiesDbContext).FullName == contextName)
+			{
+				dbContext = Context;
+			}
+			else if (typeof(ProcessesDbContext).FullName == contextName)
+			{
+				dbContext = ProcessesDbContext;
+			}
+
+			TrackAudit track = await GetTrackDetails(id, dbContext);
 
 			if (track == null) return NotFound();
 
-			enumViewModel.Track = track;
-			return View(enumViewModel);
+			return View(track);
 		}
 
 		/// <summary>
@@ -213,24 +205,27 @@ namespace ST.CORE.Controllers.Audit
 		/// <param name="stage"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Versions(Guid? id, StageEnum.Module stage)
+		public IActionResult Versions(Guid? id, string contextName)
 		{
-			if (id == null)
+			if (id == null && string.IsNullOrEmpty(contextName))
 			{
 				return NotFound();
 			}
-
-			List<TrackAudit> listTrack;
-			switch (stage)
+			dynamic dbContext = null;
+			if (typeof(ApplicationDbContext).FullName == contextName)
 			{
-				case StageEnum.Module.CORE:
-					listTrack = GetTrackVersions(id, _context);
-					break;
-
-				default:
-					return NotFound();
-
+				dbContext = ApplicationDbContext;
 			}
+			else if (typeof(EntitiesDbContext).FullName == contextName)
+			{
+				dbContext = Context;
+			}
+			else if (typeof(ProcessesDbContext).FullName == contextName)
+			{
+				dbContext = ProcessesDbContext;
+			}
+
+			List<TrackAudit> listTrack = GetTrackVersions(id, dbContext);
 
 			return View(listTrack);
 		}

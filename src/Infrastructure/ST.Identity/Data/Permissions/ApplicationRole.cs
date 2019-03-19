@@ -89,5 +89,10 @@ namespace ST.Identity.Data.Permissions
         /// Tenant id
         /// </summary>
         public Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Version
+        /// </summary>
+        public int Version { get; set; }
     }
 }

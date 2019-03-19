@@ -60,6 +60,7 @@ namespace ST.CORE.Controllers
 			var list = _context.GetTrackedEntities();
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
 			ViewBag.TotalSessions = _hub.GetSessionsCount();
+
 			//ViewBag.User = await _userManager.GetUserAsync(User);
 			
 			int parentNodeId = 1;

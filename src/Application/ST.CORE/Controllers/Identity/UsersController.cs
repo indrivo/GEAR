@@ -15,7 +15,6 @@ using ST.CORE.Attributes;
 using ST.CORE.Models;
 using ST.CORE.Models.UserViewModels;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Attributes;
@@ -23,24 +22,15 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
+using ST.Identity.Services.Abstractions;
 using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers.Identity
 {
-	[Authorize]
-	public class UsersController : Controller
+	public class UsersController : BaseController
 	{
 		#region Injections
-
-		/// <summary>
-		/// General Context
-		/// </summary>
-		private ApplicationDbContext Context { get; }
-
-		/// <summary>
-		/// Entity context
-		/// </summary>
-		private EntitiesDbContext ContextEntities { get; }
 
 		/// <summary>
 		/// Logger
@@ -48,24 +38,9 @@ namespace ST.CORE.Controllers.Identity
 		private ILogger<UsersController> Logger { get; }
 
 		/// <summary>
-		/// Inject custom repository by Soft-Tehnica
+		/// Inject custom repository 
 		/// </summary>
 		private IBaseBusinessRepository<ApplicationDbContext> Repository { get; }
-
-		/// <summary>
-		/// Inject Role Manager
-		/// </summary>
-		private RoleManager<ApplicationRole> RoleManager { get; }
-
-		/// <summary>
-		/// Inject User manager
-		/// </summary>
-		private UserManager<ApplicationUser> UserManager { get; }
-
-		/// <summary>
-		/// Inject notificator
-		/// </summary>
-		private readonly INotify _notify;
 
 		/// <summary>
 		/// Inject Ldap User Manager
@@ -74,32 +49,13 @@ namespace ST.CORE.Controllers.Identity
 
 		#endregion
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="roleManager"></param>
-		/// <param name="userManager"></param>
-		/// <param name="logger"></param>
-		/// <param name="repository"></param>
-		/// <param name="contextEntities"></param>
-		/// <param name="notify"></param>
-		/// <param name="ldapUserManager"></param>
-		public UsersController(ApplicationDbContext context,
-			RoleManager<ApplicationRole> roleManager,
-			UserManager<ApplicationUser> userManager,
-			ILogger<UsersController> logger, IBaseBusinessRepository<ApplicationDbContext> repository,
-			EntitiesDbContext contextEntities, INotify notify, LdapUserManager ldapUserManager)
+		public UsersController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, LdapUserManager ldapUserManager, ILogger<UsersController> logger, IBaseBusinessRepository<ApplicationDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			ContextEntities = contextEntities;
-			_notify = notify;
 			_ldapUserManager = ldapUserManager;
-			Context = context;
-			RoleManager = roleManager;
-			UserManager = userManager;
 			Logger = logger;
 			Repository = repository;
 		}
+
 
 		/// <summary>
 		/// User list for admin visualization
@@ -122,7 +78,8 @@ namespace ST.CORE.Controllers.Identity
 			var model = new CreateUserViewModel
 			{
 				Roles = RoleManager.Roles.AsEnumerable(),
-				Groups = Context.AuthGroups.AsEnumerable()
+				Groups = ApplicationDbContext.AuthGroups.AsEnumerable(),
+				Tenants = ApplicationDbContext.Tenants.AsEnumerable()
 			};
 			return View(model);
 		}
@@ -140,6 +97,7 @@ namespace ST.CORE.Controllers.Identity
 			model.Roles = RoleManager.Roles.AsEnumerable();
 			model.Groups = Repository.GetAll<AuthGroup>();
 			model.Profiles = new List<EntityViewModel>();
+			model.Tenants = ApplicationDbContext.Tenants.AsEnumerable();
 
 			if (!ModelState.IsValid)
 			{
@@ -155,7 +113,8 @@ namespace ST.CORE.Controllers.Identity
 				IsDeleted = model.IsDeleted,
 				Author = User.Identity.Name,
 				AuthenticationType = model.AuthenticationType,
-				IsEditable = true
+				IsEditable = true,
+				TenantId = model.TenantId
 			};
 
 			if (model.UserPhoto != null)
@@ -208,7 +167,6 @@ namespace ST.CORE.Controllers.Identity
 				return View(model);
 			}
 
-
 			if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
 			{
 				var userGroupList = new List<UserGroup>();
@@ -221,16 +179,16 @@ namespace ST.CORE.Controllers.Identity
 					});
 				}
 
-				await Context.UserGroups.AddRangeAsync(userGroupList);
+				await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
 				await Context.SaveChangesAsync();
 			}
 			//ToDO: Modify letter !!!
 			else
 			{
-				var groupId = await Context.AuthGroups.FirstOrDefaultAsync();
+				var groupId = await ApplicationDbContext.AuthGroups.FirstOrDefaultAsync();
 				if (groupId != null)
 				{
-					Context.UserGroups.Add(new UserGroup
+					ApplicationDbContext.UserGroups.Add(new UserGroup
 					{
 						AuthGroupId = groupId.Id,
 						UserId = user.Id
@@ -243,7 +201,7 @@ namespace ST.CORE.Controllers.Identity
 
 			try
 			{
-				await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+				await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
 				{
 					Content = $"{user.UserName} was created by {User.Identity.Name}",
 					Subject = "Info",
@@ -268,7 +226,7 @@ namespace ST.CORE.Controllers.Identity
 		public JsonResult GetAdUsers()
 		{
 			var result = new ResultModel<IEnumerable<ApplicationUser>>();
-			var addedUsers = Context.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).ToList();
+			var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).ToList();
 			var users = _ldapUserManager.Users;
 			if (addedUsers.Any())
 			{
@@ -317,6 +275,7 @@ namespace ST.CORE.Controllers.Identity
 			user.Created = DateTime.Now;
 			user.Author = User.Identity.Name;
 			user.Changed = DateTime.Now;
+			user.TenantId = CurrentUserTenantId;
 			var hasher = new PasswordHasher<ApplicationUser>();
 			var hashedPassword = hasher.HashPassword(user, "ldap_default_password");
 			user.PasswordHash = hashedPassword;
@@ -347,7 +306,7 @@ namespace ST.CORE.Controllers.Identity
 				return NotFound();
 			}
 
-			var applicationUser = await Context.Users.SingleOrDefaultAsync(m => m.Id == id);
+			var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
 			if (applicationUser == null)
 			{
 				return NotFound();
@@ -377,7 +336,7 @@ namespace ST.CORE.Controllers.Identity
 				return Json(new { success = false, message = "You can't delete current user" });
 			}
 
-			var applicationUser = await Context.Users.SingleOrDefaultAsync(m => m.Id == id);
+			var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
 			if (applicationUser == null)
 			{
 				return Json(new { success = false, message = "User not found" });
@@ -392,7 +351,7 @@ namespace ST.CORE.Controllers.Identity
 			{
 				await UserManager.UpdateSecurityStampAsync(applicationUser);
 				await UserManager.DeleteAsync(applicationUser);
-				await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+				await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
 				{
 					Content = $"{applicationUser.UserName} was deleted by {User.Identity.Name}",
 					Subject = "Info",
@@ -421,14 +380,14 @@ namespace ST.CORE.Controllers.Identity
 				return NotFound();
 			}
 
-			var applicationUser = await Context.Users.SingleOrDefaultAsync(m => m.Id == id);
+			var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
 			if (applicationUser == null)
 			{
 				return NotFound();
 			}
 
 			var roles = RoleManager.Roles.AsEnumerable();
-			var groups = Context.AuthGroups.AsEnumerable();
+			var groups = ApplicationDbContext.AuthGroups.AsEnumerable();
 			var userGroup = Repository.GetAll<UserGroup>(s => s.UserId == applicationUser.Id)
 				.Select(s => s.AuthGroupId.ToString()).ToList();
 			var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
@@ -449,7 +408,9 @@ namespace ST.CORE.Controllers.Identity
 				SelectedGroupId = userGroup,
 				SelectedRoleId = userRoles,
 				UserPhoto = applicationUser.UserPhoto,
-				AuthenticationType = applicationUser.AuthenticationType
+				AuthenticationType = applicationUser.AuthenticationType,
+				TenantId = applicationUser.TenantId,
+				Tenants = ApplicationDbContext.Tenants.Where(x => !x.IsDeleted).ToList()
 			};
 			return View(model);
 		}
@@ -465,7 +426,7 @@ namespace ST.CORE.Controllers.Identity
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-		public async Task<IActionResult> Edit([FromServices] SignInManager<ApplicationUser> signInManager, string id,
+		public async Task<IActionResult> Edit(string id,
 			UpdateUserViewModel model)
 		{
 			if (Guid.Parse(id) != model.Id)
@@ -473,22 +434,25 @@ namespace ST.CORE.Controllers.Identity
 				return NotFound();
 			}
 
+			var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
+			var roles = RoleManager.Roles.AsEnumerable();
+			var groupsList = ApplicationDbContext.AuthGroups.AsEnumerable();
+			var userGroupListList = Repository.GetAll<UserGroup>(s => s.UserId == applicationUser.Id)
+				.Select(s => s.AuthGroupId.ToString()).ToList();
+			var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
+			var userRoleList = userRolesNames
+				.Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
+				.ToList();
+
+			model.Roles = roles;
+			model.Groups = groupsList;
+			model.SelectedGroupId = userGroupListList;
+			model.SelectedRoleId = userRoleList;
+			model.Tenants = ApplicationDbContext.Tenants.Where(x => !x.IsDeleted).ToList();
+
 			if (!ModelState.IsValid)
 			{
-				var applicationUser = await Context.Users.SingleOrDefaultAsync(m => m.Id == id);
-				var roles = RoleManager.Roles.AsEnumerable();
-				var groupsList = Context.AuthGroups.AsEnumerable();
-				var userGroupListList = Repository.GetAll<UserGroup>(s => s.UserId == applicationUser.Id)
-					.Select(s => s.AuthGroupId.ToString()).ToList();
-				var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
-				var userRoleList = userRolesNames
-					.Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
-					.ToList();
-
-				model.Roles = roles;
-				model.Groups = groupsList;
-				model.SelectedGroupId = userGroupListList;
-				model.SelectedRoleId = userRoleList;
+				
 				foreach (var _ in ViewData.ModelState.Values)
 				{
 					foreach (var error in _.Errors)
@@ -525,6 +489,7 @@ namespace ST.CORE.Controllers.Identity
 			user.Email = model.Email;
 			user.ModifiedBy = User.Identity.Name;
 			user.UserName = model.UserName;
+			user.TenantId = model.TenantId;
 			if (!string.IsNullOrEmpty(model.Password) && string.Equals(model.Password, model.RepeatPassword))
 			{
 				if (model.AuthenticationType.Equals(AuthenticationType.Ad))
@@ -565,7 +530,7 @@ namespace ST.CORE.Controllers.Identity
 			}
 
 			// REFRESH USER ROLES
-			var userRoles = await Context.UserRoles.Where(x => x.UserId == user.Id).ToListAsync();
+			var userRoles = await ApplicationDbContext.UserRoles.Where(x => x.UserId == user.Id).ToListAsync();
 			var rolesList = new List<string>();
 			foreach (var _ in userRoles)
 			{
@@ -587,13 +552,13 @@ namespace ST.CORE.Controllers.Identity
 			if (model.Groups != null && model.Groups.Any())
 			{
 				//Refresh groups
-				var currentGroupsList = await Context.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
-				Context.UserGroups.RemoveRange(currentGroupsList);
+				var currentGroupsList = await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
+				ApplicationDbContext.UserGroups.RemoveRange(currentGroupsList);
 
 
 				var userGroupList = model.SelectedGroupId
 					.Select(groupId => new UserGroup { UserId = user.Id, AuthGroupId = Guid.Parse(groupId) }).ToList();
-				await Context.UserGroups.AddRangeAsync(userGroupList);
+				await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
 			}
 
 			try
@@ -608,7 +573,7 @@ namespace ST.CORE.Controllers.Identity
 
 			//Refresh user claims for this user
 			//await user.RefreshClaims(Context, signInManager);
-			await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+			await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
 			{
 				Content = $"{user.UserName} was edited by {User.Identity.Name}",
 				Subject = "Info",
@@ -640,8 +605,10 @@ namespace ST.CORE.Controllers.Identity
 				Changed = o.Changed.ToShortDateString(),
 				Roles = UserManager.GetRolesAsync(o).GetAwaiter().GetResult(),
 				Sessions = hub.GetSessionsCountByUserId(Guid.Parse(o.Id)),
-				AuthenticationType = o.AuthenticationType.ToString()
+				AuthenticationType = o.AuthenticationType.ToString(),
+				Organization = ApplicationDbContext.Tenants.FirstOrDefault(x => x.Id == o.TenantId)?.Name
 			});
+
 			var finalResult = new DTResult<UserListItemViewModel>
 			{
 				draw = param.Draw,
@@ -665,7 +632,7 @@ namespace ST.CORE.Controllers.Identity
 		private List<ApplicationUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
 			out int totalCount)
 		{
-			var result = Context.Users.AsNoTracking()
+			var result = ApplicationDbContext.Users.AsNoTracking()
 				.Where(p =>
 					search == null || p.Email != null &&
 					p.Email.ToLower().Contains(search.ToLower()) || p.UserName != null &&
@@ -724,7 +691,7 @@ namespace ST.CORE.Controllers.Identity
 		[Produces("application/json", Type = typeof(ResultModel))]
 		public JsonResult GetUserById([Required] Guid userId)
 		{
-			var user = Context.Users.FirstOrDefault(x => x.Id == userId.ToString());
+			var user = ApplicationDbContext.Users.FirstOrDefault(x => x.Id == userId.ToString());
 			return Json(new ResultModel
 			{
 				IsSuccess = true,
@@ -765,7 +732,7 @@ namespace ST.CORE.Controllers.Identity
 				return NotFound();
 			}
 
-			var photo = Context.Users.SingleOrDefault(x => x.Id == id);
+			var photo = ApplicationDbContext.Users.SingleOrDefault(x => x.Id == id);
 			if (photo?.UserPhoto != null) return File(photo.UserPhoto, "image/jpg");
 			var def = GetDefaultImage();
 			if (def == null) return NotFound();
@@ -813,7 +780,7 @@ namespace ST.CORE.Controllers.Identity
 				return Json(true);
 			}
 
-			if (await Context.Users.AsNoTracking().AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
+			if (await ApplicationDbContext.Users.AsNoTracking().AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
 			{
 				return Json($"User name {userName} is already in use.");
 			}

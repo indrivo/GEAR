@@ -35,8 +35,9 @@ namespace ST.CORE.Installation
 		/// Sync entities
 		/// </summary>
 		/// <param name="tableModel"></param>
+		/// <param name="tenantId"></param>
 		/// <param name="schema"></param>
-		public void SynchronizeEntities(SynchronizeTableViewModel tableModel, string schema = null)
+		public void SynchronizeEntities(SynchronizeTableViewModel tableModel, Guid tenantId, string schema = null)
 		{
 			var table = new TableModel
 			{
@@ -44,7 +45,8 @@ namespace ST.CORE.Installation
 				EntityType = schema ?? tableModel.Schema,
 				Description = tableModel.Description,
 				IsSystem = tableModel.IsSystem,
-				IsPartOfDbContext = tableModel.IsStaticFromEntityFramework
+				IsPartOfDbContext = tableModel.IsStaticFromEntityFramework,
+				TenantId = tenantId
 			};
 			try
 			{

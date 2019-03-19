@@ -417,6 +417,14 @@ catch (exp) {
 	.forEach(function (item) {
 		pn.getButton('views', item[0]).set('attributes', { title: item[1], 'data-tooltip-pos': 'bottom' });
 	});
+
+
+pn.addPanel({
+	id: 'myNewPanel',
+	visible: true,
+	buttons: []
+});
+
 var titles = document.querySelectorAll('*[title]');
 
 for (var i = 0; i < titles.length; i++) {

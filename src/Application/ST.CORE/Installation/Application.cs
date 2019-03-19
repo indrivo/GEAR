@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Sentry;
 using ST.CORE.Extensions;
 using ST.CORE.Extensions.Installer;
 using ST.CORE.Models.InstallerModels;
@@ -121,7 +122,10 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			BuildWebHost(args).Run();
+			using (SentrySdk.Init("https://165261edc4874a38b9d0a8c7f67509d3@sentry.io/1416303"))
+			{
+				BuildWebHost(args).Run();
+			}
 		}
 
 		/// <summary>
@@ -138,7 +142,9 @@ namespace ST.CORE.Installation
 		/// <summary>
 		/// Create dynamic tables
 		/// </summary>
-		public static void CreateDynamicTables(string schemaName = null)
+		/// <param name="tenantId"></param>
+		/// <param name="schemaName"></param>
+		public static void CreateDynamicTables(Guid tenantId, string schemaName = null)
 		{
 			var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
 			{
@@ -151,9 +157,9 @@ namespace ST.CORE.Installation
 				if (item.SynchronizeTableViewModels == null) continue;
 				foreach (var ent in item.SynchronizeTableViewModels)
 				{
-					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
+					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
 					{
-						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, schemaName);
+						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, schemaName);
 					}
 				}
 			}
@@ -163,9 +169,9 @@ namespace ST.CORE.Installation
 
 			foreach (var ent in entities)
 			{
-				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
+				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
 				{
-					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, ent.Schema);
+					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
 				}
 			}
 		}
@@ -176,7 +182,7 @@ namespace ST.CORE.Installation
 		/// <param name="tenant"></param>
 		public static void CreateDynamicTables(this Tenant tenant)
 		{
-			CreateDynamicTables(tenant?.MachineName);
+			CreateDynamicTables(tenant.Id, tenant?.MachineName);
 		}
 
 		/// <summary>
@@ -220,7 +226,8 @@ namespace ST.CORE.Installation
 				.UseConfiguration(config)
 				.CaptureStartupErrors(true)
 				.UseStartup<Startup>()
-				.StartLogging()
+				.UseSentry()
+				.StartLogging()				
 				.Build();
 		}
 

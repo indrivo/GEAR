@@ -1,16 +1,10 @@
 ﻿{
   "FormTypes": [
     {
-      "Description": "AddView Form type",
+      "Description": "Standart Form type",
       "IsSystem": true,
-      "Name": "AddView",
+      "Name": "Standart Form",
       "Code": "00"
-    },
-    {
-      "Description": "EditView Form type",
-      "IsSystem": true,
-      "Name": "EditView",
-      "Code": "01"
     }
   ]
 }

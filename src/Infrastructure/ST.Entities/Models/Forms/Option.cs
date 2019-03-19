@@ -1,4 +1,5 @@
 ﻿using System;
+using ST.Audit.Models;
 
 namespace ST.Entities.Models.Forms
 {

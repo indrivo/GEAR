@@ -32,6 +32,9 @@ namespace ST.CORE.Controllers.Identity
 		/// </summary>
 		private ApplicationDbContext Context { get; }
 
+		/// <summary>
+		/// Inject entities db context
+		/// </summary>
 		private readonly EntitiesDbContext _entitiesDbContext;
 
 		/// <summary>

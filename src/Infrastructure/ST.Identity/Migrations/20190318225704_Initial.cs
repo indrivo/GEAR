@@ -93,7 +93,8 @@ namespace ST.Identity.Migrations
                     Title = table.Column<string>(nullable: true),
                     IsNoEditable = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
-                    TenantId = table.Column<Guid>(nullable: true)
+                    TenantId = table.Column<Guid>(nullable: true),
+                    Version = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,7 +175,8 @@ namespace ST.Identity.Migrations
                     ModifiedBy = table.Column<string>(nullable: true),
                     UserPhoto = table.Column<byte[]>(nullable: true),
                     AuthenticationType = table.Column<int>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true)
+                    TenantId = table.Column<Guid>(nullable: true),
+                    Version = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

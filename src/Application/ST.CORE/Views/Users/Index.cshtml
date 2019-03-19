@@ -22,10 +22,10 @@
 						</a>
 						<small>New user will be added.</small>
 						@*<a id="adTrigger" alt="default" data-toggle="modal" data-target="#myModal" style="margin-left: 3em;" href="#" class="btn btn-primary btn-sm">
-							<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
-							Import Ad User
-						</a>
-						<small>New ad user will be added.</small>*@
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
+								Import Ad User
+							</a>
+							<small>New ad user will be added.</small>*@
 					</div>
 
 				</div>
@@ -36,6 +36,8 @@
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Organization</th>
+					<th>Roles</th>
 					<th>Created</th>
 					<th>Author</th>
 					<th>ModifiedBy</th>
@@ -104,6 +106,10 @@
 			}
 
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)
@@ -115,6 +121,8 @@
 				},
 				"columns": [
 					{ "data": "userName" },
+					{ "data": "organization" },
+					{ "data": "roles" },
 					{ "data": "createdDate" },
 					{ "data": "createdBy" },
 					{ "data": "modifiedBy" },
@@ -158,7 +166,7 @@
 					method: "get",
 					success: function(data) {
 						if (data != null) {
-						$("#adUsers").html(null);
+							$("#adUsers").html(null);
 							$.each(data,
 								function() {
 									$("#adUsers").append(new Option(this.name, this.samAccountName));

@@ -13,6 +13,7 @@ using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.ViewModels.Table;
+using ST.Organization;
 
 namespace ST.Entities.Data
 {
@@ -67,7 +68,7 @@ namespace ST.Entities.Data
                         {
                             await context.SaveChangesAsync();
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Debug.WriteLine(ex);
                         }
@@ -84,6 +85,7 @@ namespace ST.Entities.Data
                     foreach (var item in configurationModel.EntityTypes)
                     {
                         if (context.EntityTypes.Any(x => x.Name == item.Name)) continue;
+                        item.TenantId = DefaultTenantSettings.TenantId;
                         context.EntityTypes.Add(item);
                         await context.SaveChangesAsync();
                     }
@@ -107,6 +109,7 @@ namespace ST.Entities.Data
                 foreach (var item in formTypes.FormTypes)
                 {
                     if (context.FormTypes.Any(x => x.Name == item.Name)) continue;
+                    item.TenantId = DefaultTenantSettings.TenantId;
                     context.FormTypes.Add(item);
                     await context.SaveChangesAsync();
                 }

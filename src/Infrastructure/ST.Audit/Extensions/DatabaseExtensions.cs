@@ -7,6 +7,7 @@ using ST.Audit.Enums;
 using ST.Audit.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -14,6 +15,104 @@ namespace ST.Audit.Extensions
 {
     public static class DatabaseExtensions
     {
+        public static TrackAudit GetTrackAuditFromDictionary(this Dictionary<string, object> keys,
+            string contextName, Guid? tenantId, Type objectType, TrackEventType eventType)
+        {
+            if (keys == null) return null;
+            var details = new List<TrackAuditDetails>();
+            var audit = new TrackAudit
+            {
+                Created = DateTime.Now,
+                Changed = DateTime.Now,
+                DatabaseContextName = contextName,
+                TenantId = tenantId,
+                TypeFullName = objectType.FullName,
+                TrackEventType = eventType,
+                Version = 1
+            };
+
+            if (keys.ContainsKey("Id"))
+            {
+                audit.RecordId = keys["Id"].ToString().ToGuid();
+            }
+
+            if (eventType == TrackEventType.Updated)
+            {
+                if (keys.ContainsKey("Version"))
+                {
+                    try
+                    {
+                        var version = Convert.ToInt32(keys["Version"]);
+                        audit.Version = ++version;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex);
+                    }
+                }
+            }
+
+            foreach (var prop in keys)
+            {
+                try
+                {
+                    var detailObject = new TrackAuditDetails
+                    {
+                        PropertyName = prop.Key,
+                        PropertyType = prop.Value?.GetType().FullName,
+                        Value = prop.Value?.ToString(),
+                        TenantId = tenantId
+                    };
+
+                    details.Add(detailObject);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex);
+                }
+            }
+            audit.AuditDetailses = details;
+            return audit;
+        }
+
+        /// <summary>
+        /// Get track audit from object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="contextName"></param>
+        /// <param name="tenantId"></param>
+        /// <param name="objectType"></param>
+        /// <param name="eventType"></param>
+        /// <returns></returns>
+        public static TrackAudit GetTrackAuditFromObject(this object obj,
+            string contextName, Guid? tenantId, Type objectType, TrackEventType eventType)
+        {
+            return GetTrackAuditFromDictionary(GetDictionary(obj), contextName, tenantId, objectType, eventType);
+        }
+
+
+        /// <summary>
+        /// Store audit in context
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="audit"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static bool Store<TContext>(this TrackAudit audit, TContext context) where TContext : TrackerDbContext
+        {
+            try
+            {
+                context.Add(audit);
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return false;
+            }
+        }
+
         /// <summary>
         /// Get tracked entities
         /// </summary>
@@ -35,6 +134,28 @@ namespace ST.Audit.Extensions
         }
 
         /// <summary>
+        /// Implement from object to dictionary
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static Dictionary<string, object> GetDictionary<TEntity>(TEntity model)
+        {
+            var dictionary = new Dictionary<string, object>();
+            try
+            {
+                dictionary = model.GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .ToDictionary(prop => prop.Name, prop => prop.GetValue(model, null));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return dictionary;
+        }
+
+        /// <summary>
         /// Audit tracker for context who inherit from TrackerDbContext
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -50,21 +171,17 @@ namespace ST.Audit.Extensions
                if (audit == null) return;
                await context.AddAsync(audit);
                var propId = entry.GetType().GetProperty("Id");
-               if (propId != null)
+               if (propId == null) return;
+               var objId = propId.GetValue(entry).ToString().ToGuid();
+               var check = context.Find(entry.GetType(), objId);
+               if (check == null) return;
+               try
                {
-                   var objId = propId.GetValue(entry).ToString().ToGuid();
-                   var check = context.Find(entry.GetType(), objId);
-                   if (check != null)
-                   {
-                       try
-                       {
-                           // context.Attach(entry);
-                       }
-                       catch (Exception e)
-                       {
-                           Console.WriteLine(e);
-                       }
-                   }
+                   // context.Attach(entry);
+               }
+               catch (Exception e)
+               {
+                   Console.WriteLine(e);
                }
            };
 
@@ -88,10 +205,6 @@ namespace ST.Audit.Extensions
         {
             context.ChangeTracker.Tracked += async (sender, eventArgs) =>
             {
-                if (eventArgs.Entry.Entity.GetType().Name == "ApplicationRole")
-                {
-                    var v = 5;
-                }
                 if (eventArgs.Entry.State == EntityState.Unchanged) return;
 
                 var (audit, entry) = Track(eventArgs);
@@ -100,13 +213,11 @@ namespace ST.Audit.Extensions
                 try
                 {
                     var objId = ((dynamic)entry).Id;
-                    if (objId != null)
+                    if (objId == null) return;
+                    var check = context.Find(entry.GetType(), objId);
+                    if (check != null)
                     {
-                        var check = context.Find(entry.GetType(), objId);
-                        if (check != null)
-                        {
-                            //context.Attach(entry);
-                        }
+                        //context.Attach(entry);
                     }
                 }
                 catch (Exception e)
@@ -133,6 +244,7 @@ namespace ST.Audit.Extensions
             try
             {
                 dynamic entry = eventArgs.Entry.Entity;
+                var contextName = eventArgs.Entry.Context.GetType().FullName;
                 var audit = new TrackAudit
                 {
                     TypeFullName = eventArgs.Entry.Entity.GetType().FullName,
@@ -142,7 +254,7 @@ namespace ST.Audit.Extensions
                     ModifiedBy = "System",
                     Version = 1,
                     TrackEventType = GetRecordState(eventArgs.Entry.State),
-                    DatabaseContextName = eventArgs.Entry.Context.GetType().FullName
+                    DatabaseContextName = contextName
                 };
                 var currentVersion = Convert.ToInt32(eventArgs.Entry.Entity.GetType().GetProperty("Version")?.GetValue(eventArgs.Entry.Entity).ToString());
                 var propertyId = eventArgs.Entry.Entity.GetType().GetProperty("Id");

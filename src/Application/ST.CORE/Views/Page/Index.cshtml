@@ -26,7 +26,7 @@
 					</div>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered" id="pageTable">
+			<table class="table table-striped table-bordered" id="pagTable">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -165,13 +165,17 @@
 
 
 
-			const tableId = '#pageTable';
+			const tableId = '#pagTable';
 			if ($.fn.DataTable.isDataTable(tableId)) {
 				alert();
 				$(tableId).dataTable().fnDestroy();
 				$(tableId).dataTable().empty();
 			}
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)
@@ -194,6 +198,7 @@
 						data: null,
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
+							<a class="btn btn-warning btn-sm" href="${row.path}">Preview</a>
 									<a class="btn btn-info btn-sm" href="@Url.Action("PageBuilder")?pageId=${row.id
 								}">Builder</a>
 									<a class="btn btn-danger btn-sm" href="@Url.Action("Edit")?pageId=${row.id

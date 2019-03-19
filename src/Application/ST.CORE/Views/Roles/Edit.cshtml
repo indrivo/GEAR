@@ -15,6 +15,7 @@
 				<form asp-action="Edit" role="form">
 					@Html.HiddenFor(x => x.IsNoEditable)
 					@Html.HiddenFor(x => x.ClientName)
+					@Html.HiddenFor(x => x.TenantId)
 					<input type="hidden" asp-for="Id" />
 					<div class="form-body">
 						<h3 class="card-title">Role Info</h3>

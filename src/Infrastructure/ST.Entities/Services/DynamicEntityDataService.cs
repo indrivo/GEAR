@@ -13,7 +13,10 @@ using ST.Entities.ViewModels.DynamicEntities;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Extensions;
 using ST.Entities.Utils;
-using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using ST.Audit.Extensions;
+using ST.Audit.Enums;
+using ST.Organization;
 
 namespace ST.Entities.Services
 {
@@ -25,24 +28,35 @@ namespace ST.Entities.Services
         /// Inject db context
         /// </summary>
         private readonly EntitiesDbContext _context;
+
         /// <summary>
-        /// Store table configurations
+        /// Inject http context
         /// </summary>
-        // ReSharper disable once UnusedMember.Local
-        private static readonly HashSet<KeyValuePair<string, TableModel>> Store = new HashSet<KeyValuePair<string, TableModel>>();
-        /// <summary>
-        /// Check if entity is sync
-        /// </summary>
-        public static HashSet<KeyValuePair<string, bool>> TableSync = new HashSet<KeyValuePair<string, bool>>();
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public DynamicEntityDataService(EntitiesDbContext context)
+        /// <param name="httpContextAccessor"></param>
+        public DynamicEntityDataService(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        /// <summary>
+        /// Tenant id
+        /// </summary>
+        private Guid? CurrentUserTenantId
+        {
+            get
+            {
+                return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid() ?? DefaultTenantSettings.TenantId;
+            }
+        }
+
 
         /// <inheritdoc />
         /// <summary>
@@ -64,6 +78,7 @@ namespace ST.Entities.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get filtered data list
         /// </summary>
@@ -122,7 +137,7 @@ namespace ST.Entities.Services
             var result = new ResultModel<IEnumerable<Dictionary<string, object>>>();
             var entity = typeof(TEntity).Name;
             if (string.IsNullOrEmpty(entity)) return result;
-            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
             result.IsSuccess = true;
             var model = await Create<TEntity>(schema);
             model.Values = new List<Dictionary<string, object>>();
@@ -142,7 +157,7 @@ namespace ST.Entities.Services
             var result = new ResultModel<Dictionary<string, object>>();
             var entity = typeof(TEntity).Name;
             if (string.IsNullOrEmpty(entity)) return result;
-            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var model = await Create<TEntity>(schema);
             model.Values = new List<Dictionary<string, object>>
             {
@@ -180,6 +195,7 @@ namespace ST.Entities.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get first or default
         /// </summary>
@@ -192,14 +208,13 @@ namespace ST.Entities.Services
             //TODO: Parse NodeType.Constant of expression for get sql where query
             //var where = translator.Translate(predicate);
             var allCheck = await GetAll<TEntity, TEntity>(predicate?.Compile());
-            if (allCheck.IsSuccess)
-            {
-                result.IsSuccess = true;
-                result.Result = allCheck.Result.FirstOrDefault();
-            }
+            if (!allCheck.IsSuccess) return result;
+            result.IsSuccess = true;
+            result.Result = allCheck.Result.FirstOrDefault();
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get last element
         /// </summary>
@@ -212,11 +227,9 @@ namespace ST.Entities.Services
             var translator = new QueryTranslator();
             //TODO: Parse NodeType.Constant of expression for get sql where query
             var allCheck = await GetAll<TEntity, TEntity>(predicate?.Compile());
-            if (allCheck.IsSuccess)
-            {
-                result.IsSuccess = true;
-                result.Result = allCheck.Result.LastOrDefault();
-            }
+            if (!allCheck.IsSuccess) return result;
+            result.IsSuccess = true;
+            result.Result = allCheck.Result.LastOrDefault();
             return result;
         }
 
@@ -233,25 +246,9 @@ namespace ST.Entities.Services
                 var result = new ResultModel<TableModel>();
                 var entity = typeof(TEntity).Name;
 
-                //var search = Store.FirstOrDefault(x => x.Key.Equals(entity));
                 if (string.IsNullOrEmpty(entity)) return result;
-                //if (string.IsNullOrEmpty(search.Key))
-                //{
-                //    var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity));
-                //    if (table != null)
-                //    {
-                //        table.TableFields = _context.TableFields.Where(x => x.TableId.Equals(table.Id)).ToList();
 
-                //        result.Result = table;
-                //        Store.Add(new KeyValuePair<string, TableModel>(entity, table));
-                //    }
-                //}
-                //else
-                //{
-                //    result.Result = search.Value;
-                //}
-
-                var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity));
+                var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId);
                 if (table != null)
                 {
                     table.TableFields = _context.TableFields.Where(x => x.TableId.Equals(table.Id)).ToList();
@@ -295,7 +292,7 @@ namespace ST.Entities.Services
             };
             var entity = typeof(TEntity).Name;
             if (string.IsNullOrEmpty(entity)) return result;
-            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var model = await Create<TEntity>(schema);
             model.Values = new List<Dictionary<string, object>>();
             var count = _context.GetCount(model);
@@ -337,16 +334,25 @@ namespace ST.Entities.Services
         {
             var result = new ResultModel<Guid>();
 
-
-            var entity = typeof(TEntity).Name;
-            if (string.IsNullOrEmpty(entity)) return result;
-            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
+            var entity = typeof(TEntity);
+            if (string.IsNullOrEmpty(entity.Name)) return result;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity.Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
             //Set default values
             model.SetDefaultValues(table);
-
+            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
+                        entity, TrackEventType.Added);
+            if (model.ContainsKey("Version"))
+            {
+                model["Version"] = audit.Version;
+            }
             table.Values = new List<Dictionary<string, object>> { model };
-            return _context.Insert(table);
+            result = _context.Insert(table);
+            if (!result.IsSuccess) return result;
+            if (audit == null) return result;
+            audit.RecordId = result.Result;
+            audit?.Store(_context);
+            return result;
         }
 
         /// <inheritdoc />
@@ -368,6 +374,7 @@ namespace ST.Entities.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Add range
         /// </summary>
@@ -422,8 +429,7 @@ namespace ST.Entities.Services
         public async Task<ResultModel<Guid>> Update<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var schema = _context.Table.Where(x => x.Name.ToLower().Equals(typeof(TEntity).Name.ToLower())).FirstOrDefault()?.EntityType;
-            //var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name))?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
 
             table.Values = new List<Dictionary<string, object>> { model };
@@ -431,6 +437,11 @@ namespace ST.Entities.Services
             if (!req.IsSuccess || !req.Result) return result;
             result.IsSuccess = true;
             result.Result = Guid.Parse(model["Id"].ToString());
+            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
+                typeof(TEntity), TrackEventType.Updated);
+
+            audit.RecordId = result.Result;
+            audit?.Store(_context);
             return result;
         }
 
@@ -457,7 +468,7 @@ namespace ST.Entities.Services
         public async Task<ResultModel<Guid>> DeletePermanent<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name))?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
             table.Values = new List<Dictionary<string, object>>
             {
@@ -553,7 +564,7 @@ namespace ST.Entities.Services
             => Task.Run(() =>
             {
                 var entity = typeof(TEntity).Name;
-                var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
+                var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
                 var model = new EntityViewModel
                 {
                     TableName = entity,
@@ -577,22 +588,27 @@ namespace ST.Entities.Services
             var type = typeof(T);
             var obj = Activator.CreateInstance(type);
             if (dict == null) return (T)obj;
-            foreach (var kv in dict)
+            foreach (var (key, value) in dict)
             {
                 try
                 {
-                    var fieldType = type.GetProperties().FirstOrDefault(x => x.Name.Equals(kv.Key))?.PropertyType;
+                    var fieldType = type.GetProperties().FirstOrDefault(x => x.Name.Equals(key))?.PropertyType;
 
-                    switch (fieldType.Name)
+                    switch (fieldType?.Name)
                     {
                         case "Guid":
                             {
-                                type.GetProperty(kv.Key).SetValue(obj, kv.Value);
+                                type.GetProperty(key).SetValue(obj, value);
                             }
                             break;
                         case "String":
                             {
-                                type.GetProperty(kv.Key).SetValue(obj, kv.Value.ToString());
+                                type.GetProperty(key).SetValue(obj, value.ToString());
+                            }
+                            break;
+                        case "Int32":
+                            {
+                                type.GetProperty(key).SetValue(obj, Convert.ToInt32(value.ToString()));
                             }
                             break;
                         case "Nullable`1":
@@ -607,9 +623,9 @@ namespace ST.Entities.Services
 
                                             case "Guid":
                                                 {
-                                                    type.GetProperty(kv.Key).SetValue(obj,
-                                                        DBNull.Value.Equals(kv.Value) ? default(Nullable)
-                                                        : kv.Value);
+                                                    type.GetProperty(key).SetValue(obj,
+                                                        DBNull.Value.Equals(value) ? default(Nullable)
+                                                        : value);
                                                 }
                                                 break;
                                         }
@@ -617,12 +633,12 @@ namespace ST.Entities.Services
                                 }
                                 else
                                 {
-                                    type.GetProperty(kv.Key).SetValue(obj, default(Nullable));
+                                    type.GetProperty(key).SetValue(obj, default(Nullable));
                                 }
                             }
                             break;
                         default:
-                            type.GetProperty(kv.Key).SetValue(obj, kv.Value);
+                            type.GetProperty(key).SetValue(obj, value);
                             break;
                     }
                 }
@@ -660,7 +676,7 @@ namespace ST.Entities.Services
         /// <param name="tableName"></param>
         /// <returns></returns>
         public DynamicObject Table(string tableName)
-            => new ObjectService(tableName).Resolve(_context);
+            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor);
 
         /// <inheritdoc />
         /// <summary>
@@ -671,7 +687,7 @@ namespace ST.Entities.Services
             => new DynamicObject
             {
                 Object = Activator.CreateInstance(typeof(TEntity)),
-                DataService = new DynamicEntityDataService(_context)
+                DataService = new DynamicEntityDataService(_context, _httpContextAccessor)
             };
 
         /// <summary>

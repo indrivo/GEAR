@@ -98,6 +98,7 @@ namespace ST.CORE.Controllers.Localization
 				// If the language is invalid then set to default language.
 				var langIsValid = cLangs.Contains(identifier);
 				HttpContext.Session.SetString(sessionKey, langIsValid ? identifier : _locConfig.Value.DefaultLanguage);
+				HttpContext.Response.Cookies.Append("language", _locConfig.Value.Languages.FirstOrDefault(x => x.Identifier == identifier)?.Name);
 			}
 
 			var referer = Request.Headers["Referer"].ToString();

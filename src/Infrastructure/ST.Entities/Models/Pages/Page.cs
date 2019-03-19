@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
+using ST.Audit.Models;
 using ST.Entities.Models.Tables;
 
 namespace ST.Entities.Models.Pages

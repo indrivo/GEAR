@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Microsoft.AspNetCore.Http;
 using ST.BaseRepository;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
@@ -22,12 +23,14 @@ namespace ST.Entities.Services
         {
             _asemblyName = new AssemblyName(className);
         }
+
         /// <summary>
         /// Create object from table configuration
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="httpContextAccessor"></param>
         /// <returns></returns>
-        public DynamicObject Resolve(EntitiesDbContext context)
+        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             var proprietes = typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
             var entity = _asemblyName.Name;
@@ -58,7 +61,7 @@ namespace ST.Entities.Services
             return new DynamicObject
             {
                 Object = obj,
-                DataService = new DynamicEntityDataService(context)
+                DataService = new DynamicEntityDataService(context, httpContextAccessor)
             };
         }
 

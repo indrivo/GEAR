@@ -51,6 +51,13 @@ namespace ST.Entities.Controls.Builders
                     Name = "IsDeleted",
                     DataType = "bit",
                     AllowNull = true
+                },
+                new BaseModelVieModel
+                {
+                    Name = "Version",
+                    DataType = "int32",
+                    MaxLenght = 9999,
+                    AllowNull = true
                 }
             };
             if (entityType == "Profile")
