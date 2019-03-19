@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Mapster;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
@@ -11,26 +12,21 @@ using ST.CORE.ViewModels.Pages;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;
+using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
+using ST.Identity.Services.Abstractions;
+using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers.Entity
 {
-	public class BlocksController : Controller
+	public class BlocksController : BaseController
 	{
-		#region Inject
-		/// <summary>
-		/// Inject db context
-		/// </summary>
-		private readonly EntitiesDbContext _context;
-		#endregion
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		public BlocksController(EntitiesDbContext context)
+		public BlocksController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			_context = context;
 		}
+
 		/// <summary>
 		/// Index
 		/// </summary>
@@ -49,7 +45,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			var model = new CreateBlockViewModel
 			{
-				BlockCategories = _context.BlockCategories.ToList()
+				BlockCategories = Context.BlockCategories.ToList()
 			};
 			return View(model);
 		}
@@ -64,15 +60,18 @@ namespace ST.CORE.Controllers.Entity
 		{
 			try
 			{
-				_context.Blocks.Add(model);
-				_context.SaveChanges();
+				model.TenantId = CurrentUserTenantId;
+				model.Author = GetCurrentUser().Id;
+				model.Changed = DateTime.Now;
+				Context.Blocks.Add(model);
+				Context.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
-			model.BlockCategories = _context.BlockCategories.ToList();
+			model.BlockCategories = Context.BlockCategories.ToList();
 			return View(model);
 		}
 
@@ -85,10 +84,10 @@ namespace ST.CORE.Controllers.Entity
 		public IActionResult Edit(Guid? id)
 		{
 			if (id == null) return NotFound();
-			var req = _context.Blocks.Include(x => x.BlockCategory).Single(x => x.Id == id);
+			var req = Context.Blocks.Include(x => x.BlockCategory).Single(x => x.Id == id);
 			if (req == null) return NotFound();
 			var model = req.Adapt<CreateBlockViewModel>();
-			model.BlockCategories = _context.BlockCategories.ToList();
+			model.BlockCategories = Context.BlockCategories.ToList();
 			return View(model);
 		}
 
@@ -103,8 +102,8 @@ namespace ST.CORE.Controllers.Entity
 			model.Changed = DateTime.Now;
 			try
 			{
-				_context.Blocks.Update(model);
-				_context.SaveChanges();
+				Context.Blocks.Update(model);
+				Context.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
@@ -124,7 +123,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = _context.Filter<Block>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = Context.Filter<Block>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount);
 
@@ -150,13 +149,13 @@ namespace ST.CORE.Controllers.Entity
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete block!", success = false });
-			var page = _context.Blocks.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var page = Context.Blocks.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (page == null) return Json(new { message = "Fail to delete block!", success = false });
 
 			try
 			{
-				_context.Blocks.Remove(page);
-				_context.SaveChanges();
+				Context.Blocks.Remove(page);
+				Context.SaveChanges();
 				return Json(new { message = "Block was delete with success!", success = true });
 			}
 			catch (Exception e)

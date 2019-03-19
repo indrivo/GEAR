@@ -21,7 +21,6 @@ using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Localization;
 
@@ -81,6 +80,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="pageRender"></param>
 		/// <param name="localizationService"></param>
 		/// <param name="menuService"></param>
+		/// <param name="userManager"></param>
 		public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
 			IDynamicEntityDataService dataService, IStringLocalizer localizer,
 			IOptionsSnapshot<LocalizationConfigModel> locConfig,
@@ -409,20 +409,42 @@ namespace ST.CORE.Controllers.Render
 		/// Load paged data with ajax
 		/// </summary>
 		/// <param name="param"></param>
+		/// <param name="viewModelId"></param>
+		/// <param name="tableId"></param>
 		/// <returns></returns>
 		[HttpPost]
 		[AjaxOnly]
 		public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, Guid tableId)
 		{
 			if (viewModelId == Guid.Empty || tableId == Guid.Empty) return Json(default(DTResult<object>));
-			var viewModel = _context.ViewModels
+			var viewModel = await _context.ViewModels
 				.Include(x => x.TableModel)
+				.ThenInclude(x => x.TableFields)
 				.Include(x => x.ViewModelFields)
-				.FirstOrDefault(x => x.Id.Equals(viewModelId));
+				.ThenInclude(x => x.TableModelFields)
+				.FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
 			if (viewModel == null) return Json(default(DTResult<object>));
+			var sortColumn = param.SortOrder;
+			try
+			{
+				var columnIndex = Convert.ToInt32(param.Order[0].Column);
+				var field = viewModel.ViewModelFields.ElementAt(columnIndex);
+				if (field != null)
+				{
+					var column =
+						viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
+					sortColumn = column != null
+						? $"{column?.Name ?? field.Name} {param.SortOrder}"
+						: $"{field.Name} {param.SortOrder}";
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
 
-			var (objects, item2) = await _dataService.Filter(viewModel.TableModel.Name, param.Search.Value, param.SortOrder, param.Start,
+			var (objects, item2) = await _dataService.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn, param.Start,
 				param.Length);
 
 			var finalResult = new DTResult<object>
@@ -535,6 +557,16 @@ namespace ST.CORE.Controllers.Render
 
 				var obj = instance.ParseObject(pre);
 
+				try
+				{
+					obj.GetType().GetProperty("Author").SetValue(obj, User.Identity.Name);
+					obj.GetType().GetProperty("ModifiedBy").SetValue(obj, User.Identity.Name);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
+
 				var req = await instance.Add(obj);
 
 				if (req.IsSuccess)
@@ -571,6 +603,35 @@ namespace ST.CORE.Controllers.Render
 			if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
 
 			return Json(new { message = "Item was deleted!", success = true });
+		}
+
+		public async Task<JsonResult> GetTreeData(Guid? standartEntityId, Guid? categoryEntityId, Guid? requirementEntityId)
+		{
+			var result = new ResultModel();
+			if (standartEntityId == null || categoryEntityId == null || requirementEntityId == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(Guid.NewGuid().ToString(), "Tree block configuration is not complete!")
+				};
+				return Json(result);
+			}
+			var standartEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == standartEntityId);
+			var categoryEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == categoryEntityId);
+			var requirementEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == requirementEntityId);
+
+			if (standartEntity == null || categoryEntity == null || requirementEntity == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(Guid.NewGuid().ToString(), "Entities does not exist!")
+				};
+				return Json(result);
+			}
+
+			var standarts = await _dataService.Table(standartEntity.Name).GetAll<dynamic>();
+
+			return Json(null);
 		}
 	}
 }

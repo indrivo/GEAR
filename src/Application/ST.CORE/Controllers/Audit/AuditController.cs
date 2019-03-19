@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 
 namespace ST.CORE.Controllers.Audit
 {
-	[Authorize]
 	public class AuditController : BaseController
 	{
 		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)

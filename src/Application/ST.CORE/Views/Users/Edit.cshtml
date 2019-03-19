@@ -85,8 +85,16 @@
 					<div class="row h-25">
 						<div class="col-md-6">
 							<div class="form-group">
+								<label asp-for="TenantId" class="control-label"></label>
+								<select asp-for="TenantId" asp-items="@(new MultiSelectList(Model.Tenants, "Id", "Name", null))" class="form-control"></select>
+								<span asp-validation-for="TenantId" class="text-danger"></span><br />
+								<small>Select user organization</small>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
 								<label asp-for="UserPhotoUpdateFile" class="control-label"></label>
-								<input asp-for="UserPhotoUpdateFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M"/>
+								<input asp-for="UserPhotoUpdateFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
 							</div>
 						</div>
 						<div class="col-md-6">

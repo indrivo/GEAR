@@ -1,4 +1,6 @@
 ﻿
+using ST.Audit.Models;
+
 namespace ST.Entities.Models.Notifications
 {
     public class NotificationTypes : ExtendedModel

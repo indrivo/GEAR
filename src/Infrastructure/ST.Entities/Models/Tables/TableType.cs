@@ -1,6 +1,7 @@
 ﻿
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
+using ST.Audit.Models;
 
 namespace ST.Entities.Models.Tables
 {

@@ -20,7 +20,9 @@ namespace ST.CORE.Controllers.Entity
 {
 	public class BlockCategoryController : BaseController
 	{
-		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
+			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify,
+			IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
 		}
 

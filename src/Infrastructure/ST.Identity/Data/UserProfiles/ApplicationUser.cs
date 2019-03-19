@@ -64,5 +64,10 @@ namespace ST.Identity.Data.UserProfiles
         /// Tenant id
         /// </summary>
         public Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Version
+        /// </summary>
+        public int Version { get; set; } = 1;
     }
 }

@@ -133,7 +133,8 @@ namespace ST.CORE.Extensions
 		/// Add context and identity
 		/// </summary>
 		/// <param name="services"></param>
-		/// <param name="connectionString"></param>
+		/// <param name="configuration"></param>
+		/// <param name="hostingEnvironment"></param>
 		/// <param name="migrationsAssembly"></param>
 		/// <param name="environment"></param>
 		/// <returns></returns>
@@ -189,7 +190,7 @@ namespace ST.CORE.Extensions
 			services.AddTransient<IProcessParser, ProcessParser>();
 			services.AddTransient<IOrganizationService, OrganizationService>();
 			services.AddTransient<IProfileService, Identity.Services.ProfileService>();
-			services.UseCustomCacheService(env);
+			services.UseCustomCacheService(env, "127.0.0.1", "ST.ISO");
 			return services;
 		}
 

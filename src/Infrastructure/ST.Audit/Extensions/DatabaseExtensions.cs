@@ -76,6 +76,22 @@ namespace ST.Audit.Extensions
         }
 
         /// <summary>
+        /// Get track audit from object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="contextName"></param>
+        /// <param name="tenantId"></param>
+        /// <param name="objectType"></param>
+        /// <param name="eventType"></param>
+        /// <returns></returns>
+        public static TrackAudit GetTrackAuditFromObject(this object obj,
+            string contextName, Guid? tenantId, Type objectType, TrackEventType eventType)
+        {
+            return GetTrackAuditFromDictionary(GetDictionary(obj), contextName, tenantId, objectType, eventType);
+        }
+
+
+        /// <summary>
         /// Store audit in context
         /// </summary>
         /// <typeparam name="TContext"></typeparam>
@@ -118,6 +134,28 @@ namespace ST.Audit.Extensions
         }
 
         /// <summary>
+        /// Implement from object to dictionary
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static Dictionary<string, object> GetDictionary<TEntity>(TEntity model)
+        {
+            var dictionary = new Dictionary<string, object>();
+            try
+            {
+                dictionary = model.GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                    .ToDictionary(prop => prop.Name, prop => prop.GetValue(model, null));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return dictionary;
+        }
+
+        /// <summary>
         /// Audit tracker for context who inherit from TrackerDbContext
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -133,21 +171,17 @@ namespace ST.Audit.Extensions
                if (audit == null) return;
                await context.AddAsync(audit);
                var propId = entry.GetType().GetProperty("Id");
-               if (propId != null)
+               if (propId == null) return;
+               var objId = propId.GetValue(entry).ToString().ToGuid();
+               var check = context.Find(entry.GetType(), objId);
+               if (check == null) return;
+               try
                {
-                   var objId = propId.GetValue(entry).ToString().ToGuid();
-                   var check = context.Find(entry.GetType(), objId);
-                   if (check != null)
-                   {
-                       try
-                       {
-                           // context.Attach(entry);
-                       }
-                       catch (Exception e)
-                       {
-                           Console.WriteLine(e);
-                       }
-                   }
+                   // context.Attach(entry);
+               }
+               catch (Exception e)
+               {
+                   Console.WriteLine(e);
                }
            };
 
@@ -179,13 +213,11 @@ namespace ST.Audit.Extensions
                 try
                 {
                     var objId = ((dynamic)entry).Id;
-                    if (objId != null)
+                    if (objId == null) return;
+                    var check = context.Find(entry.GetType(), objId);
+                    if (check != null)
                     {
-                        var check = context.Find(entry.GetType(), objId);
-                        if (check != null)
-                        {
-                            //context.Attach(entry);
-                        }
+                        //context.Attach(entry);
                     }
                 }
                 catch (Exception e)

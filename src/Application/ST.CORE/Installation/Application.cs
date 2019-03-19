@@ -221,7 +221,8 @@ namespace ST.CORE.Installation
 				.UseConfiguration(config)
 				.CaptureStartupErrors(true)
 				.UseStartup<Startup>()
-				.StartLogging()
+				.UseSentry()
+				.StartLogging()				
 				.Build();
 		}
 

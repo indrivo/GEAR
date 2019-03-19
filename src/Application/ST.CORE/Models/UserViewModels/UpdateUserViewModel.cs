@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using ST.BaseRepository;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Organization.Models;
 
 namespace ST.CORE.Models.UserViewModels
 {
@@ -13,6 +15,7 @@ namespace ST.CORE.Models.UserViewModels
 	{
 		public IEnumerable<ApplicationRole> Roles { get; set; }
 		public IEnumerable<AuthGroup> Groups { get; set; }
+		public IEnumerable<Tenant> Tenants { get; set; }
 
 		[Required(AllowEmptyStrings = false, ErrorMessage = "Select a role for this user"),
 		 Display(Name = "User's Role")]
@@ -46,5 +49,7 @@ namespace ST.CORE.Models.UserViewModels
 		/// Authentication Type
 		/// </summary>
 		public AuthenticationType AuthenticationType { get; set; }
+
+		public  Guid? TenantId { get; set; }
 	}
 }

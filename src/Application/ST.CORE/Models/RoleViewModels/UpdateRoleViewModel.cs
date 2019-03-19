@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Identity.Data.Permissions;
@@ -31,5 +32,7 @@ namespace ST.CORE.Models.RoleViewModels
 		public bool IsNoEditable { get; set; }
 
 		public string ClientName { get; set; }
+
+		public  Guid? TenantId { get; set; }
 	}
 }

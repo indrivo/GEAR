@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ST.CORE.Models.UserViewModels
 {
@@ -13,5 +14,6 @@ namespace ST.CORE.Models.UserViewModels
 		public IList<string> Roles { get; set; }
 		public int Sessions { get; set; }
 		public string AuthenticationType { get; set; }
+		public string Organization { get; set; }
 	}
 }

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data;
@@ -32,11 +35,7 @@ namespace ST.Identity.Extensions
                 {
                     if (ctx.Request.Cookies.Count >= 2)
                     {
-                        foreach (var cookie in ctx.Request.Cookies.Keys)
-                        {
-                            //if (cookie != ".ST.CORE.Data")
-                            ctx.Response.Cookies.Delete(cookie);
-                        }
+                        ctx.DeleteCookies();
                     }
                     if (ctx.Request.Path.Value != "/"
                     && ExcludeAssets(ctx.Request.Path.Value)
@@ -52,6 +51,36 @@ namespace ST.Identity.Extensions
                 }
                 else
                 {
+                    try
+                    {
+                        if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "language").Equals(default(KeyValuePair<string, string>)))
+                        {
+                            ctx.Response.Cookies.Append("language", "English");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+
+                    var tenantId = ctx.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+                    if (tenantId == Guid.Empty || tenantId == null)
+                    {
+                        try
+                        {
+                            var userManager = ctx.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+                            var user = userManager.GetUserAsync(ctx.User).GetAwaiter().GetResult();
+                            if (user != null)
+                            {
+                                await userManager.AddClaimAsync(user, new Claim("tenant", user.TenantId.ToString()));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e);
+                        }
+                    }
+
                     await next();
                     var isClientUrl = ctx.ParseClientRequest();
                     if (isClientUrl) await next();
@@ -67,6 +96,21 @@ namespace ST.Identity.Extensions
             });
 
             return app;
+        }
+
+        /// <summary>
+        /// Delete cookies
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        private static HttpContext DeleteCookies(this HttpContext ctx)
+        {
+            foreach (var cookie in ctx.Request.Cookies.Keys)
+            {
+                ctx.Response.Cookies.Delete(cookie);
+            }
+
+            return ctx;
         }
 
         /// <summary>
@@ -137,7 +181,7 @@ namespace ST.Identity.Extensions
                 //    return true;
                 //}
 
-                return data.Item1.Path.ToLower().StartsWith(data.Item2.ToLower()) && !data.Item2.Equals("/");
+                return data.Item1.Path.ToLower().Equals(data.Item2.ToLower()) && !data.Item2.Equals("/");
             };
 
         /// <summary>

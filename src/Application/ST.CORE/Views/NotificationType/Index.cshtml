@@ -56,6 +56,9 @@
 			}
 
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
 				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side

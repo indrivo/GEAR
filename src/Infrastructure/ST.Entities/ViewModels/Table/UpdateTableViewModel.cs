@@ -27,5 +27,7 @@ namespace ST.Entities.ViewModels.Table
         public List<TableFieldGroups> Groups { get; set; }
 
         public bool IsPartOfDbContext { get; set; }
+
+        public  Guid? TenantId { get; set; }
     }
 }

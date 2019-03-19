@@ -23,7 +23,6 @@ using ST.CORE.Services;
 using ST.Entities.Models.Notifications;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Extensions;
 using ST.Identity.LDAP.Services;
 using ST.MPass.Gov;
 using ST.Notifications.Abstraction;
@@ -334,7 +333,7 @@ namespace ST.CORE.Controllers.Identity
 			// This doesn't count login failures towards account lockout
 			// To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
-			var user = _userManager.Users.Where(x => x.UserName == model.Email).FirstOrDefault();
+			var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Email);
 			if (user != null && !user.IsDeleted)
 			{
 				if (user.AuthenticationType == AuthenticationType.Ad)

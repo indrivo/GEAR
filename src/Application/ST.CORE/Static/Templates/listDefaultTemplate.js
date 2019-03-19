@@ -1,15 +1,15 @@
 $(document).ready(function ($) {
-	const tableId = '.render_#EntityId';
+	const tableId = '#render_#ListId';
 	if ($.fn.DataTable.isDataTable(tableId)) {
 		$(tableId).dataTable().fnDestroy();
 		$(tableId).dataTable().empty();
 	}
 
-	const viewmodelData = load("/PageRender/GetViewModelById?viewModelId=#ViewModelId")
+	const viewmodelData = load("/PageRender/GetViewModelById?viewModelId=#ViewModelId");
 	const renderColumns = [];
 	if (viewmodelData.is_success) {
 		if (viewmodelData.result.viewModelFields.length > 0) {
-			const columns = $(".render_#EntityId thead tr");
+			const columns = $("#render_#ListId thead tr");
 			columns.html(null);
 			let rows = "";
 			$.each(viewmodelData.result.viewModelFields, function (index, column) {
@@ -27,7 +27,7 @@ $(document).ready(function ($) {
 				data: null,
 				"render": function (data, type, row, meta) {
 					return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
+									<a class="btn btn-info btn-sm" href="${location.href}?entityId=${row.id}">Edit</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
 						}'); >Delete</button>
 									</div>`;
@@ -37,6 +37,9 @@ $(document).ready(function ($) {
 	}
 
 	$(tableId).DataTable({
+		"language": {
+			"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+		},
 		dom: '<"CustomizeColumns">lBfrtip',
 		"processing": true, // for show progress bar
 		"serverSide": true, // for process server side

@@ -14,23 +14,11 @@
 <link rel="stylesheet" href="~/assets/stylesheets/grapesjs-plugin-filestack.css">
 <link rel="stylesheet" href="~/assets/stylesheets/page-builder.css">
 
-<script src="//static.filestackapi.com/v3/filestack.js"></script>
-<script src="~/assets/js/toastr.min.js"></script>
-
-<script src="~/assets/js/grapes.min.js?v0.14.43"></script>
-<script src="~/assets/js/grapesjs-preset-webpage.min.js"></script>
-<script src="~/assets/js/grapesjs-lory-slider.min.js?0.1.5"></script>
-<script src="~/assets/js/grapesjs-tabs.min.js?0.1.1"></script>
-<script src="~/assets/js/grapesjs-custom-code.min.js?0.1.1"></script>
-<script src="~/assets/js/grapesjs-touch.min.js?0.1.1"></script>
-<script src="~/assets/js/grapesjs-parser-postcss.min.js?0.1.1"></script>
-<script src="~/assets/js/grapesjs-tooltip.min.js?0.1.1"></script>
-
 <a style="float: right;" target="_blank" class="btn btn-warning" href="@pageData.Path">Preview page</a>
 <h2 style="margin-bottom: 1em;">Edit <code>@pageData.Settings.Name</code> page content</h2>
 
 <div id="gjs" style="height: 150em;">
-	@Html.Raw(ViewBag.Html)
+	@ViewBag.Html
 
 	<style>
 		@Html.Raw(ViewBag.Css)
@@ -47,6 +35,18 @@
 
 
 @section Scripts{
+	<script src="//static.filestackapi.com/v3/filestack.js"></script>
+	<!-- <script src="js/aviary.js"></script> old //feather.aviary.com/imaging/v3/editor.js -->
+	<script src="~/assets/js/toastr.min.js"></script>
+
+	<script src="~/assets/js/grapes.min.js?v0.14.43"></script>
+	<script src="~/assets/js/grapesjs-preset-webpage.min.js"></script>
+	<script src="~/assets/js/grapesjs-lory-slider.min.js?0.1.5"></script>
+	<script src="~/assets/js/grapesjs-tabs.min.js?0.1.1"></script>
+	<script src="~/assets/js/grapesjs-custom-code.min.js?0.1.1"></script>
+	<script src="~/assets/js/grapesjs-touch.min.js?0.1.1"></script>
+	<script src="~/assets/js/grapesjs-parser-postcss.min.js?0.1.1"></script>
+	<script src="~/assets/js/grapesjs-tooltip.min.js?0.1.1"></script>
 	<script type="text/javascript" asp-append-version="true" src="~/assets/js/builder/custom-plugins.js"></script>
 	<script type="text/javascript" asp-append-version="true" src="~/assets/js/builder/page-builder.js"></script>
 
@@ -82,7 +82,7 @@
 						modal.setTitle('Info');
 						modal.setContent(
 							`<center>
-				<span style="color: green; font-size: 1.5em;" class='fa fa-check-circle'></span><br>Data has been saved!
+					<span style="color: green; font-size: 1.5em;" class='fa fa-check-circle'></span><br>Data has been saved!
 </center>`);
 						modal.open();
 					}
@@ -129,15 +129,15 @@
 			}
 		});
 
-		$(document).ready(function () {
-			$(document).keydown(function (e) {
-				e.preventDefault();
-				if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
-					editor.runCommand('save');
-					return false;
-				}
-				return true;
-			});
-		});
+		//$(document).ready(function () {
+		//	$(document).keydown(function (e) {
+		//		e.preventDefault();
+		//		if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
+		//			editor.runCommand('save');
+		//			return false;
+		//		}
+		//		return true;
+		//	});
+		//});
 	</script>
 }

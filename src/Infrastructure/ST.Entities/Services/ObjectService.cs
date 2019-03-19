@@ -23,10 +23,12 @@ namespace ST.Entities.Services
         {
             _asemblyName = new AssemblyName(className);
         }
+
         /// <summary>
         /// Create object from table configuration
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="httpContextAccessor"></param>
         /// <returns></returns>
         public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {

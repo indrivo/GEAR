@@ -1,7 +1,7 @@
-﻿using ST.BaseRepository;
-using System;
+﻿using System;
+using ST.BaseRepository;
 
-namespace ST.Entities.Models
+namespace ST.Audit.Models
 {
     public class ExtendedModel : BaseModel
     {

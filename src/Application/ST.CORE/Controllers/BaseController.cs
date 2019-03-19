@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -24,10 +25,12 @@ namespace ST.CORE.Controllers
 		/// Inject organization service
 		/// </summary>
 		protected readonly IOrganizationService OrganizationService;
+
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
 		protected readonly INotify Notify;
+
 		/// <summary>
 		/// Entity DbContext
 		/// </summary>
@@ -59,7 +62,17 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		protected Guid? CurrentUserTenantId
 		{
-			get => User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+			get
+			{
+				var tenantId = User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+				if (tenantId != null) return tenantId;
+				var user = UserManager.GetUserAsync(User).GetAwaiter().GetResult();
+				if (user == null) return null;
+				UserManager.AddClaimAsync(user, new Claim("tenant", user.TenantId.ToString())).GetAwaiter()
+					.GetResult();
+				return user.TenantId;
+
+			}
 		}
 
 		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext)
@@ -78,6 +91,7 @@ namespace ST.CORE.Controllers
 		/// Get Current User async
 		/// </summary>
 		/// <returns></returns>
+		[NonAction]
 		protected async Task<ApplicationUser> GetCurrentUserAsync()
 		{
 			return await UserManager.GetUserAsync(User);
@@ -87,6 +101,7 @@ namespace ST.CORE.Controllers
 		/// Get current user
 		/// </summary>
 		/// <returns></returns>
+		[NonAction]
 		protected ApplicationUser GetCurrentUser()
 		{
 			return GetCurrentUserAsync().GetAwaiter().GetResult();
@@ -96,6 +111,7 @@ namespace ST.CORE.Controllers
 		/// Get User organization
 		/// </summary>
 		/// <returns></returns>
+		[NonAction]
 		protected async Task<Tenant> GetOrganizationOfUser()
 		{
 			var user = await GetCurrentUserAsync();

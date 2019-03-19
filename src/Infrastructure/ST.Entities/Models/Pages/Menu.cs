@@ -1,6 +1,7 @@
 ﻿using ST.BaseRepository;
 using System;
 using System.ComponentModel.DataAnnotations;
+using ST.Audit.Models;
 
 namespace ST.Entities.Models.Pages
 {

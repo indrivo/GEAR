@@ -10,7 +10,7 @@ using ST.Identity.Data;
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190311121617_Initial")]
+    [Migration("20190318225704_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,7 +19,7 @@ namespace ST.Identity.Migrations
             modelBuilder
                 .HasDefaultSchema("Identity")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -203,6 +203,8 @@ namespace ST.Identity.Migrations
                     b.Property<Guid?>("TenantId");
 
                     b.Property<string>("Title");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -432,6 +434,8 @@ namespace ST.Identity.Migrations
                         .HasMaxLength(256);
 
                     b.Property<byte[]>("UserPhoto");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
