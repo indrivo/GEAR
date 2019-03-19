@@ -169,6 +169,26 @@
     <None Include="Views\_ViewImports.cshtml" />
     <None Include="Views\_ViewStart.cshtml" />
     <None Include="wwwroot\assets\js\meniu\index.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\.bowerrc" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\.gitattributes" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\.gitignore" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\.jshintrc" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\.travis.yml" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\app.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\CHANGELOG.md" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\dist\bootstrap-treeview-init.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\dist\bootstrap-treeview.min.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\Gruntfile.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\LICENSE" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\public\js\bootstrap-treeview.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\README.md" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\src\js\bootstrap-treeview.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\blanket.min.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\bootstrap-treeview.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\jquery.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\qunit-1.12.0.js" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\README.md" />
+    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\tests.js" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
@@ -190,6 +210,21 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\BlockCategory\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Requirement\Create.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Requirement\CreateItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Requirement\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Requirement\EditItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Requirement\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Tenant\Edit.cshtml">
@@ -226,6 +261,36 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\ViewModel\TemplateEdit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+	<Content Update="Views\KPI\Create.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\KPI\CreateItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\KPI\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\KPI\EditItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\KPI\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Nomenclator\Create.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Nomenclator\CreateItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Nomenclator\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Nomenclator\EditItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Nomenclator\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
