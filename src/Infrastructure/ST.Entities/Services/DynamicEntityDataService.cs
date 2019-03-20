@@ -590,6 +590,7 @@ namespace ST.Entities.Services
             if (dict == null) return (T)obj;
             foreach (var (key, value) in dict)
             {
+                if (value.Equals(DBNull.Value)) continue;
                 try
                 {
                     var fieldType = type.GetProperties().FirstOrDefault(x => x.Name.Equals(key))?.PropertyType;
@@ -598,17 +599,21 @@ namespace ST.Entities.Services
                     {
                         case "Guid":
                             {
-                                type.GetProperty(key).SetValue(obj, value);
+                                if (value != null)
+                                    type.GetProperty(key).SetValue(obj, value);
                             }
                             break;
                         case "String":
                             {
-                                type.GetProperty(key).SetValue(obj, value.ToString());
+                                type.GetProperty(key).SetValue(obj, value?.ToString());
                             }
                             break;
                         case "Int32":
                             {
-                                type.GetProperty(key).SetValue(obj, Convert.ToInt32(value.ToString()));
+                                if (!string.IsNullOrEmpty(value?.ToString()))
+                                {
+                                    type.GetProperty(key).SetValue(obj, Convert.ToInt32(value.ToString()));
+                                }
                             }
                             break;
                         case "Nullable`1":

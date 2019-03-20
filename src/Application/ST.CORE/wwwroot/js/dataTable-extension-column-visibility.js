@@ -91,40 +91,73 @@ function toggleRightListSideBar(id) {
 			});
 
 		const container =
-			`<div class="to-do-widget"><ul class="todo-list list-group m-b-0">${
+			`<div class="row">
+				<div class="col-md-6">
+					<a id="selAllCols" href="#">Select All</a>
+				</div>
+			<div class="col-md-6">
+				<a id="deselAllCols" href="#">Deselect All</a>
+				</div>
+			</div><div class="to-do-widget"><ul class="todo-list list-group m-b-0">${
 			items}</ul</div>`;
 		$(".list-sidebar-central .slimscrollright .r-panel-body").html(container);
 
-		$(".vis-check").change(function () {
-			const checked = $(this).is(':checked');
-			const idd = $(this).attr("data-id");
-			const tabled = $(this).attr("data-table");
-			const cookie = getCookie(`_list_${tabled}`);
+		$("#selAllCols").on("click", function () {
+			dataStateChange(this, true);
+		});
 
-			if (cookie) {
-				const data = JSON.parse(cookie);
-				data.values[idd] = checked;
-				data.columns[idd] = idd;
+		$("#deselAllCols").on("click", function () {
+			dataStateChange(this, false);
+		});
 
-				setCookie(`_list_${tabled}`, JSON.stringify(data), 9999);
-			} else {
-				const nrCols = $(id).DataTable().settings()[0].aoColumns.length;
-				const newCookie = {
-					columns: [],
-					values: []
-				};
-				for (let i = 0; i < nrCols; i++) {
-					newCookie.values[i] = i;
-					newCookie.columns[i] = true;
-				}
-				newCookie.values[idd] = checked;
-				newCookie.columns[idd] = idd;
-				setCookie(`_list_${tabled}`, JSON.stringify(newCookie), 9999);
+		function dataStateChange(ref, state) {
+			let inputs = $($(ref)
+				.parent()
+				.parent()
+				.parent()
+				.children()[1])
+				.find("input[type=checkbox]");
+
+			for (let input = 0; input < inputs.length; input++) {
+				inputs[input].checked = state;
+				dataChanged(inputs[input]);
 			}
-			$(tabled).DataTable().columns([idd]).visible(checked);
+		}
+
+		$(".vis-check").change(function () {
+			dataChanged(this);
 		});
 	} catch (error) {
 		console.log(error);
+	}
+
+	function dataChanged(ref) {
+		const checked = $(ref).is(':checked');
+		const idd = $(ref).attr("data-id");
+		const tabled = $(ref).attr("data-table");
+		const cookie = getCookie(`_list_${tabled}`);
+
+		if (cookie) {
+			const data = JSON.parse(cookie);
+			data.values[idd] = checked;
+			data.columns[idd] = idd;
+
+			setCookie(`_list_${tabled}`, JSON.stringify(data), 9999);
+		} else {
+			const nrCols = $(id).DataTable().settings()[0].aoColumns.length;
+			const newCookie = {
+				columns: [],
+				values: []
+			};
+			for (let i = 0; i < nrCols; i++) {
+				newCookie.values[i] = i;
+				newCookie.columns[i] = true;
+			}
+			newCookie.values[idd] = checked;
+			newCookie.columns[idd] = idd;
+			setCookie(`_list_${tabled}`, JSON.stringify(newCookie), 9999);
+		}
+		$(tabled).DataTable().columns([idd]).visible(checked);
 	}
 
 	$(".list-sidebar-central").slideDown(50);

@@ -18,7 +18,7 @@
 <h2 style="margin-bottom: 1em;">Edit <code>@pageData.Settings.Name</code> page content</h2>
 
 <div id="gjs" style="height: 150em;">
-	@ViewBag.Html
+	@Html.Raw(ViewBag.Html)
 
 	<style>
 		@Html.Raw(ViewBag.Css)
@@ -53,8 +53,18 @@
 	<script>
 		//Add Save
 		cmdm.add("save", function () {
-			const html = editor.getHtml();
+			let html = editor.getHtml();
 			const css = editor.getCss();
+			const js = editor.getJs();
+			let script = document.createElement("script");
+			script.innerHtml = js;
+			console.log(js);
+			console.log(script);
+			html += script.innerText;
+
+
+			console.log(script.innerText);
+
 			const url = new URL(location.href);
 			const pageId = url.searchParams.get("pageId");
 			$.ajax({
@@ -70,9 +80,10 @@
 					mdlDialog.className += ' ' + mdlClass;
 					modal.setTitle('Info');
 					modal.setContent(
-						`<center>
-<span style="color: red; font-size: 1.5em;" class='fa fa-close'></span><br>Data fail to save!
-</center>`);
+						`
+		<center>
+			<span style="color: red; font-size: 1.5em;" class='fa fa-close'></span><br>Data fail to save!
+		</center>`);
 					modal.open();
 				},
 				success: function (data) {
@@ -81,9 +92,10 @@
 						mdlDialog.className += ' ' + mdlClass;
 						modal.setTitle('Info');
 						modal.setContent(
-							`<center>
-					<span style="color: green; font-size: 1.5em;" class='fa fa-check-circle'></span><br>Data has been saved!
-</center>`);
+							`
+		<center>
+			<span style="color: green; font-size: 1.5em;" class='fa fa-check-circle'></span><br>Data has been saved!
+		</center>`);
 						modal.open();
 					}
 				}
@@ -130,14 +142,14 @@
 		});
 
 		//$(document).ready(function () {
-		//	$(document).keydown(function (e) {
-		//		e.preventDefault();
-		//		if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
-		//			editor.runCommand('save');
-		//			return false;
-		//		}
-		//		return true;
-		//	});
+		// $(document).keydown(function (e) {
+		// e.preventDefault();
+		// if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
+		// editor.runCommand('save');
+		// return false;
+		// }
+		// return true;
+		// });
 		//});
 	</script>
 }

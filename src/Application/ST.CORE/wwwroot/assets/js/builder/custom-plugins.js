@@ -222,27 +222,6 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		view: dView
 	});
 
-
-	////add link settings
-	//domComps.addType('Action', {
-	//	model: dModel.extend({
-	//		defaults: Object.assign({}, dModel.prototype.defaults, {
-	//			traits: [
-	//				// strings are automatically converted to text types
-	//				'name', 'href'
-	//			]
-	//		})
-	//	}, {
-	//		isComponent: function (el) {
-	//			if (el.tagName === 'A') {
-	//				return { type: 'Action' };
-	//			}
-	//		}
-	//	}),
-
-	//	view: dView
-	//});
-
 	//add list settings
 	domComps.addType("Dynamic List", {
 		model: dModel.extend({
@@ -310,7 +289,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 
 
 	function getTreeOptions() {
-		return entities.map(function(data) {
+		return entities.map(function (data) {
 			let obj = {};
 			obj.name = data.name;
 			obj.value = data.id;
@@ -344,7 +323,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 						name: "db-tree-requirement",
 						options: getTreeOptions()
 					}
-					]
+				]
 			})
 		}, {
 				isComponent: function (el) {
@@ -386,7 +365,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		category: "Dynamic Entities",
 		content: `
 		 <div class="row"> 
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <form class="form" style="margin-left: 1em !important">
                                     <div class="form-group">
                                         <label for="exampleInputuname">User Name</label>
@@ -412,93 +391,14 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 	});
 
 
-
 	//Dynamic tree
 	blockManager.add("custom-tree-block", {
 		label: "ISO Standart Tree Block",
 		type: "Dynamic Tree",
 		category: "Dynamic Entities",
-		content: {
-			script: function () {
-				function getTree() {
-					var tree = [
-						{
-							dataId: "Guid",
-							text: "ISO 270001",
-							color: "#55ce63",
-							selectable: true,
-							state: {
-								checked: false,
-								disabled: false,
-								expanded: false,
-								selected: false
-							},
-							nodes: [
-								{
-									text: "Categorie 1",
-									nodes: [
-										{
-											text: "Sub 1",
-											nodes: [
-												{
-													selectable: false,
-													text: `<span>Cerinta 1</span>
-												<div style="margin-left: 60%" class="btn-group" role="group" aria-label="Action buttons">
-													<a class="btn btn-success btn-sm" href="#">Actions</a>
-													<a class="btn btn-info btn-sm" href="#">KPI</a>
-													<a href="#" class='btn btn-danger btn-sm'>Goals</a>
-												</div>`
-												},
-												{
-													selectable: false,
-													text: `<span>Cerinta 2</span>
-												<div style="margin-left: 60%" class="btn-group" role="group" aria-label="Action buttons">
-													<a class="btn btn-success btn-sm" href="#">Actions</a>
-													<a class="btn btn-info btn-sm" href="#">KPI</a>
-													<a href="#" class='btn btn-danger btn-sm'>Goals</a>
-												</div>`
-												},
-											]
-										},
-										{
-											text: "Sub 2"
-										}
-									]
-								},
-								{
-									text: "Categorie 2"
-								}
-							]
-						}
-					];
-					return tree;
-				}
-
-				if (!(location.href.indexOf("about:blank") !== -1)) {
-					$(".custom-tree-iso").treeview({
-						levels: 1,
-						selectedBackColor: "#03a9f3",
-						onhoverColor: "rgba(0, 0, 0, 0.05)",
-						expandIcon: "ti-plus",
-						collapseIcon: "ti-minus",
-						nodeIcon: "",
-						data: getTree()
-					});
-
-					$(".custom-tree-iso").on("nodeExpanded",
-						function (event, node) {
-							console.log(node);
-
-							//$(".custom-tree-iso").treeview(true).addNode({ text: "OK" }, node, 0);
-						});
-				}
-			},
-			content: `
-				<div class="row">
-					<tree class="custom-tree-iso col-md-6" style="margin: 0.2em;">Tree node</tree>
-				</div>
-			`
-		},
+		content: `
+				<tree class="custom-tree-iso col-md-12" style="margin: 0.2em;">Loading tree ...</tree>
+			`,
 		attributes: {
 			class: "fa fa-tree"
 		}
@@ -537,15 +437,6 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>Samuel Jackson</td>
-						<td>Our description</td>
-						<td>18/12/12</td>
-						<td>12/12/12</td>
-						<td>system</td>
-						<td>false</td>
-						<td>Actions</td>
-					</tr>
 				</tbody>
 			</table>
 		</div>

@@ -122,10 +122,7 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			using (SentrySdk.Init("https://165261edc4874a38b9d0a8c7f67509d3@sentry.io/1416303"))
-			{
-				BuildWebHost(args).Run();
-			}
+			BuildWebHost(args).Run();
 		}
 
 		/// <summary>
@@ -213,7 +210,7 @@ namespace ST.CORE.Installation
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		public static IWebHost BuildWebHost(string[] args)
+		private static IWebHost BuildWebHost(string[] args)
 		{
 			var config = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
@@ -226,7 +223,6 @@ namespace ST.CORE.Installation
 				.UseConfiguration(config)
 				.CaptureStartupErrors(true)
 				.UseStartup<Startup>()
-				.UseSentry()
 				.StartLogging()				
 				.Build();
 		}
