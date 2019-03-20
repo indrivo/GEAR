@@ -67,6 +67,11 @@ namespace ST.CORE.Controllers.Render
 		/// Inject user manager
 		/// </summary>
 		private readonly UserManager<ApplicationUser> _userManager;
+
+		/// <summary>
+		/// Inject iso service
+		/// </summary>
+		private readonly ITreeIsoService _isoService;
 		#endregion
 
 		/// <summary>
@@ -81,11 +86,12 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="localizationService"></param>
 		/// <param name="menuService"></param>
 		/// <param name="userManager"></param>
+		/// <param name="isoService"></param>
 		public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
 			IDynamicEntityDataService dataService, IStringLocalizer localizer,
 			IOptionsSnapshot<LocalizationConfigModel> locConfig,
 			IPageRender pageRender,
-			ILocalizationService localizationService, IMenuService menuService, UserManager<ApplicationUser> userManager)
+			ILocalizationService localizationService, IMenuService menuService, UserManager<ApplicationUser> userManager, ITreeIsoService isoService)
 		{
 			_context = context;
 			_appContext = appContext;
@@ -95,6 +101,7 @@ namespace ST.CORE.Controllers.Render
 			_localizationService = localizationService;
 			_menuService = menuService;
 			_userManager = userManager;
+			_isoService = isoService;
 			_pageRender = pageRender;
 		}
 
@@ -605,10 +612,19 @@ namespace ST.CORE.Controllers.Render
 			return Json(new { message = "Item was deleted!", success = true });
 		}
 
-		public async Task<JsonResult> GetTreeData(Guid? standartEntityId, Guid? categoryEntityId, Guid? requirementEntityId)
+
+		/// <summary>
+		/// Load tree for standards
+		/// </summary>
+		/// <param name="standardEntityId"></param>
+		/// <param name="categoryEntityId"></param>
+		/// <param name="requirementEntityId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<JsonResult> GetTreeData(Guid? standardEntityId, Guid? categoryEntityId, Guid? requirementEntityId)
 		{
 			var result = new ResultModel();
-			if (standartEntityId == null || categoryEntityId == null || requirementEntityId == null)
+			if (standardEntityId == null || categoryEntityId == null || requirementEntityId == null)
 			{
 				result.Errors = new List<IErrorModel>
 				{
@@ -616,11 +632,10 @@ namespace ST.CORE.Controllers.Render
 				};
 				return Json(result);
 			}
-			var standartEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == standartEntityId);
+			var standardEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == standardEntityId);
 			var categoryEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == categoryEntityId);
 			var requirementEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == requirementEntityId);
-
-			if (standartEntity == null || categoryEntity == null || requirementEntity == null)
+			if (standardEntity == null || categoryEntity == null || requirementEntity == null)
 			{
 				result.Errors = new List<IErrorModel>
 				{
@@ -629,9 +644,7 @@ namespace ST.CORE.Controllers.Render
 				return Json(result);
 			}
 
-			var standarts = await _dataService.Table(standartEntity.Name).GetAll<dynamic>();
-
-			return Json(null);
+			return Json(await _isoService.LoadTreeStandard(standardEntity, categoryEntity, requirementEntity));
 		}
 	}
 }

@@ -14,6 +14,8 @@ using Shared.Core.Versioning;
 using ST.CORE.Extensions;
 using ST.CORE.Installation;
 using ST.CORE.LoggerTargets;
+using ST.CORE.Services;
+using ST.CORE.Services.Abstraction;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Utils;
@@ -105,11 +107,11 @@ namespace ST.CORE
 			services.AddLocalization(Configuration);
 			services.AddDbContext<EntitiesDbContext>(options =>
 			{
-				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
-				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 
 			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
@@ -121,7 +123,7 @@ namespace ST.CORE
 					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 				})
 				.AddMvc();
-			var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
+
 			services.AddDistributedMemoryCache()
 				.AddSession(opts =>
 				{
@@ -161,6 +163,9 @@ namespace ST.CORE
 			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
+
+			services.AddTransient<ITreeIsoService, TreeIsoService>();
+
 			//Register dependencies
 			return services.AddWindsorContainers();
 		}

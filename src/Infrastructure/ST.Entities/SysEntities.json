@@ -538,6 +538,125 @@
       ]
     },
     {
+      "Name": "Standards",
+      "Schema": "systemcore", //override by installer
+      "Description": "Entity for ISO standards",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "Name of standard",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "StandardCategories",
+      "Schema": "systemcore", //override by installer
+      "Description": "Entity for ISO standards",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "Name of standard",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "StandardId",
+          "Description": "Standart Id",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "ParentCategoryId",
+          "Description": "Parent category id",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Name": "CategoryRequirements",
+      "Schema": "systemcore", //override by installer
+      "Description": "Entity for ISO standards",
+      "Fields": [
+        {
+          "Name": "Name",
+          "Description": "Name of standard",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "CategoryId",
+          "Description": "Category id",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "ParentRequirementId",
+          "Description": "Parent requirement",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "Name": "FileReferences",
       "Schema": "systemcore", //override by installer
       "Description": "File reference for entity",
@@ -1028,7 +1147,6 @@
         }
       ]
     },
-
     {
       "Name": "NomPeriod",
       "Schema": "systemcore",
@@ -1610,8 +1728,7 @@
               "ConfigCode": "1000"
             }
           ]
-        }
-        ,
+        },
         {
           "Name": "DeadLine",
           "Description": "DeadLine field",
@@ -1628,7 +1745,5 @@
         }
       ]
     }
-
-
   ]
 }
