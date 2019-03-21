@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,13 +18,14 @@ using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.LocalizationViewModels;
 using ST.CORE.ViewModels.PageViewModels;
+using ST.CORE.ViewModels.TableColumnsViewModels;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
+using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 using ST.Localization;
-using ST.Identity.Data;
 
 namespace ST.CORE.Controllers.Render
 {
@@ -50,10 +52,6 @@ namespace ST.CORE.Controllers.Render
 		/// Inject localizer
 		/// </summary>
 		private readonly IStringLocalizer _localizer;
-		/// <summary>
-		/// Inject Service
-		/// </summary>
-		private readonly ILocalizationService _localizationService;
 		/// <summary>
 		/// Inject page render
 		/// </summary>
@@ -84,7 +82,6 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="localizer"></param>
 		/// <param name="locConfig"></param>
 		/// <param name="pageRender"></param>
-		/// <param name="localizationService"></param>
 		/// <param name="menuService"></param>
 		/// <param name="userManager"></param>
 		/// <param name="isoService"></param>
@@ -92,14 +89,13 @@ namespace ST.CORE.Controllers.Render
 			IDynamicEntityDataService dataService, IStringLocalizer localizer,
 			IOptionsSnapshot<LocalizationConfigModel> locConfig,
 			IPageRender pageRender,
-			ILocalizationService localizationService, IMenuService menuService, UserManager<ApplicationUser> userManager, ITreeIsoService isoService)
+			IMenuService menuService, UserManager<ApplicationUser> userManager, ITreeIsoService isoService)
 		{
 			_context = context;
 			_appContext = appContext;
 			_dataService = dataService;
 			_localizer = localizer;
 			_locConfig = locConfig;
-			_localizationService = localizationService;
 			_menuService = menuService;
 			_userManager = userManager;
 			_isoService = isoService;
@@ -443,7 +439,7 @@ namespace ST.CORE.Controllers.Render
 					var column =
 						viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
 					sortColumn = column != null
-						? $"{column?.Name ?? field.Name} {param.SortOrder}"
+						? $"{column.Name ?? field.Name} {param.SortOrder}"
 						: $"{field.Name} {param.SortOrder}";
 				}
 			}
@@ -646,6 +642,47 @@ namespace ST.CORE.Controllers.Render
 			}
 
 			return Json(await _isoService.LoadTreeStandard(standardEntity, categoryEntity, requirementEntity));
+		}
+
+		/// <summary>
+		/// Get view model column type for inline table edit
+		/// </summary>
+		/// <param name="viewModelId"></param>
+		/// <returns></returns>
+		public async Task<JsonResult> GetViewModelColumnTypes(Guid? viewModelId)
+		{
+			var result = new ResultModel();
+			if (viewModelId == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Not specified view model id")
+				};
+			}
+
+			var viewModel = await _context.ViewModels.Include(x => x.ViewModelFields).FirstOrDefaultAsync(x => x.Id == viewModelId);
+			if (viewModel == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "ViewModel not found")
+				};
+			}
+
+			var tableFields = _context.TableFields.Where(x => x.TableId == viewModel.TableModelId).ToList();
+			var res = new List<TableColumnData>();
+			foreach (var field in tableFields)
+			{
+				var obj = field.Adapt<TableColumnData>();
+				obj.ColumnId = viewModel?.ViewModelFields?.FirstOrDefault(x => x.TableModelFieldsId == field.Id)?.Id;
+				res.Add(obj);
+			}
+
+			if (!tableFields.Any()) return Json(result);
+			result.IsSuccess = true;
+			result.Result = res;
+
+			return Json(result);
 		}
 	}
 }

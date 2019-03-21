@@ -8,10 +8,10 @@ window.setCookie = function setCookie(cname, cvalue, exdays) {
 window.getCookie = function getCookie(cname) {
 	const name = cname + "=";
 	const decodedCookie = decodeURIComponent(document.cookie);
-	const ca = decodedCookie.split(';');
+	const ca = decodedCookie.split(";");
 	for (let i = 0; i < ca.length; i++) {
 		let c = ca[i];
-		while (c.charAt(0) == ' ') {
+		while (c.charAt(0) == " ") {
 			c = c.substring(1);
 		}
 		if (c.indexOf(name) == 0) {
@@ -40,8 +40,8 @@ function getVisibility(id) {
 	};
 }
 
-$('.table')
-	.on('preInit.dt',
+$(".table")
+	.on("preInit.dt",
 		function () {
 			const cols = getVisibility(`#${$(this).attr("id")}`);
 			$(`#${$(this).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
@@ -56,6 +56,27 @@ $('.table')
 				toggleRightListSideBar($(this).attr("data-id"));
 			});
 		});
+
+
+$(".dynamic-table")
+	.on("draw.dt", function (e, settings, json) {
+		$(".inline-edit").on("click", function () {
+			const viewModelId = $(this).attr("data-viewmodel");
+			const viewModel = load(`/PageRender/GetViewModelColumnTypes?viewModelId=${viewModelId}`);
+			console.log(viewModel);
+			const columns = $(this).parent().parent().parent().find(".data-cell");
+			for (let i = 0; i < columns.length; i++) {				
+				const columnId = $(columns[i]).attr("data-column-id");
+				const fieldData = viewModel.result.filter(obj => {
+					return obj.columnId === columnId;
+				});
+				if (fieldData.length > 0) {
+					const viewModelId = $(columns[i]).attr("data-viewmodel");
+					const cellId = $(columns[i]).attr("data-id");
+				}
+			}
+		});
+	});
 
 
 function IsChecked(state) {
@@ -111,11 +132,11 @@ function toggleRightListSideBar(id) {
 		});
 
 		function dataStateChange(ref, state) {
-			let inputs = $($(ref)
-				.parent()
-				.parent()
-				.parent()
-				.children()[1])
+			const inputs = $($(ref)
+					.parent()
+					.parent()
+					.parent()
+					.children()[1])
 				.find("input[type=checkbox]");
 
 			for (let input = 0; input < inputs.length; input++) {
@@ -132,7 +153,7 @@ function toggleRightListSideBar(id) {
 	}
 
 	function dataChanged(ref) {
-		const checked = $(ref).is(':checked');
+		const checked = $(ref).is(":checked");
 		const idd = $(ref).attr("data-id");
 		const tabled = $(ref).attr("data-table");
 		const cookie = getCookie(`_list_${tabled}`);

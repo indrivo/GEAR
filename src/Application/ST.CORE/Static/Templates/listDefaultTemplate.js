@@ -17,7 +17,7 @@ $(document).ready(function ($) {
 				renderColumns.push({
 					data: null,
 					"render": function (data, type, row, meta) {
-						return `${eval(column.template)}`;
+						return `<div class="data-cell" data-viewmodel="#ViewModelId" data-id="${row.id}" data-column-id="${column.id}">${eval(column.template)}</div>`;
 					}
 				});
 			});
@@ -27,6 +27,7 @@ $(document).ready(function ($) {
 				data: null,
 				"render": function (data, type, row, meta) {
 					return `<div class="btn-group" role="group" aria-label="Action buttons">
+									<a data-viewmodel="${viewmodelData.result.id}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>
 									<a class="btn btn-info btn-sm" href="${location.href}?entityId=${row.id}">Edit</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
 						}'); >Delete</button>
