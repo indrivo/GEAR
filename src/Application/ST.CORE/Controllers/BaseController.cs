@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Extensions;
 using ST.Entities.Data;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
+using ST.Identity.Data;
+using ST.Identity.Data.MultiTenants;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
-using ST.Organization.Models;
 using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers
@@ -29,7 +29,7 @@ namespace ST.CORE.Controllers
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		protected readonly INotify Notify;
+		protected readonly INotify<ApplicationRole> Notify;
 
 		/// <summary>
 		/// Entity DbContext
@@ -75,7 +75,7 @@ namespace ST.CORE.Controllers
 			}
 		}
 
-		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext)
+		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext)
 		{
 			Context = context;
 			ApplicationDbContext = applicationDbContext;

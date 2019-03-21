@@ -1,7 +1,7 @@
-using ST.CORE.Models.Performance;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using ST.CORE.ViewModels.Performance;
 
 namespace ST.CORE.Services
 {

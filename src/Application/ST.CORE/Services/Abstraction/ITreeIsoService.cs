@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels.TreeISO;
+using ST.CORE.ViewModels.TreeISOViewModels;
 using ST.Entities.Models.Tables;
 
 namespace ST.CORE.Services.Abstraction

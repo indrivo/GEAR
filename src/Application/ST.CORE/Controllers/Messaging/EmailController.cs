@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.CORE.Extensions;
-using ST.CORE.Models.NotificationsViewModels;
+using ST.CORE.ViewModels.NotificationsViewModels;
 using ST.Entities.Extensions;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Data.UserProfiles;

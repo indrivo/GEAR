@@ -15,7 +15,7 @@ using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Services
 {
-    public class PermissionService : IPermissionService
+    public class PermissionService<TContext> : IPermissionService where TContext: ApplicationDbContext
     {
         /// <summary>
         /// Inject sign in manager
@@ -30,7 +30,7 @@ namespace ST.Identity.Services
         /// <summary>
         /// Inject context
         /// </summary>
-        private readonly ApplicationDbContext _context;
+        private readonly TContext _context;
 
         /// <summary>
         /// Constructor
@@ -39,7 +39,7 @@ namespace ST.Identity.Services
         /// <param name="cache"></param>
         /// <param name="context"></param>
         public PermissionService(SignInManager<ApplicationUser> signInManager, IDistributedCache cache,
-            ApplicationDbContext context)
+            TContext context)
         {
             _signInManager = signInManager;
             _cache = cache;

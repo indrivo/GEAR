@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Constants;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
@@ -20,10 +19,10 @@ using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
 using ST.Entities.ViewModels.Table;
 using ST.Identity.Attributes;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 
@@ -41,7 +40,7 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
-		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
 			_logger = logger;
 			Repository = repository;
@@ -175,7 +174,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Guid id, string tab)
 		{
 			var model = Repository.GetById<TableModel, UpdateTableViewModel>(id);
-			if (!model.IsSuccess) return RedirectToAction("Index", "Table", new {page = 1, perPage = 10});
+			if (!model.IsSuccess) return RedirectToAction("Index", "Table", new { page = 1, perPage = 10 });
 			model.Result.TableFields = Repository.GetAll<TableModelFields>(x => x.TableId == id);
 			if (model.Result.ModifiedBy != null)
 				model.Result.ModifiedBy = ApplicationDbContext.Users
@@ -293,8 +292,11 @@ namespace ST.CORE.Controllers.Entity
 			{
 				var foreignSchema = fieldTypeConfig.FirstOrDefault(x => x.ConfigCode == "9999");
 				var foreignTable = Context.Table.FirstOrDefault(x => x.Name == field.Configurations.FirstOrDefault(y => y.Name == FieldConfig.ForeingTable).Value);
-				foreignSchema.Value = foreignTable.EntityType;
-				field.Configurations.Add(foreignSchema);
+				if (foreignSchema != null)
+				{
+					if (foreignTable != null) foreignSchema.Value = foreignTable.EntityType;
+					field.Configurations.Add(foreignSchema);
+				}
 			}
 
 			ITablesService sqlService = GetSqlService();
@@ -391,7 +393,6 @@ namespace ST.CORE.Controllers.Entity
 		{
 			var tableName = Context.Table.FirstOrDefault(x => x.Id == field.TableId)?.Name;
 			if (tableName == null) return View();
-			ITablesService sqlService = GetSqlService();
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
@@ -490,7 +491,7 @@ namespace ST.CORE.Controllers.Entity
 					var configtype = Context.TableFieldConfigs.First(x => x.TableFieldTypeId == fieldType).Id;
 					var configValue = Context.TableFieldConfigValues.First(x =>
 						x.TableFieldConfigId == configtype && x.TableModelFieldId == field.Id).Value;
-					var dropConstraint = sqlService.DropConstraint(ConnectionString.Item2, table.Name, table.EntityType, configValue, field.Name);
+					sqlService.DropConstraint(ConnectionString.Item2, table.Name, table.EntityType, configValue, field.Name);
 				}
 
 				var dropColumn = sqlService.DropColumn(ConnectionString.Item2, table.Name, table.EntityType, field.Name);

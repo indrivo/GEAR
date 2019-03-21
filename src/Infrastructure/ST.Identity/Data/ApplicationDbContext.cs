@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Audit.Contexts;
+using ST.Identity.Data.MultiTenants;
 using ST.Identity.Extensions;
 
 namespace ST.Identity.Data
@@ -32,7 +33,7 @@ namespace ST.Identity.Data
         }
 
         #region Permissions Store
-
+        public DbSet<Tenant> Tenants { get; set; }
         public DbSet<AuthGroup> AuthGroups { get; set; }
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }

@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
@@ -75,8 +74,7 @@ namespace ST.CORE.Controllers.Notifications
 				search == null || p.Name != null &&
 				p.Name.ToLower().Contains(search.ToLower()) || p.Author != null &&
 				p.Author.ToLower().Contains(search.ToLower()) || p.ModifiedBy != null &&
-				p.ModifiedBy.ToString().ToLower().Contains(search.ToLower()) || p.Created != null &&
-				p.Created.ToString(CultureInfo.InvariantCulture).ToLower().Contains(search.ToLower())).ToList();
+				p.ModifiedBy.ToString().ToLower().Contains(search.ToLower()) || p.Created.ToString(CultureInfo.InvariantCulture).ToLower().Contains(search.ToLower())).ToList();
 			var totalCount = result.Count();
 
 			result = result.Skip(start).Take(length).ToList();

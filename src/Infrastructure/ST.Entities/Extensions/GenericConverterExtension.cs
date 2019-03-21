@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 
 namespace ST.Entities.Extensions
 {
@@ -24,7 +23,8 @@ namespace ST.Entities.Extensions
             }
             catch(Exception ex)
             {
-                return default(TOutput);
+                Debug.WriteLine(ex);
+                return default;
             }
         }
     }

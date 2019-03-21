@@ -14,6 +14,7 @@ using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Extensions
@@ -199,7 +200,7 @@ namespace ST.Identity.Extensions
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseClaimsSynchronizer(this IApplicationBuilder app)
+        public static IApplicationBuilder UseClaimsSynchronizer<TContext>(this IApplicationBuilder app) where TContext: ApplicationDbContext
         {
             app.Use(async (ctx, next) =>
             {
@@ -210,7 +211,7 @@ namespace ST.Identity.Extensions
                     var oid = ctx.User.Identity.Name;
                     if (oid != null)
                     {
-                        var context = ctx.RequestServices.GetRequiredService<ApplicationDbContext>();
+                        var context = ctx.RequestServices.GetRequiredService<TContext>();
                         //Get signInManager
                         var signInManager = ctx.RequestServices.GetRequiredService<SignInManager<ApplicationUser>>();
                         var user = context.Users.FirstOrDefault(x => x.UserName.Equals(oid));

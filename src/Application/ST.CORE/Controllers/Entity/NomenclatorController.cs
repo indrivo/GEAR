@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Data;
 using ST.Entities.Models.Nomenclator;
 using ST.Entities.Models.Pages;

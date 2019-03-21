@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ST.CORE.Models.ApiClientViewModels;
+using ST.CORE.ViewModels.ApiClientViewModels;
 
 namespace ST.CORE.Controllers
 {

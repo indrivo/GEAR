@@ -9,16 +9,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Sentry;
+using ST.Audit;
+using ST.Configuration.Data;
+using ST.Configuration.Seed;
 using ST.CORE.Extensions;
 using ST.CORE.Extensions.Installer;
-using ST.CORE.Models.InstallerModels;
+using ST.CORE.ViewModels.InstallerModels;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
-using ST.Organization.Models;
+using ST.Identity.Data.MultiTenants;
 using ST.Procesess.Data;
 
 namespace ST.CORE.Installation
@@ -91,19 +93,19 @@ namespace ST.CORE.Installation
 		public static IWebHost Migrate(this IWebHost webHost)
 		{
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
-			{
-				var conf = services.GetService<IConfiguration>();
-				EntitiesDbContextSeed.SeedAsync(context, conf)
-					.Wait();
-			})
+				{
+					var conf = services.GetService<IConfiguration>();
+					EntitiesDbContextSeed.SeedAsync(context, conf, DefaultTenantSettings.TenantId)
+						.Wait();
+				})
 				.MigrateDbContext<ProcessesDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()
 				.MigrateDbContext<ApplicationDbContext>((context, services) =>
-				{
-					new ApplicationDbContextSeed()
-						.SeedAsync(context, services)
-						.Wait();
-				})
+			   {
+				   new ApplicationDbContextSeed()
+					   .SeedAsync(context, services)
+					   .Wait();
+			   })
 				.MigrateDbContext<ConfigurationDbContext>((context, services) =>
 				{
 					var config = services.GetService<IConfiguration>();
@@ -179,7 +181,7 @@ namespace ST.CORE.Installation
 		/// <param name="tenant"></param>
 		public static void CreateDynamicTables(this Tenant tenant)
 		{
-			CreateDynamicTables(tenant.Id, tenant?.MachineName);
+			CreateDynamicTables(tenant.Id, tenant.MachineName);
 		}
 
 		/// <summary>
@@ -223,7 +225,7 @@ namespace ST.CORE.Installation
 				.UseConfiguration(config)
 				.CaptureStartupErrors(true)
 				.UseStartup<Startup>()
-				.StartLogging()				
+				.StartLogging()
 				.Build();
 		}
 

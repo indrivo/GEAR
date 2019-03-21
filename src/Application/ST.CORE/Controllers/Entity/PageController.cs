@@ -15,17 +15,17 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.CORE.Attributes;
 using ST.CORE.Installation;
-using ST.CORE.Models;
 using ST.CORE.Services.Abstraction;
-using ST.CORE.ViewModels.Pages;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.PageViewModels;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Pages;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 
@@ -39,7 +39,7 @@ namespace ST.CORE.Controllers.Entity
 		private readonly IPageRender _pageRender;
 		private readonly IHostingEnvironment _env;
 
-		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
 			_pageRender = pageRender;
 			_env = env;
@@ -182,7 +182,7 @@ namespace ST.CORE.Controllers.Entity
 			{
 				System.IO.File.WriteAllText(model.Path, model.Code);
 				var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(model.PageId));
-				return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+				return RedirectToAction(page != null && page.IsLayout ? "Layouts" : "Index");
 			}
 			else
 			{

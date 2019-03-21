@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ST.Identity.Abstractions;
+using ST.Identity.Data;
 using ST.Identity.Services;
 
 namespace ST.Identity.Extensions
@@ -11,9 +12,9 @@ namespace ST.Identity.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAuthorizationBasedOnCache(this IServiceCollection services)
+        public static IServiceCollection AddAuthorizationBasedOnCache<TContext>(this IServiceCollection services) where TContext : ApplicationDbContext
         {
-            services.AddTransient<IPermissionService, PermissionService>();
+            services.AddTransient<IPermissionService, PermissionService<TContext>>();
             return services;
         }
     }

@@ -1,29 +1,28 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
 using ST.CORE.Attributes;
-using ST.CORE.Models;
-using ST.CORE.Models.AuditViewModels;
 using ST.Entities.Data;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.AuditViewModels;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 
 namespace ST.CORE.Controllers.Audit
 {
 	public class AuditController : BaseController
 	{
-		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
 		}
 
@@ -202,7 +201,7 @@ namespace ST.CORE.Controllers.Audit
 		/// Get versions audit
 		/// </summary>
 		/// <param name="id"></param>
-		/// <param name="stage"></param>
+		/// <param name="contextName"></param>
 		/// <returns></returns>
 		[HttpGet]
 		public IActionResult Versions(Guid? id, string contextName)

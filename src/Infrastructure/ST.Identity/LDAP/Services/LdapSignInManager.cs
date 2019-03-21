@@ -4,18 +4,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.LDAP.Services
 {
-    public class LdapSignInManager : SignInManager<ApplicationUser>
+    public class LdapSignInManager<TContext> : SignInManager<ApplicationUser> where TContext : ApplicationDbContext
     {
         public LdapSignInManager(
-            LdapUserManager ldapUserManager,
+            LdapUserManager<TContext> ldapUserManager,
             IHttpContextAccessor contextAccessor,
             IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor,
-            ILogger<LdapSignInManager> logger,
+            ILogger<LdapSignInManager<TContext>> logger,
             IAuthenticationSchemeProvider schemes)
             : base(
                 ldapUserManager,
@@ -29,14 +30,14 @@ namespace ST.Identity.LDAP.Services
 
         public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool rememberMe, bool lockOutOnFailure)
         {
-            var user = await this.UserManager.FindByNameAsync(userName);
+            var user = await UserManager.FindByNameAsync(userName);
 
             if (user == null)
             {
                 return SignInResult.Failed;
             }
 
-            return await this.PasswordSignInAsync(user, password, rememberMe, lockOutOnFailure);
+            return await PasswordSignInAsync(user, password, rememberMe, lockOutOnFailure);
         }
     }
 }

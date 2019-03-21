@@ -18,13 +18,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
 using ST.CORE.Extensions;
-using ST.CORE.Models.AccountViewModels;
 using ST.CORE.Services;
+using ST.CORE.ViewModels.AccountViewModels;
 using ST.Entities.Models.Notifications;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 using ST.MPass.Gov;
+using ST.Identity.Data;
 using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers.Identity
@@ -48,7 +50,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		private readonly INotify _notify;
+		private readonly INotify<ApplicationRole> _notify;
 
 		private readonly IOptions<MPassOptions> _mpassOptions;
 		/// <summary>
@@ -62,11 +64,10 @@ namespace ST.CORE.Controllers.Identity
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IHttpContextAccessor _httpContextAccesor;
-		private readonly ApplicationDbContext _applicationDbContext;
 		/// <summary>
 		/// Inject Ldap User Manager
 		/// </summary>
-		private readonly LdapUserManager _ldapUserManager;
+		private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
 		/// <summary>
 		/// Inject configured db context
 		/// </summary>
@@ -85,15 +86,13 @@ namespace ST.CORE.Controllers.Identity
 			IIdentityServerInteractionService interactionService,
 			IHttpContextAccessor httpContextAccessor,
 			IMPassService mPassService,
-			INotify notify,
+			INotify<ApplicationRole> notify,
 			IMPassSigningCredentialsStore mpassSigningCredentialStore,
 			IOptions<MPassOptions> mpassOptions,
-			IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env,
-			ApplicationDbContext applicationDbContext, ConfigurationDbContext configurationDbContext, LdapUserManager ldapUserManager)
+			IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, ConfigurationDbContext configurationDbContext, LdapUserManager<ApplicationDbContext> ldapUserManager)
 		{
 			_cache = distributedCache;
 			_httpContextAccesor = httpContextAccesor;
-			_applicationDbContext = applicationDbContext;
 			ConfigurationDbContext = configurationDbContext;
 			_ldapUserManager = ldapUserManager;
 			_mpassOptions = mpassOptions;

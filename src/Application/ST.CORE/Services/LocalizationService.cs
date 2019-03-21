@@ -7,8 +7,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models.LocalizationViewModels;
 using ST.CORE.Services.Abstraction;
+using ST.CORE.ViewModels.LocalizationViewModels;
 using ST.Localization;
 
 namespace ST.CORE.Services

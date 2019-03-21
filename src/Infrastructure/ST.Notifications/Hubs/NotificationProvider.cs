@@ -4,19 +4,18 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using ST.Entities.Models.Notifications;
-using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstraction;
 
 namespace ST.Notifications.Hubs
 {
     /// <inheritdoc />
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class NotificationProvider : INotificationHub
+    public class NotificationProvider<TUserEntity> : INotificationHub where TUserEntity : IdentityUser
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<TUserEntity> _userManager;
         private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public NotificationProvider(UserManager<ApplicationUser> userManager, IHubContext<NotificationsHub> hubContext)
+        public NotificationProvider(UserManager<TUserEntity> userManager, IHubContext<NotificationsHub> hubContext)
         {
             _userManager = userManager;
             _hubContext = hubContext;
@@ -30,7 +29,7 @@ namespace ST.Notifications.Hubs
         {
             var fromUser = _userManager.Users.FirstOrDefault(x => x.Id == userEmailNotification.UserId.ToString());
             if (userEmailNotification?.EmailRecipients == null) return;
-            foreach (var x in userEmailNotification?.EmailRecipients)
+            foreach (var x in userEmailNotification.EmailRecipients)
             {
                 var user = _userManager.Users.FirstOrDefault(y => y.Id.Equals(x));
                 if (user == null) return;
@@ -72,13 +71,14 @@ namespace ST.Notifications.Hubs
             var userConnections = NotificationsHub.Connections.GetConnectionsOfUserById(userId);
             return userConnections.Any();
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Check if user is online
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool IsUserOnline(ApplicationUser user)
+        public bool IsUserOnline<TUser>(TUser user) where TUser : IdentityUser
         {
             return user == null ? default : IsUserOnline(Guid.Parse(user.Id));
         }

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models.LocalizationViewModels;
+using ST.CORE.ViewModels.LocalizationViewModels;
 
 namespace ST.CORE.Services.Abstraction
 {

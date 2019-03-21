@@ -9,12 +9,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.CORE.Installation;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Data;
 using ST.Identity.Attributes;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Organization.Models;
+using ST.Identity.Data;
+using ST.Identity.Data.MultiTenants;
 using ST.Organization.Utils;
 using ST.Organization.ViewModels;
 
@@ -54,6 +54,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <param name="configuration"></param>
 		/// <param name="context"></param>
 		/// <param name="logger"></param>
+		/// <param name="entitiesDbContext"></param>
 		public TenantController(IBaseBusinessRepository<ApplicationDbContext> repository, IConfiguration configuration,
 			ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext)
 		{

@@ -58,7 +58,7 @@ namespace ST.CORE.TagHelpers
 		/// <summary>
 		/// Form Style
 		/// </summary>
-		public FormStyle FormStyle { get; set; } = FormStyle.StandartTemplate;
+		public FormStyle FormStyle { get; set; } = FormStyle.StandardTemplate;
 
 
 		/// <summary>
@@ -83,6 +83,7 @@ namespace ST.CORE.TagHelpers
 		/// <param name="dbContext"></param>
 		/// <param name="httpContextAccessor"></param>
 		/// <param name="userManager"></param>
+		/// <param name="localizer"></param>
 		public FormTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IStringLocalizer localizer)
 		{
 			_dbContext = dbContext;
@@ -148,7 +149,7 @@ namespace ST.CORE.TagHelpers
 		/// <returns></returns>
 		private async Task<string> GetTableFieldBody(TableModelFields field)
 		{
-			return string.Format(FormField._fieldBodyTemplate, field.Id, await GetInputBody(field), field.Description, field.DisplayName ?? field.Name);
+			return string.Format(FormField.FieldBodyTemplate, field.Id, await GetInputBody(field), field.Description, field.DisplayName ?? field.Name);
 		}
 
 		/// <summary>
@@ -165,14 +166,12 @@ namespace ST.CORE.TagHelpers
 					.FirstOrDefault(x => ((!string.IsNullOrEmpty(EntityName) && x.Name == EntityName)
 					|| (EntityId != null && EntityId != Guid.Empty && x.Id == EntityId)) && x.TenantId == user.TenantId);
 
-				if (table != null)
+				if (table == null) return builder.ToString();
+				foreach (var field in table.TableFields)
 				{
-					foreach (var field in table.TableFields)
-					{
-						builder.Append(await GetTableFieldBody(field));
-					}
-					builder.Append(GetSystemFields(table));
+					builder.Append(await GetTableFieldBody(field));
 				}
+				builder.Append(GetSystemFields(table));
 			}
 			else if (FormId != null && FormId != Guid.Empty)
 			{

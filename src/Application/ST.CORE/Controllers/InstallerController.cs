@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using ST.Audit;
 using ST.CORE.Installation;
-using ST.CORE.Models.InstallerModels;
+using ST.CORE.ViewModels.InstallerModels;
 using ST.Entities.Controls.Querry;
 using ST.Entities.Data;
 using ST.Entities.Models.Notifications;
@@ -15,12 +16,12 @@ using ST.Entities.Models.Tables;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
 using ST.Identity.CacheModels;
-using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Services.Abstractions;
+using ST.Identity.Data;
+using ST.Identity.Data.MultiTenants;
 using ST.Notifications.Abstraction;
-using ST.Organization;
-using ST.Organization.Models;
 using ST.Organization.Utils;
 
 namespace ST.CORE.Controllers
@@ -65,7 +66,7 @@ namespace ST.CORE.Controllers
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		private readonly INotify _notify;
+		private readonly INotify<ApplicationRole> _notify;
 
 		/// <summary>
 		/// Is system configured
@@ -83,7 +84,7 @@ namespace ST.CORE.Controllers
 		/// <param name="notify"></param>
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext)
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_hostingEnvironment = hostingEnvironment;

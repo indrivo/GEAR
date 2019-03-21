@@ -1,13 +1,13 @@
 ﻿using ST.BaseBusinessRepository;
 using ST.Entities.Models.Notifications;
-using ST.Identity.Data.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace ST.Notifications.Abstraction
 {
-    public interface INotify
+    public interface INotify<in TRole> where TRole: IdentityRole<string>
     {
         /// <summary>
         /// Send notification
@@ -15,7 +15,7 @@ namespace ST.Notifications.Abstraction
         /// <param name="roles"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        Task SendNotificationAsync(IEnumerable<ApplicationRole> roles, SystemNotifications notification);
+        Task SendNotificationAsync(IEnumerable<TRole> roles, SystemNotifications notification);
         /// <summary>
         /// Send notification
         /// </summary>

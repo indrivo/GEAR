@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;

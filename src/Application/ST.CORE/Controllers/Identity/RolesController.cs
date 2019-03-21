@@ -5,22 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
-using ST.CORE.Models.RoleViewModels;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.RoleViewModels;
 using ST.Entities.Data;
 using ST.Entities.Models.Notifications;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 
@@ -72,7 +71,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <param name="permissionService"></param>
 		/// <param name="repository"></param>
 		/// <param name="configurationDbContext"></param>
-		public RolesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, IBaseBusinessRepository<ApplicationDbContext> repository, ConfigurationDbContext configurationDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public RolesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, IBaseBusinessRepository<ApplicationDbContext> repository, ConfigurationDbContext configurationDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
 			_signInManager = signInManager;
 			_logger = logger;

@@ -6,6 +6,7 @@ using ST.Notifications.Hubs;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ST.Identity.Data.Permissions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ST.CORE.LoggerTargets
@@ -24,7 +25,7 @@ namespace ST.CORE.LoggerTargets
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		private readonly INotify _notify;
+		private readonly INotify<ApplicationRole> _notify;
 		/// <summary>
 		/// Hub
 		/// </summary>
@@ -36,7 +37,7 @@ namespace ST.CORE.LoggerTargets
 		/// <param name="logger"></param>
 		/// <param name="notify"></param>
 		/// <param name="hubContext"></param>
-		public HostedTimeService(ILogger<HostedTimeService> logger, INotify notify, IHubContext<NotificationsHub> hubContext)
+		public HostedTimeService(ILogger<HostedTimeService> logger, INotify<ApplicationRole> notify, IHubContext<NotificationsHub> hubContext)
 		{
 			_logger = logger;
 			_notify = notify;

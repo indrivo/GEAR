@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Notifications.Abstraction;
@@ -31,16 +33,17 @@ namespace ST.Notifications.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSignalR(this IServiceCollection services)
+        public static IServiceCollection AddSignalR<TContext, TUser, TRole>(this IServiceCollection services) where TContext : IdentityDbContext<TUser, TRole, string>
+            where TUser : IdentityUser where TRole : IdentityRole<string>
         {
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
             });
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
-            services.AddTransient<INotificationHub, NotificationProvider>();
-            services.AddTransient<INotify, Notify>();
+            services.AddTransient<INotificationHub, NotificationProvider<TUser>>();
+            services.AddTransient<INotify<TRole>, Notify<TContext, TRole, TUser>>();
             return services;
-        } 
+        }
     }
 }

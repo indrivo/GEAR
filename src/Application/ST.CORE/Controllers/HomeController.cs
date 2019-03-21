@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,13 +7,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Actions;
 using ST.Entities.Models.Home;
 using ST.Entities.Services.Abstraction;
-using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
 using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers
@@ -33,12 +32,15 @@ namespace ST.CORE.Controllers
 		#endregion
 
 		string tableHtml = "";
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="repository"></param>
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
+		/// <param name="context"></param>
+		/// <param name="dataService"></param>
 		public HomeController(IBaseBusinessRepository<ApplicationDbContext> repository,
 			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicEntityDataService dataService)
 		{

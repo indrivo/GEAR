@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ST.CORE.TagHelpers
 {
 	public enum FormStyle
 	{
-		StandartTemplate, EditTemplate
+		StandardTemplate, EditTemplate
 	}
 
 	public static class FormUtil
@@ -33,7 +29,7 @@ namespace ST.CORE.TagHelpers
 		/// <summary>
 		/// Form template
 		/// </summary>
-		public const string StandartTemplate = @"
+		public const string StandardTemplate = @"
 <div class='card card-outline-primary'>
 	<div class='card-header'>
 		<h4 class='mb-0 text-white'>{0}</h4>
@@ -65,7 +61,7 @@ namespace ST.CORE.TagHelpers
 
 	public static class FormField
 	{
-		public const string _fieldBodyTemplate = @"
+		public const string FieldBodyTemplate = @"
 					<div class='col-md-12'>
 						<div class='form-group'>
 							<label class='control-label' for='{0}'>{3}</label>

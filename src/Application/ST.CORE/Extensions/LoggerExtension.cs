@@ -4,8 +4,8 @@ using NLog;
 using Microsoft.Extensions.Logging;
 using ST.CORE.LoggerTargets;
 using Microsoft.Extensions.Configuration;
-using ST.Identity.Data;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Configuration.Seed;
 
 namespace ST.CORE.Extensions
 {

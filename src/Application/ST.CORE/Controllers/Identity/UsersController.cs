@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Models;
-using ST.CORE.Models.UserViewModels;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.UserViewModels;
 using ST.Entities.Data;
 using ST.Entities.Models.Notifications;
 using ST.Entities.ViewModels.DynamicEntities;
@@ -22,7 +22,8 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
-using ST.Identity.Services.Abstractions;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 
@@ -45,11 +46,11 @@ namespace ST.CORE.Controllers.Identity
 		/// <summary>
 		/// Inject Ldap User Manager
 		/// </summary>
-		private readonly LdapUserManager _ldapUserManager;
+		private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
 
 		#endregion
 
-		public UsersController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, LdapUserManager ldapUserManager, ILogger<UsersController> logger, IBaseBusinessRepository<ApplicationDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public UsersController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger, IBaseBusinessRepository<ApplicationDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
 			_ldapUserManager = ldapUserManager;
 			Logger = logger;
@@ -419,7 +420,6 @@ namespace ST.CORE.Controllers.Identity
 		/// <summary>
 		///     Save user data
 		/// </summary>
-		/// <param name="signInManager"></param>
 		/// <param name="id"></param>
 		/// <param name="model"></param>
 		/// <returns></returns>

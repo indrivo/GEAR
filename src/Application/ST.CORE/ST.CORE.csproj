@@ -26,10 +26,10 @@
     <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.2" PrivateAssets="All" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" PrivateAssets="All" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.1" />
     <PackageReference Include="ST.AspNetCore.WebHost.Customization" Version="1.0.0" />
     <PackageReference Include="ST.Localization" Version="2.0.1" />
     <PackageReference Include="ST.MPass.Gov" Version="0.1.4-alpha" />
@@ -168,7 +168,6 @@
     <None Include="Views\Process\Index.cshtml" />
     <None Include="Views\_ViewImports.cshtml" />
     <None Include="Views\_ViewStart.cshtml" />
-    <None Include="wwwroot\assets\js\meniu\index.js" />
     <None Include="wwwroot\lib\bootstrap-treeview-master\.bowerrc" />
     <None Include="wwwroot\lib\bootstrap-treeview-master\.gitattributes" />
     <None Include="wwwroot\lib\bootstrap-treeview-master\.gitignore" />
@@ -191,7 +190,11 @@
     <None Include="wwwroot\lib\bootstrap-treeview-master\tests\tests.js" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Configuration\ST.Configuration.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Files\ST.Files.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Notifications\ST.Notifications.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Organization\ST.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Processes\ST.Procesess.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="menus.json">

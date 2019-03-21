@@ -10,7 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Files\ST.Files.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Notifications\ST.Notifications.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Organization\ST.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Processes\ST.Procesess.csproj" />
   </ItemGroup>
 
 </Project>

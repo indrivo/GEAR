@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
-using ST.Organization.Models;
 
 namespace ST.Audit.Contexts
 {
@@ -35,21 +34,6 @@ namespace ST.Audit.Contexts
         /// Audit track details
         /// </summary>
         public DbSet<TrackAuditDetails> TrackAuditDetails { get; set; }
-
-        /// <summary>
-        /// Tenant
-        /// </summary>
-        public DbSet<Tenant> Tenants { get; set; }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// On model creating
-        /// </summary>
-        /// <param name="builder"></param>
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
 
         /// <summary>
         /// On update object
