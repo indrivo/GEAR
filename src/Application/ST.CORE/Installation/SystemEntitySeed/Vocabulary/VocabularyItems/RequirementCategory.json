@@ -1,0 +1,44 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "Sa existe continuitatea activitatii",
+    "Description": "",
+    "Id": "d51fd371-bdee-4851-86fe-56e6a8c01613",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "39009c25-72ce-49be-8d78-ab3a19763209",
+    "ParentId": null
+  },
+  {
+    "Name": "Sa fie tranzactiile securizate",
+    "Description": "",
+    "Id": "6e942259-b057-44c4-ac20-ec7e4e581310",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "39009c25-72ce-49be-8d78-ab3a19763209",
+    "ParentId": null
+  },
+  {
+    "Name": "Sa se acorde suport pentru investigarea incidentelor",
+    "Description": "",
+    "Id": "fb8814de-c970-4284-ab3f-89de07dcf107",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "39009c25-72ce-49be-8d78-ab3a19763209",
+    "ParentId": null
+  }
+]

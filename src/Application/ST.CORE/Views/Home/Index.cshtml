@@ -118,216 +118,7 @@
 	<!-- Column -->
 </div>
 
-<div class="card">
-	<div class="card-body">
-		<h4 class="card-title">Show Columns</h4>
-		<h6 class="card-subtitle">
-			<a class="toggle-vis" href="" data-column="0">Name</a> - <a class="toggle-vis" data-column="1">Assigned</a> - <a class="toggle-vis" data-column="2">DueDate</a> - <a class="toggle-vis" data-column="3">Progress</a> - <a class="toggle-vis" data-column="4">Actions</a>
-		</h6>
 
-		<table id="example" class="display tree" style="width:100%">
-			<thead>
-				<tr>
-					<th>Name</th>
-					@*<th>Id</th>*@
-					<th>Assigned</th>
-					<th>Due date</th>
-					<th>Progress</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody id="isoTable" runat="server">
-				@Html.Raw(Model.TableHtml)
-				@*<tr class="treegrid-1">
-								<td>4 Organisation</td>
-								<td></td>
-								<td></td>
-								<td>
-									<h5 class="m-t-30">Progress<span class="pull-right">25%</span></h5>
-									<div class="progress ">
-										<div class="progress-bar bg-danger wow animated progress-animated" style="width: 25%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group" role="group" aria-label="Action buttons">
-										<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1" data-toggle="modal" data-target="#AddType">Action Add</a>
-										<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
-											Delete
-										</button>
-									</div>
-								</td>
-							</tr>
-							<tr class="treegrid-2 treegrid-parent-1">
-								<td>4.1 Understanding the organization and its context</td>
-								<td></td>
-								<td></td>
-								<td>
-									<h5 class="m-t-30">Progress<span class="pull-right">0%</span></h5>
-									<div class="progress ">
-										<div class="progress-bar bg-danger wow animated progress-animated" style="width: 3%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group" role="group" aria-label="Action buttons">
-										<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
-										<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
-											Delete
-										</button>
-									</div>
-								</td>
-
-
-							</tr>
-							<tr class="treegrid-3 treegrid-parent-1">
-								<td>4.2 Understanding the needs and expectations of interested parties</td>
-								<td></td>
-								<td></td>
-								<td>
-									<h5 class="m-t-30">Progress<span class="pull-right">50%</span></h5>
-									<div class="progress ">
-										<div class="progress-bar bg-warning wow animated progress-animated" style="width: 50%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group" role="group" aria-label="Action buttons">
-										<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
-										<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
-											Delete
-										</button>
-									</div>
-								</td>
-							</tr>
-							<tr class="treegrid-4 treegrid-parent-3">
-								<td>4.2.a Interested parties that are relevant to the information security management system</td>
-								<td></td>
-								<td></td>
-								<td>
-									<h5 class="m-t-30">Progress<span class="pull-right">100%</span></h5>
-									<div class="progress ">
-										<div class="progress-bar bg-success wow animated progress-animated" style="width: 100%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group" role="group" aria-label="Action buttons">
-										<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
-										<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
-											Delete
-										</button>
-									</div>
-								</td>
-							</tr>
-							<tr class="treegrid-5 treegrid-parent-3">
-								<td>4.2.b The requirements of these interested parties relevant to information security.</td>
-								<td></td>
-								<td></td>
-								<td>
-									<h5 class="m-t-30">Progress<span class="pull-right">0%</span></h5>
-									<div class="progress ">
-										<div class="progress-bar bg-danger wow animated progress-animated" style="width: 3%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
-									</div>
-								</td>
-								<td>
-									<div class="btn-group" role="group" aria-label="Action buttons">
-										<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
-										<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
-											Delete
-										</button>
-									</div>
-								</td>
-							</tr>
-							<tr class="treegrid-6 treegrid-parent-4">
-								<td>4.2.a-1) To determine interested parties that are relevant to the ISMS;</td>
-								<td>Jon Pavan</td>
-								<td> 01.04.2019</td>
-								<td>
-									<h5 class="m-t-30">Progress<span class="pull-right">100%</span></h5>
-									<div class="progress ">
-										<div class="progress-bar bg-success wow animated progress-animated" style="width: 100%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
-									</div>
-
-								</td>
-								<td>
-									<div class="btn-group" role="group" aria-label="Action buttons">
-										<a asp-action="CreateRequirementAction" class="btn btn-info btn-sm">Edit</a>
-									<button type="button" class='btn btn-danger btn-sm'>
-										Delete
-									</button>
-					</div>
-										</td>
-									</tr>*@
-
-			</tbody>
-			<tfoot>
-				<tr>
-
-					<th>Name</th>
-					@*<th>Id</th>*@
-					<th>Assigned</th>
-					<th>Due date</th>
-					<th>Progress</th>
-					<th>Actions</th>
-				</tr>
-			</tfoot>
-		</table>
-	</div>
-</div>
-
-
-<div class="modal fade" id="EditType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Add activity type</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-4"><span class="pull-right">Activity Type</span></label>
-							<div class="col-md-1"></div>
-							<input class="form-control col-md-6" id="editActivityTypeName" />
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" value="Create" class="btn btn-success text-white" id="editActivityType">Add</button>
-						<button type="button" class="btn btn-inverse " data-dismiss="modal">Close</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="AddType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLabel">Add activity type</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<div class="row">
-							<label class="col-md-4"><span class="pull-right">Activity Type</span></label>
-							<div class="col-md-1"></div>
-							<input class="form-control col-md-6" id="activityTypeName" />
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" value="Create" class="btn btn-success text-white" id="createRequirementAction">Add</button>
-						<button type="button" class="btn btn-inverse " data-dismiss="modal">Close</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
 @section Scripts{
 
 	<script src="~/lib/chartist/dist/chartist.min.js"></script>
@@ -373,6 +164,10 @@
 
 	</script>
 	<script>
+
+		var newRow = "<tr class=\"treegrid-6 treegrid-parent-4\"> <td></span> 4.2.a-1) To determine interested parties that are relevant to the ISMS;</td>	<td>Jon Pavan</td><td> 01.04.2019</td><td><h5 class=\"m-t-30\">Progress<span class=\"pull-right\">100%</span></h5><div class=\"progress\"><div class=\"progress-bar bg-success wow animated progress-animated\" style=\"width: 100%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>	</div>	</td>	<td><div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">	<a asp-action=\"CreateRequirementAction\" class=\"btn btn-info btn-sm\">Edit</a>	<button type=\"button\" class='btn btn-danger btn-sm'>	Delete	</button>	</div>	</td></tr>";
+		//var table = $('table').DataTable();
+		//table.row.add($(newRow)).draw();
 		$("#createRequirementAction").click(function(e) {
             if ($('#activityTypeName').val() === "") {
                 sweetAlert("Field Shouldn't Be Empty!!", "Please Enter name", "error");
@@ -401,13 +196,14 @@
 
 							});
 						var table = $('#example').DataTable();
-						table.row.add([
-							'4.2.a-1) To determine interested parties that are relevant to the ISMS;',
-							'.2',
-							'.3',
-							'.4',
-							'.5'
-						]).draw(false);
+						//table.row.add([
+						//	'4.2.a-1) To determine interested parties that are relevant to the ISMS;',
+						//	'.2',
+						//	'.3',
+						//	'.4',
+						//	'.5'
+						//]).draw(false);
+						table.row.add($(newRow)).draw();
                     } else {
                         swal({
                             position: 'top-end',

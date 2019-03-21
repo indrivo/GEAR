@@ -1,0 +1,56 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "Objective KPI",
+    "Description": "",
+    "Id": "d174bfee-5e7e-4b05-acb7-b4c3636eb6c1",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "11e3b89d-2e51-4857-98e6-352ead5a201f",
+    "ParentId": null
+  },
+  {
+    "Name": "Process KPI",
+    "Description": "",
+    "Id": "2ca7c5a5-5b5d-4a17-8402-6a4c1c12248f",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "11e3b89d-2e51-4857-98e6-352ead5a201f",
+    "ParentId": null
+  },
+  {
+    "Name": "Management KPI",
+    "Description": "",
+    "Id": "ace7543c-81d6-440d-b214-172f0ccbc269",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "11e3b89d-2e51-4857-98e6-352ead5a201f",
+    "ParentId": null
+  },
+  {
+    "Name": "Controls KPI",
+    "Description": "",
+    "Id": "99e3f2b6-74b5-447e-8371-18f6c6f42a48",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "11e3b89d-2e51-4857-98e6-352ead5a201f",
+    "ParentId": null
+  }
+]

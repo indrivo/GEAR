@@ -17,7 +17,6 @@
         "Translate": null,
         "Icon": null,
         "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-
         "Author": "system",
         "AllowedRoles": "Administrator#"
       }
@@ -27,7 +26,6 @@
     "Translate": "apps",
     "Icon": "mdi mdi-bullseye",
     "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-
     "Author": "system",
     "AllowedRoles": "Administrator#"
   },
@@ -360,5 +358,78 @@
     "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
     "Author": "system",
     "AllowedRoles": "Administrator#"
+  },
+  {
+
+    "Name": "Standarts",
+    "Href": null,
+    "Translate": "standarts",
+    "Icon": "mdi mdi-bullseye",
+    "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+    "Author": "system",
+    "AllowedRoles": "Administrator#",
+    "SubItems": [
+      {
+        "SubItems": [
+          {
+            "SubItems": null,
+            "Name": "Actions",
+            "Href": "/Actions",
+            "Translate": null,
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "SubItems": null,
+            "Name": "Goals",
+            "Href": "/Goals",
+            "Translate": null,
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "SubItems": null,
+            "Name": "Kpi",
+            "Href": "/Kpi",
+            "Translate": null,
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "SubItems": null,
+            "Name": "Requirements",
+            "Href": "/Requirement",
+            "Translate": null,
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "SubItems": null,
+            "Name": "Vocabulary",
+            "Href": "/Nomenclator",
+            "Translate": null,
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          }
+        ],
+        "Name": "ISO-27001",
+        "Href": "/ISO-27001",
+        "Translate": null,
+        "Icon": null,
+        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+        "Author": "system",
+        "AllowedRoles": "Administrator#"
+      }
+    ]
   }
 ]

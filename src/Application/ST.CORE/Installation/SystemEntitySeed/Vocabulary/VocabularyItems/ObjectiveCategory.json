@@ -1,0 +1,44 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "O1 Asigurarea continuitatii operatiunilor",
+    "Description": "",
+    "Id": "d51fd371-bdee-4851-86fe-56e6a8c01613",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
+    "ParentId": null
+  },
+  {
+    "Name": "O1.1 Existenta unui BCP",
+    "Description": "",
+    "Id": "6e942259-b057-44c4-ac20-ec7e4e581310",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
+    "ParentId": null
+  },
+  {
+    "Name": "O1.2 Testarea anuala a BCP-ului",
+    "Description": "",
+    "Id": "fb8814de-c970-4284-ab3f-89de07dcf107",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
+    "ParentId": null
+  }
+]

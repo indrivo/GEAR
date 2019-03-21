@@ -16,6 +16,13 @@ using ST.Entities.Models.Nomenclator;
 using ST.Entities.Models.Pages;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Models.Requirement;
+using ST.Entities.Models.Home;
+using ST.Identity.Data;
+using ST.Identity.Data.UserProfiles;
+using ST.Notifications.Abstraction;
+using Microsoft.AspNetCore.Identity;
+using ST.Audit.Extensions;
+using ST.Entities.Models.Actions;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -24,20 +31,23 @@ namespace ST.CORE.Controllers.Entity
 		/// <summary>
 		/// Context
 		/// </summary>
-		private readonly EntitiesDbContext _context;
-
-		/// <summary>
-		/// Inject Data Service
-		/// </summary>
+		private readonly IBaseBusinessRepository<ApplicationDbContext> _repository;
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly INotificationHub _hub;
+		private readonly ApplicationDbContext _context;
 		private readonly IDynamicEntityDataService _dataService;
-
+		string tableHtml = "";
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="dataService"></param>
-		public RequirementController(EntitiesDbContext context, IDynamicEntityDataService dataService)
+		public RequirementController(IBaseBusinessRepository<ApplicationDbContext> repository,
+			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicEntityDataService dataService)
 		{
+			_repository = repository;
+			_userManager = userManager;
+			_hub = hub;
 			_context = context;
 			_dataService = dataService;
 		}
@@ -46,9 +56,68 @@ namespace ST.CORE.Controllers.Entity
 		/// Index view
 		/// </summary>
 		/// <returns></returns>
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			return View();
+			HomeViewModel model = new HomeViewModel();
+			var list = _context.GetTrackedEntities();
+			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
+			ViewBag.TotalSessions = _hub.GetSessionsCount();
+
+			//ViewBag.User = await _userManager.GetUserAsync(User);
+
+			int parentNodeId = 1;
+			int currentNodeId = 1;
+			var parents = await _dataService.Table("Requirement").GetAll<dynamic>(x => x.ParentId == Guid.Empty);
+			if (parents.IsSuccess == true)
+			{
+				foreach (var item in parents.Result)
+				{
+					tableHtml += "<tr class=\"treegrid-" + parentNodeId + "\">" +
+
+									 "<td>" + item.Name + "</td>" +
+									 //"<td>" + item.Id + "</td>" +
+									 "<td></td>" +
+									 "<td></td>" +
+									 "<td>" +
+										 "<h5 class=\"m-t-30\">Progress<span class=\"pull-right\">25%</span></h5>" +
+										 "<div class=\"progress \">" +
+										  "<div class=\"progress-bar bg-danger wow animated progress-animated\" style=\"width: 25%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>" +
+										"</div>" +
+									  "</td>" +
+									   "<td>" +
+									  "<div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">" +
+										 "<a class=\"btn btn-info btn-sm\" href=\"@Url.Action(\"Edit\")?id = 1\" data-toggle=\"modal\" data-target=\"#AddType\">Action Add</a>" +
+										 "<button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=createAlert('1');>" +
+											"Delete" +
+										"</button>" +
+										 "</div>" +
+									  "</td>" +
+								 "</tr>";
+				//	var requirementActions = await _dataService.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == item.Id);
+					AddHtmlChilds(item.Id, parentNodeId, currentNodeId);
+					parentNodeId++;
+				}
+
+			}
+
+			//tableHtml = "<tr class=\"treegrid-1\">" +
+			//				 "<td>4 Organisation</td>" +
+			//				 "<td></td>" +
+			//				 "<td></td>" +
+			//				 "<td>" +
+			//				   "<h5 class=\"m-t-30\">Progress<span class=\"pull-right\">25%</span></h5>" +
+			//				   	"<div class=\"progress \">" +
+			//						  "<div class=\"progress-bar bg-danger wow animated progress-animated\" style=\"width: 25%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>" +
+			//					"</div>" +
+			//				 "</td>" +
+			//				 "<td>" +
+			//				 "<div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">" +
+			//					 "<a class=\"btn btn-info btn-sm\" href=\"@Url.Action(\"Edit\")?id = 1\" data-toggle=\"modal\" data-target=\"#AddType\">Action Add</a>" +
+			//				"</div>" +
+			//				 "</td>" +
+			//				 "</tr>";
+			model.TableHtml = tableHtml;
+			return View("Index", model);
 		}
 
 		/// <summary>
@@ -79,7 +148,84 @@ namespace ST.CORE.Controllers.Entity
 
 			return View(model);
 		}
+		[HttpPost]
 
+		public IActionResult CreateRequirementAction(string name/*, IDynamicEntityDataService service*/)
+		{
+
+			if (string.IsNullOrEmpty(name))
+			{
+				return Json(new { error = true, message = "Error in name!" });
+			}
+			var activityType = new RequirementAction
+			{
+				Name = name,
+				Author = User.Identity.Name,
+				IsDeleted = false,
+				ModifiedBy = User.Identity.Name,
+				RequirementId = Guid.Parse("ca74a4cc-441c-4676-be70-db0fedc49267"),
+				Treegrid = 7
+			};
+			try
+			{
+				//_dataService.AddSystem(activityType);
+				return Json(new { success = true, message = "Create successful!" });
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				return Json(new { success = false, message = "Error on create!!" });
+			}
+		}
+
+		public void AddHtmlActions(Guid parentId, int parentNodeId, int currentId, Guid reqId)
+		{
+			//var requirementActions =  _dataService.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == reqId);
+
+
+		}
+
+		public void AddHtmlChilds(Guid parentId, int parentNodeId, int currentId)/* async Task<string>*/
+		{
+
+
+
+			var requirementChilds = _dataService.Table("Requirement").GetAll<dynamic>(x => x.ParentId == parentId);
+
+			if (requirementChilds.Result.IsSuccess == true)
+			{
+				foreach (var item in requirementChilds.Result.Result)
+				{
+					//AddHtmlActions(parentId, parentNodeId, currentId, item.Id);
+					currentId++;
+					tableHtml += "<tr class=\"treegrid-" + currentId + " treegrid-parent-" + parentNodeId + "\" >" +
+
+									   "<td>" + item.Name + "</td>" +
+									 //"<td>" + item.Id + "</td>" +
+									 "<td></td>" +
+									 "<td></td>" +
+									 "<td>" +
+										 "<h5 class=\"m-t-30\">Progress<span class=\"pull-right\">0%</span></h5>" +
+										 "<div class=\"progress \">" +
+										  "<div class=\"progress-bar bg-danger wow animated progress-animated\" style=\"width: 25%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>" +
+										"</div>" +
+									  "</td>" +
+									  "<td>" +
+									  "<div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">" +
+										 "<a class=\"btn btn-info btn-sm\" href=\"@Url.Action(\"Edit\")?id = 1\" data-toggle=\"modal\" data-target=\"#AddType\">Action Add</a>" +
+										 "<button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=createAlert('1');>" +
+											"Delete" +
+										"</button>" +
+										 "</div>" +
+									  "</td>" +
+								 "</tr>";
+
+					AddHtmlChilds(item.Id, item.Treegrid, currentId);
+				}
+			}
+
+
+		}
 		/// <summary>
 		/// Edit page type
 		/// </summary>
@@ -104,7 +250,7 @@ namespace ST.CORE.Controllers.Entity
 		//	var selectedMeasurementItem = viewMeasurementUnits.Result.Where(x => x.Id == model.Result.MeasurementUnitId).FirstOrDefault();
 		//	var fulfillmentCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
 		//	var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id  & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id ) : null);
-			
+
 
 		//	model.Result.MeasurementUnits = (viewMeasurementUnits.IsSuccess == true) ? viewMeasurementUnits.Result.To<object, IEnumerable<NomenclatorItem>>() : null;
 		//	model.Result.Periods = (viewCalculationPeriodUnits.IsSuccess == true) ? viewCalculationPeriodUnits.Result.To<object, IEnumerable<NomenclatorItem>>() : null;
@@ -129,7 +275,7 @@ namespace ST.CORE.Controllers.Entity
 
 		//	if (dataModel == null) return NotFound();
 
-			
+
 		//	dataModel.Name = model.Name;
 		//	dataModel.Description = model.Description;
 		//	dataModel.Author = model.Author;
@@ -161,7 +307,7 @@ namespace ST.CORE.Controllers.Entity
 		//	ViewBag.KPIId = KPIId;
 		//	ViewBag.ParentId = parentId;
 		//	ViewBag.KPI = (await _dataService.GetByIdSystem<Request, Request>(KPIId)).Result;
-			
+
 		//	return View();
 		//}
 
@@ -252,7 +398,7 @@ namespace ST.CORE.Controllers.Entity
 		//[HttpPost]
 		//public async Task<JsonResult> LoadKPIItems(DTParameters param, Guid KPIId, Guid? parentId = null)
 		//{
-			
+
 		//	var filtered = await _dataService.Filter<KPIItem>(param.Search.Value, param.SortOrder, param.Start,
 		//		param.Length, x => x.KPIId.Equals(KPIId) && x.ParentId.Equals(parentId));
 
@@ -271,36 +417,36 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <param name="param"></param>
 		/// <returns></returns>
-		[HttpPost]
-		[AjaxOnly]
-		public async Task<JsonResult> LoadPages(DTParameters param)
-		{
-			var filtered = await _dataService.Filter<Requirement>(param.Search.Value, param.SortOrder, param.Start,
-				param.Length);
-			var viewModel = filtered.Item1.To<object, List<UpdateRequirementViewModel>>();
-			//foreach (var item in viewModel)
-			//{
-			//	var ipId= await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.InterestedPartId);
-			//	if (ipId.IsSuccess)
-			//	{
-			//		item.SelectedInterestedPart = ipId.Result.Name;
-			//	}
+		//[HttpPost]
+		//[AjaxOnly]
+		//public async Task<JsonResult> LoadPages(DTParameters param)
+		//{
+		//	var filtered = await _dataService.Filter<Requirement>(param.Search.Value, param.SortOrder, param.Start,
+		//		param.Length);
+		//	var viewModel = filtered.Item1.To<object, List<UpdateRequirementViewModel>>();
+		//	//foreach (var item in viewModel)
+		//	//{
+		//	//	var ipId= await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.InterestedPartId);
+		//	//	if (ipId.IsSuccess)
+		//	//	{
+		//	//		item.SelectedInterestedPart = ipId.Result.Name;
+		//	//	}
 
-			//	var rId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.RequirementId);
-			//	if (rId.IsSuccess)
-			//	{
-			//		item.SelectedRequirement = rId.Result.Name;
-			//	}				
-			//}
-			var finalResult = new DTResult<UpdateRequirementViewModel>
-			{
-				draw = param.Draw,
-				data = viewModel,
-				recordsFiltered = filtered.Item2,
-				recordsTotal = filtered.Item1.Count()
-			};
-			return Json(finalResult);
-		}
+		//	//	var rId = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(item.RequirementId);
+		//	//	if (rId.IsSuccess)
+		//	//	{
+		//	//		item.SelectedRequirement = rId.Result.Name;
+		//	//	}				
+		//	//}
+		//	var finalResult = new DTResult<UpdateRequirementViewModel>
+		//	{
+		//		draw = param.Draw,
+		//		data = viewModel,
+		//		recordsFiltered = filtered.Item2,
+		//		recordsTotal = filtered.Item1.Count()
+		//	};
+		//	return Json(finalResult);
+		//}
 
 
 		/// <summary>

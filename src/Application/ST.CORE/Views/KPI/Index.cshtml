@@ -4,8 +4,10 @@
 }
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Page Types</h4>
-		<h6 class="card-subtitle">List of KPIs</h6>
+		<h4 class="card-title">List of KPIs</h4>	
+		<h6 class="card-subtitle">
+			<a class="toggle-vis" href="" data-column="0">Name</a> - <a class="toggle-vis" data-column="1">Description</a> - <a class="toggle-vis" data-column="2">Created</a> - <a class="toggle-vis" data-column="3">Measurement Unit</a> - <a class="toggle-vis" data-column="4">Category</a>
+		</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
@@ -24,13 +26,13 @@
 					<tr>
 						<th>Name</th>
 						<th>Description</th>
-						<th>@Localizer["created"]</th>					
+						<th>@Localizer["created"]</th>
 						<th>Measurement Unit</th>
 						<th>Category</th>
 						<th>Period</th>
 						<th>Fulfillment Criterion</th>
 						<th>Author</th>
-					
+
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -58,6 +60,10 @@
 				$(tableId).dataTable().empty();
 			}
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)

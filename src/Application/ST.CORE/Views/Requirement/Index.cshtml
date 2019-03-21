@@ -1,101 +1,368 @@
+
+@using ST.Identity.Data.UserProfiles
+@inject UserManager<ApplicationUser> userManager
+@model ST.Entities.Models.Home.HomeViewModel
 @inject IStringLocalizer Localizer
 @{
 	ViewData["Title"] = "Requirements";
+	var user = await userManager.GetUserAsync(User);
 }
+<link rel="stylesheet" type="text/css" href="~/lib/chartist/dist/chartist.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/chartist-plugin-tooltip/dist/chartist-plugin-tooltip.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/maxazan-jquery-treegrid-447d662/css/jquery.treegrid.css" />
+
+@*<div class="row">
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-inverse card-info">
+			<div class="box bg-info text-center">
+				<h1 class="font-light text-white">@ViewBag.TotalSessions</h1>
+				<h6 class="text-white">Sessions</h6>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-primary card-inverse">
+			<div class="box text-center">
+				<h1 class="font-light text-white">@ViewBag.TotalUsers</h1>
+				<h6 class="text-white">Users</h6>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-inverse card-success">
+			<div class="box text-center">
+				<h1 class="font-light text-white">0</h1>
+				<h6 class="text-white">Page Views</h6>
+			</div>
+		</div>
+	</div>
+	<!-- Column -->
+	<div class="col-md-6 col-lg-3 col-xlg-3">
+		<div class="card card-inverse card-warning">
+			<div class="box text-center">
+				<h1 class="font-light text-white">0%</h1>
+				<h6 class="text-white">Bounce Rate</h6>
+			</div>
+		</div>
+	</div>
+</div>*@
+
+
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Page Types</h4>
-		<h6 class="card-subtitle">List of Requirements</h6>
-		<div class="table-responsive">
-			<div class="mt-2">
-				<div class="d-flex">
-					<div class="mr-auto">
-						<div class="form-group">
-							<a asp-action="Create" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add KPI
-							</a>
-							<small>New Requirement will be added.</small>
-						</div>
-					</div>
-				</div>
-			</div>
-			<table class="table table-striped table-bordered" id="pageTable">
-				<thead>
-					<tr>
-						<th>Interested Part</th>
-						<th>Requirement</th>						
-						<th>Comments</th>
-						<th>Actions</th>
+		<h4 class="card-title">ISO-27001 REQUIREMENTS</h4>
+		<h6 class="card-subtitle">
+			<a class="toggle-vis" href="" data-column="0">Name</a> - <a class="toggle-vis" data-column="1">Assigned</a> - <a class="toggle-vis" data-column="2">DueDate</a> - <a class="toggle-vis" data-column="3">Progress</a> - <a class="toggle-vis" data-column="4">Actions</a>
+		</h6>
+		<table id="example1" class="table display tree" style="width:100%">
+			<thead>
+				<tr>
+					<th>Name</th>
+					@*<th>Id</th>*@
+					<th>Assigned</th>
+					<th>Due date</th>
+					<th>Progress</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody id="isoTable" runat="server">
+				@Html.Raw(Model.TableHtml)
+				@*<tr class="treegrid-1">
+							<td>4 Organisation</td>
+							<td></td>
+							<td></td>
+							<td>
+								<h5 class="m-t-30">Progress<span class="pull-right">25%</span></h5>
+								<div class="progress ">
+									<div class="progress-bar bg-danger wow animated progress-animated" style="width: 25%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
+								</div>
+							</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1" data-toggle="modal" data-target="#AddType">Action Add</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
+										Delete
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr class="treegrid-2 treegrid-parent-1">
+							<td>4.1 Understanding the organization and its context</td>
+							<td></td>
+							<td></td>
+							<td>
+								<h5 class="m-t-30">Progress<span class="pull-right">0%</span></h5>
+								<div class="progress ">
+									<div class="progress-bar bg-danger wow animated progress-animated" style="width: 3%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
+								</div>
+							</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
+										Delete
+									</button>
+								</div>
+							</td>
 
-					</tr>
-				</thead>
-				<tbody></tbody>
-				<tfoot></tfoot>
-			</table>
-		</div>
+
+						</tr>
+						<tr class="treegrid-3 treegrid-parent-1">
+							<td>4.2 Understanding the needs and expectations of interested parties</td>
+							<td></td>
+							<td></td>
+							<td>
+								<h5 class="m-t-30">Progress<span class="pull-right">50%</span></h5>
+								<div class="progress ">
+									<div class="progress-bar bg-warning wow animated progress-animated" style="width: 50%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
+								</div>
+							</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
+										Delete
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr class="treegrid-4 treegrid-parent-3">
+							<td>4.2.a Interested parties that are relevant to the information security management system</td>
+							<td></td>
+							<td></td>
+							<td>
+								<h5 class="m-t-30">Progress<span class="pull-right">100%</span></h5>
+								<div class="progress ">
+									<div class="progress-bar bg-success wow animated progress-animated" style="width: 100%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
+								</div>
+							</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
+										Delete
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr class="treegrid-5 treegrid-parent-3">
+							<td>4.2.b The requirements of these interested parties relevant to information security.</td>
+							<td></td>
+							<td></td>
+							<td>
+								<h5 class="m-t-30">Progress<span class="pull-right">0%</span></h5>
+								<div class="progress ">
+									<div class="progress-bar bg-danger wow animated progress-animated" style="width: 3%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
+								</div>
+							</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=1">Edit</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('1');>
+										Delete
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr class="treegrid-6 treegrid-parent-4">
+							<td>4.2.a-1) To determine interested parties that are relevant to the ISMS;</td>
+							<td>Jon Pavan</td>
+							<td> 01.04.2019</td>
+							<td>
+								<h5 class="m-t-30">Progress<span class="pull-right">100%</span></h5>
+								<div class="progress ">
+									<div class="progress-bar bg-success wow animated progress-animated" style="width: 100%; height:6px;" role="progressbar"> <span class="sr-only">60% Complete</span> </div>
+								</div>
+
+							</td>
+							<td>
+								<div class="btn-group" role="group" aria-label="Action buttons">
+									<a asp-action="CreateRequirementAction" class="btn btn-info btn-sm">Edit</a>
+								<button type="button" class='btn btn-danger btn-sm'>
+									Delete
+								</button>
+				</div>
+									</td>
+								</tr>*@
+
+			</tbody>
+			<tfoot>
+				<tr>
+
+					<th>Name</th>
+					@*<th>Id</th>*@
+					<th>Assigned</th>
+					<th>Due date</th>
+					<th>Progress</th>
+					<th>Actions</th>
+				</tr>
+			</tfoot>
+		</table>
 	</div>
 </div>
 
 
+<div class="modal fade" id="EditType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Add activity type</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<div class="row">
+							<label class="col-md-4"><span class="pull-right">Activity Type</span></label>
+							<div class="col-md-1"></div>
+							<input class="form-control col-md-6" id="editActivityTypeName" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" value="Create" class="btn btn-success text-white" id="editActivityType">Add</button>
+						<button type="button" class="btn btn-inverse " data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="AddType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Add activity type</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<div class="row">
+							<label class="col-md-4"><span class="pull-right">Activity Type</span></label>
+							<div class="col-md-1"></div>
+							<input class="form-control col-md-6" id="activityTypeName" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" value="Create" class="btn btn-success text-white" id="createRequirementAction">Add</button>
+						<button type="button" class="btn btn-inverse " data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 @section Scripts{
+
+	<script src="~/lib/chartist/dist/chartist.min.js"></script>
+	<script src="~/lib/chartist-plugin-tooltip/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="~/lib/chart.js/dist/Chart.min.js"></script>
+	<script src="~/js/dashboard2.js"></script>
+	<script src="~/js/jquery.treegrid.js"></script>
+	<script src="~/lib/bootstrap-treeview-master/dist/bootstrap-treeview.min.js"></script>
+	<script src="~/lib/bootstrap-treeview-master/dist/bootstrap-treeview-init.js"></script>
+
+
 	<script type="text/javascript" language="javascript">
-		function getTokenAntiForgery() {
-			const token = '@Html.AntiForgeryToken()';
-			return $(token).val();
-		}
-	</script>
-	<script type="text/javascript" language="javascript">
-		$(document).ready(function ($) {
-			const tableId = '#pageTable';
-			if ($.fn.DataTable.isDataTable(tableId)) {
-				alert();
-				$(tableId).dataTable().fnDestroy();
-				$(tableId).dataTable().empty();
-			}
-			$(tableId).DataTable({
-				"processing": true, // for show progress bar
-				"serverSide": true, // for process server side
-				"filter": true, // this is for disable filter (search box)
-				"orderMulti": false, // for disable multiple column at once
-				"destroy": true,
-				"ajax": {
-					"url": '@Url.Action("LoadPages")',
-					"type": "POST"
-				},
-				"columns": [				
-									
-					{ "data": "selectedInterestedPart" },
-					{ "data": "selectedRequirement" },
-					{ "data": "comments" },
-					{
-						data: null,
-						"render": function(data, type, row, meta) {
-							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									@*<a class="btn btn-warning btn-sm" href="@Url.Action("GetKPI")?KPIId=${row.id}">Items</a>*@
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
-								}'); >Delete</button>
-									</div>`;
-						}
-					}
-				]
+
+		$(document).ready(function () {
+			$('.tree').treegrid({
+				'initialState': 'collapsed',
+
 			});
 		});
 
-		function createAlert(rowId) {
-			const object = {
-				alertTitle: "Delete this KPI?",
-				alertText: "Are you sure that you want to leave this KPI?",
-				confirmButtonText: "Yes, delete it!",
-				rowId: rowId,
-				tableId: "#pageTable",
-				urlForDelete: '@Url.Action("Delete")',
-				type:"warning",
-				onDeleteSuccess: "KPI has been deleted.",
-				onDeleteFail: "Something wrong",
-				onServerNoResponse:"Api not respond or not have permissions."
-			};
-			DeleteData(object);
-		}
+		$(document).ready(function () {
+			$('#example1').DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
+				"columnDefs": [
+					{ "width": "50%", "targets": 0 },
+					{ "width": "20%", "targets": 1 },
+					{ "width": "15%", "targets": 2 },
+					{ "width": "15%", "targets": 3 }
+				]
+			});
+			$('a.toggle-vis').on('click', function (e) {
+				e.preventDefault();
+
+				// Get the column API object
+				var table = $('#example1').DataTable();
+				var column = table.column($(this).attr('data-column'));
+
+				// Toggle the visibility
+				column.visible(!column.visible());
+			});
+		});
+
+
+
+	</script>
+	<script>
+
+		var newRow = "<tr class=\"treegrid-6 treegrid-parent-4\"> <td></span> 4.2.a-1) 4.2.a-1 Interested parties that are relevant to the information security management system;</td>	<td>Jon Pavan</td><td> 01.04.2019</td><td><h5 class=\"m-t-30\">Progress<span class=\"pull-right\">100%</span></h5><div class=\"progress\"><div class=\"progress-bar bg-success wow animated progress-animated\" style=\"width: 100%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>	</div>	</td>	<td><div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">	<a asp-action=\"CreateRequirementAction\" class=\"btn btn-info btn-sm\">Edit</a>	<button type=\"button\" class='btn btn-danger btn-sm'>	Delete	</button>	</div>	</td></tr>";
+		//var table = $('table').DataTable();
+		//table.row.add($(newRow)).draw();
+		$("#createRequirementAction").click(function(e) {
+            if ($('#activityTypeName').val() === "") {
+                sweetAlert("Field Shouldn't Be Empty!!", "Please Enter name", "error");
+                return false;
+            };
+            const name = $("#activityTypeName").val();
+            const data = {
+                name: name
+            };
+            $.ajax({
+                url: '@Url.Action("CreateRequirementAction", "Home")',
+                content: "application/json; charset=utf-8",
+                type: 'POST',
+                data: data,
+                success: function(result) {
+
+                    if (result) {
+                        swal({
+                            position: 'top-end',
+                            type: 'success',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            //window.location.reload(true);
+
+							});
+						var table = $('#example1').DataTable();
+						//table.row.add([
+						//	'4.2.a-1) To determine interested parties that are relevant to the ISMS;',
+						//	'.2',
+						//	'.3',
+						//	'.4',
+						//	'.5'
+						//]).draw(false);
+						table.row.add($(newRow)).draw();
+                    } else {
+                        swal({
+                            position: 'top-end',
+                            type: 'error',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    ShowError(jqXHR.status);
+                }
+            });
+        });
 	</script>
 }

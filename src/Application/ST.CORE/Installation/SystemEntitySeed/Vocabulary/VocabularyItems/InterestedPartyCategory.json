@@ -1,0 +1,32 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "Internal",
+    "Description": "",
+    "Id": "5ff9ebc1-150c-4c38-8600-67209809d185",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "fa22d182-2877-443a-b5a2-42b327480b2b",
+    "ParentId": null
+  },
+  {
+    "Name": "External",
+    "Description": "",
+    "Id": "b3f33d30-608a-4bce-805b-bb7135b69cb0",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "fa22d182-2877-443a-b5a2-42b327480b2b",
+    "ParentId": null
+  }
+]

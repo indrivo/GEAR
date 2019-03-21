@@ -1,0 +1,60 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "The real value is Yes",
+    "Description": "",
+    "Id": "b79b0317-82f4-4f38-88c7-574ac05e41a7",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "8d203c1f-41b7-4aa4-ac1a-22457007fc72",
+    "ParentId": null,
+    "DependencyId": "ace7543c-81d6-440d-b214-172f0ccbc269"
+  },
+  {
+    "Name": "The real value is No",
+    "Description": "",
+    "Id": "175bea49-69ea-45ca-b94f-a58f995a9f30",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "8d203c1f-41b7-4aa4-ac1a-22457007fc72",
+    "ParentId": null,
+    "DependencyId": "ace7543c-81d6-440d-b214-172f0ccbc269"
+  },
+  {
+    "Name": "Actual value greater than or equal to the target value",
+    "Description": "",
+    "Id": "29e431b5-f956-4741-8a47-e4deeea892ca",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "8d203c1f-41b7-4aa4-ac1a-22457007fc72",
+    "ParentId": null,
+    "DependencyId": "ace7543c-81d6-440d-b214-172f0ccbc269"
+  },
+  {
+    "Name": "The actual value is less than or equal to the target value",
+    "Description": "",
+    "Id": "9fb8a000-0a49-4ea1-8f20-0f421b4ba709",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "8d203c1f-41b7-4aa4-ac1a-22457007fc72",
+    "ParentId": null,
+    "DependencyId": "ace7543c-81d6-440d-b214-172f0ccbc269"
+  }
+]

@@ -1,0 +1,34 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "Actionari",
+    "Description": "",
+    "Id": "e8075cd3-6618-4075-89bb-d37c1ef79747",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "62be501e-87f1-4847-96e6-bfcdc984d313",
+    "ParentId": null,
+    "RefId": "5ff9ebc1-150c-4c38-8600-67209809d185"
+  },
+  {
+    "Name": "Autoritati publice",
+    "Description": "",
+    "Id": "e0c742c0-5cd9-45a2-b22e-e02f1f2a2b59",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "62be501e-87f1-4847-96e6-bfcdc984d313",
+    "ParentId": null,
+    "RefId": "b3f33d30-608a-4bce-805b-bb7135b69cb0"
+  }
+]

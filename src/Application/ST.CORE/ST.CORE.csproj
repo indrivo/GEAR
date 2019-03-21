@@ -74,10 +74,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Views\Vocabulary\**" />
     <Compile Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <Content Remove="Views\Vocabulary\**" />
     <Content Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <EmbeddedResource Remove="Views\Vocabulary\**" />
     <EmbeddedResource Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <None Remove="Views\Vocabulary\**" />
     <None Remove="wwwroot\assets\js\workflow\bower_components\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Controllers\Entity\VocabularyController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="appsettings.Stage.json" />
@@ -194,6 +201,33 @@
     <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\BaseVocabulary\VocabularyList.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\FulfillmentCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedParty.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedPartyCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\RequirementCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\ObjectiveCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\PeriodCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\MeasurementCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\KpiCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="menus.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
