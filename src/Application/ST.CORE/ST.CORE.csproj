@@ -201,6 +201,12 @@
     <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\Requirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\KPI.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Installation\SystemEntitySeed\Vocabulary\BaseVocabulary\VocabularyList.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

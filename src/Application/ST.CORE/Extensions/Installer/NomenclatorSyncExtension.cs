@@ -204,6 +204,8 @@ namespace ST.CORE.Extensions.Installer
 			var interestedPartyTypeCategoryItems = GetInterestedPartyTypeCategoriesItems();
 			var interestedPartyCategoryItems = GetInterestedPartyCategoriesItems();
 
+			var kpi = GetKpiItems();
+
 
 			await service.AddRange(vocabularyList);
 			await service.AddRange(kpiCategoryItems);
@@ -214,6 +216,8 @@ namespace ST.CORE.Extensions.Installer
 			await service.AddRange(requirementsCategoryItems);
 			await service.AddRange(interestedPartyTypeCategoryItems);
 			await service.AddRange(interestedPartyCategoryItems);
+
+			await service.AddRange(kpi);
 
 
 
@@ -385,6 +389,15 @@ namespace ST.CORE.Extensions.Installer
 		/// <returns></returns>
 		private static IEnumerable<NomInterestedParty> GetInterestedPartyCategoriesItems()
 			=> JsonParser.ReadArrayDataFromJsonFile<List<NomInterestedParty>>(Path.Combine(AppContext.BaseDirectory, "Installation/SystemEntitySeed/Vocabulary/VocabularyItems/InterestedParty.json"));
+
+		/*********Entities seed**************/
+		/// <summary>
+		/// Read Nomenclators
+		/// </summary>
+		/// <returns></returns>
+		private static IEnumerable<KPI> GetKpiItems()
+			=> JsonParser.ReadArrayDataFromJsonFile<List<KPI>>(Path.Combine(AppContext.BaseDirectory, "Installation/SystemEntitySeed/DynamicEntities/KPI.json"));
+
 
 
 	}
