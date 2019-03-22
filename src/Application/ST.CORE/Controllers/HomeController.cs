@@ -56,66 +56,8 @@ namespace ST.CORE.Controllers
 		[Authorize]
 		public async Task<IActionResult> Index()
 		{
-			HomeViewModel model = new HomeViewModel();
-			var list = _context.GetTrackedEntities();
-			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
-			ViewBag.TotalSessions = _hub.GetSessionsCount();
-
-			//ViewBag.User = await _userManager.GetUserAsync(User);
 			
-			int parentNodeId = 1;
-			int currentNodeId = 1;
-			var parents = await _dataService.Table("Requirement").GetAll<dynamic>(x => x.ParentId == Guid.Empty);
-			if (parents.IsSuccess == true)
-			{
-				foreach (var item in parents.Result)
-				{
-					tableHtml += "<tr class=\"treegrid-"+ parentNodeId + "\">" +
-						            
-									 "<td>" +item.Name+"</td>" +
-									 //"<td>" + item.Id + "</td>" +
-									 "<td></td>" +
-								     "<td></td>" +
-									 "<td>" +
-								         "<h5 class=\"m-t-30\">Progress<span class=\"pull-right\">25%</span></h5>" +
-								     	"<div class=\"progress \">" +
-										  "<div class=\"progress-bar bg-danger wow animated progress-animated\" style=\"width: 25%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>" +
-									    "</div>" +
-								      "</td>" +
-									   "<td>" +
-									  "<div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">" +
-									     "<a class=\"btn btn-info btn-sm\" href=\"@Url.Action(\"Edit\")?id = 1\" data-toggle=\"modal\" data-target=\"#AddType\">Action Add</a>" +
-										 "<button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=createAlert('1');>"+
-											"Delete"+
-										"</button>"+
-										 "</div>" +
-									  "</td>" +
-								 "</tr>";
-					var requirementActions = await _dataService.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == item.Id);
-					 AddHtmlChilds( item.Id, parentNodeId, currentNodeId);
-					parentNodeId++;
-				}
-				
-			}
-			
-			 //tableHtml = "<tr class=\"treegrid-1\">" +
-				//				 "<td>4 Organisation</td>" +
-				//				 "<td></td>" +
-				//				 "<td></td>" +
-				//				 "<td>" +
-				//				   "<h5 class=\"m-t-30\">Progress<span class=\"pull-right\">25%</span></h5>" +
-				//				   	"<div class=\"progress \">" +
-				//						  "<div class=\"progress-bar bg-danger wow animated progress-animated\" style=\"width: 25%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>" +
-				//					"</div>" +
-				//				 "</td>" +
-				//				 "<td>" +
-				//				 "<div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">" +
-				//					 "<a class=\"btn btn-info btn-sm\" href=\"@Url.Action(\"Edit\")?id = 1\" data-toggle=\"modal\" data-target=\"#AddType\">Action Add</a>" +
-				//				"</div>" +
-				//				 "</td>" +
-				//				 "</tr>";
-			model.TableHtml = tableHtml;
-			return View("Index",model);
+			return View("Index");
 		}
 
 		[HttpPost]

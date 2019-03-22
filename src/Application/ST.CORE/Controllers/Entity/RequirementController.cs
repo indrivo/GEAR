@@ -135,19 +135,19 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
-		[HttpPost]
-		public async Task<IActionResult> Create(Requirement model)
-		{
-			if (model != null)
-			{
-				var req = await _dataService.AddSystem(model);
-				if (req.IsSuccess)
-					return RedirectToAction("Index");
-				ModelState.AddModelError(string.Empty, "Fail to save!");
-			}
+		//[HttpPost]
+		//public async Task<IActionResult> Create(Requirement model)
+		//{
+		//	if (model != null)
+		//	{
+		//		var req = await _dataService.AddSystem(model);
+		//		if (req.IsSuccess)
+		//			return RedirectToAction("Index");
+		//		ModelState.AddModelError(string.Empty, "Fail to save!");
+		//	}
 
-			return View(model);
-		}
+		//	return View(model);
+		//}
 		[HttpPost]
 
 		public IActionResult CreateRequirementAction(string name/*, IDynamicEntityDataService service*/)

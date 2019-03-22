@@ -50,13 +50,15 @@ namespace ST.Entities.Models.Nomenclator
     { }
     public class NomFulfillment : NomenclatorItem
     { }
-    public class NomObjective : NomenclatorItem
+    public class NomGoal : NomenclatorItem
     { }
-    public class NomRequirement : NomenclatorItem
-    { }
+    //public class NomRequirement : NomenclatorItem
+    //{ }
     public class NomInterestedPartyType : NomenclatorItem
     { }
     public class NomInterestedParty : NomenclatorItem
+    { }
+    public class NomRequirement : NomenclatorItem
     { }
 
 

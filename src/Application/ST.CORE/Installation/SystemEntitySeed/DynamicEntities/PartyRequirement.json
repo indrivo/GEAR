@@ -1,0 +1,20 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Id": "b45720b2-1838-4e1a-9825-26f4e608ac9c",
+    "InterestedPartId": "e0c742c0-5cd9-45a2-b22e-e02f1f2a2b59",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "RequirementId": "5235526d-491c-46d0-9380-f062376993f5",
+    "Commens" : "comentariu"   
+
+  }
+]

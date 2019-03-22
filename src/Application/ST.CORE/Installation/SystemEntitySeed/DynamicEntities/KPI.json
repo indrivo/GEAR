@@ -22,6 +22,7 @@
     "BoolGoal": true,
     "IntGoal": 980,
     "FulfillmentCriterionId": "b79b0317-82f4-4f38-88c7-574ac05e41a7",
-    "Status": true
+    "Status": true,
+    "GoalId": "6e942259-b057-44c4-ac20-ec7e4e581310"
   }
 ]

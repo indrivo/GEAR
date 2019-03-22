@@ -201,6 +201,21 @@
     <ProjectReference Include="..\..\Shared\Shared.Core\Shared.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\GoalPartyRequirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\CategoryRequirements.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\StandardCategories.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\Standards.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\PartyRequirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Installation\SystemEntitySeed\DynamicEntities\Requirement.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -217,6 +232,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedPartyCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\NomRequirement.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\RequirementCategory.json">

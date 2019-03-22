@@ -1,5 +1,6 @@
 ﻿{
   "SynchronizeTableViewModels": [
+    //Email
     {
       "Name": "Email",
       "Schema": "systemcore", //override by installer
@@ -36,6 +37,7 @@
         }
       ]
     },
+    //UserEmailFolders
     {
       "Name": "UserEmailFolders",
       "Schema": "systemcore", //override by installer
@@ -106,6 +108,7 @@
         }
       ]
     },
+    //EmailUsers
     {
       "Name": "EmailUsers",
       "Schema": "systemcore", //override by installer
@@ -184,6 +187,7 @@
         }
       ]
     },
+    //Files
     {
       "Name": "Files",
       "Schema": "systemcore", //override by installer
@@ -284,6 +288,7 @@
         }
       ]
     },
+    //Menu
     {
       "Name": "Menu",
       "Schema": "systemcore", //override by installer
@@ -319,6 +324,7 @@
         }
       ]
     },
+    //MenuItem
     {
       "Name": "MenuItem",
       "Schema": "systemcore", //override by installer
@@ -434,6 +440,7 @@
         }
       ]
     },
+    //NotificationTypes
     {
       "Name": "NotificationTypes",
       "Schema": "systemcore", //override by installer
@@ -469,6 +476,7 @@
         }
       ]
     },
+    //SystemNotifications
     {
       "Name": "SystemNotifications",
       "Schema": "systemcore", //override by installer
@@ -537,6 +545,7 @@
         }
       ]
     },
+    //Standards
     {
       "Name": "Standards",
       "Schema": "systemcore", //override by installer
@@ -558,6 +567,7 @@
         }
       ]
     },
+    //StandardCategories
     {
       "Name": "StandardCategories",
       "Schema": "systemcore", //override by installer
@@ -621,7 +631,7 @@
           "TableFieldCode": "10",
           "Configurations": [
             {
-              "Value": 500,
+              "Value": 2000,
               "ConfigCode": "1000"
             }
           ]
@@ -855,9 +865,9 @@
         }
       ]
     },
-    //NomObjective
+    //NomGoal
     {
-      "Name": "NomObjective",
+      "Name": "NomGoal",
       "Schema": "systemcore",
       "Description": "Entity for Objective item",
       "Fields": [
@@ -1248,7 +1258,7 @@
         }
       ]
     },
-
+    //NomKPICategory
     {
       "Name": "NomKPICategory",
       "Schema": "systemcore",
@@ -1346,6 +1356,7 @@
         }
       ]
     },
+    //NomType
     {
       "Name": "NomType",
       "Schema": "systemcore",
@@ -1443,7 +1454,7 @@
         }
       ]
     },
-
+    //NomMeasurement
     {
       "Name": "NomMeasurement",
       "Schema": "systemcore",
@@ -1541,6 +1552,7 @@
         }
       ]
     },
+    //NomPeriod
     {
       "Name": "NomPeriod",
       "Schema": "systemcore",
@@ -1638,7 +1650,7 @@
         }
       ]
     },
-
+    //NomFulfillment
     {
       "Name": "NomFulfillment",
       "Schema": "systemcore",
@@ -1736,7 +1748,7 @@
         }
       ]
     },
-
+    // KPI
     {
       "Name": "KPI",
       "Schema": "systemcore",
@@ -1888,7 +1900,26 @@
           ]
         },
         {
-          "Name": "FulfillmentCriterionId",
+          "Name": "GoalId",
+          "Description": "Id of the Goal reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": false,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomGoal",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "GoalId",
           "Description": "Id of the Fulfillment Criterion reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1923,66 +1954,107 @@
 
       ]
     },
+
+    //RequirementAction
+    //{
+    //  "Name": "RequirementAction",
+    //  "Schema": "systemcore",
+    //  "Description": "Actiunile",
+    //  "Fields": [
+
+    //    {
+    //      "Name": "RequirementId",
+    //      "Description": "Id of the Requirement reference",
+    //      "Synchronized": false,
+    //      "DataType": "uniqueidentifier",
+    //      "AllowNull": true,
+    //      "TableFieldCode": "30",
+    //      "Parameter": "EntityReference",
+    //      "Configurations": [
+    //        {
+    //          "Value": "Requirement",
+    //          "ConfigCode": "3000"
+    //        },
+    //        {
+    //          "Value": "systemcore",
+    //          "ConfigCode": "9999"
+    //        }
+    //      ]
+    //    },
+    //    {
+    //      "Name": "Name",
+    //      "Description": "name field",
+    //      "Synchronized": false,
+    //      "DataType": "nvarchar",
+    //      "AllowNull": false,
+    //      "TableFieldCode": "10",
+    //      "Configurations": [
+    //        {
+    //          "Value": 500,
+    //          "ConfigCode": "1000"
+    //        }
+    //      ]
+    //    },
+    //    {
+    //      "Name": "Treegrid",
+    //      "Description": "id of tree",
+    //      "Synchronized": false,
+    //      "DataType": "int",
+    //      "AllowNull": false,
+    //      "TableFieldCode": "01",
+    //      "Configurations": [
+    //        {
+    //          "Value": null,
+    //          "ConfigCode": "0100"
+    //        },
+    //        {
+    //          "Value": null,
+    //          "ConfigCode": "0101"
+    //        }
+    //      ]
+    //    },
+
+    //    {
+    //      "Name": "Description",
+    //      "Description": "comments field",
+    //      "Synchronized": false,
+    //      "DataType": "nvarchar",
+    //      "AllowNull": true,
+    //      "TableFieldCode": "10",
+    //      "Configurations": [
+    //        {
+    //          "Value": 500,
+    //          "ConfigCode": "1000"
+    //        }
+    //      ]
+    //    },
+    //    {
+    //      "Name": "DeadLine",
+    //      "Description": "DeadLine field",
+    //      "Synchronized": false,
+    //      "DataType": "datetime",
+    //      "AllowNull": true,
+    //      "TableFieldCode": "22",
+    //      "Configurations": [
+    //        {
+
+    //        }
+    //      ]
+
+    //    }
+    //  ]
+    //},
+
+    //PartyRequirement
     {
-      "Name": "Requirement",
+      "Name": "PartyRequirement",
       "Schema": "systemcore",
-      "Description": "Cerința parții interesate",
+      "Description": "Actiunile",
       "Fields": [
-        //{
-        //  "Name": "InterestedPartId",
-        //  "Description": "Id of the Interested Part reference",
-        //  "Synchronized": false,
-        //  "DataType": "uniqueidentifier",
-        //  "AllowNull": false,
-        //  "TableFieldCode": "30",
-        //  "Parameter": "EntityReference",
-        //  "Configurations": [
-        //    {
-        //      "Value": "NomenclatorItem",
-        //      "ConfigCode": "3000"
-        //    },
-        //    {
-        //      "Value": "systemcore",
-        //      "ConfigCode": "9999"
-        //    }
-        //  ]
-        //},
-        //{
-        //  "Name": "RequirementId",
-        //  "Description": "Id of the Requirement reference",
-        //  "Synchronized": false,
-        //  "DataType": "uniqueidentifier",
-        //  "AllowNull": true,
-        //  "TableFieldCode": "30",
-        //  "Parameter": "EntityReference",
-        //  "Configurations": [
-        //    {
-        //      "Value": "NomenclatorItem",
-        //      "ConfigCode": "3000"
-        //    },
-        //    {
-        //      "Value": "systemcore",
-        //      "ConfigCode": "9999"
-        //    }
-        //  ]
-        //},
+
         {
-          "Name": "Name",
-          "Description": "name field",
-          "Synchronized": false,
-          "DataType": "nvarchar",
-          "AllowNull": false,
-          "TableFieldCode": "10",
-          "Configurations": [
-            {
-              "Value": 500,
-              "ConfigCode": "1000"
-            }
-          ]
-        },
-        {
-          "Name": "ParentId",
-          "Description": "Id of the Nomenclator reference",
+          "Name": "InterestedPartId",
+          "Description": "Id of the interested Party",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
           "AllowNull": true,
@@ -1990,7 +2062,7 @@
           "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": "Requirement",
+              "Value": "NomInterestedParty",
               "ConfigCode": "3000"
             },
             {
@@ -2000,43 +2072,26 @@
           ]
         },
         {
-          "Name": "Treegrid",
-          "Description": "Type of email user",
+          "Name": "RequirementId",
+          "Description": "Id of the interested Party",
           "Synchronized": false,
-          "DataType": "int",
-          "AllowNull": false,
-          "TableFieldCode": "01",
-          "Configurations": [
-            {
-              "Value": null,
-              "ConfigCode": "0100"
-            },
-            {
-              "Value": null,
-              "ConfigCode": "0101"
-            }
-          ]
-        },
-        {
-          "Name": "ParentTreegrid",
-          "Description": "Type of email user",
-          "Synchronized": false,
-          "DataType": "int",
+          "DataType": "uniqueidentifier",
           "AllowNull": true,
-          "TableFieldCode": "01",
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": null,
-              "ConfigCode": "0100"
+              "Value": "NomRequirement",
+              "ConfigCode": "3000"
             },
             {
-              "Value": null,
-              "ConfigCode": "0101"
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
         },
         {
-          "Name": "Comments",
+          "Name": "Description",
           "Description": "comments field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -2051,23 +2106,37 @@
         }
       ]
     },
+    //NomRequirement
     {
-      "Name": "RequirementAction",
+      "Name": "NomRequirement",
       "Schema": "systemcore",
-      "Description": "Actiunile",
+      "Description": "Entity for Goal Requirement",
       "Fields": [
-
         {
-          "Name": "RequirementId",
-          "Description": "Id of the Requirement reference",
+          "Name": "Name",
+          "Description": "name field",
+          "Synchronized": false,
+          "DataType": "nvarchar",
+          "AllowNull": true,
+          "TableFieldCode": "10",
+          "Configurations": [
+            {
+              "Value": 500,
+              "ConfigCode": "1000"
+            }
+          ]
+        },
+        {
+          "Name": "NomenclatorId",
+          "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
-          "AllowNull": true,
+          "AllowNull": false,
           "TableFieldCode": "30",
           "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": "Requirement",
+              "Value": "Nomenclator",
               "ConfigCode": "3000"
             },
             {
@@ -2077,68 +2146,110 @@
           ]
         },
         {
-          "Name": "Name",
-          "Description": "name field",
+          "Name": "ParentId",
+          "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
-          "DataType": "nvarchar",
-          "AllowNull": false,
-          "TableFieldCode": "10",
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": 500,
-              "ConfigCode": "1000"
-            }
-          ]
-        },
-        {
-          "Name": "Treegrid",
-          "Description": "id of tree",
-          "Synchronized": false,
-          "DataType": "int",
-          "AllowNull": false,
-          "TableFieldCode": "01",
-          "Configurations": [
-            {
-              "Value": null,
-              "ConfigCode": "0100"
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
             },
             {
-              "Value": null,
-              "ConfigCode": "0101"
-            }
-          ]
-        },
-
-        {
-          "Name": "Description",
-          "Description": "comments field",
-          "Synchronized": false,
-          "DataType": "nvarchar",
-          "AllowNull": true,
-          "TableFieldCode": "10",
-          "Configurations": [
-            {
-              "Value": 500,
-              "ConfigCode": "1000"
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
         },
         {
-          "Name": "DeadLine",
-          "Description": "DeadLine field",
+          "Name": "DependencyId",
+          "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
-          "DataType": "datetime",
+          "DataType": "uniqueidentifier",
           "AllowNull": true,
-          "TableFieldCode": "22",
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
+        },
+        {
+          "Name": "RefId",
+          "Description": "Id of the Nomenclator reference",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomenclatorItem",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        }
+      ]
+    },
+    //”Cerința parții interesate per obiectiv” - GoalPartyRequirements
+    {
+      "Name": "GoalPartyRequirement",
+      "Schema": "systemcore",
+      "Description": "Actiunile",
+      "Fields": [
 
+        {
+          "Name": "GoalId",
+          "Description": "Id of the interested Party",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "NomGoal",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
+        },
+        {
+          "Name": "PartyRequirementId",
+          "Description": "Id of the interested Party",
+          "Synchronized": false,
+          "DataType": "uniqueidentifier",
+          "AllowNull": true,
+          "TableFieldCode": "30",
+          "Parameter": "EntityReference",
+          "Configurations": [
+            {
+              "Value": "PartyRequirement",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
+            }
+          ]
         }
       ]
     }
-
   ]
 }

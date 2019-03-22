@@ -33,6 +33,9 @@ namespace ST.Entities.Models.KPI
         [Display(Name = "Fulfillment Criterion")]
         public Guid FulfillmentCriterionId { get; set; }
 
+        [Display(Name = "Goal")]
+        public Guid GoalId { get; set; }
+
         [Display(Name = "Status")]
         public bool Status { get; set; }
     }

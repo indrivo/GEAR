@@ -50,7 +50,7 @@
     "MachineName": "NomFulfillment"
   },
   {
-    "Name": "Objective ",
+    "Name": "Goals ",
     "Description": "",
     "Id": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
     "Author": "system",
@@ -58,19 +58,19 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "MachineName": "NomObjective"
+    "MachineName": "NomGoal"
   },
-  {
-    "Name": "Requirements ",
-    "Description": "",
-    "Id": "39009c25-72ce-49be-8d78-ab3a19763209",
-    "Author": "system",
-    "Created": "2019-01-29T07:59:12.6160761Z",
-    "ModifiedBy": null,
-    "Changed": "2019-01-29T07:59:12.6160762Z",
-    "IsDeleted": false,
-    "MachineName": "NomRequirements"
-  },
+  //{
+  //  "Name": "Requirements ",
+  //  "Description": "",
+  //  "Id": "39009c25-72ce-49be-8d78-ab3a19763209",
+  //  "Author": "system",
+  //  "Created": "2019-01-29T07:59:12.6160761Z",
+  //  "ModifiedBy": null,
+  //  "Changed": "2019-01-29T07:59:12.6160762Z",
+  //  "IsDeleted": false,
+  //  "MachineName": "NomRequirements"
+  //},
   {
     "Name": "InterestedPartyType",
     "Description": "",
@@ -92,5 +92,16 @@
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
     "MachineName": "NomInterestedParty"
+  },
+  {
+    "Name": "Requirements Nomenclator",
+    "Description": "",
+    "Id": "570AB595-2594-4AA5-8A6D-67E5DEE6FBEF",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "MachineName": "NomRequirement"
   }
 ]
