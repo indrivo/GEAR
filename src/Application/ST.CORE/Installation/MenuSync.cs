@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;
 using ST.Entities.Services.Abstraction;
@@ -35,19 +36,19 @@ namespace ST.CORE.Installation
 		/// <summary>
 		/// Sync default menus
 		/// </summary>
-		/// <param name="service"></param>
-		public static async Task SyncMenuItems(IDynamicEntityDataService service)
+		/// <param name="dataService"></param>
+		public static async Task SyncMenuItems(IDynamicService dataService)
 		{
-			var exists = await service.Any<Menu>();
+			var exists = await dataService.Any<Menu>();
 			if (exists) return;
-			var rq = await service.AddRange(Menu);
+			var rq = await dataService.AddRange(Menu);
 			if (rq.All(x => x.IsSuccess))
 			{
 				foreach (var item in GetMenus())
 				{
 					item.Created = DateTime.Now;
 					item.Changed = DateTime.Now;
-					var res = await service.AddSystem(item.Adapt<MenuItem>());
+					var res = await dataService.AddSystem(item.Adapt<MenuItem>());
 					if (!res.IsSuccess) continue;
 					foreach (var i in item.SubItems)
 					{
@@ -55,7 +56,7 @@ namespace ST.CORE.Installation
 						obj.ParentMenuItemId = res.Result;
 						obj.Created = DateTime.Now;
 						obj.Changed = DateTime.Now;
-						var r = await service.AddSystem(obj);
+						var r = await dataService.AddSystem(obj);
 						if (!r.IsSuccess || i.SubItems == null) continue;
 						foreach (var j in i.SubItems)
 						{
@@ -63,7 +64,7 @@ namespace ST.CORE.Installation
 							ob.ParentMenuItemId = r.Result;
 							ob.Created = DateTime.Now;
 							ob.Changed = DateTime.Now;
-							var r1 = await service.AddSystem(ob);
+							var r1 = await dataService.AddSystem(ob);
 							if (!r1.IsSuccess || j.SubItems == null) continue;
 							foreach (var m in j.SubItems)
 							{
@@ -71,7 +72,7 @@ namespace ST.CORE.Installation
 								ob1.ParentMenuItemId = r1.Result;
 								ob1.Created = DateTime.Now;
 								ob1.Changed = DateTime.Now;
-								await service.AddSystem(ob1);
+								await dataService.AddSystem(ob1);
 							}
 						}
 					}

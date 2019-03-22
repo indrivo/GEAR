@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Http;
 using ST.BaseRepository;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
-using ST.Entities.Services.Abstraction;
 using ST.Entities.ViewModels.DynamicEntities;
 
-namespace ST.Entities.Services
+namespace ST.DynamicEntityStorage
 {
     public class ObjectService
     {
@@ -30,7 +30,7 @@ namespace ST.Entities.Services
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
         /// <returns></returns>
-        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
+        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor, Guid? tenantId)
         {
             var proprietes = typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
             var entity = _asemblyName.Name;
@@ -61,7 +61,7 @@ namespace ST.Entities.Services
             return new DynamicObject
             {
                 Object = obj,
-                DataService = new DynamicEntityDataService(context, httpContextAccessor)
+                Service = new DynamicService(context, httpContextAccessor)
             };
         }
 
@@ -237,7 +237,7 @@ namespace ST.Entities.Services
 
     public class DynamicObject
     {
-        public IDynamicEntityDataService DataService { get; set; }
+        public IDynamicService Service { get; set; }
         public object Object { get; set; }
     }
 }

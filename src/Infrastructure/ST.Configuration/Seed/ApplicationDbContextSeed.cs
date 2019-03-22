@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ST.Audit;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Models.RolesViewModels;
@@ -73,7 +72,7 @@ namespace ST.Configuration.Seed
                     if (exists) continue;
                     role.Created = DateTime.Now;
                     role.Changed = DateTime.Now;
-                    role.TenantId = DefaultTenantSettings.TenantId;
+                    role.TenantId = Settings.TenantId;
                     await roleManager.CreateAsync(role.Adapt<ApplicationRole>());
                     await context.SaveChangesAsync();
                 }
@@ -88,7 +87,7 @@ namespace ST.Configuration.Seed
                     if (context.AuthGroups.Any(x => x.Name.Equals(item.Name))) continue;
                     item.Created = DateTime.Now;
                     item.Changed = DateTime.Now;
-                    item.TenantId = DefaultTenantSettings.TenantId;
+                    item.TenantId = Settings.TenantId;
                     context.AuthGroups.Add(item);
                     context.SaveChanges();
                 }
@@ -109,7 +108,7 @@ namespace ST.Configuration.Seed
                     user.Created = DateTime.Now;
                     user.Changed = DateTime.Now;
                     user.AuthenticationType = AuthenticationType.Local;
-                    user.TenantId = DefaultTenantSettings.TenantId;
+                    user.TenantId = Settings.TenantId;
                     var result = await userManager.CreateAsync(user);
                     if (!result.Succeeded) continue;
                     if (entity.ApplicationRoles.Any())
@@ -123,7 +122,7 @@ namespace ST.Configuration.Seed
                         {
                             UserId = user.Id,
                             AuthGroupId = group.Id,
-                            TenantId = DefaultTenantSettings.TenantId
+                            TenantId = Settings.TenantId
                         };
                         context.UserGroups.Add(userGroup);
                     }
@@ -137,7 +136,7 @@ namespace ST.Configuration.Seed
                 foreach (var item in entity.Profiles)
                 {
                     if (context.Profiles.Any(x => x.ProfileName == item.ProfileName)) continue;
-                    item.TenantId = DefaultTenantSettings.TenantId;
+                    item.TenantId = Settings.TenantId;
                     context.Profiles.Add(item);
                     context.SaveChanges();
                 }

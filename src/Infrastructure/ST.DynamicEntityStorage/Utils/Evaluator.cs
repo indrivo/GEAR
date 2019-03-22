@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace ST.Entities.Utils
+namespace ST.DynamicEntityStorage.Utils
 {
     public static class Evaluator
     {

@@ -4,25 +4,24 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Mapster;
+using Microsoft.AspNetCore.Http;
+using ST.Audit.Enums;
+using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
+using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Extensions;
+using ST.DynamicEntityStorage.Utils;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.DynamicEntities;
-using ST.Entities.Services.Abstraction;
-using ST.Entities.Extensions;
-using ST.Entities.Utils;
-using Microsoft.AspNetCore.Http;
-using ST.Audit;
-using ST.Audit.Extensions;
-using ST.Audit.Enums;
 
-namespace ST.Entities.Services
+namespace ST.DynamicEntityStorage
 {
     /// <inheritdoc />
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class DynamicEntityDataService : IDynamicEntityDataService
+    public class DynamicService : IDynamicService
     {
         /// <summary>
         /// Inject db context
@@ -34,17 +33,22 @@ namespace ST.Entities.Services
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        /// <summary>
+        /// default tenant id
+        /// </summary>
+        public static Guid? TenantId { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
-        public DynamicEntityDataService(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
+        public DynamicService(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
+
 
         /// <summary>
         /// Tenant id
@@ -53,7 +57,8 @@ namespace ST.Entities.Services
         {
             get
             {
-                return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid() ?? DefaultTenantSettings.TenantId;
+                return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
+                           ?.ToGuid() ?? TenantId;
             }
         }
 
@@ -340,6 +345,11 @@ namespace ST.Entities.Services
             var table = await Create<TEntity>(schema);
             //Set default values
             model.SetDefaultValues(table);
+            model["Changed"] = DateTime.Now;
+            model["Created"] = DateTime.Now;
+            model["Author"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+
             var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
                         entity, TrackEventType.Added);
             if (model.ContainsKey("Version"))
@@ -429,8 +439,18 @@ namespace ST.Entities.Services
         public async Task<ResultModel<Guid>> Update<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
+            model["Changed"] = DateTime.Now;
+            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+            try
+            {
+                model["Version"] = Convert.ToInt32(model["Version"]) + 1;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
             table.Values = new List<Dictionary<string, object>> { model };
             var req = _context.Refresh(table);
@@ -468,7 +488,7 @@ namespace ST.Entities.Services
         public async Task<ResultModel<Guid>> DeletePermanent<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var schema = _context.Table.FirstOrDefault(x => x.Name.ToLower().Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
             table.Values = new List<Dictionary<string, object>>
             {
@@ -501,6 +521,8 @@ namespace ST.Entities.Services
             if (!item.IsSuccess) return result;
             var model = item.Result;
             model["IsDeleted"] = true;
+            model["Changed"] = DateTime.Now;
+            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             result = await Update<TEntity>(model);
             return result;
         }
@@ -518,6 +540,8 @@ namespace ST.Entities.Services
             if (!item.IsSuccess) return result;
             var model = item.Result;
             model["IsDeleted"] = false;
+            model["Changed"] = DateTime.Now;
+            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             result = await Update<TEntity>(model);
             return result;
         }
@@ -681,7 +705,7 @@ namespace ST.Entities.Services
         /// <param name="tableName"></param>
         /// <returns></returns>
         public DynamicObject Table(string tableName)
-            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor);
+            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor, TenantId);
 
         /// <inheritdoc />
         /// <summary>
@@ -692,9 +716,10 @@ namespace ST.Entities.Services
             => new DynamicObject
             {
                 Object = Activator.CreateInstance(typeof(TEntity)),
-                DataService = new DynamicEntityDataService(_context, _httpContextAccessor)
+                Service = new DynamicService(_context, _httpContextAccessor)
             };
 
+        /// <inheritdoc />
         /// <summary>
         /// Filter list
         /// </summary>
@@ -703,11 +728,13 @@ namespace ST.Entities.Services
         /// <param name="sortOrder"></param>
         /// <param name="start"></param>
         /// <param name="length"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
         public async Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Func<T, bool> predicate = null) where T : BaseModel
             => await Table<T>().Filter<T>(search, sortOrder, start, length, predicate);
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Filter dynamic entity data
         /// </summary>

@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Identity.CacheModels;
-using ST.Identity.Extensions;
 using ST.Identity.Services.Abstractions;
 
-namespace ST.Identity
+namespace ST.Configuration.Server
 {
     public class TenantRouteConstraint : IRouteConstraint
     {
@@ -24,7 +23,7 @@ namespace ST.Identity
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
             var site = values[routeKey]?.ToString();
-            if (!StatusCodeExtension.ExcludeAssets(site)) return false;
+            if (!StatusCodeProvider.ExcludeAssets(site)) return false;
             var cacheService = httpContext.RequestServices.GetService<ICacheService>();
             try
             {

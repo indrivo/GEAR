@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 
-namespace ST.Entities.Services.Abstraction
+namespace ST.DynamicEntityStorage.Abstractions
 {
-    public interface IDynamicEntityCreateService
+    public interface IDynamicDataCreateService
     {
         /// <summary>
         /// Add new value to entity

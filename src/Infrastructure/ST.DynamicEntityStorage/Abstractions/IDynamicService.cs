@@ -5,9 +5,9 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.Entities.ViewModels.DynamicEntities;
 
-namespace ST.Entities.Services.Abstraction
+namespace ST.DynamicEntityStorage.Abstractions
 {
-    public interface IDynamicEntityDataService : IDynamicEntityGetService, IDynamicEntityCreateService, IDynamicEntityUpdateService
+    public interface IDynamicService : IDynamicDataGetService, IDynamicDataCreateService, IDynamicDataUpdateService
     {
         /// <summary>
         /// Check if exists
@@ -25,7 +25,7 @@ namespace ST.Entities.Services.Abstraction
         Task<EntityViewModel> Create<TEntity>(string tableSchema) where TEntity : BaseModel;
 
         /// <summary>
-        /// Create entity view  whitout base model
+        /// Create entity view  without base model
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>

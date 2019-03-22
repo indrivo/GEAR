@@ -22,7 +22,7 @@ namespace ST.CORE.Controllers
 	public class BaseController : Controller
 	{
 		/// <summary>
-		/// Inject organization service
+		/// Inject organization dataService
 		/// </summary>
 		protected readonly IOrganizationService OrganizationService;
 

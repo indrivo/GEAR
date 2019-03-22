@@ -84,13 +84,13 @@
 					}
 				}).then(function (result) {
 					if (result.value) {
-						SetPageName(result.value);
+						setPageName(result.value);
 					}
 				});
 			}
 
 
-			function SetPageName(viewModelId) {
+			function setPageName(viewModelId) {
 
 				swal({
 					title: 'Set page name',
@@ -228,7 +228,7 @@
 				alertText: "Are you sure that you want to leave this page?",
 				confirmButtonText: "Yes, delete it!",
 				rowId: rowId,
-				tableId: "#pageTable",
+				tableId: "#pagTable",
 				urlForDelete: '@Url.Action("Delete")',
 				type: "warning",
 				onDeleteSuccess: "Page has been deleted.",

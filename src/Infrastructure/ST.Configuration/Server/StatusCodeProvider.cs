@@ -14,12 +14,11 @@ using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 
-namespace ST.Identity.Extensions
+namespace ST.Configuration.Server
 {
-    public static class StatusCodeExtension
+    public static class StatusCodeProvider
     {
         /// <summary>
         /// Use custom error pages
@@ -31,10 +30,10 @@ namespace ST.Identity.Extensions
             app.Use(async (ctx, next) =>
             {
                 var env = ctx.RequestServices.GetRequiredService<IConfiguration>();
-                var isConfigured = env.GetValue<bool>("IsConfigurated");
+                var isConfigured = env.GetValue<bool>("IsConfigured");
                 if (!isConfigured)
                 {
-                    if (ctx.Request.Cookies.Count >= 2)
+                    if (ctx.Request.Cookies.Count >= 2) 
                     {
                         ctx.DeleteCookies();
                     }
@@ -56,7 +55,12 @@ namespace ST.Identity.Extensions
                     {
                         if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "language").Equals(default(KeyValuePair<string, string>)))
                         {
-                            ctx.Response.Cookies.Append("language", "English");
+                            ctx.Response.Cookies.Append("language", Settings.DefaultLanguage);
+                        }
+
+                        if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "translations").Equals(default(KeyValuePair<string, string>)))
+                        {
+                            ctx.Response.Cookies.Append("translations", "");
                         }
                     }
                     catch (Exception e)
@@ -119,7 +123,7 @@ namespace ST.Identity.Extensions
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool ExcludeAssets(string value)
+        internal static bool ExcludeAssets(string value)
         {
             return !value.StartsWith("/css")
                 && !value.StartsWith("/lib")
@@ -143,12 +147,12 @@ namespace ST.Identity.Extensions
             var originalPath = ctx.Request.Path.Value;
             ctx.Items["originalPath"] = originalPath;
 
-            var match = Match(context, originalPath, parameters);
+            var (match, pageId) = Match(context, originalPath, parameters);
 
-            if (!match.Item1) return false;
+            if (!match) return false;
             ctx.Request.Path = "/PageRender";
 
-            var newParams = HttpUtility.ParseQueryString($"pageId={match.Item2}");
+            var newParams = HttpUtility.ParseQueryString($"pageId={pageId}");
 
             ctx.Request.QueryString = QueryString.Create(newParams.ToKeyValuePair());
 

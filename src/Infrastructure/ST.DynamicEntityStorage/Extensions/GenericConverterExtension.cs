@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
-namespace ST.Entities.Extensions
+namespace ST.DynamicEntityStorage.Extensions
 {
     public  static class GenericConverterExtension
     {
@@ -18,8 +18,7 @@ namespace ST.Entities.Extensions
             try
             {
                 var serialize = JsonConvert.SerializeObject(obj);
-                if (string.IsNullOrEmpty(serialize)) return default(TOutput);
-                return JsonConvert.DeserializeObject<TOutput>(serialize);
+                return string.IsNullOrEmpty(serialize) ? default : JsonConvert.DeserializeObject<TOutput>(serialize);
             }
             catch(Exception ex)
             {

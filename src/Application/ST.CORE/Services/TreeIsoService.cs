@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
 using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels.TreeISOViewModels;
+using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
@@ -15,15 +17,15 @@ namespace ST.CORE.Services
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="dataService"></param>
-		public TreeIsoService(IDynamicEntityDataService dataService)
+		/// <param name="service"></param>
+		public TreeIsoService(IDynamicService service)
 		{
-			_dataService = dataService;
+			_service = service;
 		}
 
 		/// <summary>
@@ -36,7 +38,7 @@ namespace ST.CORE.Services
 		public  async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
-			var standards = await _dataService.Table(standardEntity.Name).GetAll<dynamic>();
+			var standards = await _service.Table(standardEntity.Name).GetAll<dynamic>();
 			var tree = new List<TreeStandard>();
 			if (!standards.IsSuccess) return res;
 			foreach (var standard in standards.Result)
@@ -63,7 +65,7 @@ namespace ST.CORE.Services
 		/// <returns></returns>
 		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid parentCategoryId)
 		{
-			var categories = await _dataService.Table(categoryEntity).GetAll<dynamic>(x => x.ParentCategoryId == parentCategoryId && x.StandardId == standardId);
+			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(x => x.ParentCategoryId == parentCategoryId && x.StandardId == standardId);
 			var resCats = new List<TreeCategory>();
 			foreach (var category in categories.Result)
 			{
@@ -90,7 +92,7 @@ namespace ST.CORE.Services
 		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid parentRequirementId)
 		{
 			var res = new List<TreeRequirement>();
-			var requirements = await _dataService.Table(requirementEntity).GetAll<dynamic>(x => x.CategoryId == categoryId && x.ParentRequirementId == parentRequirementId);
+			var requirements = await _service.Table(requirementEntity).GetAll<dynamic>(x => x.CategoryId == categoryId && x.ParentRequirementId == parentRequirementId);
 			foreach (var req in requirements.Result)
 			{
 				res.Add(new TreeRequirement

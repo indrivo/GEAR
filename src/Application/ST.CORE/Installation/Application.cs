@@ -9,16 +9,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using ST.Audit;
-using ST.Configuration.Data;
 using ST.Configuration.Seed;
 using ST.CORE.Extensions;
 using ST.CORE.Extensions.Installer;
 using ST.CORE.ViewModels.InstallerModels;
+using ST.DynamicEntityStorage;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
 using ST.Procesess.Data;
@@ -95,7 +94,7 @@ namespace ST.CORE.Installation
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
 				{
 					var conf = services.GetService<IConfiguration>();
-					EntitiesDbContextSeed.SeedAsync(context, conf, DefaultTenantSettings.TenantId)
+					EntitiesDbContextSeed.SeedAsync(context, conf, Configuration.Settings.TenantId)
 						.Wait();
 				})
 				.MigrateDbContext<ProcessesDbContext>()
@@ -124,6 +123,7 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
+			DynamicService.TenantId = Configuration.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 
@@ -135,7 +135,7 @@ namespace ST.CORE.Installation
 		public static bool IsConfigured(IHostingEnvironment hostingEnvironment)
 		{
 			var settings = Settings(hostingEnvironment);
-			return settings != null && settings.IsConfigurated;
+			return settings != null && settings.IsConfigured;
 		}
 
 		/// <summary>
@@ -190,7 +190,7 @@ namespace ST.CORE.Installation
 		/// <returns></returns>
 		public static async Task SeedDynamicDataAsync()
 		{
-			var dataService = IoC.Resolve<IDynamicEntityDataService>();
+			var dataService = IoC.Resolve<IDynamicService>();
 			var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
 
 			//Seed notifications types

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Constants;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
@@ -68,7 +69,7 @@ namespace ST.CORE.Controllers.Entity
 		}
 
 		/// <summary>
-		/// Get table service
+		/// Get table dataService
 		/// </summary>
 		/// <returns></returns>
 		[NonAction]

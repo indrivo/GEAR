@@ -9,17 +9,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ST.Configuration.Server;
 using ST.CORE.Extensions;
 using ST.CORE.Installation;
 using ST.CORE.LoggerTargets;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Extensions;
 using ST.Identity.LDAP.Models;
 using ST.Identity.Services;
 using ST.Identity.Versioning;
@@ -160,7 +161,7 @@ namespace ST.CORE
 			//Add signaler
 			services.AddSignalR<ApplicationDbContext, ApplicationUser, ApplicationRole>();
 
-			//Run background service
+			//Run background dataService
 			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();

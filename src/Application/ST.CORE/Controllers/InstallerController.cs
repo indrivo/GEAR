@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ST.Audit;
+using ST.Configuration;
 using ST.CORE.Installation;
 using ST.CORE.ViewModels.InstallerModels;
 using ST.Entities.Controls.Querry;
@@ -44,7 +44,7 @@ namespace ST.CORE.Controllers
 		private readonly ApplicationDbContext _applicationDbContext;
 
 		/// <summary>
-		/// Inject local service
+		/// Inject local dataService
 		/// </summary>
 		private readonly ILocalService _localService;
 
@@ -54,12 +54,12 @@ namespace ST.CORE.Controllers
 		private readonly SignInManager<ApplicationUser> _signInManager;
 
 		/// <summary>
-		/// Inject permission service
+		/// Inject permission dataService
 		/// </summary>
 		private readonly IPermissionService _permissionService;
 
 		/// <summary>
-		/// Inject cache service
+		/// Inject cache dataService
 		/// </summary>
 		private readonly ICacheService _cacheService;
 
@@ -176,7 +176,7 @@ namespace ST.CORE.Controllers
 				ModelState.AddModelError(string.Empty, "Invalid name for organization");
 				return View(model);
 			}
-			settings.IsConfigurated = true;
+			settings.IsConfigured = true;
 			var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
 			await System.IO.File.WriteAllTextAsync(Application.AppSettingsFilepath(_hostingEnvironment), result);
 			Application.InitMigrations(new string[] { });
@@ -184,7 +184,7 @@ namespace ST.CORE.Controllers
 			await _permissionService.RefreshCache();
 
 			var tenantExist =
-				await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == DefaultTenantSettings.TenantId);
+				await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == Settings.TenantId);
 			if (tenantExist)
 			{
 				ModelState.AddModelError(string.Empty, "Invalid name for organization because is used for another organization or organization was configured");
@@ -193,7 +193,7 @@ namespace ST.CORE.Controllers
 
 			var tenant = new Tenant
 			{
-				Id = DefaultTenantSettings.TenantId,
+				Id = Settings.TenantId,
 				Name = model.Organization.Name,
 				MachineName = tenantMachineName,
 				Created = DateTime.Now,

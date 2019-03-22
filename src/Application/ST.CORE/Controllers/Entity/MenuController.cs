@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
 using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Entities.Services.Abstraction;
@@ -21,17 +22,17 @@ namespace ST.CORE.Controllers.Entity
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
-		/// <param name="dataService"></param>
-		public MenuController(EntitiesDbContext context, IDynamicEntityDataService dataService)
+		/// <param name="service"></param>
+		public MenuController(EntitiesDbContext context, IDynamicService service)
 		{
 			_context = context;
-			_dataService = dataService;
+			_service = service;
 		}
 
 		/// <summary>
@@ -63,7 +64,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			if (model != null)
 			{
-				var req = await _dataService.AddSystem(model);
+				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
 					return RedirectToAction("Index");
 				ModelState.AddModelError(string.Empty, "Fail to save!");
@@ -81,7 +82,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = await _dataService.GetByIdSystem<Menu, Menu>(id);
+			var model = await _service.GetByIdSystem<Menu, Menu>(id);
 
 			if (!model.IsSuccess) return NotFound();
 
@@ -97,7 +98,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Menu model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = (await _dataService.GetByIdSystem<Menu, Menu>(model.Id)).Result;
+			var dataModel = (await _service.GetByIdSystem<Menu, Menu>(model.Id)).Result;
 
 			if (dataModel == null) return NotFound();
 
@@ -105,7 +106,7 @@ namespace ST.CORE.Controllers.Entity
 			dataModel.Description = model.Description;
 			dataModel.Author = model.Author;
 			dataModel.Changed = DateTime.Now;
-			var req = await _dataService.UpdateSystem(dataModel);
+			var req = await _service.UpdateSystem(dataModel);
 			if (req.IsSuccess) return RedirectToAction("Index");
 			ModelState.AddModelError(string.Empty, "Fail to save");
 			return View(model);
@@ -122,9 +123,9 @@ namespace ST.CORE.Controllers.Entity
 		{
 			ViewBag.MenuId = menuId;
 			ViewBag.ParentId = parentId;
-			ViewBag.Menu = (await _dataService.GetByIdSystem<Menu, Menu>(menuId)).Result;
+			ViewBag.Menu = (await _service.GetByIdSystem<Menu, Menu>(menuId)).Result;
 			ViewBag.Parent = (parentId != null) ?
-									(await _dataService.GetByIdSystem<MenuItem, MenuItem>(parentId.Value)).Result
+									(await _service.GetByIdSystem<MenuItem, MenuItem>(parentId.Value)).Result
 									: null;
 			return View();
 		}
@@ -156,7 +157,7 @@ namespace ST.CORE.Controllers.Entity
 			if (model != null)
 			{
 				model.AllowedRoles = "Administrator#";
-				var req = await _dataService.AddSystem(model);
+				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
 					return RedirectToAction("GetMenu", new
 					{
@@ -178,7 +179,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> EditItem(Guid itemId)
 		{
 			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
-			var item = await _dataService.GetByIdSystem<MenuItem, MenuItem>(itemId);
+			var item = await _service.GetByIdSystem<MenuItem, MenuItem>(itemId);
 			if (!item.IsSuccess) return NotFound();
 			return View(item.Result);
 		}
@@ -191,7 +192,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public async Task<IActionResult> EditItem(MenuItem model)
 		{
-			var rq = await _dataService.UpdateSystem(model);
+			var rq = await _service.UpdateSystem(model);
 			if (rq.IsSuccess)
 			{
 				return RedirectToAction("GetMenu", new
@@ -216,7 +217,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public async Task<JsonResult> LoadMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
 		{
-			var filtered = await _dataService.Filter<MenuItem>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = await _service.Filter<MenuItem>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length, x => x.MenuId.Equals(menuId) && x.ParentMenuItemId.Equals(parentId));
 
 			var finalResult = new DTResult<MenuItem>
@@ -238,7 +239,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public async Task<JsonResult> LoadPages(DTParameters param)
 		{
-			var filtered = await _dataService.Filter<Menu>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = await _service.Filter<Menu>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length);
 
 			var finalResult = new DTResult<Menu>
@@ -262,7 +263,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu!", success = false });
-			var menu = await _dataService.DeletePermanent<Menu>(Guid.Parse(id));
+			var menu = await _service.DeletePermanent<Menu>(Guid.Parse(id));
 			if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu!", success = false });
 
 			return Json(new { message = "Menu was delete with success!", success = true });
@@ -280,7 +281,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> DeleteMenuItem(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu item!", success = false });
-			var menu = await _dataService.DeletePermanent<MenuItem>(Guid.Parse(id));
+			var menu = await _service.DeletePermanent<MenuItem>(Guid.Parse(id));
 			if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu item!", success = false });
 
 			return Json(new { message = "Model was delete with success!", success = true });

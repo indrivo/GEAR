@@ -11,11 +11,12 @@ namespace ST.Entities.Extensions
         /// Get default options
         /// </summary>
         /// <param name="options"></param>
-        /// <param name="connectionString"></param>
+        /// <param name="configuration"></param>
+        /// <param name="hostingEnvironment"></param>
         /// <returns></returns>
-        public static DbContextOptionsBuilder GetDefaultOptions(this DbContextOptionsBuilder options, IConfiguration Configuration, IHostingEnvironment HostingEnvironment)
+        public static DbContextOptionsBuilder GetDefaultOptions(this DbContextOptionsBuilder options, IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
-            var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
+            var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
             var (dbType, connection) = connectionString;
             if (dbType == DbProviderType.PostgreSql)
             {

@@ -1,10 +1,9 @@
-﻿using ST.Entities.ViewModels.DynamicEntities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Newtonsoft.Json;
+using ST.Entities.ViewModels.DynamicEntities;
 
-namespace ST.Entities.Extensions
+namespace ST.DynamicEntityStorage.Extensions
 {
     public static class DictionaryExtension
     {
@@ -26,14 +25,14 @@ namespace ST.Entities.Extensions
             if (!model.ContainsKey("Author"))
                 model.Add("Author", "user");
             else if (model["Author"] == null)
-                model["Author"] = "user";
+                model["Author"] = "system";
 
             //Set default value for modified by field
             if (!model.ContainsKey("ModifiedBy"))
-                model.Add("ModifiedBy", "user");
+                model.Add("ModifiedBy", "system");
             else if (model["ModifiedBy"] == null)
             {
-                model["ModifiedBy"] = "user";
+                model["ModifiedBy"] = "system";
             }
 
             if (!model.ContainsKey("IsDeleted"))
@@ -48,24 +47,7 @@ namespace ST.Entities.Extensions
 
             return model;
         }
-        /// <summary>
-        /// Generic parsing
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dictionary"></param>
-        /// <returns></returns>
-        private static T DictionaryToObject<T>(this Dictionary<string, object> dictionary) where T : class
-        {
-            try
-            {
-                var ser = JsonConvert.SerializeObject(dictionary);
-                return JsonConvert.DeserializeObject<T>(ser);
-            }
-            catch
-            {
-                return default;
-            }
-        }
+
         /// <summary>
         /// dictionary to object
         /// </summary>

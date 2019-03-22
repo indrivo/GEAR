@@ -25,7 +25,7 @@
 
 @import url(../css/spinners.css);
 
-@import url(../css/animate.css);
+@import url(../lib/animate.css/animate.css);
 
 .preloader {
 	width: 100%;

@@ -50,7 +50,7 @@ namespace ST.CORE.Controllers.Identity
 		private readonly ILogger<RolesController> _logger;
 
 		/// <summary>
-		/// Inject permission service
+		/// Inject permission dataService
 		/// </summary>
 		private readonly IPermissionService _permissionService;
 

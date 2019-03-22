@@ -27,6 +27,8 @@ using ST.CORE.Installation;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels.LocalizationViewModels;
+using ST.DynamicEntityStorage;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
@@ -362,9 +364,9 @@ namespace ST.CORE.Extensions
 			//Register notifier 
 			castleContainer.Register(Component.For<INotify<ApplicationRole>>().ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
 
-			//Dynamic data service
-			castleContainer.Register(Component.For<IDynamicEntityDataService>()
-				.ImplementedBy<DynamicEntityDataService>()
+			//Dynamic data dataService
+			castleContainer.Register(Component.For<IDynamicService>()
+				.ImplementedBy<DynamicService>()
 				.DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
 			//Files

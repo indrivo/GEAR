@@ -10,6 +10,7 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.CORE.Attributes;
 using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.ViewModels;

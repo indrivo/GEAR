@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Organization\ST.MultiTenant.csproj" />
   </ItemGroup>

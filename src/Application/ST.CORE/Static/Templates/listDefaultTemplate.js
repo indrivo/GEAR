@@ -1,5 +1,5 @@
 $(document).ready(function ($) {
-	const tableId = '#render_#ListId';
+	const tableId = "#render_#ListId";
 	if ($.fn.DataTable.isDataTable(tableId)) {
 		$(tableId).dataTable().fnDestroy();
 		$(tableId).dataTable().empty();
@@ -29,8 +29,8 @@ $(document).ready(function ($) {
 					return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a data-viewmodel="${viewmodelData.result.id}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>
 									<a class="btn btn-info btn-sm" href="${location.href}?entityId=${row.id}">Edit</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
-						}'); >Delete</button>
+									${row.isDeleted ? `<a href="#" class='btn btn-danger btn-sm' onclick=restoreItem('${row.id}'); >Restore</a>` :
+							`<a href="#" class='btn btn-danger btn-sm' onclick=deleteItem('${row.id}'); >Delete</a>`}
 									</div>`;
 				}
 			});
@@ -48,7 +48,7 @@ $(document).ready(function ($) {
 		"orderMulti": false, // for disable multiple column at once
 		"destroy": true,
 		"ajax": {
-			"url": '/PageRender/LoadPagedData',
+			"url": "/PageRender/LoadPagedData",
 			"type": "POST",
 			"data": {
 				"viewModelId": "#ViewModelId",
@@ -59,14 +59,62 @@ $(document).ready(function ($) {
 	});
 });
 
-function createAlert(rowId) {
+function restoreItem(rowId) {
+	const object = {
+		alertTitle: "Restore this #EntityName?",
+		alertText: "Are you sure that you want to restore this #EntityName?",
+		confirmButtonText: "Yes, restore it!",
+		rowId: rowId,
+		tableId: "#render_#ListId",
+		urlForDelete: "/PageRender/RestoreItemFromDynamicEntity",
+		type: "warning",
+		onDeleteSuccess: "#EntityName has been restored.",
+		onDeleteFail: "Something wrong",
+		onServerNoResponse: "Api not respond or not have permissions."
+	};
+
+	swal({
+		title: object.alertText,
+		text: object.alertText,
+		type: object.type,
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: object.confirmButtonText
+	}).then((result) => {
+		if (result.value) {
+			$.ajax({
+				url: `${object.urlForDelete}`,
+				type: "post",
+				data: {
+					id: object.rowId,
+					entityId: "#EntityId"
+				},
+				success: function (data) {
+					if (data.success) {
+						const oTable = $(`${object.tableId}`).DataTable();
+						oTable.draw();
+						swal("Restored!", object.message, "success");
+					} else {
+						swal("Fail!", data.message, "error");
+					}
+				},
+				error: function () {
+					swal("Fail!", object.onServerNoResponse, "error");
+				}
+			});
+		}
+	});
+}
+
+function deleteItem(rowId) {
 	const object = {
 		alertTitle: "Delete this #EntityName?",
 		alertText: "Are you sure that you want to leave this #EntityName?",
 		confirmButtonText: "Yes, delete it!",
 		rowId: rowId,
-		tableId: ".render_#EntityId",
-		urlForDelete: '/PageRender/DeleteItemFromDynamicEntity',
+		tableId: "#render_#ListId",
+		urlForDelete: "/PageRender/DeleteItemFromDynamicEntity",
 		type: "warning",
 		onDeleteSuccess: "#EntityName has been deleted.",
 		onDeleteFail: "Something wrong",

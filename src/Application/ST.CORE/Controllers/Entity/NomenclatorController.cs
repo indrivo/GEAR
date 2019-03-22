@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
 using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Models.Nomenclator;
 using ST.Entities.Models.Pages;
@@ -22,17 +23,17 @@ namespace ST.CORE.Controllers.Entity
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
-		/// <param name="dataService"></param>
-		public NomenclatorController(EntitiesDbContext context, IDynamicEntityDataService dataService)
+		/// <param name="service"></param>
+		public NomenclatorController(EntitiesDbContext context, IDynamicService service)
 		{
 			_context = context;
-			_dataService = dataService;
+			_service = service;
 		}
 
 		/// <summary>
@@ -64,7 +65,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			if (model != null)
 			{
-				var req = await _dataService.AddSystem(model);
+				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
 					return RedirectToAction("Index");
 				ModelState.AddModelError(string.Empty, "Fail to save!");
@@ -82,7 +83,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = await _dataService.GetByIdSystem<Nomenclator, Nomenclator>(id);
+			var model = await _service.GetByIdSystem<Nomenclator, Nomenclator>(id);
 
 			if (!model.IsSuccess) return NotFound();
 
@@ -98,7 +99,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Nomenclator model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = (await _dataService.GetByIdSystem<Nomenclator, Nomenclator>(model.Id)).Result;
+			var dataModel = (await _service.GetByIdSystem<Nomenclator, Nomenclator>(model.Id)).Result;
 
 			if (dataModel == null) return NotFound();
 
@@ -106,7 +107,7 @@ namespace ST.CORE.Controllers.Entity
 			dataModel.Description = model.Description;
 			dataModel.Author = model.Author;
 			dataModel.Changed = DateTime.Now;
-			var req = await _dataService.UpdateSystem(dataModel);
+			var req = await _service.UpdateSystem(dataModel);
 			if (req.IsSuccess) return RedirectToAction("Index");
 			ModelState.AddModelError(string.Empty, "Fail to save");
 			return View(model);
@@ -123,9 +124,9 @@ namespace ST.CORE.Controllers.Entity
 		{
 			ViewBag.NomenclatorId = nomenclatorId;
 			ViewBag.ParentId = parentId;
-			ViewBag.Nomenclator = (await _dataService.GetByIdSystem<Nomenclator, Nomenclator>(nomenclatorId)).Result;
+			ViewBag.Nomenclator = (await _service.GetByIdSystem<Nomenclator, Nomenclator>(nomenclatorId)).Result;
 			ViewBag.Parent = (parentId != null) ?
-									(await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(parentId.Value)).Result
+									(await _service.GetByIdSystem<NomenclatorItem, NomenclatorItem>(parentId.Value)).Result
 									: null;
 			return View();
 		}
@@ -157,7 +158,7 @@ namespace ST.CORE.Controllers.Entity
 			if (model != null)
 			{
 				//		model.AllowedRoles = "Administrator#";
-				var req = await _dataService.AddSystem(model);
+				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
 					return RedirectToAction("GetNomenclator", new
 					{
@@ -179,7 +180,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> EditItem(Guid itemId)
 		{
 			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
-			var item = await _dataService.GetByIdSystem<NomenclatorItem, NomenclatorItem>(itemId);
+			var item = await _service.GetByIdSystem<NomenclatorItem, NomenclatorItem>(itemId);
 			if (!item.IsSuccess) return NotFound();
 			return View(item.Result);
 		}
@@ -192,7 +193,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public async Task<IActionResult> EditItem(NomenclatorItem model)
 		{
-			var rq = await _dataService.UpdateSystem(model);
+			var rq = await _service.UpdateSystem(model);
 			if (rq.IsSuccess)
 			{
 				return RedirectToAction("GetNomenclator", new
@@ -218,12 +219,12 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> LoadNomenclatorItems(DTParameters param, Guid nomenclatorId, Guid? parentId = null)
 		{
 
-			var nomenclature = await _dataService.GetByIdSystem<Nomenclator, Nomenclator>(nomenclatorId);
+			var nomenclature = await _service.GetByIdSystem<Nomenclator, Nomenclator>(nomenclatorId);
 			
-				var filtered = await _dataService.Filter(nomenclature.Result.MachineName, param.Search.Value, param.SortOrder, param.Start,
+				var filtered = await _service.Filter(nomenclature.Result.MachineName, param.Search.Value, param.SortOrder, param.Start,
 				param.Length,x => ((dynamic)x).ParentId.Equals((parentId==null)?Guid.Empty:parentId));// ,x => ((dynamic)x).ParentId.Equals(parentId)
 
-			 //var filtered = await _dataService.Filter<NomenclatorItem>(param.Search.Value, param.SortOrder, param.Start,
+			 //var filtered = await _service.Filter<NomenclatorItem>(param.Search.Value, param.SortOrder, param.Start,
 			 //	param.Length, x => x.NomenclatorId.Equals(nomenclatorId) && x.ParentId.Equals(parentId));
 
 			var finalResult = new DTResult<dynamic>
@@ -245,7 +246,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public async Task<JsonResult> LoadPages(DTParameters param)
 		{
-			var filtered = await _dataService.Filter<Nomenclator>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = await _service.Filter<Nomenclator>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length);
 
 			var finalResult = new DTResult<Nomenclator>
@@ -269,7 +270,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete Nomenclator!", success = false });
-			var Nomenclator = await _dataService.DeletePermanent<Nomenclator>(Guid.Parse(id));
+			var Nomenclator = await _service.DeletePermanent<Nomenclator>(Guid.Parse(id));
 			if (!Nomenclator.IsSuccess) return Json(new { message = "Fail to delete Nomenclator!", success = false });
 
 			return Json(new { message = "Nomenclator was delete with success!", success = true });
@@ -287,7 +288,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> DeleteNomenclatorItem(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete Nomenclator item!", success = false });
-			var Nomenclator = await _dataService.DeletePermanent<NomenclatorItem>(Guid.Parse(id));
+			var Nomenclator = await _service.DeletePermanent<NomenclatorItem>(Guid.Parse(id));
 			if (!Nomenclator.IsSuccess) return Json(new { message = "Fail to delete Nomenclator item!", success = false });
 
 			return Json(new { message = "Model was delete with success!", success = true });

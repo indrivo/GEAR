@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
+    <ProjectReference Include="..\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
   </ItemGroup>
 
 </Project>

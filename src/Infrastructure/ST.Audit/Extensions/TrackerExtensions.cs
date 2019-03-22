@@ -43,7 +43,7 @@ namespace ST.Audit.Extensions
                     try
                     {
                         var version = Convert.ToInt32(keys["Version"]);
-                        audit.Version = ++version;
+                        audit.Version = version;
                     }
                     catch (Exception ex)
                     {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace ST.Entities.Utils
+namespace ST.DynamicEntityStorage.Utils
 {
     public class QueryTranslator : ExpressionVisitor
     {

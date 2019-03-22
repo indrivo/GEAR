@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Services.Abstraction;
 using ST.Notifications.Abstraction;
@@ -18,7 +19,7 @@ namespace ST.Notifications.Services
         /// <summary>
         /// Inject data service
         /// </summary>
-        private readonly IDynamicEntityDataService _dataService;
+        private readonly IDynamicService _dataService;
         /// <summary>
         /// Context
         /// </summary>
@@ -39,7 +40,7 @@ namespace ST.Notifications.Services
         /// <param name="context"></param>
         /// <param name="hub"></param>
         /// <param name="logger"></param>
-        public Notify(IDynamicEntityDataService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger)
+        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger)
         {
             _dataService = dataService;
             _context = context;

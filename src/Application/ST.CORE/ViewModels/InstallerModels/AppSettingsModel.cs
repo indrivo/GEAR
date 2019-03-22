@@ -87,9 +87,9 @@ namespace ST.CORE.ViewModels.InstallerModels
 			/// </summary>
 			public LocalizationConfig LocalizationConfig { get; set; }
 			/// <summary>
-			/// Is Configurated
+			/// Is Configured
 			/// </summary>
-			public bool IsConfigurated { get; set; }
+			public bool IsConfigured { get; set; }
 			/// <summary>
 			/// LdapSettings
 			/// </summary>

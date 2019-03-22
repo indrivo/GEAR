@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 
-namespace ST.Entities.Services.Abstraction
+namespace ST.DynamicEntityStorage.Abstractions
 {
-    public interface IDynamicEntityUpdateService
+    public interface IDynamicDataUpdateService
     {
         /// <summary>
         /// Update model in table

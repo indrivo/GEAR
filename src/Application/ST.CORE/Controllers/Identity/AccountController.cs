@@ -54,7 +54,7 @@ namespace ST.CORE.Controllers.Identity
 
 		private readonly IOptions<MPassOptions> _mpassOptions;
 		/// <summary>
-		/// Inject M pass service
+		/// Inject M pass dataService
 		/// </summary>
 		private readonly IMPassService _mpassService;
 		private readonly IMPassSigningCredentialsStore _mpassSigningCredentialStore;

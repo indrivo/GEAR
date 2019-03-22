@@ -10,6 +10,8 @@ using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.KPIViewModels;
+using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.KPI;
@@ -29,17 +31,17 @@ namespace ST.CORE.Controllers.Entity
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
-		/// <param name="dataService"></param>
-		public KPIController(EntitiesDbContext context, IDynamicEntityDataService dataService)
+		/// <param name="service"></param>
+		public KPIController(EntitiesDbContext context, IDynamicService service)
 		{
 			_context = context;
-			_dataService = dataService;
+			_service = service;
 		}
 
 		/// <summary>
@@ -59,18 +61,18 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Create()
 		{
 			var model = new UpdateKPIViewModel();
-			var measurementsItemsCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
-			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _dataService.Table("NomMeasurement").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
+			var measurementsItemsCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
+			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _service.Table("NomMeasurement").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
 
-			var calculationPeriodCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Calculation period Category");
-			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _dataService.Table("NomPeriod").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
+			var calculationPeriodCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Calculation period Category");
+			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _service.Table("NomPeriod").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
 
-			var kPICategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "KPI Category");
-			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _dataService.Table("NomKPICategory").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
+			var kPICategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "KPI Category");
+			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _service.Table("NomKPICategory").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
 
 			var selectedMeasurementItem = viewMeasurementUnits.Result.Where(x => x.Id == model.MeasurementUnitId).FirstOrDefault();
-			var fulfillmentCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
-			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id) : null);
+			var fulfillmentCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
+			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _service.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _service.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id) : null);
 
 			model.MeasurementUnits = (viewMeasurementUnits.IsSuccess == true) ? viewMeasurementUnits.Result.To<object, IEnumerable<NomMeasurement>>() : null;
 			model.NomPeriod = (viewCalculationPeriodUnits.IsSuccess == true) ? viewCalculationPeriodUnits.Result.To<object, IEnumerable<NomPeriod>>() : null;
@@ -90,7 +92,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			if (model != null)
 			{
-				var req = await _dataService.AddSystem(model);
+				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
 					return RedirectToAction("Index");
 				ModelState.AddModelError(string.Empty, "Fail to save!");
@@ -108,21 +110,21 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = await _dataService.GetByIdSystem<KPI, UpdateKPIViewModel>(id);
+			var model = await _service.GetByIdSystem<KPI, UpdateKPIViewModel>(id);
 
-			var measurementsItemsCategory= await  _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
-			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _dataService.Table("NomMeasurement").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
+			var measurementsItemsCategory= await  _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
+			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _service.Table("NomMeasurement").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
 
 
-			var calculationPeriodCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Calculation period Category");
-			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _dataService.Table("NomPeriod").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
+			var calculationPeriodCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Calculation period Category");
+			var viewCalculationPeriodUnits = (calculationPeriodCategory.IsSuccess == true) ? await _service.Table("NomPeriod").GetAll<dynamic>(x => x.NomenclatorId == calculationPeriodCategory.Result.FirstOrDefault().Id) : null;
 
-			var kPICategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "KPI Category");
-			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _dataService.Table("NomKPICategory").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
+			var kPICategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "KPI Category");
+			var viewKPICategoryUnits = (kPICategory.IsSuccess == true) ? await _service.Table("NomKPICategory").GetAll<dynamic>(x => x.NomenclatorId == kPICategory.Result.FirstOrDefault().Id) : null;
 
 			var selectedMeasurementItem = viewMeasurementUnits.Result.Where(x => x.Id == model.Result.MeasurementUnitId).FirstOrDefault();
-			var fulfillmentCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
-			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id  & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id ) : null);
+			var fulfillmentCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
+			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _service.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id  & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _service.Table("NomFulfillment").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id ) : null);
 			
 
 			model.Result.MeasurementUnits = (viewMeasurementUnits.IsSuccess == true) ? viewMeasurementUnits.Result.To<object, IEnumerable<NomMeasurement>>() : null;
@@ -144,7 +146,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(UpdateKPIViewModel model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = (await _dataService.GetByIdSystem<KPI, KPI>(model.Id)).Result;
+			var dataModel = (await _service.GetByIdSystem<KPI, KPI>(model.Id)).Result;
 
 			if (dataModel == null) return NotFound();
 
@@ -161,7 +163,7 @@ namespace ST.CORE.Controllers.Entity
 			dataModel.BoolGoal = model.BoolGoal;
 			dataModel.IntGoal = model.IntGoal;
 			dataModel.Status = model.Status;
-			var req = await _dataService.UpdateSystem(dataModel);
+			var req = await _service.UpdateSystem(dataModel);
 			if (req.IsSuccess) return RedirectToAction("Index");
 			ModelState.AddModelError(string.Empty, "Fail to save");
 			return RedirectToAction(nameof(Index));
@@ -179,7 +181,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			ViewBag.KPIId = KPIId;
 			ViewBag.ParentId = parentId;
-			ViewBag.KPI = (await _dataService.GetByIdSystem<KPI, KPI>(KPIId)).Result;
+			ViewBag.KPI = (await _service.GetByIdSystem<KPI, KPI>(KPIId)).Result;
 			
 			return View();
 		}
@@ -211,7 +213,7 @@ namespace ST.CORE.Controllers.Entity
 		//	if (model != null)
 		//	{
 		//		//		model.AllowedRoles = "Administrator#";
-		//		var req = await _dataService.AddSystem(model);
+		//		var req = await _service.AddSystem(model);
 		//		if (req.IsSuccess)
 		//			return RedirectToAction("GetKPI", new
 		//			{
@@ -233,7 +235,7 @@ namespace ST.CORE.Controllers.Entity
 		//public async Task<IActionResult> EditItem(Guid itemId)
 		//{
 		//	ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
-		//	var item = await _dataService.GetByIdSystem<KPIItem, KPIItem>(itemId);
+		//	var item = await _service.GetByIdSystem<KPIItem, KPIItem>(itemId);
 		//	if (!item.IsSuccess) return NotFound();
 		//	return View(item.Result);
 		//}
@@ -246,7 +248,7 @@ namespace ST.CORE.Controllers.Entity
 		//[HttpPost]
 		//public async Task<IActionResult> EditItem(KPIItem model)
 		//{
-		//	var rq = await _dataService.UpdateSystem(model);
+		//	var rq = await _service.UpdateSystem(model);
 		//	if (rq.IsSuccess)
 		//	{
 		//		return RedirectToAction("GetKPI", new
@@ -272,7 +274,7 @@ namespace ST.CORE.Controllers.Entity
 		//public async Task<JsonResult> LoadKPIItems(DTParameters param, Guid KPIId, Guid? parentId = null)
 		//{
 			
-		//	var filtered = await _dataService.Filter<KPIItem>(param.Search.Value, param.SortOrder, param.Start,
+		//	var filtered = await _service.Filter<KPIItem>(param.Search.Value, param.SortOrder, param.Start,
 		//		param.Length, x => x.KPIId.Equals(KPIId) && x.ParentId.Equals(parentId));
 
 		//	var finalResult = new DTResult<KPIItem>
@@ -294,30 +296,30 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public async Task<JsonResult> LoadPages(DTParameters param)
 		{
-			var filtered = await _dataService.Filter<KPI>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = await _service.Filter<KPI>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length);
 			var viewModel = filtered.Item1.To<object, List<UpdateKPIViewModel>>();
 			foreach (var item in viewModel)
 			{
-				var muId= await _dataService.GetByIdSystem<NomMeasurement, NomMeasurement>(item.MeasurementUnitId);
+				var muId= await _service.GetByIdSystem<NomMeasurement, NomMeasurement>(item.MeasurementUnitId);
 				if (muId.IsSuccess)
 				{
 					item.SelectedMeasurementUnit = muId.Result.Name;
 				}
 
-				var cId = await _dataService.GetByIdSystem<NomKPICategory, NomKPICategory>(item.CategoryId);
+				var cId = await _service.GetByIdSystem<NomKPICategory, NomKPICategory>(item.CategoryId);
 				if (cId.IsSuccess)
 				{
 					item.SelectedCategory = cId.Result.Name;
 				}
 
-				var pId = await _dataService.GetByIdSystem<NomPeriod, NomPeriod>(item.PeriodId);
+				var pId = await _service.GetByIdSystem<NomPeriod, NomPeriod>(item.PeriodId);
 				if (pId.IsSuccess)
 				{
 					item.SelectedPeriod = pId.Result.Name;
 				}
 
-				var fId = await _dataService.GetByIdSystem<NomFulfillment, NomFulfillment>(item.FulfillmentCriterionId);
+				var fId = await _service.GetByIdSystem<NomFulfillment, NomFulfillment>(item.FulfillmentCriterionId);
 				if (fId.IsSuccess)
 				{
 					item.SelectedFulfillmentCriterion = fId.Result.Name;
@@ -343,12 +345,12 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public async Task<JsonResult> LoadDependencyNomenclator(DTParameters param,string Id)
 		{
-			var measurementsItemsCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
-			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
+			var measurementsItemsCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Measurements Items Category");
+			var viewMeasurementUnits = (measurementsItemsCategory.IsSuccess == true) ? await _service.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == measurementsItemsCategory.Result.FirstOrDefault().Id) : null;
 
 			var selectedMeasurementItem = viewMeasurementUnits.Result.Where(x => x.Id == Guid.Parse(Id)).FirstOrDefault();
-			var fulfillmentCategory = await _dataService.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
-			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _dataService.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == Guid.Empty) : null);
+			var fulfillmentCategory = await _service.Table("Nomenclator").GetAll<dynamic>(x => x.Name == "Criterion of fulfillment Category");
+			var viewFulfillmentCategoryUnits = (selectedMeasurementItem?.Name == "Boolean") ? ((fulfillmentCategory.IsSuccess == true) ? await _service.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == selectedMeasurementItem.Id) : null) : ((fulfillmentCategory.IsSuccess == true) ? await _service.Table("NomenclatorItem").GetAll<dynamic>(x => x.NomenclatorId == fulfillmentCategory.Result.FirstOrDefault().Id & x.DependencyId == Guid.Empty) : null);
 
 
 			//var finalResult = new DTResult<NomenclatorItem>
@@ -373,7 +375,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete KPI!", success = false });
-			var KPI = await _dataService.DeletePermanent<KPI>(Guid.Parse(id));
+			var KPI = await _service.DeletePermanent<KPI>(Guid.Parse(id));
 			if (!KPI.IsSuccess) return Json(new { message = "Fail to delete KPI!", success = false });
 
 			return Json(new { message = "KPI was delete with success!", success = true });
@@ -391,7 +393,7 @@ namespace ST.CORE.Controllers.Entity
 		//public async Task<JsonResult> DeleteKPIItem(string id)
 		//{
 		//	if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete KPI item!", success = false });
-		//	var KPI = await _dataService.DeletePermanent<KPIItem>(Guid.Parse(id));
+		//	var KPI = await _service.DeletePermanent<KPIItem>(Guid.Parse(id));
 		//	if (!KPI.IsSuccess) return Json(new { message = "Fail to delete KPI item!", success = false });
 
 		//	return Json(new { message = "Model was delete with success!", success = true });

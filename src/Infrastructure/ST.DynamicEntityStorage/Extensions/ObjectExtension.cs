@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Mapster;
 using ST.BaseBusinessRepository;
 using ST.Entities.Models.Tables;
-using ST.Entities.Services;
 
-namespace ST.Entities.Extensions
+namespace ST.DynamicEntityStorage.Extensions
 {
     public enum MethodName
     {
@@ -37,10 +36,10 @@ namespace ST.Entities.Extensions
             var result = new ResultModel<T>();
             try
             {
-                var method = dynamicObject.DataService.GetType().GetMethod(call.ToString())
+                var method = dynamicObject.Service.GetType().GetMethod(call.ToString())
                     .MakeGenericMethod(types?.ToArray() ?? new[] { typeof(object) });
 
-                var task = (Task)method.Invoke(dynamicObject.DataService, parameters?.ToArray());
+                var task = (Task)method.Invoke(dynamicObject.Service, parameters?.ToArray());
                 task.Wait();
                 var res = ((dynamic)task).Result;
                 result.Result = res.Result;
@@ -189,7 +188,7 @@ namespace ST.Entities.Extensions
             {
                 var result = new ResultModel<Guid>();
                 if (model == null) return result;
-                var req = obj.Invoke<Guid>(MethodName.UpdateSystem, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<Guid>(MethodName.UpdateSystem, new List<Type> { model.GetType() },
                     new List<dynamic> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;

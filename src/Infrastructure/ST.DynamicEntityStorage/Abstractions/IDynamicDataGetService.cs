@@ -6,9 +6,9 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.Entities.Models.Tables;
 
-namespace ST.Entities.Services.Abstraction
+namespace ST.DynamicEntityStorage.Abstractions
 {
-    public interface IDynamicEntityGetService
+    public interface IDynamicDataGetService
     {
         /// <summary>
         /// Get all from entity

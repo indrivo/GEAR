@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Actions;
 using ST.Entities.Models.Home;
@@ -27,7 +29,7 @@ namespace ST.CORE.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly INotificationHub _hub;
 		private readonly ApplicationDbContext _context;
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 
 		#endregion
 
@@ -40,15 +42,15 @@ namespace ST.CORE.Controllers
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
-		/// <param name="dataService"></param>
+		/// <param name="service"></param>
 		public HomeController(IBaseBusinessRepository<ApplicationDbContext> repository,
-			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicEntityDataService dataService)
+			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicService service)
 		{
 			_repository = repository;
 			_userManager = userManager;
 			_hub = hub;
 			_context = context;
-			_dataService = dataService;
+			_service = service;
 		}
 
 		/// <summary>
@@ -67,7 +69,7 @@ namespace ST.CORE.Controllers
 			
 			int parentNodeId = 1;
 			int currentNodeId = 1;
-			var parents = await _dataService.Table("Requirement").GetAll<dynamic>(x => x.ParentId == Guid.Empty);
+			var parents = await _service.Table("Requirement").GetAll<dynamic>(x => x.ParentId == Guid.Empty);
 			if (parents.IsSuccess == true)
 			{
 				foreach (var item in parents.Result)
@@ -93,7 +95,7 @@ namespace ST.CORE.Controllers
 										 "</div>" +
 									  "</td>" +
 								 "</tr>";
-					var requirementActions = await _dataService.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == item.Id);
+					var requirementActions = await _service.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == item.Id);
 					 AddHtmlChilds( item.Id, parentNodeId, currentNodeId);
 					parentNodeId++;
 				}
@@ -122,7 +124,7 @@ namespace ST.CORE.Controllers
 
 		[HttpPost]
 		
-		public IActionResult CreateRequirementAction(string name/*, IDynamicEntityDataService service*/)
+		public IActionResult CreateRequirementAction(string name/*, IDynamicService dataService*/)
 		{
 			
 			if (string.IsNullOrEmpty(name))
@@ -140,7 +142,7 @@ namespace ST.CORE.Controllers
 			};
 			try
 			{
-				 //_dataService.AddSystem(activityType);
+				 //_service.AddSystem(activityType);
 				return Json(new { success = true, message = "Create successful!" });
 			}
 			catch (Exception e)
@@ -152,7 +154,7 @@ namespace ST.CORE.Controllers
 
 		public void AddHtmlActions(Guid parentId, int parentNodeId, int currentId, Guid reqId)
 		{
-			//var requirementActions =  _dataService.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == reqId);
+			//var requirementActions =  _service.Table("RequirementAction").GetAll<dynamic>(x => x.RequirementId == reqId);
 
 			
 		}
@@ -162,7 +164,7 @@ namespace ST.CORE.Controllers
 			
 			 
 
-			var requirementChilds =  _dataService.Table("Requirement").GetAll<dynamic>(x => x.ParentId == parentId);
+			var requirementChilds =  _service.Table("Requirement").GetAll<dynamic>(x => x.ParentId == parentId);
 
 			if (requirementChilds.Result.IsSuccess == true)
 			{

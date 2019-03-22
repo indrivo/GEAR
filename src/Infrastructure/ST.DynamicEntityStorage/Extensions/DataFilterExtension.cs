@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using ST.Entities.Extensions;
 using ST.Entities.Services;
 
-namespace ST.Entities.Extensions
+namespace ST.DynamicEntityStorage.Extensions
 {
     public static class DataFilterExtension
     {
@@ -70,6 +71,7 @@ namespace ST.Entities.Extensions
         /// <param name="sortOrder"></param>
         /// <param name="start"></param>
         /// <param name="length"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
         public static async Task<(List<T>, int)> Filter<T>(this DynamicObject context, string search, string sortOrder, int start, int length, Func<T, bool> predicate = null) where T : class
         {
@@ -100,7 +102,7 @@ namespace ST.Entities.Extensions
         /// <returns></returns>
         public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Func<object, bool> predicate = null)
         {
-            var data = await context.DataService.Table(entity).GetAll(predicate);
+            var data = await context.Service.Table(entity).GetAll(predicate);
             if (!data.IsSuccess) return default;
             var result = data.Result.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 

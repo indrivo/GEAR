@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Actions;
 using ST.Entities.Models.KPI;
@@ -519,8 +520,8 @@ namespace ST.CORE.Extensions.Installer
 		/// <summary>
 		/// Sync default menus
 		/// </summary>
-		/// <param name="service"></param>
-		public static async Task SyncNomenclatorItems(IDynamicEntityDataService service)
+		/// <param name="dataService"></param>
+		public static async Task SyncNomenclatorItems(IDynamicService dataService)
 		{
 			nomenclatorItems.Add(activ);
 			nomenclatorItems.Add(pasiv);
@@ -556,61 +557,61 @@ namespace ST.CORE.Extensions.Installer
 
 
 
-			var nomenclatorExists = await service.Any<Nomenclator>();
+			var nomenclatorExists = await dataService.Any<Nomenclator>();
 			if (nomenclatorExists) return;
-			await service.AddRange(n);
-			await service.AddRange(kPICategory);
-			await service.AddRange(measurementsItemsCategory);
-			await service.AddRange(periodsCategory);
-			await service.AddRange(fulfillmentCategory);
-			//await service.AddRange(objectiveCategory);
-			//await service.AddRange(requirementCategory);
-			//await service.AddRange(categoryInterestedParty);
-			//await service.AddRange(interestedParty);
+			await dataService.AddRange(n);
+			await dataService.AddRange(kPICategory);
+			await dataService.AddRange(measurementsItemsCategory);
+			await dataService.AddRange(periodsCategory);
+			await dataService.AddRange(fulfillmentCategory);
+			//await dataService.AddRange(objectiveCategory);
+			//await dataService.AddRange(requirementCategory);
+			//await dataService.AddRange(categoryInterestedParty);
+			//await dataService.AddRange(interestedParty);
 
 
-			//var existsNomKPICategoryItems = await service.Any<NomKPICategory>();
+			//var existsNomKPICategoryItems = await dataService.Any<NomKPICategory>();
 
-			if (!await service.Any<NomType>())
+			if (!await dataService.Any<NomType>())
 			{
-				await service.AddRange(nomenclatorItems);
-				await service.AddRange(childItems);
+				await dataService.AddRange(nomenclatorItems);
+				await dataService.AddRange(childItems);
 			}
-			if (!await service.Any<NomKPICategory>())
+			if (!await dataService.Any<NomKPICategory>())
 			{
-				await service.AddRange(categoryItems);
+				await dataService.AddRange(categoryItems);
 			}
-			if (!await service.Any<NomMeasurement>())
+			if (!await dataService.Any<NomMeasurement>())
 			{
-				await service.AddRange(measurementsItems);
+				await dataService.AddRange(measurementsItems);
 			}
-			if (!await service.Any<Requirement>())
+			if (!await dataService.Any<Requirement>())
 			{
-				await service.AddSystem(organization);
-				await service.AddSystem(organization41);
-				await service.AddSystem(organization42);
-				await service.AddSystem(organization42a);
-				await service.AddSystem(organization42b);
+				await dataService.AddSystem(organization);
+				await dataService.AddSystem(organization41);
+				await dataService.AddSystem(organization42);
+				await dataService.AddSystem(organization42a);
+				await dataService.AddSystem(organization42b);
 
 			}
-			if (!await service.Any<RequirementAction>())
+			if (!await dataService.Any<RequirementAction>())
 			{
-				await service.AddSystem(action1);
+				await dataService.AddSystem(action1);
 			}
 
-			var exists = await service.Any<NomenclatorItem>();
+			var exists = await dataService.Any<NomenclatorItem>();
 			if (exists) return;
 		
 			
-			await service.AddRange(periodsItems);
-			await service.AddRange(fulfillmentItems);
-			await service.AddRange(objectiveItems);
-			await service.AddRange(requirementItems);
-			await service.AddRange(categoryInterestedPartyItems);
-			await service.AddRange(interestedPartyItems);
+			await dataService.AddRange(periodsItems);
+			await dataService.AddRange(fulfillmentItems);
+			await dataService.AddRange(objectiveItems);
+			await dataService.AddRange(requirementItems);
+			await dataService.AddRange(categoryInterestedPartyItems);
+			await dataService.AddRange(interestedPartyItems);
 
 			var test = periodsCategory.FirstOrDefault().Id;
-			if (!await service.Any<KPI>())
+			if (!await dataService.Any<KPI>())
 			{
 				var kpiEx = new KPI
 				{
@@ -628,11 +629,11 @@ namespace ST.CORE.Extensions.Installer
 				
 
 				};
-				await service.AddSystem(kpiEx);
+				await dataService.AddSystem(kpiEx);
 			}
-			//if (!await service.Any<Requirement>())
+			//if (!await dataService.Any<Requirement>())
 			//{
-			//	await service.AddSystem(
+			//	await dataService.AddSystem(
 			//		new Requirement
 			//		{
 			//			InterestedPartId = ip1.Id,
@@ -644,25 +645,25 @@ namespace ST.CORE.Extensions.Installer
 			//{
 			//	foreach (var item in GetGetNomenclators())
 			//	{
-			//		var res = await service.AddSystem(item);
+			//		var res = await dataService.AddSystem(item);
 			//		//if (!res.IsSuccess) continue;
 			//		//foreach (var i in item.SubItems)
 			//		//{
 			//		//	var obj = i.Adapt<NomenclatorItem>();
 			//		//	obj.ParentMenuItemId = res.Result;
-			//		//	var r = await service.AddSystem(obj);
+			//		//	var r = await dataService.AddSystem(obj);
 			//		//	if (!r.IsSuccess || i.SubItems == null) continue;
 			//		//	foreach (var j in i.SubItems)
 			//		//	{
 			//		//		var ob = j.Adapt<NomenclatorItem>();
 			//		//		ob.ParentMenuItemId = r.Result;
-			//		//		var r1 = await service.AddSystem(ob);
+			//		//		var r1 = await dataService.AddSystem(ob);
 			//		//		if (!r1.IsSuccess || j.SubItems == null) continue;
 			//		//		foreach (var m in j.SubItems)
 			//		//		{
 			//		//			var ob1 = m.Adapt<NomenclatorItem>();
 			//		//			ob1.ParentMenuItemId = r1.Result;
-			//		//			await service.AddSystem(ob1);
+			//		//			await dataService.AddSystem(ob1);
 			//		//		}
 			//		//	}
 			//		//}
