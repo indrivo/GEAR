@@ -1,4 +1,4 @@
-namespace ST.CORE.ViewModels.LocalizationViewModels
+namespace ST.Configuration.ViewModels.LocalizationViewModels
 {
 	public class LanguageViewModel
 	{

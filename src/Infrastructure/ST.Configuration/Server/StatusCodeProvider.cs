@@ -10,11 +10,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
+using ST.Localization;
 
 namespace ST.Configuration.Server
 {
@@ -33,7 +35,7 @@ namespace ST.Configuration.Server
                 var isConfigured = env.GetValue<bool>("IsConfigured");
                 if (!isConfigured)
                 {
-                    if (ctx.Request.Cookies.Count >= 2) 
+                    if (ctx.Request.Cookies.Count >= 2)
                     {
                         ctx.DeleteCookies();
                     }
@@ -115,6 +117,15 @@ namespace ST.Configuration.Server
                 ctx.Response.Cookies.Delete(cookie);
             }
 
+            return ctx;
+        }
+
+        public static HttpContext AddOrUpdateTranslations(this HttpContext ctx)
+        {
+            var language = ctx.Request.Cookies["language"];
+            var localizer = ctx.RequestServices.GetRequiredService<IStringLocalizer>();
+            var translations = localizer.GetAllForLanguage(language);
+            var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value); 
             return ctx;
         }
 
@@ -204,7 +215,7 @@ namespace ST.Configuration.Server
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseClaimsSynchronizer<TContext>(this IApplicationBuilder app) where TContext: ApplicationDbContext
+        public static IApplicationBuilder UseClaimsSynchronizer<TContext>(this IApplicationBuilder app) where TContext : ApplicationDbContext
         {
             app.Use(async (ctx, next) =>
             {

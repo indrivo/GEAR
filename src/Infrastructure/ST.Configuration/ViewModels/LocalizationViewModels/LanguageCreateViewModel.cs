@@ -1,6 +1,6 @@
 using ST.Localization;
 
-namespace ST.CORE.ViewModels.LocalizationViewModels
+namespace ST.Configuration.ViewModels.LocalizationViewModels
 {
 	public class LanguageCreateViewModel : Language
 	{

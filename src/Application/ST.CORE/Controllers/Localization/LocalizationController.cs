@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
-using ST.CORE.Services.Abstraction;
+using ST.Configuration.Abstractions;
+using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.CORE.ViewModels;
-using ST.CORE.ViewModels.LocalizationViewModels;
 using ST.Localization;
 
 namespace ST.CORE.Controllers.Localization

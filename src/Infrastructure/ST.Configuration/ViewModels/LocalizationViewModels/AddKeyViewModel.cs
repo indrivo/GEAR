@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ST.CORE.ViewModels.LocalizationViewModels
+namespace ST.Configuration.ViewModels.LocalizationViewModels
 {
 	public class AddKeyViewModel
 	{

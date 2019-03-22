@@ -43,6 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ST.Localization" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Organization\ST.MultiTenant.csproj" />

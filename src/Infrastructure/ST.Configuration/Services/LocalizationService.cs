@@ -2,16 +2,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.BaseBusinessRepository;
-using ST.CORE.Services.Abstraction;
-using ST.CORE.ViewModels.LocalizationViewModels;
+using ST.Configuration.Abstractions;
+using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.Localization;
 
-namespace ST.CORE.Services
+namespace ST.Configuration.Services
 {
 	public class LocalizationService : ILocalizationService
 	{

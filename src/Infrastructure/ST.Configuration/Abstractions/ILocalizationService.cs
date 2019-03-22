@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels.LocalizationViewModels;
+using ST.Configuration.ViewModels.LocalizationViewModels;
 
-namespace ST.CORE.Services.Abstraction
+namespace ST.Configuration.Abstractions
 {
 	public interface ILocalizationService
 	{
