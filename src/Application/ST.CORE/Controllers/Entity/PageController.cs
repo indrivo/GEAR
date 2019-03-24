@@ -8,53 +8,45 @@ using System.Text;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
+using ST.Configuration.Seed;
 using ST.CORE.Attributes;
 using ST.CORE.Installation;
-using ST.CORE.Models;
 using ST.CORE.Services.Abstraction;
-using ST.CORE.ViewModels.Pages;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.PageViewModels;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Pages;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers.Entity
 {
-	public class PageController : Controller
+	public class PageController : BaseController
 	{
-		/// <summary>
-		/// Inject db context
-		/// </summary>
-		private readonly EntitiesDbContext _context;
 		/// <summary>
 		/// Inject  page render
 		/// </summary>
 		private readonly IPageRender _pageRender;
 		private readonly IHostingEnvironment _env;
-		/// <summary>
-		/// Inject notifier
-		/// </summary>
-		private readonly INotify _notify;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="pageRender"></param>
-		/// <param name="notify"></param>
-		/// <param name="env"></param>
-		public PageController(EntitiesDbContext context, IPageRender pageRender, INotify notify, IHostingEnvironment env)
+		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			_context = context;
 			_pageRender = pageRender;
-			_notify = notify;
 			_env = env;
 		}
+
 		/// <summary>
 		/// Index
 		/// </summary>
@@ -112,9 +104,9 @@ namespace ST.CORE.Controllers.Entity
 		public IActionResult PageBuilder(Guid pageId)
 		{
 			if (pageId == Guid.Empty) return NotFound();
-			var page = _context.Pages.FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(pageId));
 			if (page == null) return NotFound();
-			page.Settings = _context.PageSettings.FirstOrDefault(x => x.Id.Equals(page.SettingsId));
+			page.Settings = Context.PageSettings.FirstOrDefault(x => x.Id.Equals(page.SettingsId));
 			ViewBag.Page = page;
 
 			ViewBag.Css = _pageRender.GetPageCss(page.Settings?.Name);
@@ -134,10 +126,10 @@ namespace ST.CORE.Controllers.Entity
 			var req = _pageRender.SavePageContent(model.PageId, model.HtmlCode, model.CssCode);
 			if (req.IsSuccess)
 			{
-				var page = _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
-				await _notify.SendNotificationAsync(new SystemNotifications
+				var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
+				await Notify.SendNotificationAsync(new SystemNotifications
 				{
-					Content = $"The page {page.Settings.Name} was updated with page builder!",
+					Content = $"The page {page?.Settings?.Name} was updated with page builder!",
 					Subject = "Info",
 					NotificationTypeId = NotificationType.Info
 				});
@@ -155,7 +147,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> GetCode([Required]Guid id, [Required]string type)
 		{
 			if (Guid.Empty == id) return NotFound();
-			var page = await _context.Pages.Where(x => x.Id == id).Include(x => x.Settings).FirstOrDefaultAsync();
+			var page = await Context.Pages.Where(x => x.Id == id).Include(x => x.Settings).FirstOrDefaultAsync();
 			if (page == null) return NotFound();
 			if (string.IsNullOrEmpty(type)) return NotFound();
 			var file = page.Settings.PhysicPath.Split("\\").LastOrDefault();
@@ -191,8 +183,8 @@ namespace ST.CORE.Controllers.Entity
 			if (!string.IsNullOrEmpty(model.Path))
 			{
 				System.IO.File.WriteAllText(model.Path, model.Code);
-				var page = _context.Pages.FirstOrDefault(x => x.Id.Equals(model.PageId));
-				return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+				var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(model.PageId));
+				return RedirectToAction(page != null && page.IsLayout ? "Layouts" : "Index");
 			}
 			else
 			{
@@ -210,8 +202,8 @@ namespace ST.CORE.Controllers.Entity
 		{
 			var model = new PageViewModel
 			{
-				PageTypes = _context.PageTypes.ToList(),
-				Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout)
+				PageTypes = Context.PageTypes.ToList(),
+				Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout)
 			};
 
 			return View(model);
@@ -227,27 +219,27 @@ namespace ST.CORE.Controllers.Entity
 		{
 			if (!ModelState.IsValid)
 			{
-				model.PageTypes = _context.PageTypes.ToList();
-				model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+				model.PageTypes = Context.PageTypes.ToList();
+				model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 				return View(model);
 			}
 
-			var match = _context.Pages.Include(x => x.Settings)
+			var match = Context.Pages.Include(x => x.Settings)
 				.FirstOrDefault(x => x.Settings.Name.ToLower().Equals(model.Name.ToLower()));
 
 			if (match != null)
 			{
 				ModelState.AddModelError(string.Empty, "The page name exists, please type another name");
-				model.PageTypes = _context.PageTypes.ToList();
-				model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+				model.PageTypes = Context.PageTypes.ToList();
+				model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 				return View(model);
 			}
 
 			if (!model.Path.StartsWith("/"))
 			{
 				ModelState.AddModelError(string.Empty, "Invalid format for path of page.Example: /PageName ");
-				model.PageTypes = _context.PageTypes.ToList();
-				model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+				model.PageTypes = Context.PageTypes.ToList();
+				model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 				return View(model);
 			}
 
@@ -273,24 +265,24 @@ namespace ST.CORE.Controllers.Entity
 				if (!req.IsSuccess)
 				{
 					ModelState.AddModelError(string.Empty, "Fail to create files");
-					model.PageTypes = _context.PageTypes.ToList();
-					model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+					model.PageTypes = Context.PageTypes.ToList();
+					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 					return View(model);
 				}
 
 				page.Settings.PhysicPath = req.Result;
 
-				_context.Pages.Add(page);
-				_context.SaveChanges();
+				Context.Pages.Add(page);
+				Context.SaveChanges();
 			}
 			catch (Exception e)
 			{
 				ModelState.AddModelError(string.Empty, e.Message);
-				model.PageTypes = _context.PageTypes.ToList();
-				model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+				model.PageTypes = Context.PageTypes.ToList();
+				model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 				return View(model);
 			}
-			await _notify.SendNotificationAsync(new SystemNotifications
+			await Notify.SendNotificationAsync(new SystemNotifications
 			{
 				Content = $"New page added with name {page.Settings.Name}  and route {page.Path}",
 				Subject = "Info",
@@ -308,15 +300,15 @@ namespace ST.CORE.Controllers.Entity
 		public IActionResult Edit(Guid pageId)
 		{
 			if (pageId == Guid.Empty) return NotFound();
-			var page = _context.Pages.AsNoTracking().Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = Context.Pages.AsNoTracking().Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(pageId));
 			if (page == null) return NotFound();
 			var model = page.Adapt<PageViewModel>();
 			model.Name = page.Settings.Name;
 			model.Description = page.Settings.Description;
-			model.PageTypes = _context.PageTypes.AsNoTracking().ToList();
+			model.PageTypes = Context.PageTypes.AsNoTracking().ToList();
 			model.Path = page.Path;
 			model.Title = page.Settings.Title;
-			model.Layouts = _context.Pages.AsNoTracking().Include(x => x.Settings).Where(x => x.IsLayout);
+			model.Layouts = Context.Pages.AsNoTracking().Include(x => x.Settings).Where(x => x.IsLayout);
 			return View(model);
 		}
 
@@ -332,8 +324,8 @@ namespace ST.CORE.Controllers.Entity
 			{
 				if (model.Id == Guid.Empty && model.SettingsId != Guid.Empty)
 				{
-					model.PageTypes = _context.PageTypes.ToList();
-					model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+					model.PageTypes = Context.PageTypes.ToList();
+					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 					ModelState.AddModelError(string.Empty, "Invalid page");
 					return View(model);
 				}
@@ -341,19 +333,19 @@ namespace ST.CORE.Controllers.Entity
 				if (!model.Path.StartsWith("/"))
 				{
 					ModelState.AddModelError(string.Empty, "Invalid format for path of page.Example: /PageName ");
-					model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
-					model.PageTypes = _context.PageTypes.ToList();
+					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+					model.PageTypes = Context.PageTypes.ToList();
 					return View(model);
 				}
 
 
 
-				var settings = _context.PageSettings.FirstOrDefault(x => x.Id.Equals(model.SettingsId));
-				var page = _context.Pages.FirstOrDefault(x => x.Id.Equals(model.Id));
+				var settings = Context.PageSettings.FirstOrDefault(x => x.Id.Equals(model.SettingsId));
+				var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(model.Id));
 				if (page == null)
 				{
-					model.PageTypes = _context.PageTypes.ToList();
-					model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+					model.PageTypes = Context.PageTypes.ToList();
+					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 					ModelState.AddModelError(string.Empty, "Invalid page");
 					return View(model);
 				}
@@ -364,8 +356,8 @@ namespace ST.CORE.Controllers.Entity
 
 				if (settings == null)
 				{
-					model.PageTypes = _context.PageTypes.ToList();
-					model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+					model.PageTypes = Context.PageTypes.ToList();
+					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 					ModelState.AddModelError(string.Empty, "Fail to get page settings");
 					return View(model);
 				}
@@ -377,16 +369,16 @@ namespace ST.CORE.Controllers.Entity
 
 				try
 				{
-					_context.PageSettings.Update(settings);
-					_context.Pages.Update(page);
-					await _context.SaveChangesAsync();
+					Context.PageSettings.Update(settings);
+					Context.Pages.Update(page);
+					await Context.SaveChangesAsync();
 
 					return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
 				}
 				catch (Exception e)
 				{
-					model.PageTypes = _context.PageTypes.ToList();
-					model.Layouts = _context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+					model.PageTypes = Context.PageTypes.ToList();
+					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
 					ModelState.AddModelError(string.Empty, e.Message);
 					return View(model);
 				}
@@ -394,7 +386,7 @@ namespace ST.CORE.Controllers.Entity
 
 			ModelState.AddModelError(string.Empty, "Invalid data input");
 
-			model.PageTypes = _context.PageTypes.ToList();
+			model.PageTypes = Context.PageTypes.ToList();
 			return View(model);
 		}
 
@@ -408,7 +400,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = _context.Filter<Page>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = Context.Filter<Page>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount, x => !x.IsLayout && !x.IsDeleted).Select(x => new Page
 				{
@@ -416,7 +408,7 @@ namespace ST.CORE.Controllers.Entity
 					Created = x.Created,
 					Changed = x.Changed,
 					Author = x.Author,
-					Settings = _context.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
+					Settings = Context.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
 					PageType = x.PageType,
 					ModifiedBy = x.ModifiedBy,
 					IsDeleted = x.IsDeleted,
@@ -440,7 +432,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public JsonResult LoadLayouts(DTParameters param)
 		{
-			var filtered = _context.Filter<Page>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = Context.Filter<Page>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount, x => x.IsLayout && !x.IsDeleted).Select(x => new Page
 				{
@@ -448,7 +440,7 @@ namespace ST.CORE.Controllers.Entity
 					Created = x.Created,
 					Changed = x.Changed,
 					Author = x.Author,
-					Settings = _context.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
+					Settings = Context.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
 					PageType = x.PageType,
 					ModifiedBy = x.ModifiedBy,
 					IsDeleted = x.IsDeleted,
@@ -479,14 +471,14 @@ namespace ST.CORE.Controllers.Entity
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete page!", success = false });
-			var page = _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (page == null) return Json(new { message = "Fail to delete page!", success = false });
 			if (page.IsSystem) return Json(new { message = "Fail to delete system page!", success = false });
-			_context.Pages.Remove(page);
+			Context.Pages.Remove(page);
 
 			try
 			{
-				_context.SaveChanges();
+				Context.SaveChanges();
 				_pageRender.DeletePage(page.Settings.PhysicPath);
 				return Json(new { message = "Page was delete with success!", success = true });
 			}
@@ -536,20 +528,20 @@ namespace ST.CORE.Controllers.Entity
 			}
 
 			var pageId = items.First().PageId;
-			var pageScripts = _context.Set<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
+			var pageScripts = Context.Set<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
 
 			foreach (var prev in pageScripts)
 			{
 				var up = items.FirstOrDefault(x => x.Id.Equals(prev.Id));
 				if (up == null)
 				{
-					_context.Set<TItem>().Remove(prev);
+					Context.Set<TItem>().Remove(prev);
 				}
 				else if (prev.Order != up.Order || prev.Script != up.Script)
 				{
 					prev.Script = up.Script;
 					prev.Order = up.Order;
-					_context.Set<TItem>().Update(prev);
+					Context.Set<TItem>().Update(prev);
 				}
 			}
 
@@ -562,12 +554,12 @@ namespace ST.CORE.Controllers.Entity
 
 			if (news.Any())
 			{
-				_context.Set<TItem>().AddRange(news);
+				Context.Set<TItem>().AddRange(news);
 			}
 
 			try
 			{
-				_context.SaveChanges();
+				Context.SaveChanges();
 				result.IsSuccess = true;
 			}
 			catch (Exception ex)
@@ -587,8 +579,13 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> GeneratePage([Required] string name, [Required] Guid viewModelId)
 		{
 			if (string.IsNullOrEmpty(name) || viewModelId.Equals(Guid.Empty)) return Json(default(ResultModel));
-			var match = _context.Pages.Include(x => x.Settings)
+			var match = Context.Pages.Include(x => x.Settings)
 				.FirstOrDefault(x => x.Settings.Name.ToLower().Equals(name.ToLower()));
+			var viewModel = Context.ViewModels
+					.Include(x => x.TableModel)
+					.Include(x => x.ViewModelFields)
+					.FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(default(ResultModel));
 
 			if (match != null)
 			{
@@ -626,24 +623,18 @@ namespace ST.CORE.Controllers.Entity
 
 				page.Settings.PhysicPath = req.Result;
 
-				_context.Pages.Add(page);
-				_context.SaveChanges();
-
-				var viewModel = _context.ViewModels
-					.Include(x => x.TableModel)
-					.Include(x => x.ViewModelFields)
-					.FirstOrDefault(x => x.Id.Equals(viewModelId));
+				Context.Pages.Add(page);
+				Context.SaveChanges();
 
 				var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.html");
-				var jsTemplateFileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.js");
 				var reader = new StreamReader(fileInfo.CreateReadStream());
-				var readerJs = new StreamReader(jsTemplateFileInfo.CreateReadStream());
 				var template = await reader.ReadToEndAsync();
+				var listId = Guid.NewGuid();
 				template = template.Replace("#Title", name);
 				template = template.Replace("#SubTitle", name);
 				template = template.Replace("#EntityName", viewModel.TableModel.Name);
-				template = template.Replace("#EntityId", viewModel.TableModelId.ToString());
 				template = template.Replace("#ViewModelId", viewModel.Id.ToString());
+				template = template.Replace("#ListId", listId.ToString());
 
 				var tableHead = new StringBuilder();
 
@@ -653,16 +644,7 @@ namespace ST.CORE.Controllers.Entity
 
 				template = template.Replace("#TableHead", tableHead.ToString());
 
-				var templateJs = await readerJs.ReadToEndAsync();
-				templateJs = templateJs.Replace("#EntityName", viewModel.TableModel.Name);
-				templateJs = templateJs.Replace("#EntityId", viewModel.TableModelId.ToString());
-				templateJs = templateJs.Replace("#ViewModelId", viewModel.Id.ToString());
-				var res = _pageRender.SavePageContent(pageId, template, "", templateJs);
-
-				if (!res.IsSuccess)
-				{
-
-				}
+				var res = _pageRender.SavePageContent(pageId, template, "", string.Empty);
 			}
 			catch (Exception e)
 			{
@@ -670,7 +652,7 @@ namespace ST.CORE.Controllers.Entity
 				return Json(default(ResultModel));
 			}
 
-			await _notify.SendNotificationAsync(new SystemNotifications
+			await Notify.SendNotificationAsync(new SystemNotifications
 			{
 				Content = $"New page generated with name {page.Settings.Name}  and route {page.Path}",
 				Subject = "Info",

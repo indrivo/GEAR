@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
+using ST.Identity.Data.Permissions;
 using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers.Notifications
@@ -12,12 +13,12 @@ namespace ST.CORE.Controllers.Notifications
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		private readonly INotify _notify;
+		private readonly INotify<ApplicationRole> _notify;
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="notify"></param>
-		public NotificationsController(INotify notify)
+		public NotificationsController(INotify<ApplicationRole> notify)
 		{
 			_notify = notify;
 		}

@@ -1,5 +1,4 @@
-@using ST.CORE.Models.RoleViewModels
-@model ST.CORE.Models.RoleViewModels.UpdateRoleViewModel
+@model ST.CORE.ViewModels.RoleViewModels.UpdateRoleViewModel
 @inject IStringLocalizer Localize
 @{
 	ViewData["Title"] = Localize["role_edit_title"];
@@ -15,6 +14,7 @@
 				<form asp-action="Edit" role="form">
 					@Html.HiddenFor(x => x.IsNoEditable)
 					@Html.HiddenFor(x => x.ClientName)
+					@Html.HiddenFor(x => x.TenantId)
 					<input type="hidden" asp-for="Id" />
 					<div class="form-body">
 						<h3 class="card-title">Role Info</h3>

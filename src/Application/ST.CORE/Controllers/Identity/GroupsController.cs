@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ST.CORE.Models;
-using ST.CORE.Models.GroupViewModels;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.GroupViewModels;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
 
 namespace ST.CORE.Controllers.Identity
 {

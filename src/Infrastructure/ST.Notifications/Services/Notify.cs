@@ -2,27 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Services.Abstraction;
-using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
 using ST.Notifications.Abstraction;
 
 namespace ST.Notifications.Services
 {
-    public class Notify : INotify
+    public class Notify<TContext, TRole, TUser> : INotify<TRole> where TContext : IdentityDbContext<TUser, TRole, string> where TRole : IdentityRole<string> where  TUser : IdentityUser
     {
         /// <summary>
         /// Inject data service
         /// </summary>
-        private readonly IDynamicEntityDataService _dataService;
+        private readonly IDynamicService _dataService;
         /// <summary>
         /// Context
         /// </summary>
-        private readonly ApplicationDbContext _context;
+        private readonly TContext _context;
         /// <summary>
         /// Notification hub
         /// </summary>
@@ -30,7 +31,7 @@ namespace ST.Notifications.Services
         /// <summary>
         /// Logger
         /// </summary>
-        private readonly ILogger<Notify> _logger;
+        private readonly ILogger<Notify<TContext, TRole, TUser>> _logger;
 
         /// <summary>
         /// Constructor
@@ -39,7 +40,7 @@ namespace ST.Notifications.Services
         /// <param name="context"></param>
         /// <param name="hub"></param>
         /// <param name="logger"></param>
-        public Notify(IDynamicEntityDataService dataService, ApplicationDbContext context, INotificationHub hub, ILogger<Notify> logger)
+        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger)
         {
             _dataService = dataService;
             _context = context;
@@ -53,7 +54,7 @@ namespace ST.Notifications.Services
         /// <param name="roles"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public async Task SendNotificationAsync(IEnumerable<ApplicationRole> roles, SystemNotifications notification)
+        public async Task SendNotificationAsync(IEnumerable<TRole> roles, SystemNotifications notification)
         {
             var users = new List<string>();
             foreach (var role in roles)
@@ -126,7 +127,7 @@ namespace ST.Notifications.Services
         public async Task SendNotificationToSystemAdminsAsync(SystemNotifications notification)
         {
             var users = new List<Guid>();
-            var roles = await _context.Roles.AsNoTracking().Where(x => x.IsNoEditable).ToListAsync();
+            var roles = await _context.Roles.AsNoTracking().ToListAsync();
             foreach (var role in roles)
             {
                 var userRoles = await _context.UserRoles.AsNoTracking().Where(x => x.RoleId.Equals(role.Id)).ToListAsync();

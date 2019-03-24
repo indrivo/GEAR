@@ -1,5 +1,4 @@
-@using ST.CORE.ViewModels.Pages
-@model PageViewModel
+@model ST.CORE.ViewModels.PageViewModels.PageViewModel
 @inject IStringLocalizer Localizer
 
 @{
@@ -18,6 +17,7 @@
 			@Html.HiddenFor(x => x.IsDeleted)
 			@Html.HiddenFor(x => x.IsLayout)
 			@Html.HiddenFor(x => x.SettingsId)
+			@Html.HiddenFor(x => x.TenantId)
 			<div class="form-body">
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 				<div class="row p-t-20">

@@ -1,6 +1,6 @@
-@using ST.CORE.Models.InstallerModels
+@using ST.CORE.ViewModels.InstallerModels
 @using ST.Entities.Utils
-@model ST.CORE.Models.InstallerModels.SetupModel
+@model ST.CORE.ViewModels.InstallerModels.SetupModel
 
 @inject IStringLocalizer Localizer
 
@@ -287,13 +287,16 @@
 											</div>
 										</div>
 										<div class="tab-pane p-20" id="site" role="tabpanel">
-											<h3>Configure site</h3>
-											<div class="row">
-												<div class="col-md-12">
-													<div class="form-group">
-														<label>Site Name</label>
-														<input asp-for="SiteName" class="form-control">
-														<span asp-validation-for="SiteName" class="text-danger"></span>
+											<div class="p-20">
+												<div class="row">
+													<h3 class="card-title">Configure site</h3>
+													<hr>
+													<div class="col-md-12">
+														<div class="form-group">
+															<label>Site Name</label>
+															<input asp-for="SiteName" class="form-control">
+															<span asp-validation-for="SiteName" class="text-danger"></span>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -326,11 +329,9 @@
 	<script src="~/lib/tether/dist/js/tether.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 	<script src="~/js/jquery.slimscroll.js"></script>
-	<script src="~/js/waves.js"></script>
-	<script src="~/js/sidebarmenu.js"></script>
 	<script src="~/lib/sticky-kit/jquery.sticky-kit.min.js"></script>
 	<script type="text/javascript" src="~/lib/sweetalert2/dist/sweetalert2.min.js"></script>
-	<script src="~/js/custom.js"></script>
+	<script src="~/js/site.js"></script>
 	<script>
 		$("#setupForm").on("submit", function () {
 			$("#submitButton").toggle();

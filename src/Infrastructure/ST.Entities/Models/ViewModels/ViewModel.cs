@@ -2,6 +2,7 @@
 using ST.Entities.Models.Tables;
 using System;
 using System.Collections.Generic;
+using ST.Audit.Models;
 
 namespace ST.Entities.Models.ViewModels
 {

@@ -1,7 +1,7 @@
 @using ST.Identity.Data.UserProfiles
-@using ST.Localization
 @using Microsoft.AspNetCore.Http
-@using ST.CORE.Models.LocalizationViewModels
+@using ST.Configuration.Seed
+@using ST.Configuration.ViewModels.LocalizationViewModels
 @using ST.Identity.Abstractions
 
 
@@ -13,8 +13,6 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-	<!DOCTYPE html>
-
 	var layoutId = (Guid?)ViewData["layoutId"];
 	if (layoutId == null)
 	{
@@ -23,21 +21,20 @@
 
 	var user = await UserManager.GetUserAsync(User);
 	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
-	Language language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
+	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
 	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
+	<!DOCTYPE html>
 	<html>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<style>
-			html, body {
-				margin: 0px;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css" />
+		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/dist/jquery.toast.min.css" />
 		<title>@ViewData["Title"] - Gear</title>
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
+		<application-scripts layout-id="@layoutId"></application-scripts>
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -50,8 +47,6 @@
 		<application layout-id="@layoutId">
 			@RenderBody()
 		</application>
-
-		<application-scripts layout-id="@layoutId"></application-scripts>
 
 		<script>
 			window.load = function (uri, data = null, type = "get") {
@@ -76,42 +71,65 @@
 			const controller = "@ViewContext.RouteData.Values["controller"].ToString()";
 			const view = "@ViewContext.RouteData.Values["action"].ToString()";
 
-			const settings = {
-				layout: {
-					id : "@layoutId"
-				}
-			};
-				settings.navigation = {
+			const storageSettings = localStorage.getItem("settings");
+			if (storageSettings) {
+				var s = JSON.parse(storageSettings);
+				s.user = {
+					userName: "@user.UserName",
+					email: "@user.Email",
+					id: "@user.Id"
+				};
+				storageSettings.navigation = {
+					view: view,
+					controller: controller
+				};
+				s.layout = {
+					id: "@layoutId"
+				};
+				s.localization.current = {
+					identifier: "@language?.Identifier",
+					name: "@language?.Name"
+				};
+
+				localStorage.setItem("settings", JSON.stringify(s));
+			} else {
+				const s = {
+					layout: {
+						id : "@layoutId"
+					}
+				};
+				s.navigation = {
 					view: view,
 					controller : controller
 				};
 
-		settings.user = {
-			userName: "@user.UserName",
-			email: "@user.Email",
-			id: "@user.Id"
-		};
+				s.user = {
+					userName: "@user.UserName",
+					email: "@user.Email",
+					id: "@user.Id"
+				};
 
-		settings.app = {
-			name : "@LocalService.GetAppName("core")"
-		};
+				s.app = {
+					name : "@LocalService.GetAppName("core")"
+				};
 
-		settings.localization = {
-			languages: window.load("/PageRender/GetLanguages"),
-			current: {
-				identifier: "@language.Identifier",
-				name: "@language.Name"
+				s.localization = {
+					languages: window.load("/PageRender/GetLanguages"),
+					current: {
+						identifier: "@language.Identifier",
+						name: "@language.Name"
+					}
+				};
+				localStorage.setItem("settings", JSON.stringify(s));
 			}
-		};
-
-			localStorage.setItem("settings", JSON.stringify(settings));
-
 		</script>
 		<layout-js-code layout-id="@layoutId"></layout-js-code>
 
 		<script src="~/assets/js/form/formeo.min.js"></script>
 		<script src="~/assets/js/form/form-generate.js" asp-append-version="true"></script>
 		<script src="~/js/signalar.js" asp-append-version="true"></script>
+		<script src="~/lib/jquery-toast-plugin/dist/jquery.toast.min.js"></script>
+		<script src="~/js/dataTable-extension-column-visibility.js"></script>
 	</body>
 </html>
 }

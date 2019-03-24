@@ -9,14 +9,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using ST.Configuration.Seed;
 using ST.CORE.Extensions;
-using ST.CORE.Models.InstallerModels;
+using ST.CORE.ViewModels.InstallerModels;
+using ST.DynamicEntityStorage;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
-using ST.Organization.Models;
+using ST.Identity.Data.MultiTenants;
 using ST.Procesess.Data;
 
 namespace ST.CORE.Installation
@@ -89,19 +91,19 @@ namespace ST.CORE.Installation
 		public static IWebHost Migrate(this IWebHost webHost)
 		{
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
-			{
-				var conf = services.GetService<IConfiguration>();
-				EntitiesDbContextSeed.SeedAsync(context, conf)
-					.Wait();
-			})
+				{
+					var conf = services.GetService<IConfiguration>();
+					EntitiesDbContextSeed.SeedAsync(context, conf, Configuration.Settings.TenantId)
+						.Wait();
+				})
 				.MigrateDbContext<ProcessesDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()
 				.MigrateDbContext<ApplicationDbContext>((context, services) =>
-				{
-					new ApplicationDbContextSeed()
-						.SeedAsync(context, services)
-						.Wait();
-				})
+			   {
+				   new ApplicationDbContextSeed()
+					   .SeedAsync(context, services)
+					   .Wait();
+			   })
 				.MigrateDbContext<ConfigurationDbContext>((context, services) =>
 				{
 					var config = services.GetService<IConfiguration>();
@@ -120,6 +122,7 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
+			DynamicService.TenantId = Configuration.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 
@@ -131,13 +134,15 @@ namespace ST.CORE.Installation
 		public static bool IsConfigured(IHostingEnvironment hostingEnvironment)
 		{
 			var settings = Settings(hostingEnvironment);
-			return settings != null && settings.IsConfigurated;
+			return settings != null && settings.IsConfigured;
 		}
 
 		/// <summary>
 		/// Create dynamic tables
 		/// </summary>
-		public static void CreateDynamicTables(string schemaName = null)
+		/// <param name="tenantId"></param>
+		/// <param name="schemaName"></param>
+		public static void CreateDynamicTables(Guid tenantId, string schemaName = null)
 		{
 			var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
 			{
@@ -150,9 +155,9 @@ namespace ST.CORE.Installation
 				if (item.SynchronizeTableViewModels == null) continue;
 				foreach (var ent in item.SynchronizeTableViewModels)
 				{
-					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
+					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
 					{
-						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, schemaName);
+						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, schemaName);
 					}
 				}
 			}
@@ -162,9 +167,9 @@ namespace ST.CORE.Installation
 
 			foreach (var ent in entities)
 			{
-				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.EntityType == schemaName))
+				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
 				{
-					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, ent.Schema);
+					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
 				}
 			}
 		}
@@ -175,7 +180,7 @@ namespace ST.CORE.Installation
 		/// <param name="tenant"></param>
 		public static void CreateDynamicTables(this Tenant tenant)
 		{
-			CreateDynamicTables(tenant?.MachineName);
+			CreateDynamicTables(tenant.Id, tenant.MachineName);
 		}
 
 		/// <summary>
@@ -184,7 +189,7 @@ namespace ST.CORE.Installation
 		/// <returns></returns>
 		public static async Task SeedDynamicDataAsync()
 		{
-			var dataService = IoC.Resolve<IDynamicEntityDataService>();
+			var dataService = IoC.Resolve<IDynamicService>();
 			var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
 
 			//Seed notifications types
@@ -195,6 +200,10 @@ namespace ST.CORE.Installation
 
 			//Sync web pages
 			WebPageSync.SyncWebPages(entitiesDbContext);
+
+			//Sync nomenclatures
+			await NomenclatureSyncExtension.SyncNomenclatureItems(dataService);
+
 		}
 
 		/// <summary>
@@ -202,7 +211,7 @@ namespace ST.CORE.Installation
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		public static IWebHost BuildWebHost(string[] args)
+		private static IWebHost BuildWebHost(string[] args)
 		{
 			var config = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())

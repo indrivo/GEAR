@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Mapster;
 
 namespace ST.Entities.Extensions
 {
@@ -38,6 +40,40 @@ namespace ST.Entities.Extensions
             }
 
             return null;
+        }
+
+
+        /// <summary>
+        /// Read data from json array
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public static IEnumerable<dynamic> ReadDataListFromJsonWithTypeParameter(string filePath, dynamic entity)
+        {
+            if (!File.Exists(filePath))
+                return null;
+            var list = typeof(List<>);
+            var listOfType = list.MakeGenericType(entity.GetType());
+            var result = Activator.CreateInstance(listOfType);
+
+            try
+            {
+
+                using (var str = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var sReader = new StreamReader(str))
+                {
+                    var strArray = sReader.ReadToEnd();
+
+                    result = JsonConvert.DeserializeObject(strArray, listOfType);
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.WriteLine(exception);
+            }
+
+            return result;
         }
 
         /// <summary>

@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
@@ -17,17 +17,17 @@ namespace ST.CORE.Controllers.Notifications
 	{
 		#region Inject
 		/// <summary>
-		/// Inject data service
+		/// Inject data dataService
 		/// </summary>
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 		/// <summary>
 		/// Context
 		/// </summary>
 		private readonly ApplicationDbContext _context;
 
-		public NotificationTypeController(IDynamicEntityDataService dataService, ApplicationDbContext context)
+		public NotificationTypeController(IDynamicService service, ApplicationDbContext context)
 		{
-			_dataService = dataService;
+			_service = service;
 			_context = context;
 		}
 
@@ -71,12 +71,11 @@ namespace ST.CORE.Controllers.Notifications
 		/// <returns></returns>
 		private async Task<(List<NotificationTypes>, int)> GetNotificationTypesFiltered(string search, string sortOrder, int start, int length)
 		{
-			var result = (await _dataService.GetAllSystem<NotificationTypes, NotificationTypes>()).Result.Where(p =>
+			var result = (await _service.GetAllSystem<NotificationTypes, NotificationTypes>()).Result.Where(p =>
 				search == null || p.Name != null &&
 				p.Name.ToLower().Contains(search.ToLower()) || p.Author != null &&
 				p.Author.ToLower().Contains(search.ToLower()) || p.ModifiedBy != null &&
-				p.ModifiedBy.ToString().ToLower().Contains(search.ToLower()) || p.Created != null &&
-				p.Created.ToString(CultureInfo.InvariantCulture).ToLower().Contains(search.ToLower())).ToList();
+				p.ModifiedBy.ToString().ToLower().Contains(search.ToLower()) || p.Created.ToString(CultureInfo.InvariantCulture).ToLower().Contains(search.ToLower())).ToList();
 			var totalCount = result.Count();
 
 			result = result.Skip(start).Take(length).ToList();

@@ -5,34 +5,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
-using ST.CORE.Models.RoleViewModels;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.RoleViewModels;
+using ST.Entities.Data;
 using ST.Entities.Models.Notifications;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 
 namespace ST.CORE.Controllers.Identity
 {
-	[Authorize]
-	public class RolesController : Controller
+	public class RolesController : BaseController
 	{
 		#region Inject
-
-		/// <summary>
-		/// Inject db context
-		/// </summary>
-		private ApplicationDbContext Context { get; }
-
+		
 		/// <summary>
 		/// Inject Base Business repository
 		/// </summary>
@@ -42,16 +38,6 @@ namespace ST.CORE.Controllers.Identity
 		/// Inject configuration db context
 		/// </summary>
 		private ConfigurationDbContext ConfigurationDbContext { get; }
-
-		/// <summary>
-		/// Inject Role Manager
-		/// </summary>
-		private RoleManager<ApplicationRole> RoleManager { get; }
-
-		/// <summary>
-		/// Inject notifier
-		/// </summary>
-		private readonly INotify _notify;
 
 		/// <summary>
 		/// Inject sign in manager
@@ -64,7 +50,7 @@ namespace ST.CORE.Controllers.Identity
 		private readonly ILogger<RolesController> _logger;
 
 		/// <summary>
-		/// Inject permission service
+		/// Inject permission dataService
 		/// </summary>
 		private readonly IPermissionService _permissionService;
 
@@ -74,26 +60,24 @@ namespace ST.CORE.Controllers.Identity
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
-		/// <param name="repository"></param>
+		/// <param name="applicationDbContext"></param>
+		/// <param name="userManager"></param>
 		/// <param name="roleManager"></param>
-		/// <param name="configurationDbContext"></param>
-		/// <param name="signInManager"></param>
 		/// <param name="notify"></param>
+		/// <param name="organizationService"></param>
+		/// <param name="processesDbContext"></param>
+		/// <param name="signInManager"></param>
 		/// <param name="logger"></param>
 		/// <param name="permissionService"></param>
-		public RolesController(ApplicationDbContext context, IBaseBusinessRepository<ApplicationDbContext> repository,
-			RoleManager<ApplicationRole> roleManager, ConfigurationDbContext configurationDbContext,
-			SignInManager<ApplicationUser> signInManager, INotify notify, ILogger<RolesController> logger,
-			IPermissionService permissionService)
+		/// <param name="repository"></param>
+		/// <param name="configurationDbContext"></param>
+		public RolesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, IBaseBusinessRepository<ApplicationDbContext> repository, ConfigurationDbContext configurationDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
 		{
-			Context = context;
-			RoleManager = roleManager;
-			ConfigurationDbContext = configurationDbContext;
 			_signInManager = signInManager;
-			_notify = notify;
 			_logger = logger;
 			_permissionService = permissionService;
 			Repository = repository;
+			ConfigurationDbContext = configurationDbContext;
 		}
 
 		/// <summary>
@@ -105,7 +89,7 @@ namespace ST.CORE.Controllers.Identity
 		{
 			var model = new CreateRoleViewModel
 			{
-				Profiles = await Context.Profiles.Where(x => x.IsDeleted == false).AsNoTracking().ToListAsync(),
+				Profiles = await ApplicationDbContext.Profiles.Where(x => x.IsDeleted == false).AsNoTracking().ToListAsync(),
 				Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync()
 			};
 
@@ -124,14 +108,14 @@ namespace ST.CORE.Controllers.Identity
 		{
 			if (!ModelState.IsValid)
 			{
-				model.Profiles = await Context.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+				model.Profiles = await ApplicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
 				model.Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync();
 				return View(model);
 			}
 
 			if (ApplicationRoleExists(model.Name))
 			{
-				model.Profiles = await Context.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+				model.Profiles = await ApplicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
 				model.Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync();
 				ModelState.AddModelError("", "Role with same name exist!");
 				return View(model);
@@ -146,12 +130,13 @@ namespace ST.CORE.Controllers.Identity
 				Changed = DateTime.Now,
 				Author = User.Identity.Name,
 				ClientId = model.ClientId,
+				TenantId = CurrentUserTenantId
 			};
 			var result = await RoleManager.CreateAsync(applicationRole);
 			var user = await _signInManager.UserManager.GetUserAsync(User);
 			var client = ConfigurationDbContext.Clients.AsNoTracking().FirstOrDefault(x => x.Id.Equals(model.ClientId))
 				?.ClientName;
-			await _notify.SendNotificationAsync(new SystemNotifications
+			await Notify.SendNotificationAsync(new SystemNotifications
 			{
 				Content = $"{user?.UserName} created the role {applicationRole.Name} for {client}",
 				Subject = "Info",
@@ -159,14 +144,14 @@ namespace ST.CORE.Controllers.Identity
 			});
 			if (!result.Succeeded)
 			{
-				model.Profiles = await Context.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
+				model.Profiles = await ApplicationDbContext.Profiles.AsNoTracking().Where(x => x.IsDeleted == false).ToListAsync();
 				model.Clients = await ConfigurationDbContext.Clients.AsNoTracking().ToListAsync();
 				foreach (var error in result.Errors)
 					ModelState.AddModelError(string.Empty, error.Description);
 			}
 			else
 			{
-				var role = await Context.Roles.AsNoTracking().SingleOrDefaultAsync(m => m.Name == model.Name);
+				var role = await ApplicationDbContext.Roles.AsNoTracking().SingleOrDefaultAsync(m => m.Name == model.Name);
 				if (role == null)
 				{
 					return RedirectToAction(nameof(Index));
@@ -186,12 +171,12 @@ namespace ST.CORE.Controllers.Identity
 						listOfRoles.Add(newRoleProfile);
 					}
 
-					await Context.RoleProfiles.AddRangeAsync(listOfRoles);
+					await ApplicationDbContext.RoleProfiles.AddRangeAsync(listOfRoles);
 				}
 				else
 				{
 					//Todo: Modify later !
-					var profile = Context.Profiles.FirstOrDefault();
+					var profile = ApplicationDbContext.Profiles.FirstOrDefault();
 					if (profile != null)
 					{
 						var newRoleProfile = new RoleProfile
@@ -199,7 +184,7 @@ namespace ST.CORE.Controllers.Identity
 							ApplicationRoleId = role.Id,
 							ProfileId = profile.Id
 						};
-						await Context.RoleProfiles.AddAsync(newRoleProfile);
+						await ApplicationDbContext.RoleProfiles.AddAsync(newRoleProfile);
 					}
 				}
 
@@ -208,7 +193,7 @@ namespace ST.CORE.Controllers.Identity
 					var listOfRolePermission = new List<RolePermission>();
 					foreach (var _ in model.SelectedPermissionId)
 					{
-						var permission = await Context.Permissions.AsNoTracking()
+						var permission = await ApplicationDbContext.Permissions.AsNoTracking()
 							.SingleOrDefaultAsync(x => x.Id == Guid.Parse(_));
 						if (permission != null)
 						{
@@ -222,7 +207,7 @@ namespace ST.CORE.Controllers.Identity
 						}
 					}
 
-					await Context.RolePermissions.AddRangeAsync(listOfRolePermission);
+					await ApplicationDbContext.RolePermissions.AddRangeAsync(listOfRolePermission);
 				}
 
 				try
@@ -268,20 +253,20 @@ namespace ST.CORE.Controllers.Identity
 				return Json(new { message = "Is system role!", success = false });
 			}
 
-			if (Context.UserRoles.Any(x => x.RoleId == id))
+			if (ApplicationDbContext.UserRoles.Any(x => x.RoleId == id))
 			{
 				return Json(new { message = "Role is used!", success = false });
 			}
 
-			var roleProfilesList = Context.RoleProfiles.AsNoTracking()
+			var roleProfilesList = ApplicationDbContext.RoleProfiles.AsNoTracking()
 				.Where(x => x.ApplicationRoleId.Equals(applicationRole.Id));
 			var rolePermissionsList =
-				Context.RolePermissions.AsNoTracking().Where(x => x.RoleId.Equals(applicationRole.Id));
+				ApplicationDbContext.RolePermissions.AsNoTracking().Where(x => x.RoleId.Equals(applicationRole.Id));
 			if (await rolePermissionsList.AnyAsync())
 			{
 				try
 				{
-					Context.RolePermissions.RemoveRange(rolePermissionsList);
+					ApplicationDbContext.RolePermissions.RemoveRange(rolePermissionsList);
 					await Context.SaveChangesAsync();
 				}
 				catch (Exception e)
@@ -295,7 +280,7 @@ namespace ST.CORE.Controllers.Identity
 			{
 				try
 				{
-					Context.RoleProfiles.RemoveRange(roleProfilesList);
+					ApplicationDbContext.RoleProfiles.RemoveRange(roleProfilesList);
 					await Context.SaveChangesAsync();
 				}
 				catch (Exception e)
@@ -315,7 +300,7 @@ namespace ST.CORE.Controllers.Identity
 				return Json(new { message = "Error on delete role !", success = false });
 			}
 
-			await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+			await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
 			{
 				Content = $"{User.Identity.Name} deleted the role {applicationRole.Name}",
 				Subject = "Info",
@@ -361,9 +346,10 @@ namespace ST.CORE.Controllers.Identity
 				Title = applicationRole.Title,
 				IsDeleted = applicationRole.IsDeleted,
 				IsNoEditable = applicationRole.IsNoEditable,
-				Permissions = await Context.Permissions.AsNoTracking()
+				Permissions = await ApplicationDbContext.Permissions.AsNoTracking()
 					.Where(x => x.ClientId == applicationRole.ClientId).ToListAsync(),
-				SelectedPermissionId = rolePermissionId
+				SelectedPermissionId = rolePermissionId,
+				TenantId = applicationRole.TenantId
 			};
 			return View(model);
 		}
@@ -397,10 +383,11 @@ namespace ST.CORE.Controllers.Identity
 			applicationRole.IsDeleted = model.IsDeleted;
 			applicationRole.ModifiedBy = User.Identity.Name;
 			applicationRole.Changed = DateTime.Now;
+			applicationRole.TenantId = model.TenantId;
 
-			model.Profiles = Context.Profiles.Where(x => x.IsDeleted == false);
+			model.Profiles = ApplicationDbContext.Profiles.Where(x => x.IsDeleted == false);
 			model.Permissions =
-				await Context.Permissions.Where(x => x.ClientId == applicationRole.ClientId).ToListAsync();
+				await ApplicationDbContext.Permissions.Where(x => x.ClientId == applicationRole.ClientId).ToListAsync();
 			var result = await RoleManager.UpdateAsync(applicationRole);
 			if (!result.Succeeded)
 			{
@@ -411,10 +398,10 @@ namespace ST.CORE.Controllers.Identity
 			}
 			else
 			{
-				var roleProfilesId = Context.RoleProfiles.Where(x => x.ApplicationRoleId == applicationRole.Id);
+				var roleProfilesId = ApplicationDbContext.RoleProfiles.Where(x => x.ApplicationRoleId == applicationRole.Id);
 				try
 				{
-					Context.RoleProfiles.RemoveRange(roleProfilesId);
+					ApplicationDbContext.RoleProfiles.RemoveRange(roleProfilesId);
 					await Context.SaveChangesAsync();
 				}
 				catch (Exception e)
@@ -425,7 +412,7 @@ namespace ST.CORE.Controllers.Identity
 				}
 
 
-				var role = await Context.Roles.SingleOrDefaultAsync(m => m.Name == model.Name);
+				var role = await ApplicationDbContext.Roles.SingleOrDefaultAsync(m => m.Name == model.Name);
 				if (role == null)
 				{
 					return RedirectToAction(nameof(Index));
@@ -458,10 +445,10 @@ namespace ST.CORE.Controllers.Identity
 
 				//Delete previous permissions
 				var rolePermissionId =
-					Context.RolePermissions.Where(x => x.RoleId == applicationRole.Id);
+					ApplicationDbContext.RolePermissions.Where(x => x.RoleId == applicationRole.Id);
 				if (await rolePermissionId.AnyAsync())
 				{
-					Context.RolePermissions.RemoveRange(rolePermissionId);
+					ApplicationDbContext.RolePermissions.RemoveRange(rolePermissionId);
 					await Context.SaveChangesAsync();
 				}
 
@@ -469,7 +456,7 @@ namespace ST.CORE.Controllers.Identity
 				var rolePermissionList = new List<RolePermission>();
 				foreach (var _ in model.SelectedPermissionId)
 				{
-					var permission = await Context.Permissions.SingleOrDefaultAsync(x => x.Id == Guid.Parse(_));
+					var permission = await ApplicationDbContext.Permissions.SingleOrDefaultAsync(x => x.Id == Guid.Parse(_));
 					if (permission == null) continue;
 					permissions.Add(permission.PermissionKey);
 					rolePermissionList.Add(new RolePermission
@@ -484,7 +471,7 @@ namespace ST.CORE.Controllers.Identity
 
 				try
 				{
-					await Context.RolePermissions.AddRangeAsync(rolePermissionList);
+					await ApplicationDbContext.RolePermissions.AddRangeAsync(rolePermissionList);
 					await Context.SaveChangesAsync();
 					await _permissionService.RefreshCacheByRole(applicationRole.Name);
 				}
@@ -497,12 +484,12 @@ namespace ST.CORE.Controllers.Identity
 
 				//var onlineUsers = hub.GetOnlineUsers();
 				//await User.RefreshOnlineUsersClaims(Context, _signInManager, onlineUsers);
-				//await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
-				//{
-				//	Content = $"{user.UserName} edited the role {applicationRole.Name}",
-				//	Subject = "Info",
-				//	NotificationTypeId = NotificationType.Info
-				//});
+				await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+				{
+					Content = $"{user.UserName} edited the role {applicationRole.Name}",
+					Subject = "Info",
+					NotificationTypeId = NotificationType.Info
+				});
 				return RedirectToAction(nameof(Index));
 			}
 
@@ -560,7 +547,7 @@ namespace ST.CORE.Controllers.Identity
 		private List<ApplicationRole> GetApplicationRoleFiltered(string search, string sortOrder, int start, int length,
 			out int totalCount)
 		{
-			var result = Context.Roles.Where(p =>
+			var result = ApplicationDbContext.Roles.Where(p =>
 				search == null || p.Name != null &&
 				p.Name.ToLower().Contains(search.ToLower()) || p.Author != null &&
 				p.Author.ToLower().Contains(search.ToLower()) || p.ModifiedBy != null &&
@@ -622,7 +609,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <returns></returns>
 		private bool ApplicationRoleExists(string name)
 		{
-			return Context.Roles.Any(e => e.Name == name);
+			return ApplicationDbContext.Roles.Any(e => e.Name == name);
 		}
 
 		/// <summary>
@@ -638,7 +625,7 @@ namespace ST.CORE.Controllers.Identity
 				return Json(null);
 			}
 
-			var result = await Context.Roles.FirstOrDefaultAsync(x => x.Name == roleName);
+			var result = await ApplicationDbContext.Roles.FirstOrDefaultAsync(x => x.Name == roleName);
 			return Json(result != null);
 		}
 
@@ -654,7 +641,7 @@ namespace ST.CORE.Controllers.Identity
 				return Json(true);
 			}
 
-			return Json(Context.Permissions.Where(x => x.ClientId == id).Select(x => new
+			return Json(ApplicationDbContext.Permissions.Where(x => x.ClientId == id).Select(x => new
 			{
 				x.Id,
 				x.PermissionName

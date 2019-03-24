@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 
@@ -21,8 +22,8 @@ namespace ST.Identity.Extensions
         /// <param name="user"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<IList<Claim>> GetClaimsFromPermissions(this ApplicationUser user,
-            ApplicationDbContext context)
+        public static async Task<IList<Claim>> GetClaimsFromPermissions<TContext>(this ApplicationUser user,
+            TContext context) where TContext : ApplicationDbContext
         {
             var userPermission = new HashSet<string>();
             var roles = await context.UserRoles.Where(x => x.UserId.Equals(user.Id))
@@ -48,8 +49,8 @@ namespace ST.Identity.Extensions
         /// <param name="context"></param>
         /// <param name="signInManager"></param>
         /// <returns></returns>
-        public static async Task RefreshClaims(this ApplicationUser user, ApplicationDbContext context,
-            SignInManager<ApplicationUser> signInManager)
+        public static async Task RefreshClaims<TContext>(this ApplicationUser user, TContext context,
+            SignInManager<ApplicationUser> signInManager) where TContext : ApplicationDbContext
         {
             var oldClaims = await signInManager.UserManager.GetClaimsAsync(user);
             var claims = await user.GetClaimsFromPermissions(context);
@@ -70,8 +71,8 @@ namespace ST.Identity.Extensions
         /// <param name="signInManager"></param>
         /// <param name="onlineUsers"></param>
         /// <returns></returns>
-        public static async Task RefreshOnlineUsersClaims(this ClaimsPrincipal user, ApplicationDbContext context,
-            SignInManager<ApplicationUser> signInManager, IEnumerable<Guid> onlineUsers)
+        public static async Task RefreshOnlineUsersClaims<TContext>(this ClaimsPrincipal user, TContext context,
+            SignInManager<ApplicationUser> signInManager, IEnumerable<Guid> onlineUsers) where TContext : ApplicationDbContext
         {
             foreach (var onlineUser in onlineUsers)
             {
@@ -101,11 +102,11 @@ namespace ST.Identity.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddLdapAuthorization(this IServiceCollection services)
+        public static IServiceCollection AddLdapAuthorization<TContext>(this IServiceCollection services) where TContext : ApplicationDbContext
         {
             //Add Active directory dependencies
             services.AddTransient<ILdapService, LdapService>();
-            services.AddTransient<LdapUserManager>();
+            services.AddTransient<LdapUserManager<TContext>>();
             return services;
         }
 

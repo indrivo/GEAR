@@ -18,13 +18,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
 using ST.CORE.Extensions;
-using ST.CORE.Models.AccountViewModels;
 using ST.CORE.Services;
+using ST.CORE.ViewModels.AccountViewModels;
 using ST.Entities.Models.Notifications;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 using ST.MPass.Gov;
+using ST.Identity.Data;
 using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers.Identity
@@ -48,11 +50,11 @@ namespace ST.CORE.Controllers.Identity
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		private readonly INotify _notify;
+		private readonly INotify<ApplicationRole> _notify;
 
 		private readonly IOptions<MPassOptions> _mpassOptions;
 		/// <summary>
-		/// Inject M pass service
+		/// Inject M pass dataService
 		/// </summary>
 		private readonly IMPassService _mpassService;
 		private readonly IMPassSigningCredentialsStore _mpassSigningCredentialStore;
@@ -62,11 +64,10 @@ namespace ST.CORE.Controllers.Identity
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly IHttpContextAccessor _httpContextAccesor;
-		private readonly ApplicationDbContext _applicationDbContext;
 		/// <summary>
 		/// Inject Ldap User Manager
 		/// </summary>
-		private readonly LdapUserManager _ldapUserManager;
+		private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
 		/// <summary>
 		/// Inject configured db context
 		/// </summary>
@@ -85,15 +86,13 @@ namespace ST.CORE.Controllers.Identity
 			IIdentityServerInteractionService interactionService,
 			IHttpContextAccessor httpContextAccessor,
 			IMPassService mPassService,
-			INotify notify,
+			INotify<ApplicationRole> notify,
 			IMPassSigningCredentialsStore mpassSigningCredentialStore,
 			IOptions<MPassOptions> mpassOptions,
-			IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env,
-			ApplicationDbContext applicationDbContext, ConfigurationDbContext configurationDbContext, LdapUserManager ldapUserManager)
+			IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, ConfigurationDbContext configurationDbContext, LdapUserManager<ApplicationDbContext> ldapUserManager)
 		{
 			_cache = distributedCache;
 			_httpContextAccesor = httpContextAccesor;
-			_applicationDbContext = applicationDbContext;
 			ConfigurationDbContext = configurationDbContext;
 			_ldapUserManager = ldapUserManager;
 			_mpassOptions = mpassOptions;
@@ -332,61 +331,54 @@ namespace ST.CORE.Controllers.Identity
 			if (!ModelState.IsValid) return View(model);
 			// This doesn't count login failures towards account lockout
 			// To enable password failures to trigger account lockout, set lockoutOnFailure: true
-			var query = _userManager.Users.Where(x => x.UserName == model.Email);
-			if (query.Any())
+
+			var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Email);
+			if (user != null && !user.IsDeleted)
 			{
-				var user = query.FirstOrDefault();
-				if (user != null && !user.IsDeleted)
+				if (user.AuthenticationType == AuthenticationType.Ad)
 				{
-					if (user.AuthenticationType == AuthenticationType.Ad)
+					var ldapUser = await _ldapUserManager.FindByNameAsync(model.Email);
+					if (ldapUser == null)
 					{
-						var ldapUser = await _ldapUserManager.FindByNameAsync(model.Email);
-						if (ldapUser == null)
-						{
-							ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-							return View(model);
-						}
-						var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
-						if (!bind)
-						{
-							ModelState.AddModelError(string.Empty, "Invalid credentials.");
-							return View(model);
-						}
-
-						await _cache.SetStringAsync(user.Id.ToString(),
-							System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(model.Password)));
-
-						await _ldapUserManager.ChangeIdentityPassword(user, model.Password);
+						ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+						return View(model);
 					}
-					var result =
-						await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,
-							false);
-
-					if (result.Succeeded)
+					var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
+					if (!bind)
 					{
-						//Sync permissions to claims
-						//await user.RefreshClaims(_applicationDbContext, _signInManager);
-						_logger.LogInformation("User logged in.");
-						await _notify.SendNotificationAsync(new SystemNotifications
-						{
-							Content = $"User {user.UserName} logged in.",
-							Subject = "Info",
-							NotificationTypeId = NotificationType.Info
-						});
-
-						return RedirectToLocal(returnUrl);
+						ModelState.AddModelError(string.Empty, "Invalid credentials.");
+						return View(model);
 					}
 
-					ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-					return View(model);
+					await _cache.SetStringAsync(user.Id.ToString(),
+						Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(model.Password)));
+
+					await _ldapUserManager.ChangeIdentityPassword(user, model.Password);
+				}
+				var result =
+					await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,
+						false);
+
+				if (result.Succeeded)
+				{
+					//Sync permissions to claims
+					//await user.RefreshClaims(_applicationDbContext, _signInManager);
+					_logger.LogInformation("User logged in.");
+					await _notify.SendNotificationAsync(new SystemNotifications
+					{
+						Content = $"User {user.UserName} logged in.",
+						Subject = "Info",
+						NotificationTypeId = NotificationType.Info
+					});
+					await _userManager.AddClaimAsync(user, new Claim("tenant", user.TenantId.ToString()));
+					return RedirectToLocal(returnUrl);
 				}
 
-				ModelState.AddModelError(string.Empty, "User is disabled by admin.");
+				ModelState.AddModelError(string.Empty, "Invalid login attempt.");
 				return View(model);
 			}
 
-
-			ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+			ModelState.AddModelError(string.Empty, "User is disabled by admin.");
 			return View(model);
 		}
 		/// <summary>

@@ -7,22 +7,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shared.Core.Versioning;
+using ST.Configuration.Server;
 using ST.CORE.Extensions;
 using ST.CORE.Installation;
 using ST.CORE.LoggerTargets;
+using ST.CORE.Services;
+using ST.CORE.Services.Abstraction;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
-using ST.Entities.Utils;
 using ST.Identity.Abstractions;
-using ST.Identity.Extensions;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Models;
 using ST.Identity.Services;
+using ST.Identity.Versioning;
 using ST.Localization;
 using ST.MPass.Gov;
+using ST.Identity.Data;
 using ST.Notifications.Extensions;
 using ST.Procesess.Data;
 
@@ -30,6 +34,11 @@ namespace ST.CORE
 {
 	public class Startup
 	{
+		/// <summary>
+		/// Cookie name
+		/// </summary>
+		private const string CookieName = ".ST.ISO.Data";
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -100,11 +109,11 @@ namespace ST.CORE
 			services.AddLocalization(Configuration);
 			services.AddDbContext<EntitiesDbContext>(options =>
 			{
-				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
-				options = options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 
 			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
@@ -115,24 +124,20 @@ namespace ST.CORE
 						new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
 					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 				})
+				.AddDistributedMemoryCache()
 				.AddMvc();
-			var connectionString = ConnectionString.Get(Configuration, HostingEnvironment);
-			services.AddDistributedMemoryCache()
-				.AddSession(opts =>
-				{
-					opts.Cookie.HttpOnly = true;
-					opts.Cookie.Name = ".ST.CORE.Data";
-				})
-				.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-				.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
-				.AddHealthChecks(checks =>
-				{
-					var minutes = 1;
-					if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
-						minutes = minutesParsed;
 
-					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
-				});
+
+			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
+			.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
+			.AddHealthChecks(checks =>
+			{
+				//var minutes = 1;
+				//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
+				//	minutes = minutesParsed;
+
+				//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
+			});
 
 			services.AddApiVersioning(options =>
 			{
@@ -150,15 +155,19 @@ namespace ST.CORE
 			//Register dynamic table repository
 			services.RegisterDynamicDataServices();
 			//Add signaler
-			SignlarExtensions.AddSignalR(services);
+			services.AddSignalR<ApplicationDbContext, ApplicationUser, ApplicationRole>();
 
-			//Run background service
+			//Run background dataService
 			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
+
+			services.AddTransient<ITreeIsoService, TreeIsoService>();
+
 			//Register dependencies
 			return services.AddWindsorContainers();
 		}
+
 		/// <summary>
 		/// On application start
 		/// </summary>

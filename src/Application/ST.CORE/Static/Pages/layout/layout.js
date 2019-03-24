@@ -2,6 +2,8 @@ const menus = load("/PageRender/GetMenus");
 
 const renderMenuContainer = $("#sidebarnav");
 
+const settings = JSON.parse(localStorage.getItem("settings"));
+
 //Render menu
 if (menus.is_success) {
 	Promise.all([st.getTemplate("Menu/renderMenu.html")])

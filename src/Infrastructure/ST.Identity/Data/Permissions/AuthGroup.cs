@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
+using ST.Audit.Models;
 using ST.Entities.Models;
 
 namespace ST.Identity.Data.Permissions

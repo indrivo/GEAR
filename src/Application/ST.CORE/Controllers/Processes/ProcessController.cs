@@ -8,15 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
-using ST.CORE.Models.ProcessViewModels;
-using ST.CORE.ViewModels.Process;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.ProcessViewModels;
 using ST.Entities.Extensions;
 using ST.Identity.Data;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Data;
 using ST.Procesess.Models;
-using ST.Procesess.Parsers;
 
 namespace ST.CORE.Controllers.Processes
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using ST.BaseRepository;
-using ST.Organization.Models;
 
 namespace ST.Audit.Models
 {

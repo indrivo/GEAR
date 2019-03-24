@@ -19,7 +19,7 @@
 					</div>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered" id="pageTable">
+			<table class="table table-striped table-bordered" id="menuListTable">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -48,13 +48,17 @@
 	</script>
 	<script type="text/javascript" language="javascript">
 		$(document).ready(function ($) {
-			const tableId = '#pageTable';
+			const tableId = '#menuListTable';
 			if ($.fn.DataTable.isDataTable(tableId)) {
 				alert();
 				$(tableId).dataTable().fnDestroy();
 				$(tableId).dataTable().empty();
 			}
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)
@@ -63,6 +67,8 @@
 				"ajax": {
 					"url": '@Url.Action("LoadPages")',
 					"type": "POST"
+					
+
 				},
 				"columns": [
 					{ "data": "name" },

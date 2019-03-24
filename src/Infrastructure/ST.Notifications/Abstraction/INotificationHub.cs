@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using ST.Entities.Models.Notifications;
-using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Hubs;
 
 namespace ST.Notifications.Abstraction
@@ -27,12 +25,13 @@ namespace ST.Notifications.Abstraction
         /// <param name="userId"></param>
         /// <returns></returns>
 	    bool IsUserOnline(Guid userId);
+
         /// <summary>
         /// Check if user is online
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-	    bool IsUserOnline(ApplicationUser user);
+        bool IsUserOnline<TUser>(TUser user) where TUser : IdentityUser;
         /// <summary>
         /// Get sessions count
         /// </summary>

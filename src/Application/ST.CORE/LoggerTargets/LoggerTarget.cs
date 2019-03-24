@@ -34,6 +34,7 @@ namespace ST.CORE.LoggerTargets
 
 			logEvent.Message = $"{DateTime.Now} {logEvent.FormattedMessage}";
 			await SendToBrowserAsync(new List<LogEventInfo> { logEvent });
+			base.Write(logEvent);
 		}
 
 		/// <summary>
@@ -41,8 +42,9 @@ namespace ST.CORE.LoggerTargets
 		/// </summary>
 		/// <param name="logs"></param>
 		/// <returns></returns>
-		private static async Task SendToBrowserAsync(IEnumerable<LogEventInfo> logs)
+		private static Task SendToBrowserAsync(IEnumerable<LogEventInfo> logs)
 		{
+			return Task.CompletedTask;
 			//try
 			//{
 			//	var hubContext = IoC.Resolve<IHubContext<NotificationsHub>>();

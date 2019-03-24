@@ -1,7 +1,6 @@
 @inject IStringLocalizer Localizer
-@using ST.CORE.Models.UserViewModels
 @using ST.Identity.Data.UserProfiles
-@model ST.CORE.Models.UserViewModels.CreateUserViewModel
+@model ST.CORE.ViewModels.UserViewModels.CreateUserViewModel
 
 @{
 	ViewData["Title"] = Localizer["users_create_title"];
@@ -16,8 +15,8 @@
 			</div>
 			<div class="card-body">
 				<blockquote>
-					@Localizer["users_header1"]<br/>
-					@Localizer["users_header2"]<br/>
+					@Localizer["users_header1"]<br />
+					@Localizer["users_header2"]<br />
 				</blockquote>
 				<form asp-action="Create" role="form" id="UserCreate" enctype="multipart/form-data">
 					<input type="hidden" asp-for="ProfilesJson" id="profilesJson" />
@@ -87,8 +86,16 @@
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
+								<label asp-for="TenantId" class="control-label"></label>
+								<select asp-for="TenantId" asp-items="@(new MultiSelectList(Model.Tenants, "Id", "Name", null))" class="form-control"></select>
+								<span asp-validation-for="TenantId" class="text-danger"></span><br />
+								<small>Select user organization</small>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
 								<label asp-for="UserPhoto" class="control-label"></label>
-								<input type="file" asp-for="UserPhoto" class="dropify"  data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M"/>
+								<input type="file" asp-for="UserPhoto" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
 							</div>
 						</div>
 					</div>

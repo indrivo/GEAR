@@ -26,7 +26,7 @@
 					</div>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered" id="pageTable">
+			<table class="table table-striped table-bordered" id="pagTable">
 				<thead>
 					<tr>
 						<th>Name</th>
@@ -46,6 +46,7 @@
 		</div>
 	</div>
 </div>
+
 
 
 @section Scripts{
@@ -84,13 +85,13 @@
 					}
 				}).then(function (result) {
 					if (result.value) {
-						SetPageName(result.value);
+						setPageName(result.value);
 					}
 				});
 			}
 
 
-			function SetPageName(viewModelId) {
+			function setPageName(viewModelId) {
 
 				swal({
 					title: 'Set page name',
@@ -165,13 +166,17 @@
 
 
 
-			const tableId = '#pageTable';
+			const tableId = '#pagTable';
 			if ($.fn.DataTable.isDataTable(tableId)) {
 				alert();
 				$(tableId).dataTable().fnDestroy();
 				$(tableId).dataTable().empty();
 			}
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)
@@ -193,24 +198,31 @@
 					{
 						data: null,
 						"render": function(data, type, row, meta) {
-							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("PageBuilder")?pageId=${row.id
-								}">Builder</a>
-									<a class="btn btn-danger btn-sm" href="@Url.Action("Edit")?pageId=${row.id
-								}">Edit</a>
-									<a class="btn btn-info btn-sm" href="@Url.Action("GetCode")?id=${row.id
-								}&type=css">Css</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("GetCode")?id=${row.id
-								}&type=js">js</a>
-									<a class="btn btn-warning btn-sm" href="@Url.Action("GetCode")?id=${row.id
-								}&type=html">Html</a>
-									<a class="btn btn-danger btn-sm" href="@Url.Action("PageScripts")?pageId=${row.id
-								}&type=html">Scripts</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("PageStyles")?pageId=${row.id
-								}&type=html">Styles</a>
-									${(!row.isSystem) ? `<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id}'); >Delete</button>`
+							return `
+	<div class="btn-group">
+          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+          </button>
+          <div class="dropdown-menu">
+           <a class="dropdown-item" href="${row.path}">Preview</a>
+									<a class="dropdown-item" href="@Url.Action("PageBuilder")?pageId=${row.id
+								}">Build page content</a>
+									<a class="dropdown-item" href="@Url.Action("Edit")?pageId=${row.id
+								}">Edit page settings</a>
+									<a class="dropdown-item" href="@Url.Action("GetCode")?id=${row.id
+								}&type=css">Edit style</a>
+									<a class="dropdown-item" href="@Url.Action("GetCode")?id=${row.id
+								}&type=js">Edit javascript code</a>
+									<a class="dropdown-item" href="@Url.Action("GetCode")?id=${row.id
+								}&type=html">Edit html</a>
+									<a class="dropdown-item" href="@Url.Action("PageScripts")?pageId=${row.id
+								}&type=html">Page scripts</a>
+									<a class="dropdown-item" href="@Url.Action("PageStyles")?pageId=${row.id
+								}&type=html">Page styles</a>
+									${(!row.isSystem) ? `<button type="button" class='dropdown-item' onclick=createAlert('${row.id}'); >Delete</button>`
 								: ``}
-									</div>`;
+          </div>
+        </div>`;
 						}
 					}
 				]
@@ -223,7 +235,7 @@
 				alertText: "Are you sure that you want to leave this page?",
 				confirmButtonText: "Yes, delete it!",
 				rowId: rowId,
-				tableId: "#pageTable",
+				tableId: "#pagTable",
 				urlForDelete: '@Url.Action("Delete")',
 				type: "warning",
 				onDeleteSuccess: "Page has been deleted.",

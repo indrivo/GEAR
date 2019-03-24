@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
-using ST.Identity.Data;
+using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
 using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers
@@ -22,6 +22,7 @@ namespace ST.CORE.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly INotificationHub _hub;
 		private readonly ApplicationDbContext _context;
+		private readonly IDynamicService _service;
 
 		#endregion
 
@@ -31,13 +32,16 @@ namespace ST.CORE.Controllers
 		/// <param name="repository"></param>
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
+		/// <param name="context"></param>
+		/// <param name="service"></param>
 		public HomeController(IBaseBusinessRepository<ApplicationDbContext> repository,
-			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context)
+			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicService service)
 		{
 			_repository = repository;
 			_userManager = userManager;
 			_hub = hub;
 			_context = context;
+			_service = service;
 		}
 
 		/// <summary>
@@ -47,10 +51,8 @@ namespace ST.CORE.Controllers
 		[Authorize]
 		public async Task<IActionResult> Index()
 		{
-			var list = _context.GetTrackedEntities();
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
-			ViewBag.TotalSessions = _hub.GetSessionsCount();
-			//ViewBag.User = await _userManager.GetUserAsync(User);
+			ViewBag.TotalSessions = _hub.GetSessionsCount();	
 			return View("Index");
 		}
 

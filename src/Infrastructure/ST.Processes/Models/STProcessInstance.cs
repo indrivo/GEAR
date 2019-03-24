@@ -2,6 +2,7 @@
 using ST.Entities.Models;
 using System;
 using System.ComponentModel;
+using ST.Audit.Models;
 
 namespace ST.Procesess.Models
 {

@@ -186,8 +186,8 @@ namespace ST.Entities.Services
                         TableFeldId = field.TableFieldId,
                         Config = new ConfigViewModel
                         {
-                            Fieldset = config.Fieldset,
-                            Label = config.Label,
+                            Fieldset = config?.Fieldset ?? false,
+                            Label = config?.Label,
                             InputGroup = config.InputGroup,
                             Legend = config.Legend,
                             Width = config.Width,
@@ -197,9 +197,9 @@ namespace ST.Entities.Services
                         },
                         Attrs = new AttrsViewModel
                         {
-                            ClassName = attr.ClassName ?? "",
-                            Required = attr.Required,
-                            Type = attr.Type,
+                            ClassName = attr?.ClassName ?? "",
+                            Required = attr?.Required ?? false,
+                            Type = attr?.Type,
                             Value = field.Attrs.Value,
                             TableFieldId = field.TableFieldId.ToString(),
                             Tag = (field.Tag == "h1")
@@ -270,15 +270,13 @@ namespace ST.Entities.Services
             }
         }
 
-        /// <inheritdoc cref="description" />
+        /// <inheritdoc>
+        ///     <cref>description</cref>
+        /// </inheritdoc>
         /// <summary>
         /// Create form
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="tableId"></param>
-        /// <param name="formTypeId"></param>
-        /// <param name="name"></param>
-        /// <param name="description"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
         public ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model, string userId)

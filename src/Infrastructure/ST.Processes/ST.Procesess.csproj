@@ -8,8 +8,8 @@
 
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Mapster" Version="3.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.2" />
+    <PackageReference Include="Mapster" Version="3.3.2" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.3" />
     <PackageReference Include="ST.BaseRepository.Abstractions" Version="2.1.2" />
     <PackageReference Include="ST.EventBus.Core" Version="1.0.3" />
     <PackageReference Include="TheFlow" Version="0.0.1.63" />

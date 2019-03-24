@@ -39,7 +39,10 @@
     "signalr": "v2.3.0",
     "codemirror": "5.42.0",
     "ckeditor": "#standard/4.11.1",
-    "echarts": "3.4.0"
+    "echarts": "3.4.0",
+    "bootstrap-treeview": "v1.2.0",
+    "animate.css": "3.7.0",
+    "jquery-toast-plugin": "1.3.2"
   },
   "resolutions": {
     "jsrender": "v0.9.91",

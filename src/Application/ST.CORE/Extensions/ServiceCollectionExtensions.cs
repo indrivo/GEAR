@@ -8,7 +8,6 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -22,13 +21,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
-using Shared.Core.Filters;
-using Shared.Core.Versioning;
 using ST.BaseBusinessRepository;
-using ST.CORE.Installation;
-using ST.CORE.Models.LocalizationViewModels;
+using ST.Configuration.Abstractions;
+using ST.Configuration.Seed;
+using ST.Configuration.Services;
+using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
+using ST.DynamicEntityStorage;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
@@ -37,15 +38,18 @@ using ST.Entities.Utils;
 using ST.Files.Abstraction;
 using ST.Files.Providers;
 using ST.Files.Services;
-using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Extensions;
-using ST.Identity.Services;
+using ST.Identity.Filters;
 using ST.Identity.Services.Abstractions;
+using ST.Identity.Versioning;
 using ST.Localization;
 using ST.MPass.Gov;
+using ST.Identity.Data;
+using ST.MultiTenant.Services;
+using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Notifications.Providers;
 using ST.Notifications.Services;
@@ -64,8 +68,9 @@ namespace ST.CORE.Extensions
 		/// Add identity server
 		/// </summary>
 		/// <param name="services"></param>
-		/// <param name="connectionString"></param>
+		/// <param name="hostingEnvironment"></param>
 		/// <param name="migrationsAssembly"></param>
+		/// <param name="configuration"></param>
 		/// <returns></returns>
 		public static IServiceCollection AddIdentityServer(this IServiceCollection services, IConfiguration configuration, IHostingEnvironment hostingEnvironment,
 			string migrationsAssembly)
@@ -133,7 +138,8 @@ namespace ST.CORE.Extensions
 		/// Add context and identity
 		/// </summary>
 		/// <param name="services"></param>
-		/// <param name="connectionString"></param>
+		/// <param name="configuration"></param>
+		/// <param name="hostingEnvironment"></param>
 		/// <param name="migrationsAssembly"></param>
 		/// <param name="environment"></param>
 		/// <returns></returns>
@@ -163,8 +169,8 @@ namespace ST.CORE.Extensions
 				.AddIdentity<ApplicationUser, ApplicationRole>()
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
-			services.AddAuthorizationBasedOnCache();
-			services.AddLdapAuthorization();
+			services.AddAuthorizationBasedOnCache<ApplicationDbContext>();
+			services.AddLdapAuthorization<ApplicationDbContext>();
 			return services;
 		}
 
@@ -181,7 +187,7 @@ namespace ST.CORE.Extensions
 			services.AddTransient<IEmailSender, EmailSender>();
 			services.AddTransient<IMPassService, MPassService>();
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-			services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository>();
+			services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
 			services.AddTransient<IFormService, FormService>();
 			services.AddTransient<ILocalizationService, LocalizationService>();
 			services.AddTransient<IPageRender, PageRender>();
@@ -189,7 +195,7 @@ namespace ST.CORE.Extensions
 			services.AddTransient<IProcessParser, ProcessParser>();
 			services.AddTransient<IOrganizationService, OrganizationService>();
 			services.AddTransient<IProfileService, Identity.Services.ProfileService>();
-			services.UseCustomCacheService(env);
+			services.UseCustomCacheService(env, "127.0.0.1", "ST.ISO");
 			return services;
 		}
 
@@ -256,7 +262,6 @@ namespace ST.CORE.Extensions
 				SupportedUICultures = supportedCultures
 			};
 			app.UseRequestLocalization(opts);
-			app.UseSession();
 			var locMon = app.ApplicationServices.GetRequiredService<IOptionsMonitor<LocalizationConfigModel>>();
 			locMon.OnChange(locConfig =>
 			{
@@ -357,11 +362,12 @@ namespace ST.CORE.Extensions
 			castleContainer.Register(Component.For<Notificator>().Named("Email")
 				.DependsOn(Dependency.OnComponent<INotificationProvider, EmailNotificationProvider>()));
 			//Register notifier 
-			castleContainer.Register(Component.For<INotify>().ImplementedBy<Notify>());
+			castleContainer.Register(Component.For<INotify<ApplicationRole>>().ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
 
-			//Dynamic data service
-			castleContainer.Register(Component.For<IDynamicEntityDataService>()
-				.ImplementedBy<DynamicEntityDataService>());
+			//Dynamic data dataService
+			castleContainer.Register(Component.For<IDynamicService>()
+				.ImplementedBy<DynamicService>()
+				.DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
 			//Files
 			var fileConfig = new FileConfig { DbContext = formsContext, WebRootPath = env.WebRootPath };

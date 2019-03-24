@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
-using ST.CORE.Models.UserProfileViewModels;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.UserProfileViewModels;
 using ST.Entities.Data;
-using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
 
 namespace ST.CORE.Controllers.Profiles
 {
@@ -121,7 +121,7 @@ namespace ST.CORE.Controllers.Profiles
 			}
 			return result.ToList();
 		}
-	
+
 
 		/// <summary>
 		/// Get view for Create a profiles
@@ -181,7 +181,7 @@ namespace ST.CORE.Controllers.Profiles
 		public IActionResult Edit(Profile model)
 		{
 			if (!ModelState.IsValid) return View(model);
-			var response = _repository.Update(model, "test");
+			_repository.Update(model, "test");
 			return RedirectToAction(nameof(Index), "Profile");
 		}
 

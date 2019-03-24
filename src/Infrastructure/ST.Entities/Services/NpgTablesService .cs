@@ -236,12 +236,12 @@ namespace ST.Entities.Services
             };
             try
             {
-                var sqlQuerry = NpgTableQuerryBuilder.DropColumn(tableName, columnName, tableSchema);
-                if (!string.IsNullOrEmpty(sqlQuerry))
+                var sqlQuery = NpgTableQuerryBuilder.DropColumn(tableName, columnName, tableSchema);
+                if (!string.IsNullOrEmpty(sqlQuery))
                 {
                     using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        var command = new NpgsqlCommand(sqlQuerry, connection);
+                        var command = new NpgsqlCommand(sqlQuery, connection);
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
@@ -250,15 +250,19 @@ namespace ST.Entities.Services
                     returnModel.Result = true;
                     return returnModel;
                 }
-                else
+
+                returnModel.Errors = new List<IErrorModel>
                 {
-                    // Empty querry
-                    return returnModel;
-                }
+                    new ErrorModel(Guid.NewGuid().ToString(), "Empty query!")
+                };
+                return returnModel;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error
+                returnModel.Errors = new List<IErrorModel>
+                {
+                    new ErrorModel(Guid.NewGuid().ToString(),ex.ToString())
+                };
                 return returnModel;
             }
         }

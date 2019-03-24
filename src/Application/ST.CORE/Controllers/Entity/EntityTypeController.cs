@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.TableTypes;

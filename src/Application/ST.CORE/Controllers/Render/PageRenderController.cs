@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,22 +13,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
+using ST.Configuration;
+using ST.Configuration.Seed;
+using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.CORE.Attributes;
-using ST.CORE.Installation;
-using ST.CORE.Models;
-using ST.CORE.Models.LocalizationViewModels;
 using ST.CORE.Services.Abstraction;
-using ST.CORE.ViewModels.Pages;
+using ST.CORE.ViewModels;
+using ST.CORE.ViewModels.PageViewModels;
+using ST.CORE.ViewModels.TableColumnsViewModels;
+using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
-using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Localization;
 
 namespace ST.CORE.Controllers.Render
 {
+	[Authorize]
 	public class PageRenderController : Controller
 	{
 		#region InjectRegion
@@ -41,7 +45,7 @@ namespace ST.CORE.Controllers.Render
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
-		private readonly IDynamicEntityDataService _dataService;
+		private readonly IDynamicService _service;
 		/// <summary>
 		/// Inject loc config
 		/// </summary>
@@ -51,16 +55,12 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		private readonly IStringLocalizer _localizer;
 		/// <summary>
-		/// Inject Service
-		/// </summary>
-		private readonly ILocalizationService _localizationService;
-		/// <summary>
 		/// Inject page render
 		/// </summary>
 		private readonly IPageRender _pageRender;
 
 		/// <summary>
-		/// Inject menu service
+		/// Inject menu dataService
 		/// </summary>
 		private readonly IMenuService _menuService;
 
@@ -68,6 +68,11 @@ namespace ST.CORE.Controllers.Render
 		/// Inject user manager
 		/// </summary>
 		private readonly UserManager<ApplicationUser> _userManager;
+
+		/// <summary>
+		/// Inject iso dataService
+		/// </summary>
+		private readonly ITreeIsoService _isoService;
 		#endregion
 
 		/// <summary>
@@ -75,26 +80,27 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="appContext"></param>
-		/// <param name="dataService"></param>
+		/// <param name="service"></param>
 		/// <param name="localizer"></param>
 		/// <param name="locConfig"></param>
 		/// <param name="pageRender"></param>
-		/// <param name="localizationService"></param>
 		/// <param name="menuService"></param>
+		/// <param name="userManager"></param>
+		/// <param name="isoService"></param>
 		public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
-			IDynamicEntityDataService dataService, IStringLocalizer localizer,
+			IDynamicService service, IStringLocalizer localizer,
 			IOptionsSnapshot<LocalizationConfigModel> locConfig,
 			IPageRender pageRender,
-			ILocalizationService localizationService, IMenuService menuService, UserManager<ApplicationUser> userManager)
+			IMenuService menuService, UserManager<ApplicationUser> userManager, ITreeIsoService isoService)
 		{
 			_context = context;
 			_appContext = appContext;
-			_dataService = dataService;
+			_service = service;
 			_localizer = localizer;
 			_locConfig = locConfig;
-			_localizationService = localizationService;
 			_menuService = menuService;
 			_userManager = userManager;
+			_isoService = isoService;
 			_pageRender = pageRender;
 		}
 
@@ -166,7 +172,7 @@ namespace ST.CORE.Controllers.Render
 			if (config == null) return Json(new ResultModel());
 			if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
 			var table = config.Value;
-			var instance = _dataService.Table(table);
+			var instance = _service.Table(table);
 			return Json(await instance.GetAll<object>());
 		}
 
@@ -204,7 +210,7 @@ namespace ST.CORE.Controllers.Render
 		{
 			var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
 			if (entity == null) return Json(default(ResultModel));
-			var obj = _dataService.Table(entity.TableModel.Name).Object;
+			var obj = _service.Table(entity.TableModel.Name).Object;
 			return Json(new { row = obj });
 		}
 
@@ -398,7 +404,7 @@ namespace ST.CORE.Controllers.Render
 				.FirstOrDefault(x => x.Id.Equals(entityId));
 			if (table != null)
 			{
-				var instance = _dataService.Table(table.Name);
+				var instance = _service.Table(table.Name);
 				return Json(await instance.GetAll<object>());
 			}
 
@@ -409,28 +415,51 @@ namespace ST.CORE.Controllers.Render
 		/// Load paged data with ajax
 		/// </summary>
 		/// <param name="param"></param>
+		/// <param name="viewModelId"></param>
 		/// <returns></returns>
 		[HttpPost]
 		[AjaxOnly]
-		public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, Guid tableId)
+		public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId)
 		{
-			if (viewModelId == Guid.Empty || tableId == Guid.Empty) return Json(default(DTResult<object>));
-			var viewModel = _context.ViewModels
+			if (viewModelId == Guid.Empty) return Json(default(DTResult<object>));
+			var viewModel = await _context.ViewModels
 				.Include(x => x.TableModel)
+				.ThenInclude(x => x.TableFields)
 				.Include(x => x.ViewModelFields)
-				.FirstOrDefault(x => x.Id.Equals(viewModelId));
+				.ThenInclude(x => x.TableModelFields)
+				.FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
 			if (viewModel == null) return Json(default(DTResult<object>));
+			var sortColumn = param.SortOrder;
+			try
+			{
+				var columnIndex = Convert.ToInt32(param.Order[0].Column);
+				var field = viewModel.ViewModelFields.ElementAt(columnIndex);
+				if (field != null)
+				{
+					var column =
+						viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
+					sortColumn = column != null
+						? $"{column.Name ?? field.Name} {param.SortOrder}"
+						: $"{field.Name} {param.SortOrder}";
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
 
-			var (objects, item2) = await _dataService.Filter(viewModel.TableModel.Name, param.Search.Value, param.SortOrder, param.Start,
-				param.Length);
+			var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+
+			var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn, param.Start,
+				param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin));
 
 			var finalResult = new DTResult<object>
 			{
 				draw = param.Draw,
-				data = objects,
-				recordsFiltered = item2,
-				recordsTotal = objects.Count()
+				data = data,
+				recordsFiltered = recordsCount,
+				recordsTotal = data.Count()
 			};
 
 			return Json(finalResult);
@@ -457,7 +486,7 @@ namespace ST.CORE.Controllers.Render
 		[HttpGet]
 		public async Task<JsonResult> LoadDataFromEntity(string entityName)
 		{
-			var list = await _dataService.Table(entityName).GetAll<object>();
+			var list = await _service.Table(entityName).GetAll<object>();
 			return new JsonResult(list.Result);
 		}
 
@@ -466,6 +495,7 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public JsonResult GetLanguages()
 		{
 			var languages = _locConfig.Value.Languages.ToList();
@@ -507,7 +537,7 @@ namespace ST.CORE.Controllers.Render
 				.FirstOrDefault(x => x.Id.Equals(form.TableId));
 			if (table != null)
 			{
-				var instance = _dataService.Table(table.Name);
+				var instance = _service.Table(table.Name);
 				var fields = table.TableFields.ToList();
 				var pre = instance.Object;
 
@@ -535,6 +565,16 @@ namespace ST.CORE.Controllers.Render
 
 				var obj = instance.ParseObject(pre);
 
+				try
+				{
+					obj.GetType().GetProperty("Author").SetValue(obj, User.Identity.Name);
+					obj.GetType().GetProperty("ModifiedBy").SetValue(obj, User.Identity.Name);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
+
 				var req = await instance.Add(obj);
 
 				if (req.IsSuccess)
@@ -558,19 +598,185 @@ namespace ST.CORE.Controllers.Render
 		/// <summary>
 		/// Delete page by id
 		/// </summary>
-		/// <param name="entityId"></param>
+		/// <param name="viewModelId"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-		public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid entityId, string id)
+		[AjaxOnly]
+		public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
 		{
-			if (string.IsNullOrEmpty(id) || entityId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
-			var table = _context.Table.FirstOrDefault(x => x.Id.Equals(entityId));
-			if (table == null) return Json(new { message = "Fail to delete!", success = false });
-			var response = await _dataService.Table(table.Name).Delete<object>(Guid.Parse(id));
+			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
+			var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+			var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
 			if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
 
 			return Json(new { message = "Item was deleted!", success = true });
+		}
+
+		/// <summary>
+		/// Delete page by id
+		/// </summary>
+		/// <param name="viewModelId"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+		[AjaxOnly]
+		public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
+		{
+			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to restore!", success = false });
+			var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
+			var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
+			if (!response.IsSuccess) return Json(new { message = "Fail to restore!", success = false });
+
+			return Json(new { message = "Item was restored!", success = true });
+		}
+
+
+		/// <summary>
+		/// Load tree for standards
+		/// </summary>
+		/// <param name="standardEntityId"></param>
+		/// <param name="categoryEntityId"></param>
+		/// <param name="requirementEntityId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<JsonResult> GetTreeData(Guid? standardEntityId, Guid? categoryEntityId, Guid? requirementEntityId)
+		{
+			var result = new ResultModel();
+			if (standardEntityId == null || categoryEntityId == null || requirementEntityId == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(Guid.NewGuid().ToString(), "Tree block configuration is not complete!")
+				};
+				return Json(result);
+			}
+			var standardEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == standardEntityId);
+			var categoryEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == categoryEntityId);
+			var requirementEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == requirementEntityId);
+			if (standardEntity == null || categoryEntity == null || requirementEntity == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(Guid.NewGuid().ToString(), "Entities does not exist!")
+				};
+				return Json(result);
+			}
+
+			return Json(await _isoService.LoadTreeStandard(standardEntity, categoryEntity, requirementEntity));
+		}
+
+		/// <summary>
+		/// Get view model column type for inline table edit
+		/// </summary>
+		/// <param name="viewModelId"></param>
+		/// <returns></returns>
+		public async Task<JsonResult> GetViewModelColumnTypes(Guid? viewModelId)
+		{
+			var result = new ResultModel();
+			if (viewModelId == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Not specified view model id")
+				};
+				Json(result);
+			}
+
+			var viewModel = await _context.ViewModels.Include(x => x.ViewModelFields).FirstOrDefaultAsync(x => x.Id == viewModelId);
+			if (viewModel == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "ViewModel not found")
+				};
+				Json(result);
+			}
+
+			var tableFields = _context.TableFields.Where(x => x.TableId == viewModel.TableModelId).ToList();
+			var res = new List<TableColumnData>();
+			foreach (var field in tableFields)
+			{
+				var obj = field.Adapt<TableColumnData>();
+				obj.ColumnId = viewModel?.ViewModelFields?.FirstOrDefault(x => x.TableModelFieldsId == field.Id)?.Id;
+				res.Add(obj);
+			}
+
+			if (!tableFields.Any()) return Json(result);
+			result.IsSuccess = true;
+			result.Result = res;
+
+			return Json(result);
+		}
+
+		/// <summary>
+		/// Save table cell
+		/// </summary>
+		/// <param name="entityId"></param>
+		/// <param name="propertyId"></param>
+		/// <param name="rowId"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> SaveTableCellData(Guid? entityId, Guid? propertyId, Guid? rowId, string value)
+		{
+			var result = new ResultModel();
+			if (entityId == null || propertyId == null || rowId == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Not specified data")
+				};
+				return Json(result);
+			}
+
+			var entity = await _context.Table.Include(x => x.TableFields).FirstOrDefaultAsync(x => x.Id == entityId);
+			if (entity == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Entity not found")
+				};
+				return Json(result);
+			}
+
+			var property = entity.TableFields.First(x => x.Id == propertyId);
+			if (property == null)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Not found entity column")
+				};
+				return Json(result);
+			}
+
+			var row = await _service.Table(entity.Name).GetById<object>(rowId.Value);
+			if (!row.IsSuccess)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Entry Not found")
+				};
+				return Json(result);
+			}
+
+			row.Result.ChangePropValue(property.Name, value);
+			row.Result.ChangePropValue("Changed", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+
+			var req = await _service.Table(entity.Name).Update(row.Result);
+			if (!req.IsSuccess)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "Fail to save data")
+				};
+				return Json(result);
+			}
+
+			result.IsSuccess = true;
+			return Json(result);
 		}
 	}
 }

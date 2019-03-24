@@ -1,0 +1,10 @@
+﻿{
+  "FormTypes": [
+    {
+      "Description": "Standart Form type",
+      "IsSystem": true,
+      "Name": "Standart Form",
+      "Code": "00"
+    }
+  ]
+}

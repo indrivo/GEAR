@@ -17,7 +17,7 @@ namespace ST.Identity.Migrations
             modelBuilder
                 .HasDefaultSchema("Identity")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -170,6 +170,38 @@ namespace ST.Identity.Migrations
                     b.ToTable("TrackAuditDetails");
                 });
 
+            modelBuilder.Entity("ST.Identity.Data.MultiTenants.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("MachineName")
+                        .IsRequired();
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("SiteWeb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants");
+                });
+
             modelBuilder.Entity("ST.Identity.Data.Permissions.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -201,6 +233,8 @@ namespace ST.Identity.Migrations
                     b.Property<Guid?>("TenantId");
 
                     b.Property<string>("Title");
+
+                    b.Property<int>("Version");
 
                     b.HasKey("Id");
 
@@ -431,6 +465,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<byte[]>("UserPhoto");
 
+                    b.Property<int>("Version");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -489,38 +525,6 @@ namespace ST.Identity.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("RoleProfiles");
-                });
-
-            modelBuilder.Entity("ST.Organization.Models.Tenant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Address");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("MachineName")
-                        .IsRequired();
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("SiteWeb");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

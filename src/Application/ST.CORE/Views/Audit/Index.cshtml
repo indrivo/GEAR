@@ -1,5 +1,3 @@
-@using ST.CORE.Models
-
 @{
 	ViewData["Title"] = "Index";
 	Layout = "~/Views/Shared/_Layout.cshtml";
@@ -13,6 +11,7 @@
 			<table class="table table-striped table-bordered" id="tableAudit">
 				<thead>
 					<tr>
+						<th>Record Id</th>
 						<th>Changed</th>
 						<th>ModifiedBy</th>
 						<th>TrackEventType</th>
@@ -46,6 +45,10 @@
 			}
 
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				processing: true, // for show progress bar
 				serverSide: true, // for process server side
 				filter: true, // this is for disable filter (search box)
@@ -56,6 +59,7 @@
 					type: "POST"
 				},
 				columns: [
+					{ data: "recordId" },
 					{ data: "changedString" },
 					{ data: "modifiedBy" },
 					{ data: "eventType" },
@@ -65,8 +69,8 @@
 						data: null,
 						render: function(data) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-warning btn-sm" href="@Url.Action("Versions")?id=${data.id}&stage=@StageEnum.Module.CORE">Versions</a>
-									<a class="btn btn-info btn-sm" href="@Url.Action("Details")?id=${data.id}&stage=@StageEnum.Module.CORE">Details</a>
+									<a class="btn btn-warning btn-sm" href="@Url.Action("Versions")?id=${data.id}&contextName=${data.databaseContextName}">Versions</a>
+									<a class="btn btn-info btn-sm" href="@Url.Action("Details")?id=${data.id}&contextName=${data.databaseContextName}">Details</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=CreateAlert('${data.id
 								}'); >Delete</button>
 									</div>`;

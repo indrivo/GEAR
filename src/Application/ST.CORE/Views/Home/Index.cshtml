@@ -1,5 +1,6 @@
 @using ST.Identity.Data.UserProfiles
 @inject UserManager<ApplicationUser> userManager
+@model ST.Entities.Models.Home.HomeViewModel
 @inject IStringLocalizer Localizer
 @{
 	ViewData["Title"] = Localizer["title_home"];
@@ -117,10 +118,102 @@
 </div>
 
 
-
 @section Scripts{
+
 	<script src="~/lib/chartist/dist/chartist.min.js"></script>
 	<script src="~/lib/chartist-plugin-tooltip/dist/chartist-plugin-tooltip.min.js"></script>
 	<script src="~/lib/chart.js/dist/Chart.min.js"></script>
 	<script src="~/js/dashboard2.js"></script>
+
+
+	@*<script type="text/javascript" language="javascript">
+
+		$(document).ready(function () {
+			$('.tree').treegrid({
+				'initialState': 'collapsed',
+
+			});
+		});
+
+		$(document).ready(function () {
+			$('#example').DataTable({
+				"columnDefs": [
+					{ "width": "50%", "targets": 0 },
+					{ "width": "20%", "targets": 1 },
+					{ "width": "15%", "targets": 2 },
+					{ "width": "15%", "targets": 3 }
+				]
+			});
+			$('a.toggle-vis').on('click', function (e) {
+				e.preventDefault();
+			
+				// Get the column API object
+				var table = $('#example').DataTable();
+				var column = table.column($(this).attr('data-column'));
+
+				// Toggle the visibility
+				column.visible(!column.visible());
+			});
+		});
+
+
+
+	</script>
+	<script>
+
+		var newRow = "<tr class=\"treegrid-6 treegrid-parent-4\"> <td></span> 4.2.a-1) To determine interested parties that are relevant to the ISMS;</td>	<td>Jon Pavan</td><td> 01.04.2019</td><td><h5 class=\"m-t-30\">Progress<span class=\"pull-right\">100%</span></h5><div class=\"progress\"><div class=\"progress-bar bg-success wow animated progress-animated\" style=\"width: 100%; height:6px;\" role=\"progressbar\"> <span class=\"sr-only\">60% Complete</span> </div>	</div>	</td>	<td><div class=\"btn-group\" role=\"group\" aria-label=\"Action buttons\">	<a asp-action=\"CreateRequirementAction\" class=\"btn btn-info btn-sm\">Edit</a>	<button type=\"button\" class='btn btn-danger btn-sm'>	Delete	</button>	</div>	</td></tr>";
+		//var table = $('table').DataTable();
+		//table.row.add($(newRow)).draw();
+		$("#createRequirementAction").click(function(e) {
+            if ($('#activityTypeName').val() === "") {
+                sweetAlert("Field Shouldn't Be Empty!!", "Please Enter name", "error");
+                return false;
+            };
+            const name = $("#activityTypeName").val();
+            const data = {
+                name: name
+            };
+            $.ajax({
+                url: '@Url.Action("CreateRequirementAction", "Home")',
+                content: "application/json; charset=utf-8",
+                type: 'POST',
+                data: data,
+                success: function(result) {
+
+                    if (result) {
+                        swal({
+                            position: 'top-end',
+                            type: 'success',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then((result) => {
+                            //window.location.reload(true);
+
+							});
+						var table = $('#example').DataTable();
+						//table.row.add([
+						//	'4.2.a-1) To determine interested parties that are relevant to the ISMS;',
+						//	'.2',
+						//	'.3',
+						//	'.4',
+						//	'.5'
+						//]).draw(false);
+						table.row.add($(newRow)).draw();
+                    } else {
+                        swal({
+                            position: 'top-end',
+                            type: 'error',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    ShowError(jqXHR.status);
+                }
+            });
+        });
+	</script>*@
 }

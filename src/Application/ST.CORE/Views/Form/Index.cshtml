@@ -1,5 +1,4 @@
-@using ST.CORE.Models.FormsViewModels
-@model IEnumerable<ST.CORE.Models.FormsViewModels.FormListViewModel>
+@model IEnumerable<ST.CORE.ViewModels.FormsViewModels.FormListViewModel>
 
 @inject IStringLocalizer Localizer
 @{
@@ -59,6 +58,10 @@
 				$(tableId).dataTable().empty();
 			}
 			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)

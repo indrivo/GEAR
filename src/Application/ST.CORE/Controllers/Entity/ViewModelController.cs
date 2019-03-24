@@ -9,7 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.CORE.Attributes;
-using ST.CORE.Models;
+using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.ViewModels;
@@ -269,14 +270,15 @@ namespace ST.CORE.Controllers.Entity
 		/// Load page types with ajax
 		/// </summary>
 		/// <param name="param"></param>
+		/// <param name="entityId"></param>
 		/// <returns></returns>
 		[HttpPost]
 		[AjaxOnly]
-		public JsonResult LoadViewModels(DTParameters param)
+		public JsonResult LoadViewModels(DTParameters param, Guid entityId)
 		{
 			var filtered = _context.Filter<ViewModel>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
-				out var totalCount);
+				out var totalCount, x => (entityId != Guid.Empty && x.TableModelId == entityId) || entityId == Guid.Empty);
 
 
 			var sel = filtered.Select(x => new

@@ -258,9 +258,12 @@ namespace ST.Entities.Data
                 returnModel.Result.Values = finalResult;
                 returnModel.IsSuccess = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error
+                returnModel.Errors = new List<IErrorModel>
+                {
+                    new ErrorModel("_ex", ex.ToString())
+                };
                 return returnModel;
             }
 

@@ -4,7 +4,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IMPassService _mpassService
 
-@model ST.CORE.Models.AccountViewModels.LoginViewModel
+@model ST.CORE.ViewModels.AccountViewModels.LoginViewModel
 
 @{
 	ViewData["Title"] = "Log in";
@@ -124,10 +124,8 @@
 	<script src="~/lib/tether/dist/js/tether.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 	<script src="~/js/jquery.slimscroll.js"></script>
-	<script src="~/js/waves.js"></script>
-	<script src="~/js/sidebarmenu.js"></script>
+	<script src="~/js/site.js"></script>
 	<script src="~/lib/sticky-kit/jquery.sticky-kit.min.js"></script>
-	<script src="~/js/custom.js"></script>
 
 	@await Html.PartialAsync("_ValidationScriptsPartial")
 </body>

@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Identity.Data;
+using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Models;
 
 namespace ST.Identity.LDAP.Services
 {
-    public class LdapUserManager : UserManager<ApplicationUser>
+    public class LdapUserManager<TContext> : UserManager<ApplicationUser> where TContext: ApplicationDbContext
     {
         /// <summary>
         /// Inject Ldap Service
@@ -21,7 +22,8 @@ namespace ST.Identity.LDAP.Services
         /// Inject context
         /// </summary>
 
-        private readonly ApplicationDbContext _context;
+        private readonly TContext _context;
+
         /// <inheritdoc />
         /// <summary>
         /// Constructor
@@ -36,6 +38,7 @@ namespace ST.Identity.LDAP.Services
         /// <param name="errors"></param>
         /// <param name="services"></param>
         /// <param name="logger"></param>
+        /// <param name="context"></param>
         public LdapUserManager(
             ILdapService ldapService,
             IUserStore<ApplicationUser> store,
@@ -46,7 +49,7 @@ namespace ST.Identity.LDAP.Services
             ILookupNormalizer keyNormalizer,
             IdentityErrorDescriber errors,
             IServiceProvider services,
-            ILogger<LdapUserManager> logger, ApplicationDbContext context)
+            ILogger<LdapUserManager<TContext>> logger, TContext context)
             : base(
                 store,
                 optionsAccessor,

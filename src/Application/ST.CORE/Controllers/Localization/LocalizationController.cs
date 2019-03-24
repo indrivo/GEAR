@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
-using ST.CORE.Models;
-using ST.CORE.Models.LocalizationViewModels;
-using ST.CORE.Services.Abstraction;
+using ST.Configuration.Abstractions;
+using ST.Configuration.Server;
+using ST.Configuration.ViewModels.LocalizationViewModels;
+using ST.CORE.ViewModels;
 using ST.Localization;
 
 namespace ST.CORE.Controllers.Localization
@@ -98,6 +99,7 @@ namespace ST.CORE.Controllers.Localization
 				// If the language is invalid then set to default language.
 				var langIsValid = cLangs.Contains(identifier);
 				HttpContext.Session.SetString(sessionKey, langIsValid ? identifier : _locConfig.Value.DefaultLanguage);
+				HttpContext.Response.Cookies.Append("language", _locConfig.Value.Languages.FirstOrDefault(x => x.Identifier == identifier)?.Name);
 			}
 
 			var referer = Request.Headers["Referer"].ToString();

@@ -2,7 +2,7 @@
   "Id": "D12BDEB9-EC63-4AD6-A9AA-F47D8F1DEE55",
   "IsLayout": true,
   "Settings": {
-    "Name": "Layout",
+    "Name": "Administration Layout",
     "Description": "Default layout",
     "Title": ""
   },
@@ -11,7 +11,7 @@
   "PageStyles": [
     {
       "Order": 0,
-      "Script": "<link rel=\"stylesheet\" href=\"/lib/jquery.simplePagination/simplePagination.css\" />"
+      "Script": "<link href=\"/assets/css/formeo.css\" rel=\"stylesheet\" />"
     },
     {
       "Order": 1,
@@ -40,14 +40,6 @@
     {
       "Order": 7,
       "Script": "<link rel=\"stylesheet\" id=\"theme\" type=\"text/css\" href=\"/css/colors/green.css\" />"
-    },
-    {
-      "Order": 8,
-      "Script": "<link href=\"/css/custom-css.css\" rel=\"stylesheet\" />"
-    },
-    {
-      "Order": 9,
-      "Script": "<link href=\"/assets/css/formeo.css\" rel=\"stylesheet\" />"
     }
   ],
   "PageScripts": [
@@ -81,51 +73,35 @@
     },
     {
       "Order": 7,
-      "Script": "<script type=\"text/javascript\" src=\"/js/waves.js\"></script>"
-    },
-    {
-      "Order": 8,
       "Script": "<script type=\"text/javascript\" src=\"/lib/sweetalert2/dist/sweetalert2.min.js\"></script>"
     },
     {
-      "Order": 9,
-      "Script": "<script type=\"text/javascript\" src=\"/js/sidebarmenu.js\"></script>"
-    },
-    {
-      "Order": 10,
+      "Order": 8,
       "Script": "<script type=\"text/javascript\" src=\"/lib/select2/dist/js/select2.full.min.js\"></script>"
     },
     {
-      "Order": 11,
+      "Order": 9,
       "Script": "<script type=\"text/javascript\" src=\"/lib/sticky-kit/jquery.sticky-kit.js\"></script>"
     },
     {
-      "Order": 12,
+      "Order": 10,
       "Script": "<script type=\"text/javascript\" src=\"/js/site.js\"></script>"
     },
     {
+      "Order": 11,
+      "Script": "<script src=\"/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js\"></script>"
+    },
+    {
+      "Order": 12,
+      "Script": "<script src=\"/js/signalr/dist/browser/signalr.js\"></script>"
+    },
+    {
       "Order": 13,
-      "Script": "<script src=\"/assets/js/actions.js\"></script>"
-    },
-    {
-      "Order": 14,
-      "Script": "<script src=\"/js/custom.js\"></script>"
-    },
-    {
-      "Order": 15,
-      "Script": "<script src=\"/assets/js/notifications/notificator.js\"></script>"
-    },
-    {
-      "Order": 16,
       "Script": "<script src=\"/lib/jsrender/jsrender.min.js\"></script>"
     },
     {
-      "Order": 17,
+      "Order": 14,
       "Script": "<script src=\"/lib/jsviews/jsviews.min.js\"></script>"
-    },
-    {
-      "Order": 18,
-      "Script": "<script src=\"/js/signalr/dist/browser/signalr.js\"></script>"
     }
   ]
 }

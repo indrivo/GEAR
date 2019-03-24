@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
-using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
+using ST.Identity.Data;
 
 namespace ST.CORE.Controllers.Identity
 {
@@ -44,16 +44,10 @@ namespace ST.CORE.Controllers.Identity
 				});
 			var courtId = Repository.GetAll<UserGroup>(s => s.UserId == user.Id).Select(s => s.AuthGroupId)
 				.FirstOrDefault();
-			if (courtId != null)
-				return Json(new ResultModel
-				{
-					IsSuccess = true,
-					Result = courtId
-				});
 			return Json(new ResultModel
 			{
-				IsSuccess = false,
-				Result = string.Empty
+				IsSuccess = true,
+				Result = courtId
 			});
 		}
 
