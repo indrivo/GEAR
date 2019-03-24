@@ -48,6 +48,7 @@
 </div>
 
 
+
 @section Scripts{
 	<script type="text/javascript" language="javascript">
 		function getTokenAntiForgery() {
@@ -197,25 +198,31 @@
 					{
 						data: null,
 						"render": function(data, type, row, meta) {
-							return `<div class="btn-group" role="group" aria-label="Action buttons">
-							<a class="btn btn-warning btn-sm" href="${row.path}">Preview</a>
-									<a class="btn btn-info btn-sm" href="@Url.Action("PageBuilder")?pageId=${row.id
-								}">Builder</a>
-									<a class="btn btn-danger btn-sm" href="@Url.Action("Edit")?pageId=${row.id
-								}">Edit</a>
-									<a class="btn btn-info btn-sm" href="@Url.Action("GetCode")?id=${row.id
-								}&type=css">Css</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("GetCode")?id=${row.id
-								}&type=js">js</a>
-									<a class="btn btn-warning btn-sm" href="@Url.Action("GetCode")?id=${row.id
-								}&type=html">Html</a>
-									<a class="btn btn-danger btn-sm" href="@Url.Action("PageScripts")?pageId=${row.id
-								}&type=html">Scripts</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("PageStyles")?pageId=${row.id
-								}&type=html">Styles</a>
-									${(!row.isSystem) ? `<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id}'); >Delete</button>`
+							return `
+	<div class="btn-group">
+          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Actions
+          </button>
+          <div class="dropdown-menu">
+           <a class="dropdown-item" href="${row.path}">Preview</a>
+									<a class="dropdown-item" href="@Url.Action("PageBuilder")?pageId=${row.id
+								}">Build page content</a>
+									<a class="dropdown-item" href="@Url.Action("Edit")?pageId=${row.id
+								}">Edit page settings</a>
+									<a class="dropdown-item" href="@Url.Action("GetCode")?id=${row.id
+								}&type=css">Edit style</a>
+									<a class="dropdown-item" href="@Url.Action("GetCode")?id=${row.id
+								}&type=js">Edit javascript code</a>
+									<a class="dropdown-item" href="@Url.Action("GetCode")?id=${row.id
+								}&type=html">Edit html</a>
+									<a class="dropdown-item" href="@Url.Action("PageScripts")?pageId=${row.id
+								}&type=html">Page scripts</a>
+									<a class="dropdown-item" href="@Url.Action("PageStyles")?pageId=${row.id
+								}&type=html">Page styles</a>
+									${(!row.isSystem) ? `<button type="button" class='dropdown-item' onclick=createAlert('${row.id}'); >Delete</button>`
 								: ``}
-									</div>`;
+          </div>
+        </div>`;
 						}
 					}
 				]

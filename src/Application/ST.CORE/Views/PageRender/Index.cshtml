@@ -15,7 +15,7 @@
 
 @if (styles.IsSuccess)
 {
-	@foreach (var style in styles.Result)
+	foreach (var style in styles.Result)
 	{
 		@Html.Raw(style.Script)
 	}
@@ -36,12 +36,13 @@
 }
 
 @section Scripts
-	{
+{
 	@if (scripts.IsSuccess)
 	{
-		@foreach (var script in scripts.Result)
+		foreach (var script in scripts.Result)
 		{
-			@Html.Raw(script.Script);
+			@Html.Raw(script.Script)
+			;
 		}
 	}
 	@if (!string.IsNullOrEmpty(jsCode))
@@ -51,10 +52,106 @@
 		</script>
 	}
 	<script>
+		function restoreItem(rowId, tableId, viewModelId) {
+			const object = {
+				alertTitle: "Restore?",
+				alertText: "Are you sure that you want to restore this item?",
+				confirmButtonText: "Yes, restore it!",
+				rowId: rowId,
+				tableId: tableId,
+				urlForDelete: "/PageRender/RestoreItemFromDynamicEntity",
+				type: "warning",
+				onDeleteSuccess: "Item has been restored.",
+				onDeleteFail: "Something wrong",
+				onServerNoResponse: "Api not respond or not have permissions."
+			};
+
+			swal({
+				title: object.alertText,
+				text: object.alertText,
+				type: object.type,
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: object.confirmButtonText
+			}).then((result) => {
+				if (result.value) {
+					$.ajax({
+						url: `${object.urlForDelete}`,
+						type: "post",
+						data: {
+							id: object.rowId,
+							viewModelId: viewModelId
+						},
+						success: function(data) {
+							if (data.success) {
+								const oTable = $(`${object.tableId}`).DataTable();
+								oTable.draw();
+								swal("Restored!", object.message, "success");
+							} else {
+								swal("Fail!", data.message, "error");
+							}
+						},
+						error: function() {
+							swal("Fail!", object.onServerNoResponse, "error");
+						}
+					});
+				}
+			});
+		}
+
+		function deleteItem(rowId, tableId, viewModelId) {
+			const object = {
+				alertTitle: "Delete this item?",
+				alertText: "Are you sure that you want to leave this item?",
+				confirmButtonText: "Yes, delete it!",
+				rowId: rowId,
+				tableId: tableId,
+				urlForDelete: "/PageRender/DeleteItemFromDynamicEntity",
+				type: "warning",
+				onDeleteSuccess: "Item has been deleted.",
+				onDeleteFail: "Something wrong",
+				onServerNoResponse: "Api not respond or not have permissions."
+			};
+
+			swal({
+				title: object.alertText,
+				text: object.alertText,
+				type: object.type,
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: object.confirmButtonText
+			}).then((result) => {
+				if (result.value) {
+					$.ajax({
+						url: `${object.urlForDelete}`,
+						type: "post",
+						data: {
+							id: object.rowId,
+							viewModelId: viewModelId
+						},
+						success: function(data) {
+							if (data.success) {
+								const oTable = $(`${object.tableId}`).DataTable();
+								oTable.draw();
+								swal("Deleted!", object.message, "success");
+							} else {
+								swal("Fail!", data.message, "error");
+							}
+						},
+						error: function() {
+							swal("Fail!", object.onServerNoResponse, "error");
+						}
+					});
+				}
+			});
+		}
+
 		var tables = Array.prototype.filter.call(
 			document.getElementsByTagName('table'),
 			function(el) {
-				return el.getAttribute('db-entity') != null && el.getAttribute("db-viewmodel") == null;
+				return el.getAttribute("db-viewmodel") != null;
 			}
 		);
 
@@ -62,29 +159,84 @@
 
 		$.each(tables,
 			function(index, table) {
-				const entityId = $(table).attr("db-entity");
-				var data = load("/PageRender/GetListData",
-					{
-						entityId: entityId
-					});
-				$(table).find("thead").html(null);
-				if (data.is_success) {
-					$.each(data.result[0],
-						function(index, item) {
-							$(table).find("thead").append(`<th>${index}</th>`);
-						});
-					$(table).find("tbody").html(null);
-					$.each(data.result,
-						function(index, item) {
-							let row = "<tr>";
-							$.each(item,
-								function(key, value) {
-									row += `<td>${value}</td>`;
-								});
-							row += "</tr>";
-							$(table).find("tbody").append(row);
-						});
+				const viewmodelId = $(table).attr("db-viewmodel");
+				const listId = $(table).attr("id");
+				const tableId = `#${listId}`;
+				if ($.fn.DataTable.isDataTable(tableId)) {
+					$(tableId).dataTable().fnDestroy();
+					$(tableId).dataTable().empty();
 				}
+
+				const viewmodelData = load(`/PageRender/GetViewModelById?viewModelId=${viewmodelId}`);
+				const renderColumns = [];
+				if (viewmodelData.is_success) {
+					if (viewmodelData.result.viewModelFields.length > 0) {
+						const columns = $(`#${listId} thead tr`);
+						columns.html(null);
+						let rows = "";
+						//let rows = "<th>#</th>";
+						//renderColumns.push({
+						//	data: null,
+						//	"render": function(data, type, row, meta) {
+						//		return `<div class="custom-control custom-checkbox">
+						//				<input data-viewmodel="${viewmodelId}" data-table="#${listId}" data-id="${row
+						//			.id
+						//			}" type="checkbox" class="list-select-delete custom-control-input" onchnage="alert();" id="custom_check_${
+						//			row.id}">
+						//			 <label class="custom-control-label" for="custom_check_${row.id}"></label>
+						//					</div>`;
+						//	}
+						//});
+						$.each(viewmodelData.result.viewModelFields,
+							function(index, column) {
+								rows += `<th translate='${column.translate}'>${column.name}</th>`;
+								renderColumns.push({
+									data: null,
+									"render": function(data, type, row, meta) {
+										return `<div class="data-cell" data-viewmodel="${viewmodelId}" data-id="${row.id
+											}" data-column-id="${column.id}">${eval(column.template)}</div>`;
+									}
+								});
+							});
+						rows += "<th>Actions</th>";
+						columns.html(rows);
+						renderColumns.push({
+							data: null,
+							"render": function(data, type, row, meta) {
+								return `<div class="btn-group" role="group" aria-label="Action buttons">
+									<a data-viewmodel="${viewmodelData.result.id
+									}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>
+									<a class="btn btn-info btn-sm" href="?entityId=${row.id}">Edit</a>
+									${row.isDeleted
+									? `<a href="#" class='btn btn-danger btn-sm' onclick="restoreItem('${row.id
+									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
+									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
+									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}
+									</div>`;
+							}
+						});
+					}
+				}
+
+				$(tableId).DataTable({
+					"language": {
+						"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+					},
+					dom: '<"CustomizeColumns">lBfrtip',
+					"processing": true, // for show progress bar
+					"serverSide": true, // for process server side
+					"filter": true, // this is for disable filter (search box)
+					"orderMulti": false, // for disable multiple column at once
+					"destroy": true,
+					"ajax": {
+						"url": "/PageRender/LoadPagedData",
+						"type": "POST",
+						"data": {
+							"viewModelId": viewmodelId
+						}
+					},
+					"columns": renderColumns
+				});
 			});
 
 		var forms = Array.prototype.filter.call(
@@ -161,7 +313,7 @@
 										formId: formId
 									}
 								},
-								success: function (data) {
+								success: function(data) {
 									if (data != null) {
 										if (data.is_success) {
 											location.href = data.result.redirectUrl;
@@ -189,9 +341,10 @@
 						});
 					console.log(req);
 					if (req.is_success) {
-						$.each(req.result, function(index, item) {
-							$(select).append(new Option(item.name, item.id));
-						});
+						$.each(req.result,
+							function(index, item) {
+								$(select).append(new Option(item.name, item.id));
+							});
 					}
 				});
 		}

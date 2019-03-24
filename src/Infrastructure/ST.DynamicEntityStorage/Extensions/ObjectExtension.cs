@@ -16,7 +16,9 @@ namespace ST.DynamicEntityStorage.Extensions
         UpdateSystem,
         Delete,
         Restore,
-        GetTableConfigurations
+        GetTableConfigurations,
+        AddDataRange,
+        Any
     }
     /// <summary>
     /// Object extension
@@ -80,6 +82,29 @@ namespace ST.DynamicEntityStorage.Extensions
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="obj"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static Task<ResultModel<Guid>> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
+        {
+            return Task.Run(() =>
+            {
+                var result = new ResultModel<Guid>();
+                if (model == null || !model.Any()) return result;
+                //var data = obj.ParseListObject(model);
+                var req = obj.Invoke<IList<(dynamic, Guid)>>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
+                    new List<object> { model });
+                if (!req.IsSuccess) return result;
+                result.IsSuccess = true;
+                result.Result = req.Result.Adapt<Guid>();
+                return result;
+            });
+        }
+
+        /// <summary>
+        /// Add new item
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="obj"></param>
         /// <param name="func"></param>
         /// <returns></returns>
         public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null)
@@ -116,6 +141,26 @@ namespace ST.DynamicEntityStorage.Extensions
                 return result;
             });
         }
+
+        /// <summary>
+        /// Get By id
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static Task<ResultModel<bool>> Any(this DynamicObject obj)
+        {
+            return Task.Run(() =>
+            {
+                var result = new ResultModel<bool>();
+                var req = obj.Invoke<bool>(MethodName.Any, new List<Type> { obj.Object.GetType() },
+                    new List<object> { });
+                if (!req.IsSuccess) return result;
+                result.IsSuccess = true;
+                result.Result = req.Result;
+                return result;
+            });
+        }
+
         /// <summary>
         /// Get table configurations
         /// </summary>
@@ -217,7 +262,20 @@ namespace ST.DynamicEntityStorage.Extensions
         public static object ParseObject<TObject>(this DynamicObject conf, TObject obj)
         {
             var entity = conf.Object.GetType().Name;
-            return new ObjectService(entity).ParseObject(obj);
+            var res = new ObjectService(entity).ParseObject(obj);
+            return res;
+        }
+
+        /// <summary>
+        /// Parse list object
+        /// </summary>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="conf"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static IEnumerable<object> ParseListObject<TObject>(this DynamicObject conf, IEnumerable<TObject> list)
+        {
+            return list.Select(x => conf.ParseObject(x)).ToList();
         }
 
         /// <summary>

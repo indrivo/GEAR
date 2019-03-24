@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ST.Configuration.Seed;
 using ST.CORE.Extensions;
-using ST.CORE.Extensions.Installer;
 using ST.CORE.ViewModels.InstallerModels;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
@@ -203,7 +202,7 @@ namespace ST.CORE.Installation
 			WebPageSync.SyncWebPages(entitiesDbContext);
 
 			//Sync nomenclatures
-			await NomenclatorSyncExtension.SyncNomenclatorItems(dataService);
+			await NomenclatureSyncExtension.SyncNomenclatureItems(dataService);
 
 		}
 

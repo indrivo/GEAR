@@ -1,5 +1,6 @@
 @using ST.Identity.Data.UserProfiles
 @using Microsoft.AspNetCore.Http
+@using ST.Configuration.Seed
 @using ST.Configuration.ViewModels.LocalizationViewModels
 @using ST.Identity.Abstractions
 
@@ -12,8 +13,6 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-	<!DOCTYPE html>
-
 	var layoutId = (Guid?)ViewData["layoutId"];
 	if (layoutId == null)
 	{
@@ -25,17 +24,13 @@
 	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
 	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
+	<!DOCTYPE html>
 	<html>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" type="text/css" href="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css" />
 		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/dist/jquery.toast.min.css" />
-		<style>
-			html, body {
-				margin: 0px;
-			}
-		</style>
 		<title>@ViewData["Title"] - Gear</title>
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
@@ -52,7 +47,7 @@
 		<application layout-id="@layoutId">
 			@RenderBody()
 		</application>
-		
+
 		<script>
 			window.load = function (uri, data = null, type = "get") {
 				try {
@@ -76,36 +71,57 @@
 			const controller = "@ViewContext.RouteData.Values["controller"].ToString()";
 			const view = "@ViewContext.RouteData.Values["action"].ToString()";
 
-			const settings = {
-				layout: {
-					id : "@layoutId"
-				}
-			};
-			settings.navigation = {
-				view: view,
-				controller : controller
-			};
+			const storageSettings = localStorage.getItem("settings");
+			if (storageSettings) {
+				var s = JSON.parse(storageSettings);
+				s.user = {
+					userName: "@user.UserName",
+					email: "@user.Email",
+					id: "@user.Id"
+				};
+				storageSettings.navigation = {
+					view: view,
+					controller: controller
+				};
+				s.layout = {
+					id: "@layoutId"
+				};
+				s.localization.current = {
+					identifier: "@language?.Identifier",
+					name: "@language?.Name"
+				};
 
-			settings.user = {
-				userName: "@user.UserName",
-				email: "@user.Email",
-				id: "@user.Id"
-			};
+				localStorage.setItem("settings", JSON.stringify(s));
+			} else {
+				const s = {
+					layout: {
+						id : "@layoutId"
+					}
+				};
+				s.navigation = {
+					view: view,
+					controller : controller
+				};
 
-			settings.app = {
-				name : "@LocalService.GetAppName("core")"
-			};
+				s.user = {
+					userName: "@user.UserName",
+					email: "@user.Email",
+					id: "@user.Id"
+				};
 
-			settings.localization = {
-				languages: window.load("/PageRender/GetLanguages"),
-				current: {
-					identifier: "@language.Identifier",
-					name: "@language.Name"
-				}
-			};
+				s.app = {
+					name : "@LocalService.GetAppName("core")"
+				};
 
-			localStorage.setItem("settings", JSON.stringify(settings));
-
+				s.localization = {
+					languages: window.load("/PageRender/GetLanguages"),
+					current: {
+						identifier: "@language.Identifier",
+						name: "@language.Name"
+					}
+				};
+				localStorage.setItem("settings", JSON.stringify(s));
+			}
 		</script>
 		<layout-js-code layout-id="@layoutId"></layout-js-code>
 

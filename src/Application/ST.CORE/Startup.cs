@@ -124,24 +124,20 @@ namespace ST.CORE
 						new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
 					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 				})
+				.AddDistributedMemoryCache()
 				.AddMvc();
 
-			services.AddDistributedMemoryCache()
-				.AddSession(opts =>
-				{
-					opts.Cookie.HttpOnly = true;
-					opts.Cookie.Name = CookieName;
-				})
-				.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-				.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
-				.AddHealthChecks(checks =>
-				{
-					//var minutes = 1;
-					//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
-					//	minutes = minutesParsed;
 
-					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
-				});
+			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
+			.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
+			.AddHealthChecks(checks =>
+			{
+				//var minutes = 1;
+				//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
+				//	minutes = minutesParsed;
+
+				//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
+			});
 
 			services.AddApiVersioning(options =>
 			{

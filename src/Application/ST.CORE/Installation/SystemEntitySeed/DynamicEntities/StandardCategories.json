@@ -1,0 +1,261 @@
+/*
+ * Copyright © 2019 Soft-Tehnica
+ *
+ * This file is for seed nomenclator items
+ * 
+ */
+[
+  {
+    "Name": "4 Context of the organization",
+    "Id": "27ae3d62-c4da-4f9a-8d0b-81c86458dd01",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155"
+
+  },
+  {
+    "Name": "4.1 Understanding the organization and its context",
+    "Id": "d733f0c9-e766-4261-94d4-ecb853a8587e",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "27ae3d62-c4da-4f9a-8d0b-81c86458dd01"
+  },
+  {
+    "Name": "4.2 Understanding the needs and expectations of interested parties",
+    "Id": "147F7D0B-6D90-480D-A253-577449F5C30D",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "27ae3d62-c4da-4f9a-8d0b-81c86458dd01"
+  },
+  {
+    "Name": "4.3 Determining the scope of the information security management system",
+    "Id": "1c9b4345-c63b-4b84-95e9-0a421b4a6f3b",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "27ae3d62-c4da-4f9a-8d0b-81c86458dd01"
+  },
+  {
+    "Name": "4.4 Information security management system",
+    "Id": "21379a36-2e9c-4f9f-bc83-f638f85267d4",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "27ae3d62-c4da-4f9a-8d0b-81c86458dd01"
+  },
+  {
+    "Name": "5 Leadership",
+    "Id": "b39697f4-b00a-4275-a0ab-86140eabf373",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155"
+
+  },
+  {
+    "Name": "5.1 Leadership and commitment",
+    "Id": "fddff19b-09eb-48db-af0f-4aa3afa33d1c",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "b39697f4-b00a-4275-a0ab-86140eabf373"
+  },
+  {
+    "Name": "5.2 Policy",
+    "Id": "9e376fc7-3492-4cd3-bac1-4be1df7b7ff8",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "b39697f4-b00a-4275-a0ab-86140eabf373"
+  },
+  {
+    "Name": "5.3 Organizational roles, responsibilities and authorities",
+    "Id": "f3e14405-4088-4180-8f04-3683207af912",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "b39697f4-b00a-4275-a0ab-86140eabf373"
+  },
+  {
+    "Name": "6 Planning",
+    "Id": "df15c1bb-ceaa-441a-8de4-27e59de92db2",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155"
+
+  },
+  {
+    "Name": "6.1 Actions to address risks and opportunities",
+    "Id": "e0620b99-70cb-4ab4-b2d2-7a57cde1b926",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "df15c1bb-ceaa-441a-8de4-27e59de92db2"
+  },
+  {
+    "Name": "6.1.1 General",
+    "Id": "774cf4fa-de30-44ac-9b96-722589f306cf",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "e0620b99-70cb-4ab4-b2d2-7a57cde1b926"
+  },
+  {
+    "Name": "6.1.2 Information security risk assessment",
+    "Id": "7836668d-d2ab-4877-86c4-2856b8484266",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "e0620b99-70cb-4ab4-b2d2-7a57cde1b926"
+  },
+  {
+    "Name": "6.1.3 Information security risk treatment",
+    "Id": "c90c155f-c51b-46f4-962f-76f86eb2cee7",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "e0620b99-70cb-4ab4-b2d2-7a57cde1b926"
+  },
+  {
+    "Name": "6.2 Information security objectives and planning to achieve them",
+    "Id": "a475a041-19e9-4922-8433-0d98b2cd4cbb",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "df15c1bb-ceaa-441a-8de4-27e59de92db2"
+  },
+  {
+    "Name": "7 Support",
+    "Id": "9a3fec41-1348-4a3b-9673-896807477382",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155"
+
+  },
+  {
+    "Name": "7.1 Resources",
+    "Id": "bd06421c-a45c-4a50-925d-b9c17fe48083",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "9a3fec41-1348-4a3b-9673-896807477382"
+  },
+  {
+    "Name": "7.2 Competence",
+    "Id": "d07f909e-7ccd-4084-b692-7a12cf7c7da0",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "9a3fec41-1348-4a3b-9673-896807477382"
+  },
+  {
+    "Name": "7.3 Awareness",
+    "Id": "04cb3656-a48b-4a84-bf94-7245158bd2d8",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "9a3fec41-1348-4a3b-9673-896807477382"
+  },
+  {
+    "Name": "7.4 Communication",
+    "Id": "ab051cb3-1f0c-48aa-8816-a2db159c7576",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "9a3fec41-1348-4a3b-9673-896807477382"
+  },
+  {
+    "Name": "7.5 Documented information",
+    "Id": "c051c6d3-62e2-45ba-9c2e-15f8fde0d435",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "9a3fec41-1348-4a3b-9673-896807477382"
+  },
+  {
+    "Name": "7.5.1 General",
+    "Id": "f2d87774-2f80-40d7-9faf-7f614a4330d9",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "c051c6d3-62e2-45ba-9c2e-15f8fde0d435"
+  },
+  {
+    "Name": "7.5.2 Creating and updating",
+    "Id": "0d91d5e1-2ffc-4d57-9146-c51369ca193e",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155",
+    "ParentCategoryId": "c051c6d3-62e2-45ba-9c2e-15f8fde0d435"
+  }
+]

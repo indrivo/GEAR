@@ -37,6 +37,6 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task<IEnumerable<ResultModel<(TEntity, Guid)>>> AddRange<TEntity>(IEnumerable<TEntity> data) where TEntity : BaseModel;
+        Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRange<TEntity>(IEnumerable<TEntity> data) where TEntity : BaseModel;
     }
 }

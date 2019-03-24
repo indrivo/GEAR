@@ -117,6 +117,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 	const entities = load("/PageRender/GetEntities");
 	const blocks = load("/PageRender/GetBlocks");
 	const forms = load("/PageRender/GetForms");
+	const viewModels = load("/PageRender/GetViewModels");
 
 	var domComps = editor.DomComponents;
 	var dType = domComps.getType("default");
@@ -228,12 +229,17 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 			defaults: Object.assign({}, dModel.prototype.defaults, {
 				traits: [
 					// strings are automatically converted to text types
-					"name",
+					"description",
+					{
+						type: "text",
+						label: "List identifier",
+						name: "id"
+					},
 					{
 						type: "select",
-						label: "Entity",
-						name: "db-entity",
-						options: entities.map(function (data) {
+						label: "View model",
+						name: "db-viewmodel",
+						options: viewModels.map(function (data) {
 							let obj = {};
 							obj.name = data.name;
 							obj.value = data.id;
@@ -307,8 +313,8 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 					"name",
 					{
 						type: "select",
-						label: "Standart Entity",
-						name: "db-tree-standart",
+						label: "Standard Entity",
+						name: "db-tree-standard",
 						options: getTreeOptions()
 					},
 					{
@@ -393,7 +399,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 
 	//Dynamic tree
 	blockManager.add("custom-tree-block", {
-		label: "ISO Standart Tree Block",
+		label: "ISO Standard Tree Block",
 		type: "Dynamic Tree",
 		category: "Dynamic Entities",
 		content: `
@@ -411,20 +417,24 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		type: "Dynamic List",
 		category: "Dynamic Entities",
 		content: `
+<div class="card">
+	<div class="card-body">
+		<h4 class="card-title">Title</h4>
+		<h6 class="card-subtitle">Sub Title</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
 					<div class="mr-auto">
 						<div class="form-group">
-							<a asp-action="Create" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add new
+							<a href="#" class="btn btn-primary btn-sm">
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add
 							</a>
-							<small>New item will be added.</small>
+							<small>New  will be added.</small>
 						</div>
 					</div>
 				</div>
 			</div>
-			<table class="table table-striped table-bordered" id="pageTable">
+			<table class="dynamic-table table table-striped table-bordered" id="render_" db-viewmodel="">
 				<thead>
 					<tr>
 						<th><span>Name</span></th>
@@ -436,10 +446,11 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 						<th><span>Actions</span></th>
 					</tr>
 				</thead>
-				<tbody>
-				</tbody>
+				<tbody></tbody>
 			</table>
 		</div>
+	</div>
+</div>
 			`,
 		attributes: {
 			class: "fa fa-align-justify"

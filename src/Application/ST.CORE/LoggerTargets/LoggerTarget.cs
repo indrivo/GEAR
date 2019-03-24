@@ -34,6 +34,7 @@ namespace ST.CORE.LoggerTargets
 
 			logEvent.Message = $"{DateTime.Now} {logEvent.FormattedMessage}";
 			await SendToBrowserAsync(new List<LogEventInfo> { logEvent });
+			base.Write(logEvent);
 		}
 
 		/// <summary>

@@ -1,0 +1,50 @@
+[
+  {
+    "Name": "Monthly",
+    "Description": "",
+    "Id": "871b00aa-5e94-4a1a-932c-f142dab1a84a",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "b738b3dd-3a0b-4697-9f25-b783c15f696e",
+
+  },
+  {
+    "Name": "Quarterly",
+    "Description": "",
+    "Id": "82ac1f75-7285-4f70-98e5-987f320eaf0d",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "b738b3dd-3a0b-4697-9f25-b783c15f696e",
+
+  },
+  {
+    "Name": "Biannual",
+    "Description": "",
+    "Id": "34b5e4ca-5745-45a4-8a10-072c11c16d6d",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "b738b3dd-3a0b-4697-9f25-b783c15f696e",
+
+  },
+  {
+    "Name": "Annual",
+    "Description": "",
+    "Id": "0a87676b-7cdb-462d-bf14-441d5d8b0a92",
+    "Author": "system",
+    "Created": "2019-01-29T07:59:12.6160761Z",
+    "ModifiedBy": null,
+    "Changed": "2019-01-29T07:59:12.6160762Z",
+    "IsDeleted": false,
+    "NomenclatorId": "b738b3dd-3a0b-4697-9f25-b783c15f696e",
+
+  }
+]

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
+using ST.Configuration.Seed;
 using ST.CORE.Attributes;
 using ST.CORE.Installation;
 using ST.CORE.Services.Abstraction;
@@ -626,15 +627,12 @@ namespace ST.CORE.Controllers.Entity
 				Context.SaveChanges();
 
 				var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.html");
-				var jsTemplateFileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.js");
 				var reader = new StreamReader(fileInfo.CreateReadStream());
-				var readerJs = new StreamReader(jsTemplateFileInfo.CreateReadStream());
 				var template = await reader.ReadToEndAsync();
 				var listId = Guid.NewGuid();
 				template = template.Replace("#Title", name);
 				template = template.Replace("#SubTitle", name);
 				template = template.Replace("#EntityName", viewModel.TableModel.Name);
-				template = template.Replace("#EntityId", viewModel.TableModelId.ToString());
 				template = template.Replace("#ViewModelId", viewModel.Id.ToString());
 				template = template.Replace("#ListId", listId.ToString());
 
@@ -646,17 +644,7 @@ namespace ST.CORE.Controllers.Entity
 
 				template = template.Replace("#TableHead", tableHead.ToString());
 
-				var templateJs = await readerJs.ReadToEndAsync();
-				templateJs = templateJs.Replace("#EntityName", viewModel.TableModel.Name);
-				templateJs = templateJs.Replace("#EntityId", viewModel.TableModelId.ToString());
-				templateJs = templateJs.Replace("#ViewModelId", viewModel.Id.ToString());
-				templateJs = templateJs.Replace("#ListId", listId.ToString());
-				var res = _pageRender.SavePageContent(pageId, template, "", templateJs);
-
-				if (!res.IsSuccess)
-				{
-
-				}
+				var res = _pageRender.SavePageContent(pageId, template, "", string.Empty);
 			}
 			catch (Exception e)
 			{

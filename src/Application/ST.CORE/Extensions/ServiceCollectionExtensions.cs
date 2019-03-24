@@ -23,9 +23,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using ST.BaseBusinessRepository;
 using ST.Configuration.Abstractions;
+using ST.Configuration.Seed;
 using ST.Configuration.Services;
 using ST.Configuration.ViewModels.LocalizationViewModels;
-using ST.CORE.Installation;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
 using ST.DynamicEntityStorage;
@@ -262,7 +262,6 @@ namespace ST.CORE.Extensions
 				SupportedUICultures = supportedCultures
 			};
 			app.UseRequestLocalization(opts);
-			app.UseSession();
 			var locMon = app.ApplicationServices.GetRequiredService<IOptionsMonitor<LocalizationConfigModel>>();
 			locMon.OnChange(locConfig =>
 			{

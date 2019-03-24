@@ -272,16 +272,20 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public async Task<bool> Any<TEntity>() where TEntity : BaseModel
+        public async Task<ResultModel<bool>> Any<TEntity>() where TEntity : BaseModel
         {
             var entity = typeof(TEntity).Name;
-            if (string.IsNullOrEmpty(entity)) return false;
+            if (string.IsNullOrEmpty(entity)) return default;
             var count = await Count<TEntity>();
             if (count.IsSuccess)
             {
-                return count.Result > 0;
+                return new ResultModel<bool>
+                {
+                    Result = count.Result > 0,
+                    IsSuccess = true
+            };
             }
-            return false;
+            return default;
         }
         /// <inheritdoc />
         /// <summary>
@@ -391,17 +395,16 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<ResultModel<(TEntity, Guid)>>> AddRange<TEntity>(IEnumerable<TEntity> data) where TEntity : BaseModel
+        public async Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRange<TEntity>(IEnumerable<TEntity> data) where TEntity : BaseModel
         {
-            var result = new List<ResultModel<(TEntity, Guid)>>();
+            var result = new ResultModel<IList<(TEntity, Guid)>>
+            {
+                Result = new List<(TEntity, Guid)>()
+            };
             foreach (var item in data)
             {
                 var rq = await AddSystem(item);
-                result.Add(new ResultModel<(TEntity, Guid)>
-                {
-                    IsSuccess = rq.IsSuccess,
-                    Result = (item, rq.Result)
-                });
+                result.Result.Add((item, rq.Result));
             }
             return result;
         }
@@ -705,7 +708,7 @@ namespace ST.DynamicEntityStorage
         /// <param name="tableName"></param>
         /// <returns></returns>
         public DynamicObject Table(string tableName)
-            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor, TenantId);
+            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor);
 
         /// <inheritdoc />
         /// <summary>

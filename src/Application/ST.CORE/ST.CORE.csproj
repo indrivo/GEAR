@@ -16,8 +16,10 @@
   <ItemGroup>
     <None Remove="app_offline.htm" />
     <None Remove="ExtraStatic\modeler.js" />
+    <None Remove="Static\Templates\iso\category.html" />
+    <None Remove="Static\Templates\iso\requirements.html" />
+    <None Remove="Static\Templates\iso\standard.html" />
     <None Remove="Static\Templates\listDefaultTemplate.html" />
-    <None Remove="Static\Templates\listDefaultTemplate.js" />
     <None Remove="Static\Templates\Menu\renderMenu.html" />
     <None Remove="Static\Templates\profilefields.html" />
   </ItemGroup>
@@ -73,10 +75,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Views\Vocabulary\**" />
     <Compile Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <Content Remove="Views\Vocabulary\**" />
     <Content Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <EmbeddedResource Remove="Views\Vocabulary\**" />
     <EmbeddedResource Remove="wwwroot\assets\js\workflow\bower_components\**" />
+    <None Remove="Views\Vocabulary\**" />
     <None Remove="wwwroot\assets\js\workflow\bower_components\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Controllers\Entity\VocabularyController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="appsettings.Stage.json" />
@@ -196,6 +205,57 @@
     <ProjectReference Include="..\..\Infrastructure\ST.Processes\ST.Procesess.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\GoalPartyRequirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\CategoryRequirements.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\StandardCategories.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\Standards.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\PartyRequirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\Requirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\DynamicEntities\KPI.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\BaseVocabulary\VocabularyList.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\FulfillmentCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedParty.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedPartyCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\NomRequirement.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\RequirementCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\ObjectiveCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\PeriodCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\MeasurementCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\KpiCategory.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="menus.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -212,21 +272,6 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\BlockCategory\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Requirement\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Requirement\CreateItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Requirement\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Requirement\EditItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Requirement\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Tenant\Edit.cshtml">
@@ -263,36 +308,6 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\ViewModel\TemplateEdit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-	<Content Update="Views\KPI\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\KPI\CreateItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\KPI\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\KPI\EditItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\KPI\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Nomenclator\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Nomenclator\CreateItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Nomenclator\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Nomenclator\EditItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Nomenclator\Index.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

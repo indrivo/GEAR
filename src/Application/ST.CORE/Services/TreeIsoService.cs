@@ -6,9 +6,7 @@ using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels.TreeISOViewModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Tables;
-using ST.Entities.Services.Abstraction;
 
 namespace ST.CORE.Services
 {
@@ -51,6 +49,8 @@ namespace ST.CORE.Services
 				});
 			}
 
+			res.IsSuccess = true;
+			res.Result = tree;
 			return res;
 		}
 

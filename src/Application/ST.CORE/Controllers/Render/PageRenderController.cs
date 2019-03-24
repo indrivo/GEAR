@@ -13,11 +13,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
-using ST.BaseRepository;
 using ST.Configuration;
+using ST.Configuration.Seed;
 using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.CORE.Attributes;
-using ST.CORE.Installation;
 using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.PageViewModels;
@@ -417,13 +416,12 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <param name="param"></param>
 		/// <param name="viewModelId"></param>
-		/// <param name="tableId"></param>
 		/// <returns></returns>
 		[HttpPost]
 		[AjaxOnly]
-		public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, Guid tableId)
+		public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId)
 		{
-			if (viewModelId == Guid.Empty || tableId == Guid.Empty) return Json(default(DTResult<object>));
+			if (viewModelId == Guid.Empty) return Json(default(DTResult<object>));
 			var viewModel = await _context.ViewModels
 				.Include(x => x.TableModel)
 				.ThenInclude(x => x.TableFields)
@@ -497,6 +495,7 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
+		[AllowAnonymous]
 		public JsonResult GetLanguages()
 		{
 			var languages = _locConfig.Value.Languages.ToList();
@@ -599,17 +598,17 @@ namespace ST.CORE.Controllers.Render
 		/// <summary>
 		/// Delete page by id
 		/// </summary>
-		/// <param name="entityId"></param>
+		/// <param name="viewModelId"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		[AjaxOnly]
-		public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid entityId, string id)
+		public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
 		{
-			if (string.IsNullOrEmpty(id) || entityId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
-			var table = _context.Table.FirstOrDefault(x => x.Id.Equals(entityId));
-			if (table == null) return Json(new { message = "Fail to delete!", success = false });
-			var response = await _service.Table(table.Name).Delete<object>(Guid.Parse(id));
+			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
+			var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+			var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
 			if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
 
 			return Json(new { message = "Item was deleted!", success = true });
@@ -618,17 +617,17 @@ namespace ST.CORE.Controllers.Render
 		/// <summary>
 		/// Delete page by id
 		/// </summary>
-		/// <param name="entityId"></param>
+		/// <param name="viewModelId"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		[AjaxOnly]
-		public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid entityId, string id)
+		public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
 		{
-			if (string.IsNullOrEmpty(id) || entityId == Guid.Empty) return Json(new { message = "Fail to restore!", success = false });
-			var table = _context.Table.FirstOrDefault(x => x.Id.Equals(entityId));
-			if (table == null) return Json(new { message = "Fail to restore!", success = false });
-			var response = await _service.Table(table.Name).Restore<object>(Guid.Parse(id));
+			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to restore!", success = false });
+			var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
+			var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
 			if (!response.IsSuccess) return Json(new { message = "Fail to restore!", success = false });
 
 			return Json(new { message = "Item was restored!", success = true });

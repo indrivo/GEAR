@@ -3,9 +3,6 @@ using NLog.Web;
 using NLog;
 using Microsoft.Extensions.Logging;
 using ST.CORE.LoggerTargets;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using ST.Configuration.Seed;
 
 namespace ST.CORE.Extensions
 {
@@ -15,10 +12,6 @@ namespace ST.CORE.Extensions
 		{
 			builder.ConfigureServices(services =>
 			{
-				var sp = services.BuildServiceProvider();
-				var env = sp.GetService<IHostingEnvironment>();
-				var configuration = sp.GetService<IConfiguration>();
-				var uri = IdentityServerConfigDbSeed.GetClientUrl(env, configuration, "CORE");
 				var config = new NLog.Config.LoggingConfiguration();
 				var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 				var customTarget = new LoggerTarget();

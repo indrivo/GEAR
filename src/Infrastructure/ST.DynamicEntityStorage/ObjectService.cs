@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Http;
-using ST.BaseRepository;
+using ST.Audit.Models;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
@@ -30,9 +30,9 @@ namespace ST.DynamicEntityStorage
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
         /// <returns></returns>
-        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor, Guid? tenantId)
+        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
-            var proprietes = typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
+            var proprietes = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
             var entity = _asemblyName.Name;
             var schema = context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
             var model = new EntityViewModel
@@ -49,11 +49,9 @@ namespace ST.DynamicEntityStorage
 
             foreach (var field in model.Fields)
             {
-                if (!proprietes.Contains(field.ColumnName))
-                {
-                    var fieldType = GetTypeFromString(field.Type);
-                    CreateProperty(dynamicClass, field.ColumnName, fieldType);
-                }
+                if (proprietes.Contains(field.ColumnName)) continue;
+                var fieldType = GetTypeFromString(field.Type);
+                CreateProperty(dynamicClass, field.ColumnName, fieldType);
             }
 
             var type = dynamicClass.CreateType();
@@ -73,14 +71,14 @@ namespace ST.DynamicEntityStorage
         public object ParseObject<TObject>(TObject obj)
         {
             //TODO: Resolve exception for parse object to custom object
-            var proprietes = typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
+            var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
             var dynamicClass = CreateClass();
             CreateConstructor(dynamicClass);
             var props = obj.GetType().GetProperties();
 
             foreach (var prop in props)
             {
-                if (!proprietes.Contains(prop.Name))
+                if (!proprieties.Contains(prop.Name))
                 {
                     CreateProperty(dynamicClass, prop.Name, prop.PropertyType);
                 }
@@ -143,7 +141,7 @@ namespace ST.DynamicEntityStorage
                                 TypeAttributes.AnsiClass |
                                 TypeAttributes.BeforeFieldInit |
                                 TypeAttributes.AutoLayout
-                                , typeof(BaseModel));
+                                , typeof(ExtendedModel));
             return typeBuilder;
         }
         /// <summary>

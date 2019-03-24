@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
@@ -58,11 +59,6 @@ namespace ST.Configuration.Server
                         if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "language").Equals(default(KeyValuePair<string, string>)))
                         {
                             ctx.Response.Cookies.Append("language", Settings.DefaultLanguage);
-                        }
-
-                        if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "translations").Equals(default(KeyValuePair<string, string>)))
-                        {
-                            ctx.Response.Cookies.Append("translations", "");
                         }
                     }
                     catch (Exception e)
@@ -117,15 +113,6 @@ namespace ST.Configuration.Server
                 ctx.Response.Cookies.Delete(cookie);
             }
 
-            return ctx;
-        }
-
-        public static HttpContext AddOrUpdateTranslations(this HttpContext ctx)
-        {
-            var language = ctx.Request.Cookies["language"];
-            var localizer = ctx.RequestServices.GetRequiredService<IStringLocalizer>();
-            var translations = localizer.GetAllForLanguage(language);
-            var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value); 
             return ctx;
         }
 

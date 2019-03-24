@@ -64,7 +64,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        Task<bool> Any<TEntity>() where TEntity : BaseModel;
+        Task<ResultModel<bool>> Any<TEntity>() where TEntity : BaseModel;
 
         /// <summary>
         /// Count data
