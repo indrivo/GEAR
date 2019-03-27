@@ -10,8 +10,8 @@ using ST.Identity.Data;
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190321121949_Initial")]
-    partial class Initial
+    [Migration("20190327151444_Index")]
+    partial class Index
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,8 +31,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired();
+                    b.Property<Guid>("RoleId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.HasKey("Id");
 
@@ -50,8 +50,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.HasKey("Id");
 
@@ -68,8 +68,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -80,9 +80,11 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
-                    b.Property<string>("RoleId");
+                    b.Property<Guid>("RoleId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.HasKey("UserId", "RoleId");
 
@@ -93,7 +95,8 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.Property<string>("LoginProvider");
 
@@ -206,8 +209,9 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("ST.Identity.Data.Permissions.ApplicationRole", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.Property<string>("Author");
 
@@ -367,7 +371,8 @@ namespace ST.Identity.Migrations
 
                     b.Property<Guid>("PermissionId");
 
-                    b.Property<string>("RoleId");
+                    b.Property<Guid?>("RoleId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.Property<Guid?>("TenantId");
 
@@ -386,7 +391,8 @@ namespace ST.Identity.Migrations
                 {
                     b.Property<Guid>("AuthGroupId");
 
-                    b.Property<string>("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.Property<string>("Author");
 
@@ -413,8 +419,9 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("ST.Identity.Data.UserProfiles.ApplicationUser", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.Property<int>("AccessFailedCount");
 
@@ -518,7 +525,8 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("ST.Identity.Data.UserProfiles.RoleProfile", b =>
                 {
-                    b.Property<string>("ApplicationRoleId");
+                    b.Property<Guid>("ApplicationRoleId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
 
                     b.Property<Guid>("ProfileId");
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -125,8 +126,9 @@ namespace ST.DynamicEntityStorage
             {
                 if (data.IsSuccess) data.Result = data.Result.ToList().Where(func).ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 data.IsSuccess = false;
             }
             return data;
@@ -145,6 +147,7 @@ namespace ST.DynamicEntityStorage
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
             result.IsSuccess = true;
             var model = await Create<TEntity>(schema);
+
             model.Values = new List<Dictionary<string, object>>();
             var data = _context.ListEntitiesByParams(model);
             result.Result = data.Result.Values;
@@ -283,7 +286,7 @@ namespace ST.DynamicEntityStorage
                 {
                     Result = count.Result > 0,
                     IsSuccess = true
-            };
+                };
             }
             return default;
         }
@@ -347,12 +350,13 @@ namespace ST.DynamicEntityStorage
             if (string.IsNullOrEmpty(entity.Name)) return result;
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity.Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
+            var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
             model.SetDefaultValues(table);
             model["Changed"] = DateTime.Now;
             model["Created"] = DateTime.Now;
-            model["Author"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
-            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+            model["Author"] = author;
+            model["ModifiedBy"] = author;
 
             var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
                         entity, TrackEventType.Added);
@@ -503,13 +507,13 @@ namespace ST.DynamicEntityStorage
                 }
             };
             var res = _context.DeleteById(table, true);
-            if (res.Result)
-            {
-                result.IsSuccess = true;
-                result.Result = id;
-            }
+            if (!res.Result) return result;
+            result.IsSuccess = true;
+            result.Result = id;
             return result;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Change status to is deleted
@@ -529,6 +533,8 @@ namespace ST.DynamicEntityStorage
             result = await Update<TEntity>(model);
             return result;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Restore item
@@ -549,6 +555,8 @@ namespace ST.DynamicEntityStorage
             return result;
         }
 
+
+
         /// <inheritdoc />
         /// <summary>
         /// Check if exists
@@ -563,6 +571,8 @@ namespace ST.DynamicEntityStorage
             result.IsSuccess = item.IsSuccess;
             return result;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Implement create entity model with base model
@@ -581,6 +591,8 @@ namespace ST.DynamicEntityStorage
             model = await ViewModelBuilder.ResolveAsync(_context, model);
             return model;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Implement create entity model without base model
@@ -602,6 +614,8 @@ namespace ST.DynamicEntityStorage
                 model = ViewModelBuilder.Create(_context, model);
                 return model;
             });
+
+
 
         /// <inheritdoc />
         /// <summary>
@@ -681,6 +695,8 @@ namespace ST.DynamicEntityStorage
             }
             return (T)obj;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Get T object from IEnumerable dictionary
@@ -692,6 +708,8 @@ namespace ST.DynamicEntityStorage
         {
             return dictionaries.Select(GetObject<T>).ToList();
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Implement from object to dictionary
@@ -722,6 +740,7 @@ namespace ST.DynamicEntityStorage
                 Service = new DynamicService(_context, _httpContextAccessor)
             };
 
+
         /// <inheritdoc />
         /// <summary>
         /// Filter list
@@ -750,6 +769,7 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Func<object, bool> predicate = null)
             => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate);
+
 
         /// <inheritdoc />
         /// <summary>

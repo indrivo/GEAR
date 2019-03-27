@@ -51,9 +51,9 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
 		/// <summary>
-		/// Inject localizer
+		/// Inject localize
 		/// </summary>
-		private readonly IStringLocalizer _localizer;
+		private readonly IStringLocalizer _localize;
 		/// <summary>
 		/// Inject page render
 		/// </summary>
@@ -81,14 +81,14 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="context"></param>
 		/// <param name="appContext"></param>
 		/// <param name="service"></param>
-		/// <param name="localizer"></param>
+		/// <param name="localize"></param>
 		/// <param name="locConfig"></param>
 		/// <param name="pageRender"></param>
 		/// <param name="menuService"></param>
 		/// <param name="userManager"></param>
 		/// <param name="isoService"></param>
 		public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
-			IDynamicService service, IStringLocalizer localizer,
+			IDynamicService service, IStringLocalizer localize,
 			IOptionsSnapshot<LocalizationConfigModel> locConfig,
 			IPageRender pageRender,
 			IMenuService menuService, UserManager<ApplicationUser> userManager, ITreeIsoService isoService)
@@ -96,7 +96,7 @@ namespace ST.CORE.Controllers.Render
 			_context = context;
 			_appContext = appContext;
 			_service = service;
-			_localizer = localizer;
+			_localize = localize;
 			_locConfig = locConfig;
 			_menuService = menuService;
 			_userManager = userManager;
@@ -248,7 +248,7 @@ namespace ST.CORE.Controllers.Render
 				return Json(null);
 			}
 
-			var translations = _localizer.GetAllForLanguage(lang);
+			var translations = _localize.GetAllForLanguage(lang);
 			var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
 			return Json(json);
 		}
@@ -475,6 +475,25 @@ namespace ST.CORE.Controllers.Render
 			var forms = _context.Forms.Where(x => !x.IsDeleted).ToList();
 
 			return new JsonResult(forms);
+		}
+
+		/// <summary>
+		/// Get all pages
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public JsonResult GetPages()
+		{
+			var pages = _context.Pages
+				.Include(x => x.Settings)
+				.Where(x => !x.IsDeleted && !x.IsLayout)
+				.Select(x => new
+				{
+					Id = x.Path,
+					x.Settings.Name
+				}).ToList();
+
+			return new JsonResult(pages);
 		}
 
 		/// <summary>
@@ -738,6 +757,15 @@ namespace ST.CORE.Controllers.Render
 				result.Errors = new List<IErrorModel>
 				{
 					new ErrorModel(string.Empty, "Entity not found")
+				};
+				return Json(result);
+			}
+
+			if (entity.IsSystem || entity.IsPartOfDbContext)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "The system entity can not be edited")
 				};
 				return Json(result);
 			}

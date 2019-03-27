@@ -34,8 +34,7 @@ function CreateTemplate(values) {
 function getTableId() {
 	const url = location.href;
 	const parsedUrl = new URL(url);
-	const id = parsedUrl.searchParams.get("tableId");
-	return id;
+	return parsedUrl.searchParams.get("tableId");
 }
 
 function getFormTypeId() {
@@ -61,7 +60,6 @@ function Request(id) {
 		}
 	});
 }
-
 
 function Populate(data) {
 	const content = $.render.preview(data);

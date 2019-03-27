@@ -159,8 +159,13 @@
 
 		$.each(tables,
 			function(index, table) {
-				const viewmodelId = $(table).attr("db-viewmodel");
-				const listId = $(table).attr("id");
+				const listRef = $(table);
+				const viewmodelId = listRef.attr("db-viewmodel");
+				const listId = listRef.attr("id");
+				const hasEditPage = table.hasAttribute("data-is-editable");
+				const hasInlineEdit = table.hasAttribute("data-is-editable-inline");
+				const hasDeleteRestore = table.hasAttribute("data-allow-edit-restore");
+				const editPageLink = listRef.attr("data-edit-href");
 				const tableId = `#${listId}`;
 				if ($.fn.DataTable.isDataTable(tableId)) {
 					$(tableId).dataTable().fnDestroy();
@@ -181,7 +186,7 @@
 						//		return `<div class="custom-control custom-checkbox">
 						//				<input data-viewmodel="${viewmodelId}" data-table="#${listId}" data-id="${row
 						//			.id
-						//			}" type="checkbox" class="list-select-delete custom-control-input" onchnage="alert();" id="custom_check_${
+						//			}" type="checkbox" class="list-select-delete custom-control-input" onchange="alert();" id="custom_check_${
 						//			row.id}">
 						//			 <label class="custom-control-label" for="custom_check_${row.id}"></label>
 						//					</div>`;
@@ -204,14 +209,25 @@
 							data: null,
 							"render": function(data, type, row, meta) {
 								return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a data-viewmodel="${viewmodelData.result.id
-									}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>
-									<a class="btn btn-info btn-sm" href="?entityId=${row.id}">Edit</a>
-									${row.isDeleted
+									${hasInlineEdit
+									? `	<a data-viewmodel="${viewmodelData.result.id
+									}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
+									: ``}
+								
+									${hasEditPage
+									? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
+									}&&listId=${viewmodelData.result.id}">Edit</a>`
+									: ``}
+
+
+									${hasDeleteRestore
+									? `${row.isDeleted
 									? `<a href="#" class='btn btn-danger btn-sm' onclick="restoreItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
 									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
-									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}
+									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
+									: ``}
+									
 									</div>`;
 							}
 						});

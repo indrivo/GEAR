@@ -23,10 +23,9 @@ function getScripts() {
 	const def = ["/lib/jquery/dist/jquery.js", "/lib/tether/dist/js/tether.min.js",
 		"/lib/bootstrap/dist/js/bootstrap.bundle.min.js", "/lib/jquery-ui/jquery-ui.min.js",
 		"/lib/datatables/media/js/jquery.dataTables.min.js", "/lib/datatables/media/js/dataTables.bootstrap4.min.js",
-		"/lib/jquery-slimscroll/jquery.slimscroll.js", "/js/waves.js", "/lib/sweetalert2/dist/sweetalert2.min.js",
-		"/js/sidebarmenu.js", "/lib/select2/dist/js/select2.full.min.js",
-		"/lib/sticky-kit/jquery.sticky-kit.js", "/assets/js/actions.js", "/js/site.js",
-		"/assets/js/actions.js", "/js/custom.js", "/assets/js/notifications/notificator.js",
+		"/lib/jquery-slimscroll/jquery.slimscroll.js", "/lib/sweetalert2/dist/sweetalert2.min.js",
+		"/lib/select2/dist/js/select2.full.min.js",
+		"/lib/sticky-kit/jquery.sticky-kit.js", "/js/site.js",
 		"/lib/jsrender/jsrender.min.js", "/lib/jsviews/jsviews.min.js",
 		"/js/signalr/dist/browser/signalr.js", "/assets/js/builder/after-load.js", "/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"];
 
@@ -118,6 +117,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 	const blocks = load("/PageRender/GetBlocks");
 	const forms = load("/PageRender/GetForms");
 	const viewModels = load("/PageRender/GetViewModels");
+	const pages = load("/PageRender/GetPages");
 
 	var domComps = editor.DomComponents;
 	var dType = domComps.getType("default");
@@ -135,7 +135,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		events: {
 			"click": function () {
 				const formId = this.target.attributes.attributes["db-form"];
-				var mdlDialog = document.querySelector(".gjs-mdl-dialog");
+				const mdlDialog = document.querySelector(".gjs-mdl-dialog");
 				mdlDialog.className += " " + mdlClass;
 				modal.setTitle("Preview form");
 
@@ -144,12 +144,12 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 					const json = form.cleanJson(data.result);
 
 					try {
-						let formeo = new window.Formeo(
+						const formeo = new window.Formeo(
 							{
 								allowEdit: false
 							},
 							JSON.stringify(json));
-						let container = document.createElement("div");
+						const container = document.createElement("div");
 
 						const renderContainer = container;
 
@@ -167,7 +167,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		},
 		getInputEl: function () {
 			if (!this.inputEl) {
-				var button = document.createElement("button");
+				const button = document.createElement("button");
 				button.innerHTML = "Preview form";
 				button.setAttribute("class", "btn btn-primary");
 				button.setAttribute("style", "width: 100%;");
@@ -194,7 +194,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 					"name",
 					{
 						type: "text",
-						name: "placeholder",
+						name: "placeholder"
 					},
 					{
 						type: "select",
@@ -204,7 +204,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 							{ value: "text", name: "Text" },
 							{ value: "email", name: "Email" },
 							{ value: "password", name: "Password" },
-							{ value: "number", name: "Number" },
+							{ value: "number", name: "Number" }
 						]
 					}, {
 						type: "checkbox",
@@ -240,12 +240,38 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 						label: "View model",
 						name: "db-viewmodel",
 						options: viewModels.map(function (data) {
-							let obj = {};
+							const obj = {};
 							obj.name = data.name;
 							obj.value = data.id;
 							return obj;
 						})
-					}]
+					},
+					{
+						type: "checkbox",
+						name: "data-is-editable",
+						label: "Has edit option?"
+					},
+					{
+						type: "checkbox",
+						name: "data-is-editable-inline",
+						label: "Allow edit inline?"
+					},
+					{
+						type: "select",
+						label: "Edit Link",
+						name: "data-edit-href",
+						options: pages.map(function (data) {
+							const obj = {};
+							obj.name = data.name;
+							obj.value = data.id;
+							return obj;
+						})
+					},
+					{
+						type: "checkbox",
+						name: "data-allow-edit-restore",
+						label: "Allow delete/restore?"
+					},]
 			})
 		}, {
 				isComponent: function (el) {
@@ -270,7 +296,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 						label: "Form",
 						name: "db-form",
 						options: forms.map(function (data) {
-							let obj = {};
+							const obj = {};
 							obj.name = data.name;
 							obj.value = data.id;
 							return obj;
@@ -296,7 +322,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 
 	function getTreeOptions() {
 		return entities.map(function (data) {
-			let obj = {};
+			const obj = {};
 			obj.name = data.name;
 			obj.value = data.id;
 			return obj;
@@ -372,7 +398,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		content: `
 		 <div class="row"> 
                     <div class="col-lg-12">
-                        <form class="form" style="margin-left: 1em !important">
+                        <form class="render-dynamic-form" style="margin-left: 1em !important">
                                     <div class="form-group">
                                         <label for="exampleInputuname">User Name</label>
                                         <div class="input-group">

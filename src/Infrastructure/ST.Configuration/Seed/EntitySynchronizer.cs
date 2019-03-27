@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using ST.BaseBusinessRepository;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
@@ -19,19 +18,21 @@ namespace ST.Configuration.Seed
 		private readonly EntitiesDbContext _context;
 		private readonly IBaseBusinessRepository<EntitiesDbContext> _repository;
 
-		public EntitySynchronizer(IBaseBusinessRepository<EntitiesDbContext> repository, IConfiguration configuration,
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="repository"></param>
+        /// <param name="context"></param>
+		public EntitySynchronizer(IBaseBusinessRepository<EntitiesDbContext> repository,
 			EntitiesDbContext context)
 		{
-			Configuration = configuration;
-			_repository = repository;
+            _repository = repository;
 			_context = context;
 			_connectionString = _context.Database.GetDbConnection().ConnectionString;
 		}
 
-		private static IConfiguration Configuration { get; set; }
 
-
-		/// <summary>
+        /// <summary>
 		/// Sync entities
 		/// </summary>
 		/// <param name="tableModel"></param>
@@ -115,8 +116,8 @@ namespace ST.Configuration.Seed
 				else
 				{
 					ITablesService sqlService = _context.Database.IsNpgsql()
-						? new NpgTablesService(repository: _repository) : _context.Database.IsSqlServer()
-							? new TablesService(repository: _repository) : null;
+						? new NpgTablesService() : _context.Database.IsSqlServer()
+							? new TablesService() : null;
 
 					if (sqlService == null) return;
 					var response = sqlService.CreateSqlTable(table: resultModel, connectionString: _connectionString);
@@ -124,7 +125,7 @@ namespace ST.Configuration.Seed
 					// Add
 					var fieldTypeList = _context.TableFieldTypes.ToList();
 					var fieldConfigList = _context.TableFieldConfigs.ToList();
-					//
+					
 					foreach (var item in tableModel.Fields)
 					{
 						foreach (var configViewModel in item.Configurations)

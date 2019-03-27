@@ -1,13 +1,22 @@
 @model IEnumerable<ST.CORE.ViewModels.FormsViewModels.FormListViewModel>
 
 @inject IStringLocalizer Localizer
+
 @{
 	ViewData["Title"] = "Forms list";
 }
+
 <div class="card">
 	<div class="card-body">
 		<h4 class="card-title">@Localizer["forms"]</h4>
 		<h6 class="card-subtitle">List of forms</h6>
+		<div class="row">
+			<div class="col-md-12">
+				<blockquote>
+					This section includes all system forms that are attached to a dynamic entity
+				</blockquote>
+			</div>
+		</div>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">

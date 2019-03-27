@@ -13,10 +13,10 @@ using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Constants;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
+using ST.Entities.Settings;
 using ST.Entities.Utils;
 using ST.Entities.ViewModels.Table;
 using ST.Identity.Attributes;
@@ -76,9 +76,9 @@ namespace ST.CORE.Controllers.Entity
 		private ITablesService GetSqlService()
 		{
 			return ConnectionString.Item1.Equals(DbProviderType.MsSqlServer) ?
-															new TablesService(Repository)
+															new TablesService()
 															: ConnectionString.Item1.Equals(DbProviderType.PostgreSql)
-															? new NpgTablesService(Repository)
+															? new NpgTablesService()
 															: null;
 		}
 
@@ -397,7 +397,7 @@ namespace ST.CORE.Controllers.Entity
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
-					field.DataType = "uniqueidentifier";
+					field.DataType = TableFieldDataType.Guid;
 					break;
 				case FieldType.Boolean:
 					FieldConfigViewModel defaultBool = null;
@@ -555,7 +555,7 @@ namespace ST.CORE.Controllers.Entity
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
-					field.DataType = "uniqueidentifier";
+					field.DataType = TableFieldDataType.Guid;
 					break;
 				case FieldType.Boolean:
 					FieldConfigViewModel defaultBool = null;
@@ -585,7 +585,7 @@ namespace ST.CORE.Controllers.Entity
 					if (defaultTime?.Value != null && defaultTime.Value.Trim() == "off") defaultTime.Value = null;
 					break;
 				case FieldType.File:
-					field.DataType = "uniqueidentifier";
+					field.DataType = TableFieldDataType.Guid;
 					var foreignTable = field.Configurations.FirstOrDefault(s => s.Name == "ForeingTable");
 					if (foreignTable != null)
 					{

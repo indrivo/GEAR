@@ -13,7 +13,6 @@ using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Data;
 
 namespace ST.CORE.Controllers.Identity
 {

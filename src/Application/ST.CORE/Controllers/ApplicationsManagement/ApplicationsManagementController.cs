@@ -22,7 +22,6 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Extensions;
-using ST.Identity.Data;
 using ST.Notifications.Abstraction;
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 

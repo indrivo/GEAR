@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using ST.BaseBusinessRepository;
 using ST.Entities.Data;
@@ -294,20 +295,20 @@ namespace ST.Entities.Services
                     RedirectUrl = model.RedirectUrl
                 };
 
-                var settings = new Settings();
-                var stages = new List<Stage>();
-                var rows = new List<Row>();
-                var columns = new List<Column>();
-                var fields = new List<Field>();
-                var stageRows = new List<StageRows>();
-                var rowColumns = new List<RowColumn>();
-                var columnFields = new List<ColumnField>();
+                var settings = new Models.Forms.Settings();
+                var stages = new Collection<Stage>();
+                var rows = new Collection<Row>();
+                var columns = new Collection<Column>();
+                var fields = new Collection<Field>();
+                var stageRows = new Collection<StageRows>();
+                var rowColumns = new Collection<RowColumn>();
+                var columnFields = new Collection<ColumnField>();
 
                 foreach (var stage in model.Model.Stages)
                 {
                     stages.Add(new Stage
                     {
-                        Settings = new Settings()
+                        Settings = new Models.Forms.Settings()
                     });
 
                     if (!stage.Value.Rows.Any()) continue;
@@ -459,7 +460,7 @@ namespace ST.Entities.Services
                                             {
                                                 ColumnId = columns[columns.Count - 1].Id,
                                                 FieldId = fields[fields.Count - 1].Id,
-                                                Order = fields[fields.Count - 1].Order
+                                                Order = fields.ElementAtOrDefault(fields.Count - 1).Order
                                             });
                                         }
                                     }

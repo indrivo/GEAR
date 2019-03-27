@@ -49,7 +49,7 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[Authorize]
-		public async Task<IActionResult> Index()
+		public IActionResult Index()
 		{
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
 			ViewBag.TotalSessions = _hub.GetSessionsCount();	

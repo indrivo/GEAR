@@ -114,7 +114,6 @@
 			var form = new Form();
 			const id = form.getFromUrl("formId");
 			const data = form.getFormFronServer(id);
-			console.log(data);
 			const formeo = new window.Formeo(fr.getOptions('.build-form'), JSON.stringify(data.result));
 			document.querySelector("#RenderForm").onclick = evt => {
 				if (!editing) {

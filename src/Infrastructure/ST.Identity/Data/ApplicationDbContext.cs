@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -76,6 +77,9 @@ namespace ST.Identity.Data
                 .HasOne(ug => ug.AuthGroup)
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
+
+            builder.Entity<ApplicationUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
+            builder.Entity<ApplicationRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
             builder.RegisterIndexes();
         }

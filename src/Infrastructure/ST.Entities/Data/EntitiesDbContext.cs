@@ -54,7 +54,7 @@ namespace ST.Entities.Data
         public DbSet<Option> Options { get; set; }
         public DbSet<RowColumn> RowColumns { get; set; }
         public DbSet<Row> Rows { get; set; }
-        public DbSet<Settings> Settings { get; set; }
+        public DbSet<Models.Forms.Settings> Settings { get; set; }
         public DbSet<StageRows> StageRows { get; set; }
         public DbSet<Stage> Stages { get; set; }
 

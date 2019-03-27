@@ -26,7 +26,6 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 using ST.MPass.Gov;
-using ST.Identity.Data;
 using ST.Notifications.Abstraction;
 
 namespace ST.CORE.Controllers.Identity

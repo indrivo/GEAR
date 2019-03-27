@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Npgsql;
 using ST.BaseBusinessRepository;
 using ST.Entities.Controls.Querry;
-using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.Table;
 
@@ -14,12 +13,6 @@ namespace ST.Entities.Services
 {
     public class NpgTablesService : TablesService
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="repository"></param>
-        public NpgTablesService(IBaseBusinessRepository<EntitiesDbContext> repository) : base(repository) { }
-
         /// <inheritdoc />
         /// <summary>
         /// Add field SQL
@@ -28,6 +21,7 @@ namespace ST.Entities.Services
         /// <param name="tableName"></param>
         /// <param name="connectionString"></param>
         /// <param name="isNew"></param>
+        /// <param name="tableSchema"></param>
         /// <returns></returns>
         public override ResultModel<bool> AddFieldSql(CreateTableFieldViewModel table, string tableName, string connectionString,
             bool isNew, string tableSchema)
@@ -37,15 +31,15 @@ namespace ST.Entities.Services
                 IsSuccess = false,
                 Result = false
             };
-            var sqlQuerry = isNew
+            var sqlQuery = isNew
                 ? NpgTableQuerryBuilder.AddFieldQuerry(table, tableName, tableSchema)
                 : NpgTableQuerryBuilder.UpdateFieldQuerry(table, tableName, tableSchema);
-            if (string.IsNullOrEmpty(sqlQuerry)) return returnModel;
+            if (string.IsNullOrEmpty(sqlQuery)) return returnModel;
             try
             {
                 using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var command = new NpgsqlCommand(sqlQuerry, connection);
+                    var command = new NpgsqlCommand(sqlQuery, connection);
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();
@@ -63,10 +57,11 @@ namespace ST.Entities.Services
 
         /// <inheritdoc />
         /// <summary>
-        /// Check colum values
+        /// Check column values
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
         public override ResultModel<bool> CheckColumnValues(string connectionString, string tableName, string tableSchema, string columnName)
@@ -80,10 +75,10 @@ namespace ST.Entities.Services
             {
                 try
                 {
-                    var sqlQuerry = NpgTableQuerryBuilder.CheckColumnValues(tableName, tableSchema, columnName);
+                    var sqlQuery = NpgTableQuerryBuilder.CheckColumnValues(tableName, tableSchema, columnName);
                     using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        var command = new NpgsqlCommand(sqlQuerry, connection);
+                        var command = new NpgsqlCommand(sqlQuery, connection);
                         connection.Open();
                         using (var reader = command.ExecuteReader())
                         {
@@ -116,6 +111,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <returns></returns>
         public override ResultModel<bool> CheckTableValues(string connectionString, string tableName, string tableSchema)
         {
@@ -128,10 +124,10 @@ namespace ST.Entities.Services
             {
                 try
                 {
-                    var sqlQuerry = NpgTableQuerryBuilder.CheckTableValues(tableName, tableSchema);
+                    var sqlQuery = NpgTableQuerryBuilder.CheckTableValues(tableName, tableSchema);
                     using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        var command = new NpgsqlCommand(sqlQuerry, connection);
+                        var command = new NpgsqlCommand(sqlQuery, connection);
                         connection.Open();
                         using (var reader = command.ExecuteReader())
                         {
@@ -180,41 +176,32 @@ namespace ST.Entities.Services
                 CreateSchemaAsync(table.EntityType, connectionString).GetAwaiter().GetResult();
             }
 
-            if (table != null)
+            try
             {
-                try
+
+                var sqlQuery = NpgTableQuerryBuilder.CreateQuerry(table);
+                if (!string.IsNullOrEmpty(sqlQuery))
                 {
-
-                    var sqlQuerry = NpgTableQuerryBuilder.CreateQuerry(table);
-                    if (!string.IsNullOrEmpty(sqlQuerry))
+                    using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        using (var connection = new NpgsqlConnection(connectionString))
-                        {
-                            var command = new NpgsqlCommand(sqlQuerry, connection);
-                            var test = command.CommandText;
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                            connection.Close();
-                        }
+                        var command = new NpgsqlCommand(sqlQuery, connection);
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
 
-                        returnModel.IsSuccess = true;
-                        return returnModel;
-                    }
-                    else
-                    {
-                        // Empty querry
-                        return returnModel;
-                    }
+                    returnModel.IsSuccess = true;
+                    return returnModel;
                 }
-                catch (Exception ex)
+                else
                 {
-                    Debug.WriteLine(ex);
+                    // Empty query
                     return returnModel;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                // table is null
+                Debug.WriteLine(ex);
                 return returnModel;
             }
         }
@@ -225,6 +212,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
         public override ResultModel<bool> DropColumn(string connectionString, string tableName, string tableSchema, string columnName)
@@ -273,6 +261,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="constraint"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
@@ -286,12 +275,12 @@ namespace ST.Entities.Services
             };
             try
             {
-                var sqlQuerry = NpgTableQuerryBuilder.DropConstraint(tableName, constraint, columnName, tableSchema);
-                if (!string.IsNullOrEmpty(sqlQuerry))
+                var sqlQuery = NpgTableQuerryBuilder.DropConstraint(tableName, constraint, columnName, tableSchema);
+                if (!string.IsNullOrEmpty(sqlQuery))
                 {
                     using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        var command = new NpgsqlCommand(sqlQuerry, connection);
+                        var command = new NpgsqlCommand(sqlQuery, connection);
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
@@ -302,7 +291,7 @@ namespace ST.Entities.Services
                 }
                 else
                 {
-                    // Empty querry
+                    // Empty query
                     return returnModel;
                 }
             }
@@ -319,6 +308,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <returns></returns>
         public override ResultModel<bool> DropTable(string connectionString, string tableName, string tableSchema)
         {
@@ -349,11 +339,11 @@ namespace ST.Entities.Services
 
                 if (check) return returnModel;
                 {
-                    var sqlQuerry = NpgTableQuerryBuilder.DropTable(tableName, tableSchema);
-                    if (string.IsNullOrEmpty(sqlQuerry)) return returnModel;
+                    var sqlQuery = NpgTableQuerryBuilder.DropTable(tableName, tableSchema);
+                    if (string.IsNullOrEmpty(sqlQuery)) return returnModel;
                     using (var connection = new NpgsqlConnection(connectionString))
                     {
-                        var command = new NpgsqlCommand(sqlQuerry, connection);
+                        var command = new NpgsqlCommand(sqlQuery, connection);
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
@@ -370,31 +360,33 @@ namespace ST.Entities.Services
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create Schema
         /// </summary>
         /// <param name="schemaName"></param>
         /// <param name="connectionString"></param>
-        public override async Task CreateSchemaAsync(string schemaName, string connectionString)
+        protected override async Task CreateSchemaAsync(string schemaName, string connectionString)
         {
             var all = GetSchemas(connectionString);
             if (all.Contains(schemaName)) return;
-            var sqlQuerry = NpgTableQuerryBuilder.GetSchemaSqlScript(schemaName);
+            var sqlQuery = NpgTableQuerryBuilder.GetSchemaSqlScript(schemaName);
             using (var connection = new NpgsqlConnection(connectionString))
             {
-                var command = new NpgsqlCommand(sqlQuerry, connection);
+                var command = new NpgsqlCommand(sqlQuery, connection);
                 connection.Open();
                 await command.ExecuteNonQueryAsync();
                 connection.Close();
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get all schemas
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        public override IEnumerable<string> GetSchemas(string connectionString)
+        protected override IEnumerable<string> GetSchemas(string connectionString)
         {
             var result = new List<string>();
             var sqlQuerry = NpgTableQuerryBuilder.GetDbSchemesSqlScript();

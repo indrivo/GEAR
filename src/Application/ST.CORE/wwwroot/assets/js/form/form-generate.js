@@ -336,9 +336,34 @@ Form.prototype.getOptions = function (containerSelector) {
 			sortable: false,
 			groupOrder: [
 				"common",
-				"html",
+				"html"
 			],
 			elements: [
+				{
+					tag: 'input',
+					options: [{
+						label: 'Yes',
+						value: 'Yes',
+						selected: false
+					}, {
+						label: 'No',
+						value: 'No',
+						selected: false
+					}],
+					attrs: {
+						type: 'radio',
+						CaptionWidth: '125px'
+					},
+					config: {
+						label: 'Radio'
+					},
+					meta: {
+						group: 'common',
+						icon: 'radio-group',
+						id: 'radio-new'
+					},
+
+				}
 			],
 			elementOrder: {
 				common: [
