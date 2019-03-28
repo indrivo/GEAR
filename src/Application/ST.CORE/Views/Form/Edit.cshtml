@@ -114,7 +114,7 @@
 			var form = new Form();
 			const id = form.getFromUrl("formId");
 			const data = form.getFormFronServer(id);
-			const formeo = new window.Formeo(fr.getOptions('.build-form'), JSON.stringify(data.result));
+			const formeo = new window.Formeo(fr.getOptions('.build-form', "@form.TableId"), JSON.stringify(data.result));
 			document.querySelector("#RenderForm").onclick = evt => {
 				if (!editing) {
 					formeo.render(renderContainer);
@@ -170,7 +170,8 @@
 					return;
 				}
 				fr.data = JSON.parse(formeo.formData);
-				$("#form").submit();
+				console.log(formeo.formData);
+				//$("#form").submit();
 			};
 		}
 	</script>

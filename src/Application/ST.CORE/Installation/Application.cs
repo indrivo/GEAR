@@ -88,7 +88,7 @@ namespace ST.CORE.Installation
 		/// </summary>
 		/// <param name="webHost"></param>
 		/// <returns></returns>
-		public static IWebHost Migrate(this IWebHost webHost)
+		private static IWebHost Migrate(this IWebHost webHost)
 		{
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
 				{

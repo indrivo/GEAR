@@ -71,12 +71,14 @@ Form.prototype.addField = function (field, id) {
  */
 Form.prototype.generateJsonForm = function (data) {
 	const fields = data.result;
-
 	for (let field in fields) {
 		if (fields.hasOwnProperty(field)) {
 			const model = {
 				name: fields[field].name,
-				fieldTypeId: fields[field].id
+				fieldTypeId: this.getAttrForTableField(fields, fields[field].id),
+				fieldId: fields[field].id,
+				tableId: fields[field].tableId,
+				fieldConfigurations: fields[field].tableFieldConfigValues
 			};
 
 			switch (fields[field].dataType) {
@@ -124,6 +126,17 @@ Form.prototype.generateJsonForm = function (data) {
 		}
 	}
 };
+
+Form.prototype.getAttrForTableField = function (fields, selectedId) {
+	return fields.map(field => {
+		return {
+			label: field.name,
+			value: field.id,
+			selected: field.id === selectedId
+		};
+	});
+};
+
 /**
  * Push textBox field to form
  * @param {any} model Data of fields
@@ -136,11 +149,12 @@ Form.prototype.pushText = function (model) {
 			"attrs": {
 				"type": "text",
 				"required": false,
-				"className": ""
+				"className": "",
+				"tableFieldId": model.fieldTypeId
 			},
 			"config": {
 				"disabledAttrs": ["type"],
-				"label": model.name,
+				"label": model.name
 			},
 			"meta": {
 				"group": "common",
@@ -148,8 +162,7 @@ Form.prototype.pushText = function (model) {
 				"id": "text-input"
 			},
 			"fMap": "attrs.value",
-			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"id": fieldId
 		}
 	};
 	this.addField(field, fieldId);
@@ -166,7 +179,8 @@ Form.prototype.pushNumber = function (model) {
 			"attrs": {
 				"type": "number",
 				"required": false,
-				"className": ""
+				"className": "",
+				"tableFieldId": model.fieldTypeId
 			},
 			"config": {
 				"label": model.name,
@@ -180,8 +194,7 @@ Form.prototype.pushNumber = function (model) {
 				"id": "number"
 			},
 			"fMap": "attrs.value",
-			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"id": fieldId
 		}
 	};
 	this.addField(field, fieldId);
@@ -194,12 +207,18 @@ Form.prototype.pushNumber = function (model) {
 Form.prototype.pushTextarea = function (model) {
 
 };
+
+Form.prototype.getReferenceTable = function() {
+
+};
+
 /**
  * Push dropdown field to form
  * @param {any} model Data of fields
  */
 Form.prototype.pushSelect = function (model) {
 	const fieldId = st.newGuid();
+	console.log(model.fieldConfigurations);
 	const field = {
 		[fieldId]: {
 			"tag": "select",
@@ -208,22 +227,22 @@ Form.prototype.pushSelect = function (model) {
 			},
 			"attrs": {
 				"required": false,
-				"className": ""
+				"className": "",
+				"tableFieldId": model.fieldTypeId
 			},
 			"meta": {
 				"group": "common",
 				"icon": "select",
-				"id": "select"
+				"id": "custom-select"
 			},
 			"options": [
 				{
-					"label": "Option 1",
-					"value": "option-1",
+					"label": "No data",
+					"value": "",
 					"selected": false
 				}
 			],
-			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"id": fieldId
 		}
 	};
 	this.addField(field, fieldId);
@@ -325,10 +344,15 @@ Form.prototype.printJson = function () {
 /**
  * Get options for formeo render
  * @param {any} containerSelector Selector
+ * @param {any} tableId Selector
  * @returns {any} Formeo options
  */
-Form.prototype.getOptions = function (containerSelector) {
+Form.prototype.getOptions = function (containerSelector, tableId) {
 	const container = document.querySelector(containerSelector);
+	const fields = load("/PageRender/GetEntityFields", {
+		tableId: tableId
+	});
+
 	const formeoOpts = {
 		container: container,
 		//allowEdit: true,
@@ -340,29 +364,28 @@ Form.prototype.getOptions = function (containerSelector) {
 			],
 			elements: [
 				{
-					tag: 'input',
-					options: [{
-						label: 'Yes',
-						value: 'Yes',
-						selected: false
-					}, {
-						label: 'No',
-						value: 'No',
-						selected: false
-					}],
+					tag: "select",
 					attrs: {
-						type: 'radio',
-						CaptionWidth: '125px'
+						tableFieldId: (() => {
+							const options = fields.map(field => {
+								return {
+									label: field.name,
+									value: field.id,
+									selected: false
+								};
+							});
+							return options;
+						})()
 					},
 					config: {
-						label: 'Radio'
+						label: "Data reference select"
 					},
+					options: [],
 					meta: {
-						group: 'common',
-						icon: 'radio-group',
-						id: 'radio-new'
-					},
-
+						group: "common",
+						icon: "select",
+						id: "custom-select"
+					}
 				}
 			],
 			elementOrder: {
@@ -376,16 +399,17 @@ Form.prototype.getOptions = function (containerSelector) {
 					"radio",
 					"select",
 					"text-input",
-					"textarea"
+					"textarea",
+					"custom-select"
 				]
 			}
 		},
 		events: {
-			// onUpdate: console.log,
-			// onSave: console.log
+			//onUpdate: console.log,
+			//onSave: console.log
 
 		},
-		svgSprite: '/assets/images/form_icons.svg',
+		svgSprite: "/assets/images/form_icons.svg",
 		// debug: true,
 		sessionStorage: true,
 		editPanelOrder: ["attrs", "options"]
@@ -469,8 +493,8 @@ Form.prototype.cleanJson = function (obj) {
 
 /**
  * Format json and return it
- * @param {any} json The json
- * @param {any} textarea Selector to place
+ * @param {any} json
+ * @param {any} textarea
  */
 Form.prototype.formatJSON = function (json, textarea) {
 	var nl;
@@ -500,12 +524,12 @@ Form.prototype.formatJSON = function (json, textarea) {
 			}
 		}
 
-		if (c == '[' && !betweenquotes) {
+		if (c == "[" && !betweenquotes) {
 			ret += c;
 			ret += nl;
 			continue;
 		}
-		if (c == '{' && !betweenquotes) {
+		if (c == "{" && !betweenquotes) {
 			ret += tab;
 			ret += c;
 			ret += nl;
@@ -519,18 +543,18 @@ Form.prototype.formatJSON = function (json, textarea) {
 			ret += c;
 			continue;
 		}
-		if (c == ',' && !betweenquotes) {
+		if (c == "," && !betweenquotes) {
 			ret += c;
 			ret += nl;
 			continue;
 		}
-		if (c == '}' && !betweenquotes) {
+		if (c == "}" && !betweenquotes) {
 			ret += nl;
 			ret += tab;
 			ret += c;
 			continue;
 		}
-		if (c == ']' && !betweenquotes) {
+		if (c == "]" && !betweenquotes) {
 			ret += nl;
 			ret += c;
 			continue;

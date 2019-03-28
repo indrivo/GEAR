@@ -50,9 +50,9 @@ function Request(id) {
 		method: "get",
 		data: { tableId: id },
 		success: function (data) {
-			Populate(data);
+			populate(data);
 			$.when(fr.generateJsonForm(data)).then(function () {
-				StartFormEditor();
+				startFormEditor();
 			});
 		},
 		error: function (error) {
@@ -61,14 +61,14 @@ function Request(id) {
 	});
 }
 
-function Populate(data) {
+function populate(data) {
 	const content = $.render.preview(data);
 	$("#preview_place").html(content);
 }
 
-function StartFormEditor() {
+function startFormEditor() {
 	//fr.printJson();
-	const formeo = new window.Formeo(fr.getOptions('.build-form'), fr.get());
+	const formeo = new window.Formeo(fr.getOptions('.build-form', getTableId()), fr.get());
 	document.querySelector("#RenderForm").onclick = evt => {
 		if (!editing) {
 			formeo.render(renderContainer);

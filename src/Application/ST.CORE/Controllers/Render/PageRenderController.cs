@@ -131,6 +131,29 @@ namespace ST.CORE.Controllers.Render
 		}
 
 		/// <summary>
+		/// Get entity fields
+		/// </summary>
+		/// <param name="tableId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[Authorize(Roles = Settings.SuperAdmin)]
+		public JsonResult GetEntityFields(Guid tableId)
+		{
+			var fields = _context.Table
+				.Include(x => x.TableFields)
+				.FirstOrDefault(x => !x.IsDeleted && x.Id == tableId)?.TableFields
+				.Select(x => new
+				{
+					x.Id,
+					x.Name,
+					x.DataType
+				})
+				.ToList();
+
+			return new JsonResult(fields);
+		}
+
+		/// <summary>
 		/// Get All Entities
 		/// </summary>
 		/// <returns></returns>
@@ -206,6 +229,9 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <param name="viewModelId"></param>
 		/// <returns></returns>
+		[HttpGet]
+		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
 		{
 			var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -353,6 +379,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="menuId"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> GetMenuItemRoles([Required]Guid menuId)
 		{
 			if (menuId == Guid.Empty) return Json(new ResultModel());
@@ -386,6 +413,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="roles"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> UpdateMenuItemRoleAccess([Required]Guid menuId, IList<string> roles)
 		{
 			return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
@@ -402,13 +430,10 @@ namespace ST.CORE.Controllers.Render
 		{
 			var table = _context.Table.Include(x => x.TableFields)
 				.FirstOrDefault(x => x.Id.Equals(entityId));
-			if (table != null)
-			{
-				var instance = _service.Table(table.Name);
-				return Json(await instance.GetAll<object>());
-			}
+			if (table == null) return Json(null);
+			var instance = _service.Table(table.Name);
+			return Json(await instance.GetAll<object>());
 
-			return Json(null);
 		}
 
 		/// <summary>
@@ -554,7 +579,7 @@ namespace ST.CORE.Controllers.Render
 
 			var table = _context.Table.Include(x => x.TableFields)
 				.FirstOrDefault(x => x.Id.Equals(form.TableId));
-			if (table != null)
+			if (table == null) return Json(result);
 			{
 				var instance = _service.Table(table.Name);
 				var fields = table.TableFields.ToList();
@@ -584,16 +609,6 @@ namespace ST.CORE.Controllers.Render
 
 				var obj = instance.ParseObject(pre);
 
-				try
-				{
-					obj.GetType().GetProperty("Author").SetValue(obj, User.Identity.Name);
-					obj.GetType().GetProperty("ModifiedBy").SetValue(obj, User.Identity.Name);
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(e);
-				}
-
 				var req = await instance.Add(obj);
 
 				if (req.IsSuccess)
@@ -622,6 +637,7 @@ namespace ST.CORE.Controllers.Render
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
 		{
 			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
@@ -641,6 +657,7 @@ namespace ST.CORE.Controllers.Render
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
 		{
 			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to restore!", success = false });
@@ -739,6 +756,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AjaxOnly]
 		public async Task<JsonResult> SaveTableCellData(Guid? entityId, Guid? propertyId, Guid? rowId, string value)
 		{
 			var result = new ResultModel();

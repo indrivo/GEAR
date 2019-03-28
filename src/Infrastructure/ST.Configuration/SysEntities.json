@@ -589,15 +589,20 @@
         },
         {
           "Name": "StandardId",
-          "Description": "Standart Id",
+          "Description": "Standard Id",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
           "AllowNull": true,
           "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": 500,
-              "ConfigCode": "1000"
+              "Value": "Standards",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
         },
@@ -608,10 +613,15 @@
           "DataType": "uniqueidentifier",
           "AllowNull": true,
           "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": 500,
-              "ConfigCode": "1000"
+              "Value": "StandardCategories",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
         }
@@ -643,10 +653,15 @@
           "DataType": "uniqueidentifier",
           "AllowNull": true,
           "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": 500,
-              "ConfigCode": "1000"
+              "Value": "StandardCategories",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
         },
@@ -657,10 +672,15 @@
           "DataType": "uniqueidentifier",
           "AllowNull": true,
           "TableFieldCode": "30",
+          "Parameter": "EntityReference",
           "Configurations": [
             {
-              "Value": 500,
-              "ConfigCode": "1000"
+              "Value": "CategoryRequirements",
+              "ConfigCode": "3000"
+            },
+            {
+              "Value": "systemcore",
+              "ConfigCode": "9999"
             }
           ]
         }

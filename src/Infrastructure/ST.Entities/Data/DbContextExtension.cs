@@ -130,7 +130,22 @@ namespace ST.Entities.Data
                         {
                             var dbParameter = cmd.CreateParameter();
                             dbParameter.ParameterName = string.Format("@{0}", item.ColumnName);
-                            dbParameter.Value = value[item.ColumnName] ?? DBNull.Value;
+                            if (value[item.ColumnName] is Guid val)
+                            {
+                                if (val == Guid.Empty)
+                                {
+                                    dbParameter.Value = DBNull.Value;
+                                }
+                                else
+                                {
+                                    dbParameter.Value = value[item.ColumnName] ?? DBNull.Value;
+                                }
+                            }
+                            else
+                            {
+                                dbParameter.Value = value[item.ColumnName] ?? DBNull.Value;
+                            }
+
                             cmd.Parameters.Add(dbParameter);
                         }
 

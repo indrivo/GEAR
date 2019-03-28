@@ -101,7 +101,7 @@ namespace ST.Entities.Controls.Querry
                     break;
             }
 
-            if (!field.AllowNull) sql.Append(" NOT NULL");
+            if (!field.AllowNull) sql.Append(" NOT NULL"); else sql.Append(" NULL");
 
             if (field.Parameter == FieldType.EntityReference || field.Parameter == FieldType.File)
             {

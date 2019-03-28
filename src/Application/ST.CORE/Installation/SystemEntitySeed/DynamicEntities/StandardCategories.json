@@ -1,7 +1,7 @@
 /*
- * Copyright © 2019 Soft-Tehnica
+ * Copyright © 2019 Indrivo Srl
  *
- * This file is for seed nomenclator items
+ * This file is for seed nomenclature items
  * 
  */
 [
@@ -14,7 +14,6 @@
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
     "StandardId": "0a843c8a-4ef2-4978-81b2-b1d8972a3155"
-
   },
   {
     "Name": "4.1 Understanding the organization and its context",

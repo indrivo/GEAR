@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
@@ -15,10 +14,11 @@ using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.FormsViewModels;
 using ST.DynamicEntityStorage.Extensions;
@@ -164,11 +164,19 @@ namespace ST.CORE.Controllers.Entity
 		[HttpGet, Produces("application/json", Type = typeof(ResultModel))]
 		public JsonResult GetTableFields(Guid tableId)
 		{
-			var fields = Repository.GetAll<TableModelFields>(x => x.TableId == tableId);
-			return Json(new ResultModel
+			var fields = _entitiesDbContext.TableFields
+				.Include(x => x.TableFieldConfigValues)
+				.Where(x => x.TableId == tableId);
+
+			return new JsonResult(new ResultModel
 			{
 				IsSuccess = true,
 				Result = fields.ToList()
+			}, new JsonSerializerSettings
+			{
+				Formatting = Formatting.Indented,
+				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+				ContractResolver = new CamelCasePropertyNamesContractResolver()
 			});
 		}
 
