@@ -131,29 +131,6 @@ namespace ST.CORE.Controllers.Render
 		}
 
 		/// <summary>
-		/// Get entity fields
-		/// </summary>
-		/// <param name="tableId"></param>
-		/// <returns></returns>
-		[HttpGet]
-		[Authorize(Roles = Settings.SuperAdmin)]
-		public JsonResult GetEntityFields(Guid tableId)
-		{
-			var fields = _context.Table
-				.Include(x => x.TableFields)
-				.FirstOrDefault(x => !x.IsDeleted && x.Id == tableId)?.TableFields
-				.Select(x => new
-				{
-					x.Id,
-					x.Name,
-					x.DataType
-				})
-				.ToList();
-
-			return new JsonResult(fields);
-		}
-
-		/// <summary>
 		/// Get All Entities
 		/// </summary>
 		/// <returns></returns>

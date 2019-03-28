@@ -82,45 +82,21 @@ Form.prototype.generateJsonForm = function (data) {
 			};
 
 			switch (fields[field].dataType) {
-				case "nvarchar":
-					{
-						this.pushText(model);
-					};
+				case "nvarchar": this.pushText(model);
 					break;
-				case "bool":
-					{
-						this.pushCheckBox(model);
-					};
+				case "bool": this.pushCheckBox(model);
 					break;
-				case "decimal":
-					{
-						this.pushNumber(model);
-					};
+				case "decimal": this.pushNumber(model);
 					break;
-				case "int32":
-					{
-						this.pushNumber(model);
-					};
+				case "int32": this.pushNumber(model);
 					break;
-				case "bytes":
-					{
-						//console.log(fields[field].dataType);
-					};
+				case "bytes": console.log(fields[field].dataType);
 					break;
-				case "date":
-					{
-						this.pushDate(model);
-					};
+				case "date": this.pushDate(model);
 					break;
-				case "datetime":
-					{
-						this.pushDate(model);
-					};
+				case "datetime": this.pushDate(model);
 					break;
-				case "uniqueidentifier":
-					{
-						this.pushSelect(model);
-					};
+				case "uniqueidentifier": this.pushSelect(model);
 					break;
 			}
 		}
@@ -208,8 +184,17 @@ Form.prototype.pushTextarea = function (model) {
 
 };
 
-Form.prototype.getReferenceTable = function() {
 
+Form.prototype.getReferenceTable = function (conf) {
+	console.log(conf);
+	const refFields = load(`/Form/GetEntityReferenceFields?entityName=${conf[0].value}&&entitySchema=${conf[1].value}`);
+	return refFields.map(field => {
+		return {
+			label: field.name,
+			value: field.id,
+			selected: false
+		};
+	});
 };
 
 /**
@@ -218,7 +203,6 @@ Form.prototype.getReferenceTable = function() {
  */
 Form.prototype.pushSelect = function (model) {
 	const fieldId = st.newGuid();
-	console.log(model.fieldConfigurations);
 	const field = {
 		[fieldId]: {
 			"tag": "select",
@@ -228,7 +212,8 @@ Form.prototype.pushSelect = function (model) {
 			"attrs": {
 				"required": false,
 				"className": "",
-				"tableFieldId": model.fieldTypeId
+				"tableFieldId": model.fieldTypeId,
+				"fieldReference": this.getReferenceTable(model.fieldConfigurations)
 			},
 			"meta": {
 				"group": "common",
@@ -349,7 +334,7 @@ Form.prototype.printJson = function () {
  */
 Form.prototype.getOptions = function (containerSelector, tableId) {
 	const container = document.querySelector(containerSelector);
-	const fields = load("/PageRender/GetEntityFields", {
+	const fields = load("/Form/GetEntityFields", {
 		tableId: tableId
 	});
 
@@ -493,8 +478,9 @@ Form.prototype.cleanJson = function (obj) {
 
 /**
  * Format json and return it
- * @param {any} json
- * @param {any} textarea
+ * @param {any} json Old json
+ * @param {any} textarea data
+ * @return {any} result
  */
 Form.prototype.formatJSON = function (json, textarea) {
 	var nl;

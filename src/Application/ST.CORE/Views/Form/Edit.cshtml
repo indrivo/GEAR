@@ -111,7 +111,7 @@
 		});
 
 		function Init() {
-			var form = new Form();
+			const form = new Form();
 			const id = form.getFromUrl("formId");
 			const data = form.getFormFronServer(id);
 			const formeo = new window.Formeo(fr.getOptions('.build-form', "@form.TableId"), JSON.stringify(data.result));
