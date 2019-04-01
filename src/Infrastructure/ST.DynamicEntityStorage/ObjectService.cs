@@ -12,7 +12,7 @@ using ST.Entities.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage
 {
-    public class ObjectService
+    public class ObjectService<TContext> where TContext : EntitiesDbContext
     {
         private readonly AssemblyName _asemblyName;
         /// <summary>
@@ -30,7 +30,7 @@ namespace ST.DynamicEntityStorage
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
         /// <returns></returns>
-        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
+        public DynamicObject Resolve(TContext context, IHttpContextAccessor httpContextAccessor)
         {
             var proprietes = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
             var entity = _asemblyName.Name;
@@ -59,7 +59,7 @@ namespace ST.DynamicEntityStorage
             return new DynamicObject
             {
                 Object = obj,
-                Service = new DynamicService(context, httpContextAccessor)
+                Service = new DynamicService<TContext>(context, httpContextAccessor)
             };
         }
 

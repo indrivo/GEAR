@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
 using NLog;
 using Microsoft.Extensions.Logging;
@@ -13,10 +14,10 @@ namespace ST.CORE.Extensions
 			builder.ConfigureServices(services =>
 			{
 				var config = new NLog.Config.LoggingConfiguration();
-				var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
-				var customTarget = new LoggerTarget();
-				config.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, logconsole);
-				config.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, customTarget);
+				var logConsole = new NLog.Targets.ConsoleTarget();
+				//var customTarget = new LoggerTarget();
+				config.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, logConsole);
+				//config.AddRule(NLog.LogLevel.Trace, NLog.LogLevel.Fatal, customTarget);
 
 				LogManager.Configuration = config;
 			});

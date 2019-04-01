@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -48,6 +49,7 @@ using ST.Identity.Versioning;
 using ST.Localization;
 using ST.MPass.Gov;
 using ST.Identity.Data;
+using ST.Identity.Services;
 using ST.MultiTenant.Services;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
@@ -180,22 +182,23 @@ namespace ST.CORE.Extensions
 		/// </summary>
 		/// <param name="services"></param>
 		/// <param name="env"></param>
+		/// <param name="systemIdentifier"></param>
 		/// <returns></returns>
-		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env)
+		public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, string systemIdentifier)
 		{
 			services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
 			services.AddTransient<IEmailSender, EmailSender>();
 			services.AddTransient<IMPassService, MPassService>();
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
-			services.AddTransient<IFormService, FormService>();
+			services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
 			services.AddTransient<ILocalizationService, LocalizationService>();
 			services.AddTransient<IPageRender, PageRender>();
-			services.AddTransient<IMenuService, MenuService>();
+			services.AddTransient<IMenuService, MenuService<IDynamicService>>();
 			services.AddTransient<IProcessParser, ProcessParser>();
 			services.AddTransient<IOrganizationService, OrganizationService>();
 			services.AddTransient<IProfileService, Identity.Services.ProfileService>();
-			services.UseCustomCacheService(env, "127.0.0.1", "ST.ISO");
+			services.UseCustomCacheService(env, "127.0.0.1", systemIdentifier);
 			return services;
 		}
 
@@ -348,7 +351,6 @@ namespace ST.CORE.Extensions
 			IoC.Container = castleContainer;
 			var formsContext = services.BuildServiceProvider().GetService<EntitiesDbContext>();
 			var bbRep = services.BuildServiceProvider().GetService<IBaseBusinessRepository<EntitiesDbContext>>();
-			//var conf = services.BuildServiceProvider().GetService<IConfiguration>();
 			var env = services.BuildServiceProvider().GetService<IHostingEnvironment>();
 
 			//Notifications
@@ -366,8 +368,12 @@ namespace ST.CORE.Extensions
 
 			//Dynamic data dataService
 			castleContainer.Register(Component.For<IDynamicService>()
-				.ImplementedBy<DynamicService>()
+				.ImplementedBy<DynamicService<EntitiesDbContext>>()
 				.DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
+
+			//Cache service
+			castleContainer.Register(Component.For<ICacheService>()
+				.ImplementedBy<CacheService>());
 
 			//Files
 			var fileConfig = new FileConfig { DbContext = formsContext, WebRootPath = env.WebRootPath };
@@ -414,12 +420,12 @@ namespace ST.CORE.Extensions
 			if (int.TryParse(configuration["HealthCheck:Timeout"], out var minutesParsed))
 				minutes = minutesParsed;
 			//Enable CORS before calling app.UseMvc() and app.UseStaticFiles()
-			var isConfigurated = configuration.GetValue<bool>("IsConfigurated");
-			var multiTenantTemplate = isConfigurated
+			var isConfigured = configuration.GetValue<bool>("IsConfigured");
+			var multiTenantTemplate = isConfigured
 				? "{tenant}/{controller=Home}/{action=Index}"
 				: "{controller=Installer}/{action=Index}";
 
-			var singleTenantTemplate = isConfigurated
+			var singleTenantTemplate = isConfigured
 				? "{controller=Home}/{action=Index}"
 				: "{controller=Installer}/{action=Index}";
 

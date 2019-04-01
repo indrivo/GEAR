@@ -117,7 +117,7 @@ namespace ST.CORE
 			});
 
 			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
-				.AddApplicationSpecificServices(HostingEnvironment)
+				.AddApplicationSpecificServices(HostingEnvironment, CookieName)
 				.AddMPassSigningCredentials(new MPassSigningCredentials
 				{
 					ServiceProviderCertificate =
@@ -153,11 +153,11 @@ namespace ST.CORE
 			services.AddBussinessRepository();
 
 			//Register dynamic table repository
-			services.RegisterDynamicDataServices();
+			services.RegisterDynamicDataServices<EntitiesDbContext>();
 			//Add signaler
 			services.AddSignalR<ApplicationDbContext, ApplicationUser, ApplicationRole>();
 
-			//Run background dataService
+			//Run background service
 			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
@@ -179,9 +179,10 @@ namespace ST.CORE
 			   .CreateScope())
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
+				var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
 				var isConfigured = Application.IsConfigured(env);
 
-				if (isConfigured)
+				if (isConfigured && context.Database.CanConnect())
 				{
 					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 					await permissionService.RefreshCache();

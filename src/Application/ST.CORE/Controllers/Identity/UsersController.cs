@@ -22,6 +22,7 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
@@ -49,7 +50,13 @@ namespace ST.CORE.Controllers.Identity
 
 		#endregion
 
-		public UsersController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger, IBaseBusinessRepository<ApplicationDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public UsersController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
+			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+			INotify<ApplicationRole> notify, IOrganizationService organizationService,
+			ProcessesDbContext processesDbContext, ICacheService cacheService,
+			LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger,
+			IBaseBusinessRepository<ApplicationDbContext> repository)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 			_ldapUserManager = ldapUserManager;
 			Logger = logger;
@@ -446,12 +453,11 @@ namespace ST.CORE.Controllers.Identity
 			model.Roles = roles;
 			model.Groups = groupsList;
 			model.SelectedGroupId = userGroupListList;
-			model.SelectedRoleId = userRoleList;
 			model.Tenants = ApplicationDbContext.Tenants.Where(x => !x.IsDeleted).ToList();
 
 			if (!ModelState.IsValid)
 			{
-				
+				model.SelectedRoleId = userRoleList;
 				foreach (var _ in ViewData.ModelState.Values)
 				{
 					foreach (var error in _.Errors)
@@ -475,6 +481,7 @@ namespace ST.CORE.Controllers.Identity
 				var ldapUser = await _ldapUserManager.FindByNameAsync(model.UserName);
 				if (ldapUser == null)
 				{
+					model.SelectedRoleId = userRoleList;
 					ModelState.AddModelError("", $"There is no AD user with this username : {model.UserName}");
 					return View(model);
 				}
@@ -498,6 +505,7 @@ namespace ST.CORE.Controllers.Identity
 					var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
 					if (!bind)
 					{
+						model.SelectedRoleId = userRoleList;
 						ModelState.AddModelError("", $"Invalid credentials for AD authentication");
 						return View(model);
 					}
@@ -520,6 +528,7 @@ namespace ST.CORE.Controllers.Identity
 			var result = await UserManager.UpdateAsync(user);
 			if (!result.Succeeded)
 			{
+				model.SelectedRoleId = userRoleList;
 				foreach (var _ in result.Errors)
 				{
 					ModelState.AddModelError(string.Empty, _.Description);

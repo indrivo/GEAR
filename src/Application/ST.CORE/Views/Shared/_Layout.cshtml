@@ -16,7 +16,7 @@
 	var layoutId = (Guid?)ViewData["layoutId"];
 	if (layoutId == null)
 	{
-		layoutId = WebPageSync.Layouts[0];
+		layoutId = PageManager.Layouts[0];
 	}
 
 	var user = await UserManager.GetUserAsync(User);

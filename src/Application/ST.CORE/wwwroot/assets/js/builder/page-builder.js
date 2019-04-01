@@ -74,23 +74,6 @@ var editor = grapesjs.init({
 					{ property: 'position', type: 'select' }
 					]
 				},
-				//{
-				//	name: "Entity",
-				//	property: "tableId",
-				//	open: false,
-				//	buildProps: ["entity"],
-				//	properties: [
-				//		{
-				//			id: "entity",
-				//			type: 'select',
-				//			list: [
-				//				{ value: 'Mail', name: 'Left' },
-				//				{ value: 'Profile', name: 'Left' },
-				//				{ value: 'Another', name: 'Left' },
-				//			]
-				//		}
-				//	]
-				//},
 				{
 					name: 'Dimension',
 					open: false,
@@ -373,6 +356,31 @@ var editor = grapesjs.init({
 
 });
 
+
+
+editor.Panels.addButton(
+	'views', {
+		id: 'settings-open',
+		className: 'fa fa-cogs',
+		command: 'settings-open'
+	});
+
+editor.Commands.add('settings-open', {
+	run: function (editor, sender) {
+		const bm = editor.BlockManager;
+		const pn = editor.Panels;
+		const block = editor.getSelected();
+		console.log(block);
+		$('.gjs-trt-traits').parent().css("display","block");
+	},
+	stop: function (editor, sender) {
+		$('.gjs-trt-traits').parent().css("display", "none");
+	}
+});
+
+
+
+
 var pn = editor.Panels;
 var cmdm = editor.Commands;
 var modal = editor.Modal;
@@ -413,17 +421,12 @@ catch (exp) {
 	.forEach(function (item) {
 		pn.getButton('options', item[0]).set('attributes', { title: item[1], 'data-tooltip-pos': 'bottom' });
 	});
-[['open-sm', 'Style Manager'], ['open-layers', 'Layers'], ['open-blocks', 'Blocks']]
+
+
+[['open-sm', 'Style Manager'], ['open-layers', 'Layers'], ['open-blocks', 'Blocks'], ['settings-open', 'Settings']]
 	.forEach(function (item) {
 		pn.getButton('views', item[0]).set('attributes', { title: item[1], 'data-tooltip-pos': 'bottom' });
 	});
-
-
-pn.addPanel({
-	id: 'myNewPanel',
-	visible: true,
-	buttons: []
-});
 
 var titles = document.querySelectorAll('*[title]');
 
@@ -456,23 +459,23 @@ editor.on('load', function () {
 	const openSm = pn.getButton('views', 'open-sm');
 	openSm && openSm.set('active', 1);
 
-	// Add Settings Sector
-	const traitsSector = $('<div class="gjs-sm-sector no-select">' +
-		'<div class="gjs-sm-title"><span class="fa fa-cogs"></span> Settings</div>' +
-		'<div class="gjs-sm-properties" style="display: none;">' +
-		'</div></div>');
-	var traitsProps = traitsSector.find('.gjs-sm-properties');
-	traitsProps.append($('.gjs-trt-traits'));
-	$('.gjs-sm-sectors').before(traitsSector);
-	traitsSector.find('.gjs-sm-title').on('click', function () {
-		const traitStyle = traitsProps.get(0).style;
-		const hidden = traitStyle.display === 'none';
-		if (hidden) {
-			traitStyle.display = "block";
-		} else {
-			traitStyle.display = "none";
-		}
-	});
+	//// Add Settings Sector
+	//const traitsSector = $('<div class="gjs-sm-sector no-select">' +
+	//	'<div class="gjs-sm-title"><span class="fa fa-cogs"></span> Settings</div>' +
+	//	'<div class="gjs-sm-properties" style="display: none;">' +
+	//	'</div></div>');
+	//var traitsProps = traitsSector.find('.gjs-sm-properties');
+	//traitsProps.append($('.gjs-trt-traits'));
+	//$('.gjs-sm-sectors').before(traitsSector);
+	//traitsSector.find('.gjs-sm-title').on('click', function () {
+	//	const traitStyle = traitsProps.get(0).style;
+	//	const hidden = traitStyle.display === 'none';
+	//	if (hidden) {
+	//		traitStyle.display = "block";
+	//	} else {
+	//		traitStyle.display = "none";
+	//	}
+	//});
 
 	// Open block manager
 	const openBlocksBtn = editor.Panels.getButton('views', 'open-blocks');
@@ -499,3 +502,5 @@ $.each(scripts, function (index, script) {
 	sc.setAttribute("src", script);
 	iframe.contentDocument.head.appendChild(sc);
 });
+
+

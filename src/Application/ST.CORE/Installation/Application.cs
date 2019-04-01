@@ -122,7 +122,7 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			DynamicService.TenantId = Configuration.Settings.TenantId;
+			DynamicService<EntitiesDbContext>.TenantId = Configuration.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 
@@ -189,20 +189,19 @@ namespace ST.CORE.Installation
 		/// <returns></returns>
 		public static async Task SeedDynamicDataAsync()
 		{
-			var dataService = IoC.Resolve<IDynamicService>();
-			var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
-
 			//Seed notifications types
-			await EntitiesDbContextSeed.SeedNotificationTypesAsync(dataService);
+			await EntitiesDbContextSeed.SeedNotificationTypesAsync();
 
 			//Sync default menus
-			await MenuSync.SyncMenuItems(dataService);
+			await MenuManager.SyncMenuItemsAsync();
 
 			//Sync web pages
-			WebPageSync.SyncWebPages(entitiesDbContext);
+			await PageManager.SyncWebPagesAsync();
 
 			//Sync nomenclatures
-			await NomenclatureSyncExtension.SyncNomenclatureItems(dataService);
+			await NomenclatureManager.SyncNomenclaturesAsync();
+
+			await TemplateManager.SeedAsync();
 
 		}
 
@@ -222,9 +221,9 @@ namespace ST.CORE.Installation
 			return WebHost.CreateDefaultBuilder(args)
 				.UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
 				.UseConfiguration(config)
+				.StartLogging()
 				.CaptureStartupErrors(true)
 				.UseStartup<Startup>()
-				.StartLogging()
 				.Build();
 		}
 

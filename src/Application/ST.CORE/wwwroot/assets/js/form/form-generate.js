@@ -90,7 +90,10 @@ Form.prototype.generateJsonForm = function (data) {
 					break;
 				case "int32": this.pushNumber(model);
 					break;
-				case "bytes": console.log(fields[field].dataType);
+				case "bytes":
+					{
+						//console.log(fields[field].dataType);
+					}
 					break;
 				case "date": this.pushDate(model);
 					break;
@@ -186,15 +189,81 @@ Form.prototype.pushTextarea = function (model) {
 
 
 Form.prototype.getReferenceTable = function (conf) {
-	console.log(conf);
 	const refFields = load(`/Form/GetEntityReferenceFields?entityName=${conf[0].value}&&entitySchema=${conf[1].value}`);
 	return refFields.map(field => {
 		return {
 			label: field.name,
-			value: field.id,
+			value: field.name,
 			selected: false
 		};
 	});
+};
+
+function getSelectedValue(arr) {
+	for (let f in arr) {
+		if (arr[f].selected) {
+			return arr[f].value;
+		}
+	}
+	return undefined;
+}
+
+Form.prototype.attrsToArray = function (data) {
+	const form = data.result;
+	const table = load("/Form/GetFormTableReference",
+		{
+			formId: this.getFromUrl("formId")
+		});
+	if (!table) return form;
+	const tableFields = this.getEntityFields(table.id);
+	for (let i in form.fields) {
+		if (form.fields.hasOwnProperty(i)) {
+			for (let j in form.fields[i].attrs) {
+				const sel = form.fields[i].attrs[j];
+				if (j === "tableFieldId") {
+					if (tableFields) {
+						const fields = tableFields.map(field => {
+							return {
+								label: field.name,
+								value: field.id,
+								selected: field.id === sel
+							};
+						});
+						form.fields[i].attrs[j] = fields;
+					}
+				} else if (j === "fieldReference") {
+					{
+						form.fields[i].attrs[j] =
+							[{
+								label: "default",
+								value: sel,
+								selected: true
+							}];
+					};
+				}
+			}
+		}
+	}
+	return form;
+}
+
+Form.prototype.attrsToString = function (form) {
+	for (let i in form.fields) {
+		if (form.fields.hasOwnProperty(i)) {
+			for (let j in form.fields[i].attrs) {
+				if (Array.isArray(form.fields[i].attrs[j])) {
+					form.fields[i].attrs[j] = getSelectedValue(form.fields[i].attrs[j]);
+				}
+			}
+		}
+	}
+	return form;
+};
+
+
+Form.prototype.getReferenceSelectOnChangeTable = function (tableId, fieldId) {
+	const refFields = load(`/Form/GetReferenceFields?entityId=${tableId}&&entityFieldId=${fieldId}`);
+	return refFields;
 };
 
 /**
@@ -264,7 +333,7 @@ Form.prototype.pushCheckBox = function (model) {
 				}
 			],
 			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"tableFieldId": model.fieldTypeId
 		}
 	};
 	this.addField(field, fieldId);
@@ -295,7 +364,7 @@ Form.prototype.pushDate = function (model) {
 				"id": "date-input"
 			},
 			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"tableFieldId": model.fieldTypeId
 		}
 	};
 	this.addField(field, fieldId);
@@ -326,6 +395,13 @@ Form.prototype.print = function () {
 Form.prototype.printJson = function () {
 	console.log(this.data);
 };
+
+Form.prototype.getEntityFields = function (tableId) {
+	return load("/Form/GetEntityFields", {
+		tableId: tableId
+	});
+};
+
 /**
  * Get options for formeo render
  * @param {any} containerSelector Selector
@@ -334,8 +410,12 @@ Form.prototype.printJson = function () {
  */
 Form.prototype.getOptions = function (containerSelector, tableId) {
 	const container = document.querySelector(containerSelector);
-	const fields = load("/Form/GetEntityFields", {
-		tableId: tableId
+	const fields = this.getEntityFields(tableId).map(field => {
+		return {
+			label: field.name,
+			value: field.id,
+			selected: false
+		};
 	});
 
 	const formeoOpts = {
@@ -352,15 +432,10 @@ Form.prototype.getOptions = function (containerSelector, tableId) {
 					tag: "select",
 					attrs: {
 						tableFieldId: (() => {
-							const options = fields.map(field => {
-								return {
-									label: field.name,
-									value: field.id,
-									selected: false
-								};
-							});
+							const options = fields;
 							return options;
-						})()
+						})(),
+						fieldReference: []
 					},
 					config: {
 						label: "Data reference select"
@@ -390,7 +465,9 @@ Form.prototype.getOptions = function (containerSelector, tableId) {
 			}
 		},
 		events: {
-			//onUpdate: console.log,
+			//onUpdate: (evt) => {
+			//	this.registerChangeRefEvent(this, tableId);
+			//}
 			//onSave: console.log
 
 		},
@@ -414,7 +491,7 @@ Form.prototype.getFormFronServer = function (id) {
 		method: "get",
 		async: false,
 		success: function (data) {
-			if (data !== null) {
+			if (data) {
 				response = data;
 			}
 		},
@@ -423,6 +500,35 @@ Form.prototype.getFormFronServer = function (id) {
 		}
 	});
 	return response;
+};
+
+
+Form.prototype.registerChangeRefEvent = function (former, tableId) {
+	setTimeout(function () {
+		$(`#${former.controls.formID}`).find("select[name^=tableFieldId]").on("change", function () {
+			changeTableField(this, tableId);
+		});
+	}, 1000);
+};
+
+
+function changeTableField(context, tableId) {
+	console.log($(context));
+	const selectedId = $(context).val();
+	const fields = fr.getReferenceSelectOnChangeTable(tableId, selectedId);
+	const attrRefs = $(context).parent()
+		.parent()
+		.parent()
+		.parent()
+		.parent()
+		.find("select[name^=fieldReference]");
+
+	attrRefs.html(null);
+	if (fields.length > 0) {
+		$.each(fields, function () {
+			attrRefs.append(new Option(this.name, this.name));
+		});
+	}
 };
 
 /**
@@ -549,3 +655,37 @@ Form.prototype.formatJSON = function (json, textarea) {
 	}
 	return ret;
 };
+
+
+Form.prototype.populateSelect = function (selects) {
+	$.each(selects,
+		function (index, select) {
+			const fieldId = $(select).attr("table-field-id");
+			const reference = $(select).attr("field-reference");
+			$(select).html(null);
+			const req = load("/PageRender/GetInputSelectValues",
+				{
+					fieldId: fieldId
+				});
+			let identifier = "name";;
+			if (reference) {
+				try {
+					identifier = reference.charAt(0).toLowerCase() + reference.slice(1);
+				} catch (e) {
+					console.log(e);
+				}
+			}
+
+			try {
+				$(select).append(new Option("None", ""));
+				if (req.is_success) {
+					$.each(req.result,
+						function (index, item) {
+							$(select).append(new Option(item[identifier], item.id));
+						});
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		});
+}

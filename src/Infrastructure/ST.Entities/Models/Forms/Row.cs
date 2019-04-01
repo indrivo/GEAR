@@ -9,8 +9,7 @@ namespace ST.Entities.Models.Forms
         public IEnumerable<Column> Columns { get; set; }
         public Config Config { get; set; }
         public Guid ConfigId { get; set; }
-        public Attrs Attrs { get; set; }
-        public Guid AttrsId { get; set; }
+        public List<Attrs> Attrs { get; set; }
         public Guid FormId { get; set; }
     }
 }

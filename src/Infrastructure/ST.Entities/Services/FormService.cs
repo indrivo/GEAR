@@ -2,22 +2,30 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.Entities.Data;
 using ST.Entities.Models.Forms;
+using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.ViewModels.Form;
 
 namespace ST.Entities.Services
 {
-    public class FormService : IFormService
+    public class FormService<TContext> : IFormService where TContext : EntitiesDbContext
     {
-        private readonly IBaseBusinessRepository<EntitiesDbContext> _repository;
         private readonly EntitiesDbContext _context;
 
-        public FormService(IBaseBusinessRepository<EntitiesDbContext> repository, EntitiesDbContext context)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="context"></param>
+        public FormService(TContext context)
         {
-            _repository = repository;
             _context = context;
         }
 
@@ -27,15 +35,36 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ResultModel DeleteForm(Guid id)
+        public virtual ResultModel DeleteForm(Guid id)
         {
-            var form = _repository.GetSingle<Form>(id);
-            var result = _context.Forms.Remove(form);
-            _context.SaveChanges();
-            return new ResultModel
+            var form = _context.Forms.FirstOrDefault(x => x.Id == id);
+            if (form == null) return new ResultModel
             {
-                IsSuccess = result.IsKeySet
+                Errors = new List<IErrorModel>
+                {
+                    new ErrorModel("", "Form not found")
+                }
             };
+            _context.Forms.Remove(form);
+            try
+            {
+                _context.SaveChanges();
+                return new ResultModel
+                {
+                    IsSuccess = true
+                };
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new ResultModel
+                {
+                    Errors = new List<IErrorModel>
+                    {
+                        new ErrorModel("",e.ToString())
+                    }
+                };
+            }
         }
 
 
@@ -45,13 +74,11 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="formId"></param>
         /// <returns></returns>
-        public FormType GetTypeByFormId(Guid formId)
+        public virtual FormType GetTypeByFormId(Guid formId)
         {
-            var form = _repository.GetById<Form, Form>(formId);
-            if (!form.IsSuccess) return null;
-            if (form.Result.TypeId == Guid.Empty) return null;
-            var formType = _repository.GetById<FormType, FormType>(form.Result.TypeId);
-            return formType.IsSuccess ? formType.Result : null;
+            var form = _context.Forms.Include(x => x.Type).FirstOrDefault(x => x.Id == formId);
+            if (form == null) return null;
+            return form.TypeId == Guid.Empty ? null : form.Type;
         }
 
         /// <inheritdoc />
@@ -60,114 +87,133 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ResultModel<FormViewModel> GetFormById(Guid id)
+        public virtual ResultModel<FormViewModel> GetFormById(Guid id)
         {
-            var response = _repository.GetById<Form, Form>(id);
+            var response = _context.Forms
+                .Include(x => x.Settings)
+                .Include(x => x.Type)
+                .Include(x => x.Rows)
+                .ThenInclude(x => x.Attrs)
+                .Include(x => x.Columns)
+                .ThenInclude(x => x.Config)
+                .Include(x => x.Fields)
+                .ThenInclude(x => x.Attrs)
+                .Include(x => x.Fields)
+                .ThenInclude(x => x.Attrs)
+                .Include(x => x.Stages)
+                .FirstOrDefault(x => x.Id == id);
 
-            if (response.IsSuccess)
+            if (response == null) return new ResultModel<FormViewModel>
             {
-                var form = new FormViewModel
+                Errors = new List<IErrorModel>
                 {
-                    Id = response.Result.Id
-                };
-                var fields = new Dictionary<Guid, FieldViewModel>();
-                var columns = new Dictionary<Guid, ColumnViewModel>();
-                var stages = new Dictionary<Guid, StageViewModel>();
-                var rows = new Dictionary<Guid, RowViewModel>();
+                    new ErrorModel("", "Form not found")
+                }
+            };
 
-                var _stages = _context.Stages.Where(x => x.FormId == form.Id).ToList();
-                foreach (var stage in _stages)
+            var form = new FormViewModel
+            {
+                Id = response.Id
+            };
+            var fields = new Dictionary<Guid, FieldViewModel>();
+            var columns = new Dictionary<Guid, ColumnViewModel>();
+            var stages = new Dictionary<Guid, StageViewModel>();
+            var rows = new Dictionary<Guid, RowViewModel>();
+
+            var formStages = response.Stages.ToList();
+            foreach (var stage in formStages)
+            {
+                var r = new List<Guid>(_context.StageRows
+                    .Where(x => x.StageId == stage.Id)
+                    .Select(x => x.RowId));
+
+                stages.Add(stage.Id, new StageViewModel
                 {
-                    var r = new List<Guid>(_context.StageRows
-                        .Where(x => x.StageId == stage.Id)
-                        .Select(x => x.RowId));
+                    Id = stage.Id,
+                    Settings = new SettingsViewModel(),
+                    Rows = r
+                });
+            }
 
-                    stages.Add(stage.Id, new StageViewModel
+            var formRows = response.Rows.ToList();
+            foreach (var row in formRows)
+            {
+                var c = new List<Guid>(_context
+                    .RowColumns
+                    .Where(x => x.RowId == row.Id).Select(x => x.ColumnId));
+
+                var rowAttrs = _context.Attrs
+                    .Where(x => x.RowId == row.Id)
+                    .ToDictionary(x => x.Key, v => v.Value ?? "");
+
+                var config = _context.Configs.FirstOrDefault(x => x.Id == row.ConfigId);
+                rows.Add(row.Id, new RowViewModel
+                {
+                    Id = row.Id,
+                    Config = new ConfigViewModel
                     {
-                        Id = stage.Id,
-                        Settings = new SettingsViewModel(),
-                        Rows = r
-                    });
+                        Fieldset = config?.Fieldset ?? false,
+                        Label = config?.Label,
+                        InputGroup = config?.InputGroup ?? false,
+                        Legend = config?.Legend,
+                        Width = config?.Width
+                    },
+                    Columns = c,
+                    Attrs = rowAttrs
+                });
+            }
+
+            var formColumns = response.Columns.ToList();
+            foreach (var column in formColumns)
+            {
+                var f = new List<Guid>(_context.ColumnFields
+                    .Where(x => x.ColumnId == column.Id)
+                    .OrderBy(x => x.Order)
+                    .Select(x => x.FieldId));
+
+                var config = _context.Configs.FirstOrDefault(x => x.Id == column.ConfigId);
+                columns.Add(column.Id, new ColumnViewModel
+                {
+                    ClassName = column.ClassName,
+                    Config = new ConfigViewModel
+                    {
+                        Fieldset = config?.Fieldset ?? false,
+                        Label = config?.Label,
+                        InputGroup = config?.InputGroup ?? false,
+                        Legend = config?.Legend,
+                        Width = config?.Width
+                    },
+                    Id = column.Id,
+                    Fields = f
+                });
+            }
+
+            var formFields = response.Fields.ToList();
+
+            foreach (var field in formFields)
+            {
+                var config = _context.Configs.FirstOrDefault(x => x.Id == field.ConfigId);
+                var fieldAttrs = _context.Attrs
+                    .Where(x => x.FieldId == field.Id)
+                    .ToDictionary(x => x.Key, v => v.Value ?? "");
+           
+
+                var meta = _context.Meta.FirstOrDefault(x => x.Id == field.MetaId);
+                var disabledAttr = _context.DisabledAttrs.Where(x => x.ConfigId == config.Id).ToList();
+                var configDisabled = new List<string>();
+                var options = _context.Options.Where(x => x.FieldId == field.Id).ToList();
+                var ops = new List<OptionsViewModel>();
+                foreach (var dis in disabledAttr)
+                {
+                    configDisabled.Add(dis.Name);
                 }
 
-                var _rows = _context.Rows.Where(x => x.FormId == form.Id).ToList();
-                foreach (var row in _rows)
+                foreach (var f in options)
                 {
-                    var c = new List<Guid>(_context
-                        .RowColumns
-                        .Where(x => x.RowId == row.Id).Select(x => x.ColumnId));
-
-                    var attr = _context.Attrs.FirstOrDefault(x => x.Id == row.AttrsId);
-                    var config = _context.Configs.FirstOrDefault(x => x.Id == row.ConfigId);
-                    rows.Add(row.Id, new RowViewModel
+                    ops.Add(new OptionsViewModel
                     {
-                        Id = row.Id,
-                        Config = new ConfigViewModel
-                        {
-                            Fieldset = config.Fieldset,
-                            Label = config.Label,
-                            InputGroup = config.InputGroup,
-                            Legend = config.Legend,
-                            Width = config.Width
-                        },
-                        Columns = c,
-                        Attrs = new AttrsViewModel
-                        {
-                            Type = attr?.Type,
-                            ClassName = attr?.ClassName,
-                            Required = attr.Required,
-                            Value = attr?.Value
-                        }
-                    });
-                }
-
-                var _columns = _context.Columns.Where(x => x.FormId == form.Id).ToList();
-                foreach (var column in _columns)
-                {
-                    var f = new List<Guid>(_context.ColumnFields
-                        .Where(x => x.ColumnId == column.Id)
-                        .OrderBy(x => x.Order)
-                        .Select(x => x.FieldId));
-
-                    var config = _context.Configs.FirstOrDefault(x => x.Id == column.ConfigId);
-                    columns.Add(column.Id, new ColumnViewModel
-                    {
-                        ClassName = column.ClassName,
-                        Config = new ConfigViewModel
-                        {
-                            Fieldset = config.Fieldset,
-                            Label = config.Label,
-                            InputGroup = config.InputGroup,
-                            Legend = config.Legend,
-                            Width = config.Width
-                        },
-                        Id = column.Id,
-                        Fields = f
-                    });
-                }
-
-                var _fields = _context.Fields.Where(x => x.FormId == form.Id).ToList();
-
-                foreach (var field in _fields)
-                {
-                    var config = _context.Configs.FirstOrDefault(x => x.Id == field.ConfigId);
-                    var attr = _context.Attrs.FirstOrDefault(x => x.Id == field.AttrsId);
-                    var meta = _context.Meta.FirstOrDefault(x => x.Id == field.MetaId);
-                    var disabledAttr = _context.DisabledAttrs.Where(x => x.ConfigId == config.Id).ToList();
-                    var configDisabled = new List<string>();
-                    var options = _context.Options.Where(x => x.FieldId == field.Id).ToList();
-                    var ops = new List<OptionsViewModel>();
-                    foreach (var dis in disabledAttr)
-                    {
-                        configDisabled.Add(dis.Name);
-                    }
-
-                    foreach (var f in options)
-                    {
-                        ops.Add(new OptionsViewModel
-                        {
-                            Label = f.Label,
-                            Type = new List<AttrTagViewModel>
+                        Label = f.Label,
+                        Type = new List<AttrTagViewModel>
                             {
                                 new AttrTagViewModel
                                 {
@@ -176,99 +222,55 @@ namespace ST.Entities.Services
                                     Selected = true
                                 }
                             },
-                            Value = f.Value,
-                            Selected = f.Selected
-                        });
-                    }
-
-                    fields.Add(field.Id, new FieldViewModel
-                    {
-                        Id = field.Id,
-                        TableFeldId = field.TableFieldId,
-                        Config = new ConfigViewModel
-                        {
-                            Fieldset = config?.Fieldset ?? false,
-                            Label = config?.Label,
-                            InputGroup = config.InputGroup,
-                            Legend = config.Legend,
-                            Width = config.Width,
-                            DisabledAttrs = configDisabled,
-                            HideLabel = field.Config.HideLabel,
-                            Editable = field.Config.Editable
-                        },
-                        Attrs = new AttrsViewModel
-                        {
-                            ClassName = attr?.ClassName ?? "",
-                            Required = attr?.Required ?? false,
-                            Type = attr?.Type,
-                            Value = field.Attrs.Value,
-                            TableFieldId = field.TableFieldId.ToString(),
-                            Tag = (field.Tag == "h1")
-                                ? new List<AttrTagViewModel>
-                                {
-                                    new AttrTagViewModel
-                                    {
-                                        Label = "H1",
-                                        Value = "h1"
-                                    },
-                                    new AttrTagViewModel
-                                    {
-                                        Label = "H2",
-                                        Value = "h2"
-                                    },
-                                    new AttrTagViewModel
-                                    {
-                                        Label = "H3",
-                                        Value = "h3"
-                                    },
-                                    new AttrTagViewModel
-                                    {
-                                        Label = "H4",
-                                        Value = "h4"
-                                    }
-                                }
-                                : null
-                        },
-                        Content = field.Content,
-                        FMap = field.FMap,
-                        Tag = field.Tag,
-                        Meta = new MetaViewModel
-                        {
-                            Group = meta.Group,
-                            Icon = meta.Icon,
-                            Id = meta.Icon
-                        },
-                        Options = (field.Attrs.Type == "radio" ||
-                                   field.Tag == "select" ||
-                                   field.Tag == "button")
-                            ? ops
-                            : null,
-                        Order = field.Order
+                        Value = f.Value,
+                        Selected = f.Selected
                     });
                 }
 
-                form.Columns = columns;
-                form.Fields = fields.OrderBy(x => x.Value.Order)
-                    .ToDictionary(x => x.Key, x => x.Value);
-                form.Rows = rows;
-                form.Stages = stages;
-                form.Settings = new SettingsViewModel();
+                var type = field.Attrs?.FirstOrDefault(x => x.Key == "Type")?.Value;
 
-                var result = new ResultModel<FormViewModel>
+                fields.Add(field.Id, new FieldViewModel
                 {
-                    IsSuccess = response.IsSuccess,
-                    Result = form
-                };
-                return result;
+                    Id = field.Id,
+                    Config = new ConfigViewModel
+                    {
+                        Fieldset = config?.Fieldset ?? false,
+                        Label = config?.Label,
+                        InputGroup = config?.InputGroup ?? false,
+                        Legend = config?.Legend,
+                        Width = config?.Width,
+                        DisabledAttrs = configDisabled,
+                        HideLabel = field.Config.HideLabel,
+                        Editable = field.Config.Editable
+                    },
+                    Attrs = fieldAttrs,
+                    Content = field.Content,
+                    FMap = field.FMap,
+                    Tag = field.Tag,
+                    Meta = new MetaViewModel
+                    {
+                        Group = meta?.Group,
+                        Icon = meta?.Icon,
+                        Id = meta?.Icon
+                    },
+                    Options = (type == "radio" || field.Tag == "select" || field.Tag == "button") ? ops : null,
+                    Order = field.Order
+                });
             }
-            else
+
+            form.Columns = columns;
+            form.Fields = fields.OrderBy(x => x.Value.Order)
+                .ToDictionary(x => x.Key, x => x.Value);
+            form.Rows = rows;
+            form.Stages = stages;
+            form.Settings = new SettingsViewModel();
+
+            var result = new ResultModel<FormViewModel>
             {
-                var result = new ResultModel<FormViewModel>
-                {
-                    IsSuccess = response.IsSuccess
-                };
-                return result;
-            }
+                IsSuccess = true,
+                Result = form
+            };
+            return result;
         }
 
         /// <inheritdoc>
@@ -278,11 +280,10 @@ namespace ST.Entities.Services
         /// Create form
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="userId"></param>
         /// <returns></returns>
-        public ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model, string userId)
+        public virtual ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model)
         {
-            var contor = 0;
+            var order = 0;
             try
             {
                 var form = new Form
@@ -319,12 +320,11 @@ namespace ST.Entities.Services
                             if (r != row.Value.Id) continue;
                             rows.Add(new Row
                             {
-                                Attrs = new Attrs
+                                Attrs = row.Value.Attrs.Select(x => new Attrs
                                 {
-                                    ClassName = row.Value.Attrs.ClassName,
-                                    Required = row.Value.Attrs.Required,
-                                    Type = row.Value.Attrs.Type
-                                },
+                                    Key = x.Key,
+                                    Value = x.Value.ToString()
+                                }).ToList(),
                                 Config = new Config
                                 {
                                     Width = row.Value.Config.Width,
@@ -409,23 +409,16 @@ namespace ST.Entities.Services
                                                     opt.Add(o);
                                                 }
                                             }
-
+                                            //add new Field
                                             fields.Add(new Field
                                             {
-                                                Order = contor++,
-                                                TableFieldId = field.Value.TableFeldId,
-                                                Attrs = (field.Value.Attrs != null)
-                                                    ? new Attrs
-                                                    {
-                                                        ClassName = field.Value.Attrs.ClassName,
-                                                        Required = field.Value.Attrs.Required,
-                                                        Type = field.Value.Attrs.Type,
-                                                        Value = field.Value.Attrs.Value
-                                                    }
-                                                    : new Attrs
-                                                    {
-                                                        ClassName = string.Empty
-                                                    },
+                                                Order = order++,
+                                                TableFieldId = field.Value.Attrs?.FirstOrDefault(x => x.Key == "tableFieldId").Value?.TryToGuid(),
+                                                Attrs = field.Value.Attrs?.Select(x => new Attrs
+                                                {
+                                                    Key = x.Key,
+                                                    Value = x.Value?.ToString()
+                                                }).ToList(),
                                                 Config = (field.Value.Config != null)
                                                     ? new Config
                                                     {
@@ -474,11 +467,11 @@ namespace ST.Entities.Services
                     form.Author = model.Author;
                     form.Created = model.Created;
                     form.Changed = DateTime.Now;
-                    form.ModifiedBy = userId;
+                    form.ModifiedBy = model.ModifiedBy;
                 }
                 else
                 {
-                    form.Author = userId;
+                    form.Author = model.Author;
                     form.Created = DateTime.Now;
                     form.Changed = DateTime.Now;
                 }
@@ -488,7 +481,6 @@ namespace ST.Entities.Services
                 form.Settings = settings;
                 form.Columns = columns;
                 form.Stages = stages;
-                //Set formTypeId
                 form.TypeId = model.FormTypeId;
                 _context.Forms.Add(form);
                 _context.StageRows.AddRange(stageRows);
@@ -511,12 +503,113 @@ namespace ST.Entities.Services
                         new ErrorModel
                         {
                             Key = string.Empty,
+                            Message = "Fail to create form, something was wrong!"
+                        },
+                        new ErrorModel
+                        {
+                            Key = string.Empty,
                             Message = ex.ToString()
                         }
                     }
                 };
                 return result;
             }
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get entity fields
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        public virtual JsonResult GetEntityFields(Guid tableId)
+        {
+            var fields = _context.Table
+                .Include(x => x.TableFields)
+                .FirstOrDefault(x => !x.IsDeleted && x.Id == tableId)?.TableFields
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name,
+                    x.DataType
+                })
+                .ToList();
+
+            return new JsonResult(fields);
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="entitySchema"></param>
+        /// <returns></returns>
+        public virtual JsonResult GetEntityReferenceFields(string entityName, string entitySchema)
+        {
+            if (string.IsNullOrEmpty(entityName) || string.IsNullOrEmpty(entitySchema)) return new JsonResult(default(Collection<TableModelFields>));
+            var table = _context.Table.Include(x => x.TableFields).FirstOrDefault(x => x.Name == entityName && x.EntityType == entitySchema);
+            if (table == null) return new JsonResult(default(Collection<TableModelFields>));
+            return new JsonResult(table.TableFields.Select(x => new
+            {
+                x.DataType,
+                x.Id,
+                x.Name
+            }));
+        }
+
+        /// <summary>
+        /// Get reference fields
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="entityFieldId"></param>
+        /// <returns></returns>
+        public virtual JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId)
+        {
+            if (entityFieldId == null || entityId == null) return new JsonResult(default(Collection<TableModelFields>));
+            var field = _context.TableFields
+                .Include(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .FirstOrDefault(x => x.Id == entityFieldId && x.TableId == entityId);
+
+            if (field == null) return new JsonResult(default(Collection<TableModelFields>));
+            var refEntity = field.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "3000");
+            if (refEntity == null) return new JsonResult(default(Collection<TableModelFields>));
+            var refEntitySchema = field.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "9999");
+            var table = _context
+                .Table
+                .Include(x => x.TableFields)
+                .FirstOrDefault(x => x.Name == refEntity.Value && x.EntityType == refEntitySchema.Value);
+            if (table == null) return new JsonResult(default(Collection<TableModelFields>));
+            return new JsonResult(table.TableFields.Select(x => new
+            {
+                x.DataType,
+                x.Id,
+                x.Name
+            }));
+        }
+
+
+        /// <summary>
+        /// Get table fields
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        public virtual JsonResult GetTableFields(Guid tableId)
+        {
+            var fields = _context.TableFields
+                .Include(x => x.TableFieldConfigValues)
+                .Where(x => x.TableId == tableId);
+
+            return new JsonResult(new ResultModel
+            {
+                IsSuccess = true,
+                Result = fields.ToList()
+            }, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
         }
     }
 }

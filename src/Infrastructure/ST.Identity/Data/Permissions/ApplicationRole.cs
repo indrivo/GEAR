@@ -9,7 +9,7 @@ namespace ST.Identity.Data.Permissions
     /// <summary>
     /// Represents the Role of the user
     /// </summary>
-    [TrackEntity(Option = TrackEntityOption.Selected)]
+    [TrackEntity(Option = TrackEntityOption.SelectedFields)]
     public class ApplicationRole : IdentityRole<string>
     {
         /// <inheritdoc />

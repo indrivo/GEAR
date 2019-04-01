@@ -23,13 +23,13 @@ window.getCookie = function getCookie(cname) {
 
 function getVisibility(id) {
 	const cookie = getCookie(`_list_${id}`);
-	const visibledItems = [];
+	const visibleItems = [];
 	const hiddenItems = [];
 	if (cookie) {
 		const data = JSON.parse(cookie);
 
 		for (let i = 0; i < data.values.length; i++) {
-			if (data.values[i]) visibledItems.push(i);
+			if (data.values[i]) visibleItems.push(i);
 			else hiddenItems.push(i);
 		}
 	}
@@ -51,7 +51,7 @@ $(".table")
 				.html(
 					`<div class="col-md-2" style="margin-left: -1em;">
 												<a data-id="#${$(this)[0].id
-					}" style="margin-bottom: 0.5em;" class="list-side-toggle btn btn-primary btn-sm" href="#">Visibility of fields</a></div>`);
+					}" style="margin-bottom: 0.5em;" class="list-side-toggle btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a></div>`);
 			$(".list-side-toggle").click(function () {
 				toggleRightListSideBar($(this).attr("data-id"));
 			});
@@ -193,10 +193,10 @@ function toggleRightListSideBar(id) {
 		const container =
 			`<div class="row">
 				<div class="col-md-6">
-					<a id="selAllCols" href="#">Select All</a>
+					<a id="selAllCols" href="#">${window.translate("select_all")}</a>
 				</div>
 			<div class="col-md-6">
-				<a id="deselAllCols" href="#">Deselect All</a>
+				<a id="deselAllCols" href="#">${window.translate("deselect_all")}</a>
 				</div>
 			</div><div class="to-do-widget"><ul class="todo-list list-group m-b-0">${
 			items}</ul</div>`;

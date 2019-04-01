@@ -129,7 +129,7 @@ function email() {
 			emailNotifications(f.Id);
 			const uri = `/Email?folderId=${f.Id}`;
 			$("#SeeAllEmails").attr("href", uri);
-			Promise.all([st.getTemplate("notifications/folders_layout.html")])
+			Promise.all([st.getTemplate("folders_layout.html")])
 				.then(function (values) {
 					$.templates("items", values[0]);
 					const content = $.render["items"](folders);

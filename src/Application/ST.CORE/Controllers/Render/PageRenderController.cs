@@ -374,7 +374,7 @@ namespace ST.CORE.Controllers.Render
 		{
 			if (menuId == null)
 			{
-				menuId = MenuSync.NavBarId;
+				menuId = MenuManager.NavBarId;
 			}
 
 			var user = await _userManager.GetUserAsync(User);
@@ -584,7 +584,7 @@ namespace ST.CORE.Controllers.Render
 					}
 				}
 
-				var obj = instance.ParseObject(pre);
+				var obj = instance.ParseObject<dynamic, EntitiesDbContext>(pre);
 
 				var req = await instance.Add(obj);
 
@@ -624,6 +624,29 @@ namespace ST.CORE.Controllers.Render
 			if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
 
 			return Json(new { message = "Item was deleted!", success = true });
+		}
+
+
+		/// <summary>
+		/// Delete page by id
+		/// </summary>
+		/// <param name="viewModelId"></param>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
+		public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
+		{
+			if (ids == null) return Json(new { message = "Fail to delete!", success = false });
+			var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+			foreach (var id in ids)
+			{
+				await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+			}
+
+			return Json(new { message = "Items was deleted!", success = true });
 		}
 
 		/// <summary>

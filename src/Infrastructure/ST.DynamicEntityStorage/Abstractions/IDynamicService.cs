@@ -62,12 +62,6 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <returns></returns>
         DynamicObject Table(string tableName);
         /// <summary>
-        /// Table Builder
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        ObjectService TableBuild(string tableName);
-        /// <summary>
         /// Create dynamic table
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

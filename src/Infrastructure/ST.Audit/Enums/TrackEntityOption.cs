@@ -6,6 +6,6 @@ namespace ST.Audit.Enums
 {
     public enum TrackEntityOption
     {
-        AllFields, Ignore, Selected
+        AllFields, Ignore, SelectedFields
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.CORE.Attributes;
 using ST.Entities.Data;
@@ -13,15 +12,18 @@ using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.FormsViewModels;
 using ST.DynamicEntityStorage.Extensions;
+using ST.Identity.Data;
+using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Services.Abstractions;
+using ST.Notifications.Abstraction;
+using ST.Procesess.Data;
 using Settings = ST.Configuration.Settings;
 
 namespace ST.CORE.Controllers.Entity
@@ -31,35 +33,38 @@ namespace ST.CORE.Controllers.Entity
 	/// Forms manipulation
 	/// </summary>
 	[Authorize]
-	public class FormController : Controller
+	public class FormController : BaseController
 	{
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="repository"></param>
-		/// <param name="formService"></param>
-		/// <param name="userManager"></param>
-		/// <param name="entitiesDbContext"></param>
-		public FormController(IBaseBusinessRepository<EntitiesDbContext> repository,
-			IFormService formService, UserManager<ApplicationUser> userManager, EntitiesDbContext entitiesDbContext)
-		{
-			Repository = repository;
-			FormService = formService;
-			_userManager = userManager;
-			UserManager = userManager;
-			_entitiesDbContext = entitiesDbContext;
-		}
-
-		#region Import
-		private readonly UserManager<ApplicationUser> _userManager;
-
-		private UserManager<ApplicationUser> UserManager { get; }
-		private readonly EntitiesDbContext _entitiesDbContext;
-
+		#region Inject
 		private IFormService FormService { get; }
 
 		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
 		#endregion
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="applicationDbContext"></param>
+		/// <param name="userManager"></param>
+		/// <param name="roleManager"></param>
+		/// <param name="notify"></param>
+		/// <param name="organizationService"></param>
+		/// <param name="processesDbContext"></param>
+		/// <param name="formService"></param>
+		/// <param name="cacheService"></param>
+		/// <param name="repository"></param>
+		public FormController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
+			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+			INotify<ApplicationRole> notify, IOrganizationService organizationService,
+			ProcessesDbContext processesDbContext, IFormService formService,
+			ICacheService cacheService,
+			IBaseBusinessRepository<EntitiesDbContext> repository)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+		{
+			FormService = formService;
+			Repository = repository;
+		}
 
 		/// <summary>
 		/// Create new form
@@ -93,7 +98,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpGet]
 		public IActionResult Edit(Guid formId)
 		{
-			var form = _entitiesDbContext.Forms
+			var form = Context.Forms
 				.Include(x => x.Type)
 				.FirstOrDefault(x => x.Id.Equals(formId));
 			if (form == null) return NotFound();
@@ -114,11 +119,10 @@ namespace ST.CORE.Controllers.Entity
 		/// <returns></returns>
 		[Route("api/[controller]/[action]")]
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-		public async Task<JsonResult> UpdateForm(FormViewModel form, [Required]Guid formId,
+		public JsonResult UpdateForm(FormViewModel form, [Required]Guid formId,
 			string name, string description, string postUrl, string redirectUrl)
 		{
-			var user = await _userManager.GetUserAsync(User);
-			var bdForm = _entitiesDbContext.Forms.FirstOrDefault(x => x.Id.Equals(formId));
+			var bdForm = Context.Forms.FirstOrDefault(x => x.Id.Equals(formId));
 			if (bdForm == null) return Json(new ResultModel());
 			var res = FormService.DeleteForm(formId);
 			if (!res.IsSuccess) return Json(new ResultModel());
@@ -128,6 +132,8 @@ namespace ST.CORE.Controllers.Entity
 				Created = bdForm.Created,
 				Author = bdForm.Author,
 				Description = description,
+				ModifiedBy = GetCurrentUser()?.Id,
+				TenantId = CurrentUserTenantId,
 				Name = name,
 				PostUrl = postUrl,
 				RedirectUrl = redirectUrl,
@@ -135,7 +141,7 @@ namespace ST.CORE.Controllers.Entity
 				TableId = bdForm.TableId,
 				FormTypeId = bdForm.TypeId,
 				EditMode = true
-			}, user.Id);
+			});
 
 			return Json(response);
 		}
@@ -150,10 +156,7 @@ namespace ST.CORE.Controllers.Entity
 		public JsonResult GetForm(Guid id)
 		{
 			var response = FormService.GetFormById(id);
-			return Json(response, new JsonSerializerSettings
-			{
-				NullValueHandling = NullValueHandling.Ignore
-			});
+			return Json(response);
 		}
 
 		/// <summary>
@@ -165,20 +168,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpGet, Produces("application/json", Type = typeof(ResultModel))]
 		public JsonResult GetTableFields(Guid tableId)
 		{
-			var fields = _entitiesDbContext.TableFields
-				.Include(x => x.TableFieldConfigValues)
-				.Where(x => x.TableId == tableId);
-
-			return new JsonResult(new ResultModel
-			{
-				IsSuccess = true,
-				Result = fields.ToList()
-			}, new JsonSerializerSettings
-			{
-				Formatting = Formatting.Indented,
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-				ContractResolver = new CamelCasePropertyNamesContractResolver()
-			});
+			return FormService.GetTableFields(tableId);
 		}
 
 		/// <summary>
@@ -199,9 +189,18 @@ namespace ST.CORE.Controllers.Entity
 		public IActionResult Preview(Guid formId)
 		{
 			ViewBag.FormId = formId;
-			ViewBag.Form = _entitiesDbContext.Forms.FirstOrDefault(x => x.Id == formId);
+			ViewBag.Form = Context.Forms.FirstOrDefault(x => x.Id == formId);
 			ViewBag.FormType = FormService.GetTypeByFormId(formId);
 			return View();
+		}
+
+
+		[HttpGet]
+		public JsonResult GetFormTableReference(Guid? formId)
+		{
+			if (formId == null) return default;
+			var table = Context.Forms.Include(x => x.Table).FirstOrDefault(x => x.Id == formId)?.Table;
+			return Json(table);
 		}
 
 		/// <summary>
@@ -214,7 +213,7 @@ namespace ST.CORE.Controllers.Entity
 		[AjaxOnly]
 		public JsonResult LoadForms(DTParameters param, Guid entityId)
 		{
-			var filtered = _entitiesDbContext.Filter<Form>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = Context.Filter<Form>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount, x => (entityId != Guid.Empty && x.TableId == entityId) || entityId == Guid.Empty);
 
@@ -227,7 +226,7 @@ namespace ST.CORE.Controllers.Entity
 					Id = x.Id,
 					Name = x.Name,
 					Created = x.Created,
-					TableName = _entitiesDbContext.Table.FirstOrDefault(o => o.Id == x.TableId)?.Name,
+					TableName = Context.Table.FirstOrDefault(o => o.Id == x.TableId)?.Name,
 					IsDeleted = x.IsDeleted,
 					TypeId = x.TypeId,
 					Type = x.Type,
@@ -260,17 +259,19 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> CreateNewForm(FormViewModel form, Guid tableId, Guid formTypeId,
 			string name, string description, string postUrl, string redirectUrl)
 		{
-			var user = await _userManager.GetUserAsync(User);
+			var user = await GetCurrentUserAsync();
 			var response = FormService.CreateForm(new FormCreateDetailsViewModel
 			{
 				Description = description,
 				Name = name,
 				PostUrl = postUrl,
+				Author = user.Id,
+				ModifiedBy = user.Id,
 				RedirectUrl = redirectUrl,
 				Model = form,
 				TableId = tableId,
 				FormTypeId = formTypeId
-			}, user.Id);
+			});
 			return Json(response);
 		}
 
@@ -283,18 +284,7 @@ namespace ST.CORE.Controllers.Entity
 		[Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult GetEntityFields(Guid tableId)
 		{
-			var fields = _entitiesDbContext.Table
-				.Include(x => x.TableFields)
-				.FirstOrDefault(x => !x.IsDeleted && x.Id == tableId)?.TableFields
-				.Select(x => new
-				{
-					x.Id,
-					x.Name,
-					x.DataType
-				})
-				.ToList();
-
-			return new JsonResult(fields);
+			return FormService.GetEntityFields(tableId);
 		}
 
 		/// <summary>
@@ -307,14 +297,20 @@ namespace ST.CORE.Controllers.Entity
 		[Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult GetEntityReferenceFields(string entityName, string entitySchema)
 		{
-			var table = _entitiesDbContext.Table.Include(x => x.TableFields).FirstOrDefault(x => x.Name == entityName && x.EntityType == entitySchema);
-			if (table == null) return Json(default(Collection<TableModelFields>));
-			return Json(table.TableFields.Select(x => new
-			{
-				x.DataType,
-				x.Id,
-				x.Name
-			}));
+			return FormService.GetEntityReferenceFields(entityName, entitySchema);
+		}
+
+		/// <summary>
+		/// Get entity fields by entity id and entityFieldId
+		/// </summary>
+		/// <param name="entityId"></param>
+		/// <param name="entityFieldId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[Authorize(Roles = Settings.SuperAdmin)]
+		public JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId)
+		{
+			return FormService.GetReferenceFields(entityId, entityFieldId);
 		}
 
 		/// <summary>
@@ -325,6 +321,7 @@ namespace ST.CORE.Controllers.Entity
 		[Route("api/[controller]/[action]")]
 		[ValidateAntiForgeryToken]
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete form!", success = false });

@@ -29,7 +29,7 @@ namespace ST.Identity.Services
         /// <param name="key"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<bool> Set<TObject>(string key, TObject obj) where TObject : class, ICacheModel
+        public virtual async Task<bool> Set<TObject>(string key, TObject obj) where TObject : class, ICacheModel
         {
             try
             {
@@ -49,7 +49,7 @@ namespace ST.Identity.Services
         /// <typeparam name="TObject"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<TObject> Get<TObject>(string key) where TObject : class, ICacheModel
+        public virtual async Task<TObject> Get<TObject>(string key) where TObject : class, ICacheModel
         {
             try
             {
@@ -65,5 +65,12 @@ namespace ST.Identity.Services
                 return default;
             }
         }
+
+        /// <summary>
+        /// Remove key from cache service
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual async Task RemoveAsync(string key) => await _cache.RemoveAsync(key);
     }
 }

@@ -42,17 +42,13 @@
 					<div class="form-body">
 						<h3 class="card-title">Preview form  @form.Name</h3>
 						<hr>
-						<div class="row" id="preview_place">
+						<div class="row render-dynamic-form" id="preview_place">
 
 						</div>
 					</div>
 					<div class="row button-group">
 						<div class="col-lg-2 col-md-3">
-							<a id="serializeform" href="#" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</a>
-						</div>
-						<div class="col-lg-2 col-md-3">
-							<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
-
+							<a id="serializeform" href="#" class="btn btn-block btn-success"> <i class="fa fa-check"></i>Simulate</a>
 						</div>
 						<div class="col-lg-2 col-md-3">
 							<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
@@ -64,11 +60,8 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-md-6">
-		<h2>Preview data from Submit</h2>
-		<textarea style="height: 20em" class="form-control" id="textarea"></textarea>
-	</div>
-	<div class="col-md-6">
+	<div class="col-md-12">
+		<h2>Simulation for preview serialization of form</h2>
 		<pre id="jsonPlace" style="min-height: 23em; margin-top: 3em;"></pre>
 	</div>
 </div>

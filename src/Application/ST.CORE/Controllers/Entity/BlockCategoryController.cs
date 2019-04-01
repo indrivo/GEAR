@@ -8,11 +8,11 @@ using ST.CORE.Attributes;
 using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
@@ -22,8 +22,9 @@ namespace ST.CORE.Controllers.Entity
 	public class BlockCategoryController : BaseController
 	{
 		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
-			IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+			INotify<ApplicationRole> notify, ICacheService cacheService,
+			IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 		}
 

@@ -16,12 +16,17 @@
   <ItemGroup>
     <None Remove="app_offline.htm" />
     <None Remove="ExtraStatic\modeler.js" />
-    <None Remove="Static\Templates\iso\category.html" />
-    <None Remove="Static\Templates\iso\requirements.html" />
-    <None Remove="Static\Templates\iso\standard.html" />
+    <None Remove="Static\Templates\category.html" />
+    <None Remove="Static\Templates\folders.html" />
+    <None Remove="Static\Templates\folders_layout.html" />
     <None Remove="Static\Templates\listDefaultTemplate.html" />
-    <None Remove="Static\Templates\Menu\renderMenu.html" />
+    <None Remove="Static\Templates\notifications.html" />
+    <None Remove="Static\Templates\preview.html" />
     <None Remove="Static\Templates\profilefields.html" />
+    <None Remove="Static\Templates\profilefieldsvalues.html" />
+    <None Remove="Static\Templates\renderMenu.html" />
+    <None Remove="Static\Templates\requirements.html" />
+    <None Remove="Static\Templates\standard.html" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.0.1" />
@@ -52,58 +57,6 @@
     <Content Include="Certificates\samplempass.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\.bower.json" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\.gitignore" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\bower.json" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\css\bpmn-embedded.css" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\css\bpmn.css" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.eot" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.svg" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.ttf" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\bpmn-font\font\bpmn.woff" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\assets\diagram-js.css" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-modeler.js" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-modeler.js.map" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-navigated-viewer.js" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-navigated-viewer.js.map" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-viewer.js" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\dist\bpmn-viewer.js.map" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\LICENSE" />
-    <Content Include="wwwroot\assets\js\workflow\bower_components\bpmn-js\README.md" />
-    <Content Include="Static\**\*">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Views\Vocabulary\**" />
-    <Compile Remove="wwwroot\assets\js\workflow\bower_components\**" />
-    <Content Remove="Views\Vocabulary\**" />
-    <Content Remove="wwwroot\assets\js\workflow\bower_components\**" />
-    <EmbeddedResource Remove="Views\Vocabulary\**" />
-    <EmbeddedResource Remove="wwwroot\assets\js\workflow\bower_components\**" />
-    <None Remove="Views\Vocabulary\**" />
-    <None Remove="wwwroot\assets\js\workflow\bower_components\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Controllers\Entity\VocabularyController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="appsettings.Stage.json" />
-    <Content Remove="bpmConfig.json" />
-    <Content Remove="Static\Embedded Resources\user.jpg" />
-    <Content Remove="Static\Pages\index\index.css" />
-    <Content Remove="Static\Pages\index\index.html" />
-    <Content Remove="Static\Pages\index\index.js" />
-    <Content Remove="Static\Pages\index\settings.json" />
-    <Content Remove="Static\Pages\layout\layout.css" />
-    <Content Remove="Static\Pages\layout\layout.html" />
-    <Content Remove="Static\Pages\layout\layout.js" />
-    <Content Remove="Static\Pages\layout\settings.json" />
-    <Content Remove="Static\Pages\performanceserver\performanceserver.css" />
-    <Content Remove="Static\Pages\performanceserver\performanceserver.js" />
-    <Content Remove="Static\Pages\performanceserver\settings.json" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="bpmConfig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -141,6 +94,39 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Static\Pages\performanceserver\settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\category.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\folders.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\folders_layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\listDefaultTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\notifications.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\preview.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\profilefields.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\profilefieldsvalues.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\renderMenu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\requirements.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\standard.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -265,6 +251,18 @@
     <Content Update="Static\Pages\performanceserver\performanceserver.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="Static\Templates\folders.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Templates\Create.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Templates\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Templates\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\BlockCategory\Create.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -311,7 +309,11 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
-  <ProjectExtensions><VisualStudio><UserProperties bower_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties bower_1json__JSONSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
     <PropertyGroup>
       <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>

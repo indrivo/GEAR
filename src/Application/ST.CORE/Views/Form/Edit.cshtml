@@ -114,7 +114,9 @@
 			const form = new Form();
 			const id = form.getFromUrl("formId");
 			const data = form.getFormFronServer(id);
-			const formeo = new window.Formeo(fr.getOptions('.build-form', "@form.TableId"), JSON.stringify(data.result));
+			const f = form.attrsToArray(data);
+			const formeo = new window.Formeo(fr.getOptions('.build-form', "@form.TableId"), JSON.stringify(f));
+			fr.registerChangeRefEvent(formeo, "@form.TableId");
 			document.querySelector("#RenderForm").onclick = evt => {
 				if (!editing) {
 					formeo.render(renderContainer);
@@ -135,11 +137,13 @@
 				console.log(formeo.formData);
 			};
 			$("#form").on("submit", function (e) {
+				let form = JSON.parse(formeo.formData);
+				form = fr.attrsToString(form);
 				$.ajax({
 					url: "/api/Form/UpdateForm",
 					method: "post",
 					data: {
-						form: JSON.parse(formeo.formData),
+						form: form,
 						formId: "@form.Id",
 						name: $("#form_name").val(),
 						description: $("#form_description").val(),
@@ -147,7 +151,7 @@
 						redirectUrl: $("#form_redirectUrl").val()
 					},
 					success: function (data) {
-						if (data !== null) {
+						if (data) {
 							if (data.is_success) {
 								location.href = "/Form";
 							}
@@ -170,8 +174,7 @@
 					return;
 				}
 				fr.data = JSON.parse(formeo.formData);
-				console.log(formeo.formData);
-				//$("#form").submit();
+				$("#form").submit();
 			};
 		}
 	</script>

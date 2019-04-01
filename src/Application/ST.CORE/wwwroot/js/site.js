@@ -37,9 +37,115 @@ function DeleteData(object) {
 }
 
 
+//------------------------------------------------------------------------------------//
+//								Templates
+//------------------------------------------------------------------------------------//
+
+function TemplateManager() { }
+
+/**
+ * Get template from server
+ * @param {any} identifierName
+ */
+TemplateManager.prototype.getTemplate = function (identifierName) {
+	const template = localStorage.getItem(identifierName);
+	if (template) return template;
+	const serverTemplate = load("/Templates/GetTemplateByIdentifier",
+		{
+			identifier: identifierName
+		});
+	if (serverTemplate) {
+		if (serverTemplate.is_success) {
+			const temp = serverTemplate.result;
+			localStorage.setItem(identifierName, temp);
+			return temp;
+		} else {
+			console.log(serverTemplate);
+		}
+	}
+	return "";
+}
+
+/**
+ * Remove template from storage by template identifier
+ * @param {any} identifier
+ */
+TemplateManager.prototype.removeTemplate = function (identifier) {
+	localStorage.removeItem(identifier);
+}
+
+/**
+ * Register template into 
+ * @param {any} identifier
+ */
+TemplateManager.prototype.registerTemplate = function (identifier) {
+	$.templates(identifier, this.getTemplate(identifier));
+}
+
+/**
+ * Render template and return content
+ * @param {any} identifier
+ * @param {any} data
+ */
+TemplateManager.prototype.render = function (identifier, data, helpers) {
+	$.views.settings.allowCode(true);
+	this.registerTemplate(identifier);
+	return $.render[identifier](data, helpers);
+}
+
+//------------------------------------------------------------------------------------//
+//								Translations
+//------------------------------------------------------------------------------------//
+
+//Get translations from storage
+window.translations = function () {
+	const cached = localStorage.getItem("translations");
+	let trans = {};
+	if (!cached) {
+		trans = load("/PageRender/GetTranslations");
+		localStorage.setItem("translations", JSON.stringify(trans));
+	} else {
+		trans = JSON.parse(cached);
+	}
+	return trans;
+}
 
 
+window.translate = function (key) {
+	const trans = window.translations();
+	return trans[key];
+}
 
+
+//$(document).ajaxComplete(function (event, xhr, settings) {
+//	window.forceTranslate();
+//});
+
+
+//On page load translate all
+$(document).ready(function () {
+	window.forceTranslate();
+});
+
+//Translate page content
+window.forceTranslate = function () {
+	new Promise((resolve, reject) => {
+		const translations = Array.prototype.filter.call(
+			document.getElementsByTagName('*'),
+			function (el) {
+				return el.getAttribute('translate') != null && !el.hasAttribute("translated");
+			}
+		);
+		const trans = window.translations();
+		$.each(translations,
+			function (index, item) {
+				let key = $(item).attr("translate");
+				$(item).text(trans[key]);
+				$(item).attr("translated", "");
+			});
+		resolve();
+	});
+};
 
 //------------------------------------------------------------------------------------//
 //								Dynamic tree for ISO Standard
@@ -75,7 +181,7 @@ $(document).ready(function () {
 			const data = loadTree(`/PageRender/GetTreeData?standardEntityId=${standardId}&&categoryEntityId=${categoryId}&&requirementEntityId=${requirementId}`);
 			if (data.is_success) {
 				const st = new ST();
-				Promise.all([st.getTemplate("iso/standard.html"), st.getTemplate("iso/category.html"), st.getTemplate("iso/requirements.html")])
+				Promise.all([st.getTemplate("standard.html"), st.getTemplate("category.html"), st.getTemplate("requirements.html")])
 					.then(function (values) {
 						$.templates("IsoCategory", values[1]);
 						$.templates("IsoRequirements", values[2]);

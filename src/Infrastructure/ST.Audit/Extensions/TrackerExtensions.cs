@@ -283,7 +283,7 @@ namespace ST.Audit.Extensions
                     audit.UserName = propertyUserName.GetValue(eventArgs.Entry.Entity)?.ToString();
                 }
 
-                if (trackOption.Equals(TrackEntityOption.Selected))
+                if (trackOption.Equals(TrackEntityOption.SelectedFields))
                 {
                     auditDetails.AddRange(eventArgs.Entry.Entity.GetType().GetProperties().Where(IsFieldTrackable)
                         .Select(x => new TrackAuditDetails
@@ -428,7 +428,35 @@ namespace ST.Audit.Extensions
         /// <returns></returns>
         public static Guid ToGuid(this string id)
         {
-            return Guid.Parse(id);
+            if (string.IsNullOrEmpty(id)) return Guid.Empty;
+            try
+            {
+                return Guid.Parse(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return Guid.Empty;
+        }
+        /// <summary>
+        /// Parse string to Guid
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static Guid? TryToGuid(this string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            try
+            {
+                return Guid.Parse(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return null;
         }
     }
 }

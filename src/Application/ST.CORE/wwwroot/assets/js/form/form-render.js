@@ -29,7 +29,7 @@ $(function () {
 						return el.getAttribute('table-field-id') != null;
 					}
 				);
-				populateSelect(selects);
+				form.populateSelect(selects);
 			});
 
 			$("#serializeform").on("click",
@@ -46,11 +46,11 @@ $(function () {
 								final[s] = serialized[s];
 						}
 					}
-					const json = form.formatJSON(JSON.stringify(final));
+					//const json = form.formatJSON(JSON.stringify(final));
 
-					$("#textarea").empty();
-					$("#textarea").append(json);
-					var str = JSON.stringify(final, null, 4);
+					//$("#textarea").empty();
+					//$("#textarea").append(json);
+					const str = JSON.stringify(final, null, 4);
 					output(syntaxHighlight(str));
 				});
 		}
@@ -58,24 +58,6 @@ $(function () {
 		alert("fail");
 	}
 });
-
-function populateSelect(selects) {
-	$.each(selects,
-		function (index, select) {
-			const fieldId = $(select).attr("table-field-id");
-			$(select).html(null);
-			const req = load("/PageRender/GetInputSelectValues",
-				{
-					fieldId: fieldId
-				});
-			console.log(req);
-			if (req.is_success) {
-				$.each(req.result, function (index, item) {
-					$(select).append(new Option(item.name, item.id));
-				});
-			}
-		});
-}
 
 function output(inp) {
 	$("#jsonPlace").html(inp);

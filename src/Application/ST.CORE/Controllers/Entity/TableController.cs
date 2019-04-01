@@ -23,6 +23,7 @@ using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
@@ -41,7 +42,11 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
-		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext,
+			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
+			IOrganizationService organizationService, ProcessesDbContext processesDbContext,
+			ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository, ICacheService cacheService)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 			_logger = logger;
 			Repository = repository;

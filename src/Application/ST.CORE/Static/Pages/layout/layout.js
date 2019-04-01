@@ -4,36 +4,15 @@ const renderMenuContainer = $("#sidebarnav");
 
 const settings = JSON.parse(localStorage.getItem("settings"));
 
+const tManager = new TemplateManager();
 //Render menu
 if (menus.is_success) {
-	Promise.all([st.getTemplate("Menu/renderMenu.html")])
-		.then(function (values) {
-			$.templates("menu", values[0]);
-			const content = $.render["menu"](menus.result);
-			renderMenuContainer.html(content);
-		})
-		.catch(function (err) {
-			console.log(err);
-		});
+	const content = tManager.render("template_renderMenu.html", menus.result, {
+		host: location.origin
+	});
+	renderMenuContainer.html(content);
+	window.forceTranslate();
 }
-
-$(document).ready(function () {
-	const trans = load("/PageRender/GetTranslations");
-
-	var translations = Array.prototype.filter.call(
-		document.getElementsByTagName('*'),
-		function (el) {
-			return el.getAttribute('translate') != null;
-		}
-	);
-
-	$.each(translations,
-		function (index, item) {
-			let key = $(item).attr("translate");
-			$(item).text(trans[key]);
-		});
-});
-
 
 $(document).ready(function () {
 	const notificator = new Notificator();
@@ -47,22 +26,16 @@ $(document).ready(function () {
 			const f = folders.find((e) => e.Name === "Inbox");
 			const uri = `/Email?folderId=${f.Id}`;
 			$("#SeeAllEmails").attr("href", uri);
-			Promise.all([st.getTemplate("notifications/folders_layout.html")])
-				.then(function (values) {
-					$.templates("items", values[0]);
-					const content = $.render["items"](folders);
-					m.html(content);
-					$("#right_menu").html(content);
-					m.find("a").on("click", function () {
-						const folderId = $(this).attr("folderid");
-						if (folderId != undefined) {
-							window.location.href = `/Email?folderId=${folderId}`;
-						}
-					});
-				})
-				.catch(function (err) {
-					console.log(err);
-				});
+
+			const content = tManager.render("template_folders_layout.html", folders);
+			m.html(content);
+			$("#right_menu").html(content);
+			m.find("a").on("click", function () {
+				const folderId = $(this).attr("folderid");
+				if (folderId != undefined) {
+					window.location.href = `/Email?folderId=${folderId}`;
+				}
+			});
 		}
 	}
 
@@ -96,10 +69,14 @@ $(document).ready(function () {
 	}
 
 	$.each(settings.localization.languages, function (index, lang) {
-		const language = `<a href="/Localization/ChangeLanguage?identifier=${lang.identifier}" class="dropdown-item">
+		const language = `<a href="/Localization/ChangeLanguage?identifier=${lang.identifier}" class="dropdown-item language-event">
 							<i class="flag-icon flag-icon-${getIdentifier(lang.identifier)}"></i> ${lang.name}
 						</a>`;
 		languageBlock.append(language);
+	});
+
+	$(".language-event").on("click", function () {
+		localStorage.removeItem("translations");
 	});
 
 

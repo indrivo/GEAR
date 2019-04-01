@@ -15,18 +15,17 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.Configuration.Seed;
 using ST.CORE.Attributes;
-using ST.CORE.Installation;
 using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.PageViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
@@ -41,7 +40,10 @@ namespace ST.CORE.Controllers.Entity
 		private readonly IPageRender _pageRender;
 		private readonly IHostingEnvironment _env;
 
-		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+			INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService,
+			ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 			_pageRender = pageRender;
 			_env = env;
@@ -256,7 +258,7 @@ namespace ST.CORE.Controllers.Entity
 					Description = model.Description,
 					Title = model.Title
 				},
-				IsLayout = model.PageTypeId == WebPageSync.PageTypes[0].Id
+				IsLayout = model.PageTypeId == PageManager.PageTypes[0].Id
 			};
 
 			try
@@ -599,8 +601,8 @@ namespace ST.CORE.Controllers.Entity
 				Id = pageId,
 				Created = DateTime.Now,
 				Changed = DateTime.Now,
-				PageTypeId = WebPageSync.PageTypes[1].Id,
-				LayoutId = WebPageSync.Layouts[0],
+				PageTypeId = PageManager.PageTypes[1].Id,
+				LayoutId = PageManager.Layouts[0],
 				Path = $"/{name}",
 				Settings = new PageSettings
 				{

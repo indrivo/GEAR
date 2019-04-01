@@ -12,6 +12,14 @@
 	var styles = PageRender.GetPageStyles(page.Id);
 	var scripts = PageRender.GetPageScripts(page.Id);
 }
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
+<style>
+	.dt-buttons {
+		margin-left: 1em;
+		margin-top: -1em;
+	}
+</style>
 
 @if (styles.IsSuccess)
 {
@@ -36,13 +44,21 @@
 }
 
 @section Scripts
-{
+	{
+	<script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+	<script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
+
 	@if (scripts.IsSuccess)
 	{
 		foreach (var script in scripts.Result)
 		{
 			@Html.Raw(script.Script)
-			;
 		}
 	}
 	@if (!string.IsNullOrEmpty(jsCode))
@@ -178,20 +194,16 @@
 					if (viewmodelData.result.viewModelFields.length > 0) {
 						const columns = $(`#${listId} thead tr`);
 						columns.html(null);
-						let rows = "";
-						//let rows = "<th>#</th>";
-						//renderColumns.push({
-						//	data: null,
-						//	"render": function(data, type, row, meta) {
-						//		return `<div class="custom-control custom-checkbox">
-						//				<input data-viewmodel="${viewmodelId}" data-table="#${listId}" data-id="${row
-						//			.id
-						//			}" type="checkbox" class="list-select-delete custom-control-input" onchange="alert();" id="custom_check_${
-						//			row.id}">
-						//			 <label class="custom-control-label" for="custom_check_${row.id}"></label>
-						//					</div>`;
-						//	}
-						//});
+						let rows = "<th>#</th>";
+						//CheckBox column
+						renderColumns.push({
+							data: null,
+							"render": function(data, type, row, meta) {
+								return "";
+							}
+						});
+
+
 						$.each(viewmodelData.result.viewModelFields,
 							function(index, column) {
 								rows += `<th translate='${column.translate}'>${column.name}</th>`;
@@ -203,7 +215,7 @@
 									}
 								});
 							});
-						rows += "<th>Actions</th>";
+						rows += `<th>${window.translate("list_actions")}</th>`;
 						columns.html(rows);
 						renderColumns.push({
 							data: null,
@@ -213,7 +225,7 @@
 									? `	<a data-viewmodel="${viewmodelData.result.id
 									}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
 									: ``}
-								
+
 									${hasEditPage
 									? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
 									}&&listId=${viewmodelData.result.id}">Edit</a>`
@@ -222,15 +234,56 @@
 
 									${hasDeleteRestore
 									? `${row.isDeleted
-									? `<a href="#" class='btn btn-danger btn-sm' onclick="restoreItem('${row.id
+									? `<a href="#" class='btn btn-warning btn-sm' onclick="restoreItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
 									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
 									: ``}
-									
+
 									</div>`;
 							}
 						});
+					}
+				}
+
+				function deleteSelectedRows() {
+					const selected = this.rows({ selected: true }).data();
+					if (selected.length > 0) {
+						const ids = selected.map(x => {
+							return x.id;
+						});
+						const data = [];
+						for (let i = 0; i < ids.length; i++) {
+							data.push(ids[i]);
+						}
+						const req = load("/PageRender/DeleteItemsFromDynamicEntity",
+							{
+								ids: data,
+								viewModelId: viewmodelData.result.id
+							},
+							"post");
+						if (req && req.success) {
+							this.ajax.reload();
+							$.toast({
+								heading: 'Items deleted',
+								text: ``,
+								position: 'bottom-right',
+								loaderBg: '#ff6849',
+								icon: 'success',
+								hideAfter: 3500,
+								stack: 6
+							});
+						} else {
+							$.toast({
+								heading: "Fail delete items",
+								text: "",
+								position: 'bottom-right',
+								loaderBg: '#ff6849',
+								icon: 'error',
+								hideAfter: 3500,
+								stack: 6
+							});
+						}
 					}
 				}
 
@@ -239,6 +292,60 @@
 						"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
 					},
 					dom: '<"CustomizeColumns">lBfrtip',
+					buttons: [
+						{
+							extend: 'copyHtml5',
+							text: '<i class="fa fa-files-o"></i>',
+							exportOptions: {
+								columns: ':visible'
+							},
+							className: ""
+						},
+						{
+							extend: 'csvHtml5',
+							text: '<i class="fa fa-file-text-o"></i>',
+							exportOptions: {
+								columns: ':visible'
+							}
+						},
+						{
+							extend: 'excelHtml5',
+							text: '<i class="fa fa-file-excel-o"></i>',
+							autoFilter: true,
+							exportOptions: {
+								columns: ':visible'
+							}
+						},
+						{
+							extend: 'pdfHtml5',
+							text: '<i class="fa fa-file-pdf-o"></i>',
+							exportOptions: {
+								columns: ':visible'
+							}
+						},
+						{
+							extend: 'print',
+							exportOptions: {
+								columns: ':visible'
+							}
+						},
+						{
+							text: 'Delete selected items',
+							action: deleteSelectedRows
+						},
+					],
+					columnDefs: [
+						{
+							orderable: false,
+							className: 'select-checkbox',
+							targets: 0
+						}
+					],
+					select: {
+						style: 'os',
+						selector: 'td:first-child',
+						blurable: true
+					},
 					"processing": true, // for show progress bar
 					"serverSide": true, // for process server side
 					"filter": true, // this is for disable filter (search box)
@@ -296,7 +403,7 @@
 									return el.getAttribute('table-field-id') != null;
 								}
 							);
-							populateSelect(selects);
+							form.populateSelect(selects);
 						});
 
 					} catch (exp) {
@@ -343,26 +450,6 @@
 			} else {
 				console.log("fail");
 			}
-		}
-
-
-		function populateSelect(selects) {
-			$.each(selects,
-				function(index, select) {
-					const fieldId = $(select).attr("table-field-id");
-					$(select).html(null);
-					const req = load("/PageRender/GetInputSelectValues",
-						{
-							fieldId: fieldId
-						});
-					console.log(req);
-					if (req.is_success) {
-						$.each(req.result,
-							function(index, item) {
-								$(select).append(new Option(item.name, item.id));
-							});
-					}
-				});
 		}
 	</script>
 }

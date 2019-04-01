@@ -68,10 +68,12 @@ function populate(data) {
 
 function startFormEditor() {
 	//fr.printJson();
-	const formeo = new window.Formeo(fr.getOptions('.build-form', getTableId()), fr.get());
+	const tableId = getTableId();
+	const former = new window.Formeo(fr.getOptions('.build-form', tableId), fr.get());
+	fr.registerChangeRefEvent(former);
 	document.querySelector("#RenderForm").onclick = evt => {
 		if (!editing) {
-			formeo.render(renderContainer);
+			former.render(renderContainer);
 		}
 
 		return editing = !editing;
@@ -86,14 +88,17 @@ function startFormEditor() {
 	};
 
 	viewDataBtn.onclick = evt => {
-		console.log(formeo.formData);
+		console.log(former.formData);
 	};
+
 	$("#form").on("submit", function (e) {
+		let form = JSON.parse(former.formData);
+		form = fr.attrsToString(form);
 		$.ajax({
 			url: "/api/Form/CreateNewForm",
 			method: "post",
 			data: {
-				form: JSON.parse(formeo.formData),
+				form: form,
 				tableId: getTableId(),
 				formTypeId: getFormTypeId(),
 				name: $("#form_name").val(),
@@ -102,12 +107,20 @@ function startFormEditor() {
 				redirectUrl: $("#form_redirectUrl").val()
 			},
 			success: function (data) {
-				if (data !== null) {
+				if (data) {
 					if (data.is_success) {
 						location.href = "/Form";
 					}
 					else {
-						alert("Fail! View console.log");
+						$.toast({
+							heading: data.error_keys[0].message,
+							text: "",
+							position: 'bottom-right',
+							loaderBg: '#ff6849',
+							icon: 'error',
+							hideAfter: 3500,
+							stack: 6
+						});
 						console.log(data);
 					}
 				}
@@ -124,7 +137,7 @@ function startFormEditor() {
 			formObj.focus();
 			return;
 		}
-		fr.data = JSON.parse(formeo.formData);
+		fr.data = JSON.parse(former.formData);
 		$("#form").submit();
 	};
 }

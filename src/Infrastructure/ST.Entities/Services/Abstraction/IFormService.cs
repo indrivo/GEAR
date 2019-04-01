@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.Entities.Models.Forms;
 using ST.Entities.ViewModels.Form;
@@ -20,9 +20,8 @@ namespace ST.Entities.Services.Abstraction
         /// Create a form
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="userId"></param>
         /// <returns></returns>
-        ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model, string userId);
+        ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model);
 
         /// <summary>
         /// Delete form by id
@@ -37,5 +36,24 @@ namespace ST.Entities.Services.Abstraction
         /// <param name="formId"></param>
         /// <returns></returns>
         FormType GetTypeByFormId(Guid formId);
+
+        /// <summary>
+        /// Entity fields
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        JsonResult GetEntityFields(Guid tableId);
+
+        /// <summary>
+        /// Get entity reference fields
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="entitySchema"></param>
+        /// <returns></returns>
+        JsonResult GetEntityReferenceFields(string entityName, string entitySchema);
+
+        JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId);
+
+        JsonResult GetTableFields(Guid tableId);
     }
 }

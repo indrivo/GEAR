@@ -12,6 +12,7 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
@@ -19,7 +20,7 @@ using ST.Procesess.Data;
 namespace ST.CORE.Controllers
 {
 	[Authorize]
-	public class BaseController : Controller
+	public class BaseController : Controller, ITenant
 	{
 		/// <summary>
 		/// Inject organization dataService
@@ -56,11 +57,17 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		protected readonly RoleManager<ApplicationRole> RoleManager;
 
+		/// <summary>
+		/// Cache Service
+		/// </summary>
+		protected readonly ICacheService CacheService;
 
+
+		/// <inheritdoc />
 		/// <summary>
 		/// Tenant id
 		/// </summary>
-		protected Guid? CurrentUserTenantId
+		public Guid? CurrentUserTenantId
 		{
 			get
 			{
@@ -75,7 +82,7 @@ namespace ST.CORE.Controllers
 			}
 		}
 
-		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext)
+		public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, ICacheService cacheService)
 		{
 			Context = context;
 			ApplicationDbContext = applicationDbContext;
@@ -84,6 +91,7 @@ namespace ST.CORE.Controllers
 			Notify = notify;
 			OrganizationService = organizationService;
 			ProcessesDbContext = processesDbContext;
+			CacheService = cacheService;
 		}
 
 
