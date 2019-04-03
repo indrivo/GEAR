@@ -20,7 +20,7 @@
 	<div class="card-body">
 		<form asp-action="GetCode" role="form">
 			@Html.HiddenFor(x => x.PageId)
-			@Html.HiddenFor(x => x.Path)
+			@Html.HiddenFor(x => x.Type)
 			<div class="form-body">
 				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 				<div class="row p-t-20">

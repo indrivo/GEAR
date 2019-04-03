@@ -16,7 +16,7 @@ namespace ST.Entities.Extensions
         /// <returns></returns>
         public static DbContextOptionsBuilder GetDefaultOptions(this DbContextOptionsBuilder options, IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
-            var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
+            var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
             var (dbType, connection) = connectionString;
             if (dbType == DbProviderType.PostgreSql)
             {

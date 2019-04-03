@@ -28,6 +28,12 @@ namespace ST.CORE.TagHelpers
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
 			var content = new StringBuilder();
+			if (LayoutId == null)
+			{
+				output.Content.SetHtmlContent(string.Empty);
+				return;
+			}
+
 			var styles = _pageRender.GetPageStyles(LayoutId.Value);
 			if (styles.IsSuccess)
 			{
@@ -62,6 +68,11 @@ namespace ST.CORE.TagHelpers
 		public override void Process(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
+			if (LayoutId == null)
+			{
+				output.Content.SetHtmlContent(string.Empty);
+				return;
+			}
 			var scripts = _pageRender.GetPageScripts(LayoutId.Value);
 			var content = new StringBuilder();
 			if (scripts.IsSuccess)

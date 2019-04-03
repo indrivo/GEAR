@@ -90,6 +90,7 @@
 			}
 		};
 		$(document).ready(function () {
+			localStorage.removeItem("translations");
 			$('#languageChange').click(function () {
 				const lang = load("/PageRender/GetLanguages");
 				const model = {};

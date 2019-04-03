@@ -37,7 +37,7 @@ namespace ST.Notifications.Hubs
                 userConnections.ToList().ForEach(c =>
                 {
                     _hubContext.Clients.Client(c).SendAsync(SignalrSendMethods.SendClientEmail,
-                        userEmailNotification.Subject, userEmailNotification.Message, fromUser?.Email, fromUser?.UserName);
+                        userEmailNotification.Subject, userEmailNotification.Message, fromUser?.Email, fromUser?.UserName, fromUser?.Id);
                 });
             }
         }

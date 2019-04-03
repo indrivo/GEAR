@@ -254,8 +254,8 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "nvarchar":
-                    var maxLenght = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
-                    sql.AppendFormat(" varchar({0})", maxLenght);
+                    var maxLength = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
+                    sql.AppendFormat(" varchar({0})", maxLength);
                     if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
                     break;
 
@@ -291,11 +291,11 @@ namespace ST.Entities.Controls.Querry
 
             if (field.Parameter == FieldType.EntityReference)
             {
-                var foreingTableName =
+                var foreignTableName =
                     field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
                 var foreignTableSchemaName =
                     field.Configurations.FirstOrDefault(x => x.ConfigCode == "9999");
-                sql.AppendFormat(" FOREIGN KEY REFERENCES \"{2}\".\"{0}\"({1})", foreingTableName, "\"Id\"", foreignTableSchemaName);
+                sql.AppendFormat(" FOREIGN KEY REFERENCES \"{2}\".\"{0}\"({1})", foreignTableName, "\"Id\"", foreignTableSchemaName);
             }
 
             sql.AppendFormat("{0}", alterSql.ToString());

@@ -50,7 +50,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			_logger = logger;
 			Repository = repository;
-			ConnectionString = Entities.Utils.ConnectionString.Get(configuration, env);
+			ConnectionString = DbUtil.GetConnectionString(configuration, env);
 		}
 
 		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }

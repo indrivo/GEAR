@@ -6,6 +6,6 @@ namespace ST.Identity.Services.Abstractions
 {
     public interface ICacheModel
     {
-        bool IsSuccess { get; set; }
+
     }
 }

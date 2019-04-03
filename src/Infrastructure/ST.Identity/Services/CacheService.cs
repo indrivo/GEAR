@@ -57,7 +57,6 @@ namespace ST.Identity.Services
                 if (value == null || value.Length == 0) return default;
                 var str = Encoding.UTF8.GetString(value);
                 var data = JsonConvert.DeserializeObject<TObject>(str);
-                data.IsSuccess = true;
                 return data;
             }
             catch

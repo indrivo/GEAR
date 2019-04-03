@@ -8,6 +8,7 @@
       "Fields": [
         {
           "Name": "Subject",
+          "DisplayName": "Subject",
           "Description": "email subject field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -22,6 +23,7 @@
         },
         {
           "Name": "Message",
+          "DisplayName": "Message",
           "Description": "email body field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -45,6 +47,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "User email folder name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -60,6 +63,7 @@
         },
         {
           "Name": "Order",
+          "DisplayName": "Order",
           "Description": "Type of email user",
           "Synchronized": false,
           "DataType": "int",
@@ -78,6 +82,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "User email folder description field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -93,6 +98,7 @@
         },
         {
           "Name": "IsSystem",
+          "DisplayName": "IsSystem",
           "Description": "Determine if user email folder is default system folder",
           "Synchronized": false,
           "DataType": "bool",
@@ -116,6 +122,7 @@
       "Fields": [
         {
           "Name": "EmailId",
+          "DisplayName": "EmailId",
           "Description": "Id of email",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -135,6 +142,7 @@
         },
         {
           "Name": "UserEmailFolderId",
+          "DisplayName": "UserEmailFolderId",
           "Description": "Id of email folder",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -154,6 +162,7 @@
         },
         {
           "Name": "Type",
+          "DisplayName": "Type",
           "Description": "Type of email user",
           "Synchronized": false,
           "DataType": "int",
@@ -172,6 +181,7 @@
         },
         {
           "Name": "IsRead",
+          "DisplayName": "IsRead",
           "Description": "Determine if email is read by recipient",
           "Synchronized": false,
           "DataType": "bool",
@@ -182,7 +192,6 @@
               "Value": false,
               "ConfigCode": "4000"
             }
-
           ]
         }
       ]
@@ -195,6 +204,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "Name of the file with no path components",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -210,6 +220,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "Description of the file",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -225,6 +236,7 @@
         },
         {
           "Name": "Uri",
+          "DisplayName": "Uri",
           "Description": "The URI to access the file (either local or remote)",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -240,6 +252,7 @@
         },
         {
           "Name": "Extension",
+          "DisplayName": "Extension",
           "Description": "The file's Extension",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -255,6 +268,7 @@
         },
         {
           "Name": "Size",
+          "DisplayName": "Size",
           "Description": "The file's size",
           "Synchronized": false,
           "DataType": "bigint",
@@ -273,6 +287,7 @@
         },
         {
           "Name": "Hash",
+          "DisplayName": "Hash",
           "Description": "The file's hash",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -296,6 +311,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "Menu name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -310,6 +326,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "Menu description field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -332,6 +349,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -346,6 +364,7 @@
         },
         {
           "Name": "Icon",
+          "DisplayName": "Icon",
           "Description": "Icon field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -360,6 +379,7 @@
         },
         {
           "Name": "AllowedRoles",
+          "DisplayName": "AllowedRoles",
           "Description": "AllowedRoles field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -374,6 +394,7 @@
         },
         {
           "Name": "Translate",
+          "DisplayName": "Translate",
           "Description": "Translate field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -388,6 +409,7 @@
         },
         {
           "Name": "Href",
+          "DisplayName": "Href",
           "Description": "href field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -402,6 +424,7 @@
         },
         {
           "Name": "MenuId",
+          "DisplayName": "MenuId",
           "Description": "Id of the menu reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -421,6 +444,7 @@
         },
         {
           "Name": "ParentMenuItemId",
+          "DisplayName": "ParentMenuItemId",
           "Description": "Id of the parent menu reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -448,6 +472,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "notification type field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -462,6 +487,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "notification description field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -484,6 +510,7 @@
       "Fields": [
         {
           "Name": "Subject",
+          "DisplayName": "Subject",
           "Description": "notification subject field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -498,6 +525,7 @@
         },
         {
           "Name": "Content",
+          "DisplayName": "Content",
           "Description": "notification content field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -512,6 +540,7 @@
         },
         {
           "Name": "NotificationTypeId",
+          "DisplayName": "NotificationTypeId",
           "Description": "Id of the notification type reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -531,6 +560,7 @@
         },
         {
           "Name": "UserId",
+          "DisplayName": "UserId",
           "Description": "User id",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -553,6 +583,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "Name of standard",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -575,6 +606,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "Name of standard",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -589,6 +621,7 @@
         },
         {
           "Name": "StandardId",
+          "DisplayName": "StandardId",
           "Description": "Standard Id",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -608,6 +641,7 @@
         },
         {
           "Name": "ParentCategoryId",
+          "DisplayName": "ParentCategoryId",
           "Description": "Parent category id",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -634,6 +668,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "Name of standard",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -648,6 +683,7 @@
         },
         {
           "Name": "CategoryId",
+          "DisplayName": "CategoryId",
           "Description": "Category id",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -667,6 +703,7 @@
         },
         {
           "Name": "ParentRequirementId",
+          "DisplayName": "ParentRequirementId",
           "Description": "Parent requirement",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -699,6 +736,7 @@
       "Fields": [
         {
           "Name": "FileId",
+          "DisplayName": "FileId",
           "Description": "Id of the file",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -718,6 +756,7 @@
         },
         {
           "Name": "FileReferenceId",
+          "DisplayName": "FileReferenceId",
           "Description": "Id of the file reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -737,7 +776,7 @@
         }
       ]
     },
-    //Nomenclator
+    //Nomenclature
     {
       "Name": "Nomenclature",
       "Schema": "systemcore",
@@ -745,6 +784,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "Nomenclature name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -759,6 +799,7 @@
         },
         {
           "Name": "MachineName",
+          "DisplayName": "MachineName",
           "Description": "Machine name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -773,6 +814,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "Nomenclature description field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -787,7 +829,7 @@
         }
       ]
     },
-    //NomenclatorItem
+    //NomenclatureItem
     {
       "Name": "NomenclatorItem",
       "Schema": "systemcore",
@@ -795,6 +837,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -809,6 +852,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -828,6 +872,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -847,6 +892,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -866,6 +912,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -893,6 +940,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -907,6 +955,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -926,6 +975,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -945,6 +995,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -964,6 +1015,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -991,6 +1043,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1005,6 +1058,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1024,6 +1078,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1043,6 +1098,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1062,6 +1118,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1089,6 +1146,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1103,6 +1161,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1122,6 +1181,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1141,6 +1201,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1160,6 +1221,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1188,6 +1250,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1202,6 +1265,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1221,6 +1285,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1240,6 +1305,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1259,6 +1325,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1286,6 +1353,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1300,6 +1368,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1319,6 +1388,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1338,6 +1408,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1357,6 +1428,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1384,6 +1456,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1398,6 +1471,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1417,6 +1491,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1436,6 +1511,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1455,6 +1531,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1482,6 +1559,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1496,6 +1574,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1515,6 +1594,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1534,6 +1614,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1553,6 +1634,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1580,6 +1662,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1594,6 +1677,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1613,6 +1697,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1632,6 +1717,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1651,6 +1737,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1678,6 +1765,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1692,6 +1780,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1711,6 +1800,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1730,6 +1820,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the Measurement reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1749,6 +1840,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1776,6 +1868,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1790,6 +1883,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "description field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1804,6 +1898,7 @@
         },
         {
           "Name": "CategoryId",
+          "DisplayName": "CategoryId",
           "Description": "Id of the Category reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1823,6 +1918,7 @@
         },
         {
           "Name": "CalculationMethod",
+          "DisplayName": "CalculationMethod",
           "Description": "Calculation Method field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1837,6 +1933,7 @@
         },
         {
           "Name": "PeriodId",
+          "DisplayName": "PeriodId",
           "Description": "Id of the Calculation period reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1856,6 +1953,7 @@
         },
         {
           "Name": "MeasurementUnitId",
+          "DisplayName": "MeasurementUnitId",
           "Description": "Id of the Measurement Unit reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1875,6 +1973,7 @@
         },
         {
           "Name": "ProcentGoal",
+          "DisplayName": "ProcentGoal",
           "Description": "Procent Goal description field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -1889,6 +1988,7 @@
         },
         {
           "Name": "BoolGoal",
+          "DisplayName": "BoolGoal",
           "Description": "",
           "Synchronized": false,
           "DataType": "bool",
@@ -1903,6 +2003,7 @@
         },
         {
           "Name": "IntGoal",
+          "DisplayName": "IntGoal",
           "Description": "",
           "Synchronized": false,
           "DataType": "int",
@@ -1921,6 +2022,7 @@
         },
         {
           "Name": "GoalId",
+          "DisplayName": "GoalId",
           "Description": "Id of the Goal reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1940,6 +2042,7 @@
         },
         {
           "Name": "GoalId",
+          "DisplayName": "GoalId",
           "Description": "Id of the Fulfillment Criterion reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -1959,6 +2062,7 @@
         },
         {
           "Name": "Status",
+          "DisplayName": "Status",
           "Description": "",
           "Synchronized": false,
           "DataType": "bool",
@@ -1975,105 +2079,15 @@
       ]
     },
 
-    //RequirementAction
-    //{
-    //  "Name": "RequirementAction",
-    //  "Schema": "systemcore",
-    //  "Description": "Actiunile",
-    //  "Fields": [
-
-    //    {
-    //      "Name": "RequirementId",
-    //      "Description": "Id of the Requirement reference",
-    //      "Synchronized": false,
-    //      "DataType": "uniqueidentifier",
-    //      "AllowNull": true,
-    //      "TableFieldCode": "30",
-    //      "Parameter": "EntityReference",
-    //      "Configurations": [
-    //        {
-    //          "Value": "Requirement",
-    //          "ConfigCode": "3000"
-    //        },
-    //        {
-    //          "Value": "systemcore",
-    //          "ConfigCode": "9999"
-    //        }
-    //      ]
-    //    },
-    //    {
-    //      "Name": "Name",
-    //      "Description": "name field",
-    //      "Synchronized": false,
-    //      "DataType": "nvarchar",
-    //      "AllowNull": false,
-    //      "TableFieldCode": "10",
-    //      "Configurations": [
-    //        {
-    //          "Value": 500,
-    //          "ConfigCode": "1000"
-    //        }
-    //      ]
-    //    },
-    //    {
-    //      "Name": "Treegrid",
-    //      "Description": "id of tree",
-    //      "Synchronized": false,
-    //      "DataType": "int",
-    //      "AllowNull": false,
-    //      "TableFieldCode": "01",
-    //      "Configurations": [
-    //        {
-    //          "Value": null,
-    //          "ConfigCode": "0100"
-    //        },
-    //        {
-    //          "Value": null,
-    //          "ConfigCode": "0101"
-    //        }
-    //      ]
-    //    },
-
-    //    {
-    //      "Name": "Description",
-    //      "Description": "comments field",
-    //      "Synchronized": false,
-    //      "DataType": "nvarchar",
-    //      "AllowNull": true,
-    //      "TableFieldCode": "10",
-    //      "Configurations": [
-    //        {
-    //          "Value": 500,
-    //          "ConfigCode": "1000"
-    //        }
-    //      ]
-    //    },
-    //    {
-    //      "Name": "DeadLine",
-    //      "Description": "DeadLine field",
-    //      "Synchronized": false,
-    //      "DataType": "datetime",
-    //      "AllowNull": true,
-    //      "TableFieldCode": "22",
-    //      "Configurations": [
-    //        {
-
-    //        }
-    //      ]
-
-    //    }
-    //  ]
-    //},
-
     //PartyRequirement
     {
       "Name": "PartyRequirement",
       "Schema": "systemcore",
       "Description": "Actiunile",
       "Fields": [
-
         {
           "Name": "InterestedPartId",
+          "DisplayName": "InterestedPartId",
           "Description": "Id of the interested Party",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2093,6 +2107,7 @@
         },
         {
           "Name": "RequirementId",
+          "DisplayName": "RequirementId",
           "Description": "Id of the interested Party",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2112,6 +2127,7 @@
         },
         {
           "Name": "Description",
+          "DisplayName": "Description",
           "Description": "comments field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -2134,6 +2150,7 @@
       "Fields": [
         {
           "Name": "Name",
+          "DisplayName": "Name",
           "Description": "name field",
           "Synchronized": false,
           "DataType": "nvarchar",
@@ -2148,6 +2165,7 @@
         },
         {
           "Name": "NomenclatorId",
+          "DisplayName": "NomenclatorId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2167,6 +2185,7 @@
         },
         {
           "Name": "ParentId",
+          "DisplayName": "ParentId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2186,6 +2205,7 @@
         },
         {
           "Name": "DependencyId",
+          "DisplayName": "DependencyId",
           "Description": "Id of the NomenclatorItem reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2205,6 +2225,7 @@
         },
         {
           "Name": "RefId",
+          "DisplayName": "RefId",
           "Description": "Id of the Nomenclator reference",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2230,9 +2251,9 @@
       "Schema": "systemcore",
       "Description": "Actiunile",
       "Fields": [
-
         {
           "Name": "GoalId",
+          "DisplayName": "GoalId",
           "Description": "Id of the interested Party",
           "Synchronized": false,
           "DataType": "uniqueidentifier",
@@ -2252,6 +2273,7 @@
         },
         {
           "Name": "PartyRequirementId",
+          "DisplayName": "PartyRequirementId",
           "Description": "Id of the interested Party",
           "Synchronized": false,
           "DataType": "uniqueidentifier",

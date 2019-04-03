@@ -262,6 +262,37 @@
             "SubItems": [
               {
                 "SubItems": null,
+                "Name": "Export",
+                "Href": "/Data/Export",
+                "Translate": "",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "SubItems": null,
+                "Name": "Import",
+                "Href": "/Data/Import",
+                "Translate": "",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              }
+            ],
+            "Name": "Backup",
+            "Href": null,
+            "Translate": "",
+            "Icon": "mdi mdi-transcribe",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "SubItems": [
+              {
+                "SubItems": null,
                 "Name": "Languages",
                 "Href": "/Localization/GetLanguages?page=1&perPage=10",
                 "Translate": "languages",

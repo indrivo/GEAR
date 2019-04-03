@@ -159,11 +159,14 @@ namespace ST.Entities.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
                     TenantId = table.Column<Guid>(nullable: true),
+                    Identifier = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Icon = table.Column<string>(nullable: true),
-                    PhysicPath = table.Column<string>(nullable: true)
+                    HtmlCode = table.Column<string>(nullable: true),
+                    CssCode = table.Column<string>(nullable: true),
+                    JsCode = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

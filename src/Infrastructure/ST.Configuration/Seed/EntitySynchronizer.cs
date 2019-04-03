@@ -38,7 +38,7 @@ namespace ST.Configuration.Seed
 		/// <param name="tableModel"></param>
 		/// <param name="tenantId"></param>
 		/// <param name="schema"></param>
-		public void SynchronizeEntities(SynchronizeTableViewModel tableModel, Guid tenantId, string schema = null)
+		public void SynchronizeEntities(SynchronizeTableViewModel tableModel, Guid? tenantId, string schema = null)
 		{
 			var table = new TableModel
 			{
@@ -90,6 +90,7 @@ namespace ST.Configuration.Seed
 						var model = new TableModelFields
 						{
 							DataType = item.DataType,
+                            DisplayName = item.DisplayName,
 							TableId = resultModel.Id,
 							Description = item.Description,
 							Name = item.Name,

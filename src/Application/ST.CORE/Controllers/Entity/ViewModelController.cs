@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.CORE.Attributes;
+using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.ViewModels;
 
 namespace ST.CORE.Controllers.Entity
@@ -24,13 +25,17 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		private readonly EntitiesDbContext _context;
 
+		private readonly IPageRender _pageRender;
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
-		public ViewModelController(EntitiesDbContext context)
+		/// <param name="pageRender"></param>
+		public ViewModelController(EntitiesDbContext context, IPageRender pageRender)
 		{
 			_context = context;
+			_pageRender = pageRender;
 		}
 
 		/// <summary>
@@ -76,7 +81,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public IActionResult TemplateEdit(ViewModelFields model)
 		{
-			if (model.Id != null)
+			if (model.Id != Guid.Empty)
 			{
 				var dataModel = _context.ViewModelFields.FirstOrDefault(x => x.Id.Equals(model.Id));
 				if (dataModel == null)
@@ -92,7 +97,10 @@ namespace ST.CORE.Controllers.Entity
 					_context.SaveChanges();
 					return RedirectToAction("Index");
 				}
-				catch { }
+				catch
+				{
+					// ignored
+				}
 			}
 			ModelState.AddModelError(string.Empty, "Invalid data entry!");
 			return View(model);
@@ -107,7 +115,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public IActionResult Edit([Required] ViewModel model)
 		{
-			if (model.Id != null)
+			if (model.Id != Guid.Empty)
 			{
 				var dataModel = _context.ViewModels.FirstOrDefault(x => x.Id.Equals(model.Id));
 				if (dataModel == null)
@@ -123,7 +131,10 @@ namespace ST.CORE.Controllers.Entity
 					_context.SaveChanges();
 					return RedirectToAction("Index");
 				}
-				catch { }
+				catch
+				{
+					// ignored
+				}
 			}
 			ModelState.AddModelError(string.Empty, "Invalid data entry!");
 			return View(model);
@@ -135,54 +146,15 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <returns></returns>
 		[HttpPost]
-		public JsonResult GenerateViewModel([Required]Guid entityId)
+		public async Task<JsonResult> GenerateViewModel([Required]Guid entityId)
 		{
-			var table = _context.Table.Include(x => x.TableFields).FirstOrDefault(x => x.Id.Equals(entityId));
-			if (table == null) return Json(default(ResultModel));
-			var id = Guid.NewGuid();
-			var fields = new List<ViewModelFields>();
-			var model = new ViewModel
-			{
-				Id = id,
-				Name = $"{table.Name}_{id}",
-				TableModel = table
-			};
-			var c = 0;
-			var props = typeof(BaseModel).GetProperties().ToList();
-
-			fields.AddRange(props.Select(x => new ViewModelFields
-			{
-				Order = c++,
-				Name = x.Name,
-				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
-			}));
-
-			fields.AddRange(table.TableFields.Select(x => new ViewModelFields
-			{
-				Order = c++,
-				Name = x.Name,
-				TableModelFields = x,
-				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
-			}));
-
-			model.ViewModelFields = fields;
-			_context.ViewModels.Add(model);
-			try
-			{
-				_context.SaveChanges();
-				return Json(new ResultModel { IsSuccess = true, Result = id });
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex);
-				return Json(default(ResultModel));
-			}
+			return Json(await _pageRender.GenerateViewModel(entityId));
 		}
 
 		/// <summary>
 		/// Update styles of page
 		/// </summary>
-		/// <param name="styles"></param>
+		/// <param name="items"></param>
 		/// <returns></returns>
 		[HttpPost]
 		public JsonResult UpdateViewModelFields([Required]IEnumerable<ViewModelFields> items)

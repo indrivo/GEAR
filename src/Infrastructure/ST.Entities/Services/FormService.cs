@@ -2,16 +2,19 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
+using ST.Entities.Constants;
 using ST.Entities.Data;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
+using ST.Entities.Settings;
 using ST.Entities.ViewModels.Form;
 
 namespace ST.Entities.Services
@@ -196,7 +199,7 @@ namespace ST.Entities.Services
                 var fieldAttrs = _context.Attrs
                     .Where(x => x.FieldId == field.Id)
                     .ToDictionary(x => x.Key, v => v.Value ?? "");
-           
+
 
                 var meta = _context.Meta.FirstOrDefault(x => x.Id == field.MetaId);
                 var disabledAttr = _context.DisabledAttrs.Where(x => x.ConfigId == config.Id).ToList();
@@ -610,6 +613,232 @@ namespace ST.Entities.Services
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
+        }
+
+        /// <summary>
+        /// Generate form from entity
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="name"></param>
+        /// <param name="redirectUrl"></param>
+        /// <param name="headerName"></param>
+        /// <returns></returns>
+        public virtual async Task<FormCreateDetailsViewModel> GenerateFormByEntity(Guid entityId, string name, string redirectUrl, string headerName)
+        {
+            if (entityId == Guid.Empty) return default;
+            var entity = await _context.Table.Include(x => x.TableFields).FirstOrDefaultAsync(x => x.Id == entityId);
+            if (entity == null) return default;
+            var formType = _context.FormTypes.FirstOrDefault();
+            if (formType == null) return default;
+            var stageId = Guid.NewGuid();
+            var rowId = Guid.NewGuid();
+            var colId = Guid.Empty;
+            var order = 0;
+            var fields = new Dictionary<Guid, FieldViewModel>();
+            fields.Add(Guid.NewGuid(), new FieldViewModel
+            {
+                Id = Guid.NewGuid(),
+                Attrs = new Dictionary<string, string>
+                {
+                    {
+                        "className", ""
+                    }
+                },
+                Order = order++,
+                Config = new ConfigViewModel
+                {
+                    Editable = true,
+                    HideLabel = true,
+                    Label = "Header"
+                },
+                Content = headerName,
+                Meta = new MetaViewModel
+                {
+                    Id = "header",
+                    Group = "html",
+                    Icon = "header"
+                },
+                Tag = "h1"
+            });
+
+            foreach (var field in entity.TableFields)
+            {
+                var fieldConfig = new FormControl();
+                switch (field.DataType)
+                {
+                    case TableFieldDataType.Guid:
+                        fieldConfig = FormeoControls.Select;
+                        break;
+                    case TableFieldDataType.Boolean:
+                        fieldConfig = FormeoControls.CheckBox;
+                        break;
+                    case TableFieldDataType.BigInt:
+                    case TableFieldDataType.Decimal:
+                    case TableFieldDataType.Int:
+                        fieldConfig = FormeoControls.Number;
+                        break;
+                    case TableFieldDataType.String:
+                        fieldConfig = FormeoControls.Text;
+                        break;
+                    case TableFieldDataType.Date:
+                        fieldConfig = FormeoControls.Date;
+                        break;
+                }
+                fields.Add(Guid.NewGuid(), new FieldViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Attrs = new Dictionary<string, string>
+                    {
+                        {
+                            "className", "form-control"
+                        },
+                        {
+                            "tableField", field.Id.ToString()
+                        },
+                        {
+                            "required", (!field.AllowNull).ToString()
+                        },
+                        {
+                            "type", fieldConfig.Type
+                        }
+                    },
+                    FMap = "attrs.value",
+                    Order = order++,
+                    Config = new ConfigViewModel
+                    {
+                        Editable = true,
+                        Label = field.DisplayName,
+                        DisabledAttrs = new List<string> { "type" }
+                    },
+                    Content = headerName,
+                    Meta = new MetaViewModel
+                    {
+                        Id = fieldConfig.Id,
+                        Group = fieldConfig.Group,
+                        Icon = fieldConfig.Icon
+                    },
+                    Tag = fieldConfig.Tag
+                });
+            }
+
+            fields.Add(Guid.NewGuid(), new FieldViewModel
+            {
+                Id = Guid.NewGuid(),
+                Order = order,
+                Config = new ConfigViewModel
+                {
+                    HideLabel = true,
+                    Label = "Button",
+                    DisabledAttrs = new List<string> { "type" }
+                },
+                Meta = new MetaViewModel
+                {
+                    Id = "button",
+                    Group = "common",
+                    Icon = "button"
+                },
+                Options = new List<OptionsViewModel>
+                {
+                    new OptionsViewModel
+                    {
+                        ClassName = new List<AttrTagViewModel>
+                        {
+                            new AttrTagViewModel
+                            {
+                                Value = "error",
+                                Label = "Danger",
+                                Selected = false,
+                            },
+                            new AttrTagViewModel
+                            {
+                                Value = "success",
+                                Label = "Success",
+                                Selected = false,
+                            },
+                            new AttrTagViewModel
+                            {
+                                Value = "default",
+                                Label = "Default",
+                                Selected = false,
+                            },
+                            new AttrTagViewModel
+                            {
+                                Value = "primary",
+                                Label = "Primary",
+                                Selected = false,
+                            }
+                        },
+                        Type = new List<AttrTagViewModel>
+                        {
+                            new AttrTagViewModel
+                            {
+                                Label = "submit",
+                                Selected = true,
+                                Value = "submit"
+                            },
+                            new AttrTagViewModel
+                            {
+                                Label = "Button",
+                                Selected = false,
+                                Value = "button"
+                            },
+                            new AttrTagViewModel
+                            {
+                                Label = "Reset",
+                                Selected = false,
+                                Value = "reset"
+                            }
+                        }
+                    }
+                },
+                Tag = "button"
+            });
+
+
+            var form = new FormCreateDetailsViewModel
+            {
+                Name = name,
+                Description = "Generated on scaffold",
+                FormTypeId = formType.Id,
+                RedirectUrl = redirectUrl,
+                TableId = entityId,
+                Model = new FormViewModel
+                {
+                    Stages = new Dictionary<Guid, StageViewModel>
+                    {
+                        {
+                            stageId, new StageViewModel
+                            {
+                                Id = stageId,
+                                Rows = new List<Guid>{ rowId }
+                            }
+                        }
+                    },
+                    Rows = new Dictionary<Guid, RowViewModel>
+                    {
+                        {
+                            rowId, new RowViewModel
+                            {
+                                Id = rowId,
+                                Columns =new List<Guid>{ colId }
+                            }
+                        }
+                    },
+                    Columns = new Dictionary<Guid, ColumnViewModel>
+                    {
+                        {
+                            colId, new ColumnViewModel
+                            {
+                                Fields = fields.Select(x => x.Key),
+                                Id = colId
+                            }
+                        }
+                    },
+                    Fields = fields
+                }
+            };
+
+            return form;
         }
     }
 }

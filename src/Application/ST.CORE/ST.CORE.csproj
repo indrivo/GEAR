@@ -16,6 +16,7 @@
   <ItemGroup>
     <None Remove="app_offline.htm" />
     <None Remove="ExtraStatic\modeler.js" />
+    <None Remove="Static\Pages\performanceserver\performanceserver.html" />
     <None Remove="Static\Templates\category.html" />
     <None Remove="Static\Templates\folders.html" />
     <None Remove="Static\Templates\folders_layout.html" />
@@ -88,6 +89,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.js">

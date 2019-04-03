@@ -76,6 +76,7 @@
 						render: function(data, type, row) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
+									<a class="btn btn-warning btn-sm" href="@Url.Action("Scaffold", "Page")?tableId=${row.id}">Scaffold</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">Delete</button></div>`;
 						}
 					}

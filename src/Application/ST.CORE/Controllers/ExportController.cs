@@ -1,78 +1,61 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using ST.Configuration;
-using ST.CORE.Installation;
-using ST.Entities.Data;
+using ST.Configuration.Services;
 
 namespace ST.CORE.Controllers
 {
 	[Authorize(Roles = Settings.SuperAdmin)]
-	public class ExportController : Controller
+	public class DataController : Controller
 	{
-		private readonly EntitiesDbContext _entitiesDbContext;
-
-		public ExportController(EntitiesDbContext entitiesDbContext)
+		/// <summary>
+		/// CreateZipArchive data
+		/// </summary>
+		/// <returns></returns>
+		public async Task<IActionResult> Export()
 		{
-			_entitiesDbContext = entitiesDbContext;
+			var (stream, contentType, name) = await ExportManager.ExportAsync();
+			return File(stream, contentType, name);
+		}
+		/// <summary>
+		/// Import config zip file
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public IActionResult Import()
+		{
+			return View();
 		}
 
-		public IActionResult Export()
+		/// <summary>
+		/// Apply zip config on current system
+		/// </summary>
+		/// <param name="file"></param>
+		/// <returns></returns>
+		public IActionResult Import(IFormFile file)
 		{
-			//Export entities
-			var entities = _entitiesDbContext.Table
-				.Include(x => x.TableFields);
-
-			var entitiesSerialized = JsonConvert.SerializeObject(entities, Formatting.Indented, new JsonSerializerSettings
+			if (file == null)
 			{
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-			});
+				ModelState.AddModelError(string.Empty, "File not selected!");
+				return View();
+			}
 
-			//Export forms
-			var forms = _entitiesDbContext.Forms.Include(x => x.Table)
-				.Include(x => x.Columns)
-				.Include(x => x.Rows)
-				.Include(x => x.Fields)
-				.Include(x => x.Stages)
-				.Include(x => x.Settings).ToList();
-
-			var formsSerialized = JsonConvert.SerializeObject(forms, Formatting.Indented, new JsonSerializerSettings
+			if (file.ContentType != "application/x-zip-compressed")
 			{
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-			});
+				ModelState.AddModelError(string.Empty, "File need to be in zip format!");
+				return View();
+			}
 
-			//Export pages
-			var pages = _entitiesDbContext.Pages
-				.Include(x => x.PageScripts)
-				.Include(x => x.PageStyles)
-				.Include(x => x.PageType)
-				.Include(x => x.Settings).ToArray();
-			var serializedPages = JsonConvert.SerializeObject(pages, Formatting.Indented, new JsonSerializerSettings
-			{
-				ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-			});
-
-			var zipStream = DataIo.Export(new Dictionary<string, MemoryStream>
-			{
-				{
-					"forms.json", new MemoryStream(Encoding.ASCII.GetBytes(formsSerialized))
-				},
-				{
-					"pages.json", new MemoryStream(Encoding.ASCII.GetBytes(serializedPages))
-				},
-				{
-					"entities.json", new MemoryStream(Encoding.ASCII.GetBytes(entitiesSerialized))
-				}
-			});
-			var date = DateTime.Now;
-			return File(zipStream, "application/octet-stream", $"export_system_{date.Minute}_{date.Hour}_{date.Day}_{date.Month}_{date.Year}.zip");
+			var memStream = new MemoryStream();
+			file.CopyTo(memStream);
+			var response = ExportManager.Import(memStream);
+			if (response.IsSuccess)
+				return RedirectToAction("Index", "Home");
+			ModelState.AddModelError(string.Empty, "Fail to import data");
+			return View();
 		}
 	}
 }

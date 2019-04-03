@@ -70,7 +70,16 @@ namespace ST.Configuration.Seed
                     var pagePath = Path.Combine(dir, "settings.json");
                     var page = ReadPageSettings(pagePath);
                     if (page == null) continue;
-                    page.Settings.PhysicPath = dir;
+                    try
+                    {
+                        page.Settings.CssCode = await File.ReadAllTextAsync(Path.Combine(dir, $"{page.Settings.Identifier}.css"));
+                        page.Settings.JsCode = await File.ReadAllTextAsync(Path.Combine(dir, $"{page.Settings.Identifier}.js"));
+                        page.Settings.HtmlCode = await File.ReadAllTextAsync(Path.Combine(dir, $"{page.Settings.Identifier}.html"));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                     page.PageTypeId = page.IsLayout ? PageTypes.First().Id : PageTypes[1].Id;
                     page.Created = DateTime.Now;
                     page.Changed = DateTime.Now;

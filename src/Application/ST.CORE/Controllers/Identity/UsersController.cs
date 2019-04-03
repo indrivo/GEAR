@@ -740,11 +740,19 @@ namespace ST.CORE.Controllers.Identity
 				return NotFound();
 			}
 
-			var photo = ApplicationDbContext.Users.SingleOrDefault(x => x.Id == id);
-			if (photo?.UserPhoto != null) return File(photo.UserPhoto, "image/jpg");
-			var def = GetDefaultImage();
-			if (def == null) return NotFound();
-			return File(def, "image/jpg");
+			try
+			{
+				var photo = ApplicationDbContext.Users.SingleOrDefault(x => x.Id == id);
+				if (photo?.UserPhoto != null) return File(photo.UserPhoto, "image/jpg");
+				var def = GetDefaultImage();
+				if (def == null) return NotFound();
+				return File(def, "image/jpg");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+			return NotFound();
 		}
 
 		/// <summary>

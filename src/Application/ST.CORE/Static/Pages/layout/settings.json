@@ -4,7 +4,8 @@
   "Settings": {
     "Name": "Administration Layout",
     "Description": "Default layout",
-    "Title": ""
+    "Title": "",
+    "Identifier": "layout" 
   },
   "Path": "",
   "IsSystem": true,

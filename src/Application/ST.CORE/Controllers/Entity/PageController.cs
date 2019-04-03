@@ -126,16 +126,14 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<JsonResult> Save([Required]CodeUpdateViewModel model)
 		{
 			var req = _pageRender.SavePageContent(model.PageId, model.HtmlCode, model.CssCode);
-			if (req.IsSuccess)
+			if (!req.IsSuccess) return new JsonResult(req);
+			var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
+			await Notify.SendNotificationAsync(new SystemNotifications
 			{
-				var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
-				await Notify.SendNotificationAsync(new SystemNotifications
-				{
-					Content = $"The page {page?.Settings?.Name} was updated with page builder!",
-					Subject = "Info",
-					NotificationTypeId = NotificationType.Info
-				});
-			}
+				Content = $"The page {page?.Settings?.Name} was updated with page builder!",
+				Subject = "Info",
+				NotificationTypeId = NotificationType.Info
+			});
 			return new JsonResult(req);
 		}
 
@@ -152,15 +150,22 @@ namespace ST.CORE.Controllers.Entity
 			var page = await Context.Pages.Where(x => x.Id == id).Include(x => x.Settings).FirstOrDefaultAsync();
 			if (page == null) return NotFound();
 			if (string.IsNullOrEmpty(type)) return NotFound();
-			var file = page.Settings.PhysicPath.Split("\\").LastOrDefault();
-			var path = Path.Combine(page.Settings.PhysicPath, $"{file}.{type}");
-			var exists = System.IO.File.Exists(path);
-			if (!exists) return NotFound();
-			var code = System.IO.File.ReadAllText(path);
+			var code = string.Empty;
+			switch (type)
+			{
+				case "css":
+					code = page.Settings.CssCode;
+					break;
+				case "js":
+					code = page.Settings.JsCode;
+					break;
+				case "html":
+					code = page.Settings.HtmlCode;
+					break;
+			}
 			var model = new CodeViewModel
 			{
 				PageId = page.Id,
-				Path = path,
 				Code = code,
 				Type = type
 			};
@@ -182,17 +187,38 @@ namespace ST.CORE.Controllers.Entity
 				return View(model);
 			}
 
-			if (!string.IsNullOrEmpty(model.Path))
+			var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
+			if (page == null)
 			{
-				System.IO.File.WriteAllText(model.Path, model.Code);
-				var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(model.PageId));
-				return RedirectToAction(page != null && page.IsLayout ? "Layouts" : "Index");
-			}
-			else
-			{
-				ModelState.AddModelError(string.Empty, "Invalid data input");
+				ModelState.AddModelError(string.Empty, "Page not found");
 				return View(model);
 			}
+			switch (model.Type)
+			{
+				case "css":
+					page.Settings.CssCode = model.Code;
+					break;
+				case "js":
+					page.Settings.JsCode = model.Code;
+					break;
+				case "html":
+					page.Settings.HtmlCode = model.Code;
+					break;
+			}
+
+			try
+			{
+				Context.Update(page);
+				Context.SaveChanges();
+				return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+			}
+
+			ModelState.AddModelError(string.Empty, "Invalid data input");
+			return View(model);
 		}
 
 		/// <summary>
@@ -263,17 +289,6 @@ namespace ST.CORE.Controllers.Entity
 
 			try
 			{
-				var req = _pageRender.CreatePage(model.Name.ToLower());
-				if (!req.IsSuccess)
-				{
-					ModelState.AddModelError(string.Empty, "Fail to create files");
-					model.PageTypes = Context.PageTypes.ToList();
-					model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
-					return View(model);
-				}
-
-				page.Settings.PhysicPath = req.Result;
-
 				Context.Pages.Add(page);
 				Context.SaveChanges();
 			}
@@ -340,8 +355,6 @@ namespace ST.CORE.Controllers.Entity
 					return View(model);
 				}
 
-
-
 				var settings = Context.PageSettings.FirstOrDefault(x => x.Id.Equals(model.SettingsId));
 				var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(model.Id));
 				if (page == null)
@@ -363,7 +376,6 @@ namespace ST.CORE.Controllers.Entity
 					ModelState.AddModelError(string.Empty, "Fail to get page settings");
 					return View(model);
 				}
-				_pageRender.UpdatePageName(settings.PhysicPath, settings.Name.ToLower(), model.Name);
 				settings.Description = model.Description;
 				settings.Name = model.Name;
 				settings.Changed = DateTime.Now;
@@ -481,7 +493,6 @@ namespace ST.CORE.Controllers.Entity
 			try
 			{
 				Context.SaveChanges();
-				_pageRender.DeletePage(page.Settings.PhysicPath);
 				return Json(new { message = "Page was delete with success!", success = true });
 			}
 			catch (Exception e)
@@ -580,93 +591,33 @@ namespace ST.CORE.Controllers.Entity
 		/// <returns></returns>
 		public async Task<JsonResult> GeneratePage([Required] string name, [Required] Guid viewModelId)
 		{
-			if (string.IsNullOrEmpty(name) || viewModelId.Equals(Guid.Empty)) return Json(default(ResultModel));
-			var match = Context.Pages.Include(x => x.Settings)
-				.FirstOrDefault(x => x.Settings.Name.ToLower().Equals(name.ToLower()));
-			var viewModel = Context.ViewModels
-					.Include(x => x.TableModel)
-					.Include(x => x.ViewModelFields)
-					.FirstOrDefault(x => x.Id.Equals(viewModelId));
-			if (viewModel == null) return Json(default(ResultModel));
-
-			if (match != null)
-			{
-				return Json(default(ResultModel));
-			}
-
-			var pageId = Guid.NewGuid();
-
-			var page = new Page
-			{
-				Id = pageId,
-				Created = DateTime.Now,
-				Changed = DateTime.Now,
-				PageTypeId = PageManager.PageTypes[1].Id,
-				LayoutId = PageManager.Layouts[0],
-				Path = $"/{name}",
-				Settings = new PageSettings
-				{
-					Name = name,
-					Description = "Generated page",
-					Title = name
-				},
-				IsLayout = false
-			};
-
-			try
-			{
-				var req = _pageRender.CreatePage(name);
-
-				if (!req.IsSuccess)
-				{
-					return Json(default(ResultModel));
-				}
-
-
-				page.Settings.PhysicPath = req.Result;
-
-				Context.Pages.Add(page);
-				Context.SaveChanges();
-
-				var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.html");
-				var reader = new StreamReader(fileInfo.CreateReadStream());
-				var template = await reader.ReadToEndAsync();
-				var listId = Guid.NewGuid();
-				template = template.Replace("#Title", name);
-				template = template.Replace("#SubTitle", name);
-				template = template.Replace("#EntityName", viewModel.TableModel.Name);
-				template = template.Replace("#ViewModelId", viewModel.Id.ToString());
-				template = template.Replace("#ListId", listId.ToString());
-
-				var tableHead = new StringBuilder();
-
-				foreach (var line in viewModel.ViewModelFields.ToList().OrderBy(x => x.Order))
-					tableHead.AppendLine($"<th translate='{line.Translate}'>{line.Name}</th>");
-				tableHead.AppendLine("<th>Actions</th>");
-
-				template = template.Replace("#TableHead", tableHead.ToString());
-
-				var res = _pageRender.SavePageContent(pageId, template, "", string.Empty);
-			}
-			catch (Exception e)
-			{
-				Debug.WriteLine(e);
-				return Json(default(ResultModel));
-			}
-
-			await Notify.SendNotificationAsync(new SystemNotifications
-			{
-				Content = $"New page generated with name {page.Settings.Name}  and route {page.Path}",
-				Subject = "Info",
-				NotificationTypeId = NotificationType.Info
-			});
-
-			return Json(new ResultModel
-			{
-				IsSuccess = true,
-				Result = pageId
-			});
+			return Json(await _pageRender.GenerateListPageType(name, $"{name}-page", viewModelId));
 		}
-		private const string BasePath = "Static/Templates/";
+
+		/// <summary>
+		/// Scaffold pages 
+		/// </summary>
+		/// <param name="tableId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<IActionResult> Scaffold(Guid? tableId)
+		{
+			var result = new ResultModel();
+			if (tableId == null) return Json(result);
+
+			var table = await Context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
+			if (table == null) return Json(result);
+			var viewModel = await _pageRender.GenerateViewModel(tableId.Value);
+			if (viewModel.IsSuccess)
+			{
+				var listPath = $"{table.Name}-{Guid.NewGuid()}-page";
+				var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result);
+				if (listPage.IsSuccess)
+				{
+
+				}
+			}
+			return Json(result);
+		}
 	}
 }

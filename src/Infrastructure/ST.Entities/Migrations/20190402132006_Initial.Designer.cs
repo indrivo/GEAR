@@ -10,7 +10,7 @@ using ST.Entities.Data;
 namespace ST.Entities.Migrations
 {
     [DbContext(typeof(EntitiesDbContext))]
-    [Migration("20190330161723_Initial")]
+    [Migration("20190402132006_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -842,17 +842,23 @@ namespace ST.Entities.Migrations
 
                     b.Property<DateTime>("Created");
 
+                    b.Property<string>("CssCode");
+
                     b.Property<string>("Description");
+
+                    b.Property<string>("HtmlCode");
 
                     b.Property<string>("Icon");
 
+                    b.Property<string>("Identifier");
+
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("JsCode");
 
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
-
-                    b.Property<string>("PhysicPath");
 
                     b.Property<Guid?>("TenantId");
 

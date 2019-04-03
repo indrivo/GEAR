@@ -4,7 +4,6 @@ namespace ST.Configuration.Models
 {
     public class TemplateCacheModel : ICacheModel
     {
-        public bool IsSuccess { get; set; }
         /// <summary>
         /// Identifier of template
         /// </summary>

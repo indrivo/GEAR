@@ -85,7 +85,7 @@ namespace ST.CORE.Extensions
 					options.DefaultSchema = constants.DEFAULT_SCHEMA;
 					options.ConfigureDbContext = builder =>
 					{
-						var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
+						var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
 						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							builder.UseNpgsql(connectionString.Item2, opts =>
@@ -111,7 +111,7 @@ namespace ST.CORE.Extensions
 					options.DefaultSchema = constants.DEFAULT_SCHEMA;
 					options.ConfigureDbContext = builder =>
 					{
-						var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
+						var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
 						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							builder.UseNpgsql(connectionString.Item2, opts =>
@@ -150,7 +150,7 @@ namespace ST.CORE.Extensions
 		{
 			services.AddDbContext<ApplicationDbContext>(options =>
 					{
-						var connectionString = ConnectionString.Get(configuration, hostingEnvironment);
+						var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
 						if (connectionString.Item1 == DbProviderType.PostgreSql)
 						{
 							options.UseNpgsql(connectionString.Item2, opts =>
