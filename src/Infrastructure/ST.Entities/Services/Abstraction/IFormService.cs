@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
@@ -53,11 +54,38 @@ namespace ST.Entities.Services.Abstraction
         /// <returns></returns>
         JsonResult GetEntityReferenceFields(string entityName, string entitySchema);
 
+        /// <summary>
+        /// Get reference fields
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="entityFieldId"></param>
+        /// <returns></returns>
         JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId);
 
+        /// <summary>
+        /// Get table fields as json
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
         JsonResult GetTableFields(Guid tableId);
 
+        /// <summary>
+        /// Generate form by entity and params
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="name"></param>
+        /// <param name="redirectUrl"></param>
+        /// <param name="headerName"></param>
+        /// <returns></returns>
         Task<FormCreateDetailsViewModel> GenerateFormByEntity(Guid entityId, string name, string redirectUrl,
             string headerName);
+
+        /// <summary>
+        /// Get values for form fields 
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="objDict"></param>
+        /// <returns></returns>
+        ResultModel<IDictionary<string, string>> GetValuesForEditForm(Form form, IDictionary<string, object> objDict);
     }
 }

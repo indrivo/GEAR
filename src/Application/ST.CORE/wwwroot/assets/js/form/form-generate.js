@@ -247,6 +247,10 @@ Form.prototype.attrsToArray = function (data) {
 	return form;
 }
 
+/**
+ * Attrs of form to single select
+ * @param {any} form
+ */
 Form.prototype.attrsToString = function (form) {
 	for (let i in form.fields) {
 		if (form.fields.hasOwnProperty(i)) {
@@ -260,10 +264,13 @@ Form.prototype.attrsToString = function (form) {
 	return form;
 };
 
-
+/**
+ * Get reference of select control on change table field
+ * @param {any} tableId
+ * @param {any} fieldId
+ */
 Form.prototype.getReferenceSelectOnChangeTable = function (tableId, fieldId) {
-	const refFields = load(`/Form/GetReferenceFields?entityId=${tableId}&&entityFieldId=${fieldId}`);
-	return refFields;
+	return load(`/Form/GetReferenceFields?entityId=${tableId}&&entityFieldId=${fieldId}`);;
 };
 
 /**
@@ -502,7 +509,11 @@ Form.prototype.getFormFronServer = function (id) {
 	return response;
 };
 
-
+/**
+ * Register change event for table field
+ * @param {any} former
+ * @param {any} tableId
+ */
 Form.prototype.registerChangeRefEvent = function (former, tableId) {
 	setTimeout(function () {
 		$(`#${former.controls.formID}`).find("select[name^=tableFieldId]").on("change", function () {
@@ -542,6 +553,114 @@ Form.prototype.getFromUrl = function (name) {
 	const id = parsedUrl.searchParams.get(name);
 	return id;
 };
+
+/**
+ * Check if is edit form
+ * @param {any} formRef
+ * @param {any} formId
+ */
+Form.prototype.checkIfIsEditForm = function (formRef, formId) {
+	const itemId = this.getFromUrl("itemId");
+	const listId = this.getFromUrl("listId");
+	if (itemId && listId) {
+		const data = window.load("/Form/GetValuesFormObjectEditInForm",
+			{
+				formId: formId,
+				itemId: itemId
+			});
+		if (data && data.is_success) {
+			this.populateEditForm(formRef, data.result);
+		}
+		else {
+			$.toast({
+				heading: "Fail to load form",
+				text: "",
+				position: 'bottom-right',
+				loaderBg: '#ff6849',
+				icon: 'error',
+				hideAfter: 3500,
+				stack: 6
+			});
+		}
+	}
+}
+
+
+/**
+ * Extract form fields
+ * @param {any} place
+ */
+Form.prototype.extractOnlyReferenceFields = function (place, serialized) {
+	const final = {};
+	for (let s in serialized) {
+		if (serialized.hasOwnProperty(s)) {
+			const id = $(`#${place} #${s}`).attr("table-field-id");
+			if (!this.isGuid(id)) continue;
+			if (id) {
+				final[id] = serialized[s];
+			} else
+				final[s] = serialized[s];
+		}
+	}
+
+	return final;
+}
+
+
+/**
+ * Check if is guid
+ * @param {any} value
+ */
+Form.prototype.isGuid = function (value) {
+	return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(value);
+};
+
+
+/**
+ * Populate edit form
+ * @param {any} frm
+ * @param {any} data
+ */
+Form.prototype.populateEditForm = function (frm, data) {
+	const context = this;
+	$(frm).attr("isEdit", true);
+	$.each(data, function (key, value) {
+		if (context.isGuid(key)) {
+			const $ctrl = $('[name=' + key + ']', frm);
+			if ($ctrl.is('select')) {
+				$("option", $ctrl).each(function () {
+					if (this.value === value) {
+						this.selected = "selected";
+					}
+				});
+			}
+			if ($ctrl.is('textarea')) {
+				$ctrl.html(value);
+			}
+			else {
+				switch ($ctrl.attr("type")) {
+					case "text": case "hidden": case "number":
+						$ctrl.val(value);
+						break;
+					case "radio": case "checkbox":
+						$ctrl.each(function () {
+							if ($(this).attr('value') === value) {
+								$(this).attr("checked", value);
+							}
+						});
+						break;
+				}
+			}
+		} else {
+			const input = document.createElement("input");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("name", key);
+			input.setAttribute("value", value);
+			document.querySelector(frm).appendChild(input);
+		}
+	});
+};
+
 
 /**
  * Render form

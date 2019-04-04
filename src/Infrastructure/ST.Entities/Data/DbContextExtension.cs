@@ -197,6 +197,14 @@ namespace ST.Entities.Data
 
                         foreach (var item in viewModel.Fields)
                         {
+                            if (value[item.ColumnName] is Guid g)
+                            {
+                                if (g == Guid.Empty)
+                                {
+                                    value[item.ColumnName] = null;
+                                }
+                            }
+
                             var dbParameter = cmd.CreateParameter();
                             dbParameter.ParameterName = string.Format("@{0}", item.ColumnName);
                             dbParameter.Value = value[item.ColumnName] ?? DBNull.Value;

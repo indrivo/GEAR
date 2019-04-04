@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ST.Audit.Extensions;
+using ST.Audit.Models;
 using ST.BaseBusinessRepository;
 using ST.Entities.Constants;
 using ST.Entities.Data;
@@ -616,6 +617,7 @@ namespace ST.Entities.Services
             });
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Generate form from entity
         /// </summary>
@@ -731,6 +733,7 @@ namespace ST.Entities.Services
                 Order = order,
                 Config = new ConfigViewModel
                 {
+
                     HideLabel = true,
                     Label = "Button",
                     DisabledAttrs = new List<string> { "type" }
@@ -850,6 +853,43 @@ namespace ST.Entities.Services
             };
 
             return form;
+        }
+
+
+        public virtual ResultModel<IDictionary<string, string>> GetValuesForEditForm(Form form, IDictionary<string, object> objDict)
+        {
+            var result = new ResultModel<IDictionary<string, string>>();
+
+            if (form == null)
+            {
+                result.Errors = new List<IErrorModel>
+                {
+                    new ErrorModel(string.Empty, "Form not found")
+                };
+                return result;
+            }
+            var fields = new Dictionary<string, string>();
+
+            var baseFields = typeof(ExtendedModel).GetProperties();
+            foreach (var field in form.Fields)
+            {
+                var tableField = form.Table.TableFields.FirstOrDefault(x => x.Id == field.TableFieldId);
+                if (tableField == null) continue;
+                if (!objDict.ContainsKey(tableField.Name)) continue;
+                fields.Add(field.Id.ToString(), objDict[tableField.Name]?.ToString());
+            }
+
+            foreach (var baseField in baseFields)
+            {
+                if (objDict.ContainsKey(baseField.Name))
+                {
+                    fields.Add(baseField.Name, objDict[baseField.Name]?.ToString());
+                }
+            }
+
+            result.IsSuccess = true;
+            result.Result = fields;
+            return result;
         }
     }
 }

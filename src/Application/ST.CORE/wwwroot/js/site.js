@@ -1,3 +1,8 @@
+// Make sure jQuery has been loaded
+if (typeof jQuery === 'undefined') {
+	throw new Error('Events requires jQuery')
+}
+
 //Delete row from Jquery Table
 function DeleteData(object) {
 	swal({
@@ -567,13 +572,6 @@ Notificator.prototype.restore = function (notificationId) {
 
 
 //Actions
-
-
-// Make sure jQuery has been loaded
-if (typeof jQuery === 'undefined') {
-	throw new Error('Events requires jQuery')
-}
-
 function ST() { }
 /**
  * Constructor

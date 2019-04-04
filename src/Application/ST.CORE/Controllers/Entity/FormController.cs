@@ -12,12 +12,15 @@ using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.FormsViewModels;
+using ST.DynamicEntityStorage;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
@@ -38,7 +41,15 @@ namespace ST.CORE.Controllers.Entity
 		#region Inject
 		private IFormService FormService { get; }
 
+		/// <summary>
+		/// Inject re
+		/// </summary>
 		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
+
+		/// <summary>
+		/// Inject dynamic service
+		/// </summary>
+		private readonly IDynamicService _service;
 		#endregion
 
 		/// <summary>
@@ -59,11 +70,12 @@ namespace ST.CORE.Controllers.Entity
 			INotify<ApplicationRole> notify, IOrganizationService organizationService,
 			ProcessesDbContext processesDbContext, IFormService formService,
 			ICacheService cacheService,
-			IBaseBusinessRepository<EntitiesDbContext> repository)
+			IBaseBusinessRepository<EntitiesDbContext> repository, IDynamicService service)
 			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 			FormService = formService;
 			Repository = repository;
+			_service = service;
 		}
 
 		/// <summary>
@@ -311,6 +323,46 @@ namespace ST.CORE.Controllers.Entity
 		public JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId)
 		{
 			return FormService.GetReferenceFields(entityId, entityFieldId);
+		}
+
+		/// <summary>
+		/// Get values for object on edit
+		/// </summary>
+		/// <param name="formId"></param>
+		/// <param name="itemId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<JsonResult> GetValuesFormObjectEditInForm([Required]Guid formId, [Required] Guid itemId)
+		{
+			var result = new ResultModel
+			{
+				Errors = new List<IErrorModel>()
+			};
+			var form = await Context.Forms
+				.Include(x => x.Table)
+				.ThenInclude(x => x.TableFields)
+				.Include(x => x.Fields)
+				.ThenInclude(x => x.Attrs)
+				.FirstOrDefaultAsync(x => x.Id == formId);
+
+			if (form == null)
+			{
+				result.Errors.Add(new ErrorModel(string.Empty, "Form not found"));
+				return Json(result);
+			}
+			var obj = await _service.Table(form.Table.Name).GetById<object>(itemId);
+			if (!obj.IsSuccess)
+			{
+				result.Errors.Add(new ErrorModel(string.Empty, "Object not found"));
+				return Json(result);
+			}
+			var objDict = ObjectService<EntitiesDbContext>.GetDictionary(obj.Result);
+
+			var formValues = FormService.GetValuesForEditForm(form, objDict);
+			if (!formValues.IsSuccess) return Json(result);
+			result.Result = formValues.Result;
+			result.IsSuccess = formValues.IsSuccess;
+			return Json(result);
 		}
 
 		/// <summary>

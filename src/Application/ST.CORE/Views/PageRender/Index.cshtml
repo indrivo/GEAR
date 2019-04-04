@@ -32,7 +32,7 @@
 @if (!string.IsNullOrEmpty(cssCode))
 {
 	<style>
-		@Html.Raw(cssCode)
+	@Html.Raw(cssCode)
 	</style>
 }
 
@@ -371,7 +371,7 @@
 
 		$.each(forms,
 			function(index, form) {
-				let formId = $(form).attr("db-form");
+				const formId = $(form).attr("db-form");
 				const st = new ST();
 				const id = `render_${st.newGuid()}`;
 				$(form).attr("id", id);
@@ -380,14 +380,14 @@
 			});
 
 		function renderForm(formId, place) {
-			let data = form.getFormFronServer(formId);
+			const data = form.getFormFronServer(formId);
 
-			if (data != null) {
+			if (data) {
 				if (data.is_success) {
 					const json = form.cleanJson(data.result);
 
 					try {
-						let formeo = new window.Formeo(
+						const formeo = new window.Formeo(
 							{
 								allowEdit: false
 							},
@@ -404,6 +404,7 @@
 								}
 							);
 							form.populateSelect(selects);
+							form.checkIfIsEditForm(`#${place}`, formId);
 						});
 
 					} catch (exp) {
@@ -411,33 +412,36 @@
 					}
 
 					$(`#${place}`).on("submit",
-						function() {
+						function () {
 							const st = new ST();
-							const serialized = st.serializeToJson($(`#${place}`));
-
-							const final = {};
-							for (let s in serialized) {
-								if (serialized.hasOwnProperty(s)) {
-									const id = $(`#${place} #${s}`).attr("table-field-id");
-
-									if (id != undefined) {
-										final[id] = serialized[s];
-									} else
-										final[s] = serialized[s];
+							const isEdit = this.hasAttribute("isedit");
+							let systemFields = [];
+							if (isEdit) {
+								const hiddens = $(this).find("input:hidden");
+								for (var i = 0; i < hiddens.length; i++) {
+									systemFields.push({
+										key: $(hiddens[i]).attr("name"),
+										value: $(hiddens[i]).val()
+									});
 								}
 							}
+							const serialized = st.serializeToJson($(this));
+
+							const obj = form.extractOnlyReferenceFields(place, serialized);
 
 							$.ajax({
 								url: "@Url.Action("PostForm", "PageRender")",
 								type: "post",
 								data: {
 									model: {
-										data: final,
-										formId: formId
+										data: obj,
+										formId: formId,
+										isEdit: isEdit,
+										systemFields: systemFields
 									}
 								},
 								success: function(data) {
-									if (data != null) {
+									if (data) {
 										if (data.is_success) {
 											location.href = data.result.redirectUrl;
 										}
@@ -448,7 +452,15 @@
 						});
 				}
 			} else {
-				console.log("fail");
+				$.toast({
+				heading: "Server unavailable!",
+				text: "",
+				position: 'bottom-right',
+				loaderBg: '#ff6849',
+				icon: 'error',
+				hideAfter: 3500,
+				stack: 6
+			});
 			}
 		}
 	</script>

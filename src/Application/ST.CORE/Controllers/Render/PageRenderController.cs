@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.Configuration;
 using ST.Configuration.Seed;
@@ -547,60 +548,105 @@ namespace ST.CORE.Controllers.Render
 		{
 			var result = new ResultModel
 			{
-				IsSuccess = false
+				IsSuccess = false,
+				Errors = new List<IErrorModel>()
 			};
 
-			if (model == null) return Json(result);
+			if (model == null)
+			{
+				result.Errors.Add(new ErrorModel("Null", "Data is not defined!"));
+				return Json(result);
+			}
 			var form = _context.Forms.FirstOrDefault(x => x.Id.Equals(model.FormId));
-			if (form == null) return Json(result);
+			if (form == null)
+			{
+				result.Errors.Add(new ErrorModel("Null", "Form not found!"));
+				return Json(result);
+			}
 
 			var table = _context.Table.Include(x => x.TableFields)
 				.FirstOrDefault(x => x.Id.Equals(form.TableId));
-			if (table == null) return Json(result);
+			if (table == null)
 			{
-				var instance = _service.Table(table.Name);
-				var fields = table.TableFields.ToList();
-				var pre = instance.Object;
+				result.Errors.Add(new ErrorModel("Null", "Form entity reference not found"));
+				return Json(result);
+			}
 
-				foreach (var (key, value) in model.Data)
+			if (model.IsEdit && model.SystemFields.Count() == 0)
+			{
+				result.Errors
+					.Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
+				return Json(result);
+			}
+
+			var id = model?.SystemFields?.FirstOrDefault(x => x.Key == "Id");
+
+			var instance = _service.Table(table.Name);
+			var fields = table.TableFields.ToList();
+			var pre = instance.Object;
+
+			if (model.IsEdit)
+			{
+				if (id == null)
 				{
-					var field = fields.FirstOrDefault(x => x.Id.Equals(Guid.Parse(key)));
-					if (field == null) continue;
-					try
+					result.Errors
+					.Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
+					return Json(result);
+				}
+				var oldObj = await instance.GetById<object>(id.Value.ToGuid());
+				if (!oldObj.IsSuccess)
+				{
+					result.Errors
+					.Add(new ErrorModel("Fail", "Data missed, check if this data exist!"));
+					return Json(result);
+				}
+				pre = oldObj.Result;
+			}
+
+			foreach (var (key, value) in model.Data)
+			{
+				var field = fields.FirstOrDefault(x => x.Id.Equals(Guid.Parse(key)));
+				if (field == null) continue;
+				try
+				{
+					var prop = pre.GetType().GetProperty(field.Name);
+					if (prop.PropertyType == typeof(Guid))
 					{
-						var prop = pre.GetType().GetProperty(field.Name);
-						if (prop.PropertyType == typeof(Guid))
+						if (value == null)
 						{
-							prop.SetValue(pre, Guid.Parse(value));
+							prop.SetValue(pre, null);
 						}
 						else
 						{
-							prop.SetValue(pre, value);
+							prop.SetValue(pre, Guid.Parse(value));
 						}
 					}
-					catch (Exception e)
+					else
 					{
-						Console.WriteLine(e);
+						prop.SetValue(pre, value);
 					}
 				}
-
-				var obj = instance.ParseObject<dynamic, EntitiesDbContext>(pre);
-
-				var req = await instance.Add(obj);
-
-				if (req.IsSuccess)
+				catch (Exception e)
 				{
-					return Json(new ResultModel
-					{
-						IsSuccess = true,
-						Result = new
-						{
-							IdOfCreatedObject = req.Result,
-							form.RedirectUrl
-						}
-					});
+					Console.WriteLine(e);
 				}
 			}
+
+			var obj = instance.ParseObject<dynamic, EntitiesDbContext>(pre);
+
+			var req = (model.IsEdit) ? await instance.Update(obj) : await instance.Add(obj);
+
+			if (req.IsSuccess)
+			{
+				result.IsSuccess = true;
+				result.Result = new
+				{
+					IdOfCreatedObject = req.Result,
+					form.RedirectUrl
+				};
+				return Json(result);
+			}
+
 
 			return Json(result);
 		}

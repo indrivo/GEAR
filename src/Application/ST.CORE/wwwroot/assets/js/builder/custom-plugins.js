@@ -398,7 +398,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 		content: `
 		 <div class="row"> 
                     <div class="col-lg-12">
-                        <form class="render-dynamic-form" style="margin-left: 1em !important">
+                        <form class="render-dynamic-form" action="#" method="post" style="margin-left: 1em !important">
                                     <div class="form-group">
                                         <label for="exampleInputuname">User Name</label>
                                         <div class="input-group">
