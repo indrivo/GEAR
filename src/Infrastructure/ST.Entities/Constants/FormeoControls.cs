@@ -8,7 +8,7 @@
             Id = "custom-select",
             Icon = "select",
             Group = "common",
-            Type = "number"
+            Type = string.Empty
         };
 
         public static FormControl Text = new FormControl

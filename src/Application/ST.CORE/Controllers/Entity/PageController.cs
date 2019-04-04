@@ -630,7 +630,7 @@ namespace ST.CORE.Controllers.Entity
 				}
 			}
 
-			var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result);
+			var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result, $"/{listPath}/add", $"/{listPath}/edit");
 			if (listPage != null)
 			{
 				if (listPage.IsSuccess)

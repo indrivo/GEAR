@@ -85,18 +85,17 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <param name="obj"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static Task<ResultModel<List<(dynamic, Guid)>>> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
+        public static Task<ResultModel> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
         {
             return Task.Run(() =>
             {
-                var result = new ResultModel<List<(dynamic, Guid)>>();
+                var result = new ResultModel();
                 if (model == null || !model.Any()) return result;
                 //var data = obj.ParseListObject(model);
                 var req = obj.Invoke<dynamic>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
                     new List<object> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
-                result.Result = req.Result;
                 return result;
             });
         }

@@ -218,12 +218,15 @@ namespace ST.CORE.Services
 		/// <param name="name"></param>
 		/// <param name="path"></param>
 		/// <param name="viewModelId"></param>
+		/// <param name="addPath"></param>
+		/// <param name="editPath"></param>
 		/// <returns></returns>
-		public virtual async Task<ResultModel<Guid>> GenerateListPageType([Required] string name, string path, [Required] Guid viewModelId)
+		public virtual async Task<ResultModel<Guid>> GenerateListPageType([Required] string name, string path,
+			[Required] Guid viewModelId, string addPath = "#", string editPath = "#")
 		{
 			if (string.IsNullOrEmpty(name) || viewModelId.Equals(Guid.Empty)) return default;
 			var match = _context.Pages.Include(x => x.Settings)
-				.FirstOrDefault(x => x.Settings.Name.ToLower().Equals(name.ToLower()));
+				.FirstOrDefault(x => x.Path.ToLower().Equals($"/{path}".ToLower()));
 			var viewModel = _context.ViewModels
 					.Include(x => x.TableModel)
 					.Include(x => x.ViewModelFields)
@@ -268,6 +271,8 @@ namespace ST.CORE.Services
 				template = template.Replace("#EntityName", viewModel.TableModel.Name);
 				template = template.Replace("#ViewModelId", viewModel.Id.ToString());
 				template = template.Replace("#ListId", listId.ToString());
+				template = template.Replace("#AddPagePath", addPath);
+				template = template.Replace("#EditPagePath", editPath);
 
 				var tableHead = new StringBuilder();
 

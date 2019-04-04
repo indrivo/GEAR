@@ -688,7 +688,10 @@ namespace ST.Entities.Services
                             "className", string.Empty
                         },
                         {
-                            "tableField", field.Id.ToString()
+                            "tableFieldId", field.Id.ToString()
+                        },
+                        {
+                            "fieldReference", string.Empty
                         },
                         {
                             "required", (!field.AllowNull).ToString()
