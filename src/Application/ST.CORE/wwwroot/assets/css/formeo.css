@@ -6,7 +6,11 @@
 	---------------Custom css for rendered forms----------------
 */
 
-.render-dynamic-form .formeo input[type=text], .render-dynamic-form .formeo select, .render-dynamic-form .formeo textarea {
+.render-dynamic-form .formeo input[type=text],
+.render-dynamic-form .formeo input[type=number],
+.render-dynamic-form .formeo .f-checkbox,
+.render-dynamic-form .formeo select,
+.render-dynamic-form .formeo textarea {
 	-webkit-transition: all 0.30s ease-in-out;
 	-moz-transition: all 0.30s ease-in-out;
 	-ms-transition: all 0.30s ease-in-out;
@@ -23,11 +27,11 @@
 	color: #555;
 }
 
-.render-dynamic-form .formeo input[type=text], .render-dynamic-form .formeo textarea {
+.render-dynamic-form .formeo input[type=text], .formeo input[type=number], .render-dynamic-form .formeo textarea {
 	background: #fff;
 }
 
-.render-dynamic-form .formeo input[type=text], .render-dynamic-form .formeo select {
+.render-dynamic-form .formeo input[type=text], .formeo input[type=number], .render-dynamic-form .formeo select {
 	height: 2.7em;
 }
 
@@ -37,6 +41,7 @@
 
 
 	.render-dynamic-form .formeo input[type=text]:focus,
+	.render-dynamic-form .formeo input[type=number]:focus,
 	.render-dynamic-form .formeo select:focus,
 	.render-dynamic-form .formeo textarea:focus {
 		box-shadow: 0 0 7px #1e7e34;

@@ -300,6 +300,56 @@ namespace ST.CORE.Services
 		}
 
 		/// <summary>
+		/// Generate form page
+		/// </summary>
+		/// <param name="formId"></param>
+		/// <param name="path"></param>
+		/// <param name="pageName"></param>
+		/// <returns></returns>
+		public virtual async Task<ResultModel> GenerateFormPage(Guid formId, string path, string pageName)
+		{
+			var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/formDefaultTemplate.html");
+			var reader = new StreamReader(fileInfo.CreateReadStream());
+			var template = await reader.ReadToEndAsync();
+			template = template.Replace("#FormId", formId.ToString());
+			var page = new Page
+			{
+				Created = DateTime.Now,
+				Changed = DateTime.Now,
+				PageTypeId = PageManager.PageTypes[1].Id,
+				LayoutId = PageManager.Layouts[0],
+				Path = path,
+				Settings = new PageSettings
+				{
+					Name = pageName,
+					Description = "Generated page",
+					Title = pageName
+				},
+				IsLayout = false
+			};
+			try
+			{
+				_context.Pages.Add(page);
+				_context.SaveChanges();
+				SavePageContent(page.Id, template, string.Empty, string.Empty);
+				return new ResultModel
+				{
+					IsSuccess = true
+				};
+			}
+			catch (Exception e)
+			{
+				return new ResultModel
+				{
+					Errors = new List<IErrorModel>
+					{
+						new ErrorModel(string.Empty, e.ToString())
+					}
+				};
+			}
+		}
+
+		/// <summary>
 		/// Generate view model
 		/// </summary>
 		/// <param name="entityId"></param>

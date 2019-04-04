@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.Entities.Models.Forms;
@@ -55,5 +56,8 @@ namespace ST.Entities.Services.Abstraction
         JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId);
 
         JsonResult GetTableFields(Guid tableId);
+
+        Task<FormCreateDetailsViewModel> GenerateFormByEntity(Guid entityId, string name, string redirectUrl,
+            string headerName);
     }
 }

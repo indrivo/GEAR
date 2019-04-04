@@ -20,6 +20,7 @@
     <None Remove="Static\Templates\category.html" />
     <None Remove="Static\Templates\folders.html" />
     <None Remove="Static\Templates\folders_layout.html" />
+    <None Remove="Static\Templates\formDefaultTemplate.html" />
     <None Remove="Static\Templates\listDefaultTemplate.html" />
     <None Remove="Static\Templates\notifications.html" />
     <None Remove="Static\Templates\preview.html" />
@@ -107,6 +108,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Static\Templates\folders_layout.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Templates\formDefaultTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Static\Templates\listDefaultTemplate.html">

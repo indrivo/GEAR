@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +20,7 @@ using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Pages;
+using ST.Entities.Services.Abstraction;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
@@ -39,14 +38,16 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		private readonly IPageRender _pageRender;
 		private readonly IHostingEnvironment _env;
+		private readonly IFormService _formService;
 
 		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
 			INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService,
-			ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env)
+			ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env, IFormService formService)
 			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 			_pageRender = pageRender;
 			_env = env;
+			_formService = formService;
 		}
 
 		/// <summary>
@@ -602,22 +603,45 @@ namespace ST.CORE.Controllers.Entity
 		[HttpGet]
 		public async Task<IActionResult> Scaffold(Guid? tableId)
 		{
-			var result = new ResultModel();
-			if (tableId == null) return Json(result);
+			if (tableId == null) return NotFound();
 
 			var table = await Context.Table.FirstOrDefaultAsync(x => x.Id == tableId);
-			if (table == null) return Json(result);
+			if (table == null) return NotFound();
 			var viewModel = await _pageRender.GenerateViewModel(tableId.Value);
-			if (viewModel.IsSuccess)
+			var listPath = $"{table.Name}-{Guid.NewGuid()}-page";
+			if (!viewModel.IsSuccess) return NotFound();
+			var createForm = await _formService.GenerateFormByEntity(table.Id, $"Add {table.Name} {Guid.NewGuid()}", $"/{listPath}", $"Add {table.Name}");
+			if (createForm != null)
 			{
-				var listPath = $"{table.Name}-{Guid.NewGuid()}-page";
-				var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result);
-				if (listPage.IsSuccess)
+				var resCreate = _formService.CreateForm(createForm);
+				if (resCreate.IsSuccess)
 				{
-
+					await _pageRender.GenerateFormPage(resCreate.Result, $"/{listPath}/add", $"Add {table.Name}");
 				}
 			}
-			return Json(result);
+
+			var editForm = await _formService.GenerateFormByEntity(table.Id, $"Edit {table.Name} {Guid.NewGuid()}", $"/{listPath}", $"Edit {table.Name}");
+			if (editForm != null)
+			{
+				var resEdit = _formService.CreateForm(editForm);
+				if (resEdit.IsSuccess)
+				{
+					await _pageRender.GenerateFormPage(resEdit.Result, $"/{listPath}/edit", $"Edit {table.Name}");
+				}
+			}
+
+			var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result);
+			if (listPage != null)
+			{
+				if (listPage.IsSuccess)
+				{
+					return RedirectToAction("Edit", "Table", new
+					{
+						table.Id
+					});
+				}
+			}
+			return NotFound();
 		}
 	}
 }

@@ -492,7 +492,8 @@ namespace ST.Entities.Services
                 _context.SaveChanges();
                 var result = new ResultModel<Guid>
                 {
-                    IsSuccess = true
+                    IsSuccess = true,
+                    Result = form.Id
                 };
                 return result;
             }
@@ -634,32 +635,24 @@ namespace ST.Entities.Services
             var rowId = Guid.NewGuid();
             var colId = Guid.Empty;
             var order = 0;
-            var fields = new Dictionary<Guid, FieldViewModel>();
-            fields.Add(Guid.NewGuid(), new FieldViewModel
+            var headId = Guid.NewGuid();
+            var fields = new Dictionary<Guid, FieldViewModel>
             {
-                Id = Guid.NewGuid(),
-                Attrs = new Dictionary<string, string>
                 {
+                    headId,
+                    new FieldViewModel
                     {
-                        "className", ""
+                        Id = headId,
+                        Attrs = new Dictionary<string, string> {{"className", ""}},
+                        Order = order++,
+                        Config = new ConfigViewModel {Editable = true, HideLabel = true, Label = "Header"},
+                        Content = headerName,
+                        Meta = new MetaViewModel {Id = "header", Group = "html", Icon = "header"},
+                        Tag = "h1",
+                        Options = new List<OptionsViewModel>()
                     }
-                },
-                Order = order++,
-                Config = new ConfigViewModel
-                {
-                    Editable = true,
-                    HideLabel = true,
-                    Label = "Header"
-                },
-                Content = headerName,
-                Meta = new MetaViewModel
-                {
-                    Id = "header",
-                    Group = "html",
-                    Icon = "header"
-                },
-                Tag = "h1"
-            });
+                }
+            };
 
             foreach (var field in entity.TableFields)
             {
@@ -684,13 +677,15 @@ namespace ST.Entities.Services
                         fieldConfig = FormeoControls.Date;
                         break;
                 }
-                fields.Add(Guid.NewGuid(), new FieldViewModel
+
+                var key = Guid.NewGuid();
+                fields.Add(key, new FieldViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = key,
                     Attrs = new Dictionary<string, string>
                     {
                         {
-                            "className", "form-control"
+                            "className", string.Empty
                         },
                         {
                             "tableField", field.Id.ToString()
@@ -710,7 +705,6 @@ namespace ST.Entities.Services
                         Label = field.DisplayName,
                         DisabledAttrs = new List<string> { "type" }
                     },
-                    Content = headerName,
                     Meta = new MetaViewModel
                     {
                         Id = fieldConfig.Id,
@@ -721,9 +715,16 @@ namespace ST.Entities.Services
                 });
             }
 
-            fields.Add(Guid.NewGuid(), new FieldViewModel
+            var buttonId = Guid.NewGuid();
+            fields.Add(buttonId, new FieldViewModel
             {
-                Id = Guid.NewGuid(),
+                Attrs = new Dictionary<string, string>
+                {
+                    {
+                        "translate", "save"
+                    }
+                },
+                Id = buttonId,
                 Order = order,
                 Config = new ConfigViewModel
                 {
@@ -768,6 +769,7 @@ namespace ST.Entities.Services
                                 Selected = false,
                             }
                         },
+                        Label = "Save",
                         Type = new List<AttrTagViewModel>
                         {
                             new AttrTagViewModel
@@ -820,7 +822,9 @@ namespace ST.Entities.Services
                             rowId, new RowViewModel
                             {
                                 Id = rowId,
-                                Columns =new List<Guid>{ colId }
+                                Columns =new List<Guid>{ colId },
+                                Attrs = new Dictionary<string, string>{ { "className", "f-row"}},
+                                Config = new ConfigViewModel(),
                             }
                         }
                     },
@@ -830,7 +834,11 @@ namespace ST.Entities.Services
                             colId, new ColumnViewModel
                             {
                                 Fields = fields.Select(x => x.Key),
-                                Id = colId
+                                Id = colId,
+                                Config = new ConfigViewModel
+                                {
+                                    Width = "100%"
+                                }
                             }
                         }
                     },

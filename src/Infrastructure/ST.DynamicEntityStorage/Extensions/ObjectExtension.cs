@@ -92,7 +92,7 @@ namespace ST.DynamicEntityStorage.Extensions
                 var result = new ResultModel<List<(dynamic, Guid)>>();
                 if (model == null || !model.Any()) return result;
                 //var data = obj.ParseListObject(model);
-                var req = obj.Invoke<List<(dynamic, Guid)>>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<dynamic>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
                     new List<object> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;

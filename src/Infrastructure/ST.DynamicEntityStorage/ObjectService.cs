@@ -228,6 +228,16 @@ namespace ST.DynamicEntityStorage
                         type = typeof(long);
                     }
                     break;
+                case "date":
+                    {
+                        type = typeof(DateTime);
+                    }
+                    break;
+                case "decimal":
+                    {
+                        type = typeof(double);
+                    }
+                    break;
             }
             return type;
         }

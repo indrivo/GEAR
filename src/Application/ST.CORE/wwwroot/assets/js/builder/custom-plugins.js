@@ -416,6 +416,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
                                     <button type="submit" class="btn btn-inverse waves-effect waves-light">Cancel</button>
                                 </form>
                     </div>
+		</div>
 			`,
 		attributes: {
 			class: "fa fa-align-justify"

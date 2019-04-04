@@ -21,5 +21,6 @@ namespace ST.CORE.Services.Abstraction
 		ResultModel<IEnumerable<PageStyle>> GetPageStyles(Guid pageId);
 		Task<ResultModel<Guid>> GenerateListPageType([Required] string name, string path, [Required] Guid viewModelId);
 		Task<ResultModel<Guid>> GenerateViewModel(Guid entityId);
+		Task<ResultModel> GenerateFormPage(Guid formId, string path, string pageName);
 	}
 }
