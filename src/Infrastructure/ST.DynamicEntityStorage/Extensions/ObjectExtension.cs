@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using ST.BaseBusinessRepository;
+using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 
 namespace ST.DynamicEntityStorage.Extensions
@@ -84,18 +85,17 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <param name="obj"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static Task<ResultModel<Guid>> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
+        public static Task<ResultModel> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
         {
             return Task.Run(() =>
             {
-                var result = new ResultModel<Guid>();
+                var result = new ResultModel();
                 if (model == null || !model.Any()) return result;
                 //var data = obj.ParseListObject(model);
-                var req = obj.Invoke<IList<(dynamic, Guid)>>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<dynamic>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
                     new List<object> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
-                result.Result = req.Result.Adapt<Guid>();
                 return result;
             });
         }
@@ -153,7 +153,7 @@ namespace ST.DynamicEntityStorage.Extensions
             {
                 var result = new ResultModel<bool>();
                 var req = obj.Invoke<bool>(MethodName.Any, new List<Type> { obj.Object.GetType() },
-                    new List<object> { });
+                    new List<object>());
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
                 result.Result = req.Result;
@@ -241,28 +241,33 @@ namespace ST.DynamicEntityStorage.Extensions
                 return result;
             });
         }
+
         /// <summary>
         /// Parse object
         /// </summary>
         /// <typeparam name="TObject"></typeparam>
-        /// <param name="conf"></param>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="conf">
+        /// </param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static object ParseObject<TObject>(this ObjectService conf, TObject obj)
+        public static object ParseObject<TObject, TContext>(this ObjectService<TContext> conf, TObject obj) where TContext : EntitiesDbContext
         {
             return conf.ParseObject(obj);
         }
+
         /// <summary>
         /// Parse object
         /// </summary>
         /// <typeparam name="TObject"></typeparam>
+        /// <typeparam name="TContext"></typeparam>
         /// <param name="conf"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static object ParseObject<TObject>(this DynamicObject conf, TObject obj)
+        public static object ParseObject<TObject, TContext>(this DynamicObject conf, TObject obj) where TContext : EntitiesDbContext
         {
             var entity = conf.Object.GetType().Name;
-            var res = new ObjectService(entity).ParseObject(obj);
+            var res = new ObjectService<TContext>(entity).ParseObject(obj);
             return res;
         }
 
@@ -270,30 +275,13 @@ namespace ST.DynamicEntityStorage.Extensions
         /// Parse list object
         /// </summary>
         /// <typeparam name="TObject"></typeparam>
+        /// <typeparam name="TContext"></typeparam>
         /// <param name="conf"></param>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static IEnumerable<object> ParseListObject<TObject>(this DynamicObject conf, IEnumerable<TObject> list)
+        public static IEnumerable<object> ParseListObject<TObject, TContext>(this DynamicObject conf, IEnumerable<TObject> list) where TContext : EntitiesDbContext
         {
-            return list.Select(x => conf.ParseObject(x)).ToList();
-        }
-
-        /// <summary>
-        /// Get Entity Id
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static Guid GetValueId(this object obj)
-        {
-            try
-            {
-                return Guid.Parse(((dynamic)obj).Id.ToString());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return Guid.Empty;
+            return list.Select(conf.ParseObject<TObject, TContext>).ToList();
         }
     }
 }

@@ -6,5 +6,6 @@ namespace ST.Identity.Services.Abstractions
     {
         Task<bool> Set<TObject>(string key, TObject obj) where TObject : class, ICacheModel;
         Task<TObject> Get<TObject>(string key) where TObject : class, ICacheModel;
+        Task RemoveAsync(string key);
     }
 }

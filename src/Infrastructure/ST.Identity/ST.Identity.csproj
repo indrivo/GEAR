@@ -11,8 +11,11 @@
 
   <ItemGroup>
     <Compile Remove="Authorization\**" />
+    <Compile Remove="Models\ProfileModels\**" />
     <EmbeddedResource Remove="Authorization\**" />
+    <EmbeddedResource Remove="Models\ProfileModels\**" />
     <None Remove="Authorization\**" />
+    <None Remove="Models\ProfileModels\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,10 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\ProfileModels\" />
   </ItemGroup>
 
 </Project>

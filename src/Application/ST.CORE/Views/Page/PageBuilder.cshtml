@@ -17,6 +17,27 @@
 <a style="float: right;" target="_blank" class="btn btn-warning" href="@pageData.Path">Preview page</a>
 <h2 style="margin-bottom: 1em;">Edit <code>@pageData.Settings.Name</code> page content</h2>
 
+<p>
+	<a class="btn" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+		Builder Info
+	</a>
+</p>
+<div class="collapse" id="collapseExample">
+	<div class="card card-body">
+		<blockquote>
+			This is a builder that allows you to add, stylize content to the desired mode. For this it offers a set of possibilities:
+			<ul class="list-icons">
+				<li><i class="fa fa-minus text-info"></i> Adding textual content with block manager</li>
+				<li><i class="fa fa-minus text-info"></i> Adding images from both local and external sources</li>
+				<li><i class="fa fa-minus text-info"></i> Adding forms through drag and drop of the component, but also with the preview and setting option from the right menu</li>
+				<li><i class="fa fa-minus text-info"></i> Add dynamic lists from a database source with the option to set a set of options</li>
+				<li><i class="fa fa-minus text-info"></i> Adding new types of blocks</li>
+				<li><i class="fa fa-minus text-info"></i> Copying a block and reusing it</li>
+			</ul>
+		</blockquote>
+	</div>
+</div>
+
 <div id="gjs" style="height: 150em;">
 	@Html.Raw(ViewBag.Html)
 
@@ -81,9 +102,9 @@
 					modal.setTitle('Info');
 					modal.setContent(
 						`
-		<center>
-			<span style="color: red; font-size: 1.5em;" class='fa fa-close'></span><br>Data fail to save!
-		</center>`);
+			<center>
+				<span style="color: red; font-size: 1.5em;" class='fa fa-close'></span><br>Data fail to save!
+			</center>`);
 					modal.open();
 				},
 				success: function (data) {
@@ -93,9 +114,9 @@
 						modal.setTitle('Info');
 						modal.setContent(
 							`
-		<center>
-			<span style="color: green; font-size: 1.5em;" class='fa fa-check-circle'></span><br>Data has been saved!
-		</center>`);
+			<center>
+				<span style="color: green; font-size: 1.5em;" class='fa fa-check-circle'></span><br>Data has been saved!
+			</center>`);
 						modal.open();
 					}
 				}
@@ -141,15 +162,15 @@
 			}
 		});
 
-		//$(document).ready(function () {
-		// $(document).keydown(function (e) {
-		// e.preventDefault();
-		// if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
-		// editor.runCommand('save');
-		// return false;
-		// }
-		// return true;
-		// });
-		//});
+			//$(document).ready(function () {
+			// $(document).keydown(function (e) {
+			// e.preventDefault();
+			// if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !(e.altKey)) {
+			// editor.runCommand('save');
+			// return false;
+			// }
+			// return true;
+			// });
+			//});
 	</script>
 }

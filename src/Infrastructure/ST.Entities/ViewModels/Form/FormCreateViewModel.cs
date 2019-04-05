@@ -11,7 +11,7 @@ namespace ST.Entities.ViewModels.Form
         public string Description { get; set; }
         public TableModel Table { get; set; }
         public Guid TableId { get; set; }
-        public Settings Settings { get; set; }
+        public Models.Forms.Settings Settings { get; set; }
         public Guid SettingsId { get; set; }
         public IEnumerable<Stage> Stages { get; set; }
         public IEnumerable<Row> Rows { get; set; }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.Entities.Models.Forms;
 using ST.Entities.ViewModels.Form;
@@ -20,9 +22,8 @@ namespace ST.Entities.Services.Abstraction
         /// Create a form
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="userId"></param>
         /// <returns></returns>
-        ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model, string userId);
+        ResultModel<Guid> CreateForm(FormCreateDetailsViewModel model);
 
         /// <summary>
         /// Delete form by id
@@ -37,5 +38,54 @@ namespace ST.Entities.Services.Abstraction
         /// <param name="formId"></param>
         /// <returns></returns>
         FormType GetTypeByFormId(Guid formId);
+
+        /// <summary>
+        /// Entity fields
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        JsonResult GetEntityFields(Guid tableId);
+
+        /// <summary>
+        /// Get entity reference fields
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="entitySchema"></param>
+        /// <returns></returns>
+        JsonResult GetEntityReferenceFields(string entityName, string entitySchema);
+
+        /// <summary>
+        /// Get reference fields
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="entityFieldId"></param>
+        /// <returns></returns>
+        JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId);
+
+        /// <summary>
+        /// Get table fields as json
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <returns></returns>
+        JsonResult GetTableFields(Guid tableId);
+
+        /// <summary>
+        /// Generate form by entity and params
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="name"></param>
+        /// <param name="redirectUrl"></param>
+        /// <param name="headerName"></param>
+        /// <returns></returns>
+        Task<FormCreateDetailsViewModel> GenerateFormByEntity(Guid entityId, string name, string redirectUrl,
+            string headerName);
+
+        /// <summary>
+        /// Get values for form fields 
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="objDict"></param>
+        /// <returns></returns>
+        ResultModel<IDictionary<string, string>> GetValuesForEditForm(Form form, IDictionary<string, object> objDict);
     }
 }

@@ -4,7 +4,8 @@
   "Settings": {
     "Name": "Performance server",
     "Description": "Page for view server performance",
-    "Title": "Performance server"
+    "Title": "Performance server",
+    "Identifier": "performanceserver"
   },
   "Path": "/LoadServerPerformance",
   "IsSystem": true,

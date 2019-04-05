@@ -4,7 +4,8 @@
   "Settings": {
     "Name": "Index",
     "Description": "Index page",
-    "Title": "Index"
+    "Title": "Index",
+    "Identifier": "index"
   },
   "Path": "/index",
   "IsSystem": true,

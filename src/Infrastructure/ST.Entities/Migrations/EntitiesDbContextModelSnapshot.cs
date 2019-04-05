@@ -17,7 +17,7 @@ namespace ST.Entities.Migrations
             modelBuilder
                 .HasDefaultSchema("Entities")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
@@ -95,25 +95,31 @@ namespace ST.Entities.Migrations
 
                     b.Property<DateTime>("Changed");
 
-                    b.Property<string>("ClassName");
-
                     b.Property<DateTime>("Created");
+
+                    b.Property<Guid?>("FieldId");
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<string>("Key");
+
                     b.Property<string>("ModifiedBy");
 
-                    b.Property<bool>("Required");
+                    b.Property<Guid?>("RowId");
 
                     b.Property<Guid?>("TenantId");
 
-                    b.Property<string>("Type");
+                    b.Property<int>("Type");
 
                     b.Property<string>("Value");
 
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.HasIndex("RowId");
 
                     b.ToTable("Attrs");
                 });
@@ -259,8 +265,6 @@ namespace ST.Entities.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("AttrsId");
-
                     b.Property<string>("Author");
 
                     b.Property<DateTime>("Changed");
@@ -294,8 +298,6 @@ namespace ST.Entities.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AttrsId");
 
                     b.HasIndex("ColumnId");
 
@@ -354,6 +356,44 @@ namespace ST.Entities.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("Forms");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Forms.FormFieldEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("Event");
+
+                    b.Property<Guid>("FieldId");
+
+                    b.Property<string>("Handler")
+                        .IsRequired();
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FieldId");
+
+                    b.ToTable("FormFieldEvents");
                 });
 
             modelBuilder.Entity("ST.Entities.Models.Forms.FormType", b =>
@@ -462,8 +502,6 @@ namespace ST.Entities.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("AttrsId");
-
                     b.Property<string>("Author");
 
                     b.Property<DateTime>("Changed");
@@ -485,8 +523,6 @@ namespace ST.Entities.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AttrsId");
 
                     b.HasIndex("ConfigId");
 
@@ -804,17 +840,23 @@ namespace ST.Entities.Migrations
 
                     b.Property<DateTime>("Created");
 
+                    b.Property<string>("CssCode");
+
                     b.Property<string>("Description");
+
+                    b.Property<string>("HtmlCode");
 
                     b.Property<string>("Icon");
 
+                    b.Property<string>("Identifier");
+
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("JsCode");
 
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
-
-                    b.Property<string>("PhysicPath");
 
                     b.Property<Guid?>("TenantId");
 
@@ -899,15 +941,23 @@ namespace ST.Entities.Migrations
 
                     b.Property<DateTime>("Changed");
 
-                    b.Property<string>("Content");
-
                     b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("IdentifierName")
+                        .IsRequired();
 
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
 
+                    b.Property<string>("Name")
+                        .IsRequired();
+
                     b.Property<Guid?>("TenantId");
+
+                    b.Property<string>("Value");
 
                     b.Property<int>("Version");
 
@@ -1189,6 +1239,19 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ST.Entities.Models.Forms.Attrs", b =>
+                {
+                    b.HasOne("ST.Entities.Models.Forms.Field", "Field")
+                        .WithMany("Attrs")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ST.Entities.Models.Forms.Row", "Row")
+                        .WithMany("Attrs")
+                        .HasForeignKey("RowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ST.Entities.Models.Forms.Column", b =>
                 {
                     b.HasOne("ST.Entities.Models.Forms.Config", "Config")
@@ -1216,11 +1279,6 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Models.Forms.Field", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Forms.Attrs", "Attrs")
-                        .WithMany()
-                        .HasForeignKey("AttrsId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ST.Entities.Models.Forms.Column")
                         .WithMany("Fields")
                         .HasForeignKey("ColumnId");
@@ -1230,7 +1288,7 @@ namespace ST.Entities.Migrations
                         .HasForeignKey("ConfigId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Models.Forms.Form")
+                    b.HasOne("ST.Entities.Models.Forms.Form", "Form")
                         .WithMany("Fields")
                         .HasForeignKey("FormId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1264,6 +1322,14 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("ST.Entities.Models.Forms.FormFieldEvent", b =>
+                {
+                    b.HasOne("ST.Entities.Models.Forms.Field", "Field")
+                        .WithMany("FieldEvents")
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ST.Entities.Models.Forms.Option", b =>
                 {
                     b.HasOne("ST.Entities.Models.Forms.Field")
@@ -1274,11 +1340,6 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Models.Forms.Row", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Forms.Attrs", "Attrs")
-                        .WithMany()
-                        .HasForeignKey("AttrsId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ST.Entities.Models.Forms.Config", "Config")
                         .WithMany()
                         .HasForeignKey("ConfigId")

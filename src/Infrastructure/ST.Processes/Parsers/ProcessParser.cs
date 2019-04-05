@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using ST.Identity.Data.Permissions;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Extensions;
@@ -24,6 +23,7 @@ namespace ST.Procesess.Parsers
         /// Xml parsed as XSchema
         /// </summary>
         private XSchema XSchema { get; set; }
+
         private IEnumerable<Dictionary<string, string>> XSettings { get; set; }
 
 
@@ -40,11 +40,20 @@ namespace ST.Procesess.Parsers
         /// Init parser
         /// </summary>
         /// <param name="schema"></param>
+        /// <param name="xSettings"></param>
         public void Init(string schema, IEnumerable<Dictionary<string, string>> xSettings)
         {
             Schema = schema;
-            var parsed = BPMN.Model.Parse(schema);
-            XSchema = parsed.Adapt<XSchema>();
+            if (!string.IsNullOrEmpty(schema))
+            {
+                var parsed = BPMN.Model.Parse(schema);
+                XSchema = parsed.Adapt<XSchema>();
+            }
+            else
+            {
+                throw new Exception("Invalid schema content!!!");
+            }
+
             XSettings = xSettings;
         }
 
@@ -52,18 +61,12 @@ namespace ST.Procesess.Parsers
         /// Get string Schema
         /// </summary>
         /// <returns></returns>
-        public string GetStringSchema
-        {
-            get => Schema;
-        }
+        public string GetStringSchema => Schema;
 
         /// <summary>
         /// Get Schema
         /// </summary>
-        public XSchema GetXSchema
-        {
-            get => XSchema;
-        }
+        public XSchema GetXSchema => XSchema;
 
         /// <summary>
         /// 
@@ -83,7 +86,6 @@ namespace ST.Procesess.Parsers
             ValidateInit();
             var processes = new List<STProcess>();
             if (XSchema == null) return default;
-            var json = JsonConvert.SerializeObject(XSchema);
 
             if (XSchema.IsCollaborationDiagram())
             {
@@ -92,10 +94,12 @@ namespace ST.Procesess.Parsers
             else
             {
                 var startEvents = XSchema.Elements.Where(x => x.TypeName.ToUpperFirstString().GetTransitionType() == TransitionType.StartEvent);
-                if (startEvents.Any())
+                if (!startEvents.Any()) return processes;
                 {
-                    var sequences = XSchema.Elements.Where(x => x.TypeName.ToUpperFirstString().GetTransitionType() == TransitionType.SequenceFlow);
-                    if (sequences.Any())
+                    var sequences = XSchema.Elements.Where(x =>
+                        x.TypeName.ToUpperFirstString().GetTransitionType() == TransitionType.SequenceFlow).ToList();
+
+                    if (!sequences.Any()) return processes;
                     {
                         var prElement = XSchema.Elements.FirstOrDefault(x => x.TypeName.ToUpperFirstString().GetTransitionType() == TransitionType.Process);
                         var process = new STProcess
@@ -112,13 +116,14 @@ namespace ST.Procesess.Parsers
                             var target = sequence.Attributes["targetRef"];
 
                             //Check source
-                            if (!string.IsNullOrEmpty(source))
+                            if (string.IsNullOrEmpty(source)) continue;
+                            //Check if source exist
+                            var sourceTransition = process.ProcessTransitions.FirstOrDefault(x => x.Name == source);
+                            if (sourceTransition == null)
                             {
-                                //Check if source exist
-                                var sourceTransition = process.ProcessTransitions.FirstOrDefault(x => x.Name == source);
-                                if (sourceTransition == null)
+                                var sourceElement = XSchema.Elements.FirstOrDefault(x => x.ID == source);
+                                if (sourceElement == null) continue;
                                 {
-                                    var sourceElement = XSchema.Elements.FirstOrDefault(x => x.ID == source);
                                     var newSourceTran = new STProcessTransition
                                     {
                                         Id = Guid.NewGuid(),
@@ -127,7 +132,7 @@ namespace ST.Procesess.Parsers
                                         TransitionType = sourceElement.TypeName.ToUpperFirstString().GetTransitionType()
                                     };
 
-                                    if (!string.IsNullOrEmpty(target))
+                                    if (string.IsNullOrEmpty(target)) continue;
                                     {
                                         //Check if target exist
                                         var trans = process.ProcessTransitions.FirstOrDefault(x => x.Name == target);
@@ -149,43 +154,43 @@ namespace ST.Procesess.Parsers
                                         else
                                         {
                                             var targetElement = XSchema.Elements.FirstOrDefault(x => x.ID == target);
-                                            var newSourceTran1 = new STProcessTransition
+                                            if (targetElement != null)
                                             {
-                                                Id = Guid.NewGuid(),
-                                                Name = target,
-                                                TransitionType = targetElement.TypeName.ToUpperFirstString().GetTransitionType(),
-                                                TransitionSettings = XSettings.FirstOrDefault(x => x?["id"] == target).ToStringSettings(),
-                                                IncomingTransitions = new List<STIncomingTransition> {
-                                                    new STIncomingTransition {
-                                                    IncomingTransitionId = newSourceTran.Id,
-                                                    ProcessTransitionId = trans.Id
-                                                }
-                                                }
-                                            };
-                                            process.ProcessTransitions.Add(newSourceTran1);
+                                                var newSourceTran1 = new STProcessTransition
+                                                {
+                                                    Id = Guid.NewGuid(),
+                                                    Name = target,
+                                                    TransitionType = targetElement.TypeName.ToUpperFirstString().GetTransitionType(),
+                                                    TransitionSettings = XSettings.FirstOrDefault(x => x?["id"] == target).ToStringSettings(),
+                                                    IncomingTransitions = new List<STIncomingTransition> {
+                                                        new STIncomingTransition {
+                                                            IncomingTransitionId = newSourceTran.Id,
+                                                            ProcessTransitionId = trans.Id
+                                                        }
+                                                    }
+                                                };
+                                                process.ProcessTransitions.Add(newSourceTran1);
+                                            }
                                         }
                                     }
                                 }
-                                //Check if transition has outgoing
-                                else
+                            }
+                            //Check if transition has outgoing
+                            else
+                            {
+                                if (string.IsNullOrEmpty(target)) continue;
+                                //Check outgoing transition
+                                var outTransition = process.ProcessTransitions.FirstOrDefault(x => x.Name == target);
+                                if (outTransition == null) continue;
                                 {
-                                    if (!string.IsNullOrEmpty(target))
+                                    var exist = sourceTransition.OutgoingTransitions.FirstOrDefault(x => x.OutgoingTransitionId == outTransition.Id);
+                                    if (exist == null)
                                     {
-
-                                        //Check outgoing transition
-                                        var outTransition = process.ProcessTransitions.FirstOrDefault(x => x.Name == target);
-                                        if (outTransition != null)
+                                        sourceTransition.OutgoingTransitions.Add(new STOutgoingTransition
                                         {
-                                            var exist = sourceTransition.OutgoingTransitions.FirstOrDefault(x => x.OutgoingTransitionId == outTransition.Id);
-                                            if (exist == null)
-                                            {
-                                                sourceTransition.OutgoingTransitions.Add(new STOutgoingTransition
-                                                {
-                                                    ProcessTransitionId = sourceTransition.Id,
-                                                    OutgoingTransitionId = outTransition.Id
-                                                });
-                                            }
-                                        }
+                                            ProcessTransitionId = sourceTransition.Id,
+                                            OutgoingTransitionId = outTransition.Id
+                                        });
                                     }
                                 }
                             }
@@ -198,19 +203,17 @@ namespace ST.Procesess.Parsers
             return processes;
         }
 
-
-
-
         /// <summary>
         /// Get process from a simple diagram
         /// </summary>
         /// <returns></returns>
         private STParsedProcess GetProcessFromSimpleDiagram(IEnumerable<XElement> startEvents)
         {
-            if (!startEvents.Any()) return null;
+            var xElements = startEvents.ToList();
+            if (!xElements.Any()) return null;
             var process = new STParsedProcess();
 
-            foreach (var startEvent in startEvents)
+            foreach (var startEvent in xElements)
             {
                 //Initiate start transition
                 var startTransition = new STProcessTransition
@@ -221,22 +224,20 @@ namespace ST.Procesess.Parsers
                 };
 
                 var xOutgoings = startEvent.Elements["outgoing"];
-                if (xOutgoings.Any())
+                if (!xOutgoings.Any()) continue;
+                var nextTransitions = GetOutgoingXElementTransitions(xOutgoings).ToList();
+                startTransition.OutgoingTransitions = ConvertXElementToXComing<STOutgoingTransition>(xOutgoings, startTransition);
+                var go = xOutgoings.Any();
+                while (go)
                 {
-                    var nextTransitions = GetOutgoingXElementTransitions(xOutgoings);
-                    startTransition.OutgoingTransitions = ConvertXElementToXComing<STOutgoingTransition>(xOutgoings, startTransition);
-                    var go = xOutgoings.Any();
-                    while (go)
+                    var (nextTrans, recycle) = GetNextTransitions(nextTransitions);
+
+                    foreach (var nextTransition in nextTrans)
                     {
-                        var (nextTrans, recycle) = GetNextTransitions(nextTransitions);
-
-                        foreach (var nextTransition in nextTrans)
-                        {
-                            //TODO: Parse simple diagram
-                        }
-
-                        go = recycle;
+                        //TODO: Parse simple diagram
                     }
+
+                    go = recycle;
                 }
             }
 
@@ -320,10 +321,11 @@ namespace ST.Procesess.Parsers
         {
             ValidateInit();
             var processes = new List<STProcess>();
-            var xColaborations = XSchema.GetCollaborations();
+            var xCollaborations = XSchema.GetCollaborations();
 
-            if (!xColaborations.Any()) return default;
-            foreach (var xCollaboration in xColaborations)
+            var xElements = xCollaborations.ToList();
+            if (!xElements.Any()) return default;
+            foreach (var xCollaboration in xElements)
             {
                 var xParticipants = XSchema.GetParticipantsbyCollaborationId(xCollaboration.ID);
                 foreach (var xParticipant in xParticipants)
@@ -363,29 +365,33 @@ namespace ST.Procesess.Parsers
                             };
                             //Get actor transitions
                             var xReferences = xActor.Elements?["flowNodeRef"];
-                            foreach (var xReference in xReferences)
+                            if (xReferences == null) continue;
                             {
-                                var xEl = XSchema.Elements.FirstOrDefault(x => x.ID == xReference.Attributes.FirstOrDefault().Value);
-                                if (xEl == null) continue;
-                                var transitionSettings = XSettings.FirstOrDefault(x => x?["id"] == xEl.ID);
-                                var transition = new STProcessTransition
+                                foreach (var xReference in xReferences)
                                 {
-                                    Name = xEl.ID,
-                                    Process = process,
-                                    TransitionActors = new List<STTransitionActor> { actor },
-                                    TransitionType = xEl.TypeName.ToUpperFirstString().GetTransitionType(),
-                                    TransitionSettings = transitionSettings.ToStringSettings()
-                                };
+                                    var xEl = XSchema.Elements.FirstOrDefault(x =>
+                                        x.ID == xReference.Attributes.FirstOrDefault().Value);
+                                    if (xEl == null) continue;
+                                    var transitionSettings = XSettings.FirstOrDefault(x => x?["id"] == xEl.ID);
+                                    var transition = new STProcessTransition
+                                    {
+                                        Name = xEl.ID,
+                                        Process = process,
+                                        TransitionActors = new List<STTransitionActor> { actor },
+                                        TransitionType = xEl.TypeName.ToUpperFirstString().GetTransitionType(),
+                                        TransitionSettings = transitionSettings.ToStringSettings()
+                                    };
 
-                                var xIncomings = xEl.Elements["incoming"];
-                                var xOutgoing = xEl.Elements["outgoing"];
-                                var inc = ExtractIncomingTransitions(xIncomings, transition.Name);
-                                if (inc != null)
-                                    incomingMap.AddRange(inc);
-                                var outg = ExtractOutGoingTransitions(xOutgoing, transition.Name);
-                                if (outg != null)
-                                    outgoingMap.AddRange(outg);
-                                process.ProcessTransitions.Add(transition);
+                                    var xIncoming = xEl.Elements["incoming"];
+                                    var xOutgoing = xEl.Elements["outgoing"];
+                                    var inc = ExtractIncomingTransitions(xIncoming, transition.Name);
+                                    if (inc != null)
+                                        incomingMap.AddRange(inc);
+                                    var outg = ExtractOutGoingTransitions(xOutgoing, transition.Name);
+                                    if (outg != null)
+                                        outgoingMap.AddRange(outg);
+                                    process.ProcessTransitions.Add(transition);
+                                }
                             }
                         }
 
@@ -410,18 +416,19 @@ namespace ST.Procesess.Parsers
         {
             if (!transitions.Any()) return default;
 
-            foreach(var transition in transitions)
+            foreach (var transition in transitions)
             {
-                var tIncomings = incoming.Where(x => x.Key == transition.Name).ToList();
-                var tOutgoings = outgoing.Where(x => x.Key == transition.Name).ToList();
+                var keyValuePairs = incoming?.ToList();
+                var tIncoming = keyValuePairs?.Where(x => x.Key == transition.Name).ToList();
+                var tOutgoings = outgoing?.Where(x => x.Key == transition.Name).ToList();
 
                 //Incoming
-                if (incoming.Any())
+                if (keyValuePairs != null && keyValuePairs.Any())
                 {
-                    foreach (var inc in tIncomings)
+                    foreach (var (key, value) in tIncoming)
                     {
-                        var target = transitions.FirstOrDefault(x => x.Name == inc.Key);
-                        var source = transitions.FirstOrDefault(x => x.Name == inc.Value);
+                        var target = transitions.FirstOrDefault(x => x.Name == key);
+                        var source = transitions.FirstOrDefault(x => x.Name == value);
 
                         if (target != null && source != null)
                         {
@@ -438,21 +445,22 @@ namespace ST.Procesess.Parsers
                 //Outgoing
                 if (outgoing.Any())
                 {
-                    foreach (var outg in tOutgoings)
-                    {
-                        var source = transitions.FirstOrDefault(x => x.Name == outg.Key);
-                        var target = transitions.FirstOrDefault(x => x.Name == outg.Value);
-
-                        if (target != null && source != null)
+                    if (tOutgoings != null)
+                        foreach (var outg in tOutgoings)
                         {
-                            transition.OutgoingTransitions.Add(new STOutgoingTransition
+                            var source = transitions.FirstOrDefault(x => x.Name == outg.Key);
+                            var target = transitions.FirstOrDefault(x => x.Name == outg.Value);
+
+                            if (target != null && source != null)
                             {
-                                ProcessTransitionId = source.Id,
-                                OutgoingTransition = target,
-                                OutgoingTransitionId = target.Id
-                            });
+                                transition.OutgoingTransitions.Add(new STOutgoingTransition
+                                {
+                                    ProcessTransitionId = source.Id,
+                                    OutgoingTransition = target,
+                                    OutgoingTransitionId = target.Id
+                                });
+                            }
                         }
-                    }
                 }
             }
 

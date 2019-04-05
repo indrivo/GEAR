@@ -7,7 +7,7 @@
 				<div class="d-flex">
 					<div class="mr-auto">
 						<div class="form-group">
-							<a href="#" class="btn btn-primary btn-sm">
+							<a href="#AddPagePath" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add #EntityName
 							</a>
 							<small>New  will be added.</small>
@@ -15,14 +15,13 @@
 					</div>
 				</div>
 			</div>
-			<table class="dynamic-table table table-striped table-bordered" id="render_#ListId" db-viewmodel="#ViewModelId">
+			<table class="dynamic-table table table-striped table-bordered" id="render_#ListId" db-viewmodel="#ViewModelId" data-edit-href="#EditPagePath">
 				<thead>
 					<tr>
 						#TableHead
 					</tr>
 				</thead>
 				<tbody></tbody>
-				<tfoot></tfoot>
 			</table>
 		</div>
 	</div>

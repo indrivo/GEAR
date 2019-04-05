@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
-using ST.DynamicEntityStorage.Utils;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
@@ -21,12 +21,12 @@ namespace ST.DynamicEntityStorage
 {
     /// <inheritdoc />
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class DynamicService : IDynamicService
+    public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext
     {
         /// <summary>
         /// Inject db context
         /// </summary>
-        private readonly EntitiesDbContext _context;
+        private readonly TContext _context;
 
         /// <summary>
         /// Inject http context
@@ -43,7 +43,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
-        public DynamicService(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
+        public DynamicService(TContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -70,7 +70,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <typeparam name="TOutput"></typeparam>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<TOutput>>> GetAllSystem<TEntity, TOutput>() where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAllSystem<TEntity, TOutput>() where TEntity : BaseModel
         {
             var result = new ResultModel<IEnumerable<TOutput>>();
             var data = await GetAll<TEntity>();
@@ -91,13 +91,13 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TOutput"></typeparam>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null) where TEntity : BaseModel
         {
             var rq = await GetAllSystem<TEntity, TOutput>();
             if (!rq.IsSuccess) return default;
             try
             {
-                var data = rq.Result.Where(predicate).ToList();
+                var data = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
                 return new ResultModel<IEnumerable<TOutput>>
                 {
 
@@ -118,15 +118,16 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Func<Dictionary<string, object>, bool> func) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Func<Dictionary<string, object>, bool> func) where TEntity : BaseModel
         {
             var data = await GetAll<TEntity>();
             try
             {
                 if (data.IsSuccess) data.Result = data.Result.ToList().Where(func).ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 data.IsSuccess = false;
             }
             return data;
@@ -137,7 +138,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>() where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>() where TEntity : BaseModel
         {
             var result = new ResultModel<IEnumerable<Dictionary<string, object>>>();
             var entity = typeof(TEntity).Name;
@@ -145,6 +146,7 @@ namespace ST.DynamicEntityStorage
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
             result.IsSuccess = true;
             var model = await Create<TEntity>(schema);
+
             model.Values = new List<Dictionary<string, object>>();
             var data = _context.ListEntitiesByParams(model);
             result.Result = data.Result.Values;
@@ -157,7 +159,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Dictionary<string, object>>> GetById<TEntity>(Guid id) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Dictionary<string, object>>> GetById<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Dictionary<string, object>>();
             var entity = typeof(TEntity).Name;
@@ -187,7 +189,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TOutput"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel<TOutput>> GetByIdSystem<TEntity, TOutput>(Guid id) where TEntity : BaseModel
+        public virtual async Task<ResultModel<TOutput>> GetByIdSystem<TEntity, TOutput>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<TOutput>();
             var req = await GetById<TEntity>(id);
@@ -206,10 +208,10 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public async Task<ResultModel<TEntity>> FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel
+        public virtual async Task<ResultModel<TEntity>> FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel
         {
             var result = new ResultModel<TEntity>();
-            var translator = new QueryTranslator();
+            //var translator = new QueryTranslator();
             //TODO: Parse NodeType.Constant of expression for get sql where query
             //var where = translator.Translate(predicate);
             var allCheck = await GetAll<TEntity, TEntity>(predicate?.Compile());
@@ -226,10 +228,10 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<ResultModel<TEntity>> LastOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel
+        public virtual async Task<ResultModel<TEntity>> LastOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel
         {
             var result = new ResultModel<TEntity>();
-            var translator = new QueryTranslator();
+            //var translator = new QueryTranslator();
             //TODO: Parse NodeType.Constant of expression for get sql where query
             var allCheck = await GetAll<TEntity, TEntity>(predicate?.Compile());
             if (!allCheck.IsSuccess) return result;
@@ -244,7 +246,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public Task<ResultModel<TableModel>> GetTableConfigurations<TEntity>() where TEntity : BaseModel
+        public virtual Task<ResultModel<TableModel>> GetTableConfigurations<TEntity>() where TEntity : BaseModel
         {
             return Task.Run(() =>
             {
@@ -272,7 +274,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public async Task<ResultModel<bool>> Any<TEntity>() where TEntity : BaseModel
+        public virtual async Task<ResultModel<bool>> Any<TEntity>() where TEntity : BaseModel
         {
             var entity = typeof(TEntity).Name;
             if (string.IsNullOrEmpty(entity)) return default;
@@ -283,7 +285,7 @@ namespace ST.DynamicEntityStorage
                 {
                     Result = count.Result > 0,
                     IsSuccess = true
-            };
+                };
             }
             return default;
         }
@@ -293,7 +295,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public async Task<ResultModel<int>> Count<TEntity>() where TEntity : BaseModel
+        public virtual async Task<ResultModel<int>> Count<TEntity>() where TEntity : BaseModel
         {
             var result = new ResultModel<int>()
             {
@@ -318,7 +320,7 @@ namespace ST.DynamicEntityStorage
         /// <param name="page"></param>
         /// <param name="perPage"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginated<TEntity>(ulong page = 1, ulong perPage = 10) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginated<TEntity>(ulong page = 1, ulong perPage = 10) where TEntity : BaseModel
         {
             //TODO: Create paginates sql query result
             var result = new ResultModel<IEnumerable<Dictionary<string, object>>>()
@@ -339,7 +341,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
 
@@ -347,12 +349,13 @@ namespace ST.DynamicEntityStorage
             if (string.IsNullOrEmpty(entity.Name)) return result;
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity.Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
             var table = await Create<TEntity>(schema);
+            var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
             model.SetDefaultValues(table);
             model["Changed"] = DateTime.Now;
             model["Created"] = DateTime.Now;
-            model["Author"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
-            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+            model["Author"] = author;
+            model["ModifiedBy"] = author;
 
             var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
                         entity, TrackEventType.Added);
@@ -365,7 +368,7 @@ namespace ST.DynamicEntityStorage
             if (!result.IsSuccess) return result;
             if (audit == null) return result;
             audit.RecordId = result.Result;
-            audit?.Store(_context);
+            audit.Store(_context);
             return result;
         }
 
@@ -376,7 +379,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> AddSystem<TEntity>(TEntity model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> AddSystem<TEntity>(TEntity model) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
             if (model == null) return result;
@@ -395,7 +398,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRange<TEntity>(IEnumerable<TEntity> data) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRange<TEntity>(IEnumerable<TEntity> data) where TEntity : BaseModel
         {
             var result = new ResultModel<IList<(TEntity, Guid)>>
             {
@@ -416,7 +419,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="items"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Guid>>> AddRange<TEntity>(IEnumerable<Dictionary<string, object>> items) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<Guid>>> AddRange<TEntity>(IEnumerable<Dictionary<string, object>> items) where TEntity : BaseModel
         {
             var result = new ResultModel<IEnumerable<Guid>>();
             var entity = typeof(TEntity).Name;
@@ -439,7 +442,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> Update<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Update<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
@@ -464,7 +467,7 @@ namespace ST.DynamicEntityStorage
                 typeof(TEntity), TrackEventType.Updated);
 
             audit.RecordId = result.Result;
-            audit?.Store(_context);
+            audit.Store(_context);
             return result;
         }
 
@@ -475,7 +478,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> UpdateSystem<TEntity>(TEntity model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> UpdateSystem<TEntity>(TEntity model) where TEntity : BaseModel
         {
             var dic = GetDictionary(model);
             return await Update<TEntity>(dic);
@@ -488,7 +491,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> DeletePermanent<TEntity>(Guid id) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> DeletePermanent<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
@@ -503,13 +506,13 @@ namespace ST.DynamicEntityStorage
                 }
             };
             var res = _context.DeleteById(table, true);
-            if (res.Result)
-            {
-                result.IsSuccess = true;
-                result.Result = id;
-            }
+            if (!res.Result) return result;
+            result.IsSuccess = true;
+            result.Result = id;
             return result;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Change status to is deleted
@@ -517,7 +520,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> Delete<TEntity>(Guid id) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Delete<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
             var item = await GetById<TEntity>(id);
@@ -529,6 +532,8 @@ namespace ST.DynamicEntityStorage
             result = await Update<TEntity>(model);
             return result;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Restore item
@@ -536,7 +541,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> Restore<TEntity>(Guid id) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Restore<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
             var item = await GetById<TEntity>(id);
@@ -549,6 +554,8 @@ namespace ST.DynamicEntityStorage
             return result;
         }
 
+
+
         /// <inheritdoc />
         /// <summary>
         /// Check if exists
@@ -556,20 +563,22 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel> Exists<TEntity>(Guid id) where TEntity : BaseModel
+        public virtual async Task<ResultModel> Exists<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel();
             var item = await GetByIdSystem<TEntity, TEntity>(id);
             result.IsSuccess = item.IsSuccess;
             return result;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Implement create entity model with base model
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public async Task<EntityViewModel> Create<TEntity>(string tableSchema) where TEntity : BaseModel
+        public virtual async Task<EntityViewModel> Create<TEntity>(string tableSchema) where TEntity : BaseModel
         {
             var model = new EntityViewModel
             {
@@ -581,13 +590,15 @@ namespace ST.DynamicEntityStorage
             model = await ViewModelBuilder.ResolveAsync(_context, model);
             return model;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Implement create entity model without base model
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public Task<EntityViewModel> CreateWithoutBaseModel<TEntity>() where TEntity : BaseModel
+        public virtual Task<EntityViewModel> CreateWithoutBaseModel<TEntity>() where TEntity : BaseModel
             => Task.Run(() =>
             {
                 var entity = typeof(TEntity).Name;
@@ -603,6 +614,8 @@ namespace ST.DynamicEntityStorage
                 return model;
             });
 
+
+
         /// <inheritdoc />
         /// <summary>
         /// Get T object from dictionary
@@ -610,7 +623,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="T"></typeparam>
         /// <param name="dict"></param>
         /// <returns></returns>
-        public T GetObject<T>(Dictionary<string, object> dict)
+        public virtual T GetObject<T>(Dictionary<string, object> dict)
         {
             var type = typeof(T);
             var obj = Activator.CreateInstance(type);
@@ -681,6 +694,8 @@ namespace ST.DynamicEntityStorage
             }
             return (T)obj;
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Get T object from IEnumerable dictionary
@@ -688,10 +703,12 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="T"></typeparam>
         /// <param name="dictionaries"></param>
         /// <returns></returns>
-        public IEnumerable<T> GetObject<T>(IEnumerable<Dictionary<string, object>> dictionaries)
+        public virtual IEnumerable<T> GetObject<T>(IEnumerable<Dictionary<string, object>> dictionaries)
         {
             return dictionaries.Select(GetObject<T>).ToList();
         }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Implement from object to dictionary
@@ -699,7 +716,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public Dictionary<string, object> GetDictionary<TEntity>(TEntity model) => ObjectService.GetDictionary(model);
+        public virtual Dictionary<string, object> GetDictionary<TEntity>(TEntity model) => ObjectService<TContext>.GetDictionary(model);
 
         /// <inheritdoc />
         /// <summary>
@@ -707,20 +724,21 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public DynamicObject Table(string tableName)
-            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor);
+        public virtual DynamicObject Table(string tableName)
+            => new ObjectService<TContext>(tableName).Resolve(_context, _httpContextAccessor);
 
         /// <inheritdoc />
         /// <summary>
         /// Create table
         /// </summary>
         /// <returns></returns>
-        public DynamicObject Table<TEntity>() where TEntity : BaseModel
+        public virtual DynamicObject Table<TEntity>() where TEntity : BaseModel
             => new DynamicObject
             {
                 Object = Activator.CreateInstance(typeof(TEntity)),
-                Service = new DynamicService(_context, _httpContextAccessor)
+                Service = new DynamicService<TContext>(_context, _httpContextAccessor)
             };
+
 
         /// <inheritdoc />
         /// <summary>
@@ -733,8 +751,8 @@ namespace ST.DynamicEntityStorage
         /// <param name="length"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Func<T, bool> predicate = null) where T : BaseModel
-            => await Table<T>().Filter<T>(search, sortOrder, start, length, predicate);
+        public virtual async Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Func<T, bool> predicate = null) where T : BaseModel
+            => await Table<T>().Filter(search, sortOrder, start, length, predicate);
 
 
         /// <inheritdoc />
@@ -748,15 +766,7 @@ namespace ST.DynamicEntityStorage
         /// <param name="length"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Func<object, bool> predicate = null)
+        public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Func<object, bool> predicate = null)
             => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate);
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Table builder
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        public ObjectService TableBuild(string tableName) => new ObjectService(tableName);
     }
 }

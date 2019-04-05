@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +48,7 @@ namespace ST.CORE.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[Authorize]
-		public async Task<IActionResult> Index()
+		public IActionResult Index()
 		{
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
 			ViewBag.TotalSessions = _hub.GetSessionsCount();	

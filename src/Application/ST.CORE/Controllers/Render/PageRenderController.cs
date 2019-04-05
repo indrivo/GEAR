@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.Configuration;
 using ST.Configuration.Seed;
@@ -51,9 +52,9 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
 		/// <summary>
-		/// Inject localizer
+		/// Inject localize
 		/// </summary>
-		private readonly IStringLocalizer _localizer;
+		private readonly IStringLocalizer _localize;
 		/// <summary>
 		/// Inject page render
 		/// </summary>
@@ -81,14 +82,14 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="context"></param>
 		/// <param name="appContext"></param>
 		/// <param name="service"></param>
-		/// <param name="localizer"></param>
+		/// <param name="localize"></param>
 		/// <param name="locConfig"></param>
 		/// <param name="pageRender"></param>
 		/// <param name="menuService"></param>
 		/// <param name="userManager"></param>
 		/// <param name="isoService"></param>
 		public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
-			IDynamicService service, IStringLocalizer localizer,
+			IDynamicService service, IStringLocalizer localize,
 			IOptionsSnapshot<LocalizationConfigModel> locConfig,
 			IPageRender pageRender,
 			IMenuService menuService, UserManager<ApplicationUser> userManager, ITreeIsoService isoService)
@@ -96,7 +97,7 @@ namespace ST.CORE.Controllers.Render
 			_context = context;
 			_appContext = appContext;
 			_service = service;
-			_localizer = localizer;
+			_localize = localize;
 			_locConfig = locConfig;
 			_menuService = menuService;
 			_userManager = userManager;
@@ -206,6 +207,9 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <param name="viewModelId"></param>
 		/// <returns></returns>
+		[HttpGet]
+		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
 		{
 			var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -248,7 +252,7 @@ namespace ST.CORE.Controllers.Render
 				return Json(null);
 			}
 
-			var translations = _localizer.GetAllForLanguage(lang);
+			var translations = _localize.GetAllForLanguage(lang);
 			var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
 			return Json(json);
 		}
@@ -353,6 +357,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="menuId"></param>
 		/// <returns></returns>
 		[HttpGet]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> GetMenuItemRoles([Required]Guid menuId)
 		{
 			if (menuId == Guid.Empty) return Json(new ResultModel());
@@ -370,7 +375,7 @@ namespace ST.CORE.Controllers.Render
 		{
 			if (menuId == null)
 			{
-				menuId = MenuSync.NavBarId;
+				menuId = MenuManager.NavBarId;
 			}
 
 			var user = await _userManager.GetUserAsync(User);
@@ -386,6 +391,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="roles"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> UpdateMenuItemRoleAccess([Required]Guid menuId, IList<string> roles)
 		{
 			return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
@@ -402,13 +408,10 @@ namespace ST.CORE.Controllers.Render
 		{
 			var table = _context.Table.Include(x => x.TableFields)
 				.FirstOrDefault(x => x.Id.Equals(entityId));
-			if (table != null)
-			{
-				var instance = _service.Table(table.Name);
-				return Json(await instance.GetAll<object>());
-			}
+			if (table == null) return Json(null);
+			var instance = _service.Table(table.Name);
+			return Json(await instance.GetAll<object>());
 
-			return Json(null);
 		}
 
 		/// <summary>
@@ -478,6 +481,25 @@ namespace ST.CORE.Controllers.Render
 		}
 
 		/// <summary>
+		/// Get all pages
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		public JsonResult GetPages()
+		{
+			var pages = _context.Pages
+				.Include(x => x.Settings)
+				.Where(x => !x.IsDeleted && !x.IsLayout)
+				.Select(x => new
+				{
+					Id = x.Path,
+					x.Settings.Name
+				}).ToList();
+
+			return new JsonResult(pages);
+		}
+
+		/// <summary>
 		/// Load data from entity
 		/// </summary>
 		/// <param name="entityName"></param>
@@ -526,70 +548,105 @@ namespace ST.CORE.Controllers.Render
 		{
 			var result = new ResultModel
 			{
-				IsSuccess = false
+				IsSuccess = false,
+				Errors = new List<IErrorModel>()
 			};
 
-			if (model == null) return Json(result);
+			if (model == null)
+			{
+				result.Errors.Add(new ErrorModel("Null", "Data is not defined!"));
+				return Json(result);
+			}
 			var form = _context.Forms.FirstOrDefault(x => x.Id.Equals(model.FormId));
-			if (form == null) return Json(result);
+			if (form == null)
+			{
+				result.Errors.Add(new ErrorModel("Null", "Form not found!"));
+				return Json(result);
+			}
 
 			var table = _context.Table.Include(x => x.TableFields)
 				.FirstOrDefault(x => x.Id.Equals(form.TableId));
-			if (table != null)
+			if (table == null)
 			{
-				var instance = _service.Table(table.Name);
-				var fields = table.TableFields.ToList();
-				var pre = instance.Object;
+				result.Errors.Add(new ErrorModel("Null", "Form entity reference not found"));
+				return Json(result);
+			}
 
-				foreach (var (key, value) in model.Data)
+			if (model.IsEdit && model.SystemFields.Count() == 0)
+			{
+				result.Errors
+					.Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
+				return Json(result);
+			}
+
+			var id = model?.SystemFields?.FirstOrDefault(x => x.Key == "Id");
+
+			var instance = _service.Table(table.Name);
+			var fields = table.TableFields.ToList();
+			var pre = instance.Object;
+
+			if (model.IsEdit)
+			{
+				if (id == null)
 				{
-					var field = fields.FirstOrDefault(x => x.Id.Equals(Guid.Parse(key)));
-					if (field == null) continue;
-					try
+					result.Errors
+					.Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
+					return Json(result);
+				}
+				var oldObj = await instance.GetById<object>(id.Value.ToGuid());
+				if (!oldObj.IsSuccess)
+				{
+					result.Errors
+					.Add(new ErrorModel("Fail", "Data missed, check if this data exist!"));
+					return Json(result);
+				}
+				pre = oldObj.Result;
+			}
+
+			foreach (var (key, value) in model.Data)
+			{
+				var field = fields.FirstOrDefault(x => x.Id.Equals(Guid.Parse(key)));
+				if (field == null) continue;
+				try
+				{
+					var prop = pre.GetType().GetProperty(field.Name);
+					if (prop.PropertyType == typeof(Guid))
 					{
-						var prop = pre.GetType().GetProperty(field.Name);
-						if (prop.PropertyType == typeof(Guid))
+						if (value == null)
 						{
-							prop.SetValue(pre, Guid.Parse(value));
+							prop.SetValue(pre, null);
 						}
 						else
 						{
-							prop.SetValue(pre, value);
+							prop.SetValue(pre, Guid.Parse(value));
 						}
 					}
-					catch (Exception e)
+					else
 					{
-						Console.WriteLine(e);
+						prop.SetValue(pre, value);
 					}
-				}
-
-				var obj = instance.ParseObject(pre);
-
-				try
-				{
-					obj.GetType().GetProperty("Author").SetValue(obj, User.Identity.Name);
-					obj.GetType().GetProperty("ModifiedBy").SetValue(obj, User.Identity.Name);
 				}
 				catch (Exception e)
 				{
 					Console.WriteLine(e);
 				}
-
-				var req = await instance.Add(obj);
-
-				if (req.IsSuccess)
-				{
-					return Json(new ResultModel
-					{
-						IsSuccess = true,
-						Result = new
-						{
-							IdOfCreatedObject = req.Result,
-							form.RedirectUrl
-						}
-					});
-				}
 			}
+
+			var obj = instance.ParseObject<dynamic, EntitiesDbContext>(pre);
+
+			var req = (model.IsEdit) ? await instance.Update(obj) : await instance.Add(obj);
+
+			if (req.IsSuccess)
+			{
+				result.IsSuccess = true;
+				result.Result = new
+				{
+					IdOfCreatedObject = req.Result,
+					form.RedirectUrl
+				};
+				return Json(result);
+			}
+
 
 			return Json(result);
 		}
@@ -603,6 +660,7 @@ namespace ST.CORE.Controllers.Render
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
 		{
 			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
@@ -614,6 +672,29 @@ namespace ST.CORE.Controllers.Render
 			return Json(new { message = "Item was deleted!", success = true });
 		}
 
+
+		/// <summary>
+		/// Delete page by id
+		/// </summary>
+		/// <param name="viewModelId"></param>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
+		public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
+		{
+			if (ids == null) return Json(new { message = "Fail to delete!", success = false });
+			var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+			if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+			foreach (var id in ids)
+			{
+				await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+			}
+
+			return Json(new { message = "Items was deleted!", success = true });
+		}
+
 		/// <summary>
 		/// Delete page by id
 		/// </summary>
@@ -622,6 +703,7 @@ namespace ST.CORE.Controllers.Render
 		/// <returns></returns>
 		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		[AjaxOnly]
+		[Authorize(Roles = Settings.SuperAdmin)]
 		public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
 		{
 			if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to restore!", success = false });
@@ -720,6 +802,7 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[HttpPost]
+		[AjaxOnly]
 		public async Task<JsonResult> SaveTableCellData(Guid? entityId, Guid? propertyId, Guid? rowId, string value)
 		{
 			var result = new ResultModel();
@@ -738,6 +821,15 @@ namespace ST.CORE.Controllers.Render
 				result.Errors = new List<IErrorModel>
 				{
 					new ErrorModel(string.Empty, "Entity not found")
+				};
+				return Json(result);
+			}
+
+			if (entity.IsSystem || entity.IsPartOfDbContext)
+			{
+				result.Errors = new List<IErrorModel>
+				{
+					new ErrorModel(string.Empty, "The system entity can not be edited")
 				};
 				return Json(result);
 			}

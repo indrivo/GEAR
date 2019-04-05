@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.Entities.Data;
 
 namespace ST.DynamicEntityStorage.Extensions
 {
@@ -10,12 +11,12 @@ namespace ST.DynamicEntityStorage.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterDynamicDataServices(this IServiceCollection services)
+        public static IServiceCollection RegisterDynamicDataServices<TContext>(this IServiceCollection services) where TContext : EntitiesDbContext
         {
-            services.AddTransient<IDynamicService, DynamicService>();
-            services.AddTransient<IDynamicDataGetService, DynamicService>();
-            services.AddTransient<IDynamicDataCreateService, DynamicService>();
-            services.AddTransient<IDynamicDataUpdateService, DynamicService>();
+            services.AddTransient<IDynamicService, DynamicService<TContext>>();
+            services.AddTransient<IDynamicDataGetService, DynamicService<TContext>>();
+            services.AddTransient<IDynamicDataCreateService, DynamicService<TContext>>();
+            services.AddTransient<IDynamicDataUpdateService, DynamicService<TContext>>();
             return services;
         }
     }

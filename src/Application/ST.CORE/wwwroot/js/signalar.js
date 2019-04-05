@@ -129,7 +129,7 @@ function email() {
 			emailNotifications(f.Id);
 			const uri = `/Email?folderId=${f.Id}`;
 			$("#SeeAllEmails").attr("href", uri);
-			Promise.all([st.getTemplate("notifications/folders_layout.html")])
+			Promise.all([st.getTemplate("folders_layout.html")])
 				.then(function (values) {
 					$.templates("items", values[0]);
 					const content = $.render["items"](folders);
@@ -156,9 +156,10 @@ function email() {
 function emailNotifications(folderId) {
 	const notificator = new Notificator();
 	const data = notificator.getUnreadMessages(folderId);
-	if (data !== null) {
+	if (data) {
 		if (data.is_success) {
 			const all = data.result.notifications.values;
+			console.log(all);
 			for (const e in all) {
 				const arr = [all[e].Subject, all[e].Message, all[e].Author.Email, all[e].Author.UserName];
 				const d = formatEmailDate(all[e].Created);

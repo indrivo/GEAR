@@ -54,9 +54,10 @@ namespace ST.Entities.Data
         public DbSet<Option> Options { get; set; }
         public DbSet<RowColumn> RowColumns { get; set; }
         public DbSet<Row> Rows { get; set; }
-        public DbSet<Settings> Settings { get; set; }
+        public DbSet<Models.Forms.Settings> Settings { get; set; }
         public DbSet<StageRows> StageRows { get; set; }
         public DbSet<Stage> Stages { get; set; }
+        public DbSet<FormFieldEvent> FormFieldEvents { get; set; }
 
         #endregion Forms
 
@@ -89,6 +90,9 @@ namespace ST.Entities.Data
             builder.Entity<TableModelFields>().HasOne(typeof(TableFieldTypes), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Field>().HasOne(model => model.TableField).WithMany().HasForeignKey(model => model.TableFieldId).OnDelete(DeleteBehavior.Restrict);
             builder.Entity<Form>().HasOne(model => model.Type).WithMany().HasForeignKey(model => model.TypeId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Attrs>().HasOne(model => model.Row).WithMany().HasForeignKey(model => model.RowId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Row>().HasMany(model => model.Attrs).WithOne(x => x.Row).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Field>().HasMany(model => model.Attrs).WithOne(x => x.Field).OnDelete(DeleteBehavior.Cascade);
             builder.RegisterIndexes();
         }
     }

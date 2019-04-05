@@ -13,16 +13,17 @@ using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Constants;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
+using ST.Entities.Settings;
 using ST.Entities.Utils;
 using ST.Entities.ViewModels.Table;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
@@ -41,11 +42,15 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
-		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext, ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext,
+			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
+			IOrganizationService organizationService, ProcessesDbContext processesDbContext,
+			ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository, ICacheService cacheService)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 			_logger = logger;
 			Repository = repository;
-			ConnectionString = Entities.Utils.ConnectionString.Get(configuration, env);
+			ConnectionString = DbUtil.GetConnectionString(configuration, env);
 		}
 
 		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
@@ -76,9 +81,9 @@ namespace ST.CORE.Controllers.Entity
 		private ITablesService GetSqlService()
 		{
 			return ConnectionString.Item1.Equals(DbProviderType.MsSqlServer) ?
-															new TablesService(Repository)
+															new TablesService()
 															: ConnectionString.Item1.Equals(DbProviderType.PostgreSql)
-															? new NpgTablesService(Repository)
+															? new NpgTablesService()
 															: null;
 		}
 
@@ -397,7 +402,7 @@ namespace ST.CORE.Controllers.Entity
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
-					field.DataType = "uniqueidentifier";
+					field.DataType = TableFieldDataType.Guid;
 					break;
 				case FieldType.Boolean:
 					FieldConfigViewModel defaultBool = null;
@@ -555,7 +560,7 @@ namespace ST.CORE.Controllers.Entity
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
-					field.DataType = "uniqueidentifier";
+					field.DataType = TableFieldDataType.Guid;
 					break;
 				case FieldType.Boolean:
 					FieldConfigViewModel defaultBool = null;
@@ -585,7 +590,7 @@ namespace ST.CORE.Controllers.Entity
 					if (defaultTime?.Value != null && defaultTime.Value.Trim() == "off") defaultTime.Value = null;
 					break;
 				case FieldType.File:
-					field.DataType = "uniqueidentifier";
+					field.DataType = TableFieldDataType.Guid;
 					var foreignTable = field.Configurations.FirstOrDefault(s => s.Name == "ForeingTable");
 					if (foreignTable != null)
 					{

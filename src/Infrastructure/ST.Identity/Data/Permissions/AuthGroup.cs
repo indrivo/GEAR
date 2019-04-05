@@ -12,7 +12,7 @@ namespace ST.Identity.Data.Permissions
 	/// Represents the authorization User group.
 	/// </summary>
 	[DebuggerDisplay(@"\{{" + nameof(Name) + @",nq}\}")]
-	[TrackEntity(Option = TrackEntityOption.Selected)]
+	[TrackEntity(Option = TrackEntityOption.SelectedFields)]
     public class AuthGroup : ExtendedModel
 	{
         /// <summary>

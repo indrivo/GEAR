@@ -71,59 +71,51 @@ Form.prototype.addField = function (field, id) {
  */
 Form.prototype.generateJsonForm = function (data) {
 	const fields = data.result;
-
 	for (let field in fields) {
 		if (fields.hasOwnProperty(field)) {
 			const model = {
 				name: fields[field].name,
-				fieldTypeId: fields[field].id
+				fieldTypeId: this.getAttrForTableField(fields, fields[field].id),
+				fieldId: fields[field].id,
+				tableId: fields[field].tableId,
+				fieldConfigurations: fields[field].tableFieldConfigValues
 			};
 
 			switch (fields[field].dataType) {
-				case "nvarchar":
-					{
-						this.pushText(model);
-					};
+				case "nvarchar": this.pushText(model);
 					break;
-				case "bool":
-					{
-						this.pushCheckBox(model);
-					};
+				case "bool": this.pushCheckBox(model);
 					break;
-				case "decimal":
-					{
-						this.pushNumber(model);
-					};
+				case "decimal": this.pushNumber(model);
 					break;
-				case "int32":
-					{
-						this.pushNumber(model);
-					};
+				case "int32": this.pushNumber(model);
 					break;
 				case "bytes":
 					{
 						//console.log(fields[field].dataType);
-					};
+					}
 					break;
-				case "date":
-					{
-						this.pushDate(model);
-					};
+				case "date": this.pushDate(model);
 					break;
-				case "datetime":
-					{
-						this.pushDate(model);
-					};
+				case "datetime": this.pushDate(model);
 					break;
-				case "uniqueidentifier":
-					{
-						this.pushSelect(model);
-					};
+				case "uniqueidentifier": this.pushSelect(model);
 					break;
 			}
 		}
 	}
 };
+
+Form.prototype.getAttrForTableField = function (fields, selectedId) {
+	return fields.map(field => {
+		return {
+			label: field.name,
+			value: field.id,
+			selected: field.id === selectedId
+		};
+	});
+};
+
 /**
  * Push textBox field to form
  * @param {any} model Data of fields
@@ -136,11 +128,12 @@ Form.prototype.pushText = function (model) {
 			"attrs": {
 				"type": "text",
 				"required": false,
-				"className": ""
+				"className": "",
+				"tableFieldId": model.fieldTypeId
 			},
 			"config": {
 				"disabledAttrs": ["type"],
-				"label": model.name,
+				"label": model.name
 			},
 			"meta": {
 				"group": "common",
@@ -148,8 +141,7 @@ Form.prototype.pushText = function (model) {
 				"id": "text-input"
 			},
 			"fMap": "attrs.value",
-			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"id": fieldId
 		}
 	};
 	this.addField(field, fieldId);
@@ -166,7 +158,8 @@ Form.prototype.pushNumber = function (model) {
 			"attrs": {
 				"type": "number",
 				"required": false,
-				"className": ""
+				"className": "",
+				"tableFieldId": model.fieldTypeId
 			},
 			"config": {
 				"label": model.name,
@@ -180,8 +173,7 @@ Form.prototype.pushNumber = function (model) {
 				"id": "number"
 			},
 			"fMap": "attrs.value",
-			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"id": fieldId
 		}
 	};
 	this.addField(field, fieldId);
@@ -194,6 +186,93 @@ Form.prototype.pushNumber = function (model) {
 Form.prototype.pushTextarea = function (model) {
 
 };
+
+
+Form.prototype.getReferenceTable = function (conf) {
+	const refFields = load(`/Form/GetEntityReferenceFields?entityName=${conf[0].value}&&entitySchema=${conf[1].value}`);
+	return refFields.map(field => {
+		return {
+			label: field.name,
+			value: field.name,
+			selected: false
+		};
+	});
+};
+
+function getSelectedValue(arr) {
+	for (let f in arr) {
+		if (arr[f].selected) {
+			return arr[f].value;
+		}
+	}
+	return undefined;
+}
+
+Form.prototype.attrsToArray = function (data) {
+	const form = data.result;
+	const table = load("/Form/GetFormTableReference",
+		{
+			formId: this.getFromUrl("formId")
+		});
+	if (!table) return form;
+	const tableFields = this.getEntityFields(table.id);
+	for (let i in form.fields) {
+		if (form.fields.hasOwnProperty(i)) {
+			for (let j in form.fields[i].attrs) {
+				const sel = form.fields[i].attrs[j];
+				if (j === "tableFieldId") {
+					if (tableFields) {
+						const fields = tableFields.map(field => {
+							return {
+								label: field.name,
+								value: field.id,
+								selected: field.id === sel
+							};
+						});
+						form.fields[i].attrs[j] = fields;
+					}
+				} else if (j === "fieldReference") {
+					{
+						form.fields[i].attrs[j] =
+							[{
+								label: "default",
+								value: sel,
+								selected: true
+							}];
+					};
+				}
+			}
+		}
+	}
+	return form;
+}
+
+/**
+ * Attrs of form to single select
+ * @param {any} form
+ */
+Form.prototype.attrsToString = function (form) {
+	for (let i in form.fields) {
+		if (form.fields.hasOwnProperty(i)) {
+			for (let j in form.fields[i].attrs) {
+				if (Array.isArray(form.fields[i].attrs[j])) {
+					form.fields[i].attrs[j] = getSelectedValue(form.fields[i].attrs[j]);
+				}
+			}
+		}
+	}
+	return form;
+};
+
+/**
+ * Get reference of select control on change table field
+ * @param {any} tableId
+ * @param {any} fieldId
+ */
+Form.prototype.getReferenceSelectOnChangeTable = function (tableId, fieldId) {
+	return load(`/Form/GetReferenceFields?entityId=${tableId}&&entityFieldId=${fieldId}`);;
+};
+
 /**
  * Push dropdown field to form
  * @param {any} model Data of fields
@@ -208,22 +287,23 @@ Form.prototype.pushSelect = function (model) {
 			},
 			"attrs": {
 				"required": false,
-				"className": ""
+				"className": "",
+				"tableFieldId": model.fieldTypeId,
+				"fieldReference": this.getReferenceTable(model.fieldConfigurations)
 			},
 			"meta": {
 				"group": "common",
 				"icon": "select",
-				"id": "select"
+				"id": "custom-select"
 			},
 			"options": [
 				{
-					"label": "Option 1",
-					"value": "option-1",
+					"label": "No data",
+					"value": "",
 					"selected": false
 				}
 			],
-			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"id": fieldId
 		}
 	};
 	this.addField(field, fieldId);
@@ -260,7 +340,7 @@ Form.prototype.pushCheckBox = function (model) {
 				}
 			],
 			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"tableFieldId": model.fieldTypeId
 		}
 	};
 	this.addField(field, fieldId);
@@ -291,7 +371,7 @@ Form.prototype.pushDate = function (model) {
 				"id": "date-input"
 			},
 			"id": fieldId,
-			"tableFeldId": model.fieldTypeId
+			"tableFieldId": model.fieldTypeId
 		}
 	};
 	this.addField(field, fieldId);
@@ -322,13 +402,29 @@ Form.prototype.print = function () {
 Form.prototype.printJson = function () {
 	console.log(this.data);
 };
+
+Form.prototype.getEntityFields = function (tableId) {
+	return load("/Form/GetEntityFields", {
+		tableId: tableId
+	});
+};
+
 /**
  * Get options for formeo render
  * @param {any} containerSelector Selector
+ * @param {any} tableId Selector
  * @returns {any} Formeo options
  */
-Form.prototype.getOptions = function (containerSelector) {
+Form.prototype.getOptions = function (containerSelector, tableId) {
 	const container = document.querySelector(containerSelector);
+	const fields = this.getEntityFields(tableId).map(field => {
+		return {
+			label: field.name,
+			value: field.id,
+			selected: false
+		};
+	});
+
 	const formeoOpts = {
 		container: container,
 		//allowEdit: true,
@@ -336,9 +432,28 @@ Form.prototype.getOptions = function (containerSelector) {
 			sortable: false,
 			groupOrder: [
 				"common",
-				"html",
+				"html"
 			],
 			elements: [
+				{
+					tag: "select",
+					attrs: {
+						tableFieldId: (() => {
+							const options = fields;
+							return options;
+						})(),
+						fieldReference: []
+					},
+					config: {
+						label: "Data reference select"
+					},
+					options: [],
+					meta: {
+						group: "common",
+						icon: "select",
+						id: "custom-select"
+					}
+				}
 			],
 			elementOrder: {
 				common: [
@@ -351,16 +466,19 @@ Form.prototype.getOptions = function (containerSelector) {
 					"radio",
 					"select",
 					"text-input",
-					"textarea"
+					"textarea",
+					"custom-select"
 				]
 			}
 		},
 		events: {
-			// onUpdate: console.log,
-			// onSave: console.log
+			//onUpdate: (evt) => {
+			//	this.registerChangeRefEvent(this, tableId);
+			//}
+			//onSave: console.log
 
 		},
-		svgSprite: '/assets/images/form_icons.svg',
+		svgSprite: "/assets/images/form_icons.svg",
 		// debug: true,
 		sessionStorage: true,
 		editPanelOrder: ["attrs", "options"]
@@ -380,7 +498,7 @@ Form.prototype.getFormFronServer = function (id) {
 		method: "get",
 		async: false,
 		success: function (data) {
-			if (data !== null) {
+			if (data) {
 				response = data;
 			}
 		},
@@ -389,6 +507,39 @@ Form.prototype.getFormFronServer = function (id) {
 		}
 	});
 	return response;
+};
+
+/**
+ * Register change event for table field
+ * @param {any} former
+ * @param {any} tableId
+ */
+Form.prototype.registerChangeRefEvent = function (former, tableId) {
+	setTimeout(function () {
+		$(`#${former.controls.formID}`).find("select[name^=tableFieldId]").on("change", function () {
+			changeTableField(this, tableId);
+		});
+	}, 1000);
+};
+
+
+function changeTableField(context, tableId) {
+	console.log($(context));
+	const selectedId = $(context).val();
+	const fields = fr.getReferenceSelectOnChangeTable(tableId, selectedId);
+	const attrRefs = $(context).parent()
+		.parent()
+		.parent()
+		.parent()
+		.parent()
+		.find("select[name^=fieldReference]");
+
+	attrRefs.html(null);
+	if (fields.length > 0) {
+		$.each(fields, function () {
+			attrRefs.append(new Option(this.name, this.name));
+		});
+	}
 };
 
 /**
@@ -402,6 +553,114 @@ Form.prototype.getFromUrl = function (name) {
 	const id = parsedUrl.searchParams.get(name);
 	return id;
 };
+
+/**
+ * Check if is edit form
+ * @param {any} formRef
+ * @param {any} formId
+ */
+Form.prototype.checkIfIsEditForm = function (formRef, formId) {
+	const itemId = this.getFromUrl("itemId");
+	const listId = this.getFromUrl("listId");
+	if (itemId && listId) {
+		const data = window.load("/Form/GetValuesFormObjectEditInForm",
+			{
+				formId: formId,
+				itemId: itemId
+			});
+		if (data && data.is_success) {
+			this.populateEditForm(formRef, data.result);
+		}
+		else {
+			$.toast({
+				heading: "Fail to load form",
+				text: "",
+				position: 'bottom-right',
+				loaderBg: '#ff6849',
+				icon: 'error',
+				hideAfter: 3500,
+				stack: 6
+			});
+		}
+	}
+}
+
+
+/**
+ * Extract form fields
+ * @param {any} place
+ */
+Form.prototype.extractOnlyReferenceFields = function (place, serialized) {
+	const final = {};
+	for (let s in serialized) {
+		if (serialized.hasOwnProperty(s)) {
+			const id = $(`#${place} #${s}`).attr("table-field-id");
+			if (!this.isGuid(id)) continue;
+			if (id) {
+				final[id] = serialized[s];
+			} else
+				final[s] = serialized[s];
+		}
+	}
+
+	return final;
+}
+
+
+/**
+ * Check if is guid
+ * @param {any} value
+ */
+Form.prototype.isGuid = function (value) {
+	return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(value);
+};
+
+
+/**
+ * Populate edit form
+ * @param {any} frm
+ * @param {any} data
+ */
+Form.prototype.populateEditForm = function (frm, data) {
+	const context = this;
+	$(frm).attr("isEdit", true);
+	$.each(data, function (key, value) {
+		if (context.isGuid(key)) {
+			const $ctrl = $('[name=' + key + ']', frm);
+			if ($ctrl.is('select')) {
+				$("option", $ctrl).each(function () {
+					if (this.value === value) {
+						this.selected = "selected";
+					}
+				});
+			}
+			if ($ctrl.is('textarea')) {
+				$ctrl.html(value);
+			}
+			else {
+				switch ($ctrl.attr("type")) {
+					case "text": case "hidden": case "number":
+						$ctrl.val(value);
+						break;
+					case "radio": case "checkbox":
+						$ctrl.each(function () {
+							if ($(this).attr('value') === value) {
+								$(this).attr("checked", value);
+							}
+						});
+						break;
+				}
+			}
+		} else {
+			const input = document.createElement("input");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("name", key);
+			input.setAttribute("value", value);
+			document.querySelector(frm).appendChild(input);
+		}
+	});
+};
+
 
 /**
  * Render form
@@ -444,8 +703,9 @@ Form.prototype.cleanJson = function (obj) {
 
 /**
  * Format json and return it
- * @param {any} json The json
- * @param {any} textarea Selector to place
+ * @param {any} json Old json
+ * @param {any} textarea data
+ * @return {any} result
  */
 Form.prototype.formatJSON = function (json, textarea) {
 	var nl;
@@ -475,12 +735,12 @@ Form.prototype.formatJSON = function (json, textarea) {
 			}
 		}
 
-		if (c == '[' && !betweenquotes) {
+		if (c == "[" && !betweenquotes) {
 			ret += c;
 			ret += nl;
 			continue;
 		}
-		if (c == '{' && !betweenquotes) {
+		if (c == "{" && !betweenquotes) {
 			ret += tab;
 			ret += c;
 			ret += nl;
@@ -494,18 +754,18 @@ Form.prototype.formatJSON = function (json, textarea) {
 			ret += c;
 			continue;
 		}
-		if (c == ',' && !betweenquotes) {
+		if (c == "," && !betweenquotes) {
 			ret += c;
 			ret += nl;
 			continue;
 		}
-		if (c == '}' && !betweenquotes) {
+		if (c == "}" && !betweenquotes) {
 			ret += nl;
 			ret += tab;
 			ret += c;
 			continue;
 		}
-		if (c == ']' && !betweenquotes) {
+		if (c == "]" && !betweenquotes) {
 			ret += nl;
 			ret += c;
 			continue;
@@ -514,3 +774,37 @@ Form.prototype.formatJSON = function (json, textarea) {
 	}
 	return ret;
 };
+
+
+Form.prototype.populateSelect = function (selects) {
+	$.each(selects,
+		function (index, select) {
+			const fieldId = $(select).attr("table-field-id");
+			const reference = $(select).attr("field-reference");
+			$(select).html(null);
+			const req = load("/PageRender/GetInputSelectValues",
+				{
+					fieldId: fieldId
+				});
+			let identifier = "name";;
+			if (reference) {
+				try {
+					identifier = reference.charAt(0).toLowerCase() + reference.slice(1);
+				} catch (e) {
+					console.log(e);
+				}
+			}
+
+			try {
+				$(select).append(new Option("None", ""));
+				if (req.is_success) {
+					$.each(req.result,
+						function (index, item) {
+							$(select).append(new Option(item[identifier], item.id));
+						});
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		});
+}

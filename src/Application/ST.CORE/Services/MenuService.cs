@@ -10,18 +10,18 @@ using ST.DynamicEntityStorage.Abstractions;
 
 namespace ST.CORE.Services
 {
-	public class MenuService : IMenuService
+	public class MenuService<TService> : IMenuService where TService : IDynamicService
 	{
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
-		private readonly IDynamicService _service;
+		private readonly TService _service;
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="service"></param>
-		public MenuService(IDynamicService service)
+		public MenuService(TService service)
 		{
 			_service = service;
 		}
@@ -41,44 +41,32 @@ namespace ST.CORE.Services
 			var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id)
 																			&& HaveAccess(roles, x.AllowedRoles));
 			var menus = search.Result.ToList();
-
-			var data = new List<MenuViewModel>(menus
-				.Where(x => x.ParentMenuItemId == null && HaveAccess(roles, x.AllowedRoles))
-				.Adapt<IEnumerable<MenuViewModel>>())
-				.ToArray();
-
-			if (data == null)
-				return default;
-			foreach (var t in data)
-			{
-				t.SubItems = menus.Where(x => x.ParentMenuItemId.Equals(t.Id))
-					.Select(x => x.Adapt<MenuViewModel>()).ToArray();
-
-				if (t.SubItems == null) continue;
-				{
-					for (var j = 0; j < t.SubItems.Length; j++)
-					{
-						t.SubItems[j].SubItems = menus
-							.Where(x => x.ParentMenuItemId.Equals(t.SubItems[j].Id))
-							.Select(x => x.Adapt<MenuViewModel>()).ToArray();
-
-						if (t.SubItems[j].SubItems == null) continue;
-						{
-							for (var m = 0; m < t.SubItems[j].SubItems.Length; m++)
-							{
-								t.SubItems[j].SubItems[m].SubItems = menus
-									.Where(x => x.ParentMenuItemId.Equals(t.SubItems[j].SubItems[m].Id))
-									.Select(x => x.Adapt<MenuViewModel>()).ToArray();
-							}
-						}
-					}
-				}
-			}
+			if (!menus.Any()) return default;
 			return new ResultModel<IEnumerable<MenuViewModel>>
 			{
 				IsSuccess = true,
-				Result = data
+				Result = GetMenu(menus, roles)
 			};
+		}
+
+		/// <summary>
+		/// Get recursive menus
+		/// </summary>
+		/// <param name="menus"></param>
+		/// <param name="roles"></param>
+		/// <param name="parentMenuId"></param>
+		/// <returns></returns>
+		private IEnumerable<MenuViewModel> GetMenu(IList<MenuItem> menus, IList<string> roles, Guid? parentMenuId = null)
+		{
+			var data = menus
+				.Where(x => x.ParentMenuItemId == parentMenuId && HaveAccess(roles, x.AllowedRoles))
+				.Adapt<IEnumerable<MenuViewModel>>().ToList();
+
+			foreach (var t in data)
+			{
+				t.SubItems = GetMenu(menus, roles, t.Id).ToArray();
+			}
+			return data;
 		}
 
 		/// <inheritdoc />

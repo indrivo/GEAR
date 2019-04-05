@@ -1,0 +1,199 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using ST.BaseBusinessRepository;
+using ST.Configuration.Seed;
+using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Extensions;
+using ST.Entities.Data;
+using ST.Entities.Extensions;
+using ST.Entities.Models.Tables;
+using ST.Entities.Utils;
+using ST.Entities.ViewModels.Table;
+using ST.Identity.Data;
+
+namespace ST.Configuration.Services
+{
+    public static class ExportManager
+    {
+        /// <summary>
+        /// CreateZipArchive data async
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<(MemoryStream, string, string)> ExportAsync()
+        {
+            var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
+            var dynamicService = IoC.Resolve<IDynamicService>();
+            var applicationDbContext = IoC.Resolve<ApplicationDbContext>();
+
+            var dynamicEntities = entitiesDbContext.Table
+                .Where(x => !x.IsPartOfDbContext)
+                .Include(x => x.TableFields);
+
+            var entityFrameWorkEntities = entitiesDbContext.Table
+                .Where(x => x.IsPartOfDbContext)
+                .Include(x => x.TableFields);
+
+            var dynamicData = new Dictionary<string, IEnumerable<object>>();
+            var frameworkData = new Dictionary<string, IEnumerable<object>>();
+
+            //Extract values from from dynamic entities
+            foreach (var entity in dynamicEntities)
+            {
+                var req = await dynamicService.Table(entity.Name).GetAll<object>();
+                if (req.IsSuccess)
+                {
+                    dynamicData.Add(entity.Name, req.Result);
+                }
+            }
+
+            //Extract values from Entity FrameWork DbSet declarations
+            foreach (var entity in entityFrameWorkEntities)
+            {
+                var req = await dynamicService.Table(entity.Name).GetAll<object>();
+                if (req.IsSuccess)
+                {
+                    frameworkData.Add(entity.Name, req.Result);
+                }
+            }
+
+            var zipStream = ExportDataIO.CreateZipArchive(new Dictionary<string, MemoryStream>
+            {
+                {
+                    "forms.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Forms.Include(x => x.Table)
+                        .Include(x => x.Columns)
+                        .Include(x => x.Rows)
+                        .Include(x => x.Fields)
+                        .Include(x => x.Stages)
+                        .Include(x => x.Settings).ToList())))
+                },
+                {
+                    "pages.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Pages
+                        .Include(x => x.PageScripts)
+                        .Include(x => x.PageStyles)
+                        .Include(x => x.PageType)
+                        .Include(x => x.Settings).ToArray())))
+                },
+                {
+                    "dynamicEntities.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(dynamicEntities)))
+                },
+                {
+                    "templates.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Templates.ToList())))
+                },
+                {
+                    "roles.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.Roles.ToList())))
+                },
+                {
+                    "tenants.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.Tenants.ToList())))
+                },
+                {
+                    "users.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.Users.ToList())))
+                },
+                {
+                    "userRoles.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.UserRoles.ToList())))
+                },
+                {
+                    "rolePermissions.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.RolePermissions.ToList())))
+                },
+                {
+                    "blocksCategories.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.BlockCategories.ToList())))
+                },
+                {
+                    "blocks.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Blocks.ToList())))
+                },
+                {
+                    "dynamicEntitiesData.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(dynamicData)))
+                },
+                {
+                    "frameworkEntitiesData.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(frameworkData)))
+                }
+            });
+            var date = DateTime.Now;
+            return (zipStream, "application/octet-stream", $"export_system_{date.Minute}_{date.Hour}_{date.Day}_{date.Month}_{date.Year}.zip");
+        }
+
+        /// <summary>
+        /// Import async
+        /// </summary>
+        /// <param name="memStream"></param>
+        /// <returns></returns>
+        public static ResultModel Import(MemoryStream memStream)
+        {
+            var result = new ResultModel();
+
+            ExportDataIO.Decompress(memStream, async zip =>
+           {
+               var context = IoC.Resolve<EntitiesDbContext>();
+               var provider = context.GetProviderType();
+
+               var tableService = DbUtil.GetSqlTableService(provider);
+               var dynamicContext = IoC.Resolve<IDynamicService>();
+               var dynamicValues = await zip.Entries.GetDataFromZipArchiveEntry<IDictionary<string, IEnumerable<object>>>("dynamicEntitiesData.json");
+               if (dynamicValues == null) return;
+
+               //Import dynamic entities
+               var dynamicEntities = await zip.Entries.GetDataFromZipArchiveEntry<List<TableModel>>("dynamicEntities.json");
+               if (dynamicEntities != null)
+               {
+                   foreach (var entity in dynamicEntities)
+                   {
+                       if (!await context.Table.AnyAsync(x => x.Name == entity.Name && x.TenantId == entity.TenantId))
+                       {
+                           await context.Table.AddAsync(entity);
+                           tableService.CreateSqlTable(entity, context.GetConnectionString());
+                           foreach (var tableField in entity.TableFields)
+                           {
+                               tableService.AddFieldSql(new CreateTableFieldViewModel
+                               {
+                                   Name = tableField.Name,
+                                   DisplayName = tableField.DisplayName,
+                                   AllowNull = tableField.AllowNull,
+                                   Id = tableField.Id,
+                                   TableId = entity.Id,
+                                   DataType = tableField.DataType,
+                                   Description = tableField.Description
+                               }, entity.Name, context.GetConnectionString(), true, entity.EntityType);
+                           }
+                           if (dynamicValues.ContainsKey(entity.Name))
+                           {
+                               await dynamicContext.Table(entity.Name).AddRange(dynamicValues[entity.Name]);
+                           }
+                       }
+                   }
+                   await context.SaveChangesAsync();
+               }
+           });
+
+            result.IsSuccess = true;
+            return result;
+        }
+
+        /// <summary>
+        /// Serialize
+        /// </summary>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private static string Serialize<TObject>(TObject obj)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return string.Empty;
+        }
+    }
+}

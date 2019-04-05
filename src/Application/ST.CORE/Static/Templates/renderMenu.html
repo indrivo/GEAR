@@ -1,0 +1,29 @@
+<li>
+	{{if subItems.length == 0}}
+		{{if href == ''}}
+			<a href="#">
+				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
+			</a>
+		{{else}}
+			<a href="{{:~host}}{{:href}}">
+				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
+			</a>
+		{{/else}}
+	{{else}}
+		{{if href == ''}}
+			<a class="has-arrow" href="#" aria-expanded="false">
+				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
+			</a>
+		{{else}}
+			<a class="has-arrow" href="{{:~host}}{{:href}}" aria-expanded="false">
+				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
+			</a>
+		{{/else}}
+	{{/else}}
+
+	{{if subItems.length > 0 }}
+			<ul aria-expanded="false" class="collapse">
+				{{for subItems tmpl="template_renderMenu.html"/}}
+			</ul>
+	{{/if}}
+</li>

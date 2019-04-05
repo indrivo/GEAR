@@ -7,7 +7,7 @@ using ST.Identity.LDAP.Models;
 
 namespace ST.Identity.Data.UserProfiles
 {
-    [TrackEntity(Option = TrackEntityOption.Selected)]
+    [TrackEntity(Option = TrackEntityOption.SelectedFields)]
     public class ApplicationUser : LdapUser
     {
         /// <summary>

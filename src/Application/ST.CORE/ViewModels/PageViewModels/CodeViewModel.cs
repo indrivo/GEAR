@@ -6,7 +6,6 @@ namespace ST.CORE.ViewModels.PageViewModels
 	{
 		public Guid PageId { get; set; }
 		public string Code { get; set; }
-		public string Path { get; set; }
 		public string Type { get; set; }
 	}
 }

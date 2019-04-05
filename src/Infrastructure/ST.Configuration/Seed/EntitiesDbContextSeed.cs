@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
+using ST.Entities.Extensions;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Tables;
@@ -115,11 +116,14 @@ namespace ST.Configuration.Seed
                 }
             }
         }
+
         /// <summary>
         /// Seed notification types
         /// </summary>
-        public static async Task SeedNotificationTypesAsync(IDynamicService dataService)
+        public static async Task SeedNotificationTypesAsync()
         {
+            var dataService = IoC.Resolve<IDynamicService>();
+            if (dataService == null) throw new Exception("IDynamicService is not registered");
             var types = ReadData(Path.Combine(AppContext.BaseDirectory, "NotificationTypes.json"));
             if (types == null)
                 return;

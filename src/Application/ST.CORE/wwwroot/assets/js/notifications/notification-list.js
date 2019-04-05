@@ -1,4 +1,3 @@
-let notificator = new Notificator();
 let st = new ST();
 let menu = $("#notification-menu");
 let list = $("#notifications");
@@ -51,7 +50,7 @@ $(document).ready(function () {
 		const response = notificator.getFolders();
 		if (response.is_success) {
 			const data = response.result.values;
-			Promise.all([st.getTemplate("notifications/folders.html")])
+			Promise.all([st.getTemplate("folders.html")])
 				.then(function (values) {
 					$.templates("menu", values[0]);
 					for (let i = 0; i < data.length; i++) {
@@ -137,7 +136,7 @@ $(document).ready(function () {
 
 
 	function populate(data) {
-		Promise.all([st.getTemplate("notifications/notifications.html")])
+		Promise.all([st.getTemplate("notifications.html")])
 			.then(function (values) {
 				$.templates("list", values[0]);
 				const content = $.render["list"](data);

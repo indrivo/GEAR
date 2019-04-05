@@ -50,11 +50,14 @@ namespace ST.Entities.Models.Pages
     [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class PageSettings : ExtendedModel
     {
+        public string Identifier { get; set; }
         public string Name { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Icon { get; set; }
-        public string PhysicPath { get; set; }
+        public string HtmlCode { get; set; }
+        public string CssCode { get; set; }
+        public string JsCode { get; set; }
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]

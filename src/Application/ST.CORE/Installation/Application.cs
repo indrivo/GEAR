@@ -13,7 +13,6 @@ using ST.Configuration.Seed;
 using ST.CORE.Extensions;
 using ST.CORE.ViewModels.InstallerModels;
 using ST.DynamicEntityStorage;
-using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
@@ -88,7 +87,7 @@ namespace ST.CORE.Installation
 		/// </summary>
 		/// <param name="webHost"></param>
 		/// <returns></returns>
-		public static IWebHost Migrate(this IWebHost webHost)
+		private static IWebHost Migrate(this IWebHost webHost)
 		{
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
 				{
@@ -122,7 +121,7 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			DynamicService.TenantId = Configuration.Settings.TenantId;
+			DynamicService<EntitiesDbContext>.TenantId = Configuration.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 
@@ -147,6 +146,7 @@ namespace ST.CORE.Installation
 			var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
 			{
 				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
+				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
 				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
 			};
 
@@ -189,20 +189,19 @@ namespace ST.CORE.Installation
 		/// <returns></returns>
 		public static async Task SeedDynamicDataAsync()
 		{
-			var dataService = IoC.Resolve<IDynamicService>();
-			var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
-
 			//Seed notifications types
-			await EntitiesDbContextSeed.SeedNotificationTypesAsync(dataService);
+			await EntitiesDbContextSeed.SeedNotificationTypesAsync();
 
 			//Sync default menus
-			await MenuSync.SyncMenuItems(dataService);
+			await MenuManager.SyncMenuItemsAsync();
 
 			//Sync web pages
-			WebPageSync.SyncWebPages(entitiesDbContext);
+			await PageManager.SyncWebPagesAsync();
 
 			//Sync nomenclatures
-			await NomenclatureSyncExtension.SyncNomenclatureItems(dataService);
+			await NomenclatureManager.SyncNomenclaturesAsync();
+
+			await TemplateManager.SeedAsync();
 
 		}
 
@@ -222,9 +221,9 @@ namespace ST.CORE.Installation
 			return WebHost.CreateDefaultBuilder(args)
 				.UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
 				.UseConfiguration(config)
+				.StartLogging()
 				.CaptureStartupErrors(true)
 				.UseStartup<Startup>()
-				.StartLogging()
 				.Build();
 		}
 

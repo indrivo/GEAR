@@ -4,32 +4,19 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using ST.Audit.Models;
 using ST.BaseBusinessRepository;
-using ST.BaseRepository;
 using ST.Entities.Controls.Querry;
-using ST.Entities.Data;
-using ST.Entities.Models;
 using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
+using ST.Entities.Settings;
 using ST.Entities.ViewModels.Table;
 
 namespace ST.Entities.Services
 {
     public class TablesService : ITablesService
     {
-        private readonly IBaseBusinessRepository<EntitiesDbContext> _repository;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="repository"></param>
-        public TablesService(IBaseBusinessRepository<EntitiesDbContext> repository)
-        {
-            _repository = repository;
-        }
-
         /// <inheritdoc />
         /// <summary>
         /// Add field SQL
@@ -38,6 +25,7 @@ namespace ST.Entities.Services
         /// <param name="tableName"></param>
         /// <param name="connectionString"></param>
         /// <param name="isNew"></param>
+        /// <param name="tableSchema"></param>
         /// <returns></returns>
         public virtual ResultModel<bool> AddFieldSql(CreateTableFieldViewModel table, string tableName, string connectionString,
             bool isNew, string tableSchema)
@@ -47,29 +35,26 @@ namespace ST.Entities.Services
                 IsSuccess = false,
                 Result = false
             };
-            var sqlQuerry = isNew
+            var sqlQuery = isNew
                 ? TableQuerryBuilder.AddFieldQuerry(table, tableName, tableSchema)
                 : TableQuerryBuilder.UpdateFieldQuerry(table, tableName, tableSchema);
-            if (!string.IsNullOrEmpty(sqlQuerry))
+            if (!string.IsNullOrEmpty(sqlQuery))
             {
                 using (var connection = new SqlConnection(connectionString))
                 {
-                    var command = new SqlCommand(sqlQuerry, connection);
+                    var command = new SqlCommand(sqlQuery, connection);
                     connection.Open();
                     command.ExecuteNonQuery();
                     connection.Close();
                 }
 
-                //
                 returnModel.IsSuccess = true;
                 returnModel.Result = true;
                 return returnModel;
             }
-            else
-            {
-                // Empty query
-                return returnModel;
-            }
+
+            // Empty query
+            return returnModel;
         }
 
         /// <inheritdoc />
@@ -92,10 +77,10 @@ namespace ST.Entities.Services
             {
                 try
                 {
-                    var sqlQuerry = TableQuerryBuilder.CheckColumnValues(tableName, columnName, tableSchema);
+                    var sqlQuery = TableQuerryBuilder.CheckColumnValues(tableName, columnName, tableSchema);
                     using (var connection = new SqlConnection(connectionString))
                     {
-                        var command = new SqlCommand(sqlQuerry, connection);
+                        var command = new SqlCommand(sqlQuery, connection);
                         connection.Open();
                         using (var reader = command.ExecuteReader())
                         {
@@ -116,10 +101,8 @@ namespace ST.Entities.Services
                     return returnModel;
                 }
             }
-            else
-            {
-                return returnModel;
-            }
+
+            return returnModel;
         }
 
         /// <inheritdoc />
@@ -128,6 +111,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <returns></returns>
         public virtual ResultModel<bool> CheckTableValues(string connectionString, string tableName, string tableSchema)
         {
@@ -140,10 +124,10 @@ namespace ST.Entities.Services
             {
                 try
                 {
-                    var sqlQuerry = TableQuerryBuilder.CheckTableValues(tableName, tableSchema);
+                    var sqlQuery = TableQuerryBuilder.CheckTableValues(tableName, tableSchema);
                     using (var connection = new SqlConnection(connectionString))
                     {
-                        var command = new SqlCommand(sqlQuerry, connection);
+                        var command = new SqlCommand(sqlQuery, connection);
                         connection.Open();
                         using (var reader = command.ExecuteReader())
                         {
@@ -192,39 +176,31 @@ namespace ST.Entities.Services
                 CreateSchemaAsync(table.EntityType, connectionString).GetAwaiter().GetResult();
             }
 
-            if (table != null)
+            try
             {
-                try
+                var sqlQuery = TableQuerryBuilder.CreateQuerry(table);
+                if (!string.IsNullOrEmpty(sqlQuery))
                 {
-                    var sqlQuerry = TableQuerryBuilder.CreateQuerry(table);
-                    if (!string.IsNullOrEmpty(sqlQuerry))
+                    using (var connection = new SqlConnection(connectionString))
                     {
-                        using (var connection = new SqlConnection(connectionString))
-                        {
-                            var command = new SqlCommand(sqlQuerry, connection);
-                            connection.Open();
-                            command.ExecuteNonQuery();
-                            connection.Close();
-                        }
+                        var command = new SqlCommand(sqlQuery, connection);
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        connection.Close();
+                    }
 
-                        returnModel.IsSuccess = true;
-                        return returnModel;
-                    }
-                    else
-                    {
-                        // Empty querry
-                        return returnModel;
-                    }
+                    returnModel.IsSuccess = true;
+                    return returnModel;
                 }
-                catch (Exception)
+                else
                 {
-                    // Error
+                    // Empty query
                     return returnModel;
                 }
             }
-            else
+            catch (Exception)
             {
-                // table is null
+                // Error
                 return returnModel;
             }
         }
@@ -235,6 +211,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
         public virtual ResultModel<bool> DropColumn(string connectionString, string tableName, string tableSchema, string columnName)
@@ -246,12 +223,12 @@ namespace ST.Entities.Services
             };
             try
             {
-                var sqlQuerry = TableQuerryBuilder.DropColumn(tableName, tableSchema, columnName);
-                if (!string.IsNullOrEmpty(sqlQuerry))
+                var sqlQuery = TableQuerryBuilder.DropColumn(tableName, tableSchema, columnName);
+                if (!string.IsNullOrEmpty(sqlQuery))
                 {
                     using (var connection = new SqlConnection(connectionString))
                     {
-                        var command = new SqlCommand(sqlQuerry, connection);
+                        var command = new SqlCommand(sqlQuery, connection);
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
@@ -262,7 +239,7 @@ namespace ST.Entities.Services
                 }
                 else
                 {
-                    // Empty querry
+                    // Empty query
                     return returnModel;
                 }
             }
@@ -280,15 +257,15 @@ namespace ST.Entities.Services
         /// <returns></returns>
         public static IEnumerable<SynchronizeTableViewModel> GetEntitiesFromDbContexts(params Type[] contexts)
         {
-            var entities = new List<SynchronizeTableViewModel>();
-            if (!contexts.Any()) return entities;
+            var result = new List<SynchronizeTableViewModel>();
+            if (!contexts.Any()) return result;
             foreach (var context in contexts)
             {
-                var ents = GetEntitiesFromContext(context);
-                if (!ents.Any()) continue;
-                entities.AddRange(ents);
+                var entities = GetEntitiesFromContext(context).ToList();
+                if (!entities.Any()) continue;
+                result.AddRange(entities);
             }
-            return entities;
+            return result;
         }
 
         /// <summary>
@@ -316,141 +293,147 @@ namespace ST.Entities.Services
         /// <param name="prop"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static SynchronizeTableViewModel GetEntityData(PropertyInfo prop, Type context)
+        private static SynchronizeTableViewModel GetEntityData(PropertyInfo prop, Type context)
         {
             var result = new SynchronizeTableViewModel();
             var fields = new List<CreateTableFieldViewModel>();
             var baseProps = typeof(ExtendedModel).GetProperties().Select(x => x.Name);
             var entity = prop.PropertyType.GenericTypeArguments[0];
+
+            if (entity.Name == "ApplicationUser")
+            {
+                entity = typeof(IdentityUser);
+            }
+
             //if (entity.BaseType != typeof(BaseModel) || entity.BaseType != typeof(ExtendedModel)) continue;
             result.Name = prop.Name;
             result.IsStaticFromEntityFramework = true;
+            result.IsSystem = true;
+            if (context.GetField("Schema") == null)
+                throw new Exception("This context does not have the Schema field, which stores the schema name");
             result.Schema = context.GetField("Schema").GetValue(context).ToString();
             result.Description = $"System {prop.Name} entity";
             var entityProps = entity.GetProperties().Select(x => x.Name).Except(baseProps).ToList();
             foreach (var field in entityProps)
             {
                 var propField = entity.GetProperties().FirstOrDefault(x => x.Name.Equals(field));
+                if (propField == null) continue;
                 var propType = propField.PropertyType.FullName;
                 switch (propType)
                 {
                     case "System.String":
+                        fields.Add(new CreateTableFieldViewModel
                         {
-                            fields.Add(new CreateTableFieldViewModel
+                            Name = field,
+                            DisplayName = field,
+                            TableFieldCode = "10",
+                            DataType = TableFieldDataType.String,
+                            Configurations = new List<FieldConfigViewModel>
                             {
-                                Name = field,
-                                DisplayName = field,
-                                TableFieldCode = "10",
-                                DataType = "nvarchar",
-                                Configurations = new List<FieldConfigViewModel>
+                                new FieldConfigViewModel
+                                {
+                                    ConfigCode = "1000",
+                                    Value = "500"
+                                }
+                            }
+                        });
+                        break;
+
+                    case "System.Guid":
+                        var f = new CreateTableFieldViewModel
+                        {
+                            Name = field,
+                            DisplayName = field,
+                            TableFieldCode = "30",
+                            DataType = TableFieldDataType.Guid
+                        };
+
+                        if (field.EndsWith("Id"))
+                        {
+                            var ent = field.Remove(field.Length - "Id".Length);
+                            if (entityProps.Contains(ent))
+                            {
+                                f.Parameter = "EntityReference";
+                                f.Configurations = new List<FieldConfigViewModel>
                                 {
                                     new FieldConfigViewModel
                                     {
-                                        ConfigCode = "1000",
-                                        Value = "500"
-                                    }
-                                }
-                            });
-                        }; break;
-
-                    case "System.Guid":
-                        {
-                            var f = new CreateTableFieldViewModel
-                            {
-                                Name = field,
-                                DisplayName = field,
-                                TableFieldCode = "30",
-                                DataType = "uniqueidentifier"
-                            };
-
-                            if (field.EndsWith("Id"))
-                            {
-                                var ent = field.Remove(field.Length - "Id".Length);
-                                if (entityProps.Contains(ent))
-                                {
-                                    f.Parameter = "EntityReference";
-                                    f.Configurations = new List<FieldConfigViewModel>
+                                        ConfigCode = "9999",
+                                        Value = result.Schema
+                                    },
+                                    new FieldConfigViewModel
                                     {
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "9999",
-                                            Value = result.Schema
-                                        },
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "3000",
-                                            Value = ent
-                                        }
-                                    };
-                                }
+                                        ConfigCode = "3000",
+                                        Value = ent
+                                    }
+                                };
                             }
-                            fields.Add(f);
-                        }; break;
+                        }
+
+                        fields.Add(f);
+                        break;
                     case "System.Int":
                     case "System.Int32":
+                        fields.Add(new CreateTableFieldViewModel
                         {
-                            fields.Add(new CreateTableFieldViewModel
+                            Name = field,
+                            DisplayName = field,
+                            TableFieldCode = "01",
+                            DataType = TableFieldDataType.Int,
+                            Configurations = new List<FieldConfigViewModel>
                             {
-                                Name = field,
-                                DisplayName = field,
-                                TableFieldCode = "01",
-                                DataType = "int",
-                                Configurations = new List<FieldConfigViewModel>
-                                    {
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "0100",
-                                            Value = null
-                                        },
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "0101",
-                                            Value = null
-                                        }
-                                    }
-                            });
-                        }; break;
+                                new FieldConfigViewModel
+                                {
+                                    ConfigCode = "0100",
+                                    Value = null
+                                },
+                                new FieldConfigViewModel
+                                {
+                                    ConfigCode = "0101",
+                                    Value = null
+                                }
+                            }
+                        });
+                        break;
                     case "System.Double":
+                        fields.Add(new CreateTableFieldViewModel
                         {
-                            fields.Add(new CreateTableFieldViewModel
+                            Name = field,
+                            DisplayName = field,
+                            TableFieldCode = "01",
+                            DataType = TableFieldDataType.Int,
+                            Configurations = new List<FieldConfigViewModel>
                             {
-                                Name = field,
-                                DisplayName = field,
-                                TableFieldCode = "01",
-                                DataType = "int",
-                                Configurations = new List<FieldConfigViewModel>
-                                    {
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "0100",
-                                            Value = null
-                                        },
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "0101",
-                                            Value = null
-                                        }
-                                    }
-                            });
-                        }; break;
+                                new FieldConfigViewModel
+                                {
+                                    ConfigCode = "0100",
+                                    Value = null
+                                },
+                                new FieldConfigViewModel
+                                {
+                                    ConfigCode = "0101",
+                                    Value = null
+                                }
+                            }
+                        });
+                        break;
                     case "System.Boolean":
+                        fields.Add(new CreateTableFieldViewModel
                         {
-                            fields.Add(new CreateTableFieldViewModel
+                            Name = field,
+                            DisplayName = field,
+                            TableFieldCode = "40",
+                            DataType = TableFieldDataType.Boolean,
+                            Configurations = new List<FieldConfigViewModel>
                             {
-                                Name = field,
-                                DisplayName = field,
-                                TableFieldCode = "40",
-                                DataType = "bool",
-                                Configurations = new List<FieldConfigViewModel>
-                                    {
-                                        new FieldConfigViewModel
-                                        {
-                                            ConfigCode = "4000",
-                                            Value = null
-                                        }
-                                    }
-                            });
-                        }; break;
+                                new FieldConfigViewModel
+                                {
+                                    ConfigCode = "4000",
+                                    Value = null
+                                }
+                            }
+                        });
+                        break;
                 }
             }
             result.Fields = fields;
@@ -463,6 +446,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="constraint"></param>
         /// <param name="columnName"></param>
         /// <returns></returns>
@@ -476,25 +460,20 @@ namespace ST.Entities.Services
             };
             try
             {
-                var sqlQuerry = TableQuerryBuilder.DropConstraint(tableName, tableSchema, constraint, columnName);
-                if (!string.IsNullOrEmpty(sqlQuerry))
+                var sqlQuery = TableQuerryBuilder.DropConstraint(tableName, tableSchema, constraint, columnName);
+                if (string.IsNullOrEmpty(sqlQuery)) return returnModel;
+                using (var connection = new SqlConnection(connectionString))
                 {
-                    using (var connection = new SqlConnection(connectionString))
-                    {
-                        var command = new SqlCommand(sqlQuerry, connection);
-                        connection.Open();
-                        command.ExecuteNonQuery();
-                        connection.Close();
-                    }
+                    var command = new SqlCommand(sqlQuery, connection);
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                    connection.Close();
+                }
 
-                    returnModel.Result = true;
-                    return returnModel;
-                }
-                else
-                {
-                    // Empty querry
-                    return returnModel;
-                }
+                returnModel.Result = true;
+                return returnModel;
+
+                // Empty query
             }
             catch (Exception)
             {
@@ -509,6 +488,7 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <returns></returns>
         public virtual ResultModel<bool> DropTable(string connectionString, string tableName, string tableSchema)
         {
@@ -520,10 +500,10 @@ namespace ST.Entities.Services
             try
             {
                 var check = false;
-                var sqlCheckQuerry = TableQuerryBuilder.CheckTableValues(tableName, tableSchema);
+                var sqlCheckQuery = TableQuerryBuilder.CheckTableValues(tableName, tableSchema);
                 using (var connection = new SqlConnection(connectionString))
                 {
-                    var command = new SqlCommand(sqlCheckQuerry, connection);
+                    var command = new SqlCommand(sqlCheckQuery, connection);
                     connection.Open();
                     using (var reader = command.ExecuteReader())
                     {
@@ -539,11 +519,11 @@ namespace ST.Entities.Services
 
                 if (check) return returnModel;
                 {
-                    var sqlQuerry = TableQuerryBuilder.DropTable(tableName, tableSchema);
-                    if (string.IsNullOrEmpty(sqlQuerry)) return returnModel;
+                    var sqlQuery = TableQuerryBuilder.DropTable(tableName, tableSchema);
+                    if (string.IsNullOrEmpty(sqlQuery)) return returnModel;
                     using (var connection = new SqlConnection(connectionString))
                     {
-                        var command = new SqlCommand(sqlQuerry, connection);
+                        var command = new SqlCommand(sqlQuery, connection);
                         connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
@@ -564,14 +544,14 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="schemaName"></param>
         /// <param name="connectionString"></param>
-        public virtual async Task CreateSchemaAsync(string schemaName, string connectionString)
+        protected virtual async Task CreateSchemaAsync(string schemaName, string connectionString)
         {
             var all = GetSchemas(connectionString);
             if (all.Contains(schemaName)) return;
-            var sqlQuerry = TableQuerryBuilder.GetSchemaSqlScript(schemaName);
+            var sqlQuery = TableQuerryBuilder.GetSchemaSqlScript(schemaName);
             using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(sqlQuerry, connection);
+                var command = new SqlCommand(sqlQuery, connection);
                 connection.Open();
                 await command.ExecuteNonQueryAsync();
                 connection.Close();
@@ -583,13 +563,13 @@ namespace ST.Entities.Services
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        public virtual IEnumerable<string> GetSchemas(string connectionString)
+        protected virtual IEnumerable<string> GetSchemas(string connectionString)
         {
             var result = new List<string>();
-            var sqlQuerry = TableQuerryBuilder.GetDbSchemesSqlScript();
+            var sqlQuery = TableQuerryBuilder.GetDbSchemesSqlScript();
             using (var connection = new SqlConnection(connectionString))
             {
-                var command = new SqlCommand(sqlQuerry, connection);
+                var command = new SqlCommand(sqlQuery, connection);
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {

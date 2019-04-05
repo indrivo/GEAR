@@ -1,4 +1,4 @@
-
+@inject IStringLocalizer localize
 @{
 	Layout = null;
 }
@@ -21,11 +21,11 @@
 	<div class="error-box">
 		<div class="error-body text-center">
 			<h1>404</h1>
-			<h3 class="text-uppercase">Page Not Found !</h3>
-			<p class="text-muted m-t-30 m-b-30">YOU SEEM TO BE TRYING TO FIND HIS WAY HOME</p>
+			<h3 class="text-uppercase">@localize["page_not_found"]</h3>
+			<p class="text-muted m-t-30 m-b-30">@localize["not_found_message"]</p>
 			<a asp-controller="Home" asp-action="Index" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Back to home</a>
 		</div>
-		<footer class="footer text-center">2018 © Soft-Tehnica.</footer>
+		<footer class="footer text-center">2019 © ISO DMS.</footer>
 	</div>
 </section>
 <!-- ============================================================== -->

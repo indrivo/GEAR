@@ -16,13 +16,17 @@ using System.Threading.Tasks;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.AuditViewModels;
 using ST.Identity.Data;
+using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
 
 namespace ST.CORE.Controllers.Audit
 {
 	public class AuditController : BaseController
 	{
-		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext)
+		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager,
+			RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
+			IOrganizationService organizationService, ProcessesDbContext processesDbContext, ICacheService cacheService)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
 		}
 
