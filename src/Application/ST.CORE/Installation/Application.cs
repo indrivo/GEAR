@@ -146,6 +146,7 @@ namespace ST.CORE.Installation
 			var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
 			{
 				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
+				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
 				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
 			};
 
