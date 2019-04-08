@@ -14,14 +14,17 @@ using ST.Identity.Data.UserProfiles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ST.Configuration.Models;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.FormsViewModels;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
+using ST.Entities.Extensions;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Services.Abstractions;
@@ -363,6 +366,89 @@ namespace ST.CORE.Controllers.Entity
 			result.Result = formValues.Result;
 			result.IsSuccess = formValues.IsSuccess;
 			return Json(result);
+		}
+
+		/// <summary>
+		/// Get form fields
+		/// </summary>
+		/// <param name="formId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<IActionResult> GetFormFields([Required] Guid? formId)
+		{
+			if (formId == null) return NotFound();
+			var form = await Context.Forms
+				.Include(x => x.Table)
+				.Include(x => x.Fields)
+				.ThenInclude(x => x.TableField)
+				.Include(x => x.Fields)
+				.ThenInclude(x => x.Attrs)
+				.Include(x => x.Fields)
+				.ThenInclude(x => x.Config)
+				.Include(x => x.Fields)
+				.ThenInclude(x => x.Meta)
+				.FirstOrDefaultAsync(x => x.Id == formId);
+			if (form == null) return NotFound();
+			return View(form);
+		}
+
+		/// <summary>
+		/// Get field attributes for validations
+		/// </summary>
+		/// <param name="fieldId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<IActionResult> GetFieldAttributes([Required]Guid? fieldId)
+		{
+			if (fieldId == null) return NotFound();
+			var field = await Context.Fields
+				.Include(x => x.Attrs)
+				.FirstOrDefaultAsync(x => x.Id == fieldId);
+			if (field == null) return NotFound();
+			var systemValidations = await CacheService
+										.Get<StCollection<FormValidation>>("_fieldValidations")
+									?? await GetOrUpdateForm();
+			var applied = field.Attrs.Where(x => systemValidations.Select(u => u.Name).Contains(x.Key))
+				.Select(x => new FormValidation
+				{
+					Name = x.Key,
+					Code = systemValidations.FirstOrDefault(c => c.Name == x.Key)?.Code,
+					Default = x.Value,
+					Description = systemValidations.FirstOrDefault(c => c.Name == x.Key)?.Description,
+				}).ToList();
+
+			var dict = new Dictionary<bool, FormValidation>(applied.ToDictionary(u => true, v => v));
+			var remains = systemValidations.Except(applied);
+			foreach (var _ in remains)
+			{
+				dict.Add(false, _);
+			}
+			var model = new FieldValidationViewModel
+			{
+				Field = field,
+				FormValidations = dict
+			};
+			return View(model);
+		}
+
+		/// <summary>
+		/// Get or save to cache
+		/// </summary>
+		/// <returns></returns>
+		[NonAction]
+		private async Task<StCollection<FormValidation>> GetOrUpdateForm()
+		{
+			var systemValidations = JsonParser
+				.ReadArrayDataFromJsonFile<StCollection<FormValidation>>(
+					Path.Combine(AppContext.BaseDirectory,
+					"FormValidations.json"));
+
+			if (systemValidations != null)
+			{
+				await CacheService
+					.Set("_fieldValidations", systemValidations);
+			}
+			return systemValidations;
 		}
 
 		/// <summary>

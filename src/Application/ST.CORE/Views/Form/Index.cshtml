@@ -93,6 +93,7 @@
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?formId=${row.id}">Edit</a>
+									<a class="btn btn-success btn-sm" href="@Url.Action("GetFormFields")?formId=${row.id}">Form fields</a>
 									<a class="btn btn-warning btn-sm" href="@Url.Action("Preview")?formId=${row.id}">Preview</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
 								}'); >Delete</button>

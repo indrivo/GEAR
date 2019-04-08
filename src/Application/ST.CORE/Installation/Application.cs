@@ -198,11 +198,11 @@ namespace ST.CORE.Installation
 			//Sync web pages
 			await PageManager.SyncWebPagesAsync();
 
-			//Sync nomenclatures
-			await NomenclatureManager.SyncNomenclaturesAsync();
-
+			//Sync templates
 			await TemplateManager.SeedAsync();
 
+			//Sync nomenclatures
+			await NomenclatureManager.SyncNomenclaturesAsync();
 		}
 
 		/// <summary>

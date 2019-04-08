@@ -1,0 +1,20 @@
+@model ST.CORE.ViewModels.FormsViewModels.FieldValidationViewModel
+
+@{
+	ViewData["Title"] = "Get Field Attributes";
+}
+
+<form asp-action="GetFieldAttributes" method="post">
+	@foreach (var v in Model.FormValidations)
+	{
+		<div class="row">
+			<div class="col-md-6">
+				<input type="checkbox" name="v" value="v" />
+			</div>
+			<div class="col-md-6">
+
+			</div>
+		</div>
+	}
+</form>
+
