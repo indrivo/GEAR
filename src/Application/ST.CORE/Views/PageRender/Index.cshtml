@@ -440,7 +440,7 @@
 
 		function renderForm(formId, place) {
 			const data = form.getFormFronServer(formId);
-
+			const formRef = `#${place}`;
 			if (data) {
 				if (data.is_success) {
 					const json = form.cleanJson(data.result);
@@ -452,7 +452,7 @@
 							},
 							JSON.stringify(json));
 
-						const renderContainer = document.querySelector(`#${place}`);
+						const renderContainer = document.querySelector(formRef);
 
 						$(function() {
 							formeo.render(renderContainer);
@@ -463,15 +463,16 @@
 								}
 							);
 							form.populateSelect(selects);
-							form.checkIfIsEditForm(`#${place}`, formId);
-							$(`#${place}`).find(".f-field-group").addClass("form-group");
-							const inputs = $(`#${place}`).find(".f-field-group");
+							form.checkIfIsEditForm(formRef, formId);
+							$(formRef).find(".f-field-group").addClass("form-group");
+							const inputs = $(formRef).find(".f-field-group");
 							for (let y = 0; y < inputs.length; y++) {
 								const data = $(inputs[y]).html();
 								$(inputs[y]).html(null);
 								$(inputs[y]).append(`<div class="controls"></div>`);
 								$(inputs[y]).find(".controls").html(data);
 							}
+							$(formRef).attr("novalidate","");
 							$("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
 						});
 
@@ -479,7 +480,7 @@
 						console.log(exp);
 					}
 
-					@*$(`#${place}`).on("submit",
+					$(formRef).on("submit",
 						function() {
 							const st = new ST();
 							const isEdit = this.hasAttribute("isedit");
@@ -517,7 +518,7 @@
 								}
 							});
 							return false;
-						});*@
+						});
 				}
 			} else {
 				$.toast({
