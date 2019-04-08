@@ -87,5 +87,11 @@
     "Name": "data-validation-regex-regex",
     "Default": "",
     "Description": "Regex"
+  },
+  {
+    "Code": "15",
+    "Name": "required",
+    "Default": "",
+    "Description": "Required"
   }
 ]
