@@ -38,7 +38,6 @@
 
 @Html.Raw(PageRender.GetPageHtml(page.Settings.Name))
 
-
 @{
 	var jsCode = PageRender.GetPageJavaScript(page.Settings.Name);
 }
@@ -468,11 +467,14 @@
 							const inputs = $(formRef).find(".f-field-group");
 							for (let y = 0; y < inputs.length; y++) {
 								const data = $(inputs[y]).html();
+								console.log(data);
 								$(inputs[y]).html(null);
 								$(inputs[y]).append(`<div class="controls"></div>`);
 								$(inputs[y]).find(".controls").html(data);
 							}
-							$(formRef).attr("novalidate","");
+							$(formRef).attr("novalidate", "");
+							$("input,select,textarea").not("[type=submit]").addClass("form-control");
+							$(formRef).jqBootstrapValidation();
 							$("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
 						});
 
@@ -480,7 +482,7 @@
 						console.log(exp);
 					}
 
-					$(formRef).on("submit",
+					@*$(formRef).on("submit",
 						function() {
 							const st = new ST();
 							const isEdit = this.hasAttribute("isedit");
@@ -518,7 +520,7 @@
 								}
 							});
 							return false;
-						});
+						});*@
 				}
 			} else {
 				$.toast({

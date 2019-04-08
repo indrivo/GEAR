@@ -3785,32 +3785,32 @@ Form Material page
 
 .has-warning .bar:before,
 .has-warning .bar:after {
-	background: #ffbc34;
+	background: #ffbc34 !important;
 }
 
 .has-success .bar:before,
 .has-success .bar:after {
-	background: #55ce63;
+	background: #55ce63 !important;
 }
 
 .has-error .bar:before,
 .has-error .bar:after {
-	background: #f62d51;
+	background: #f62d51 !important;
 }
 
 .has-warning .form-control:focus ~ label,
 .has-warning .form-control:valid ~ label {
-	color: #ffbc34;
+	color: #ffbc34 !important;
 }
 
 .has-success .form-control:focus ~ label,
 .has-success .form-control:valid ~ label {
-	color: #55ce63;
+	color: #55ce63 !important;
 }
 
 .has-error .form-control:focus ~ label,
 .has-error .form-control:valid ~ label {
-	color: #f62d51;
+	color: #f62d51 !important;
 }
 
 .has-feedback label ~ .t-0 {
@@ -3818,16 +3818,16 @@ Form Material page
 }
 
 .form-group.error input, .form-group.error select, .form-group.error textarea {
-	border: 1px solid #f62d51;
+	border: 1px solid #f62d51 !important;
 }
 
 .form-group.validate input, .form-group.validate select, .form-group.validate textarea {
-	border: 1px solid #55ce63;
+	border: 1px solid #55ce63 !important;
 }
 
 .form-group.error .help-block ul {
 	padding: 0px;
-	color: #f62d51;
+	color: #f62d51 !important;
 }
 
 	.form-group.error .help-block ul li {
@@ -3836,7 +3836,7 @@ Form Material page
 
 .form-group.issue .help-block ul {
 	padding: 0px;
-	color: #ffbc34;
+	color: #ffbc34 !important;
 }
 
 	.form-group.issue .help-block ul li {
@@ -3847,7 +3847,7 @@ Form Material page
 Pagination
 ******************/
 .pagination-circle li.active a {
-	background: #55ce63;
+	background: #55ce63 !important;
 }
 
 .pagination-circle li a {
@@ -3864,7 +3864,7 @@ Pagination
 	}
 
 	.pagination-circle li a:hover {
-		background: #55ce63;
+		background: #55ce63 !important;
 		color: #ffffff;
 	}
 
