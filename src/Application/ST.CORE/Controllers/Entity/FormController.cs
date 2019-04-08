@@ -68,6 +68,7 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="formService"></param>
 		/// <param name="cacheService"></param>
 		/// <param name="repository"></param>
+		/// <param name="service"></param>
 		public FormController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
 			INotify<ApplicationRole> notify, IOrganizationService organizationService,
@@ -402,33 +403,105 @@ namespace ST.CORE.Controllers.Entity
 		{
 			if (fieldId == null) return NotFound();
 			var field = await Context.Fields
+				.Include(x => x.Form)
 				.Include(x => x.Attrs)
 				.FirstOrDefaultAsync(x => x.Id == fieldId);
 			if (field == null) return NotFound();
-			var systemValidations = await CacheService
-										.Get<StCollection<FormValidation>>("_fieldValidations")
-									?? await GetOrUpdateForm();
-			var applied = field.Attrs.Where(x => systemValidations.Select(u => u.Name).Contains(x.Key))
+			var systemValidations = SystemFieldValidations;
+			var data = field.Attrs.Where(x => systemValidations.Select(u => u.Name).Contains(x.Key))
 				.Select(x => new FormValidation
 				{
 					Name = x.Key,
 					Code = systemValidations.FirstOrDefault(c => c.Name == x.Key)?.Code,
 					Default = x.Value,
 					Description = systemValidations.FirstOrDefault(c => c.Name == x.Key)?.Description,
+					IsSelected = true
 				}).ToList();
 
-			var dict = new Dictionary<bool, FormValidation>(applied.ToDictionary(u => true, v => v));
-			var remains = systemValidations.Except(applied);
-			foreach (var _ in remains)
+			foreach (var item in systemValidations)
 			{
-				dict.Add(false, _);
+				if (!data.Select(x => x.Code).Contains(item.Code))
+				{
+					data.Add(item);
+				}
 			}
 			var model = new FieldValidationViewModel
 			{
 				Field = field,
-				FormValidations = dict
+				FormValidations = data
 			};
 			return View(model);
+		}
+
+		/// <summary>
+		/// Get system field validations
+		/// </summary>
+		private StCollection<FormValidation> SystemFieldValidations =>
+			CacheService
+				.Get<StCollection<FormValidation>>("_fieldValidations").GetAwaiter().GetResult()
+			?? GetOrUpdateForm().GetAwaiter().GetResult();
+
+		/// <summary>
+		/// Update validations for field
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<IActionResult> GetFieldAttributes([Required]FieldValidationViewModel model)
+		{
+			if (model.Field == null)
+			{
+				ModelState.AddModelError(string.Empty, "Field not found!");
+				return View(model);
+			}
+
+			var field = await Context.Fields
+				.Include(x => x.Attrs)
+				.FirstOrDefaultAsync(x => x.Id == model.Field.Id);
+
+			if (field == null)
+			{
+				ModelState.AddModelError(string.Empty, "Field not found!");
+				return View(model);
+			}
+
+			var systemValidations = SystemFieldValidations.ToList();
+			var selectedValidations = model.FormValidations.Where(x => x.IsSelected).ToList();
+			//var nonSelectedValidations = model.FormValidations.Where(x => !x.IsSelected).ToList();
+			foreach (var item in field.Attrs)
+			{
+				if (systemValidations.Select(x => x.Name).Contains(item.Key))
+				{
+					var selected = selectedValidations.FirstOrDefault(x => x.Name == item.Key);
+					if (selected != null)
+					{
+						selectedValidations.Remove(selected);
+						if (item.Value == selected.Default) continue;
+						var attr = item;
+						attr.Value = selected.Default;
+						Context.Attrs.Update(attr);
+					}
+					else
+					{
+						Context.Attrs.Remove(item);
+					}
+				}
+			}
+
+			foreach (var item in selectedValidations)
+			{
+				await Context.Attrs.AddAsync(new Attrs
+				{
+					Field = field,
+					Value = item.Default,
+					Key = item.Name,
+					Type = AttrValueType.String,
+					TenantId = CurrentUserTenantId
+				});
+			}
+
+			await Context.SaveChangesAsync();
+			return RedirectToAction("GetFormFields", new { formId = model.Field.FormId });
 		}
 
 		/// <summary>
