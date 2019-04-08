@@ -6,7 +6,12 @@
 	---------------Custom css for rendered forms----------------
 */
 
-.render-dynamic-form .formeo .form-group .help-block{
+.render-dynamic-form .server-errors {
+	color: red;
+	list-style-type: none;
+}
+
+.render-dynamic-form .formeo .form-group .help-block {
 	margin-left: 1em;
 }
 
@@ -52,9 +57,9 @@
 	height: 2.7em;
 }
 
-	.render-dynamic-form .formeo textarea {
-		min-height: 10em;
-	}
+.render-dynamic-form .formeo textarea {
+	min-height: 10em;
+}
 
 
 	.render-dynamic-form .formeo input[type=text]:focus,

@@ -32,7 +32,7 @@
 @if (!string.IsNullOrEmpty(cssCode))
 {
 	<style>
-		@Html.Raw(cssCode)
+	@Html.Raw(cssCode)
 	</style>
 }
 
@@ -467,60 +467,73 @@
 							const inputs = $(formRef).find(".f-field-group");
 							for (let y = 0; y < inputs.length; y++) {
 								const data = $(inputs[y]).html();
-								console.log(data);
 								$(inputs[y]).html(null);
 								$(inputs[y]).append(`<div class="controls"></div>`);
 								$(inputs[y]).find(".controls").html(data);
 							}
 							$(formRef).attr("novalidate", "");
+							$(formRef).prepend("<div><ul class='server-errors'></ul></div>");
 							$("input,select,textarea").not("[type=submit]").addClass("form-control");
-							$(formRef).jqBootstrapValidation();
-							$("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
+
+
+							$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(
+								{
+									submitSuccess: function($form, event) {
+										event.preventDefault();
+										const st = new ST();
+										let isEdit = $($form).attr("isedit");
+										let systemFields = [];
+										if (typeof isEdit !== typeof undefined && isEdit !== false) {
+											const hiddens = $($form).find("input:hidden");
+											for (var i = 0; i < hiddens.length; i++) {
+												systemFields.push({
+													key: $(hiddens[i]).attr("name"),
+													value: $(hiddens[i]).val()
+												});
+											}
+											isEdit = true;
+										} else {
+											isEdit = false;
+										}
+										const serialized = st.serializeToJson($($form));
+
+										const obj = form.extractOnlyReferenceFields(place, serialized);
+										const model = {
+											data: obj,
+											formId: formId,
+											isEdit: isEdit,
+											systemFields: systemFields
+										};
+										const errorsBlock = $($form).find(".server-errors");
+										errorsBlock.html(null);
+										$.ajax({
+											url: "@Url.Action("PostForm", "PageRender")",
+											type: "post",
+											data: {
+												model: model
+											},
+											success: function(data) {
+												if (data) {
+													if (data.is_success) {
+														location.href = data.result.redirectUrl;
+													} else {
+														for (let i = 0; i < data.error_keys.length; i++) {
+															errorsBlock.append(`<li>${data.error_keys[i].message}</li>`);
+														}
+													}
+												} else {
+													errorsBlock.append(`<li>Server not respond!</li>`);
+												}
+											}
+										});
+									}
+								}
+							);
 						});
 
 					} catch (exp) {
 						console.log(exp);
 					}
-
-					@*$(formRef).on("submit",
-						function() {
-							const st = new ST();
-							const isEdit = this.hasAttribute("isedit");
-							let systemFields = [];
-							if (isEdit) {
-								const hiddens = $(this).find("input:hidden");
-								for (var i = 0; i < hiddens.length; i++) {
-									systemFields.push({
-										key: $(hiddens[i]).attr("name"),
-										value: $(hiddens[i]).val()
-									});
-								}
-							}
-							const serialized = st.serializeToJson($(this));
-
-							const obj = form.extractOnlyReferenceFields(place, serialized);
-
-							$.ajax({
-								url: "@Url.Action("PostForm", "PageRender")",
-								type: "post",
-								data: {
-									model: {
-										data: obj,
-										formId: formId,
-										isEdit: isEdit,
-										systemFields: systemFields
-									}
-								},
-								success: function(data) {
-									if (data) {
-										if (data.is_success) {
-											location.href = data.result.redirectUrl;
-										}
-									}
-								}
-							});
-							return false;
-						});*@
 				}
 			} else {
 				$.toast({
