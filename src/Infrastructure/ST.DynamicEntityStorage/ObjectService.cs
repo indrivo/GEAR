@@ -160,37 +160,44 @@ namespace ST.DynamicEntityStorage
         /// <param name="propertyType"></param>
         private static void CreateProperty(TypeBuilder typeBuilder, string propertyName, Type propertyType)
         {
-            var fieldBuilder = typeBuilder.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
+            try
+            {
+                var fieldBuilder = typeBuilder.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
-            var propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
-            var getPropMthdBldr = typeBuilder.DefineMethod("get_" + propertyName, MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig, propertyType, Type.EmptyTypes);
-            var getIl = getPropMthdBldr.GetILGenerator();
+                var propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
+                var getPropMthdBldr = typeBuilder.DefineMethod("get_" + propertyName, MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig, propertyType, Type.EmptyTypes);
+                var getIl = getPropMthdBldr.GetILGenerator();
 
-            getIl.Emit(OpCodes.Ldarg_0);
-            getIl.Emit(OpCodes.Ldfld, fieldBuilder);
-            getIl.Emit(OpCodes.Ret);
+                getIl.Emit(OpCodes.Ldarg_0);
+                getIl.Emit(OpCodes.Ldfld, fieldBuilder);
+                getIl.Emit(OpCodes.Ret);
 
-            var setPropMthdBldr = typeBuilder.DefineMethod("set_" + propertyName,
-                  MethodAttributes.Public |
-                  MethodAttributes.SpecialName |
-                  MethodAttributes.HideBySig,
-                  null, new[] { propertyType });
+                var setPropMthdBldr = typeBuilder.DefineMethod("set_" + propertyName,
+                    MethodAttributes.Public |
+                    MethodAttributes.SpecialName |
+                    MethodAttributes.HideBySig,
+                    null, new[] { propertyType });
 
-            var setIl = setPropMthdBldr.GetILGenerator();
-            var modifyProperty = setIl.DefineLabel();
-            var exitSet = setIl.DefineLabel();
+                var setIl = setPropMthdBldr.GetILGenerator();
+                var modifyProperty = setIl.DefineLabel();
+                var exitSet = setIl.DefineLabel();
 
-            setIl.MarkLabel(modifyProperty);
-            setIl.Emit(OpCodes.Ldarg_0);
-            setIl.Emit(OpCodes.Ldarg_1);
-            setIl.Emit(OpCodes.Stfld, fieldBuilder);
+                setIl.MarkLabel(modifyProperty);
+                setIl.Emit(OpCodes.Ldarg_0);
+                setIl.Emit(OpCodes.Ldarg_1);
+                setIl.Emit(OpCodes.Stfld, fieldBuilder);
 
-            setIl.Emit(OpCodes.Nop);
-            setIl.MarkLabel(exitSet);
-            setIl.Emit(OpCodes.Ret);
+                setIl.Emit(OpCodes.Nop);
+                setIl.MarkLabel(exitSet);
+                setIl.Emit(OpCodes.Ret);
 
-            propertyBuilder.SetGetMethod(getPropMthdBldr);
-            propertyBuilder.SetSetMethod(setPropMthdBldr);
+                propertyBuilder.SetGetMethod(getPropMthdBldr);
+                propertyBuilder.SetSetMethod(setPropMthdBldr);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
         /// <summary>
         /// Get type from string definition
@@ -213,6 +220,11 @@ namespace ST.DynamicEntityStorage
                         type = typeof(int);
                     }
                     break;
+                case "char":
+                    {
+                        type = typeof(char);
+                    }
+                    break;
                 case "bool":
                     {
                         type = typeof(bool);
@@ -229,6 +241,7 @@ namespace ST.DynamicEntityStorage
                     }
                     break;
                 case "date":
+                case "datetime":
                     {
                         type = typeof(DateTime);
                     }

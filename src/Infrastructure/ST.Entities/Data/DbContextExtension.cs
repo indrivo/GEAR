@@ -228,6 +228,12 @@ namespace ST.Entities.Data
             return returnModel;
         }
 
+        /// <summary>
+        /// Get data by params
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
         public static ResultModel<EntityViewModel> ListEntitiesByParams(this EntitiesDbContext dbContext,
             EntityViewModel viewModel)
         {
@@ -236,10 +242,6 @@ namespace ST.Entities.Data
                 IsSuccess = false,
                 Result = new EntityViewModel { Includes = new List<EntityViewModel>() }
             };
-
-
-            //Create Default Field
-            //viewModel = ViewModelBuilder.Create(dbContext, viewModel);
 
             //For Add Single Field To Parent if no Exist
             viewModel = AddFieldForSingle(viewModel);

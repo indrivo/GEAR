@@ -6,9 +6,12 @@
 	---------------Custom css for rendered forms----------------
 */
 
+.render-dynamic-form .formeo .form-group .help-block{
+	margin-left: 1em;
+}
+
 .render-dynamic-form .formeo input[type=text],
 .render-dynamic-form .formeo input[type=number],
-.render-dynamic-form .formeo .f-checkbox,
 .render-dynamic-form .formeo select,
 .render-dynamic-form .formeo textarea {
 	-webkit-transition: all 0.30s ease-in-out;
@@ -20,8 +23,22 @@
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	width: 98%;
-	margin-bottom: 2%;
 	border: 1px solid #ccc;
+	font: 100% Arial, Helvetica, sans-serif;
+	margin-left: 1em;
+	color: #555;
+}
+
+.render-dynamic-form .formeo .f-checkbox {
+	-webkit-transition: all 0.30s ease-in-out;
+	-moz-transition: all 0.30s ease-in-out;
+	-ms-transition: all 0.30s ease-in-out;
+	-o-transition: all 0.30s ease-in-out;
+	outline: none;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 98%;
 	font: 100% Arial, Helvetica, sans-serif;
 	margin-left: 1em;
 	color: #555;

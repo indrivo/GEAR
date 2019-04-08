@@ -1,0 +1,97 @@
+/*
+ * Copyright © 2019 Soft-Tehnica S.R.L.
+ *
+ * This file is for get field validations
+ */
+[
+  {
+    "Code": "01",
+    "Name": "data-validation-required-message",
+    "Default": "This field is required",
+    "Description": "Required message",
+    "DataType": "string"
+  },
+  {
+    "Code": "02",
+    "Name": "data-validation-match-match",
+    "Description": "Match with another field by name",
+    "DataType": "string"
+  },
+  {
+    "Code": "03",
+    "Name": "maxlength",
+    "Description": "Attribute for maximum number of characters to accept",
+    "DataType": "int"
+  },
+  {
+    "Code": "04",
+    "Name": "minlength",
+    "Description": "Attribute for minimum number of characters to accept",
+    "DataType": "int"
+  },
+  {
+    "Code": "05",
+    "Name": "max",
+    "Description": "Must be lower than value. Add max attribute for maximum number to accept. Also use <code>data-validation-max-message</code> attribute for max failure message",
+    "DataType": "int"
+  },
+  {
+    "Code": "06",
+    "Name": "min",
+    "Description": "Must be higher than value. Add min attribute for minimum number to accept. Also use <code>data-validation-min-message</code> attribute for min failure message",
+    "DataType": "int"
+  },
+  {
+    "Code": "07",
+    "Name": "data-validation-containsnumber-regex",
+    "Default": "(\\d)+",
+    "Description": "No Characters Allowed, Only Numbers",
+    "DataType": "regex"
+  },
+  {
+    "Code": "08",
+    "Name": "data-validation-containsnumber-message",
+    "Description": "Message for contains number regex",
+    "DataType": "string"
+  },
+  {
+    "Code": "09",
+    "Name": "pattern",
+    "Default": "a.*z",
+    "Description": "Pattern for check characters"
+  },
+  {
+    "Code": "10",
+    "Name": "data-validation-pattern-message",
+    "Description": "Attribute for pattern failure message"
+  },
+  {
+    "Code": "11",
+    "Name": "data-validation-regex-regex",
+    "Default": "((http[s]?|ftp[s]?):\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*",
+    "Description": "Url's regex"
+  },
+  {
+    "Code": "12",
+    "Name": "data-validation-regex-message",
+    "Description": "Regex message"
+  },
+  {
+    "Code": "13",
+    "Name": "data-validation-regex-regex",
+    "Default": "([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})",
+    "Description": "Email validation"
+  },
+  {
+    "Code": "14",
+    "Name": "data-validation-regex-regex",
+    "Default": "",
+    "Description": "Regex"
+  },
+  {
+    "Code": "15",
+    "Name": "required",
+    "Default": "",
+    "Description": "Required"
+  }
+]

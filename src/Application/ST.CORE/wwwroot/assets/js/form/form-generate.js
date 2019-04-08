@@ -248,6 +248,26 @@ Form.prototype.attrsToArray = function (data) {
 }
 
 /**
+ * Required to boolean
+ * @param {any} data
+ */
+Form.prototype.parseRequiredToBoolean = function (data) {
+	const form = data.result;
+	for (let i in form.fields) {
+		if (form.fields.hasOwnProperty(i)) {
+			for (let j in form.fields[i].attrs) {
+				const sel = form.fields[i].attrs[j];
+				if (j === "required") {
+					form.fields[i].attrs[j] = sel === "True";
+				}
+			}
+		}
+	}
+
+	return form;
+}
+
+/**
  * Attrs of form to single select
  * @param {any} form
  */
@@ -492,6 +512,7 @@ Form.prototype.getOptions = function (containerSelector, tableId) {
  */
 Form.prototype.getFormFronServer = function (id) {
 	var response = null;
+	const context = this;
 	$.ajax({
 		url: "/api/Form/GetForm",
 		data: { id: id },
@@ -499,6 +520,9 @@ Form.prototype.getFormFronServer = function (id) {
 		async: false,
 		success: function (data) {
 			if (data) {
+				if (data.is_success) {					
+					data.result = context.parseRequiredToBoolean(data);
+				}
 				response = data;
 			}
 		},

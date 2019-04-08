@@ -62,7 +62,7 @@
             {
               "Name": "ContentLen",
               "Type": "int",
-              "Description": "Max lenght of the string.",
+              "Description": "Max length of the string.",
               "Code": "1000"
             },
             {

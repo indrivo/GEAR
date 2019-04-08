@@ -166,10 +166,10 @@ namespace ST.CORE.Controllers.Render
 
 			var field = _context.TableFields.FirstOrDefault(x => x.Id.Equals(fieldId));
 			if (field == null) return Json(new ResultModel());
-			var config = _context.TableFieldConfigValues
+			var config = await _context.TableFieldConfigValues
 				.Include(x => x.TableFieldConfig)
 				.ThenInclude(x => x.TableFieldType)
-				.FirstOrDefault(x => x.TableModelFieldId.Equals(fieldId));
+				.FirstOrDefaultAsync(x => x.TableModelFieldId.Equals(fieldId) && x.TableFieldConfig.Code == "3000");
 			if (config == null) return Json(new ResultModel());
 			if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
 			var table = config.Value;
