@@ -572,7 +572,7 @@ namespace ST.CORE.Controllers.Render
 				return Json(result);
 			}
 
-			if (model.IsEdit && model.SystemFields.Count() == 0)
+			if (model.IsEdit && !model.SystemFields.Any())
 			{
 				result.Errors
 					.Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
