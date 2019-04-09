@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -360,25 +361,22 @@ namespace ST.CORE.Controllers.Entity
 			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id);
 			// Clean Code
 			var field = await Context.TableFields.FirstOrDefaultAsync(x => x.Id == fieldId);
-			var configFields = Context.TableFieldConfigValues.Where(x => x.TableModelFieldId == fieldId);
-			var configurations = new List<FieldConfigViewModel>();
-			foreach (var item in configFields)
-			{
-				configurations.Add(new FieldConfigViewModel
+			var configFields = Context.TableFieldConfigValues
+				.Where(x => x.TableModelFieldId == fieldId)
+				.Select(y => new FieldConfigViewModel
 				{
-					Name = fieldTypeConfig.Single(x => x.Id == item.TableFieldConfigId).Name,
-					Type = fieldTypeConfig.Single(x => x.Id == item.TableFieldConfigId).Type,
-					ConfigId = item.TableFieldConfigId,
-					Description = fieldTypeConfig.Single(x => x.Id == item.TableFieldConfigId).Description,
-					Value = item.Value
-				});
-			}
+					Name = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Name,
+					Type = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Type,
+					ConfigId = y.TableFieldConfigId,
+					Description = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Description,
+					Value = y.Value
+				}).ToList();
 
 			var model = new CreateTableFieldViewModel
 			{
 				Id = fieldId,
 				TableId = field.TableId,
-				Configurations = configurations,
+				Configurations = configFields,
 				TableFieldTypeId = field.TableFieldTypeId,
 				DataType = field.DataType,
 				Parameter = fieldType.Name,
@@ -395,10 +393,11 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult EditField(CreateTableFieldViewModel field)
+		public async Task<IActionResult> EditField([Required]CreateTableFieldViewModel field)
 		{
-			var tableName = Context.Table.FirstOrDefault(x => x.Id == field.TableId)?.Name;
-			if (tableName == null) return View();
+			var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
+			if (table == null) return NotFound();
+			if (field.Id == Guid.Empty) return NotFound();
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
@@ -432,10 +431,22 @@ namespace ST.CORE.Controllers.Entity
 					if (defaultTime?.Value != null && defaultTime.Value.Trim() == "off") defaultTime.Value = null;
 					break;
 			}
-
-			//	var insertField = sqlService.AddFieldSql(field, tableName, _connectionString, false);
-			// Save field model in the dataBase
-			if (true)
+			var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.DataType == field.DataType);
+			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id);
+			field.Configurations = Context.TableFieldConfigValues
+				.Where(x => x.TableModelFieldId == field.Id)
+				.Select(y => new FieldConfigViewModel
+				{
+					Name = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Name,
+					Type = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Type,
+					ConfigId = y.TableFieldConfigId,
+					Description = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Description,
+					Value = y.Value
+				}).ToList();
+			var sqlService = GetSqlService();
+			var updateStructure = sqlService.AddFieldSql(field, table.Name, ConnectionString.Item2, false, table.EntityType);
+			// Save field model structure in the dataBase
+			if (updateStructure.IsSuccess)
 			{
 				var configValues = new List<TableFieldConfigValues>();
 				var model = new TableModelFields
@@ -462,14 +473,16 @@ namespace ST.CORE.Controllers.Entity
 
 				model.TableFieldConfigValues = configValues;
 				Repository.Refresh<TableModelFields, TableModelFields>(model);
-				foreach (var item in model.TableFieldConfigValues)
-				{
-					Context.TableFieldConfigValues.Update(item);
-					Context.SaveChanges();
-				}
+				//foreach (var item in model.TableFieldConfigValues)
+				//{
+				//	Context.TableFieldConfigValues.Update(item);
+				//	Context.SaveChanges();
+				//}
 
 				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
 			}
+			ModelState.AddModelError("Fail", "Fail on update data to database!");
+			return View(field);
 		}
 
 		/// <summary>

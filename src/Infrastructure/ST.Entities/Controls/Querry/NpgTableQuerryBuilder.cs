@@ -60,9 +60,9 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "nvarchar":
-                    var maxLenght = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
-                    if (string.IsNullOrEmpty(maxLenght) || maxLenght.Trim() == "0") sql.AppendFormat(" varchar(3999)");
-                    else sql.AppendFormat(" varchar({0})", maxLenght);
+                    var maxLength = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
+                    if (string.IsNullOrEmpty(maxLength) || maxLength.Trim() == "0") sql.AppendFormat(" varchar(3999)");
+                    else sql.AppendFormat(" varchar({0})", maxLength);
                     if (defaultValue != null) sql.AppendFormat(" default '{0}' ", defaultValue);
                     break;
 
@@ -207,7 +207,7 @@ namespace ST.Entities.Controls.Querry
             var sql = new StringBuilder();
             var alterSql = new StringBuilder();
             sql.AppendFormat(" ALTER TABLE \"{1}\".\"{0}\" ", tableName, tableSchema);
-            sql.AppendFormat(" ALTER COLUMN \"{0}\" ", field.Name);
+            sql.AppendFormat(" ALTER COLUMN \"{0}\" TYPE", field.Name);
             var defaultValue = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.DefaultValue)?.Value;
             switch (field.DataType.Trim())
             {
@@ -255,8 +255,9 @@ namespace ST.Entities.Controls.Querry
 
                 case "nvarchar":
                     var maxLength = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
-                    sql.AppendFormat(" varchar({0})", maxLength);
-                    if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
+                    if (string.IsNullOrEmpty(maxLength) || maxLength.Trim() == "0") sql.AppendFormat(" varchar(3999)");
+                    else sql.AppendFormat(" varchar({0})", maxLength);
+                    if (defaultValue != null) sql.AppendFormat(" default '{0}' ", defaultValue);
                     break;
 
                 case "double":
@@ -286,19 +287,19 @@ namespace ST.Entities.Controls.Querry
                     if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
                     break;
             }
+            sql.AppendFormat(", ALTER COLUMN \"{0}\" ", field.Name);
+            sql.Append(!field.AllowNull ? "SET NOT NULL" : "DROP NOT NULL");
 
-            if (!field.AllowNull) sql.Append(" NOT NULL");
+            //if (field.Parameter == FieldType.EntityReference)
+            //{
+            //    var foreignTableName =
+            //        field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
+            //    var foreignTableSchemaName =
+            //        field.Configurations.FirstOrDefault(x => x.ConfigCode == "9999");
+            //    sql.AppendFormat(" FOREIGN KEY REFERENCES \"{2}\".\"{0}\"({1})", foreignTableName, "\"Id\"", foreignTableSchemaName);
+            //}
 
-            if (field.Parameter == FieldType.EntityReference)
-            {
-                var foreignTableName =
-                    field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
-                var foreignTableSchemaName =
-                    field.Configurations.FirstOrDefault(x => x.ConfigCode == "9999");
-                sql.AppendFormat(" FOREIGN KEY REFERENCES \"{2}\".\"{0}\"({1})", foreignTableName, "\"Id\"", foreignTableSchemaName);
-            }
-
-            sql.AppendFormat("{0}", alterSql.ToString());
+            sql.AppendFormat("{0}", alterSql);
             return sql.ToString();
         }
 
