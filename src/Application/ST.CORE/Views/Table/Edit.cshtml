@@ -144,13 +144,13 @@
 													@Html.DisplayFor(modelItem => item.DataType)
 												</td>
 												<td style="text-align: center">
-													@if (item.AllowNull == false)
+													@if (item.AllowNull)
 													{
-														<i class="circle outline icon"></i>
+														<i class="fa fa-check"></i>
 													}
 													else
 													{
-														<i class="circle icon"></i>
+														<i class="fa fa-minus"></i>
 													}
 												</td>
 												<td>

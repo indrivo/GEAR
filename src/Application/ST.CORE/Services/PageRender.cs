@@ -372,20 +372,21 @@ namespace ST.CORE.Services
 				TableModel = table
 			};
 			var c = 0;
-			var props = typeof(ExtendedModel).GetProperties().ToList();
-
-			fields.AddRange(props.Select(x => new ViewModelFields
-			{
-				Order = c++,
-				Name = x.Name,
-				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
-			}));
 
 			fields.AddRange(table.TableFields.Select(x => new ViewModelFields
 			{
 				Order = c++,
 				Name = x.Name,
 				TableModelFields = x,
+				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
+			}));
+
+			var props = typeof(ExtendedModel).GetProperties().ToList();
+
+			fields.AddRange(props.Select(x => new ViewModelFields
+			{
+				Order = c++,
+				Name = x.Name,
 				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
 			}));
 

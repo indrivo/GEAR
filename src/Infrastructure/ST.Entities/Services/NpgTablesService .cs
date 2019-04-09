@@ -29,7 +29,8 @@ namespace ST.Entities.Services
             var returnModel = new ResultModel<bool>
             {
                 IsSuccess = false,
-                Result = false
+                Result = false,
+                Errors = new List<IErrorModel>()
             };
             var sqlQuery = isNew
                 ? NpgTableQuerryBuilder.AddFieldQuerry(table, tableName, tableSchema)
@@ -51,6 +52,7 @@ namespace ST.Entities.Services
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                returnModel.Errors.Add(new ErrorModel("Exception", ex.ToString()));
                 return returnModel;
             }
         }
