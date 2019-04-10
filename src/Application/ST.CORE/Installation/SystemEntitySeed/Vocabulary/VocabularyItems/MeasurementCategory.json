@@ -8,8 +8,7 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "NomenclatorId": "9b82104b-a92c-42dd-9b03-cb9bb42173c2",
-
+    "NomenclatorId": "9b82104b-a92c-42dd-9b03-cb9bb42173c2"
   },
   {
     "Name": "Number",
@@ -20,8 +19,7 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "NomenclatorId": "9b82104b-a92c-42dd-9b03-cb9bb42173c2",
-
+    "NomenclatorId": "9b82104b-a92c-42dd-9b03-cb9bb42173c2"
   },
   {
     "Name": "Boolean",
@@ -32,7 +30,6 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "NomenclatorId": "9b82104b-a92c-42dd-9b03-cb9bb42173c2",
-
+    "NomenclatorId": "9b82104b-a92c-42dd-9b03-cb9bb42173c2"
   }
 ]
