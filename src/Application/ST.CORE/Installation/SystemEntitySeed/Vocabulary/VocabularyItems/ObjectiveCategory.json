@@ -8,8 +8,7 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
-
+    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b"
   },
   {
     "Name": "O1.1 Existenta unui BCP",
@@ -20,8 +19,7 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
-
+    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b"
   },
   {
     "Name": "O1.2 Testarea anuala a BCP-ului",
@@ -32,7 +30,6 @@
     "ModifiedBy": null,
     "Changed": "2019-01-29T07:59:12.6160762Z",
     "IsDeleted": false,
-    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b",
-
+    "NomenclatorId": "6f5e24f3-f046-45e3-8197-c8315a1eb53b"
   }
 ]

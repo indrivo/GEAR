@@ -306,7 +306,7 @@ namespace ST.CORE.Controllers.Entity
 				}
 			}
 
-			ITablesService sqlService = GetSqlService();
+			var sqlService = GetSqlService();
 			field = field.CreateSqlField(ConnectionString);
 			var insertField = sqlService.AddFieldSql(field, tableName, ConnectionString.Item2, true, schema);
 			// Save field model in the dataBase

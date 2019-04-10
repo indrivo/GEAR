@@ -296,6 +296,7 @@ namespace ST.Entities.Data
             returnModel.Result.Values = values;
             return returnModel;
         }
+
         /// <summary>
         /// Delete row by id
         /// </summary>

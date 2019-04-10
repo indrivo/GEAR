@@ -73,7 +73,7 @@
 											{
 												<div class="field">
 													<p>@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></p>
-													<input name="Configurations[@i].Value" value="@item.Value" type="text" class="form-control" />
+													<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" class="form-control" />
 													<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
 													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
 												</div>

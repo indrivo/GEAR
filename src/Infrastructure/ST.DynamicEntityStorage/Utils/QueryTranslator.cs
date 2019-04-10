@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using ST.Audit.Models;
 
 namespace ST.DynamicEntityStorage.Utils
 {
@@ -49,7 +50,7 @@ namespace ST.DynamicEntityStorage.Utils
         {
         }
 
-        public string Translate(Expression expression)
+        public string Translate<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : ExtendedModel
         {
             this.sb = new StringBuilder();
             this.Visit(expression);
@@ -107,7 +108,18 @@ namespace ST.DynamicEntityStorage.Utils
                     return this.Visit(nextExpression);
                 }
             }
-
+            else if (m.Method.Name == "Contains")
+            {
+                var nextExpression = m.Arguments[0];
+                sb.AppendFormat(" {0} LIKE '%", nextExpression);
+                return this.Visit(nextExpression);
+            }
+            else if (m.Method.Name == "StartsWith")
+            {
+                var nextExpression = m.Arguments[0];
+                sb.AppendFormat(" {0} LIKE '%", nextExpression);
+                return this.Visit(nextExpression);
+            }
             throw new NotSupportedException($"The method '{m.Method.Name}' is not supported");
         }
 
@@ -136,7 +148,7 @@ namespace ST.DynamicEntityStorage.Utils
         /// <returns></returns>
         protected override Expression VisitBinary(BinaryExpression b)
         {
-            sb.Append("(");
+            //sb.Append("(");
             this.Visit(b.Left);
 
             switch (b.NodeType)
@@ -187,7 +199,7 @@ namespace ST.DynamicEntityStorage.Utils
             }
 
             this.Visit(b.Right);
-            sb.Append(")");
+            //sb.Append(")");
             return b;
         }
 
