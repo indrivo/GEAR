@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Mapster;
+using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
+using ST.DynamicEntityStorage.Utils;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
+using Expression = Castle.DynamicProxy.Generators.Emitters.SimpleAST.Expression;
 
 namespace ST.DynamicEntityStorage.Extensions
 {
     public enum MethodName
     {
-        GetAllSystem,
+        GetAllWithInclude,
         GetByIdSystem,
         AddSystem,
         UpdateSystem,
@@ -21,6 +27,7 @@ namespace ST.DynamicEntityStorage.Extensions
         AddDataRange,
         Any
     }
+
     /// <summary>
     /// Object extension
     /// </summary>
@@ -107,12 +114,15 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <param name="obj"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null)
+        public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null) where TEntity : class
         {
             return Task.Run(() =>
             {
                 var result = new ResultModel<IEnumerable<TEntity>>();
-                var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllSystem, new List<Type> { obj.Object.GetType(), obj.Object.GetType() });
+
+                var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllWithInclude,
+                    new List<Type> { obj.Object.GetType(), obj.Object.GetType() }, new List<dynamic> { null });
+
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
                 result.Result = req.Result.Adapt<IEnumerable<TEntity>>();
@@ -120,6 +130,7 @@ namespace ST.DynamicEntityStorage.Extensions
                 return result;
             });
         }
+
         /// <summary>
         /// Get By id
         /// </summary>
@@ -178,6 +189,7 @@ namespace ST.DynamicEntityStorage.Extensions
                 return result;
             });
         }
+
         /// <summary>
         /// Delete item
         /// </summary>
@@ -199,6 +211,7 @@ namespace ST.DynamicEntityStorage.Extensions
                 return result;
             });
         }
+
         /// <summary>
         /// Delete item
         /// </summary>
@@ -220,6 +233,7 @@ namespace ST.DynamicEntityStorage.Extensions
                 return result;
             });
         }
+
         /// <summary>
         /// Update item
         /// </summary>
@@ -251,7 +265,7 @@ namespace ST.DynamicEntityStorage.Extensions
         /// </param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static object ParseObject<TObject, TContext>(this ObjectService<TContext> conf, TObject obj) where TContext : EntitiesDbContext
+        public static object ParseObject<TObject, TContext>(this ObjectService conf, TObject obj) where TContext : EntitiesDbContext
         {
             return conf.ParseObject(obj);
         }
@@ -267,7 +281,7 @@ namespace ST.DynamicEntityStorage.Extensions
         public static object ParseObject<TObject, TContext>(this DynamicObject conf, TObject obj) where TContext : EntitiesDbContext
         {
             var entity = conf.Object.GetType().Name;
-            var res = new ObjectService<TContext>(entity).ParseObject(obj);
+            var res = new ObjectService(entity).ParseObject(obj);
             return res;
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ST.Audit.Models;
 using ST.DynamicEntityStorage.Abstractions;
@@ -12,16 +13,30 @@ using ST.Entities.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage
 {
-    public class ObjectService<TContext> where TContext : EntitiesDbContext
+    public class ObjectService
     {
-        private readonly AssemblyName _asemblyName;
+        /// <summary>
+        /// Store types
+        /// </summary>
+        private static Dictionary<string, Dictionary<string, Type>> TypeManager { get; set; }
+
+        /// <summary>
+        /// Get types
+        /// </summary>
+        public static Dictionary<string, Dictionary<string, Type>> Types => TypeManager;
+
+        /// <summary>
+        /// Assembly name
+        /// </summary>
+        private readonly AssemblyName _assemblyName;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="className"></param>
         public ObjectService(string className)
         {
-            _asemblyName = new AssemblyName(className);
+            _assemblyName = new AssemblyName(className);
         }
 
         /// <summary>
@@ -29,18 +44,43 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
+        /// <param name="includeFieldReferences"></param>
         /// <returns></returns>
-        public DynamicObject Resolve(TContext context, IHttpContextAccessor httpContextAccessor)
+        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor, bool includeFieldReferences = true)
         {
-            var proprietes = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
-            var entity = _asemblyName.Name;
+            if (TypeManager == null)
+            {
+                TypeManager = new Dictionary<string, Dictionary<string, Type>>();
+            }
+
+            var entity = _assemblyName.Name;
             var schema = context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
+            if (Types.ContainsKey(schema))
+            {
+                if (Types[schema].ContainsKey(entity))
+                {
+                    var instanceType = Types[schema][entity];
+                    var newInstance = Activator.CreateInstance(instanceType);
+
+                    return new DynamicObject
+                    {
+                        Object = newInstance,
+                        Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
+                    };
+                }
+            }
+            else
+            {
+                TypeManager.Add(schema, new Dictionary<string, Type>());
+            }
+
             var model = new EntityViewModel
             {
                 TableName = entity,
                 TableSchema = schema,
                 Fields = new List<EntityFieldsViewModel>()
             };
+            var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
 
             model = ViewModelBuilder.Resolve(context, model);
 
@@ -49,17 +89,38 @@ namespace ST.DynamicEntityStorage
 
             foreach (var field in model.Fields)
             {
-                if (proprietes.Contains(field.ColumnName)) continue;
+                if (proprieties.Contains(field.ColumnName)) continue;
+
+                var entityRef = field.Configurations.FirstOrDefault(x => x.Name == "ForeingTable");
+                var entityRefSchema = field.Configurations.FirstOrDefault(x => x.Name == "ForeingSchemaTable");
+                if (entityRef != null && entityRefSchema != null)
+                {
+                    if (includeFieldReferences)
+                    {
+                        var refType = new ObjectService(entityRef.Value).Resolve(context, httpContextAccessor, false);
+                        CreateProperty(dynamicClass, $"{field.ColumnName}Reference", refType.Object.GetType());
+                    }
+                }
                 var fieldType = GetTypeFromString(field.Type);
                 CreateProperty(dynamicClass, field.ColumnName, fieldType);
             }
 
             var type = dynamicClass.CreateType();
+            if (!Types[schema].ContainsKey(entity))
+            {
+                TypeManager[schema].Add(entity, type);
+            }
+            else
+            {
+                TypeManager[schema][entity] = type;
+            }
+
             var obj = Activator.CreateInstance(type);
+
             return new DynamicObject
             {
                 Object = obj,
-                Service = new DynamicService<TContext>(context, httpContextAccessor)
+                Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
             };
         }
 
@@ -70,7 +131,6 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public object ParseObject<TObject>(TObject obj)
         {
-            //TODO: Resolve exception for parse object to custom object
             var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
             var dynamicClass = CreateClass();
             CreateConstructor(dynamicClass);
@@ -132,9 +192,9 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         private TypeBuilder CreateClass()
         {
-            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(_asemblyName, AssemblyBuilderAccess.Run);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(_assemblyName, AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule("MainModule");
-            var typeBuilder = moduleBuilder.DefineType(_asemblyName.FullName
+            var typeBuilder = moduleBuilder.DefineType(_assemblyName.FullName
                                 , TypeAttributes.Public |
                                 TypeAttributes.Class |
                                 TypeAttributes.AutoClass |

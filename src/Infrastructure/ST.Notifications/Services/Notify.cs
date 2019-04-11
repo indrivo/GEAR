@@ -152,7 +152,7 @@ namespace ST.Notifications.Services
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId)
         {
-            var notifications = await _dataService.GetAllSystem<SystemNotifications, SystemNotifications>();
+            var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>();
             if (notifications.IsSuccess)
             {
                 notifications.Result = notifications.Result.Where(x => x.UserId.Equals(userId)).OrderBy(x => x.Created);

@@ -360,7 +360,7 @@ namespace ST.CORE.Controllers.Entity
 				result.Errors.Add(new ErrorModel(string.Empty, "Object not found"));
 				return Json(result);
 			}
-			var objDict = ObjectService<EntitiesDbContext>.GetDictionary(obj.Result);
+			var objDict = ObjectService.GetDictionary(obj.Result);
 
 			var formValues = FormService.GetValuesForEditForm(form, objDict);
 			if (!formValues.IsSuccess) return Json(result);

@@ -343,6 +343,20 @@
 					"language": {
 						"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
 					},
+					//rowsGroup: [
+					//	0
+					//],
+					//'createdRow': function(row, data, dataIndex){
+					//	// Add COLSPAN attribute
+					//	$('td:eq(1)', row).attr('colspan', 5);
+
+					//	// Hide required number of columns
+					//	// next to the cell with COLSPAN attribute
+					//	$('td:eq(2)', row).css('display', 'none');
+					//	$('td:eq(3)', row).css('display', 'none');
+					//	$('td:eq(4)', row).css('display', 'none');
+					//	$('td:eq(5)', row).css('display', 'none');
+					//},
 					dom: '<"CustomizeColumns">lBfrtip',
 					buttons: [
 						{
@@ -400,10 +414,11 @@
 						}
 					],
 					select: {
-						style: 'os',
+						style: 'multi',
 						selector: 'td:first-child',
 						blurable: true
 					},
+					"scrollX": true,
 					"processing": true, // for show progress bar
 					"serverSide": true, // for process server side
 					"filter": true, // this is for disable filter (search box)

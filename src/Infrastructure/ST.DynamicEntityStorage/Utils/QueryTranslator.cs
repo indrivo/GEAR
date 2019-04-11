@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using ST.Audit.Models;
+using ST.BaseRepository;
 
 namespace ST.DynamicEntityStorage.Utils
 {
@@ -50,7 +51,7 @@ namespace ST.DynamicEntityStorage.Utils
         {
         }
 
-        public string Translate<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : ExtendedModel
+        public string Translate<TEntity>(Expression<Func<TEntity, bool>> expression) where  TEntity: class
         {
             this.sb = new StringBuilder();
             this.Visit(expression);

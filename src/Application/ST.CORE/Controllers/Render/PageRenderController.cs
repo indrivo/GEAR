@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -210,11 +211,30 @@ namespace ST.CORE.Controllers.Render
 		[HttpGet]
 		[AjaxOnly]
 		[Authorize(Roles = Settings.SuperAdmin)]
-		public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
+		public async Task<JsonResult> GetJsonExampleOfEntity([Required] Guid viewModelId)
 		{
 			var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
 			if (entity == null) return Json(default(ResultModel));
 			var obj = _service.Table(entity.TableModel.Name).Object;
+			var referenceFields = obj.GetType().GetProperties()
+				.Where(x => !x.PropertyType.GetTypeInfo().FullName.StartsWith("System"))
+				.ToList();
+			foreach (var refField in referenceFields)
+			{
+				var refEntity = refField.PropertyType.Name;
+				var refPropName = refField.Name;
+				try
+				{
+					var refType = obj.GetType().GetProperty(refPropName).PropertyType;
+					var newInstance = Activator.CreateInstance(refType);
+					obj.GetType().GetProperty(refPropName).SetValue(obj, newInstance);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
+			}
+
 			return Json(new { row = obj });
 		}
 
