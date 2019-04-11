@@ -211,7 +211,7 @@ namespace ST.CORE.Controllers.Render
 		[HttpGet]
 		[AjaxOnly]
 		[Authorize(Roles = Settings.SuperAdmin)]
-		public async Task<JsonResult> GetJsonExampleOfEntity([Required] Guid viewModelId)
+		public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
 		{
 			var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
 			if (entity == null) return Json(default(ResultModel));
@@ -221,7 +221,6 @@ namespace ST.CORE.Controllers.Render
 				.ToList();
 			foreach (var refField in referenceFields)
 			{
-				var refEntity = refField.PropertyType.Name;
 				var refPropName = refField.Name;
 				try
 				{
