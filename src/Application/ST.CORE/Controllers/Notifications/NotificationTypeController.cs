@@ -71,7 +71,7 @@ namespace ST.CORE.Controllers.Notifications
 		/// <returns></returns>
 		private async Task<(List<NotificationTypes>, int)> GetNotificationTypesFiltered(string search, string sortOrder, int start, int length)
 		{
-			var result = (await _service.GetAllSystem<NotificationTypes, NotificationTypes>()).Result.Where(p =>
+			var result = (await _service.GetAllWithInclude<NotificationTypes, NotificationTypes>()).Result.Where(p =>
 				search == null || p.Name != null &&
 				p.Name.ToLower().Contains(search.ToLower()) || p.Author != null &&
 				p.Author.ToLower().Contains(search.ToLower()) || p.ModifiedBy != null &&

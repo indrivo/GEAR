@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.Entities.ViewModels.DynamicEntities;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {
@@ -18,11 +21,19 @@ namespace ST.DynamicEntityStorage.Abstractions
         Task<ResultModel> Exists<TEntity>(Guid id) where TEntity : BaseModel;
 
         /// <summary>
-        /// Create entity view 
+        /// Create entity definition
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        Task<EntityViewModel> Create<TEntity>(string tableSchema) where TEntity : BaseModel;
+        Task<EntityViewModel> CreateEntityDefinition<TEntity>(string tableSchema) where TEntity : BaseModel;
+
+        /// <summary>
+        /// Create entity definition
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="tableSchema"></param>
+        /// <returns></returns>
+        Task<EntityViewModel> CreateEntityDefinition(string entityName, string tableSchema);
 
         /// <summary>
         /// Create entity view  without base model
@@ -76,8 +87,9 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <param name="sortOrder"></param>
         /// <param name="start"></param>
         /// <param name="length"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Func<T, bool> predicate = null) where T : BaseModel;
+        Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Expression<Func<T, bool>> predicate = null) where T : BaseModel;
         /// <summary>
         /// Filter dynamic entity data
         /// </summary>
@@ -88,6 +100,6 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <param name="length"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Func<object, bool> predicate = null);
+        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null);
     }
 }

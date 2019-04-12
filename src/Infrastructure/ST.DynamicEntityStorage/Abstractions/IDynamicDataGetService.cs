@@ -10,17 +10,20 @@ namespace ST.DynamicEntityStorage.Abstractions
 {
     public interface IDynamicDataGetService
     {
-        /// <summary>
-        /// Get all from entity
-        /// </summary>
-        /// <returns></returns>
-        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>() where TEntity : BaseModel;
+        Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null)
+            where TEntity : BaseModel;
 
         /// <summary>
         /// Get all from entity
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<TOutput>>> GetAllSystem<TEntity, TOutput>() where TEntity : BaseModel;
+        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Expression<Func<TEntity, bool>> predicate = null) where TEntity : BaseModel;
+
+        /// <summary>
+        /// Get all from entity
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<TOutput>>> GetAllWithInclude<TEntity, TOutput>(Expression<Func<TEntity, bool>> predicate = null) where TEntity : BaseModel;
 
         /// <summary>
         /// Get all with predicate
@@ -88,14 +91,5 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <param name="predicate"></param>
         /// <returns></returns>
         Task<ResultModel<TEntity>> LastOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel;
-
-        /// <summary>
-        /// Get data list
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <typeparam name="TOutput"></typeparam>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null) where TEntity : BaseModel;
     }
 }

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace ST.DynamicEntityStorage.Extensions
 {
@@ -73,9 +76,9 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <param name="length"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public static async Task<(List<T>, int)> Filter<T>(this DynamicObject context, string search, string sortOrder, int start, int length, Func<T, bool> predicate = null) where T : class
+        public static async Task<(List<T>, int)> Filter<T>(this DynamicObject context, string search, string sortOrder, int start, int length, Expression<Func<T, bool>> predicate = null) where T : class
         {
-            var data = await context.GetAll(predicate);
+            var data = await context.GetAll(predicate?.Compile());
             if (!data.IsSuccess) return default;
             var result = data.Result.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 
@@ -91,7 +94,6 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <summary>
         /// Filter dynamic entity
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <param name="entity"></param>
         /// <param name="search"></param>
@@ -100,9 +102,9 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <param name="length"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Func<object, bool> predicate = null)
+        public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null)
         {
-            var data = await context.Service.Table(entity).GetAll(predicate);
+            var data = await context.Service.Table(entity).GetAll(predicate?.Compile());
             if (!data.IsSuccess) return default;
             var result = data.Result.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 
