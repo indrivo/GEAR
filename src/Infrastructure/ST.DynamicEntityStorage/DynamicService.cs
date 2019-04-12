@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using ST.Audit.Enums;
 using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
@@ -815,6 +816,19 @@ namespace ST.DynamicEntityStorage
                 Object = Activator.CreateInstance(typeof(TEntity)),
                 Service = new DynamicService<TContext>(_context, _httpContextAccessor)
             };
+
+        /// <summary>
+        /// Register in memory
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task RegisterInMemoryDynamicTypes()
+        {
+            var tables = await _context.Table.ToListAsync();
+            foreach (var table in tables)
+            {
+                new ObjectService(table.Name).Resolve(_context, _httpContextAccessor);
+            }
+        }
 
 
         /// <inheritdoc />

@@ -15,6 +15,7 @@ using ST.CORE.Installation;
 using ST.CORE.LoggerTargets;
 using ST.CORE.Services;
 using ST.CORE.Services.Abstraction;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
@@ -85,7 +86,7 @@ namespace ST.CORE
 			app.UseLocalization(languages);
 			lifetime.ApplicationStarted.Register(() =>
 			{
-				OnApplicationStarted(app);
+				Application.OnApplicationStarted(app);
 			});
 			// Microsoft.AspNetCore.StaticFiles: API for starting the application from wwwroot.
 			// Uses default files as index.html.
@@ -166,28 +167,6 @@ namespace ST.CORE
 
 			//Register dependencies
 			return services.AddWindsorContainers();
-		}
-
-		/// <summary>
-		/// On application start
-		/// </summary>
-		/// <param name="app"></param>
-		private static async void OnApplicationStarted(IApplicationBuilder app)
-		{
-			using (var serviceScope = app.ApplicationServices
-			   .GetRequiredService<IServiceScopeFactory>()
-			   .CreateScope())
-			{
-				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
-				var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
-				var isConfigured = Application.IsConfigured(env);
-
-				if (isConfigured && context.Database.CanConnect())
-				{
-					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
-					await permissionService.RefreshCache();
-				}
-			}
 		}
 	}
 }

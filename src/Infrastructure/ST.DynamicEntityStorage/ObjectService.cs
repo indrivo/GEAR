@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using ST.Audit.Models;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Exceptions;
+using ST.DynamicEntityStorage.Services;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.ViewModels.DynamicEntities;
@@ -15,16 +17,6 @@ namespace ST.DynamicEntityStorage
 {
     public class ObjectService
     {
-        /// <summary>
-        /// Store types
-        /// </summary>
-        private static Dictionary<string, Dictionary<string, Type>> TypeManager { get; set; }
-
-        /// <summary>
-        /// Get types
-        /// </summary>
-        public static Dictionary<string, Dictionary<string, Type>> Types => TypeManager;
-
         /// <summary>
         /// Assembly name
         /// </summary>
@@ -48,30 +40,20 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor, bool includeFieldReferences = true)
         {
-            if (TypeManager == null)
-            {
-                TypeManager = new Dictionary<string, Dictionary<string, Type>>();
-            }
 
             var entity = _assemblyName.Name;
-            var schema = context.Table.FirstOrDefault(x => x.Name.Equals(entity))?.EntityType;
-            if (Types.ContainsKey(schema))
-            {
-                if (Types[schema].ContainsKey(entity))
-                {
-                    var instanceType = Types[schema][entity];
-                    var newInstance = Activator.CreateInstance(instanceType);
+            var table = context.Table.FirstOrDefault(x => x.Name.Equals(entity));
+            if (table == null) throw new DynamicTableOperationException($"Table {entity} not found in database!");
+            var schema = table.EntityType;
+            var stored = TypeManager.TryGet(entity, schema);
 
-                    return new DynamicObject
-                    {
-                        Object = newInstance,
-                        Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
-                    };
-                }
-            }
-            else
+            if (stored.IsSuccess)
             {
-                TypeManager.Add(schema, new Dictionary<string, Type>());
+                return new DynamicObject
+                {
+                    Object = stored.Result,
+                    Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
+                };
             }
 
             var model = new EntityViewModel
@@ -80,6 +62,7 @@ namespace ST.DynamicEntityStorage
                 TableSchema = schema,
                 Fields = new List<EntityFieldsViewModel>()
             };
+
             var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
 
             model = ViewModelBuilder.Resolve(context, model);
@@ -106,14 +89,8 @@ namespace ST.DynamicEntityStorage
             }
 
             var type = dynamicClass.CreateType();
-            if (!Types[schema].ContainsKey(entity))
-            {
-                TypeManager[schema].Add(entity, type);
-            }
-            else
-            {
-                TypeManager[schema][entity] = type;
-            }
+
+            TypeManager.Register(schema, entity, type);
 
             var obj = Activator.CreateInstance(type);
 
