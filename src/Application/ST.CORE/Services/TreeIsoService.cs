@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
 using ST.CORE.Services.Abstraction;
 using ST.CORE.ViewModels.TreeISOViewModels;
+using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Models.Tables;
@@ -33,7 +34,7 @@ namespace ST.CORE.Services
 		/// <param name="categoryEntity"></param>
 		/// <param name="requirementEntity"></param>
 		/// <returns></returns>
-		public  async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
+		public async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
 			var standards = await _service.Table(standardEntity.Name).GetAll<dynamic>();
@@ -44,7 +45,7 @@ namespace ST.CORE.Services
 				tree.Add(new TreeStandard
 				{
 					Name = standard.Name,
-					Categories = await LoadCategories(categoryEntity.Name, requirementEntity.Name, standard.Id, Guid.Empty),
+					Categories = await LoadCategories(categoryEntity.Name, requirementEntity.Name, standard.Id, null),
 					Id = standard.Id
 				});
 			}
@@ -63,9 +64,24 @@ namespace ST.CORE.Services
 		/// <param name="standardId"></param>
 		/// <param name="parentCategoryId"></param>
 		/// <returns></returns>
-		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid parentCategoryId)
+		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid? parentCategoryId)
 		{
-			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(x => x.ParentCategoryId == parentCategoryId && x.StandardId == standardId);
+			//x => x.ParentCategoryId == parentCategoryId && x.StandardId == standardId
+			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(null, new List<Filter>
+			{
+				new Filter
+				{
+					Parameter = "ParentCategoryId",
+					Criteria = Criteria.Equals,
+					Value = parentCategoryId
+				},
+				new Filter
+				{
+					Parameter = "StandardId",
+					Criteria = Criteria.Equals,
+					Value = standardId
+				}
+			});
 			var resCats = new List<TreeCategory>();
 			foreach (var category in categories.Result)
 			{
@@ -74,7 +90,7 @@ namespace ST.CORE.Services
 					Name = category.Name,
 					Id = category.Id,
 					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),
-					Requirements = await LoadRequirements(requirementEntity, category.Id, Guid.Empty)
+					Requirements = await LoadRequirements(requirementEntity, category.Id, null)
 				};
 				resCats.Add(cat);
 			}
@@ -89,10 +105,26 @@ namespace ST.CORE.Services
 		/// <param name="categoryId"></param>
 		/// <param name="parentRequirementId"></param>
 		/// <returns></returns>
-		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid parentRequirementId)
+		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid? parentRequirementId)
 		{
 			var res = new List<TreeRequirement>();
-			var requirements = await _service.Table(requirementEntity).GetAll<dynamic>(x => x.CategoryId == categoryId && x.ParentRequirementId == parentRequirementId);
+			//x => x.CategoryId == categoryId && x.ParentRequirementId == parentRequirementId
+			var requirements = await _service.Table(requirementEntity).GetAll<dynamic>(null,
+				new List<Filter>
+				{
+					new Filter
+					{
+						Parameter = "CategoryId",
+						Criteria = Criteria.Equals,
+						Value = categoryId
+					},
+					new Filter
+					{
+						Parameter = "ParentRequirementId",
+						Criteria = Criteria.Equals,
+						Value = parentRequirementId
+					}
+				});
 			foreach (var req in requirements.Result)
 			{
 				res.Add(new TreeRequirement

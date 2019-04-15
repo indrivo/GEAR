@@ -39,12 +39,14 @@ namespace ST.CORE.Controllers.Entity
 		private readonly IPageRender _pageRender;
 		private readonly IHostingEnvironment _env;
 		private readonly IFormService _formService;
+		private readonly ICacheService _cacheService;
 
 		public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
 			INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService,
 			ProcessesDbContext processesDbContext, IPageRender pageRender, IHostingEnvironment env, IFormService formService)
 			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
 		{
+			_cacheService = cacheService;
 			_pageRender = pageRender;
 			_env = env;
 			_formService = formService;
@@ -76,11 +78,11 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="pageId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult PageScripts([Required] Guid pageId)
+		public async Task<IActionResult> PageScripts([Required] Guid pageId)
 		{
 			if (pageId == Guid.Empty) return NotFound();
-			var scripts = _pageRender.GetPageScripts(pageId);
-			ViewBag.Scripts = scripts.Result.OrderBy(x => x.Order).ToList();
+			var scripts = await _pageRender.GetPageScripts(pageId);
+			ViewBag.Scripts = scripts.Result.ToList();
 			return View();
 		}
 
@@ -90,11 +92,11 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="pageId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult PageStyles([Required] Guid pageId)
+		public async Task<IActionResult> PageStyles([Required] Guid pageId)
 		{
 			if (pageId == Guid.Empty) return NotFound();
-			var styles = _pageRender.GetPageStyles(pageId);
-			ViewBag.Styles = styles.Result.OrderBy(x => x.Order).ToList();
+			var styles = await _pageRender.GetPageStyles(pageId);
+			ViewBag.Styles = styles.Result.ToList();
 			return View();
 		}
 
@@ -104,16 +106,15 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="pageId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult PageBuilder(Guid pageId)
+		public async Task<IActionResult> PageBuilder(Guid pageId)
 		{
 			if (pageId == Guid.Empty) return NotFound();
-			var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = await _pageRender.GetPageAsync(pageId);
 			if (page == null) return NotFound();
-			page.Settings = Context.PageSettings.FirstOrDefault(x => x.Id.Equals(page.SettingsId));
 			ViewBag.Page = page;
 
-			ViewBag.Css = _pageRender.GetPageCss(page.Settings?.Name);
-			ViewBag.Html = _pageRender.GetPageHtml(page.Settings?.Name);
+			ViewBag.Css = page.Settings?.CssCode;
+			ViewBag.Html = page.Settings?.HtmlCode;
 
 			return View();
 		}
@@ -128,7 +129,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			var req = _pageRender.SavePageContent(model.PageId, model.HtmlCode, model.CssCode);
 			if (!req.IsSuccess) return new JsonResult(req);
-			var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
+			var page = await _pageRender.GetPageAsync(model.PageId);
 			await Notify.SendNotificationAsync(new SystemNotifications
 			{
 				Content = $"The page {page?.Settings?.Name} was updated with page builder!",
@@ -148,20 +149,20 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> GetCode([Required]Guid id, [Required]string type)
 		{
 			if (Guid.Empty == id) return NotFound();
-			var page = await Context.Pages.Where(x => x.Id == id).Include(x => x.Settings).FirstOrDefaultAsync();
+			var page = await _pageRender.GetPageAsync(id);
 			if (page == null) return NotFound();
 			if (string.IsNullOrEmpty(type)) return NotFound();
 			var code = string.Empty;
 			switch (type)
 			{
 				case "css":
-					code = page.Settings.CssCode;
+					code = page.Settings?.CssCode;
 					break;
 				case "js":
-					code = page.Settings.JsCode;
+					code = page.Settings?.JsCode;
 					break;
 				case "html":
-					code = page.Settings.HtmlCode;
+					code = page.Settings?.HtmlCode;
 					break;
 			}
 			var model = new CodeViewModel
@@ -180,7 +181,7 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public IActionResult GetCode(CodeViewModel model)
+		public async Task<IActionResult> GetCode(CodeViewModel model)
 		{
 			if (model.PageId == Guid.Empty)
 			{
@@ -188,12 +189,18 @@ namespace ST.CORE.Controllers.Entity
 				return View(model);
 			}
 
-			var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(model.PageId));
+			var page = await _pageRender.GetPageAsync(model.PageId);
 			if (page == null)
 			{
 				ModelState.AddModelError(string.Empty, "Page not found");
 				return View(model);
 			}
+
+			if (page.Settings == null)
+			{
+				page.Settings = new PageSettings();
+			}
+
 			switch (model.Type)
 			{
 				case "css":
@@ -211,6 +218,7 @@ namespace ST.CORE.Controllers.Entity
 			{
 				Context.Update(page);
 				Context.SaveChanges();
+				await _cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
 				return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
 			}
 			catch (Exception e)
@@ -315,10 +323,10 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="pageId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Edit(Guid pageId)
+		public async Task<IActionResult> Edit(Guid pageId)
 		{
 			if (pageId == Guid.Empty) return NotFound();
-			var page = Context.Pages.AsNoTracking().Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = await _pageRender.GetPageAsync(pageId);
 			if (page == null) return NotFound();
 			var model = page.Adapt<PageViewModel>();
 			model.Name = page.Settings.Name;
@@ -387,7 +395,7 @@ namespace ST.CORE.Controllers.Entity
 					Context.PageSettings.Update(settings);
 					Context.Pages.Update(page);
 					await Context.SaveChangesAsync();
-
+					await _cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
 					return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
 				}
 				catch (Exception e)
@@ -494,6 +502,7 @@ namespace ST.CORE.Controllers.Entity
 			try
 			{
 				Context.SaveChanges();
+				_cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
 				return Json(new { message = "Page was delete with success!", success = true });
 			}
 			catch (Exception e)
@@ -509,9 +518,9 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="scripts"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public JsonResult UpdateScripts([Required]IEnumerable<PageScript> scripts)
+		public async Task<JsonResult> UpdateScripts([Required]IEnumerable<PageScript> scripts)
 		{
-			return UpdateItems(scripts.ToList());
+			return await UpdateItemsAsync(scripts.ToList());
 		}
 
 		/// <summary>
@@ -520,9 +529,9 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="styles"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public JsonResult UpdateStyles([Required]IEnumerable<PageStyle> styles)
+		public async Task<JsonResult> UpdateStyles([Required]IEnumerable<PageStyle> styles)
 		{
-			return UpdateItems(styles.ToList());
+			return await UpdateItemsAsync(styles.ToList());
 		}
 
 		/// <summary>
@@ -532,7 +541,7 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="items"></param>
 		/// <returns></returns>
 		[NonAction]
-		private JsonResult UpdateItems<TItem>(IList<TItem> items) where TItem : BaseModel, IPageItem
+		private async Task<JsonResult> UpdateItemsAsync<TItem>(IList<TItem> items) where TItem : BaseModel, IPageItem
 		{
 			var result = new ResultModel();
 			if (!items.Any())
@@ -541,7 +550,7 @@ namespace ST.CORE.Controllers.Entity
 				return Json(result);
 			}
 
-			var pageId = items.First().PageId;
+			var pageId = items.FirstOrDefault()?.PageId;
 			var pageScripts = Context.Set<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
 
 			foreach (var prev in pageScripts)
@@ -574,6 +583,7 @@ namespace ST.CORE.Controllers.Entity
 			try
 			{
 				Context.SaveChanges();
+				await _cacheService.RemoveAsync($"_page_dynamic_{pageId}");
 				result.IsSuccess = true;
 			}
 			catch (Exception ex)
@@ -631,15 +641,13 @@ namespace ST.CORE.Controllers.Entity
 			}
 
 			var listPage = await _pageRender.GenerateListPageType(table.Name, listPath, viewModel.Result, $"/{listPath}/add", $"/{listPath}/edit");
-			if (listPage != null)
+			if (listPage == null) return NotFound();
+			if (listPage.IsSuccess)
 			{
-				if (listPage.IsSuccess)
+				return RedirectToAction("Edit", "Table", new
 				{
-					return RedirectToAction("Edit", "Table", new
-					{
-						table.Id
-					});
-				}
+					table.Id
+				});
 			}
 			return NotFound();
 		}

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using ST.CORE.Services.Abstraction;
 
@@ -21,11 +22,11 @@ namespace ST.CORE.TagHelpers
 		/// </summary>
 		public Guid? LayoutId { get; set; }
 
-		public override void Process(TagHelperContext context, TagHelperOutput output)
+		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
 			output.TagName = "style";
-			var cssCode = _pageRender.GetLayoutCss(LayoutId);
+			var cssCode = await _pageRender.GetLayoutCss(LayoutId);
 
 			output.Content.SetHtmlContent(cssCode);
 		}
@@ -48,11 +49,11 @@ namespace ST.CORE.TagHelpers
 		/// </summary>
 		public Guid? LayoutId { get; set; }
 
-		public override void Process(TagHelperContext context, TagHelperOutput output)
+		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
 			output.TagName = "script";
-			var cssCode = _pageRender.GetLayoutJavaScript(LayoutId);
+			var cssCode = await _pageRender.GetLayoutJavaScript(LayoutId);
 
 			output.Content.SetHtmlContent(cssCode);
 		}

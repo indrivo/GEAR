@@ -66,6 +66,7 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		private readonly IMenuService _menuService;
 
+
 		/// <summary>
 		/// Inject user manager
 		/// </summary>
@@ -111,9 +112,9 @@ namespace ST.CORE.Controllers.Render
 		/// </summary>
 		/// <param name="pageId"></param>
 		/// <returns></returns>
-		public IActionResult Index([Required]Guid pageId)
+		public async Task<IActionResult> Index([Required]Guid pageId)
 		{
-			var page = _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = await _pageRender.GetPageAsync(pageId);
 			if (page == null) return NotFound();
 			ViewBag.Page = page;
 
@@ -549,14 +550,13 @@ namespace ST.CORE.Controllers.Render
 		/// <param name="pageId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public string GetPageScript(Guid pageId)
+		public async Task<string> GetPageScript(Guid pageId)
 		{
 			if (pageId == Guid.Empty) return string.Empty;
-			var page = _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(pageId));
-			if (page == null) return string.Empty;
-			var script = _pageRender.GetPageJavaScript(page.Settings.Name);
-			return script;
+			var page = await _pageRender.GetPageAsync(pageId);
+			return page == null ? string.Empty : page.Settings?.JsCode;
 		}
+
 		/// <summary>
 		/// Post Form
 		/// </summary>

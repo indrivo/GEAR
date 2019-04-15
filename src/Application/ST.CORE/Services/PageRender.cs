@@ -38,7 +38,7 @@ namespace ST.CORE.Services
 		/// <summary>
 		/// Inject cache service
 		/// </summary>
-		private ICacheService _cacheService;
+		private readonly ICacheService _cacheService;
 
 		public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, IHostingEnvironment env)
 		{
@@ -52,9 +52,9 @@ namespace ST.CORE.Services
 		/// Get Layout html
 		/// </summary>
 		/// <returns></returns>
-		public (HtmlString, HtmlString) GetLayoutHtml(Guid? layoutId = null)
+		public async Task<(HtmlString, HtmlString)> GetLayoutHtml(Guid? layoutId = null)
 		{
-			var code = GetLayoutCode(PageContentType.Html, "layout", layoutId);
+			var code = await GetLayoutCode(PageContentType.Html, "layout", layoutId);
 			var arr = code.Split("@RenderBody()");
 			return (new HtmlString(arr[0]), new HtmlString(arr[1]));
 		}
@@ -63,18 +63,18 @@ namespace ST.CORE.Services
 		/// Get Layout css
 		/// </summary>
 		/// <returns></returns>
-		public string GetLayoutCss(Guid? layoutId = null)
+		public async Task<string> GetLayoutCss(Guid? layoutId = null)
 		{
-			return GetLayoutCode(PageContentType.Css, "layout", layoutId);
+			return await GetLayoutCode(PageContentType.Css, "layout", layoutId);
 		}
 
 		/// <summary>
 		/// Get layout js
 		/// </summary>
 		/// <returns></returns>
-		public string GetLayoutJavaScript(Guid? layoutId = null)
+		public async Task<string> GetLayoutJavaScript(Guid? layoutId = null)
 		{
-			return GetLayoutCode(PageContentType.Js, "layout", layoutId);
+			return await GetLayoutCode(PageContentType.Js, "layout", layoutId);
 		}
 
 		/// <summary>
@@ -82,18 +82,18 @@ namespace ST.CORE.Services
 		/// </summary>
 		/// <param name="pageName"></param>
 		/// <returns></returns>
-		public virtual HtmlString GetPageHtml(string pageName)
+		public virtual async Task<HtmlString> GetPageHtml(string pageName)
 		{
-			return new HtmlString(GetLayoutCode(PageContentType.Html, pageName));
+			return new HtmlString(await GetLayoutCode(PageContentType.Html, pageName));
 		}
 		/// <summary>
 		/// Get css of page
 		/// </summary>
 		/// <param name="pageName"></param>
 		/// <returns></returns>
-		public virtual string GetPageCss(string pageName)
+		public virtual async Task<string> GetPageCss(string pageName)
 		{
-			return GetLayoutCode(PageContentType.Css, pageName);
+			return await GetLayoutCode(PageContentType.Css, pageName);
 		}
 
 		/// <summary>
@@ -101,9 +101,9 @@ namespace ST.CORE.Services
 		/// </summary>
 		/// <param name="pageName"></param>
 		/// <returns></returns>
-		public virtual string GetPageJavaScript(string pageName)
+		public virtual async Task<string> GetPageJavaScript(string pageName)
 		{
-			return GetLayoutCode(PageContentType.Js, pageName);
+			return await GetLayoutCode(PageContentType.Js, pageName);
 		}
 
 		/// <summary>
@@ -127,6 +127,7 @@ namespace ST.CORE.Services
 			{
 				_context.Pages.Update(page);
 				_context.SaveChanges();
+				_cacheService.RemoveAsync($"_page_dynamic_{pageId}").GetAwaiter().GetResult();
 				result.IsSuccess = true;
 			}
 			catch (Exception e)
@@ -142,11 +143,11 @@ namespace ST.CORE.Services
 		/// </summary>
 		/// <param name="pageId"></param>
 		/// <returns></returns>
-		public virtual ResultModel<IEnumerable<PageScript>> GetPageScripts(Guid pageId)
+		public virtual async Task<ResultModel<IEnumerable<PageScript>>> GetPageScripts(Guid pageId)
 		{
-			var page = _context.Pages.FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = await GetPageAsync(pageId);
 			if (page == null) return default;
-			var scrips = _context.PageScripts.Where(x => x.PageId.Equals(pageId)).OrderBy(x => x.Order).ToList();
+			var scrips = page.PageScripts?.OrderBy(x => x.Order).ToList();
 			return new ResultModel<IEnumerable<PageScript>>
 			{
 				IsSuccess = true,
@@ -159,11 +160,11 @@ namespace ST.CORE.Services
 		/// </summary>
 		/// <param name="pageId"></param>
 		/// <returns></returns>
-		public virtual ResultModel<IEnumerable<PageStyle>> GetPageStyles(Guid pageId)
+		public virtual async Task<ResultModel<IEnumerable<PageStyle>>> GetPageStyles(Guid pageId)
 		{
-			var page = _context.Pages.FirstOrDefault(x => x.Id.Equals(pageId));
+			var page = await GetPageAsync(pageId);
 			if (page == null) return default;
-			var scrips = _context.PageStyles.Where(x => x.PageId.Equals(pageId)).OrderBy(x => x.Order).ToList();
+			var scrips = page.PageStyles?.OrderBy(x => x.Order).ToList();
 			return new ResultModel<IEnumerable<PageStyle>>
 			{
 				IsSuccess = true,
@@ -179,13 +180,13 @@ namespace ST.CORE.Services
 		/// <param name="pageName"></param>
 		/// <param name="pageId"></param>
 		/// <returns></returns>
-		private string GetLayoutCode(PageContentType type, string pageName = "layout", Guid? pageId = null)
+		private async Task<string> GetLayoutCode(PageContentType type, string pageName = "layout", Guid? pageId = null)
 		{
 			try
 			{
 				var layout = pageId == null
 					? _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Settings.Name == pageName)
-					: _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(pageId));
+					: await GetPageAsync(pageId.Value);
 
 				if (layout == null) return string.Empty;
 				var code = string.Empty;
@@ -355,6 +356,27 @@ namespace ST.CORE.Services
 		}
 
 		/// <summary>
+		/// Get page type
+		/// </summary>
+		/// <param name="pageId"></param>
+		/// <returns></returns>
+		public virtual async Task<Page> GetPageAsync(Guid? pageId)
+		{
+			if (pageId == null) return null;
+			var cachedPage = await _cacheService.Get<Page>($"_page_dynamic_{pageId}");
+			if (cachedPage != null) return cachedPage;
+			var page = await _context.Pages
+				.Include(x => x.PageScripts)
+				.Include(x => x.PageStyles)
+				.Include(x => x.PageType)
+				.Include(x => x.Layout)
+				.Include(x => x.Settings)
+				.FirstOrDefaultAsync(x => x.Id.Equals(pageId));
+			await _cacheService.Set($"_page_dynamic_{pageId}", page);
+			return page;
+		}
+
+		/// <summary>
 		/// Generate view model
 		/// </summary>
 		/// <param name="entityId"></param>
@@ -378,7 +400,7 @@ namespace ST.CORE.Services
 				Order = c++,
 				Name = x.Name,
 				TableModelFields = x,
-				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
+				Template = GetTemplate(x.Name)
 			}));
 
 			var props = typeof(ExtendedModel).GetProperties().ToList();
@@ -387,7 +409,7 @@ namespace ST.CORE.Services
 			{
 				Order = c++,
 				Name = x.Name,
-				Template = $"`${{row.{x.Name[0].ToString().ToLower()}{x.Name.Substring(1, x.Name.Length - 1)}}}`"
+				Template = GetTemplate(x.Name)
 			}));
 
 			model.ViewModelFields = fields;
@@ -402,6 +424,16 @@ namespace ST.CORE.Services
 				Debug.WriteLine(ex);
 				return default;
 			}
+		}
+
+		/// <summary>
+		/// Get template
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		private static string GetTemplate(string name)
+		{
+			return $"`${{row.{name[0].ToString().ToLower()}{name.Substring(1, name.Length - 1)}}}`";
 		}
 	}
 

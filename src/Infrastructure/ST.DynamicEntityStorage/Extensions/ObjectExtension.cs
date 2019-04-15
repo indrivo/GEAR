@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Mapster;
-using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
-using ST.DynamicEntityStorage.Utils;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
-using Expression = Castle.DynamicProxy.Generators.Emitters.SimpleAST.Expression;
 
 namespace ST.DynamicEntityStorage.Extensions
 {
@@ -113,15 +107,19 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="obj"></param>
         /// <param name="func"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
-        public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null) where TEntity : class
+        public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null, IEnumerable<Filter> filters = null) where TEntity : class
         {
             return Task.Run(() =>
             {
                 var result = new ResultModel<IEnumerable<TEntity>>();
+                var fType = typeof(Func<,>);
+                var genericFunc = fType.MakeGenericType(obj.Object.GetType(), typeof(bool));
 
+                //var param = func == null ? null : Delegate.CreateDelegate(genericFunc, func.Target, func.Method);
                 var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllWithInclude,
-                    new List<Type> { obj.Object.GetType(), obj.Object.GetType() }, new List<dynamic> { null });
+                    new List<Type> { obj.Object.GetType(), obj.Object.GetType() }, new List<dynamic> { null, filters });
 
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -131,7 +129,7 @@ namespace ST.DynamicEntityStorage.Extensions
             });
         }
 
-        /// <summary>
+        /// <summary>0
         /// Get By id
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

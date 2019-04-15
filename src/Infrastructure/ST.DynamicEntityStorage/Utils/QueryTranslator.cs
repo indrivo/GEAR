@@ -51,7 +51,7 @@ namespace ST.DynamicEntityStorage.Utils
         {
         }
 
-        public string Translate<TEntity>(Expression<Func<TEntity, bool>> expression) where  TEntity: class
+        public string Translate<TEntity>(Expression<Func<TEntity, bool>> expression) where TEntity : class
         {
             this.sb = new StringBuilder();
             this.Visit(expression);
@@ -246,7 +246,7 @@ namespace ST.DynamicEntityStorage.Utils
 
         protected override Expression VisitMember(MemberExpression m)
         {
-            if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
+            if (m.Expression != null && (m.Expression.NodeType == ExpressionType.Parameter || m.Expression.NodeType == ExpressionType.Constant))
             {
                 sb.Append(m.Member.Name);
                 return m;

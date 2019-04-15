@@ -116,9 +116,11 @@ namespace ST.Entities.Data
                                         : string.Empty;
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
+
                     using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
+
                         if (cmd.Connection.State != ConnectionState.Open)
                             cmd.Connection.Open();
 
@@ -447,6 +449,7 @@ namespace ST.Entities.Data
             string sql, Dictionary<string, object> parameters)
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
+            var result = new List<Dictionary<string, object>>();
             using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
             {
                 cmd.CommandText = sql;
@@ -459,20 +462,31 @@ namespace ST.Entities.Data
 
                 foreach (var param in parameters)
                 {
+                    if (param.Value == null) continue;
                     var dbParameter = cmd.CreateParameter();
                     dbParameter.ParameterName = string.Format("@{0}", param.Key);
                     dbParameter.Value = param.Value;
+
                     cmd.Parameters.Add(dbParameter);
                 }
 
-                using (var dataReader = cmd.ExecuteReader())
+                try
                 {
-                    while (dataReader.Read())
+                    using (var dataReader = cmd.ExecuteReader())
                     {
-                        var dataRow = GetDataRow(dataReader);
-                        yield return dataRow;
+                        while (dataReader.Read())
+                        {
+                            var dataRow = GetDataRow(dataReader);
+                            result.Add(dataRow);
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                return result;
             }
         }
 

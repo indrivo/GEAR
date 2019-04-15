@@ -2,7 +2,7 @@
 
 namespace ST.Configuration.Models
 {
-    public class TemplateCacheModel : ICacheModel
+    public class TemplateCacheModel 
     {
         /// <summary>
         /// Identifier of template

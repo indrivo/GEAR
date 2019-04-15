@@ -57,8 +57,14 @@
 						<pre id="jsonPlace"></pre>
 					</div>
 					<div class="col-md-8">
+						<h3>Preview</h3>
+						<div class="row" style="border: 1px solid grey; min-height: 8em; margin-bottom: 0.5em;">
+							<div id="preview" style="margin: 0.5em;">
+
+							</div>
+						</div>
 						<div class="form-group">
-							<textarea asp-for="Template" style="height:100em">@Model.Template</textarea>
+							<textarea asp-for="Template" style="height: 100em">@Model.Template</textarea>
 						</div>
 					</div>
 				</div>
@@ -91,12 +97,13 @@
 	<script>
 		var orig = CodeMirror.hint.javascript;
 		const obj = load("/PageRender/GetJsonExampleOfEntity?viewModelId=@Model.ViewModelId");
-		CodeMirror.hint.javascript = function (cm) {
+		CodeMirror.hint.javascript = function(cm) {
 			var inner = orig(cm) || { from: cm.getCursor(), to: cm.getCursor(), list: [] };
 
-			$.each(obj.row, function (index, data) {
-				inner.list.push(index);
-			});
+			$.each(obj.row,
+				function(index, data) {
+					inner.list.push(index);
+				});
 			//console.log(editor.getLine(cm.getCursor().line));
 			//var A1 = editor.getCursor().line;
 			//var A2 = editor.getCursor().ch;
@@ -125,9 +132,18 @@
 				extraKeys: { "Ctrl-Space": "autocomplete" }
 			});
 
-		editor.on('change', function () {
-			editor.save();
-		});
+		editor.on('change',
+			function() {
+				editor.save();
+				try {
+					const template = $("#Template").val();
+					const row = obj.row;
+					$("#preview").html(eval(template));
+
+				} catch (e) {
+					$("#preview").html(`<span style="color: red">${e}</span>`);
+				}
+			});
 
 		editor.setSize(null, 700);
 
@@ -138,21 +154,23 @@
 
 		function syntaxHighlight(json) {
 			json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-				var cls = 'number';
-				if (/^"/.test(match)) {
-					if (/:$/.test(match)) {
-						cls = 'key';
-					} else {
-						cls = 'string';
+			return json.replace(
+				/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+				function(match) {
+					var cls = 'number';
+					if (/^"/.test(match)) {
+						if (/:$/.test(match)) {
+							cls = 'key';
+						} else {
+							cls = 'string';
+						}
+					} else if (/true|false/.test(match)) {
+						cls = 'boolean';
+					} else if (/null/.test(match)) {
+						cls = 'null';
 					}
-				} else if (/true|false/.test(match)) {
-					cls = 'boolean';
-				} else if (/null/.test(match)) {
-					cls = 'null';
-				}
-				return '<span class="' + cls + '">' + match + '</span>';
-			});
+					return '<span class="' + cls + '">' + match + '</span>';
+				});
 		}
 
 		var str = JSON.stringify(obj, null, 4);

@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.Entities.ViewModels.DynamicEntities;
-using Expression = System.Linq.Expressions.Expression;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {
     public interface IDynamicService : IDynamicDataGetService, IDynamicDataCreateService, IDynamicDataUpdateService
     {
+        /// <summary>
+        /// Register in memory
+        /// </summary>
+        /// <returns></returns>
+        Task RegisterInMemoryDynamicTypes();
+
         /// <summary>
         /// Check if exists
         /// </summary>

@@ -17,13 +17,13 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// Get all from entity
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Expression<Func<TEntity, bool>> predicate = null) where TEntity : BaseModel;
+        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Expression<Func<TEntity, bool>> predicate = null, IEnumerable<Filter> filters = null) where TEntity : BaseModel;
 
         /// <summary>
         /// Get all from entity
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<TOutput>>> GetAllWithInclude<TEntity, TOutput>(Expression<Func<TEntity, bool>> predicate = null) where TEntity : BaseModel;
+        Task<ResultModel<IEnumerable<TOutput>>> GetAllWithInclude<TEntity, TOutput>(Func<TEntity, bool> predicate = null, IEnumerable<Filter> filters = null) where TEntity : BaseModel;
 
         /// <summary>
         /// Get all with predicate

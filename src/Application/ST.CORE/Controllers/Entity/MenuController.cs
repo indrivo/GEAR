@@ -8,7 +8,7 @@ using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
-using ST.Entities.Services.Abstraction;
+using ST.Identity.Services.Abstractions;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -25,14 +25,21 @@ namespace ST.CORE.Controllers.Entity
 		private readonly IDynamicService _service;
 
 		/// <summary>
+		/// Inject cache service
+		/// </summary>
+		private readonly ICacheService _cacheService;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="context"></param>
 		/// <param name="service"></param>
-		public MenuController(EntitiesDbContext context, IDynamicService service)
+		/// <param name="cacheService"></param>
+		public MenuController(EntitiesDbContext context, IDynamicService service, ICacheService cacheService)
 		{
 			_context = context;
 			_service = service;
+			_cacheService = cacheService;
 		}
 
 		/// <summary>
@@ -66,7 +73,11 @@ namespace ST.CORE.Controllers.Entity
 			{
 				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
+				{
+					await _cacheService.RemoveAsync("_menus_central");
 					return RedirectToAction("Index");
+				}
+
 				ModelState.AddModelError(string.Empty, "Fail to save!");
 			}
 
@@ -107,6 +118,7 @@ namespace ST.CORE.Controllers.Entity
 			dataModel.Author = model.Author;
 			dataModel.Changed = DateTime.Now;
 			var req = await _service.UpdateSystem(dataModel);
+			await _cacheService.RemoveAsync("_menus_central");
 			if (req.IsSuccess) return RedirectToAction("Index");
 			ModelState.AddModelError(string.Empty, "Fail to save");
 			return View(model);

@@ -1,8 +1,11 @@
 using System;
+using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -64,6 +67,14 @@ namespace ST.CORE
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
+			if (Application.IsHostedOnLinux())
+			{
+				app.UseForwardedHeaders(new ForwardedHeadersOptions
+				{
+					ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+				});
+			}
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -85,7 +96,7 @@ namespace ST.CORE
 			app.UseLocalization(languages);
 			lifetime.ApplicationStarted.Register(() =>
 			{
-				OnApplicationStarted(app);
+				Application.OnApplicationStarted(app);
 			});
 			// Microsoft.AspNetCore.StaticFiles: API for starting the application from wwwroot.
 			// Uses default files as index.html.
@@ -104,6 +115,7 @@ namespace ST.CORE
 				// enables immediate logout, after updating the user's stat.
 				options.ValidationInterval = TimeSpan.Zero;
 			});
+
 			services.AddConfiguredCors();
 
 			services.AddLocalization(Configuration);
@@ -164,30 +176,17 @@ namespace ST.CORE
 
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
 
+
+			if (Application.IsHostedOnLinux())
+			{
+				services.Configure<ForwardedHeadersOptions>(options =>
+				{
+					options.KnownProxies.Add(IPAddress.Parse("185.131.222.95"));
+				});
+			}
+
 			//Register dependencies
 			return services.AddWindsorContainers();
-		}
-
-		/// <summary>
-		/// On application start
-		/// </summary>
-		/// <param name="app"></param>
-		private static async void OnApplicationStarted(IApplicationBuilder app)
-		{
-			using (var serviceScope = app.ApplicationServices
-			   .GetRequiredService<IServiceScopeFactory>()
-			   .CreateScope())
-			{
-				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
-				var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
-				var isConfigured = Application.IsConfigured(env);
-
-				if (isConfigured && context.Database.CanConnect())
-				{
-					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
-					await permissionService.RefreshCache();
-				}
-			}
 		}
 	}
 }

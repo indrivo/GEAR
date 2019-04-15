@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +15,11 @@ using ST.Configuration.Seed;
 using ST.CORE.Extensions;
 using ST.CORE.ViewModels.InstallerModels;
 using ST.DynamicEntityStorage;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
+using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
 using ST.Procesess.Data;
@@ -65,7 +69,7 @@ namespace ST.CORE.Installation
 		/// Run
 		/// </summary>
 		/// <param name="args"></param>
-		public static void MigrateAndRun(string[] args)
+		internal static void MigrateAndRun(string[] args)
 		{
 			BuildWebHost(args)
 				.Migrate()
@@ -203,6 +207,39 @@ namespace ST.CORE.Installation
 
 			//Sync nomenclatures
 			await NomenclatureManager.SyncNomenclaturesAsync();
+		}
+
+		/// <summary>
+		/// On application start
+		/// </summary>
+		/// <param name="app"></param>
+		internal static async void OnApplicationStarted(IApplicationBuilder app)
+		{
+			using (var serviceScope = app.ApplicationServices
+				.GetRequiredService<IServiceScopeFactory>()
+				.CreateScope())
+			{
+				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
+				var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
+				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
+				var isConfigured = IsConfigured(env);
+
+				if (isConfigured && context.Database.CanConnect())
+				{
+					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
+					await permissionService.RefreshCache();
+					await service.RegisterInMemoryDynamicTypes();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Return true if is 
+		/// </summary>
+		/// <returns></returns>
+		internal static bool IsHostedOnLinux()
+		{
+			return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 		}
 
 		/// <summary>
