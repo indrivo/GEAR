@@ -360,8 +360,9 @@ namespace ST.CORE.Services
 		/// </summary>
 		/// <param name="pageId"></param>
 		/// <returns></returns>
-		public virtual async Task<Page> GetPageAsync(Guid pageId)
+		public virtual async Task<Page> GetPageAsync(Guid? pageId)
 		{
+			if (pageId == null) return null;
 			var cachedPage = await _cacheService.Get<Page>($"_page_dynamic_{pageId}");
 			if (cachedPage != null) return cachedPage;
 			var page = await _context.Pages

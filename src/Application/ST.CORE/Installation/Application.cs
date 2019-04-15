@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore;
@@ -230,6 +231,15 @@ namespace ST.CORE.Installation
 					await service.RegisterInMemoryDynamicTypes();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Return true if is 
+		/// </summary>
+		/// <returns></returns>
+		internal static bool IsHostedOnLinux()
+		{
+			return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 		}
 
 		/// <summary>

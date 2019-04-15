@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ST.CORE.TagHelpers
 {
 	[HtmlTargetElement("application-styles")]
-	public class LayoutJsScriptsTagHelper : TagHelper
+	public sealed class LayoutCssScriptsTagHelper : TagHelper
 	{
 
 		/// <summary>
@@ -15,7 +15,7 @@ namespace ST.CORE.TagHelpers
 		/// </summary>
 		private readonly IPageRender _pageRender;
 
-		public LayoutJsScriptsTagHelper(IPageRender pageRender)
+		public LayoutCssScriptsTagHelper(IPageRender pageRender)
 		{
 			_pageRender = pageRender;
 		}
@@ -48,7 +48,7 @@ namespace ST.CORE.TagHelpers
 	}
 
 	[HtmlTargetElement("application-scripts")]
-	public class LayoutCssScriptsTagHelper : TagHelper
+	public sealed class LayoutJsScriptsTagHelper : TagHelper
 	{
 
 		/// <summary>
@@ -56,7 +56,7 @@ namespace ST.CORE.TagHelpers
 		/// </summary>
 		private readonly IPageRender _pageRender;
 
-		public LayoutCssScriptsTagHelper(IPageRender pageRender)
+		public LayoutJsScriptsTagHelper(IPageRender pageRender)
 		{
 			_pageRender = pageRender;
 		}

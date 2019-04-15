@@ -23,6 +23,6 @@ namespace ST.CORE.Services.Abstraction
 			[Required] Guid viewModelId, string addPath = "#", string editPath = "#");
 		Task<ResultModel<Guid>> GenerateViewModel(Guid entityId);
 		Task<ResultModel> GenerateFormPage(Guid formId, string path, string pageName);
-		Task<Page> GetPageAsync(Guid pageId);
+		Task<Page> GetPageAsync(Guid? pageId);
 	}
 }
