@@ -220,14 +220,14 @@ namespace ST.CORE.Installation
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
 				var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
-				//var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
-				var isConfigured = Application.IsConfigured(env);
+				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
+				var isConfigured = IsConfigured(env);
 
 				if (isConfigured && context.Database.CanConnect())
 				{
 					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 					await permissionService.RefreshCache();
-					//await service.RegisterInMemoryDynamicTypes();
+					await service.RegisterInMemoryDynamicTypes();
 				}
 			}
 		}

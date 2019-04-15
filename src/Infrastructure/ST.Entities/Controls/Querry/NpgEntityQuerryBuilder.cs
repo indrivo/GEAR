@@ -183,7 +183,17 @@ namespace ST.Entities.Controls.Querry
                 fieldsData.AppendFormat(item.Equals(last) ? "\"{0}\" " : "\"{0}\", ", item.ColumnName);
 
             foreach (var param in parameters)
-                paramsData.AppendFormat("AND \"{0}\" = @{0} ", param.Key);
+            {
+                if (param.Value != null)
+                {
+                    paramsData.AppendFormat("AND \"{0}\" = @{0} ", param.Key);
+                }
+                else
+                {
+                    paramsData.AppendFormat("AND \"{0}\" IS NULL ", param.Key);
+                }
+            }
+
             sql.AppendFormat("SELECT {0} FROM \"{1}\".\"{2}\" WHERE 1=1 {3}", fieldsData, viewModel.TableSchema,
                 viewModel.TableName, paramsData);
             return sql.ToString();

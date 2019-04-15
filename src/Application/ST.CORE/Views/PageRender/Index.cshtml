@@ -1,46 +1,33 @@
 @{
-	var page = (Page)ViewBag.Page;
+	var page = (Page) ViewBag.Page;
 
 	ViewData["Title"] = page.Settings.Title;
 
 	Layout = page.LayoutId == null ? null : "~/Views/Shared/_Layout.cshtml";
 
 	ViewData["layoutId"] = page.LayoutId;
-
-	var cssCode = PageRender.GetPageCss(page.Settings.Name);
-
-	var styles = PageRender.GetPageStyles(page.Id);
-	var scripts = PageRender.GetPageScripts(page.Id);
 }
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css"/>
 <style>
 	.dt-buttons {
 		margin-left: 1em;
 		margin-top: -1em;
 	}
 </style>
-
-@if (styles.IsSuccess)
+@foreach (var style in page.PageStyles)
 {
-	foreach (var style in styles.Result)
-	{
-		@Html.Raw(style.Script)
-	}
+	@Html.Raw(style.Script)
 }
 
-@if (!string.IsNullOrEmpty(cssCode))
+@if (!string.IsNullOrEmpty(page.Settings.CssCode))
 {
 	<style>
-	@Html.Raw(cssCode)
+		@Html.Raw(page.Settings.CssCode) 
 	</style>
 }
 
-@Html.Raw(PageRender.GetPageHtml(page.Settings.Name))
-
-@{
-	var jsCode = PageRender.GetPageJavaScript(page.Settings.Name);
-}
+@Html.Raw(page.Settings.HtmlCode)
 
 @section Scripts
 {
@@ -53,17 +40,14 @@
 	<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
 	<script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
 
-	@if (scripts.IsSuccess)
+	@foreach (var script in page.PageScripts)
 	{
-		foreach (var script in scripts.Result)
-		{
-			@Html.Raw(script.Script)
-		}
+		@Html.Raw(script.Script)
 	}
-	@if (!string.IsNullOrEmpty(jsCode))
+	@if (!string.IsNullOrEmpty(page.Settings.JsCode))
 	{
 		<script>
-			@Html.Raw(jsCode)
+			@Html.Raw(page.Settings.JsCode)
 		</script>
 	}
 	<script src="~/assets/js/form/validation.js" asp-append-version="true"></script>
@@ -533,7 +517,8 @@
 														location.href = data.result.redirectUrl;
 													} else {
 														for (let i = 0; i < data.error_keys.length; i++) {
-															errorsBlock.append(`<li>${data.error_keys[i].message}</li>`);
+															errorsBlock.append(
+																`<li>${data.error_keys[i].message}</li>`);
 														}
 													}
 												} else {

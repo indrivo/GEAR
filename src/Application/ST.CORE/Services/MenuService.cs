@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Mapster;
 using ST.CORE.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.Identity.Services.Abstractions;
 
 namespace ST.CORE.Services
 {
@@ -18,12 +19,19 @@ namespace ST.CORE.Services
 		private readonly TService _service;
 
 		/// <summary>
+		/// Inject cache service
+		/// </summary>
+		private readonly ICacheService _cacheService;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="service"></param>
-		public MenuService(TService service)
+		/// <param name="cacheService"></param>
+		public MenuService(TService service, ICacheService cacheService)
 		{
 			_service = service;
+			_cacheService = cacheService;
 		}
 
 		/// <inheritdoc />
@@ -38,10 +46,21 @@ namespace ST.CORE.Services
 			if (!menuId.HasValue) return default;
 			var navbar = await _service.GetByIdSystem<Menu, Menu>(menuId.Value);
 			if (!navbar.IsSuccess) return default;
-			var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id)
-																			&& HaveAccess(roles, x.AllowedRoles));
-			var menus = search.Result.ToList();
+			List<MenuItem> menus;
+			var cache = await _cacheService.Get<List<MenuItem>>("_menus_central");
+			if (cache == null)
+			{
+				var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id));
+				await _cacheService.Set("_menus_central", search.Result);
+				menus = search.Result.ToList();
+			}
+			else
+			{
+				menus = cache;
+			}
+
 			if (!menus.Any()) return default;
+			menus = menus.Where(x => HaveAccess(roles, x.AllowedRoles)).ToList();
 			return new ResultModel<IEnumerable<MenuViewModel>>
 			{
 				IsSuccess = true,

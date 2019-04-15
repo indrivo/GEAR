@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,7 +15,6 @@ using ST.BaseBusinessRepository;
 using ST.BaseRepository;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
-using ST.DynamicEntityStorage.Utils;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
@@ -66,6 +66,12 @@ namespace ST.DynamicEntityStorage
         }
 
 
+        public string GetFromSql(string sql)
+        {
+            return string.Empty;
+        }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Get all with adapt to Model
@@ -73,10 +79,10 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <typeparam name="TOutput"></typeparam>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAllWithInclude<TEntity, TOutput>(Expression<Func<TEntity, bool>> predicate = null) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAllWithInclude<TEntity, TOutput>(Func<TEntity, bool> predicate = null, IEnumerable<Filter> filters = null) where TEntity : BaseModel
         {
             var result = new ResultModel<IEnumerable<TOutput>>();
-            var data = await GetAll(predicate);
+            var data = await GetAll(FuncToExpression(predicate), filters);
             if (!data.IsSuccess) return result;
             var model = GetObject<TEntity>(data.Result);
             if (model == null) return result;
@@ -85,6 +91,18 @@ namespace ST.DynamicEntityStorage
             var adapt = model.Adapt<IEnumerable<TOutput>>();
             result.Result = adapt.ToList();
             return result;
+        }
+
+        /// <summary>
+        /// Func to expression
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        private static Expression<Func<T, bool>> FuncToExpression<T>(Func<T, bool> f)
+        {
+            if (f == null) return null;
+            return x => f(x);
         }
 
 
@@ -201,24 +219,37 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Expression<Func<TEntity, bool>> expression = null) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Expression<Func<TEntity, bool>> expression = null, IEnumerable<Filter> filters = null) where TEntity : BaseModel
         {
             var result = new ResultModel<IEnumerable<Dictionary<string, object>>>();
             var entity = typeof(TEntity).Name;
 
             if (string.IsNullOrEmpty(entity)) return result;
-            if (expression != null)
-            {
-                var translator = new QueryTranslator();
-                var wherePredicate = translator.Translate(expression);
-            }
+            //if (expression != null)
+            //{
+            //    var translator = new QueryTranslator();
+            //    var wherePredicate = translator.Translate(expression);
+            //}
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<TEntity>(schema);
-            model.Includes = new List<EntityViewModel>();
-            model.Values = new List<Dictionary<string, object>>();
+            model.Values = GetFilters(filters);
             var data = _context.ListEntitiesByParams(model);
             result.Result = data.Result.Values;
+            return result;
+        }
+
+        /// <summary>
+        /// Get filters
+        /// </summary>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        private static List<Dictionary<string, object>> GetFilters(IEnumerable<Filter> filters)
+        {
+            if (filters == null) return new List<Dictionary<string, object>>();
+            var result = new List<Dictionary<string, object>>();
+            var dict = filters.ToDictionary(filter => filter.Parameter, filter => filter.Value);
+            result.Add(dict);
             return result;
         }
 
@@ -281,7 +312,7 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<TEntity>> FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel
         {
             var result = new ResultModel<TEntity>();
-            var allCheck = await GetAllWithInclude<TEntity, TEntity>(predicate);
+            var allCheck = await GetAllWithInclude<TEntity, TEntity>(predicate?.Compile());
             if (!allCheck.IsSuccess) return result;
             result.IsSuccess = true;
             result.Result = allCheck.Result.FirstOrDefault();
@@ -298,7 +329,7 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<TEntity>> LastOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : BaseModel
         {
             var result = new ResultModel<TEntity>();
-            var allCheck = await GetAllWithInclude<TEntity, TEntity>(predicate);
+            var allCheck = await GetAllWithInclude<TEntity, TEntity>(predicate?.Compile());
             if (!allCheck.IsSuccess) return result;
             result.IsSuccess = true;
             result.Result = allCheck.Result.LastOrDefault();
@@ -817,13 +848,14 @@ namespace ST.DynamicEntityStorage
                 Service = new DynamicService<TContext>(_context, _httpContextAccessor)
             };
 
+        /// <inheritdoc />
         /// <summary>
         /// Register in memory
         /// </summary>
         /// <returns></returns>
         public virtual async Task RegisterInMemoryDynamicTypes()
         {
-            var tables = await _context.Table.ToListAsync();
+            var tables = await _context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
             foreach (var table in tables)
             {
                 new ObjectService(table.Name).Resolve(_context, _httpContextAccessor);
@@ -859,5 +891,18 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null)
             => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate);
+    }
+
+
+    public enum Criteria
+    {
+        Equals
+    }
+
+    public class Filter
+    {
+        public Criteria Criteria { get; set; }
+        public string Parameter { get; set; }
+        public object Value { get; set; }
     }
 }

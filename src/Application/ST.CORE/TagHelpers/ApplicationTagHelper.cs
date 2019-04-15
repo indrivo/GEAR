@@ -29,7 +29,7 @@ namespace ST.CORE.TagHelpers
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
 			var initial = (await output.GetChildContentAsync()).GetContent();
-			var (pre, next) = _pageRender.GetLayoutHtml(LayoutId);
+			var (pre, next) = await _pageRender.GetLayoutHtml(LayoutId);
 			var content = new StringBuilder();
 			content.Append(pre);
 			content.Append(initial);
