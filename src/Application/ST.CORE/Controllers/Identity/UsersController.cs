@@ -761,7 +761,7 @@ namespace ST.CORE.Controllers.Identity
 		/// <returns></returns>
 		public byte[] GetDefaultImage()
 		{
-			var path = Path.Combine(AppContext.BaseDirectory, "static/Embedded Resources/user.jpg");
+			var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/user.jpg");
 			if (!System.IO.File.Exists(path))
 				return default;
 
