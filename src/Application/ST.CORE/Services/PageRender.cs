@@ -146,7 +146,7 @@ namespace ST.CORE.Services
 		public virtual async Task<ResultModel<IEnumerable<PageScript>>> GetPageScripts(Guid pageId)
 		{
 			var page = await GetPageAsync(pageId);
-			if (page == null) return default;
+			if (page == null) return new ResultModel<IEnumerable<PageScript>>();
 			var scrips = page.PageScripts?.OrderBy(x => x.Order).ToList();
 			return new ResultModel<IEnumerable<PageScript>>
 			{
@@ -163,7 +163,7 @@ namespace ST.CORE.Services
 		public virtual async Task<ResultModel<IEnumerable<PageStyle>>> GetPageStyles(Guid pageId)
 		{
 			var page = await GetPageAsync(pageId);
-			if (page == null) return default;
+			if (page == null) return new ResultModel<IEnumerable<PageStyle>>();
 			var scrips = page.PageStyles?.OrderBy(x => x.Order).ToList();
 			return new ResultModel<IEnumerable<PageStyle>>
 			{

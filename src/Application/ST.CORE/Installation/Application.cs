@@ -220,11 +220,11 @@ namespace ST.CORE.Installation
 				.CreateScope())
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
-				var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
+				//var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
 				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
 				var isConfigured = IsConfigured(env);
 
-				if (isConfigured && context.Database.CanConnect())
+				if (isConfigured)
 				{
 					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 					await permissionService.RefreshCache();

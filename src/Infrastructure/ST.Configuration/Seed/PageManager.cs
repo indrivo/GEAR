@@ -60,7 +60,7 @@ namespace ST.Configuration.Seed
             try
             {
                 var baseDirectory = AppContext.BaseDirectory;
-                var path = Path.Combine(baseDirectory, "static\\pages");
+                var path = Path.Combine(baseDirectory, "Static/Pages");
 
                 var exists = Directory.Exists(path);
                 if (!exists) return;
