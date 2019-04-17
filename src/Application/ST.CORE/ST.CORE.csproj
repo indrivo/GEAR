@@ -147,13 +147,9 @@
   <ItemGroup>
     <None Include="appsettings.Stage.json" />
     <None Include="Views\Home\Contact.cshtml" />
-    <None Include="Views\Shared\Error.cshtml" />
-    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
     <None Include="Views\Process\Create.cshtml" />
     <None Include="Views\Process\Edit.cshtml" />
     <None Include="Views\Process\Index.cshtml" />
-    <None Include="Views\_ViewImports.cshtml" />
-    <None Include="Views\_ViewStart.cshtml" />
     <None Include="wwwroot\lib\bootstrap-treeview-master\.bowerrc" />
     <None Include="wwwroot\lib\bootstrap-treeview-master\.gitattributes" />
     <None Include="wwwroot\lib\bootstrap-treeview-master\.gitignore" />
@@ -179,7 +175,9 @@
     <ProjectReference Include="..\..\Infrastructure\ST.Configuration\ST.Configuration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Files\ST.Files.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Identity.Razor\ST.Identity.Razor.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Localization.Razor\ST.Localization.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Notifications\ST.Notifications.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Processes\ST.Procesess.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -246,27 +244,6 @@
     <Content Update="Static\Templates\folders.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Views\Templates\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Templates\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Templates\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\BlockCategory\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\BlockCategory\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\BlockCategory\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Blocks\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Views\Menu\EditItem.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -280,21 +257,6 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Menu\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\PageType\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Page\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Page\Layouts.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Page\PageStyles.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\ViewModel\TemplateEdit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>

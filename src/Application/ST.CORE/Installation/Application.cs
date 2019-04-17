@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -21,6 +20,7 @@ using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
+using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
 
 namespace ST.CORE.Installation
@@ -95,7 +95,7 @@ namespace ST.CORE.Installation
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
 				{
 					var conf = services.GetService<IConfiguration>();
-					EntitiesDbContextSeed.SeedAsync(context, conf, Configuration.Settings.TenantId)
+					EntitiesDbContextSeed.SeedAsync(context, conf, Shared.Settings.TenantId)
 						.Wait();
 				})
 				.MigrateDbContext<ProcessesDbContext>()
@@ -124,7 +124,7 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			DynamicService<EntitiesDbContext>.TenantId = Configuration.Settings.TenantId;
+			DynamicService<EntitiesDbContext>.TenantId = Shared.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 

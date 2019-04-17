@@ -497,8 +497,10 @@
 						data: null,
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit", "ViewModel")?id=${row.id}">Edit</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields", "ViewModel")?id=${row.id}">Order Fields</a>
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit", "ViewModel")?id=${row.id
+								}">Edit</a>
+									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields", "ViewModel")?id=${
+								row.id}">Order Fields</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=deleteViewModel('${row.id
 								}'); >Delete</button>
 									</div>`;

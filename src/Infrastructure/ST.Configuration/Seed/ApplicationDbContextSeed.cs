@@ -14,6 +14,7 @@ using ST.Identity.Data.UserProfiles;
 using ST.Identity.Models.RolesViewModels;
 using ST.Identity.Models.UserViewModels;
 using ST.Identity.Data;
+using ST.Shared;
 
 namespace ST.Configuration.Seed
 {

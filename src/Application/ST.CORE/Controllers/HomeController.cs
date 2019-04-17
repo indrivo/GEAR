@@ -3,12 +3,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ST.Application.Razor.ViewModels;
 using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
-using ST.Notifications.Abstraction;
 using ST.Notifications.Abstractions;
 
 namespace ST.CORE.Controllers

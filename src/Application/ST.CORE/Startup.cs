@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
-using ST.CORE.Installation;
 using ST.CORE.LoggerTargets;
 using ST.CORE.Services.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
@@ -28,7 +27,9 @@ using ST.Identity.Versioning;
 using ST.Localization;
 using ST.MPass.Gov;
 using ST.Identity.Data;
+using ST.Localization.Razor.Extensions;
 using ST.Notifications.Extensions;
+using ST.PageRender.Razor.Extensions;
 using ST.Procesess.Data;
 using TreeIsoService = ST.CORE.Services.TreeIsoService;
 
@@ -66,7 +67,7 @@ namespace ST.CORE
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (Application.IsHostedOnLinux())
+			if (Installation.Application.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -95,7 +96,7 @@ namespace ST.CORE
 			app.UseLocalization(languages);
 			lifetime.ApplicationStarted.Register(() =>
 			{
-				Application.OnApplicationStarted(app);
+				Installation.Application.OnApplicationStarted(app);
 			});
 			// Microsoft.AspNetCore.StaticFiles: API for starting the application from wwwroot.
 			// Uses default files as index.html.
@@ -172,11 +173,11 @@ namespace ST.CORE
 			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
-
+			services.AddPageRender();
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
 
 
-			if (Application.IsHostedOnLinux())
+			if (Installation.Application.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{

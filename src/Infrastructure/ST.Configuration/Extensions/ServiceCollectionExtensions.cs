@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
@@ -12,21 +10,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using ST.BaseBusinessRepository;
-using ST.Configuration.Abstractions;
 using ST.Configuration.Seed;
 using ST.Configuration.Services;
 using ST.Configuration.Services.Abstraction;
-using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
@@ -46,7 +38,6 @@ using ST.Identity.Filters;
 using ST.Identity.Services;
 using ST.Identity.Services.Abstractions;
 using ST.Identity.Versioning;
-using ST.Localization;
 using ST.MPass.Gov;
 using ST.MultiTenant.Services;
 using ST.MultiTenant.Services.Abstractions;
@@ -186,13 +177,11 @@ namespace ST.Configuration.Extensions
         public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, string systemIdentifier)
         {
             services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
-            services.AddTransient<ST.Identity.Services.Abstractions.IEmailSender, EmailSender>();
+            services.AddTransient<Identity.Services.Abstractions.IEmailSender, EmailSender>();
             services.AddTransient<IMPassService, MPassService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
-            services.AddTransient<ILocalizationService, LocalizationService>();
-            services.AddTransient<IPageRender, PageRender>();
             services.AddTransient<IMenuService, MenuService<IDynamicService>>();
             services.AddTransient<IProcessParser, ProcessParser>();
             services.AddTransient<IOrganizationService, OrganizationService>();
@@ -222,57 +211,6 @@ namespace ST.Configuration.Extensions
                 });
             services.AddAuthorization();
             return services;
-        }
-
-        /// <summary>
-        /// Add localization
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddLocalization(this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            services.AddTransient<IStringLocalizer, JsonStringLocalizer>();
-            services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
-            services.Configure<LocalizationConfigModel>(configuration.GetSection(nameof(LocalizationConfig)));
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddSession(opts =>
-            {
-                opts.IdleTimeout = TimeSpan.FromDays(1);
-                opts.Cookie.HttpOnly = true;
-            });
-            return services;
-        }
-
-        /// <summary>
-        /// Use Localization
-        /// </summary>
-        /// <param name="app"></param>
-        /// <param name="language"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseLocalization(this IApplicationBuilder app,
-            IOptionsSnapshot<LocalizationConfig> language)
-        {
-            var supportedCultures = language.Value.Languages.Select(str => new CultureInfo(str.Identifier)).ToList();
-            var opts = new RequestLocalizationOptions
-            {
-                DefaultRequestCulture = new RequestCulture("en"),
-                SupportedCultures = supportedCultures,
-                SupportedUICultures = supportedCultures
-            };
-            app.UseRequestLocalization(opts);
-            var locMon = app.ApplicationServices.GetRequiredService<IOptionsMonitor<LocalizationConfigModel>>();
-            locMon.OnChange(locConfig =>
-            {
-                var languages = locConfig.Languages.Select(lStr => new CultureInfo(lStr.Identifier)).ToList();
-                var reqLoc = app.ApplicationServices.GetRequiredService<IOptionsSnapshot<RequestLocalizationOptions>>();
-
-                reqLoc.Value.SupportedCultures = languages;
-                reqLoc.Value.SupportedUICultures = languages;
-            });
-            return app;
         }
 
         /// <summary>

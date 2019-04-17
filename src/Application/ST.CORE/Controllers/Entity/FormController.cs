@@ -12,6 +12,7 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -21,6 +22,7 @@ using ST.Configuration.Models;
 using ST.CORE.ViewModels.FormsViewModels;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Extensions;
 using ST.Identity.Data;
@@ -30,7 +32,7 @@ using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Shared;
 using ST.Shared.Attributes;
-using Settings = ST.Configuration.Settings;
+using Settings = ST.Shared.Settings;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -434,9 +436,9 @@ namespace ST.CORE.Controllers.Entity
 		/// <summary>
 		/// Get system field validations
 		/// </summary>
-		private StCollection<FormValidation> SystemFieldValidations =>
+		private Collection<FormValidation> SystemFieldValidations =>
 			CacheService
-				.Get<StCollection<FormValidation>>("_fieldValidations").GetAwaiter().GetResult()
+				.Get<Collection<FormValidation>>("_fieldValidations").GetAwaiter().GetResult()
 			?? GetOrUpdateForm().GetAwaiter().GetResult();
 
 		/// <summary>
@@ -507,10 +509,10 @@ namespace ST.CORE.Controllers.Entity
 		/// </summary>
 		/// <returns></returns>
 		[NonAction]
-		private async Task<StCollection<FormValidation>> GetOrUpdateForm()
+		private async Task<Collection<FormValidation>> GetOrUpdateForm()
 		{
 			var systemValidations = JsonParser
-				.ReadArrayDataFromJsonFile<StCollection<FormValidation>>(
+				.ReadArrayDataFromJsonFile<Collection<FormValidation>>(
 					Path.Combine(AppContext.BaseDirectory,
 					"FormValidations.json"));
 

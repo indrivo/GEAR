@@ -1,13 +1,13 @@
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using ST.Entities.Data;
 using ST.Identity.Data.UserProfiles;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ST.CORE.TagHelpers
 {

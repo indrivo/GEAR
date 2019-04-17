@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;

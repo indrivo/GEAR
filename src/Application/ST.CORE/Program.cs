@@ -10,7 +10,7 @@ namespace ST.CORE
 		/// <param name="args"></param>
 		public static void Main(string[] args)
 		{
-			Application.Run(args);
+			Installation.Application.Run(args);
 		}
 	}
 }

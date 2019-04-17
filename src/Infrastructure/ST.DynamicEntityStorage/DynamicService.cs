@@ -14,6 +14,7 @@ using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.Configuration.Seed;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Controls.Builders;

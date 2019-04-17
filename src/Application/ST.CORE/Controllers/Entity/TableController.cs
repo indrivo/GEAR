@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Constants;
 using ST.Entities.Data;

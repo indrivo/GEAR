@@ -18,6 +18,7 @@ using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 using ST.Localization;
+using ST.Shared;
 
 namespace ST.Configuration.Server
 {
