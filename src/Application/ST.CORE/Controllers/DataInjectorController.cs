@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -8,13 +9,13 @@ using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 
 namespace ST.CORE.Controllers
 {
 	[Route("api/[controller]/[action]")]
 	[ApiController]
+	[Authorize]
 	public class DataInjectorController : ControllerBase
 	{
 		/// <summary>

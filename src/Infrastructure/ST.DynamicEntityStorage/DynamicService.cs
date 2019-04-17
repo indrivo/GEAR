@@ -26,7 +26,6 @@ using ST.Shared;
 namespace ST.DynamicEntityStorage
 {
     /// <inheritdoc />
-    // ReSharper disable once ClassNeverInstantiated.Global
     public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext
     {
         /// <summary>
@@ -68,13 +67,6 @@ namespace ST.DynamicEntityStorage
             }
         }
 
-
-        public string GetFromSql(string sql)
-        {
-            return string.Empty;
-        }
-
-
         /// <inheritdoc />
         /// <summary>
         /// Get all with adapt to Model
@@ -87,9 +79,14 @@ namespace ST.DynamicEntityStorage
             var result = new ResultModel<IEnumerable<TOutput>>();
             var data = await GetAll(FuncToExpression(predicate), filters);
             if (!data.IsSuccess) return result;
-            var model = GetObject<TEntity>(data.Result);
+            var model = GetObject<TEntity>(data.Result)?.ToList();
             if (model == null) return result;
-            model = await IncludeReferencesOnList(model.ToList());
+            foreach (var item in model)
+            {
+                item.TenantId = CurrentUserTenantId;
+            }
+
+            model = (await IncludeReferencesOnList(model)).ToList();
             result.IsSuccess = true;
             var adapt = model.Adapt<IEnumerable<TOutput>>();
             result.Result = adapt.ToList();
@@ -300,6 +297,7 @@ namespace ST.DynamicEntityStorage
             if (!req.IsSuccess) return result;
             var obj = GetObject<TEntity>(req.Result);
             if (obj == null) return result;
+            obj.TenantId = CurrentUserTenantId;
             var adapt = obj.Adapt<TOutput>();
             result.IsSuccess = true;
             result.Result = adapt;
