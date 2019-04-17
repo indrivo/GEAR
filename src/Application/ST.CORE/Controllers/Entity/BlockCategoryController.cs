@@ -4,8 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
-using ST.CORE.Attributes;
-using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
@@ -13,9 +11,11 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
-using ST.Notifications.Abstraction;
-using ST.Procesess.Data;
+using ST.Notifications.Abstractions;
+using ST.Shared;
+using ST.Shared.Attributes;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -24,7 +24,7 @@ namespace ST.CORE.Controllers.Entity
 		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
 			INotify<ApplicationRole> notify, ICacheService cacheService,
-			IOrganizationService organizationService, ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+			IOrganizationService organizationService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 		}
 

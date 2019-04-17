@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ST.CORE.Attributes;
+using ST.Shared.Attributes;
 
 namespace ST.CORE.Controllers.StaticFiles
 {

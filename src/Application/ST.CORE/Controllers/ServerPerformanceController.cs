@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ST.CORE.Services;
+using ST.Configuration.Services;
 
 namespace ST.CORE.Controllers
 {
@@ -14,7 +14,7 @@ namespace ST.CORE.Controllers
 		{
 			var cpuInfo = PerformanceServer.GetCpuInfo();
 			var ramInfo = PerformanceServer.GetAllRamInformation();
-			var osInfo = PerformanceServer.GetOSVersion();
+			var osInfo = PerformanceServer.GetOsVersion();
 			return Json(new
 			{
 				CpuInfo = cpuInfo,

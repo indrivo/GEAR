@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
 using ST.Configuration;
-using ST.CORE.Attributes;
-using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.PageViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
@@ -18,9 +16,11 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
-using ST.Notifications.Abstraction;
-using ST.Procesess.Data;
+using ST.Notifications.Abstractions;
+using ST.Shared;
+using ST.Shared.Attributes;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -28,8 +28,7 @@ namespace ST.CORE.Controllers.Entity
 	public class BlocksController : BaseController
 	{
 		public BlocksController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-			INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService,
-			ProcessesDbContext processesDbContext) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+			INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 		}
 

@@ -13,6 +13,7 @@ using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.TableTypes;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
+using ST.Shared;
 
 namespace ST.CORE.Controllers.Entity
 {

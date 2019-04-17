@@ -1,5 +1,4 @@
-﻿using ST.BaseRepository;
-using System;
+﻿using System;
 using System.ComponentModel;
 
 namespace ST.Procesess.Models

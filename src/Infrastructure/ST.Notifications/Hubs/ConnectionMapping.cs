@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ST.Notifications.Abstractions.Models.Config;
 
 namespace ST.Notifications.Hubs
 {
@@ -64,7 +65,7 @@ namespace ST.Notifications.Hubs
         /// <param name="connection"></param>
         public void Remove(string connection)
         {
-            var exists = this.Exists(connection);
+            var exists = Exists(connection);
             if (!exists) return;
             var toRemove = _connections.FirstOrDefault(x => x.ConnectionId.Equals(connection));
             _connections.Remove(toRemove);
@@ -74,28 +75,6 @@ namespace ST.Notifications.Hubs
         /// </summary>
         /// <returns></returns>
         public long Count() => _connections.Count;
-    }
-    /// <summary>
-    /// Signalr connection
-    /// </summary>
-    public class SignalrConnection
-    {
-        public string ConnectionId { get; set; }
-        public Guid UserId { get; set; }
-    }
-
-    public class SignalrEmail
-    {
-        public Guid UserId { get; set; }
-        public string Subject { get; set; }
-        public string Message { get; set; }
-        public List<string> EmailRecipients { get; set; }
-    }
-    public abstract class SignalrSendMethods
-    {
-        public const string SendClientEmail = "SendClientEmailNotification";
-        public const string SendClientNotification = "SendClientNotification";
-        public const string SendLog = "SendLog";
     }
 }
 

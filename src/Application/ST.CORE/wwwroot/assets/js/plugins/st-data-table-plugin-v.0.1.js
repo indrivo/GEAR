@@ -1,3 +1,18 @@
+/* Data table render
+ * A plugin for render tables in dynamic pages
+ *
+ * v1.0.0
+ *
+ * License: MIT Soft-Tehnica Srl
+ * Author: Lupei Nicolae
+ */
+
+
+// Make sure jQuery has been loaded
+if (typeof jQuery === 'undefined') {
+	throw new Error('Data Table plugin require JQuery')
+}
+
 function restoreItem(rowId, tableId, viewModelId) {
 	const object = {
 		alertTitle: "Restore?",
@@ -29,7 +44,7 @@ function restoreItem(rowId, tableId, viewModelId) {
 					id: object.rowId,
 					viewModelId: viewModelId
 				},
-				success: function(data) {
+				success: function (data) {
 					if (data.success) {
 						const oTable = $(`${object.tableId}`).DataTable();
 						oTable.draw();
@@ -38,7 +53,7 @@ function restoreItem(rowId, tableId, viewModelId) {
 						swal("Fail!", data.message, "error");
 					}
 				},
-				error: function() {
+				error: function () {
 					swal("Fail!", object.onServerNoResponse, "error");
 				}
 			});
@@ -77,7 +92,7 @@ function deleteItem(rowId, tableId, viewModelId) {
 					id: object.rowId,
 					viewModelId: viewModelId
 				},
-				success: function(data) {
+				success: function (data) {
 					if (data.success) {
 						const oTable = $(`${object.tableId}`).DataTable();
 						oTable.draw();
@@ -86,7 +101,7 @@ function deleteItem(rowId, tableId, viewModelId) {
 						swal("Fail!", data.message, "error");
 					}
 				},
-				error: function() {
+				error: function () {
 					swal("Fail!", object.onServerNoResponse, "error");
 				}
 			});
@@ -96,7 +111,7 @@ function deleteItem(rowId, tableId, viewModelId) {
 
 var tables = Array.prototype.filter.call(
 	document.getElementsByTagName('table'),
-	function(el) {
+	function (el) {
 		return el.getAttribute("db-viewmodel") != null;
 	}
 );
@@ -104,7 +119,7 @@ var tables = Array.prototype.filter.call(
 const form = new Form();
 
 $.each(tables,
-	function(index, table) {
+	function (index, table) {
 		const listRef = $(table);
 		const viewmodelId = listRef.attr("db-viewmodel");
 		const listId = listRef.attr("id");
@@ -128,18 +143,18 @@ $.each(tables,
 				//CheckBox column
 				renderColumns.push({
 					data: null,
-					"render": function(data, type, row, meta) {
+					"render": function (data, type, row, meta) {
 						return "";
 					}
 				});
 
 
 				$.each(viewmodelData.result.viewModelFields,
-					function(index, column) {
+					function (index, column) {
 						rows += `<th translate='${column.translate}'>${column.name}</th>`;
 						renderColumns.push({
 							data: null,
-							"render": function(data, type, row, meta) {
+							"render": function (data, type, row, meta) {
 								return `<div class="data-cell" data-viewmodel="${viewmodelId}" data-id="${row.id
 									}" data-column-id="${column.id}">${eval(column.template)}</div>`;
 							}
@@ -149,26 +164,26 @@ $.each(tables,
 				columns.html(rows);
 				renderColumns.push({
 					data: null,
-					"render": function(data, type, row, meta) {
+					"render": function (data, type, row, meta) {
 						return `<div class="btn-group" role="group" aria-label="Action buttons">
 										${hasInlineEdit
-							? `	<a data-viewmodel="${viewmodelData.result.id
-							}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
-							: ``}
+								? `	<a data-viewmodel="${viewmodelData.result.id
+								}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
+								: ``}
 
 										${hasEditPage
-							? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
-							}&&listId=${viewmodelData.result.id}">Edit</a>`
-							: ``}
+								? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
+								}&&listId=${viewmodelData.result.id}">Edit</a>`
+								: ``}
 
 
 										${hasDeleteRestore
-							? `${row.isDeleted
-							? `<a href="#" class='btn btn-warning btn-sm' onclick="restoreItem('${row.id
-							}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
-							: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
-							}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
-							: ``}
+								? `${row.isDeleted
+									? `<a href="#" class='btn btn-warning btn-sm' onclick="restoreItem('${row.id
+									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
+									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
+									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
+								: ``}
 
 										</div>`;
 					}
@@ -218,7 +233,7 @@ $.each(tables,
 		}
 
 
-		var oldExportAction = function(self, e, dt, button, config) {
+		var oldExportAction = function (self, e, dt, button, config) {
 			if (button[0].className.indexOf('buttons-excel') >= 0) {
 				if ($.fn.dataTable.ext.buttons.excelHtml5.available(dt, config)) {
 					$.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config);
@@ -234,23 +249,23 @@ $.each(tables,
 			}
 		};
 
-		var newExportAction = function(e, dt, button, config) {
+		var newExportAction = function (e, dt, button, config) {
 			var self = this;
 			var oldStart = dt.settings()[0]._iDisplayStart;
 
 			dt.one('preXhr',
-				function(e, s, data) {
+				function (e, s, data) {
 					// Just this once, load all data from the server...
 					data.start = 0;
 					data.length = 2147483647;
 
 					dt.one('preDraw',
-						function(e, settings) {
+						function (e, settings) {
 							// Call the original action function
 							oldExportAction(self, e, dt, button, config);
 
 							dt.one('preXhr',
-								function(e, s, data) {
+								function (e, s, data) {
 									// DataTables thinks the first item displayed is index 0, but we're not drawing that.
 									// Set the property to what it was before exporting.
 									settings._iDisplayStart = oldStart;

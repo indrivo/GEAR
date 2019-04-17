@@ -1,0 +1,62 @@
+@model ST.Identity.Razor.ViewModels.AccountViewModels.ExternalLoginViewModel
+
+@{
+	ViewData["Title"] = "ExternalLogin";
+}
+
+<div class="preloader">
+	<svg class="circular" viewBox="25 25 50 50">
+		<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+	</svg>
+</div>
+
+<section id="wrapper">
+	<div class="login-register" style="background-image:url(../images/background/login-register.jpg);">
+		<div class="login-box card">
+			<div class="card-block">
+				<form class="form-horizontal form-material" asp-action="ExternalLoginConfirmation" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+					<div asp-validation-summary="All" class="text-danger"></div>
+					<input type="hidden" asp-for="LoginProvider"/>
+					<input type="hidden" asp-for="Picture"/>
+					<div class="form-group">
+						<div class="col-md-12 text-center">
+							<div class="user-thumb text-center">
+								<img alt="@Model.Name" class="img-circle" width="100" src="@Model.Picture" title="@Model.Picture" >
+								<h3>@Model.Name</h3>
+							</div>
+						</div>
+					</div>
+					<p class="text-info text-center">
+						You've successfully authenticated with <strong>@ViewData["LoginProvider"]</strong>.
+						Please enter an email address for this site below and click the Register button to finish
+						logging in.
+					</p>
+					<div class="form-group">
+						<div class="col-md-12">
+							<label asp-for="Name" class="control-label"></label>
+							<input asp-for="Name" class="form-control"/>
+							<span asp-validation-for="Name" placeholder="User Name" class="text-danger"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-md-12">
+							<label asp-for="Email" class="control-label"></label>
+							<input asp-for="Email" class="form-control"/>
+							<span asp-validation-for="Email" placeholder="e-Mail" class="text-danger"></span>
+						</div>
+					</div>
+
+					<div class="form-group text-center">
+						<div class="col-md-12">
+							<button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Register</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+
+@section Scripts {
+	@await Html.PartialAsync("_ValidationScriptsPartial")
+}

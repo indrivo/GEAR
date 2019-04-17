@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.Configuration;
 using ST.Configuration.Models;
-using ST.CORE.Attributes;
-using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.RenderTemplates;
@@ -18,9 +16,11 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
-using ST.Notifications.Abstraction;
-using ST.Procesess.Data;
+using ST.Notifications.Abstractions;
+using ST.Shared;
+using ST.Shared.Attributes;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -36,11 +36,10 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="roleManager"></param>
 		/// <param name="notify"></param>
 		/// <param name="organizationService"></param>
-		/// <param name="processesDbContext"></param>
 		/// <param name="cacheService"></param>
 		public TemplatesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
-			IOrganizationService organizationService, ProcessesDbContext processesDbContext, ICacheService cacheService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+			IOrganizationService organizationService, ICacheService cacheService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 		}
 

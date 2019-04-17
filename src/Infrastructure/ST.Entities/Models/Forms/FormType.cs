@@ -1,7 +1,7 @@
 ﻿using ST.Audit.Attributes;
 using ST.Audit.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
-using ST.Audit.Models;
+using ST.Shared;
 
 namespace ST.Entities.Models.Forms
 {

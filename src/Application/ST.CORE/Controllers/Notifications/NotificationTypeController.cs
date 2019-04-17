@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Entities.Models.Notifications;
-using ST.Entities.Services.Abstraction;
-using ST.Identity.Data;
+using ST.Notifications.Abstractions.Models.Notifications;
+using ST.Shared;
 
 namespace ST.CORE.Controllers.Notifications
 {
@@ -20,15 +19,10 @@ namespace ST.CORE.Controllers.Notifications
 		/// Inject data dataService
 		/// </summary>
 		private readonly IDynamicService _service;
-		/// <summary>
-		/// Context
-		/// </summary>
-		private readonly ApplicationDbContext _context;
 
-		public NotificationTypeController(IDynamicService service, ApplicationDbContext context)
+		public NotificationTypeController(IDynamicService service)
 		{
 			_service = service;
-			_context = context;
 		}
 
 		#endregion

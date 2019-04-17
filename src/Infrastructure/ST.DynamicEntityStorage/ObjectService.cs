@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Microsoft.AspNetCore.Http;
-using ST.Audit.Models;
-using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.DynamicEntityStorage.Exceptions;
 using ST.DynamicEntityStorage.Services;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.ViewModels.DynamicEntities;
+using ST.Shared;
 
 namespace ST.DynamicEntityStorage
 {
@@ -291,11 +290,5 @@ namespace ST.DynamicEntityStorage
             }
             return type;
         }
-    }
-
-    public class DynamicObject
-    {
-        public IDynamicService Service { get; set; }
-        public object Object { get; set; }
     }
 }

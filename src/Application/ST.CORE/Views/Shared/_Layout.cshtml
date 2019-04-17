@@ -68,8 +68,8 @@
 			};
 			const notificator = new Notificator();
 			st = new ST();
-			const controller = "@ViewContext.RouteData.Values["controller"].ToString()";
-			const view = "@ViewContext.RouteData.Values["action"].ToString()";
+			const controller = "@ViewContext?.RouteData?.Values["controller"]?.ToString()";
+			const view = "@ViewContext?.RouteData?.Values["action"]?.ToString()";
 
 			const storageSettings = localStorage.getItem("settings");
 			if (storageSettings) {

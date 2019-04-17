@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ST.Identity\ST.Identity.csproj" />
+    <ProjectReference Include="..\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

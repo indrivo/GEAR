@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Entities.Models.Notifications;
-using ST.Entities.Services.Abstraction;
-using ST.Notifications.Abstraction;
+using ST.Notifications.Abstractions;
+using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.Notifications.Services
 {

@@ -14,6 +14,12 @@
     <Copyright>Soft-tehnica 2019</Copyright>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Controllers\Identity\**" />
+    <Content Remove="Controllers\Identity\**" />
+    <EmbeddedResource Remove="Controllers\Identity\**" />
+    <None Remove="Controllers\Identity\**" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="app_offline.htm" />
     <None Remove="ExtraStatic\modeler.js" />
     <None Remove="Static\Pages\performanceserver\performanceserver.html" />
@@ -35,13 +41,12 @@
     <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="1.0.172" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.1" />
     <PackageReference Include="ST.AspNetCore.WebHost.Customization" Version="1.0.0" />
-    <PackageReference Include="ST.MPass.Gov" Version="0.1.4-alpha" />
     <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.HealthChecks.SqlServer" Version="1.0.0" />
     <PackageReference Include="ST.ServiceDiscovery" Version="1.1.1" />
@@ -141,31 +146,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="appsettings.Stage.json" />
-    <None Include="Views\Account\AccessDenied.cshtml" />
-    <None Include="Views\Account\ConfirmEmail.cshtml" />
-    <None Include="Views\Account\ForgotPassword.cshtml" />
-    <None Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <None Include="Views\Account\Lockout.cshtml" />
-    <None Include="Views\Account\Login.cshtml" />
-    <None Include="Views\Account\LoginWithRecoveryCode.cshtml" />
-    <None Include="Views\Account\Logout.cshtml" />
-    <None Include="Views\Account\Register.cshtml" />
-    <None Include="Views\Account\ResetPassword.cshtml" />
-    <None Include="Views\Account\ResetPasswordConfirmation.cshtml" />
-    <None Include="Views\Account\SignedOut.cshtml" />
-    <None Include="Views\Groups\Create.cshtml" />
-    <None Include="Views\Groups\Edit.cshtml" />
-    <None Include="Views\Groups\Index.cshtml" />
     <None Include="Views\Home\Contact.cshtml" />
-    <None Include="Views\Roles\Create.cshtml" />
-    <None Include="Views\Roles\Edit.cshtml" />
-    <None Include="Views\Roles\Index.cshtml" />
     <None Include="Views\Shared\Error.cshtml" />
     <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
-    <None Include="Views\Users\Create.cshtml" />
-    <None Include="Views\Users\Delete.cshtml" />
-    <None Include="Views\Users\Edit.cshtml" />
-    <None Include="Views\Users\Index.cshtml" />
     <None Include="Views\Process\Create.cshtml" />
     <None Include="Views\Process\Edit.cshtml" />
     <None Include="Views\Process\Index.cshtml" />
@@ -195,8 +178,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\ST.Configuration\ST.Configuration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Files\ST.Files.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Identity.Razor\ST.Identity.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Notifications\ST.Notifications.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\ST.Organization\ST.MultiTenant.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Processes\ST.Procesess.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -279,9 +262,6 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\BlockCategory\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Tenant\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Blocks\Edit.cshtml">

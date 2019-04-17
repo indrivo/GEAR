@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.Extensions;
 using ST.CORE.ViewModels.NotificationsViewModels;
 using ST.Entities.Extensions;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Data.UserProfiles;
-using ST.Notifications.Abstraction;
+using ST.Notifications.Abstractions;
+using ST.Notifications.Abstractions.Models.Config;
 using ST.Notifications.Hubs;
 using ST.Notifications.Services;
 
@@ -54,7 +54,7 @@ namespace ST.CORE.Controllers.Messaging
 		/// <returns></returns>
 		public async Task<IActionResult> Index()
 		{
-			await _hubContext.Clients.All.SendCoreAsync(SignalrSendMethods.SendClientNotification, new[] { "test" });
+			await _hubContext.Clients.All.SendCoreAsync(SignalrSendMethods.SendClientNotification, new object[] { "test" });
 			return View();
 		}
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using ST.Notifications.Abstraction;
+using ST.Notifications.Abstractions;
 using ST.Notifications.Hubs;
 using ST.Notifications.Services;
 

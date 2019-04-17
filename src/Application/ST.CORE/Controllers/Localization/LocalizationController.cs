@@ -12,6 +12,7 @@ using ST.Configuration.Server;
 using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.CORE.ViewModels;
 using ST.Localization;
+using ST.Shared;
 
 namespace ST.CORE.Controllers.Localization
 {

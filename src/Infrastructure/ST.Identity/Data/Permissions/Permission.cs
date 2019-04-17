@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ST.Audit.Models;
-using ST.Entities.Models;
+using ST.Shared;
 
 namespace ST.Identity.Data.Permissions
 {

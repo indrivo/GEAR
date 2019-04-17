@@ -1,6 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
-using ST.Audit.Models;
+using ST.Shared;
 
 namespace ST.Entities.Models.RenderTemplates
 {

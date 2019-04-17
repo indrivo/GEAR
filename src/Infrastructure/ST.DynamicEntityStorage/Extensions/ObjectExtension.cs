@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using ST.BaseBusinessRepository;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 

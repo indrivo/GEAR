@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
-using ST.CORE.Attributes;
 using ST.Entities.Data;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Tables;
@@ -19,7 +18,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ST.Configuration.Models;
-using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.FormsViewModels;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
@@ -27,9 +25,11 @@ using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Extensions;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
-using ST.Notifications.Abstraction;
-using ST.Procesess.Data;
+using ST.Notifications.Abstractions;
+using ST.Shared;
+using ST.Shared.Attributes;
 using Settings = ST.Configuration.Settings;
 
 namespace ST.CORE.Controllers.Entity
@@ -64,18 +64,16 @@ namespace ST.CORE.Controllers.Entity
 		/// <param name="roleManager"></param>
 		/// <param name="notify"></param>
 		/// <param name="organizationService"></param>
-		/// <param name="processesDbContext"></param>
 		/// <param name="formService"></param>
 		/// <param name="cacheService"></param>
 		/// <param name="repository"></param>
 		/// <param name="service"></param>
 		public FormController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-			INotify<ApplicationRole> notify, IOrganizationService organizationService,
-			ProcessesDbContext processesDbContext, IFormService formService,
+			INotify<ApplicationRole> notify, IOrganizationService organizationService, IFormService formService,
 			ICacheService cacheService,
 			IBaseBusinessRepository<EntitiesDbContext> repository, IDynamicService service)
-			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 			FormService = formService;
 			Repository = repository;

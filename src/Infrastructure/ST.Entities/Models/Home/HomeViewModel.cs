@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ST.Entities.Models.Home
+﻿namespace ST.Entities.Models.Home
 {
     public class HomeViewModel
     {

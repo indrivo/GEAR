@@ -15,6 +15,7 @@ using ST.Identity.Data;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Data;
 using ST.Procesess.Models;
+using ST.Shared;
 
 namespace ST.CORE.Controllers.Processes
 {

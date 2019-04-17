@@ -17,9 +17,10 @@ using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.Configuration;
 using ST.Configuration.Seed;
+using ST.Configuration.Services.Abstraction;
 using ST.Configuration.ViewModels.LocalizationViewModels;
 using ST.CORE.Attributes;
-using ST.CORE.Services.Abstraction;
+using ST.CORE.Services.Abstractions;
 using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.PageViewModels;
 using ST.CORE.ViewModels.TableColumnsViewModels;
@@ -29,6 +30,8 @@ using ST.Entities.Data;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 using ST.Localization;
+using ST.Shared;
+using ST.Shared.Attributes;
 
 namespace ST.CORE.Controllers.Render
 {
