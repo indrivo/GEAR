@@ -39,9 +39,13 @@ namespace ST.DynamicEntityStorage
         /// <param name="httpContextAccessor"></param>
         /// <param name="includeFieldReferences"></param>
         /// <returns></returns>
-        public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor, bool includeFieldReferences = true)
+        public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             var entity = _assemblyName.Name;
+            if (entity == "Control")
+            {
+
+            }
             var table = await context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity));
             if (table == null) throw new DynamicTableOperationException($"Table {entity} not found in database!");
             var schema = table.EntityType;
@@ -87,7 +91,6 @@ namespace ST.DynamicEntityStorage
                 var entityRef = field.Configurations.FirstOrDefault(x => x.Name == "ForeingTable");
                 var entityRefSchema = field.Configurations.FirstOrDefault(x => x.Name == "ForeingSchemaTable");
                 if (entityRef == null || entityRefSchema == null) continue;
-                if (!includeFieldReferences) continue;
 
                 if (entityRef.Value == _assemblyName.Name)
                 {
@@ -95,7 +98,7 @@ namespace ST.DynamicEntityStorage
                 }
                 else
                 {
-                    var refType = await Task.Run(async () => await new ObjectService(entityRef.Value).ResolveAsync(context, httpContextAccessor, false));
+                    var refType = await Task.Run(async () => await new ObjectService(entityRef.Value).ResolveAsync(context, httpContextAccessor));
 
                     CreateProperty(dynamicClass, $"{field.ColumnName}Reference", refType.Type);
                 }
