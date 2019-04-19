@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
-using ST.CORE.Attributes;
-using ST.CORE.ViewModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
@@ -173,11 +171,15 @@ namespace ST.CORE.Controllers.Entity
 				model.AllowedRoles = "Administrator#";
 				var req = await _service.AddSystem(model);
 				if (req.IsSuccess)
+				{
+					await _cacheService.RemoveAsync("_menus_central");
 					return RedirectToAction("GetMenu", new
 					{
 						model.MenuId,
 						ParentId = model.ParentMenuItemId
 					});
+				}
+
 				ModelState.AddModelError(string.Empty, "Fail to save!");
 			}
 
@@ -209,6 +211,7 @@ namespace ST.CORE.Controllers.Entity
 			var rq = await _service.UpdateSystem(model);
 			if (rq.IsSuccess)
 			{
+				await _cacheService.RemoveAsync("_menus_central");
 				return RedirectToAction("GetMenu", new
 				{
 					model.MenuId,
@@ -236,10 +239,10 @@ namespace ST.CORE.Controllers.Entity
 
 			var finalResult = new DTResult<MenuItem>
 			{
-				draw = param.Draw,
-				data = filtered.Item1,
-				recordsFiltered = filtered.Item2,
-				recordsTotal = filtered.Item1.Count()
+				Draw = param.Draw,
+				Data = filtered.Item1,
+				RecordsFiltered = filtered.Item2,
+				RecordsTotal = filtered.Item1.Count()
 			};
 			return Json(finalResult);
 		}
@@ -258,10 +261,10 @@ namespace ST.CORE.Controllers.Entity
 
 			var finalResult = new DTResult<Menu>
 			{
-				draw = param.Draw,
-				data = filtered.Item1,
-				recordsFiltered = filtered.Item2,
-				recordsTotal = filtered.Item1.Count()
+				Draw = param.Draw,
+				Data = filtered.Item1,
+				RecordsFiltered = filtered.Item2,
+				RecordsTotal = filtered.Item1.Count()
 			};
 			return Json(finalResult);
 		}
@@ -279,10 +282,9 @@ namespace ST.CORE.Controllers.Entity
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu!", success = false });
 			var menu = await _service.DeletePermanent<Menu>(Guid.Parse(id));
 			if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu!", success = false });
-
+			await _cacheService.RemoveAsync("_menus_central");
 			return Json(new { message = "Menu was delete with success!", success = true });
 		}
-
 
 		/// <summary>
 		/// Delete page type by id
@@ -297,7 +299,7 @@ namespace ST.CORE.Controllers.Entity
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu item!", success = false });
 			var menu = await _service.DeletePermanent<MenuItem>(Guid.Parse(id));
 			if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu item!", success = false });
-
+			await _cacheService.RemoveAsync("_menus_central");
 			return Json(new { message = "Model was delete with success!", success = true });
 		}
 	}

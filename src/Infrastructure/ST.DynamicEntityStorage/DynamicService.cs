@@ -833,7 +833,10 @@ namespace ST.DynamicEntityStorage
         /// <param name="tableName"></param>
         /// <returns></returns>
         public virtual DynamicObject Table(string tableName)
-            => new ObjectService(tableName).Resolve(_context, _httpContextAccessor);
+            => new ObjectService(tableName)
+                .ResolveAsync(_context, _httpContextAccessor)
+                .GetAwaiter()
+                .GetResult();
 
         /// <inheritdoc />
         /// <summary>
@@ -843,7 +846,7 @@ namespace ST.DynamicEntityStorage
         public virtual DynamicObject Table<TEntity>() where TEntity : ExtendedModel
             => new DynamicObject
             {
-                Object = Activator.CreateInstance(typeof(TEntity)),
+                Type = typeof(TEntity),
                 Service = new DynamicService<TContext>(_context, _httpContextAccessor)
             };
 
@@ -857,7 +860,7 @@ namespace ST.DynamicEntityStorage
             var tables = await _context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
             foreach (var table in tables)
             {
-                new ObjectService(table.Name).Resolve(_context, _httpContextAccessor);
+                await new ObjectService(table.Name).ResolveAsync(_context, _httpContextAccessor);
             }
         }
 

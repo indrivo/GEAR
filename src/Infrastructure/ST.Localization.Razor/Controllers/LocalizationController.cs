@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
-using ST.Localization;
 using ST.Localization.Razor.Services.Abstractions;
 using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 using ST.Shared;
 
-namespace ST.CORE.Controllers.Localization
+namespace ST.Localization.Razor.Controllers
 {
 	[Authorize]
 	public class LocalizationController : Controller
@@ -125,10 +124,10 @@ namespace ST.CORE.Controllers.Localization
 				out var totalCount);
 			var finalResult = new DTResult<LocalizedString>
 			{
-				draw = param.Draw,
-				data = filtered.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = filtered.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);
@@ -227,10 +226,10 @@ namespace ST.CORE.Controllers.Localization
 				out var totalCount);
 			var finalResult = new DTResult<LanguageCreateViewModel>
 			{
-				draw = param.Draw,
-				data = filtered.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = filtered.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);

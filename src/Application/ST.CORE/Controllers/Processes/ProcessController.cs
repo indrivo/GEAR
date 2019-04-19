@@ -229,10 +229,10 @@ namespace ST.CORE.Controllers.Processes
 			});
 			var finalResult = new DTResult<ProcessesListViewModel>
 			{
-				draw = param.Draw,
-				data = orderList.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = orderList.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);

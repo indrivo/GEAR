@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ST.Configuration;
-using ST.CORE.Installation;
 using ST.CORE.ViewModels.InstallerModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Controls.Querry;
@@ -258,6 +256,10 @@ namespace ST.CORE.Controllers
 			await _dynamicService.CreateDynamicTables(tenant.Id, tenantMachineName);
 
 			await Installation.Application.SeedDynamicDataAsync();
+
+			//Register in memory types
+			await _dynamicService.RegisterInMemoryDynamicTypes();
+
 			//Send welcome message to user
 			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id) }, new SystemNotifications
 			{

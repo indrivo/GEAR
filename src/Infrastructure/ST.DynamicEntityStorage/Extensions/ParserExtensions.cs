@@ -22,7 +22,7 @@ namespace ST.DynamicEntityStorage.Extensions
             return Task.Run(() =>
             {
                 var result = new ResultModel<TableModel>();
-                var req = obj.Invoke<TableModel>(MethodName.GetTableConfigurations, new List<Type> { obj.Object.GetType() });
+                var req = obj.Invoke<TableModel>(MethodName.GetTableConfigurations, new List<Type> { obj.Type });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
                 result.Result = req.Result;
@@ -53,7 +53,7 @@ namespace ST.DynamicEntityStorage.Extensions
         /// <returns></returns>
         public static object ParseObject<TObject, TContext>(this DynamicObject conf, TObject obj) where TContext : EntitiesDbContext
         {
-            var entity = conf.Object.GetType().Name;
+            var entity = conf.Type.Name;
             var res = new ObjectService(entity).ParseObject(obj);
             return res;
         }

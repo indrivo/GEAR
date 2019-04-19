@@ -220,7 +220,8 @@ namespace ST.CORE.Controllers.Render
 		{
 			var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
 			if (entity == null) return Json(default(ResultModel));
-			var obj = _service.Table(entity.TableModel.Name).Object;
+			var objType = _service.Table(entity.TableModel.Name).Type;
+			var obj = Activator.CreateInstance(objType);
 			var referenceFields = obj.GetType().GetProperties()
 				.Where(x => !x.PropertyType.GetTypeInfo().FullName.StartsWith("System"))
 				.ToList();
@@ -483,10 +484,10 @@ namespace ST.CORE.Controllers.Render
 
 			var finalResult = new DTResult<object>
 			{
-				draw = param.Draw,
-				data = data,
-				recordsFiltered = recordsCount,
-				recordsTotal = data.Count()
+				Draw = param.Draw,
+				Data = data,
+				RecordsFiltered = recordsCount,
+				RecordsTotal = data.Count()
 			};
 
 			return Json(finalResult);
@@ -606,7 +607,7 @@ namespace ST.CORE.Controllers.Render
 
 			var instance = _service.Table(table.Name);
 			var fields = table.TableFields.ToList();
-			var pre = instance.Object;
+			var pre = Activator.CreateInstance(instance.Type);
 
 			if (model.IsEdit)
 			{

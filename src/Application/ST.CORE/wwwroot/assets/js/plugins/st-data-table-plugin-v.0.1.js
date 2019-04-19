@@ -10,13 +10,13 @@
 
 // Make sure jQuery has been loaded
 if (typeof jQuery === 'undefined') {
-	throw new Error('Data Table plugin require JQuery')
+	throw new Error('Data Table plugin require JQuery');
 }
 
 function restoreItem(rowId, tableId, viewModelId) {
 	const object = {
-		alertTitle: "Restore?",
-		alertText: "Are you sure that you want to restore this item?",
+		alertTitle: window.translate("restore_alert"),
+		alertText: "",
 		confirmButtonText: "Yes, restore it!",
 		rowId: rowId,
 		tableId: tableId,
@@ -28,7 +28,7 @@ function restoreItem(rowId, tableId, viewModelId) {
 	};
 
 	swal({
-		title: object.alertText,
+		title: object.alertTitle,
 		text: object.alertText,
 		type: object.type,
 		showCancelButton: true,
@@ -166,30 +166,41 @@ $.each(tables,
 					data: null,
 					"render": function (data, type, row, meta) {
 						return `<div class="btn-group" role="group" aria-label="Action buttons">
-										${hasInlineEdit
-								? `	<a data-viewmodel="${viewmodelData.result.id
-								}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
-								: ``}
-
-										${hasEditPage
-								? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
-								}&&listId=${viewmodelData.result.id}">Edit</a>`
-								: ``}
-
-
+										${getRenderRowActions(row, viewmodelData, hasEditPage, hasInlineEdit, editPageLink)}
 										${hasDeleteRestore
 								? `${row.isDeleted
-									? `<a href="#" class='btn btn-warning btn-sm' onclick="restoreItem('${row.id
+									? `<a href="#" class='btn restore-item btn-warning btn-sm' onclick="restoreItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
 									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
 								: ``}
-
 										</div>`;
 					}
 				});
 			}
 		}
+
+		/**
+		 * Get action buttons
+		 * @param {any} row
+		 * @param {any} viewmodelData
+		 * @param {any} hasEditPage
+		 * @param {any} hasInlineEdit
+		 * @param {any} editPageLink
+		 */
+		function getRenderRowActions(row, viewmodelData, hasEditPage, hasInlineEdit, editPageLink) {
+			if (row.isDeleted) return "";
+			return `${hasInlineEdit
+				? `	<a data-viewmodel="${viewmodelData.result.id
+				}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
+				: ``}
+
+										${hasEditPage
+					? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
+					}&&listId=${viewmodelData.result.id}">Edit</a>`
+					: ``}`;
+		}
+
 
 		function deleteSelectedRows() {
 			const selected = this.rows({ selected: true }).data();
@@ -349,7 +360,7 @@ $.each(tables,
 				{
 					text: 'Delete selected items',
 					action: deleteSelectedRows
-				},
+				}
 			],
 			columnDefs: [
 				{
@@ -360,7 +371,7 @@ $.each(tables,
 			],
 			select: {
 				style: 'multi',
-				selector: 'td:first-child',
+				selector: 'td:not(.not-selectable):first-child',
 				blurable: true
 			},
 			"scrollX": true,
@@ -376,6 +387,16 @@ $.each(tables,
 					"viewModelId": viewmodelId
 				}
 			},
-			"columns": renderColumns
+			"columns": renderColumns,
+			"createdRow": function (row, data, dataIndex) {
+				if (data.isDeleted) {
+					$(row).addClass("row-deleted");
+					$(row).find("td.select-checkbox").find("input").css("display", "none");
+					$(row).find("td").addClass("not-selectable");
+				}
+			},
+			"createdCell": function (td, cellData, rowData, row, col) {
+				//on created cell
+			}
 		});
 	});

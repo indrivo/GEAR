@@ -92,7 +92,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
                 var result = new ResultModel();
                 if (model == null || !model.Any()) return result;
                 //var data = obj.ParseListObject(model);
-                var req = obj.Invoke<dynamic>(MethodName.AddDataRange, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<dynamic>(MethodName.AddDataRange, new List<Type> { obj.Type },
                     new List<object> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -114,11 +114,11 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<IEnumerable<TEntity>>();
                 var fType = typeof(Func<,>);
-                var genericFunc = fType.MakeGenericType(obj.Object.GetType(), typeof(bool));
+                var genericFunc = fType.MakeGenericType(obj.Type, typeof(bool));
 
                 //var param = func == null ? null : Delegate.CreateDelegate(genericFunc, func.Target, func.Method);
                 var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllWithInclude,
-                    new List<Type> { obj.Object.GetType(), obj.Object.GetType() }, new List<dynamic> { null, filters });
+                    new List<Type> { obj.Type, obj.Type }, new List<dynamic> { null, filters });
 
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -141,7 +141,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<TEntity>();
                 if (id == Guid.Empty) return result;
-                var req = obj.Invoke<TEntity>(MethodName.GetByIdSystem, new List<Type> { obj.Object.GetType(), obj.Object.GetType() },
+                var req = obj.Invoke<TEntity>(MethodName.GetByIdSystem, new List<Type> { obj.Type, obj.Type },
                     new List<object> { id });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -160,7 +160,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             return Task.Run(() =>
             {
                 var result = new ResultModel<bool>();
-                var req = obj.Invoke<bool>(MethodName.Any, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<bool>(MethodName.Any, new List<Type> { obj.Type },
                     new List<object>());
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -182,7 +182,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<Guid>();
                 if (id == Guid.Empty) return result;
-                var req = obj.Invoke<TEntity>(MethodName.Delete, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<TEntity>(MethodName.Delete, new List<Type> { obj.Type },
                     new List<object> { id });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -204,7 +204,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<Guid>();
                 if (id == Guid.Empty) return result;
-                var req = obj.Invoke<TEntity>(MethodName.Restore, new List<Type> { obj.Object.GetType() },
+                var req = obj.Invoke<TEntity>(MethodName.Restore, new List<Type> { obj.Type },
                     new List<object> { id });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;

@@ -135,5 +135,6 @@
   "columns-visibility": "Visibility of fields",
   "column-list": "List column",
   "select_all": "Select All",
-  "deselect_all": "Deselect All"
+  "deselect_all": "Deselect All",
+  "restore_alert": "Are you sure that you want to restore this item?"
 }

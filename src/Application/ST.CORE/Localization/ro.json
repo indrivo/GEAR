@@ -135,5 +135,6 @@
   "columns-visibility": "Vizibilitatea câmpurilor",
   "column-list": "Lista de coloane",
   "select_all": "Selecteaza tot",
-  "deselect_all": "Deselecteaza tot"
+  "deselect_all": "Deselecteaza tot",
+  "restore_alert": "Doriti sa restabiliti?"
 }

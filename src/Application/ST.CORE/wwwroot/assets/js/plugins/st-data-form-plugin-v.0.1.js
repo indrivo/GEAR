@@ -10,7 +10,7 @@
 
 // Make sure jQuery has been loaded
 if (typeof jQuery === 'undefined') {
-	throw new Error('Data form plugin require JQuery')
+	throw new Error('Data form plugin require JQuery');
 }
 
 
@@ -68,7 +68,6 @@ function renderForm(formId, place) {
 					$(formRef).attr("novalidate", "");
 					$(formRef).prepend("<div><ul class='server-errors'></ul></div>");
 					$("input,select,textarea").not("[type=submit]").addClass("form-control");
-
 
 					$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(
 						{

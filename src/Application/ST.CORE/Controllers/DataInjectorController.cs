@@ -70,7 +70,7 @@ namespace ST.CORE.Controllers
 			if (!isValid) return new JsonResult(errors);
 			try
 			{
-				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Object.GetType());
+				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type);
 				var rq = await _dynamicService.Table(tableName).Add(parsed);
 				return new JsonResult(rq);
 			}
@@ -96,7 +96,7 @@ namespace ST.CORE.Controllers
 			if (!isValid) return new JsonResult(errors);
 			try
 			{
-				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Object.GetType());
+				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type);
 				var rq = await _dynamicService.Table(tableName).Update(parsed);
 				return new JsonResult(rq);
 			}

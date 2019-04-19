@@ -520,7 +520,7 @@ Form.prototype.getFormFronServer = function (id) {
 		async: false,
 		success: function (data) {
 			if (data) {
-				if (data.is_success) {					
+				if (data.is_success) {
 					data.result = context.parseRequiredToBoolean(data);
 				}
 				response = data;
@@ -585,15 +585,19 @@ Form.prototype.getFromUrl = function (name) {
  */
 Form.prototype.checkIfIsEditForm = function (formRef, formId) {
 	const itemId = this.getFromUrl("itemId");
-	const listId = this.getFromUrl("listId");
-	if (itemId && listId) {
+	//const listId = this.getFromUrl("listId");
+	if (itemId) {
 		const data = window.load("/Form/GetValuesFormObjectEditInForm",
 			{
 				formId: formId,
 				itemId: itemId
 			});
+		const context = this;
 		if (data && data.is_success) {
-			this.populateEditForm(formRef, data.result);
+			setTimeout(function () {
+				context.populateEditForm(formRef, data.result);
+			}, 50);
+
 		}
 		else {
 			$.toast({
@@ -665,6 +669,7 @@ Form.prototype.populateEditForm = function (frm, data) {
 				switch ($ctrl.attr("type")) {
 					case "text": case "hidden": case "number":
 						$ctrl.val(value);
+						console.log($ctrl);
 						break;
 					case "radio": case "checkbox":
 						$ctrl.each(function () {

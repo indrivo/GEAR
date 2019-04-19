@@ -47,10 +47,10 @@ namespace ST.CORE.Controllers.Notifications
 
 			var finalResult = new DTResult<NotificationTypes>
 			{
-				draw = param.Draw,
-				data = filtered.Item1,
-				recordsFiltered = filtered.Item2,
-				recordsTotal = filtered.Item1.Count()
+				Draw = param.Draw,
+				Data = filtered.Item1,
+				RecordsFiltered = filtered.Item2,
+				RecordsTotal = filtered.Item1.Count()
 			};
 
 			return Json(finalResult);

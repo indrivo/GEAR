@@ -165,10 +165,10 @@ namespace ST.CORE.Controllers.Audit
 
 			var finalResult = new DTResult<TrackAuditsListViewModel>
 			{
-				draw = param.Draw,
-				data = trackAuditsList.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = trackAuditsList.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 			return Json(finalResult);
 		}

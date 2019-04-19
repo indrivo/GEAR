@@ -443,10 +443,10 @@ namespace ST.PageRender.Razor.Controllers
 
 			var finalResult = new DTResult<Page>
 			{
-				draw = param.Draw,
-				data = filtered.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count()
+				Draw = param.Draw,
+				Data = filtered.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count()
 			};
 			return Json(finalResult);
 		}
@@ -475,10 +475,10 @@ namespace ST.PageRender.Razor.Controllers
 
 			var finalResult = new DTResult<Page>
 			{
-				draw = param.Draw,
-				data = filtered.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count()
+				Draw = param.Draw,
+				Data = filtered.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count()
 			};
 			return Json(finalResult);
 		}

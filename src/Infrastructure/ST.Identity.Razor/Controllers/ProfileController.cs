@@ -50,10 +50,10 @@ namespace ST.Identity.Razor.Controllers
 			var filtered = GetOrderFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length, out var totalCount);
 			var finalResult = new DTResult<Profile>
 			{
-				draw = param.Draw,
-				data = filtered.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = filtered.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);

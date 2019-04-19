@@ -165,10 +165,10 @@ namespace ST.CORE.Controllers.Entity
 
 			var finalResult = new DTResult<TableModel>
 			{
-				draw = param.Draw,
-				data = orderList.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = orderList.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);

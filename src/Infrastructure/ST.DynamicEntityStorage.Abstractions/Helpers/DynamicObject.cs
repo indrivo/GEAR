@@ -1,8 +1,10 @@
-﻿namespace ST.DynamicEntityStorage.Abstractions.Helpers
+﻿using System;
+
+namespace ST.DynamicEntityStorage.Abstractions.Helpers
 {
     public class DynamicObject
     {
         public IDynamicService Service { get; set; }
-        public object Object { get; set; }
+        public Type Type { get; set; }
     }
 }

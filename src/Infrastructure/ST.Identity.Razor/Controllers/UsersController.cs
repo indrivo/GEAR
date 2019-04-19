@@ -619,10 +619,10 @@ namespace ST.Identity.Razor.Controllers
 
             var finalResult = new DTResult<UserListItemViewModel>
             {
-                draw = param.Draw,
-                data = usersList.ToList(),
-                recordsFiltered = totalCount,
-                recordsTotal = filtered.Count
+                Draw = param.Draw,
+                Data = usersList.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
             };
 
             return Json(finalResult);

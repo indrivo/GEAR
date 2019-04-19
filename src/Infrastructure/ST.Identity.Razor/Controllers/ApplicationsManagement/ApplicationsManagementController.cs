@@ -85,10 +85,10 @@ namespace ST.Identity.Razor.Controllers.ApplicationsManagement
                 out var totalCount);
             var finalResult = new DTResult<Client>
             {
-                draw = param.Draw,
-                data = filtered.ToList(),
-                recordsFiltered = totalCount,
-                recordsTotal = filtered.Count
+                Draw = param.Draw,
+                Data = filtered.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
             };
 
             return Json(finalResult);
@@ -352,10 +352,10 @@ namespace ST.Identity.Razor.Controllers.ApplicationsManagement
 
             var finalResult = new DTResult<ApplicationRole>
             {
-                draw = param.Draw,
-                data = filtered.ToList(),
-                recordsFiltered = totalCount,
-                recordsTotal = filtered.Count
+                Draw = param.Draw,
+                Data = filtered.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
             };
             return Json(finalResult);
         }
@@ -661,10 +661,10 @@ namespace ST.Identity.Razor.Controllers.ApplicationsManagement
 
             var finalResult = new DTResult<PermissionListItemViewModel>
             {
-                draw = param.Draw,
-                data = permissionList.ToList(),
-                recordsFiltered = totalCount,
-                recordsTotal = filtered.Count
+                Draw = param.Draw,
+                Data = permissionList.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
             };
             return Json(finalResult);
         }

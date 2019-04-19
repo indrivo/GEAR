@@ -531,10 +531,10 @@ namespace ST.Identity.Razor.Controllers
 
 			var finalResult = new DTResult<RoleListViewModel>
 			{
-				draw = param.Draw,
-				data = list,
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = list,
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);

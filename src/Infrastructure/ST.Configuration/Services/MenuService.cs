@@ -141,7 +141,7 @@ namespace ST.Configuration.Services
 			var model = menu.Result;
 			if (!roles.Contains("Administrator")) roles.Add("Administrator");
 			model.AllowedRoles = string.Join("#", roles.ToArray());
-
+            await _cacheService.RemoveAsync("_menus_central");
 			return await _service.UpdateSystem(model);
 		}
 	}

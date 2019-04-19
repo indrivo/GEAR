@@ -25,7 +25,7 @@ function completeEditInline() {
 		const value = $(columns[i]).find(".data-input").val();
 		if (value) {
 			$(columns[i]).html(value);
-			$(columns[i]).find(".inline-update-event").off("blur", oninputBlur);
+			$(columns[i]).find(".inline-update-event").off("blur", onInputBlur);
 		}
 	}
 	$(this).html("Edit inline");
@@ -69,15 +69,20 @@ function inlineEdit() {
 						container = `<input data-entity="${tableId}" data-prop-id="${propId}" data-id="${cellId}" class="inline-update-event data-input form-control" value="${value}" type="number" />`;
 					}
 					break;
+				case "uniqueidentifier":
+					{
+
+					}
+					break;
 			}
 			$(columns[i]).html(container);
-			$(columns[i]).find(".inline-update-event").on("blur", oninputBlur);
+			$(columns[i]).find(".inline-update-event").on("blur", onInputBlur);
 		}
 	}
 	$(this).on("click", completeEditInline);
 }
 
-function oninputBlur() {
+function onInputBlur() {
 	const rowId = $(this).attr("data-id");
 	const entityId = $(this).attr("data-entity");
 	const propId = $(this).attr("data-prop-id");

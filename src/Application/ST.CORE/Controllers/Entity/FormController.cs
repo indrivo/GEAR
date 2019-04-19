@@ -236,8 +236,8 @@ namespace ST.CORE.Controllers.Entity
 
 			var finalResult = new DTResult<FormListViewModel>
 			{
-				draw = param.Draw,
-				data = filtered.Select(x => new FormListViewModel
+				Draw = param.Draw,
+				Data = filtered.Select(x => new FormListViewModel
 				{
 					Id = x.Id,
 					Name = x.Name,
@@ -253,8 +253,8 @@ namespace ST.CORE.Controllers.Entity
 					ModifiedBy = x.ModifiedBy,
 					TableId = x.TableId
 				}).ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 			return Json(finalResult);
 		}

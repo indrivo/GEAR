@@ -27,11 +27,20 @@
 
 @import url(../lib/animate.css/animate.css);
 
-
 .table thead tr th a {
 	color: white !important;
 }
 
+.row-deleted .restore-item {
+	text-decoration: none !important;
+	font-style: normal;
+}
+
+.row-deleted {
+	background: #ffdbdb !important;
+	text-decoration: line-through;
+	font-style: italic;
+}
 
 .dynamic-table {
 	margin-left: 0px !important;

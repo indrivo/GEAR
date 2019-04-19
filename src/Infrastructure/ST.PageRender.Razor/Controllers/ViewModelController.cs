@@ -266,10 +266,10 @@ namespace ST.PageRender.Razor.Controllers
 
 			var finalResult = new DTResult<object>
 			{
-				draw = param.Draw,
-				data = sel.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count()
+				Draw = param.Draw,
+				Data = sel.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count()
 			};
 			return Json(finalResult);
 		}

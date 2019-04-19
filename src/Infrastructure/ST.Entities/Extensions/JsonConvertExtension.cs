@@ -49,12 +49,12 @@ namespace ST.Entities.Extensions
         /// <param name="filePath"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public static IEnumerable<dynamic> ReadDataListFromJsonWithTypeParameter(string filePath, dynamic entity)
+        public static IEnumerable<dynamic> ReadDataListFromJsonWithTypeParameter(string filePath, Type entity)
         {
             if (!File.Exists(filePath))
                 return null;
             var list = typeof(List<>);
-            var listOfType = list.MakeGenericType(entity.GetType());
+            var listOfType = list.MakeGenericType(entity);
             var result = Activator.CreateInstance(listOfType);
 
             try
@@ -73,7 +73,7 @@ namespace ST.Entities.Extensions
                 Debug.WriteLine(exception);
             }
 
-            return result;
+            return (dynamic)result;
         }
 
         /// <summary>
