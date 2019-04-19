@@ -217,7 +217,7 @@ namespace ST.Identity.Razor.Controllers
 
 				try
 				{
-					await Context.SaveChangesAsync();
+					await ApplicationDbContext.SaveChangesAsync();
 					await _permissionService.RefreshCacheByRole(applicationRole.Name);
 				}
 				catch (Exception e)
@@ -272,7 +272,7 @@ namespace ST.Identity.Razor.Controllers
 				try
 				{
 					ApplicationDbContext.RolePermissions.RemoveRange(rolePermissionsList);
-					await Context.SaveChangesAsync();
+					await ApplicationDbContext.SaveChangesAsync();
 				}
 				catch (Exception e)
 				{
@@ -286,7 +286,7 @@ namespace ST.Identity.Razor.Controllers
 				try
 				{
 					ApplicationDbContext.RoleProfiles.RemoveRange(roleProfilesList);
-					await Context.SaveChangesAsync();
+					await ApplicationDbContext.SaveChangesAsync();
 				}
 				catch (Exception e)
 				{
@@ -335,9 +335,9 @@ namespace ST.Identity.Razor.Controllers
 				return NotFound();
 			}
 
-			var roleProfilesId = await Context.Set<RoleProfile>().Where(x => x.ApplicationRoleId == applicationRole.Id)
+			var roleProfilesId = await ApplicationDbContext.Set<RoleProfile>().Where(x => x.ApplicationRoleId == applicationRole.Id)
 				.Select(x => x.ProfileId.ToString()).ToListAsync();
-			var rolePermissionId = await Context.Set<RolePermission>().Where(x => x.RoleId == id)
+			var rolePermissionId = await ApplicationDbContext.Set<RolePermission>().Where(x => x.RoleId == id)
 				.Select(x => x.PermissionId.ToString()).ToListAsync();
 
 			var model = new UpdateRoleViewModel
@@ -407,7 +407,7 @@ namespace ST.Identity.Razor.Controllers
 				try
 				{
 					ApplicationDbContext.RoleProfiles.RemoveRange(roleProfilesId);
-					await Context.SaveChangesAsync();
+					await ApplicationDbContext.SaveChangesAsync();
 				}
 				catch (Exception e)
 				{
@@ -437,8 +437,8 @@ namespace ST.Identity.Razor.Controllers
 
 					try
 					{
-						await Context.AddRangeAsync(roleProfileList);
-						await Context.SaveChangesAsync();
+						await ApplicationDbContext.AddRangeAsync(roleProfileList);
+						await ApplicationDbContext.SaveChangesAsync();
 					}
 					catch (Exception e)
 					{
@@ -454,7 +454,7 @@ namespace ST.Identity.Razor.Controllers
 				if (await rolePermissionId.AnyAsync())
 				{
 					ApplicationDbContext.RolePermissions.RemoveRange(rolePermissionId);
-					await Context.SaveChangesAsync();
+					await ApplicationDbContext.SaveChangesAsync();
 				}
 
 				var permissions = new List<string>();
@@ -477,7 +477,7 @@ namespace ST.Identity.Razor.Controllers
 				try
 				{
 					await ApplicationDbContext.RolePermissions.AddRangeAsync(rolePermissionList);
-					await Context.SaveChangesAsync();
+					await ApplicationDbContext.SaveChangesAsync();
 					await _permissionService.RefreshCacheByRole(applicationRole.Name);
 				}
 				catch (Exception e)

@@ -37,7 +37,6 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
-        /// <param name="includeFieldReferences"></param>
         /// <returns></returns>
         public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
