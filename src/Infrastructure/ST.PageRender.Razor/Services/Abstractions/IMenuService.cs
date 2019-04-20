@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
 using ST.Entities.Models.Pages;
 
-namespace ST.Configuration.Services.Abstraction
+namespace ST.PageRender.Razor.Services.Abstractions
 {
 	public interface IMenuService
 	{

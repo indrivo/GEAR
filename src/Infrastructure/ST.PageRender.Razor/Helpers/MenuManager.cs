@@ -8,7 +8,7 @@ using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;
 
-namespace ST.Configuration.Seed
+namespace ST.PageRender.Razor.Helpers
 {
     public static class MenuManager
     {

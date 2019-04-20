@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ST.DynamicEntityStorage.Extensions
+namespace ST.DynamicEntityStorage.Abstractions.Extensions
 {
     public static class UpdatePropertyExtension
     {

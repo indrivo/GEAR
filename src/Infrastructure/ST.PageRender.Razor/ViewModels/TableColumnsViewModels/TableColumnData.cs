@@ -1,7 +1,7 @@
 using System;
 using ST.Entities.Models.Tables;
 
-namespace ST.CORE.ViewModels.TableColumnsViewModels
+namespace ST.PageRender.Razor.ViewModels.TableColumnsViewModels
 {
 	public class TableColumnData : TableModelFields
 	{

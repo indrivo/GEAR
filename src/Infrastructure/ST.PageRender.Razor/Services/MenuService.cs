@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using ST.BaseBusinessRepository;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Models.Pages;
 using ST.Identity.Services.Abstractions;
+using ST.PageRender.Razor.Services.Abstractions;
 
-namespace ST.Configuration.Services
+namespace ST.PageRender.Razor.Services
 {
 	public class MenuService<TService> : IMenuService where TService : IDynamicService
 	{

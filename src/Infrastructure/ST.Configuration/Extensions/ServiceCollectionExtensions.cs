@@ -17,8 +17,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using ST.BaseBusinessRepository;
 using ST.Configuration.Seed;
-using ST.Configuration.Services;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
@@ -182,7 +180,6 @@ namespace ST.Configuration.Extensions
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
-            services.AddTransient<IMenuService, MenuService<IDynamicService>>();
             services.AddTransient<IProcessParser, ProcessParser>();
             services.AddTransient<IOrganizationService, OrganizationService>();
             services.UseCustomCacheService(env, "127.0.0.1", systemIdentifier);
