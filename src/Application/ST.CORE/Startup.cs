@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
 using ST.CORE.LoggerTargets;
@@ -137,8 +138,11 @@ namespace ST.CORE
 					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 				})
 				.AddDistributedMemoryCache()
-				.AddMvc();
-
+				.AddMvc()
+				.AddJsonOptions(x =>
+				{
+					x.SerializerSettings.DateFormatString = "dd'.'MM'.'yyyy hh:mm";
+				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 			.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)

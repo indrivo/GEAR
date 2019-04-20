@@ -825,7 +825,7 @@ Form.prototype.populateSelect = function (selects) {
 			}
 
 			try {
-				$(select).append(new Option("None", ""));
+				$(select).append(new Option(window.translate("no_value_selected"), ""));
 				if (req.is_success) {
 					$.each(req.result,
 						function (index, item) {

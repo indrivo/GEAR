@@ -112,11 +112,15 @@ window.translations = function () {
 	} else {
 		trans = JSON.parse(cached);
 	}
+	window.localTranslations = trans;
 	return trans;
 }
 
 
 window.translate = function (key) {
+	if (window.localTranslations) {
+		return window.localTranslations[key];
+	}
 	const trans = window.translations();
 	return trans[key];
 }

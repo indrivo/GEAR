@@ -175,7 +175,7 @@ namespace ST.Configuration.Extensions
         public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, string systemIdentifier)
         {
             services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
-            services.AddTransient<Identity.Services.Abstractions.IEmailSender, EmailSender>();
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IMPassService, MPassService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();

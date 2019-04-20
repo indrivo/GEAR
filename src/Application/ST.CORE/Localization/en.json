@@ -136,5 +136,6 @@
   "column-list": "List column",
   "select_all": "Select All",
   "deselect_all": "Deselect All",
-  "restore_alert": "Are you sure that you want to restore this item?"
+  "restore_alert": "Are you sure that you want to restore this item?",
+  "no_value_selected": "Not selected"
 }
