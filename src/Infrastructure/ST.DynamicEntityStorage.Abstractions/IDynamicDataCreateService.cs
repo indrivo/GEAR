@@ -22,7 +22,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> AddSystem<TEntity>(TEntity model) where TEntity : ExtendedModel;
+        Task<ResultModel<Guid>> AddWithReflection<TEntity>(TEntity model) where TEntity : ExtendedModel;
 
         /// <summary>
         /// Add multiples values to entity
@@ -37,6 +37,6 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRange<TEntity>(IEnumerable<TEntity> data) where TEntity : ExtendedModel;
+        Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRangeWithReflection<TEntity>(IEnumerable<TEntity> data) where TEntity : ExtendedModel;
     }
 }

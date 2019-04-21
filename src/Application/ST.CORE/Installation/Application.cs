@@ -124,7 +124,6 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			DynamicService<EntitiesDbContext>.TenantId = Shared.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 

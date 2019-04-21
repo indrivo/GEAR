@@ -39,11 +39,6 @@ namespace ST.DynamicEntityStorage
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// default tenant id
-        /// </summary>
-        public static Guid? TenantId { get; set; }
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
@@ -63,7 +58,7 @@ namespace ST.DynamicEntityStorage
             get
             {
                 return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
-                           ?.ToGuid() ?? TenantId;
+                           ?.ToGuid() ?? Settings.TenantId;
             }
         }
 
@@ -213,6 +208,7 @@ namespace ST.DynamicEntityStorage
             return data;
         }
 
+
         /// <inheritdoc />
         /// <summary>
         /// Implementation for Get all
@@ -235,6 +231,29 @@ namespace ST.DynamicEntityStorage
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             model.Values = GetFilters(filters);
             var data = _context.ListEntitiesByParams(model);
+            result.Result = data.Result.Values;
+            return result;
+        }
+
+
+        /// <summary>
+        /// Get all  as dictionary collection
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="expression"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll(string entity, Expression<Func<Dictionary<string, object>, bool>> expression = null, IEnumerable<Filter> filters = null)
+        {
+            var result = new ResultModel<IEnumerable<Dictionary<string, object>>>();
+
+            if (string.IsNullOrEmpty(entity)) return result;
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
+            result.IsSuccess = true;
+            var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
+            model.Values = GetFilters(filters);
+            var data = _context.ListEntitiesByParams(model);
+            if (expression != null) data.Result.Values = data.Result.Values.Where(expression.Compile()).ToList();
             result.Result = data.Result.Values;
             return result;
         }
@@ -262,11 +281,23 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public virtual async Task<ResultModel<Dictionary<string, object>>> GetById<TEntity>(Guid id) where TEntity : ExtendedModel
         {
-            var result = new ResultModel<Dictionary<string, object>>();
             var entity = typeof(TEntity).Name;
+            return await GetById(entity, id);
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get by id
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Dictionary<string, object>>> GetById(string entity, Guid id)
+        {
+            var result = new ResultModel<Dictionary<string, object>>();
             if (string.IsNullOrEmpty(entity)) return result;
             var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
-            var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
+            var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model.Values = new List<Dictionary<string, object>>
             {
                 new Dictionary<string, object>
@@ -282,6 +313,7 @@ namespace ST.DynamicEntityStorage
             result.IsSuccess = true;
             return result;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Get entity by id
@@ -290,7 +322,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TOutput"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<TOutput>> GetByIdSystem<TEntity, TOutput>(Guid id) where TEntity : ExtendedModel
+        public virtual async Task<ResultModel<TOutput>> GetByIdWithReflection<TEntity, TOutput>(Guid id) where TEntity : ExtendedModel
         {
             var result = new ResultModel<TOutput>();
             var req = await GetById<TEntity>(id);
@@ -472,7 +504,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> AddSystem<TEntity>(TEntity model) where TEntity : ExtendedModel
+        public virtual async Task<ResultModel<Guid>> AddWithReflection<TEntity>(TEntity model) where TEntity : ExtendedModel
         {
             var result = new ResultModel<Guid>();
             if (model == null) return result;
@@ -491,7 +523,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRange<TEntity>(IEnumerable<TEntity> data) where TEntity : ExtendedModel
+        public virtual async Task<ResultModel<IList<(TEntity, Guid)>>> AddDataRangeWithReflection<TEntity>(IEnumerable<TEntity> data) where TEntity : ExtendedModel
         {
             var result = new ResultModel<IList<(TEntity, Guid)>>
             {
@@ -499,7 +531,7 @@ namespace ST.DynamicEntityStorage
             };
             foreach (var item in data)
             {
-                var rq = await AddSystem(item);
+                var rq = await AddWithReflection(item);
                 result.Result.Add((item, rq.Result));
             }
             return result;
@@ -537,9 +569,21 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public virtual async Task<ResultModel<Guid>> Update<TEntity>(Dictionary<string, object> model) where TEntity : ExtendedModel
         {
+            var entity = typeof(TEntity).Name;
+            return await Update(entity, model);
+        }
+
+        /// <summary>
+        /// Update
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> Update(string entity, Dictionary<string, object> model)
+        {
             var result = new ResultModel<Guid>();
-            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(typeof(TEntity).Name) && x.TenantId == CurrentUserTenantId)?.EntityType;
-            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
+            var schema = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId)?.EntityType;
+            var table = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model["Changed"] = DateTime.Now;
             model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             try
@@ -557,7 +601,7 @@ namespace ST.DynamicEntityStorage
             result.IsSuccess = true;
             result.Result = Guid.Parse(model["Id"].ToString());
             var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
-                typeof(TEntity), TrackEventType.Updated);
+                null, TrackEventType.Updated);
 
             audit.RecordId = result.Result;
             audit.Store(_context);
@@ -571,7 +615,7 @@ namespace ST.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> UpdateSystem<TEntity>(TEntity model) where TEntity : ExtendedModel
+        public virtual async Task<ResultModel<Guid>> UpdateWithReflection<TEntity>(TEntity model) where TEntity : ExtendedModel
         {
             var dic = GetDictionary(model);
             return await Update<TEntity>(dic);
@@ -659,7 +703,7 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel> Exists<TEntity>(Guid id) where TEntity : ExtendedModel
         {
             var result = new ResultModel();
-            var item = await GetByIdSystem<TEntity, TEntity>(id);
+            var item = await GetByIdWithReflection<TEntity, TEntity>(id);
             result.IsSuccess = item.IsSuccess;
             return result;
         }

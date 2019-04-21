@@ -10,8 +10,20 @@ namespace ST.DynamicEntityStorage.Abstractions
 {
     public interface IDynamicDataGetService
     {
+
+        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll(string entity,
+            Expression<Func<Dictionary<string, object>, bool>> expression = null, IEnumerable<Filter> filters = null);
+
         Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null)
             where TEntity : ExtendedModel;
+
+        /// <summary>
+        /// Get by id as dictionary
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ResultModel<Dictionary<string, object>>> GetById(string entity, Guid id);
 
         /// <summary>
         /// Get all from entity
@@ -53,7 +65,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<ResultModel<TOutput>> GetByIdSystem<TEntity, TOutput>(Guid id) where TEntity : ExtendedModel;
+        Task<ResultModel<TOutput>> GetByIdWithReflection<TEntity, TOutput>(Guid id) where TEntity : ExtendedModel;
 
         /// <summary>
         /// Get table configurations

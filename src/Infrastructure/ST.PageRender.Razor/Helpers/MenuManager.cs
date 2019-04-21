@@ -41,14 +41,14 @@ namespace ST.PageRender.Razor.Helpers
             if (dataService == null) throw new Exception("IDynamicService is not registered");
             var exists = await dataService.Any<Menu>();
             if (exists.Result) return;
-            var rq = await dataService.AddDataRange(Menu);
+            var rq = await dataService.AddDataRangeWithReflection(Menu);
             if (rq.Result.All(x => x.Item2 != null))
             {
                 foreach (var item in GetMenus())
                 {
                     item.Created = DateTime.Now;
                     item.Changed = DateTime.Now;
-                    var res = await dataService.AddSystem(item.Adapt<MenuItem>());
+                    var res = await dataService.AddWithReflection(item.Adapt<MenuItem>());
                     if (!res.IsSuccess) continue;
                     foreach (var i in item.SubItems)
                     {
@@ -56,7 +56,7 @@ namespace ST.PageRender.Razor.Helpers
                         obj.ParentMenuItemId = res.Result;
                         obj.Created = DateTime.Now;
                         obj.Changed = DateTime.Now;
-                        var r = await dataService.AddSystem(obj);
+                        var r = await dataService.AddWithReflection(obj);
                         if (!r.IsSuccess || i.SubItems == null) continue;
                         foreach (var j in i.SubItems)
                         {
@@ -64,7 +64,7 @@ namespace ST.PageRender.Razor.Helpers
                             ob.ParentMenuItemId = r.Result;
                             ob.Created = DateTime.Now;
                             ob.Changed = DateTime.Now;
-                            var r1 = await dataService.AddSystem(ob);
+                            var r1 = await dataService.AddWithReflection(ob);
                             if (!r1.IsSuccess || j.SubItems == null) continue;
                             foreach (var m in j.SubItems)
                             {
@@ -72,7 +72,7 @@ namespace ST.PageRender.Razor.Helpers
                                 ob1.ParentMenuItemId = r1.Result;
                                 ob1.Created = DateTime.Now;
                                 ob1.Changed = DateTime.Now;
-                                await dataService.AddSystem(ob1);
+                                await dataService.AddWithReflection(ob1);
                             }
                         }
                     }

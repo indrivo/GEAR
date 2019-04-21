@@ -44,7 +44,7 @@ namespace ST.PageRender.Razor.Services
         public async Task<ResultModel<IEnumerable<MenuViewModel>>> GetMenus(Guid? menuId, IList<string> roles)
         {
             if (!menuId.HasValue) return default;
-            var navbar = await _service.GetByIdSystem<Menu, Menu>(menuId.Value);
+            var navbar = await _service.GetByIdWithReflection<Menu, Menu>(menuId.Value);
             if (!navbar.IsSuccess) return default;
             List<MenuItem> menus;
             var cache = await _cacheService.Get<List<MenuItem>>("_menus_central");
@@ -148,7 +148,7 @@ namespace ST.PageRender.Razor.Services
             if (!roles.Contains("Administrator")) roles.Add("Administrator");
             model.AllowedRoles = string.Join("#", roles.ToArray());
             await _cacheService.RemoveAsync("_menus_central");
-            return await _service.UpdateSystem(model);
+            return await _service.UpdateWithReflection(model);
         }
     }
 }

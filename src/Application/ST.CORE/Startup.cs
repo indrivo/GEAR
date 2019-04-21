@@ -87,7 +87,7 @@ namespace ST.CORE
 				app.UseExceptionHandler("/Home/Error");
 			}
 
-			app.UsePageRedirect();
+			app.UseUrlRewrite();
 
 			app.UseConfiguredCors(Configuration);
 

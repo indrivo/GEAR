@@ -58,7 +58,7 @@ namespace ST.Configuration.Seed
                     if (exist.Result.Any()) continue;
                     item.Author = "admin";
                     item.ModifiedBy = "admin";
-                    var response = await dataService.AddSystem(item);
+                    var response = await dataService.AddWithReflection(item);
                     if (!response.IsSuccess)
                     {
                         Console.WriteLine("Fail to add");

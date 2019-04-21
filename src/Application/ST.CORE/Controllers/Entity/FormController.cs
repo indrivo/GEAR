@@ -354,15 +354,14 @@ namespace ST.CORE.Controllers.Entity
 				result.Errors.Add(new ErrorModel(string.Empty, "Form not found"));
 				return Json(result);
 			}
-			var obj = await _service.Table(form.Table.Name).GetById<object>(itemId);
+			var obj = await _service.GetById(form.Table.Name, itemId);
 			if (!obj.IsSuccess)
 			{
 				result.Errors.Add(new ErrorModel(string.Empty, "Object not found"));
 				return Json(result);
 			}
-			var objDict = ObjectService.GetDictionary(obj.Result);
 
-			var formValues = FormService.GetValuesForEditForm(form, objDict);
+			var formValues = FormService.GetValuesForEditForm(form, obj.Result);
 			if (!formValues.IsSuccess) return Json(result);
 			result.Result = formValues.Result;
 			result.IsSuccess = formValues.IsSuccess;

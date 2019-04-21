@@ -10,26 +10,23 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using ST.Audit.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
-using ST.Localization;
 using ST.Shared;
 
 namespace ST.Configuration.Server
 {
-    public static class StatusCodeProvider
+    public static class UrlRewrite
     {
         /// <summary>
         /// Use custom error pages
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UsePageRedirect(this IApplicationBuilder app)
+        public static void UseUrlRewrite(this IApplicationBuilder app)
         {
             app.Use(async (ctx, next) =>
             {
@@ -98,8 +95,6 @@ namespace ST.Configuration.Server
                     }
                 }
             });
-
-            return app;
         }
 
         /// <summary>
@@ -107,14 +102,12 @@ namespace ST.Configuration.Server
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        private static HttpContext DeleteCookies(this HttpContext ctx)
+        private static void DeleteCookies(this HttpContext ctx)
         {
             foreach (var cookie in ctx.Request.Cookies.Keys)
             {
                 ctx.Response.Cookies.Delete(cookie);
             }
-
-            return ctx;
         }
 
         /// <summary>
@@ -157,6 +150,7 @@ namespace ST.Configuration.Server
 
             return true;
         }
+
         /// <summary>
         /// Match routes
         /// </summary>
@@ -193,7 +187,7 @@ namespace ST.Configuration.Server
         /// </summary>
         /// <param name="collection"></param>
         /// <returns></returns>
-        public static IEnumerable<KeyValuePair<string, string>> ToKeyValuePair(this NameValueCollection collection)
+        private static IEnumerable<KeyValuePair<string, string>> ToKeyValuePair(this NameValueCollection collection)
         {
             return collection.AllKeys.Select(x => new KeyValuePair<string, string>(x, collection[x]));
         }

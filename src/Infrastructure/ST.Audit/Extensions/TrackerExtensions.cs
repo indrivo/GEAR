@@ -26,7 +26,7 @@ namespace ST.Audit.Extensions
                 Changed = DateTime.Now,
                 DatabaseContextName = contextName,
                 TenantId = tenantId,
-                TypeFullName = objectType.FullName,
+                TypeFullName = objectType?.FullName,
                 TrackEventType = eventType,
                 Version = 1
             };

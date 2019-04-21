@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
+using ST.BaseRepository;
 using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
@@ -774,7 +775,7 @@ namespace ST.PageRender.Razor.Controllers
                 return Json(result);
             }
 
-            var row = await _service.Table(entity.Name).GetById<object>(rowId.Value);
+            var row = await _service.GetById(entity.Name, rowId.Value);
             if (!row.IsSuccess)
             {
                 result.Errors = new List<IErrorModel>
@@ -784,10 +785,17 @@ namespace ST.PageRender.Razor.Controllers
                 return Json(result);
             }
 
-            row.Result.ChangePropValue(property.Name, value);
-            row.Result.ChangePropValue("Changed", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+            if (row.Result.ContainsKey(property.Name))
+            {
+                row.Result[property.Name] = value;
+            }
 
-            var req = await _service.Table(entity.Name).Update(row.Result);
+            if (row.Result.ContainsKey(nameof(BaseModel.Changed)))
+            {
+                row.Result[nameof(BaseModel.Changed)] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+            }
+
+            var req = await _service.Update(entity.Name, row.Result);
             if (!req.IsSuccess)
             {
                 result.Errors = new List<IErrorModel>

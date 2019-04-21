@@ -71,7 +71,7 @@ namespace ST.CORE.Controllers.Entity
 		{
 			if (model != null)
 			{
-				var req = await _service.AddSystem(model);
+				var req = await _service.AddWithReflection(model);
 				if (req.IsSuccess)
 				{
 					await _cacheService.RemoveAsync("_menus_central");
@@ -93,7 +93,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = await _service.GetByIdSystem<Menu, Menu>(id);
+			var model = await _service.GetByIdWithReflection<Menu, Menu>(id);
 
 			if (!model.IsSuccess) return NotFound();
 
@@ -109,7 +109,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> Edit(Menu model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = (await _service.GetByIdSystem<Menu, Menu>(model.Id)).Result;
+			var dataModel = (await _service.GetByIdWithReflection<Menu, Menu>(model.Id)).Result;
 
 			if (dataModel == null) return NotFound();
 
@@ -117,7 +117,7 @@ namespace ST.CORE.Controllers.Entity
 			dataModel.Description = model.Description;
 			dataModel.Author = model.Author;
 			dataModel.Changed = DateTime.Now;
-			var req = await _service.UpdateSystem(dataModel);
+			var req = await _service.UpdateWithReflection(dataModel);
 			await _cacheService.RemoveAsync("_menus_central");
 			if (req.IsSuccess) return RedirectToAction("Index");
 			ModelState.AddModelError(string.Empty, "Fail to save");
@@ -135,9 +135,9 @@ namespace ST.CORE.Controllers.Entity
 		{
 			ViewBag.MenuId = menuId;
 			ViewBag.ParentId = parentId;
-			ViewBag.Menu = (await _service.GetByIdSystem<Menu, Menu>(menuId)).Result;
+			ViewBag.Menu = (await _service.GetByIdWithReflection<Menu, Menu>(menuId)).Result;
 			ViewBag.Parent = (parentId != null) ?
-									(await _service.GetByIdSystem<MenuItem, MenuItem>(parentId.Value)).Result
+									(await _service.GetByIdWithReflection<MenuItem, MenuItem>(parentId.Value)).Result
 									: null;
 			return View();
 		}
@@ -169,7 +169,7 @@ namespace ST.CORE.Controllers.Entity
 			if (model != null)
 			{
 				model.AllowedRoles = "Administrator#";
-				var req = await _service.AddSystem(model);
+				var req = await _service.AddWithReflection(model);
 				if (req.IsSuccess)
 				{
 					await _cacheService.RemoveAsync("_menus_central");
@@ -195,7 +195,7 @@ namespace ST.CORE.Controllers.Entity
 		public async Task<IActionResult> EditItem(Guid itemId)
 		{
 			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
-			var item = await _service.GetByIdSystem<MenuItem, MenuItem>(itemId);
+			var item = await _service.GetByIdWithReflection<MenuItem, MenuItem>(itemId);
 			if (!item.IsSuccess) return NotFound();
 			return View(item.Result);
 		}
@@ -208,7 +208,7 @@ namespace ST.CORE.Controllers.Entity
 		[HttpPost]
 		public async Task<IActionResult> EditItem(MenuItem model)
 		{
-			var rq = await _service.UpdateSystem(model);
+			var rq = await _service.UpdateWithReflection(model);
 			if (rq.IsSuccess)
 			{
 				await _cacheService.RemoveAsync("_menus_central");

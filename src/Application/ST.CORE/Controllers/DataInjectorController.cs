@@ -120,7 +120,7 @@ namespace ST.CORE.Controllers
 		{
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
-			var rq = await _dynamicService.Table(tableName).GetById<dynamic>(id);
+			var rq = await _dynamicService.GetById(tableName, id);
 			return new JsonResult(rq);
 		}
 
@@ -134,7 +134,21 @@ namespace ST.CORE.Controllers
 		{
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
-			var rq = await _dynamicService.Table(tableName).GetAll<dynamic>();
+			var rq = await _dynamicService.GetAll(tableName);
+			return new JsonResult(rq);
+		}
+
+		/// <summary>
+		/// Get all items
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<JsonResult> GetAllWithInclude(string tableName)
+		{
+			var (isValid, errors) = await IsValid(tableName);
+			if (!isValid) return new JsonResult(errors);
+			var rq = await _dynamicService.GetAll(tableName);
 			return new JsonResult(rq);
 		}
 

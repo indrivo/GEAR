@@ -11,13 +11,13 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
     public enum MethodName
     {
         GetAllWithInclude,
-        GetByIdSystem,
-        AddSystem,
-        UpdateSystem,
+        GetByIdWithReflection,
+        AddWithReflection,
+        UpdateWithReflection,
         Delete,
         Restore,
         GetTableConfigurations,
-        AddDataRange,
+        AddDataRangeWithReflection,
         Any
     }
 
@@ -69,7 +69,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
            {
                var result = new ResultModel<Guid>();
                if (model == null) return result;
-               var req = obj.Invoke<Guid>(MethodName.AddSystem, new List<Type> { model.GetType() },
+               var req = obj.Invoke<Guid>(MethodName.AddWithReflection, new List<Type> { model.GetType() },
                    new List<object> { model });
                if (!req.IsSuccess) return result;
                result.IsSuccess = true;
@@ -92,7 +92,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
                 var result = new ResultModel();
                 if (model == null || !model.Any()) return result;
                 //var data = obj.ParseListObject(model);
-                var req = obj.Invoke<dynamic>(MethodName.AddDataRange, new List<Type> { obj.Type },
+                var req = obj.Invoke<dynamic>(MethodName.AddDataRangeWithReflection, new List<Type> { obj.Type },
                     new List<object> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -114,7 +114,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<IEnumerable<TEntity>>();
                 var fType = typeof(Func<,>);
-                var genericFunc = fType.MakeGenericType(obj.Type, typeof(bool));
+                //var genericFunc = fType.MakeGenericType(obj.Type, typeof(bool));
 
                 //var param = func == null ? null : Delegate.CreateDelegate(genericFunc, func.Target, func.Method);
                 var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllWithInclude,
@@ -141,7 +141,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<TEntity>();
                 if (id == Guid.Empty) return result;
-                var req = obj.Invoke<TEntity>(MethodName.GetByIdSystem, new List<Type> { obj.Type, obj.Type },
+                var req = obj.Invoke<TEntity>(MethodName.GetByIdWithReflection, new List<Type> { obj.Type, obj.Type },
                     new List<object> { id });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
@@ -226,7 +226,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             {
                 var result = new ResultModel<Guid>();
                 if (model == null) return result;
-                var req = obj.Invoke<Guid>(MethodName.UpdateSystem, new List<Type> { model.GetType() },
+                var req = obj.Invoke<Guid>(MethodName.UpdateWithReflection, new List<Type> { model.GetType() },
                     new List<dynamic> { model });
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;

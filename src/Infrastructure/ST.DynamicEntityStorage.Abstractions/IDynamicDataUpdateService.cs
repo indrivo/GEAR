@@ -8,6 +8,7 @@ namespace ST.DynamicEntityStorage.Abstractions
 {
     public interface IDynamicDataUpdateService
     {
+        Task<ResultModel<Guid>> Update(string entity, Dictionary<string, object> model);
         /// <summary>
         /// Update model in table
         /// </summary>
@@ -21,7 +22,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> UpdateSystem<TEntity>(TEntity model) where TEntity : ExtendedModel;
+        Task<ResultModel<Guid>> UpdateWithReflection<TEntity>(TEntity model) where TEntity : ExtendedModel;
 
         /// <summary>
         /// Delete row permanent

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Abstractions.Enums;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 
@@ -110,7 +112,7 @@ namespace ST.Notifications.Services
             {
                 notification.Id = Guid.NewGuid();
                 notification.UserId = user;
-                var response = await _dataService.AddSystem(notification);
+                var response = await _dataService.AddWithReflection(notification);
                 if (!response.IsSuccess)
                 {
                     _logger.LogError("Fail to add new notification in database");
@@ -151,10 +153,18 @@ namespace ST.Notifications.Services
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId)
         {
-            var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>();
+            var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, new List<Filter>
+            {
+                new Filter
+                {
+                    Criteria = Criteria.Equals,
+                    Parameter = "UserId",
+                    Value = userId
+                }
+            });
             if (notifications.IsSuccess)
             {
-                notifications.Result = notifications.Result.Where(x => x.UserId.Equals(userId)).OrderBy(x => x.Created);
+                notifications.Result = notifications.Result.OrderBy(x => x.Created);
             }
             return notifications;
         }
