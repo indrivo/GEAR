@@ -13,6 +13,7 @@ using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.TableTypes;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
+using ST.Shared;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -131,10 +132,10 @@ namespace ST.CORE.Controllers.Entity
 
 			var finalresult = new DTResult<EntityType>
 			{
-				draw = param.Draw,
-				data = filtered.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = filtered.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalresult);

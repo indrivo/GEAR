@@ -9,7 +9,7 @@
 <head>
 	<meta name="viewport" content="width=device-width"/>
 	<title>404</title>
-	<link rel="stylesheet" type="text/css" href="~/lib/bootstrap/dist/css/bootstrap.css"/>
+	<link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css"/>
 	<link rel="stylesheet" type="text/css" href="~/css/style.css"/>
 	<link rel="stylesheet" type="text/css" href="~/css/colors/megna-dark.css"/>
 </head>
@@ -25,16 +25,12 @@
 			<p class="text-muted m-t-30 m-b-30">@localize["not_found_message"]</p>
 			<a asp-controller="Home" asp-action="Index" class="btn btn-info btn-rounded waves-effect waves-light m-b-40">Back to home</a>
 		</div>
-		<footer class="footer text-center">2019 © ISO DMS.</footer>
+		<footer class="footer text-center">@DateTime.Now.Year © ISO DMS.</footer>
 	</div>
 </section>
 <!-- ============================================================== -->
 <!-- End Wrapper -->
 <!-- ============================================================== -->
 
-<script src="~/lib/jquery/dist/jquery.js"></script>
-<script src="~/lib/tether/dist/js/tether.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-<script src="~/js/waves.js"></script>
 </body>
 </html>

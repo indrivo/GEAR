@@ -1,3 +1,19 @@
+/* Form plugin
+ * A plugin for form render in pages
+ *
+ * v1.0.0
+ *
+ * License: MIT Soft-Tehnica Srl
+ * Author: Lupei Nicolae
+ */
+
+
+// Make sure jQuery has been loaded
+if (typeof jQuery === 'undefined') {
+	throw new Error('Data form plugin require JQuery');
+}
+
+
 var forms = Array.prototype.filter.call(
 	document.getElementsByTagName('form'),
 	function(el) {
@@ -52,8 +68,10 @@ function renderForm(formId, place) {
 					$(formRef).attr("novalidate", "");
 					$(formRef).prepend("<div><ul class='server-errors'></ul></div>");
 					$("input,select,textarea").not("[type=submit]").addClass("form-control");
-
-
+					$('input[type=date]').datepicker({
+						format: 'dd/mm/yyyy',
+						//startDate: '-3d'
+					}).addClass("datepicker").attr("type", "text");
 					$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(
 						{
 							submitSuccess: function($form, event) {
@@ -85,7 +103,7 @@ function renderForm(formId, place) {
 								const errorsBlock = $($form).find(".server-errors");
 								errorsBlock.html(null);
 								$.ajax({
-									url: "PageRender/PostForm",
+									url: "/PageRender/PostForm",
 									type: "post",
 									data: {
 										model: model

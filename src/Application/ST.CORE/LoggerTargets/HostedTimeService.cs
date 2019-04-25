@@ -7,6 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ST.Identity.Data.Permissions;
+using ST.Notifications.Abstractions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ST.CORE.LoggerTargets

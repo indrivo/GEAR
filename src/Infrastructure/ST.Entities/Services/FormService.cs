@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ST.Audit.Extensions;
-using ST.Audit.Models;
 using ST.BaseBusinessRepository;
 using ST.Entities.Constants;
 using ST.Entities.Data;
@@ -17,6 +16,7 @@ using ST.Entities.Models.Tables;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Settings;
 using ST.Entities.ViewModels.Form;
+using ST.Shared;
 
 namespace ST.Entities.Services
 {
@@ -562,6 +562,7 @@ namespace ST.Entities.Services
             }));
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get reference fields
         /// </summary>
@@ -594,6 +595,7 @@ namespace ST.Entities.Services
         }
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Get table fields
         /// </summary>
@@ -676,6 +678,7 @@ namespace ST.Entities.Services
                         fieldConfig = FormeoControls.Text;
                         break;
                     case TableFieldDataType.Date:
+                    case TableFieldDataType.DateTime:
                         fieldConfig = FormeoControls.Date;
                         break;
                 }

@@ -23,7 +23,7 @@ namespace ST.Configuration.Server
         public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values, RouteDirection routeDirection)
         {
             var site = values[routeKey]?.ToString();
-            if (!StatusCodeProvider.ExcludeAssets(site)) return false;
+            if (!UrlRewrite.ExcludeAssets(site)) return false;
             var cacheService = httpContext.RequestServices.GetService<ICacheService>();
             try
             {

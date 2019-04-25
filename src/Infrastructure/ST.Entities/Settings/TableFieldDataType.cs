@@ -9,5 +9,6 @@
         public const string BigInt = "bigint";
         public const string Decimal = "decimal";
         public const string Date = "date";
+        public const string DateTime = "datetime";
     }
 }

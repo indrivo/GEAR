@@ -69,12 +69,7 @@
 					{ "data": "name" },
 					{ "data": "description" },
 					{
-						"data": "created",
-						"render": function (data) {
-							const date = new Date(data);
-							const month = date.getMonth() + 1;
-							return (month.length > 1 ? month : `0${month}`) + "/" + date.getDate() + "/" + date.getFullYear();
-						}
+						"data": "created"
 					},
 					{ "data": "modifiedBy" },
 					{"data": "isDeleted",

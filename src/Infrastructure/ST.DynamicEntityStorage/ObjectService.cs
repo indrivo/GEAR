@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using ST.Audit.Models;
-using ST.DynamicEntityStorage.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.DynamicEntityStorage.Exceptions;
 using ST.DynamicEntityStorage.Services;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.ViewModels.DynamicEntities;
+using ST.Shared;
 
 namespace ST.DynamicEntityStorage
 {
@@ -36,13 +37,15 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
-        /// <param name="includeFieldReferences"></param>
         /// <returns></returns>
-        public DynamicObject Resolve(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor, bool includeFieldReferences = true)
+        public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
         {
-
             var entity = _assemblyName.Name;
-            var table = context.Table.FirstOrDefault(x => x.Name.Equals(entity));
+            if (entity == "Control")
+            {
+
+            }
+            var table = await context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity));
             if (table == null) throw new DynamicTableOperationException($"Table {entity} not found in database!");
             var schema = table.EntityType;
             var stored = TypeManager.TryGet(entity, schema);
@@ -51,7 +54,7 @@ namespace ST.DynamicEntityStorage
             {
                 return new DynamicObject
                 {
-                    Object = stored.Result,
+                    Type = stored.Result,
                     Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
                 };
             }
@@ -65,38 +68,48 @@ namespace ST.DynamicEntityStorage
 
             var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
 
-            model = ViewModelBuilder.Resolve(context, model);
+            model = await ViewModelBuilder.ResolveAsync(context, model);
 
             var dynamicClass = CreateClass();
             CreateConstructor(dynamicClass);
 
+            //Create base props
             foreach (var field in model.Fields)
             {
                 if (proprieties.Contains(field.ColumnName)) continue;
 
-                var entityRef = field.Configurations.FirstOrDefault(x => x.Name == "ForeingTable");
-                var entityRefSchema = field.Configurations.FirstOrDefault(x => x.Name == "ForeingSchemaTable");
-                if (entityRef != null && entityRefSchema != null)
-                {
-                    if (includeFieldReferences)
-                    {
-                        var refType = new ObjectService(entityRef.Value).Resolve(context, httpContextAccessor, false);
-                        CreateProperty(dynamicClass, $"{field.ColumnName}Reference", refType.Object.GetType());
-                    }
-                }
                 var fieldType = GetTypeFromString(field.Type);
                 CreateProperty(dynamicClass, field.ColumnName, fieldType);
+            }
+
+            //Create references
+            foreach (var field in model.Fields)
+            {
+                if (field.Configurations == null) continue;
+                if (!field.Configurations.Any()) continue;
+                var entityRef = field.Configurations.FirstOrDefault(x => x.Name == "ForeingTable");
+                var entityRefSchema = field.Configurations.FirstOrDefault(x => x.Name == "ForeingSchemaTable");
+                if (entityRef == null || entityRefSchema == null) continue;
+
+                if (entityRef.Value == _assemblyName.Name)
+                {
+                    CreateProperty(dynamicClass, $"{field.ColumnName}Reference", dynamicClass);
+                }
+                else
+                {
+                    var refType = await Task.Run(async () => await new ObjectService(entityRef.Value).ResolveAsync(context, httpContextAccessor));
+
+                    CreateProperty(dynamicClass, $"{field.ColumnName}Reference", refType.Type);
+                }
             }
 
             var type = dynamicClass.CreateType();
 
             TypeManager.Register(schema, entity, type);
 
-            var obj = Activator.CreateInstance(type);
-
             return new DynamicObject
             {
-                Object = obj,
+                Type = type,
                 Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
             };
         }
@@ -108,21 +121,11 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public object ParseObject<TObject>(TObject obj)
         {
-            var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
-            var dynamicClass = CreateClass();
-            CreateConstructor(dynamicClass);
             var props = obj.GetType().GetProperties();
 
-            foreach (var prop in props)
-            {
-                if (!proprieties.Contains(prop.Name))
-                {
-                    CreateProperty(dynamicClass, prop.Name, prop.PropertyType);
-                }
-            }
-
-            var type = dynamicClass.CreateType();
-            var resultObject = Activator.CreateInstance(type);
+            var rq = TypeManager.TryGet(_assemblyName.Name, "");
+            if (!rq.IsSuccess) return obj;
+            var resultObject = Activator.CreateInstance(rq.Result);
             foreach (var prop in resultObject.GetType().GetProperties())
             {
                 foreach (var data in props)
@@ -131,7 +134,7 @@ namespace ST.DynamicEntityStorage
                     try
                     {
                         var value = data.GetValue(obj, null);
-                        type.GetProperty(prop.Name).SetValue(resultObject, value);
+                        rq.Result.GetProperty(prop.Name).SetValue(resultObject, value);
                     }
                     catch (Exception e)
                     {
@@ -291,11 +294,5 @@ namespace ST.DynamicEntityStorage
             }
             return type;
         }
-    }
-
-    public class DynamicObject
-    {
-        public IDynamicService Service { get; set; }
-        public object Object { get; set; }
     }
 }

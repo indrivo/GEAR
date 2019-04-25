@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -6,10 +10,6 @@ using Microsoft.Extensions.Localization;
 using ST.Entities.Data;
 using ST.Entities.Models.Tables;
 using ST.Identity.Data.UserProfiles;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ST.CORE.TagHelpers
 {
@@ -92,6 +92,7 @@ namespace ST.CORE.TagHelpers
 			_localizer = localizer;
 		}
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Get html data
 		/// </summary>
@@ -101,8 +102,9 @@ namespace ST.CORE.TagHelpers
 		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
-			var childs = (await output.GetChildContentAsync()).GetContent();
+			var child = (await output.GetChildContentAsync()).GetContent();
 			var body = await PerformTemplate();
+			body.Append(child);
 			output.Content.SetHtmlContent(body.ToString());
 		}
 
@@ -113,9 +115,10 @@ namespace ST.CORE.TagHelpers
 		/// <returns></returns>
 		private async Task<string> GetInputBody(TableModelFields field)
 		{
-			var configurations = _dbContext.TableFieldConfigValues
+			//TODO: On config type render inout body
+			var configurations = await _dbContext.TableFieldConfigValues
 				.Include(x => x.TableFieldConfig)
-				.Where(x => x.TableModelFieldId == field.Id).ToList();
+				.Where(x => x.TableModelFieldId == field.Id).ToListAsync();
 
 			var content = string.Empty;
 			switch (field.DataType)
@@ -125,6 +128,11 @@ namespace ST.CORE.TagHelpers
 						content = FormField.GetInputTextField(field.Id.ToString());
 					}
 					break;
+			}
+
+			if (configurations.Any())
+			{
+				//Ignore
 			}
 			return content;
 		}

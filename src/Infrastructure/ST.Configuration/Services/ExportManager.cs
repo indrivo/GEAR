@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ST.BaseBusinessRepository;
-using ST.Configuration.Seed;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.DynamicEntityStorage.Extensions;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Tables;
@@ -53,14 +52,14 @@ namespace ST.Configuration.Services
             }
 
             //Extract values from Entity FrameWork DbSet declarations
-            foreach (var entity in entityFrameWorkEntities)
-            {
-                var req = await dynamicService.Table(entity.Name).GetAll<object>();
-                if (req.IsSuccess)
-                {
-                    frameworkData.Add(entity.Name, req.Result);
-                }
-            }
+            //foreach (var entity in entityFrameWorkEntities)
+            //{
+            //    var req = await dynamicService.Table(entity.Name).GetAll<object>();
+            //    if (req.IsSuccess)
+            //    {
+            //        frameworkData.Add(entity.Name, req.Result);
+            //    }
+            //}
 
             var zipStream = ExportDataIO.CreateZipArchive(new Dictionary<string, MemoryStream>
             {

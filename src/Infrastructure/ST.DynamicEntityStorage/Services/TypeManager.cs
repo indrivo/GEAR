@@ -17,9 +17,9 @@ namespace ST.DynamicEntityStorage.Services
         /// <param name="assemblyName"></param>
         /// <param name="schema"></param>
         /// <returns></returns>
-        public static ResultModel<object> TryGet(string assemblyName, string schema)
+        public static ResultModel<Type> TryGet(string assemblyName, string schema)
         {
-            var result = new ResultModel<object>();
+            var result = new ResultModel<Type>();
             if (InMemoryStorageItems == null)
             {
                 InMemoryStorageItems = new Dictionary<string, Dictionary<string, Type>>();
@@ -29,7 +29,7 @@ namespace ST.DynamicEntityStorage.Services
             if (!InMemoryStorageItems[schema].ContainsKey(assemblyName)) return result;
             var instanceType = InMemoryStorageItems[schema][assemblyName];
             result.IsSuccess = true;
-            result.Result = Activator.CreateInstance(instanceType);
+            result.Result = instanceType;
             return result;
         }
 
@@ -54,6 +54,14 @@ namespace ST.DynamicEntityStorage.Services
             {
                 InMemoryStorageItems[schema][entity] = type;
             }
+        }
+
+        /// <summary>
+        /// Clear type in memory
+        /// </summary>
+        public static void Clear()
+        {
+            InMemoryStorageItems?.Clear();
         }
     }
 }

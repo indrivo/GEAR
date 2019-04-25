@@ -3,31 +3,38 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
-using ST.CORE.Attributes;
 using ST.Entities.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Notifications.Abstraction;
 using ST.Procesess.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.AuditViewModels;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
+using ST.Notifications.Abstractions;
+using ST.Shared;
+using ST.Shared.Attributes;
 
 namespace ST.CORE.Controllers.Audit
 {
 	public class AuditController : BaseController
 	{
+		/// <summary>
+		/// Inject process db context
+		/// </summary>
+		private readonly ProcessesDbContext _processesDbContext;
+
 		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager,
 			RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
 			IOrganizationService organizationService, ProcessesDbContext processesDbContext, ICacheService cacheService)
-			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
+			_processesDbContext = processesDbContext;
 		}
 
 		/// <summary>
@@ -54,7 +61,7 @@ namespace ST.CORE.Controllers.Audit
 		{
 			var data = new List<TrackAudit>();
 			var coreData = ApplicationDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
-			var processData = ProcessesDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
+			var processData = _processesDbContext.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
 			var entityData = Context.TrackAudits.AsNoTracking().GroupBy(x => x.RecordId).Select(grp => grp.OrderByDescending(d => d.Version).First()).ToList();
 
 			data.AddRange(coreData);
@@ -158,10 +165,10 @@ namespace ST.CORE.Controllers.Audit
 
 			var finalResult = new DTResult<TrackAuditsListViewModel>
 			{
-				draw = param.Draw,
-				data = trackAuditsList.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = trackAuditsList.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 			return Json(finalResult);
 		}
@@ -191,7 +198,7 @@ namespace ST.CORE.Controllers.Audit
 			}
 			else if (typeof(ProcessesDbContext).FullName == contextName)
 			{
-				dbContext = ProcessesDbContext;
+				dbContext = _processesDbContext;
 			}
 
 			TrackAudit track = await GetTrackDetails(id, dbContext);
@@ -225,7 +232,7 @@ namespace ST.CORE.Controllers.Audit
 			}
 			else if (typeof(ProcessesDbContext).FullName == contextName)
 			{
-				dbContext = ProcessesDbContext;
+				dbContext = _processesDbContext;
 			}
 
 			List<TrackAudit> listTrack = GetTrackVersions(id, dbContext);

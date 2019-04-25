@@ -7,31 +7,35 @@
 /*Extra Variable*/
 /*Preloader*/
 @import 'https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900';
+
 @import url(../lib/font-awesome/css/font-awesome.min.css);
 
-@import url(../lib/themify-icons/css/themify-icons.css);
+@import url(../lib/simple-line-icons/css/simple-line-icons.min.css);
 
-@import url(../lib/simple-line-icons/css/simple-line-icons.css);
-
-@import url(../lib/weather-icons/css/weather-icons.min.css);
-
-@import url(../lib/linea-fonts/stylesheet/linea.css);
+@import url(../css/icons/themify-icons/themify-icons.css);
 
 @import url(../lib/flag-icon-css/css/flag-icon.min.css);
 
-@import url(../lib/flag-icon-css/css/flag-icon.min.css);
-
-@import url(../lib/mdi/css/materialdesignicons.min.css);
+@import url(../lib/MaterialDesign-Webfont/css/materialdesignicons.min.css);
 
 @import url(../css/spinners.css);
 
-@import url(../lib/animate.css/animate.css);
-
+@import url(../lib/animate.css/animate.min.css);
 
 .table thead tr th a {
 	color: white !important;
 }
 
+.row-deleted .restore-item {
+	text-decoration: none !important;
+	font-style: normal;
+}
+
+.row-deleted {
+	background: #ffdbdb !important;
+	text-decoration: line-through;
+	font-style: italic;
+}
 
 .dynamic-table {
 	margin-left: 0px !important;

@@ -20,14 +20,23 @@ window.load = function (uri, data = null, type = "get") {
  */
 function getScripts() {
 	const u = new URL(location.href);
-	const def = ["/lib/jquery/dist/jquery.js", "/lib/tether/dist/js/tether.min.js",
-		"/lib/bootstrap/dist/js/bootstrap.bundle.min.js", "/lib/jquery-ui/jquery-ui.min.js",
-		"/lib/datatables/media/js/jquery.dataTables.min.js", "/lib/datatables/media/js/dataTables.bootstrap4.min.js",
-		"/lib/jquery-slimscroll/jquery.slimscroll.js", "/lib/sweetalert2/dist/sweetalert2.min.js",
-		"/lib/select2/dist/js/select2.full.min.js",
-		"/lib/sticky-kit/jquery.sticky-kit.js", "/js/site.js",
-		"/lib/jsrender/jsrender.min.js", "/lib/jsviews/jsviews.min.js",
-		"/js/signalr/dist/browser/signalr.js", "/assets/js/builder/after-load.js", "/lib/bootstrap-treeview/dist/bootstrap-treeview.min.js"];
+	const def = [
+		"/lib/jquery/jquery.min.js",
+		"/lib/tether/js/tether.min.js",
+		"/lib/twitter-bootstrap/js/bootstrap.bundle.min.js",
+		"/lib/jqueryui/jquery-ui.min.js",
+		"/lib/datatables/js/jquery.dataTables.min.js",
+		"/lib/datatables/js/dataTables.bootstrap4.min.js",
+		"/lib/jQuery-slimScroll/jquery.slimscroll.min.js",
+		"/lib/limonte-sweetalert2/sweetalert2.min.js",
+		"/lib/select2/js/select2.full.min.js",
+		"/lib/sticky-kit/sticky-kit.min.js",
+		"/js/site.js",
+		"/lib/jsrender/jsrender.min.js",
+		"/lib/jsviews/jsviews.min.js",
+		"/js/signalr/dist/browser/signalr.js",
+		"/assets/js/builder/after-load.js"
+	];
 
 	let pageId = u.searchParams.get("pageId");
 
@@ -81,7 +90,7 @@ const scripts = getScripts();
  * Register new plugin for grape js
  */
 grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
-	const trans = load("/PageRender/GetTranslations");
+	const trans = load("/Localization/GetTranslationsForCurrentLanguage");
 	const iframe = editor.Canvas.getFrameEl();
 
 	const form = new Form();

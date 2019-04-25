@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
 using NLog;
 using Microsoft.Extensions.Logging;
-using ST.CORE.LoggerTargets;
 
 namespace ST.CORE.Extensions
 {

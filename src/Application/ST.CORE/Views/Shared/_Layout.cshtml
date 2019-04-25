@@ -1,8 +1,8 @@
 @using ST.Identity.Data.UserProfiles
 @using Microsoft.AspNetCore.Http
 @using ST.Configuration.Seed
-@using ST.Configuration.ViewModels.LocalizationViewModels
 @using ST.Identity.Abstractions
+@using ST.Localization.Razor.ViewModels.LocalizationViewModels
 
 
 @inject UserManager<ApplicationUser> UserManager
@@ -24,24 +24,23 @@
 	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
 	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
-	<!DOCTYPE html>
+	<!DOCTYPE html />
 	<html>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" type="text/css" href="~/lib/bootstrap-treeview/dist/bootstrap-treeview.min.css" />
-		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/dist/jquery.toast.min.css" />
-		<title>@ViewData["Title"] - Gear</title>
+		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
+		<title>@ViewData["Title"] - ISO</title>
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
 		<application-scripts layout-id="@layoutId"></application-scripts>
-
+		@RenderSection("Styles", required: false)
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
-			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-		<![endif]-->
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
 		<application layout-id="@layoutId">
@@ -68,8 +67,8 @@
 			};
 			const notificator = new Notificator();
 			st = new ST();
-			const controller = "@ViewContext.RouteData.Values["controller"].ToString()";
-			const view = "@ViewContext.RouteData.Values["action"].ToString()";
+			const controller = "@ViewContext?.RouteData?.Values["controller"]?.ToString()";
+			const view = "@ViewContext?.RouteData?.Values["action"]?.ToString()";
 
 			const storageSettings = localStorage.getItem("settings");
 			if (storageSettings) {
@@ -79,7 +78,7 @@
 					email: "@user.Email",
 					id: "@user.Id"
 				};
-				storageSettings.navigation = {
+				s.navigation = {
 					view: view,
 					controller: controller
 				};
@@ -114,7 +113,7 @@
 				};
 
 				s.localization = {
-					languages: window.load("/PageRender/GetLanguages"),
+					languages: window.load("/Localization/GetLanguagesAsJson"),
 					current: {
 						identifier: "@language.Identifier",
 						name: "@language.Name"
@@ -127,9 +126,11 @@
 
 		<script src="~/assets/js/form/formeo.min.js"></script>
 		<script src="~/assets/js/form/form-generate.js" asp-append-version="true"></script>
+		<script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
 		<script src="~/js/signalar.js" asp-append-version="true"></script>
-		<script src="~/lib/jquery-toast-plugin/dist/jquery.toast.min.js"></script>
-		<script src="~/js/dataTable-extension-column-visibility.js"></script>
+		<script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+		<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
+		<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 	</body>
 </html>
 }

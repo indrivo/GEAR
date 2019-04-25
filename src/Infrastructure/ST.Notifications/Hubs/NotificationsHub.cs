@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using ST.Notifications.Abstractions.Models.Config;
 
 namespace ST.Notifications.Hubs
 {

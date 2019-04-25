@@ -1,0 +1,39 @@
+@model ST.Localization.Razor.ViewModels.LocalizationViewModels.EditLocalizationViewModel
+@inject IStringLocalizer Localizer
+
+
+<div class="card card-outline-primary">
+	<div class="card-header">
+		<h4 class="mb-0 text-white">Edit localization for key: <span class="font-bold">@Model.Key</span> </h4>
+	</div>
+	<div class="card-body">
+		<form asp-action="EditKey" role="form">
+			@Html.HiddenFor(m => m.Key)
+			<div class="form-body">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<hr/>
+				<div class="row p-t-20">
+					<div class="col-md-6">
+						@foreach (var item in Model.LocalizedStrings)
+						{
+							<div class="form-group">
+								<label class="control-label">@Model.Languages[item.Key]</label>
+								<input class="form-control" type="text" asp-for="LocalizedStrings[item.Key]"/>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+			<div class="form-actions">
+				<button type="submit" class="btn btn-success">
+					<i class="fa fa-check"></i> @Localizer["save"]</button>
+				<button type="reset" class="btn btn-inverse"> @Localizer["reset"]</button>
+				<a asp-action="Index" class="btn btn-link"> @Localizer["back"]</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -72,12 +72,13 @@ namespace ST.CORE.TagHelpers
 					</div>";
 
 
-		/// <summary>
-		/// Get text input
-		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public static string GetInputTextField(string name, string value = null)
+        /// <summary>
+        /// Get text input
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string GetInputTextField(string name, string value = null)
 		{
 			return string.Format("<input class='form-control' value='{1}' type='text' name='{0}' id='{0}' />", name, value);
 		}

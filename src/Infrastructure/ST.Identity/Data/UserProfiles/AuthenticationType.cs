@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ST.Identity.Data.UserProfiles
+﻿namespace ST.Identity.Data.UserProfiles
 {
     public enum AuthenticationType
     {

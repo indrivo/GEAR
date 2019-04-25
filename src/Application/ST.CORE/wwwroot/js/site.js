@@ -107,16 +107,20 @@ window.translations = function () {
 	const cached = localStorage.getItem("translations");
 	let trans = {};
 	if (!cached) {
-		trans = load("/PageRender/GetTranslations");
+		trans = load("/Localization/GetTranslationsForCurrentLanguage");
 		localStorage.setItem("translations", JSON.stringify(trans));
 	} else {
 		trans = JSON.parse(cached);
 	}
+	window.localTranslations = trans;
 	return trans;
 }
 
 
 window.translate = function (key) {
+	if (window.localTranslations) {
+		return window.localTranslations[key];
+	}
 	const trans = window.translations();
 	return trans[key];
 }
@@ -183,7 +187,7 @@ $(document).ready(function () {
 			const standardId = $(tree).attr("db-tree-standard");
 			const categoryId = $(tree).attr("db-tree-category");
 			const requirementId = $(tree).attr("db-tree-requirement");
-			const data = loadTree(`/PageRender/GetTreeData?standardEntityId=${standardId}&&categoryEntityId=${categoryId}&&requirementEntityId=${requirementId}`);
+			const data = loadTree(`/IsoStandard/GetTreeData?standardEntityId=${standardId}&&categoryEntityId=${categoryId}&&requirementEntityId=${requirementId}`);
 			if (data.is_success) {
 				const st = new ST();
 				Promise.all([st.getTemplate("standard.html"), st.getTemplate("category.html"), st.getTemplate("requirements.html")])

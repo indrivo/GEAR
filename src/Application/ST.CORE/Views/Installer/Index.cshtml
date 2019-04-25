@@ -1,7 +1,7 @@
 @using ST.Localization
 @using Microsoft.AspNetCore.Http
-@using ST.Configuration.ViewModels.LocalizationViewModels
 @using ST.Identity.Abstractions
+@using ST.Localization.Razor.ViewModels.LocalizationViewModels
 
 @inject ILocalService LocalService
 @inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
@@ -92,7 +92,7 @@
 		$(document).ready(function () {
 			localStorage.removeItem("translations");
 			$('#languageChange').click(function () {
-				const lang = load("/PageRender/GetLanguages");
+				const lang = load("/Localization/GetLanguagesAsJson");
 				const model = {};
 
 				$.each(lang, function (index, item) {

@@ -57,7 +57,15 @@
   <ItemGroup>
     <ProjectReference Include="..\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
+    <ProjectReference Include="..\ST.Files\ST.Files.csproj" />
+    <ProjectReference Include="..\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Notifications\ST.Notifications.csproj" />
     <ProjectReference Include="..\ST.Organization\ST.MultiTenant.csproj" />
+    <ProjectReference Include="..\ST.Processes\ST.Procesess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

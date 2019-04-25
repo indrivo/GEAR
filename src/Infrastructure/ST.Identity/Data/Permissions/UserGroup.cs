@@ -1,6 +1,5 @@
 using System;
-using ST.Audit.Models;
-using ST.Entities.Models;
+using ST.Shared;
 
 namespace ST.Identity.Data.Permissions
 {

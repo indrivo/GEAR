@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-using ST.Entities.Models.Notifications;
-using ST.Notifications.Abstraction;
+using ST.Notifications.Abstractions;
+using ST.Notifications.Abstractions.Models.Config;
+using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.Notifications.Hubs
 {

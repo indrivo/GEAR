@@ -1,10 +1,9 @@
 ﻿using ST.Audit.Attributes;
 using ST.Audit.Enums;
-using ST.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ST.Audit.Models;
+using ST.Shared;
 
 namespace ST.Procesess.Models
 {

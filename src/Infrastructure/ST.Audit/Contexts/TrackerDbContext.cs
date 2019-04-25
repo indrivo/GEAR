@@ -1,12 +1,10 @@
 ﻿using System;
-using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using ST.Audit.Enums;
 using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
-using ST.BaseRepository;
+using ST.Shared;
 
 namespace ST.Audit.Contexts
 {

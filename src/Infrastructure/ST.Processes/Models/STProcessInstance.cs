@@ -1,8 +1,6 @@
-﻿using ST.BaseRepository;
-using ST.Entities.Models;
-using System;
+﻿using System;
 using System.ComponentModel;
-using ST.Audit.Models;
+using ST.Shared;
 
 namespace ST.Procesess.Models
 {

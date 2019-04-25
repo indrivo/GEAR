@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,12 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ST.Configuration.Extensions;
 using ST.Configuration.Server;
-using ST.CORE.Extensions;
-using ST.CORE.Installation;
 using ST.CORE.LoggerTargets;
-using ST.CORE.Services;
-using ST.CORE.Services.Abstraction;
+using ST.CORE.Services.Abstractions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
@@ -30,8 +27,11 @@ using ST.Identity.Versioning;
 using ST.Localization;
 using ST.MPass.Gov;
 using ST.Identity.Data;
+using ST.Localization.Razor.Extensions;
 using ST.Notifications.Extensions;
+using ST.PageRender.Razor.Extensions;
 using ST.Procesess.Data;
+using TreeIsoService = ST.CORE.Services.TreeIsoService;
 
 namespace ST.CORE
 {
@@ -67,7 +67,7 @@ namespace ST.CORE
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (Application.IsHostedOnLinux())
+			if (Installation.Application.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -86,7 +86,7 @@ namespace ST.CORE
 				app.UseExceptionHandler("/Home/Error");
 			}
 
-			app.UsePageRedirect();
+			app.UseUrlRewrite();
 
 			app.UseConfiguredCors(Configuration);
 
@@ -96,7 +96,7 @@ namespace ST.CORE
 			app.UseLocalization(languages);
 			lifetime.ApplicationStarted.Register(() =>
 			{
-				Application.OnApplicationStarted(app);
+				Installation.Application.OnApplicationStarted(app);
 			});
 			// Microsoft.AspNetCore.StaticFiles: API for starting the application from wwwroot.
 			// Uses default files as index.html.
@@ -137,8 +137,11 @@ namespace ST.CORE
 					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 				})
 				.AddDistributedMemoryCache()
-				.AddMvc();
-
+				.AddMvc()
+				.AddJsonOptions(x =>
+				{
+					x.SerializerSettings.DateFormatString = "dd'.'MM'.'yyyy hh:mm";
+				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 			.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
@@ -173,11 +176,11 @@ namespace ST.CORE
 			services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
-
+			services.AddPageRender();
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
 
 
-			if (Application.IsHostedOnLinux())
+			if (Installation.Application.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{

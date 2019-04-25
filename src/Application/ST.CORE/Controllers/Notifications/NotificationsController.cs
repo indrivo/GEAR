@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
 using ST.Identity.Data.Permissions;
-using ST.Notifications.Abstraction;
+using ST.Notifications.Abstractions;
 
 namespace ST.CORE.Controllers.Notifications
 {

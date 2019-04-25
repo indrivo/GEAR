@@ -1,27 +1,25 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ST.Configuration.Seed;
 using ST.CORE.Extensions;
 using ST.CORE.ViewModels.InstallerModels;
-using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.MultiTenants;
+using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
 
 namespace ST.CORE.Installation
@@ -96,7 +94,7 @@ namespace ST.CORE.Installation
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
 				{
 					var conf = services.GetService<IConfiguration>();
-					EntitiesDbContextSeed.SeedAsync(context, conf, Configuration.Settings.TenantId)
+					EntitiesDbContextSeed.SeedAsync(context, conf, Shared.Settings.TenantId)
 						.Wait();
 				})
 				.MigrateDbContext<ProcessesDbContext>()
@@ -125,7 +123,6 @@ namespace ST.CORE.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
-			DynamicService<EntitiesDbContext>.TenantId = Configuration.Settings.TenantId;
 			BuildWebHost(args).Run();
 		}
 
@@ -145,46 +142,18 @@ namespace ST.CORE.Installation
 		/// </summary>
 		/// <param name="tenantId"></param>
 		/// <param name="schemaName"></param>
-		public static void CreateDynamicTables(Guid tenantId, string schemaName = null)
+		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId, string schemaName = null)
 		{
-			var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
-			{
-				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
-				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
-				EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
-			};
-
-			foreach (var item in entitiesList)
-			{
-				if (item.SynchronizeTableViewModels == null) continue;
-				foreach (var ent in item.SynchronizeTableViewModels)
-				{
-					if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
-					{
-						IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, schemaName);
-					}
-				}
-			}
-
 			//Seed EntityFrameWork entities
 			var entities = TablesService.GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext));
 
 			foreach (var ent in entities)
 			{
-				if (!IoC.Resolve<EntitiesDbContext>().Table.Any(s => s.Name == ent.Name && s.TenantId == tenantId))
+				if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
 				{
 					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Create dynamic tables extension
-		/// </summary>
-		/// <param name="tenant"></param>
-		public static void CreateDynamicTables(this Tenant tenant)
-		{
-			CreateDynamicTables(tenant.Id, tenant.MachineName);
 		}
 
 		/// <summary>
@@ -194,7 +163,7 @@ namespace ST.CORE.Installation
 		public static async Task SeedDynamicDataAsync()
 		{
 			//Seed notifications types
-			await EntitiesDbContextSeed.SeedNotificationTypesAsync();
+			await NotificationManager.SeedNotificationTypesAsync();
 
 			//Sync default menus
 			await MenuManager.SyncMenuItemsAsync();
@@ -220,16 +189,13 @@ namespace ST.CORE.Installation
 				.CreateScope())
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
-				//var context = serviceScope.ServiceProvider.GetService<EntitiesDbContext>();
 				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
 				var isConfigured = IsConfigured(env);
 
-				if (isConfigured)
-				{
-					var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
-					await permissionService.RefreshCache();
-					await service.RegisterInMemoryDynamicTypes();
-				}
+				if (!isConfigured) return;
+				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
+				await permissionService.RefreshCache();
+				await service.RegisterInMemoryDynamicTypes();
 			}
 		}
 
@@ -263,6 +229,5 @@ namespace ST.CORE.Installation
 				.UseStartup<Startup>()
 				.Build();
 		}
-
 	}
 }

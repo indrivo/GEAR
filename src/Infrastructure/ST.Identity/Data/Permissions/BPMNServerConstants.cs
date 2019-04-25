@@ -5,6 +5,7 @@ namespace ST.Identity.Data.Permissions
         public class StandarScopes
         {
             public const string CORE = "core";
+            public const string ECommerce = "eCommerce";
             public const string BPMApi = "bpmapi";
             public const string ProcessEngine = "bpm_engine";
         }

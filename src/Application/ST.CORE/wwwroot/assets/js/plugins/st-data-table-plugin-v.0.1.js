@@ -1,7 +1,22 @@
+/* Data table render
+ * A plugin for render tables in dynamic pages
+ *
+ * v1.0.0
+ *
+ * License: MIT Soft-Tehnica Srl
+ * Author: Lupei Nicolae
+ */
+
+
+// Make sure jQuery has been loaded
+if (typeof jQuery === 'undefined') {
+	throw new Error('Data Table plugin require JQuery');
+}
+
 function restoreItem(rowId, tableId, viewModelId) {
 	const object = {
-		alertTitle: "Restore?",
-		alertText: "Are you sure that you want to restore this item?",
+		alertTitle: window.translate("restore_alert"),
+		alertText: "",
 		confirmButtonText: "Yes, restore it!",
 		rowId: rowId,
 		tableId: tableId,
@@ -13,7 +28,7 @@ function restoreItem(rowId, tableId, viewModelId) {
 	};
 
 	swal({
-		title: object.alertText,
+		title: object.alertTitle,
 		text: object.alertText,
 		type: object.type,
 		showCancelButton: true,
@@ -29,7 +44,7 @@ function restoreItem(rowId, tableId, viewModelId) {
 					id: object.rowId,
 					viewModelId: viewModelId
 				},
-				success: function(data) {
+				success: function (data) {
 					if (data.success) {
 						const oTable = $(`${object.tableId}`).DataTable();
 						oTable.draw();
@@ -38,7 +53,7 @@ function restoreItem(rowId, tableId, viewModelId) {
 						swal("Fail!", data.message, "error");
 					}
 				},
-				error: function() {
+				error: function () {
 					swal("Fail!", object.onServerNoResponse, "error");
 				}
 			});
@@ -77,7 +92,7 @@ function deleteItem(rowId, tableId, viewModelId) {
 					id: object.rowId,
 					viewModelId: viewModelId
 				},
-				success: function(data) {
+				success: function (data) {
 					if (data.success) {
 						const oTable = $(`${object.tableId}`).DataTable();
 						oTable.draw();
@@ -86,7 +101,7 @@ function deleteItem(rowId, tableId, viewModelId) {
 						swal("Fail!", data.message, "error");
 					}
 				},
-				error: function() {
+				error: function () {
 					swal("Fail!", object.onServerNoResponse, "error");
 				}
 			});
@@ -96,15 +111,28 @@ function deleteItem(rowId, tableId, viewModelId) {
 
 var tables = Array.prototype.filter.call(
 	document.getElementsByTagName('table'),
-	function(el) {
+	function (el) {
 		return el.getAttribute("db-viewmodel") != null;
 	}
 );
 
 const form = new Form();
 
+/**
+ * Render table cell
+ * @param {any} column
+ */
+function renderCell(row, column) {
+	try {
+		return eval(column.template);
+	}
+	catch (e) {
+		return "";
+	}
+}
+
 $.each(tables,
-	function(index, table) {
+	function (index, table) {
 		const listRef = $(table);
 		const viewmodelId = listRef.attr("db-viewmodel");
 		const listId = listRef.attr("id");
@@ -128,20 +156,19 @@ $.each(tables,
 				//CheckBox column
 				renderColumns.push({
 					data: null,
-					"render": function(data, type, row, meta) {
+					"render": function (data, type, row, meta) {
 						return "";
 					}
 				});
 
-
 				$.each(viewmodelData.result.viewModelFields,
-					function(index, column) {
+					function (index, column) {
 						rows += `<th translate='${column.translate}'>${column.name}</th>`;
 						renderColumns.push({
 							data: null,
-							"render": function(data, type, row, meta) {
+							"render": function (data, type, row, meta) {
 								return `<div class="data-cell" data-viewmodel="${viewmodelId}" data-id="${row.id
-									}" data-column-id="${column.id}">${eval(column.template)}</div>`;
+									}" data-column-id="${column.id}">${renderCell(row, column)}</div>`;
 							}
 						});
 					});
@@ -149,32 +176,43 @@ $.each(tables,
 				columns.html(rows);
 				renderColumns.push({
 					data: null,
-					"render": function(data, type, row, meta) {
+					"render": function (data, type, row, meta) {
 						return `<div class="btn-group" role="group" aria-label="Action buttons">
-										${hasInlineEdit
-							? `	<a data-viewmodel="${viewmodelData.result.id
-							}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
-							: ``}
-
-										${hasEditPage
-							? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
-							}&&listId=${viewmodelData.result.id}">Edit</a>`
-							: ``}
-
-
+										${getRenderRowActions(row, viewmodelData, hasEditPage, hasInlineEdit, editPageLink)}
 										${hasDeleteRestore
-							? `${row.isDeleted
-							? `<a href="#" class='btn btn-warning btn-sm' onclick="restoreItem('${row.id
-							}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
-							: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
-							}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
-							: ``}
-
+								? `${row.isDeleted
+									? `<a href="#" class='btn restore-item btn-warning btn-sm' onclick="restoreItem('${row.id
+									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
+									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
+									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
+								: ``}
 										</div>`;
 					}
 				});
 			}
 		}
+
+		/**
+		 * Get action buttons
+		 * @param {any} row
+		 * @param {any} viewmodelData
+		 * @param {any} hasEditPage
+		 * @param {any} hasInlineEdit
+		 * @param {any} editPageLink
+		 */
+		function getRenderRowActions(row, viewmodelData, hasEditPage, hasInlineEdit, editPageLink) {
+			if (row.isDeleted) return "";
+			return `${hasInlineEdit
+				? `	<a data-viewmodel="${viewmodelData.result.id
+				}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
+				: ``}
+
+										${hasEditPage
+					? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
+					}&&listId=${viewmodelData.result.id}">Edit</a>`
+					: ``}`;
+		}
+
 
 		function deleteSelectedRows() {
 			const selected = this.rows({ selected: true }).data();
@@ -217,8 +255,7 @@ $.each(tables,
 			}
 		}
 
-
-		var oldExportAction = function(self, e, dt, button, config) {
+		var oldExportAction = function (self, e, dt, button, config) {
 			if (button[0].className.indexOf('buttons-excel') >= 0) {
 				if ($.fn.dataTable.ext.buttons.excelHtml5.available(dt, config)) {
 					$.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config);
@@ -234,23 +271,23 @@ $.each(tables,
 			}
 		};
 
-		var newExportAction = function(e, dt, button, config) {
+		var newExportAction = function (e, dt, button, config) {
 			var self = this;
 			var oldStart = dt.settings()[0]._iDisplayStart;
 
 			dt.one('preXhr',
-				function(e, s, data) {
+				function (e, s, data) {
 					// Just this once, load all data from the server...
 					data.start = 0;
 					data.length = 2147483647;
 
 					dt.one('preDraw',
-						function(e, settings) {
+						function (e, settings) {
 							// Call the original action function
 							oldExportAction(self, e, dt, button, config);
 
 							dt.one('preXhr',
-								function(e, s, data) {
+								function (e, s, data) {
 									// DataTables thinks the first item displayed is index 0, but we're not drawing that.
 									// Set the property to what it was before exporting.
 									settings._iDisplayStart = oldStart;
@@ -334,7 +371,7 @@ $.each(tables,
 				{
 					text: 'Delete selected items',
 					action: deleteSelectedRows
-				},
+				}
 			],
 			columnDefs: [
 				{
@@ -345,7 +382,7 @@ $.each(tables,
 			],
 			select: {
 				style: 'multi',
-				selector: 'td:first-child',
+				selector: 'td:not(.not-selectable):first-child',
 				blurable: true
 			},
 			"scrollX": true,
@@ -361,6 +398,19 @@ $.each(tables,
 					"viewModelId": viewmodelId
 				}
 			},
-			"columns": renderColumns
+			"columns": renderColumns,
+			"createdRow": function (row, data, dataIndex) {
+				if (data.isDeleted) {
+					$(row).addClass("row-deleted");
+					$(row).find("td.select-checkbox").find("input").css("display", "none");
+					$(row).find("td").addClass("not-selectable");
+				}
+			},
+			"rowCallback": function (row, data) {
+				//on callback
+			},
+			"createdCell": function (td, cellData, rowData, row, col) {
+				//on created cell
+			}
 		});
 	});

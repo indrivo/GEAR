@@ -3,7 +3,7 @@
 @inject IStringLocalizer Localizer
 
 @{
-	ViewData["Title"] = "Edit";
+	ViewData["Title"] = Localizer["edit"];
 }
 
 <form asp-action="Edit" role="form" class="ui form">
@@ -219,12 +219,12 @@
 											<tr>
 												<th>@Html.DisplayNameFor(model => model.Name)</th>
 												<th>@Localizer["entity_name"]</th>
-												<th>Description</th>
+												<th>@Localizer["description"]</th>
 												<th>@Localizer["created"]</th>
 												<th>@Localizer["changed"]</th>
-												<th>Author</th>
-												<th>Deleted</th>
-												<th>Actions</th>
+												<th>@Localizer["author"]</th>
+												<th>@Localizer["id_deleted"]</th>
+												<th>@Localizer["list_actions"]</th>
 											</tr>
 										</thead>
 										<tbody></tbody>
@@ -259,12 +259,12 @@
 									<thead>
 										<tr>
 											<th>Name</th>
-											<th>Table</th>
+											<th>@Localizer["table"]</th>
 											<th>@Localizer["created"]</th>
 											<th>@Localizer["changed"]</th>
-											<th>Author</th>
-											<th>Deleted</th>
-											<th>Actions</th>
+											<th>@Localizer["author"]</th>
+											<th>@Localizer["is_deleted"]</th>
+											<th>@Localizer["list_actions"]</th>
 										</tr>
 									</thead>
 									<tbody></tbody>
@@ -497,8 +497,10 @@
 						data: null,
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit", "ViewModel")?id=${row.id}">Edit</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields", "ViewModel")?id=${row.id}">Order Fields</a>
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit", "ViewModel")?id=${row.id
+								}">Edit</a>
+									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields", "ViewModel")?id=${
+								row.id}">Order Fields</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=deleteViewModel('${row.id
 								}'); >Delete</button>
 									</div>`;

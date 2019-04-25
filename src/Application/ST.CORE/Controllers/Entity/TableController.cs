@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Constants;
 using ST.Entities.Data;
@@ -25,9 +25,10 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Data;
 using ST.Identity.Services.Abstractions;
+using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
-using ST.Notifications.Abstraction;
-using ST.Procesess.Data;
+using ST.Notifications.Abstractions;
+using ST.Shared;
 
 namespace ST.CORE.Controllers.Entity
 {
@@ -45,9 +46,9 @@ namespace ST.CORE.Controllers.Entity
 
 		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
-			IOrganizationService organizationService, ProcessesDbContext processesDbContext,
+			IOrganizationService organizationService,
 			ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository, ICacheService cacheService)
-			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, processesDbContext, cacheService)
+			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 			_logger = logger;
 			Repository = repository;
@@ -164,10 +165,10 @@ namespace ST.CORE.Controllers.Entity
 
 			var finalResult = new DTResult<TableModel>
 			{
-				draw = param.Draw,
-				data = orderList.ToList(),
-				recordsFiltered = totalCount,
-				recordsTotal = filtered.Count
+				Draw = param.Draw,
+				Data = orderList.ToList(),
+				RecordsFiltered = totalCount,
+				RecordsTotal = filtered.Count
 			};
 
 			return Json(finalResult);

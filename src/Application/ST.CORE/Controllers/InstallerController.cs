@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ST.Configuration;
-using ST.CORE.Installation;
 using ST.CORE.ViewModels.InstallerModels;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Controls.Querry;
 using ST.Entities.Data;
-using ST.Entities.Models.Notifications;
 using ST.Entities.Models.Tables;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
@@ -21,8 +19,10 @@ using ST.Identity.Data.UserProfiles;
 using ST.Identity.Services.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
-using ST.Notifications.Abstraction;
+using ST.Notifications.Abstractions;
+using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Organization.Utils;
+using ST.Shared;
 
 namespace ST.CORE.Controllers
 {
@@ -69,6 +69,11 @@ namespace ST.CORE.Controllers
 		private readonly INotify<ApplicationRole> _notify;
 
 		/// <summary>
+		/// Inject dynamic service
+		/// </summary>
+		private readonly IDynamicService _dynamicService;
+
+		/// <summary>
 		/// Is system configured
 		/// </summary>
 		private readonly bool _isConfigured;
@@ -84,9 +89,10 @@ namespace ST.CORE.Controllers
 		/// <param name="notify"></param>
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext)
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService)
 		{
 			_entitiesDbContext = entitiesDbContext;
+			_dynamicService = dynamicService;
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_signInManager = signInManager;
@@ -94,7 +100,7 @@ namespace ST.CORE.Controllers
 			_permissionService = permissionService;
 			_cacheService = cacheService;
 			_notify = notify;
-			_isConfigured = Application.IsConfigured(_hostingEnvironment);
+			_isConfigured = Installation.Application.IsConfigured(_hostingEnvironment);
 		}
 
 		/// <summary>
@@ -106,7 +112,7 @@ namespace ST.CORE.Controllers
 		{
 			if (_isConfigured) return RedirectToAction("Index", "Home");
 			var model = new SetupModel();
-			var settings = Application.Settings(_hostingEnvironment);
+			var settings = Installation.Application.Settings(_hostingEnvironment);
 			if (settings != null)
 			{
 				model.DataBaseType = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
@@ -144,7 +150,7 @@ namespace ST.CORE.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Setup(SetupModel model)
 		{
-			var settings = Application.Settings(_hostingEnvironment);
+			var settings = Installation.Application.Settings(_hostingEnvironment);
 
 			if (model.DataBaseType == DbProviderType.MsSqlServer)
 			{
@@ -178,8 +184,8 @@ namespace ST.CORE.Controllers
 			}
 			settings.IsConfigured = true;
 			var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
-			await System.IO.File.WriteAllTextAsync(Application.AppSettingsFilepath(_hostingEnvironment), result);
-			Application.InitMigrations(new string[] { });
+			await System.IO.File.WriteAllTextAsync(Installation.Application.AppSettingsFilepath(_hostingEnvironment), result);
+			Installation.Application.InitMigrations(new string[] { });
 
 			await _permissionService.RefreshCache();
 
@@ -243,10 +249,17 @@ namespace ST.CORE.Controllers
 			//For core change name as installer change
 			_localService.SetAppName("core", model.SiteName);
 
-			//Create dynamic tables
-			tenant.CreateDynamicTables();
+			//Create system tables
+			await Installation.Application.SyncDefaultEntityFrameWorkEntities(tenant.Id);
 
-			await Application.SeedDynamicDataAsync();
+			//Create dynamic tables for configured tenant
+			await _dynamicService.CreateDynamicTables(tenant.Id, tenantMachineName);
+
+			await Installation.Application.SeedDynamicDataAsync();
+
+			//Register in memory types
+			await _dynamicService.RegisterInMemoryDynamicTypes();
+
 			//Send welcome message to user
 			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id) }, new SystemNotifications
 			{

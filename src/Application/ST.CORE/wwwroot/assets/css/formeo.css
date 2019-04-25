@@ -17,6 +17,7 @@
 
 .render-dynamic-form .formeo input[type=text],
 .render-dynamic-form .formeo input[type=number],
+.render-dynamic-form .formeo input[type=date],
 .render-dynamic-form .formeo select,
 .render-dynamic-form .formeo textarea {
 	-webkit-transition: all 0.30s ease-in-out;
@@ -28,6 +29,7 @@
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	width: 98%;
+	min-width: 98% !important;
 	border: 1px solid #ccc;
 	font: 100% Arial, Helvetica, sans-serif;
 	margin-left: 1em;
@@ -49,11 +51,18 @@
 	color: #555;
 }
 
-.render-dynamic-form .formeo input[type=text], .formeo input[type=number], .render-dynamic-form .formeo textarea {
+.render-dynamic-form
+.formeo input[type=text],
+.formeo input[type=number],
+.render-dynamic-form .formeo textarea {
 	background: #fff;
 }
 
-.render-dynamic-form .formeo input[type=text], .formeo input[type=number], .render-dynamic-form .formeo select {
+.render-dynamic-form
+.formeo input[type=text],
+.formeo input[type=number],
+.formeo input[type=date],
+.render-dynamic-form .formeo select {
 	height: 2.7em;
 }
 
@@ -64,6 +73,7 @@
 
 	.render-dynamic-form .formeo input[type=text]:focus,
 	.render-dynamic-form .formeo input[type=number]:focus,
+	.render-dynamic-form .formeo input[type=date]:focus,
 	.render-dynamic-form .formeo select:focus,
 	.render-dynamic-form .formeo textarea:focus {
 		box-shadow: 0 0 7px #1e7e34;
