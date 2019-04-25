@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels;
 using ST.CORE.ViewModels.ProcessViewModels;
 using ST.Entities.Extensions;
 using ST.Identity.Data;
@@ -21,8 +19,6 @@ namespace ST.CORE.Controllers.Processes
 {
 	public class ProcessController : Controller
 	{
-		private IBaseBusinessRepository<ProcessesDbContext> Repository { get; }
-
 		/// <summary>
 		/// Inject process parser
 		/// </summary>
@@ -41,15 +37,13 @@ namespace ST.CORE.Controllers.Processes
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="repository"></param>
 		/// <param name="context"></param>
 		/// <param name="logger"></param>
 		/// <param name="applicationDbContext"></param>
 		/// <param name="processParser"></param>
-		public ProcessController(IBaseBusinessRepository<ProcessesDbContext> repository, ProcessesDbContext context,
+		public ProcessController(ProcessesDbContext context,
 			ILogger<ProcessController> logger, ApplicationDbContext applicationDbContext, IProcessParser processParser)
 		{
-			Repository = repository;
 			Context = context;
 			_logger = logger;
 			_applicationDbContext = applicationDbContext;
@@ -60,6 +54,7 @@ namespace ST.CORE.Controllers.Processes
 		/// Create process
 		/// </summary>
 		/// <returns></returns>
+		[HttpGet]
 		public IActionResult Create() => View();
 
 		/// <summary>
@@ -76,7 +71,7 @@ namespace ST.CORE.Controllers.Processes
 			}
 			var settings = JsonConvert.DeserializeObject<IEnumerable<Dictionary<string, string>>>(model.DiagramSettings);
 			_processParser.Init(model.Diagram, settings);
-			var processes = _processParser.GetProcesses();
+			var processes = _processParser.GetProcesses().ToList();
 
 			if (!processes.Any())
 			{

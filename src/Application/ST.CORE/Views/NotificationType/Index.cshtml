@@ -1,4 +1,4 @@
-
+@inject IStringLocalizer Localizer
 @{
 	ViewData["Title"] = "List of notification types";
 }
@@ -11,26 +11,26 @@
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
-					<div class="mr-auto">
+					@*<div class="mr-auto">
 						<div class="form-group">
 							<a asp-action="Create" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add new notification type
 							</a>
 							<small>New role will be added.</small>
 						</div>
-					</div>
+					</div>*@
 				</div>
 			</div>
 			<table class="table table-striped table-bordered" width="100%" id="notificationTable">
 				<thead>
 					<tr>
 						<th>Name</th>
-						<th>Created</th>
-						<th>Author</th>
-						<th>ModifiedBy</th>
-						<th>Changed</th>
-						<th>IsDeleted</th>
-						<th>Actions</th>
+						<th>@Localizer["created"]</th>
+						<th>@Localizer["author"]</th>
+						<th>@Localizer["modified_by"]</th>
+						<th>@Localizer["changed"]</th>
+						<th>@Localizer["is_deleted"]</th>
+						<th>@Localizer["list_actions"]</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
@@ -93,30 +93,13 @@
 						data: null,
 						render: function(data, type, row) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=CreateAlert('${row.id}'); >Delete</button>
+									
 									</div>`;
 						}
 					}
 				]
 			});
 		});
-
-		function CreateAlert(rowId) {
-			const object = {
-				alertTitle: "Delete this role?",
-				alertText: "Are you sure that you want to leave this role?",
-				confirmButtonText: "Yes, delete it!",
-				rowId: rowId,
-				tableId: "#roleTable",
-				urlForDelete: '@Url.Action("Delete")',
-				type: "warning",
-				onDeleteSuccess: "Role has been deleted.",
-				onDeleteFail: "Something wrong",
-				onServerNoResponse: "Api not respond or not have permissions."
-			};
-			DeleteData(object);
-		}
 	</script>
 }
 

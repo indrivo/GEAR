@@ -6,7 +6,6 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
@@ -57,11 +56,11 @@ namespace ST.Identity.Razor.Controllers
         /// Constructor
         /// </summary>
         /// <param name="repository"></param>
-        /// <param name="configuration"></param>
         /// <param name="context"></param>
         /// <param name="logger"></param>
         /// <param name="entitiesDbContext"></param>
-        public TenantController(IBaseBusinessRepository<ApplicationDbContext> repository, IConfiguration configuration,
+        /// <param name="service"></param>
+        public TenantController(IBaseBusinessRepository<ApplicationDbContext> repository,
             ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IDynamicService service)
         {
             Repository = repository;

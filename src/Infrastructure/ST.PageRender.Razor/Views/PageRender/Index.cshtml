@@ -7,8 +7,13 @@
 
     ViewData["layoutId"] = page.LayoutId;
 }
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
+
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/bootstrap-datepicker/css/bootstrap-datepicker.min.css" />
+}
+
 <style>
     .dt-buttons {
         margin-left: 1em;
@@ -39,6 +44,7 @@
     <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
+    <script src="~/lib/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
     <script src="~/assets/js/plugins/st-data-form-validation-plugin-v.0.1.js" asp-append-version="true"></script>
     <script src="~/assets/js/plugins/st-data-table-plugin-v.0.1.js" asp-append-version="true"></script>

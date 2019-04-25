@@ -68,7 +68,10 @@ function renderForm(formId, place) {
 					$(formRef).attr("novalidate", "");
 					$(formRef).prepend("<div><ul class='server-errors'></ul></div>");
 					$("input,select,textarea").not("[type=submit]").addClass("form-control");
-
+					$('input[type=date]').datepicker({
+						format: 'dd/mm/yyyy',
+						//startDate: '-3d'
+					}).addClass("datepicker").attr("type", "text");
 					$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(
 						{
 							submitSuccess: function($form, event) {

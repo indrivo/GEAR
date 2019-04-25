@@ -23,7 +23,8 @@ namespace ST.Configuration.Seed
             var clientUrls = new Dictionary<string, string>
             {
                 ["CORE"] = GetClientUrl(env, configuration, "CORE"),
-                ["BPMApi"] = GetClientUrl(env, configuration, "BPMApi")
+                ["BPMApi"] = GetClientUrl(env, configuration, "BPMApi"),
+                ["eCommerce"] = GetClientUrl(env, configuration, "eCommerce")
             };
 
             //Seed clients

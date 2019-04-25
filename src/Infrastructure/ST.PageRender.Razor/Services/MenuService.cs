@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Mapster;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Abstractions.Enums;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Models.Pages;
 using ST.Identity.Services.Abstractions;
 using ST.PageRender.Razor.Services.Abstractions;
@@ -102,9 +104,18 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public async Task<IEnumerable<string>> GetMenuRoles(Guid menuId)
         {
-            var menu = await _service.FirstOrDefault<MenuItem>(x => x.Id == menuId);
-            if (!menu.IsSuccess || menu.Result == null) return default;
-            var preRoles = menu.Result.AllowedRoles;
+            var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
+            {
+                new Filter
+                {
+                    Value = menuId,
+                    Criteria = Criteria.Equals,
+                    Parameter = "Id"
+                }
+            });
+            var menu = match.Result?.FirstOrDefault();
+            if (menu == null) return default;
+            var preRoles = menu.AllowedRoles;
             if (string.IsNullOrEmpty(preRoles)) return default;
             var roles = preRoles.Split("#").ToList();
             return roles;
@@ -142,13 +153,21 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public async Task<ResultModel<Guid>> UpdateMenuItemRoleAccess(Guid menuId, IList<string> roles)
         {
-            var menu = await _service.FirstOrDefault<MenuItem>(x => x.Id == menuId);
-            if (!menu.IsSuccess || menu.Result == null) return default;
-            var model = menu.Result;
+            var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
+            {
+                new Filter
+                {
+                    Value = menuId,
+                    Criteria = Criteria.Equals,
+                    Parameter = "Id"
+                }
+            });
+            var menu = match.Result?.FirstOrDefault();
+            if (!match.IsSuccess || menu == null) return new ResultModel<Guid>();
             if (!roles.Contains("Administrator")) roles.Add("Administrator");
-            model.AllowedRoles = string.Join("#", roles.ToArray());
+            menu.AllowedRoles = string.Join("#", roles.ToArray());
             await _cacheService.RemoveAsync("_menus_central");
-            return await _service.UpdateWithReflection(model);
+            return await _service.UpdateWithReflection(menu);
         }
     }
 }

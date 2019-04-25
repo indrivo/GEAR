@@ -118,6 +118,19 @@ var tables = Array.prototype.filter.call(
 
 const form = new Form();
 
+/**
+ * Render table cell
+ * @param {any} column
+ */
+function renderCell(row, column) {
+	try {
+		return eval(column.template);
+	}
+	catch (e) {
+		return "";
+	}
+}
+
 $.each(tables,
 	function (index, table) {
 		const listRef = $(table);
@@ -148,7 +161,6 @@ $.each(tables,
 					}
 				});
 
-
 				$.each(viewmodelData.result.viewModelFields,
 					function (index, column) {
 						rows += `<th translate='${column.translate}'>${column.name}</th>`;
@@ -156,7 +168,7 @@ $.each(tables,
 							data: null,
 							"render": function (data, type, row, meta) {
 								return `<div class="data-cell" data-viewmodel="${viewmodelId}" data-id="${row.id
-									}" data-column-id="${column.id}">${eval(column.template)}</div>`;
+									}" data-column-id="${column.id}">${renderCell(row, column)}</div>`;
 							}
 						});
 					});
@@ -242,7 +254,6 @@ $.each(tables,
 				}
 			}
 		}
-
 
 		var oldExportAction = function (self, e, dt, button, config) {
 			if (button[0].className.indexOf('buttons-excel') >= 0) {
@@ -394,6 +405,9 @@ $.each(tables,
 					$(row).find("td.select-checkbox").find("input").css("display", "none");
 					$(row).find("td").addClass("not-selectable");
 				}
+			},
+			"rowCallback": function (row, data) {
+				//on callback
 			},
 			"createdCell": function (td, cellData, rowData, row, col) {
 				//on created cell

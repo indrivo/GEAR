@@ -3,7 +3,7 @@
 @inject IStringLocalizer Localizer
 
 @{
-	ViewData["Title"] = "Edit";
+	ViewData["Title"] = Localizer["edit"];
 }
 
 <form asp-action="Edit" role="form" class="ui form">
@@ -219,12 +219,12 @@
 											<tr>
 												<th>@Html.DisplayNameFor(model => model.Name)</th>
 												<th>@Localizer["entity_name"]</th>
-												<th>Description</th>
+												<th>@Localizer["description"]</th>
 												<th>@Localizer["created"]</th>
 												<th>@Localizer["changed"]</th>
-												<th>Author</th>
-												<th>Deleted</th>
-												<th>Actions</th>
+												<th>@Localizer["author"]</th>
+												<th>@Localizer["id_deleted"]</th>
+												<th>@Localizer["list_actions"]</th>
 											</tr>
 										</thead>
 										<tbody></tbody>
@@ -259,12 +259,12 @@
 									<thead>
 										<tr>
 											<th>Name</th>
-											<th>Table</th>
+											<th>@Localizer["table"]</th>
 											<th>@Localizer["created"]</th>
 											<th>@Localizer["changed"]</th>
-											<th>Author</th>
-											<th>Deleted</th>
-											<th>Actions</th>
+											<th>@Localizer["author"]</th>
+											<th>@Localizer["is_deleted"]</th>
+											<th>@Localizer["list_actions"]</th>
 										</tr>
 									</thead>
 									<tbody></tbody>

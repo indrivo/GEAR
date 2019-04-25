@@ -122,7 +122,7 @@ namespace ST.PageRender.Razor.Services
             var page = await GetPageAsync(pageId);
             if (page == null) return result;
             page.Settings.CssCode = css;
-            page.Settings.JsCode = js;
+            //page.Settings.JsCode = js;
             page.Settings.HtmlCode = html;
             try
             {

@@ -159,7 +159,6 @@ function emailNotifications(folderId) {
 	if (data) {
 		if (data.is_success) {
 			const all = data.result.notifications.values;
-			console.log(all);
 			for (const e in all) {
 				const arr = [all[e].Subject, all[e].Message, all[e].Author.Email, all[e].Author.UserName];
 				const d = formatEmailDate(all[e].Created);

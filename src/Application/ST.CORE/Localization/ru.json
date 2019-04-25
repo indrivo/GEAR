@@ -137,5 +137,21 @@
   "select_all": "Выбрать все",
   "deselect_all": "Отменить выбор всех",
   "restore_alert": "Вы уверены, что хотите восстановить этот предмет?",
-  "no_value_selected": "Не выбран"
+  "no_value_selected": "Не выбран",
+  "api_resources": "Api ресурсы",
+  "add_table_info": "Новая таблица будет добавлена.",
+  "add_table": "Добавить таблицу",
+  "edit": "Pедактировать",
+  "delete": "Удалить",
+  "scaffold_modal_title": "Вы хотите использовать scaffold для выбранного объекта?",
+  "scaffold_modal_text": "Будут сгенерированы страницы: список, добавление, редактирование, просмотр модели, добавление и редактирование формы",
+  "scaffold_modal_confirm": "Да, scaffold",
+  "description": "Описание",
+  "author": "Aвтор",
+  "id_deleted": "Удален",
+  "modified_by": "Изменено пользователем",
+  "organization": "Oрганизация",
+  "sessions": "Cсессии",
+  "authentification_type": "Тип аутентификации",
+  "is_deleted": "Удален"
 }

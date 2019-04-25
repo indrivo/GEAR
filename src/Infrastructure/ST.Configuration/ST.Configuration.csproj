@@ -64,4 +64,8 @@
     <ProjectReference Include="..\ST.Processes\ST.Procesess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

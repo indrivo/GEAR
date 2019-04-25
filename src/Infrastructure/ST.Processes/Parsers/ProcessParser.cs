@@ -85,7 +85,7 @@ namespace ST.Procesess.Parsers
         {
             ValidateInit();
             var processes = new List<STProcess>();
-            if (XSchema == null) return default;
+            if (XSchema == null) return processes;
 
             if (XSchema.IsCollaborationDiagram())
             {

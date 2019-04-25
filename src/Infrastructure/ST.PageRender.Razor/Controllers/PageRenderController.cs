@@ -17,6 +17,7 @@ using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
+using ST.Entities.Settings;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 using ST.PageRender.Razor.Extensions;
@@ -725,6 +726,52 @@ namespace ST.PageRender.Razor.Controllers
         }
 
         /// <summary>
+        /// Get row select references
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="propertyId"></param>
+        /// <returns></returns>
+        [AjaxOnly]
+        [HttpGet]
+        public async Task<JsonResult> GetRowReferences([Required]Guid entityId, [Required]Guid propertyId)
+        {
+            var response = new ResultModel();
+            var refProp = _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .FirstOrDefault(x => x.Id == entityId)?
+                .TableFields?.FirstOrDefault(x => x.Id == propertyId);
+            if (refProp == null)
+            {
+                response.Errors = new List<IErrorModel>
+                {
+                    new ErrorModel("fail", "Property reference not found")
+                };
+                return Json(response);
+            }
+
+            var entityRefName = refProp.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "3000");
+            if (entityRefName == null)
+            {
+                response.Errors = new List<IErrorModel>
+                {
+                    new ErrorModel("fail", "Property reference not found")
+                };
+                return Json(response);
+            }
+
+            var res = await _service.GetAll(entityRefName.Value);
+            response.IsSuccess = res.IsSuccess;
+            response.Result = new
+            {
+                Data = res.Result,
+                EntityName = entityRefName.Value
+            };
+            return Json(response);
+        }
+
+        /// <summary>
         /// Save table cell
         /// </summary>
         /// <param name="entityId"></param>
@@ -787,7 +834,55 @@ namespace ST.PageRender.Razor.Controllers
 
             if (row.Result.ContainsKey(property.Name))
             {
-                row.Result[property.Name] = value;
+                switch (property.DataType)
+                {
+                    case TableFieldDataType.Guid:
+                        {
+                            Guid.TryParse(value, out var parsed);
+                            row.Result[property.Name] = parsed;
+                        }
+                        break;
+                    case TableFieldDataType.Boolean:
+                        {
+                            bool.TryParse(value, out var val);
+                            row.Result[property.Name] = val;
+                        }
+                        break;
+                    case TableFieldDataType.Int:
+                        {
+                            try
+                            {
+                                row.Result[property.Name] = Convert.ToInt32(value);
+                            }
+                            catch
+                            {
+                                row.Result[property.Name] = value;
+                            }
+                        }
+                        break;
+                    case TableFieldDataType.Decimal:
+                        {
+                            try
+                            {
+                                row.Result[property.Name] = Convert.ToDecimal(value);
+                            }
+                            catch
+                            {
+                                row.Result[property.Name] = value;
+                            }
+                        }
+                        break;
+                    case TableFieldDataType.Date:
+                    case TableFieldDataType.DateTime:
+                        {
+                            DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed);
+                            row.Result[property.Name] = parsed;
+                        }
+                        break;
+                    default:
+                        row.Result[property.Name] = value;
+                        break;
+                }
             }
 
             if (row.Result.ContainsKey(nameof(BaseModel.Changed)))

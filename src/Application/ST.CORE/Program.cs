@@ -1,5 +1,3 @@
-using ST.CORE.Installation;
-
 namespace ST.CORE
 {
 	public static class Program

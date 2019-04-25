@@ -13,7 +13,6 @@ using Newtonsoft.Json;
 using ST.Configuration.Seed;
 using ST.CORE.Extensions;
 using ST.CORE.ViewModels.InstallerModels;
-using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;

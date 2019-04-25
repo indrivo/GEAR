@@ -278,8 +278,7 @@ namespace ST.DynamicEntityStorage.Utils
         {
             var sizeExpression = (ConstantExpression)expression.Arguments[1];
 
-            int size;
-            if (!int.TryParse(sizeExpression.Value.ToString(), out size)) return false;
+            if (!int.TryParse(sizeExpression.Value.ToString(), out var size)) return false;
             _take = size;
             return true;
 
@@ -289,8 +288,7 @@ namespace ST.DynamicEntityStorage.Utils
         {
             var sizeExpression = (ConstantExpression)expression.Arguments[1];
 
-            int size;
-            if (int.TryParse(sizeExpression.Value.ToString(), out size))
+            if (int.TryParse(sizeExpression.Value.ToString(), out var size))
             {
                 _skip = size;
                 return true;

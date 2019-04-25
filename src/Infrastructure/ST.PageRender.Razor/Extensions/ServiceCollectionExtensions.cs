@@ -17,6 +17,7 @@ namespace ST.PageRender.Razor.Extensions
         {
             services.AddTransient<IPageRender, Services.PageRender>();
             services.AddTransient<IMenuService, MenuService<IDynamicService>>();
+            services.ConfigureOptions(typeof(StaticFileConfiguration));
             return services;
         }
     }

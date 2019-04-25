@@ -14,9 +14,8 @@ using ST.Entities.Data;
 namespace ST.CORE.Controllers
 {
 	[Route("api/[controller]/[action]")]
-	[ApiController]
 	[Authorize]
-	public class DataInjectorController : ControllerBase
+	public class DataInjectorController : Controller
 	{
 		/// <summary>
 		/// Inject dynamic service
@@ -72,7 +71,7 @@ namespace ST.CORE.Controllers
 			{
 				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type);
 				var rq = await _dynamicService.Table(tableName).Add(parsed);
-				return new JsonResult(rq);
+				return Json(rq);
 			}
 			catch (Exception e)
 			{
@@ -98,7 +97,7 @@ namespace ST.CORE.Controllers
 			{
 				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type);
 				var rq = await _dynamicService.Table(tableName).Update(parsed);
-				return new JsonResult(rq);
+				return Json(rq);
 			}
 			catch (Exception e)
 			{
@@ -121,7 +120,7 @@ namespace ST.CORE.Controllers
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
 			var rq = await _dynamicService.GetById(tableName, id);
-			return new JsonResult(rq);
+			return Json(rq);
 		}
 
 		/// <summary>
@@ -135,7 +134,7 @@ namespace ST.CORE.Controllers
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
 			var rq = await _dynamicService.GetAll(tableName);
-			return new JsonResult(rq);
+			return Json(rq);
 		}
 
 		/// <summary>
@@ -149,7 +148,7 @@ namespace ST.CORE.Controllers
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
 			var rq = await _dynamicService.GetAll(tableName);
-			return new JsonResult(rq);
+			return Json(rq);
 		}
 
 		/// <summary>
@@ -164,7 +163,7 @@ namespace ST.CORE.Controllers
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
 			var rq = await _dynamicService.Table(tableName).GetAll<dynamic>(null, filters);
-			return new JsonResult(rq);
+			return Json(rq);
 		}
 	}
 }

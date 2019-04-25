@@ -71,29 +71,11 @@
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a class="btn btn-warning btn-sm" href="@Url.Action("Versions")?id=${data.id}&contextName=${data.databaseContextName}">Versions</a>
 									<a class="btn btn-info btn-sm" href="@Url.Action("Details")?id=${data.id}&contextName=${data.databaseContextName}">Details</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=CreateAlert('${data.id
-								}'); >Delete</button>
 									</div>`;
 						}
 					}
 				]
 			});
 		});
-
-		function CreateAlert(rowId) {
-			const object = {
-				alertTitle: "Delete this change?",
-				alertText: "are you sure that you want to leave this change?",
-				confirmButtonText: "Yes, delete it!",
-				rowId: rowId,
-				tableId: "#tableAudit",
-				urlForDelete: '@Url.Action("Delete")',
-				type: "warning",
-				onDeleteSuccess: "Diagram has been deleted.",
-				onDeleteFail: "Something wrong",
-				onServerNoResponse: "Api not respond or not have permissions."
-			};
-			DeleteData(object);
-		}
 	</script>
 }

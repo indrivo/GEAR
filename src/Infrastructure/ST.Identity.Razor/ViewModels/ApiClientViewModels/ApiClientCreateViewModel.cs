@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ST.Identity.Razor.ViewModels.ApiClientViewModels
 {
@@ -9,10 +10,10 @@ namespace ST.Identity.Razor.ViewModels.ApiClientViewModels
 		[Display(Name = "Hybrid", Description = "Hybrid Authentication flow", Prompt = "Hybrid Authentication flow")]
 		public bool HybridGrantType { get; set; }
 
-		[Display(Name = "ClientCredentials", Prompt = "Client Credentials authentication flow")]
+		[Display(Name = "Client Credentials", Prompt = "Client Credentials authentication flow")]
 		public bool ClientCredentialsGrantType { get; set; }
 
-		[Display(Name = "Implicit garend type")]
+		[Display(Name = "Implicit grand type")]
 		public bool ImplicitGrantType { get; set; }
 
 		[Display(Name = "Resource owner password grand type")]
@@ -31,8 +32,11 @@ namespace ST.Identity.Razor.ViewModels.ApiClientViewModels
 
 		public IEnumerable<string> ChosenApiScopes { get; set; }
 
+        public IEnumerable<SelectListItem> AvailableApiScopes { get; set; }
+
 		[Required]
 		[Display(Name = "Client URI")]
+        [Url]
 		[StringLength(50)]
 		public string ClientUri { get; set; }
 	}

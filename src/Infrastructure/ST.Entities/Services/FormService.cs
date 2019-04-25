@@ -562,6 +562,7 @@ namespace ST.Entities.Services
             }));
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get reference fields
         /// </summary>
@@ -594,6 +595,7 @@ namespace ST.Entities.Services
         }
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Get table fields
         /// </summary>
@@ -676,6 +678,7 @@ namespace ST.Entities.Services
                         fieldConfig = FormeoControls.Text;
                         break;
                     case TableFieldDataType.Date:
+                    case TableFieldDataType.DateTime:
                         fieldConfig = FormeoControls.Date;
                         break;
                 }

@@ -1,10 +1,12 @@
+@inject IStringLocalizer Localizer
+
 @{
-	ViewData["Title"] = "Table List";
+	ViewData["Title"] = Localizer["tables"];
 }
 
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">List of tables</h4>
+		<h4 class="card-title">@Localizer["tables"]</h4>
 		<h6 class="card-subtitle"></h6>
 		<div class="table-responsive">
 			<div class="mt-2">
@@ -12,9 +14,9 @@
 					<div class="mr-auto">
 						<div class="form-group">
 							<a asp-action="Create" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add table
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_table"]
 							</a>
-							<small>New table will be added.</small>
+							<small>@Localizer["add_table_info"]</small>
 						</div>
 					</div>
 				</div>
@@ -22,11 +24,11 @@
 			<table class="table table-striped table-bordered" id="tableGrid">
 				<thead class="full-width">
 					<tr>
-						<th>Name</th>
-						<th>EntityType</th>
-						<th>Created</th>
-						<th>Changed</th>
-						<th>Actions</th>
+						<th>@Localizer["entity_name"]</th>
+						<th>@Localizer["entity_type"]</th>
+						<th>@Localizer["created"]</th>
+						<th>@Localizer["changed"]</th>
+						<th>@Localizer["list_actions"]</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
@@ -75,10 +77,9 @@
 						data: null,
 						render: function(data, type, row) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
-									<a class="btn btn-warning btn-sm" href="@Url.Action("Scaffold", "Page")?tableId=${
-								row.id}">Scaffold</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">Delete</button></div>`;
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window.translate("edit")}</a>
+									<a class="btn btn-warning btn-sm" onclick="scaffoldClickEvent('${row.id}')" href="#">Scaffold</a>
+									<button type="button" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</button></div>`;
 						}
 					}
 				]
@@ -99,5 +100,29 @@
 			};
 			DeleteData(object);
 		}
+
+		function scaffoldClickEvent(id) {
+			if (!id) {
+				Swal.fire({
+					type: 'error',
+					title: 'Oops...',
+					text: 'Something went wrong!'
+				});
+				return;
+			}
+	swal({
+		title: window.translate("scaffold_modal_title"),
+		text: window.translate("scaffold_modal_text"),
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: window.translate("scaffold_modal_confirm")
+	}).then((result) => {
+		if (result.value) {
+			location.href = `@Url.Action("Scaffold", "Page")?tableId=${id}`;
+		}
+	});
+}
 	</script>
 }

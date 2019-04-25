@@ -11,11 +11,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Identity.Razor.Users\ST.Identity.Razor.Users.csproj" />
     <ProjectReference Include="..\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Organization\ST.MultiTenant.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\ApiResource\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Tenant\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

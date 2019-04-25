@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -150,30 +150,12 @@
     <None Include="Views\Process\Create.cshtml" />
     <None Include="Views\Process\Edit.cshtml" />
     <None Include="Views\Process\Index.cshtml" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\.bowerrc" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\.gitattributes" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\.gitignore" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\.jshintrc" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\.travis.yml" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\app.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\CHANGELOG.md" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\dist\bootstrap-treeview-init.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\dist\bootstrap-treeview.min.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\Gruntfile.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\LICENSE" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\public\js\bootstrap-treeview.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\README.md" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\src\js\bootstrap-treeview.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\blanket.min.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\bootstrap-treeview.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\jquery.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\lib\qunit-1.12.0.js" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\README.md" />
-    <None Include="wwwroot\lib\bootstrap-treeview-master\tests\tests.js" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\Communication.Razor\ST.Email.Razor\ST.Email.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Configuration\ST.Configuration.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Files\ST.Files.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Form.Razor\ST.Forms.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Identity.Razor\ST.Identity.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Localization.Razor\ST.Localization.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Notifications\ST.Notifications.csproj" />
@@ -244,27 +226,7 @@
     <Content Update="Static\Templates\folders.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Views\Menu\EditItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Menu\CreateItem.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Menu\Create.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Menu\Edit.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="Views\Menu\Index.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
   </ItemGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties bower_1json__JSONSchema="" />
-    </VisualStudio>
-  </ProjectExtensions>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
     <PropertyGroup>
       <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>

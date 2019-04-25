@@ -7,7 +7,7 @@
 	ViewData["Title"] = "GetCode";
 }
 
-<link rel="stylesheet" type="text/css" href="~/lib/codemirror/lib/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
 <link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
 
 @{
@@ -50,12 +50,12 @@
 
 @section Scripts
 	{
-	<script src="~/lib/codemirror/lib/codemirror.js"></script>
-	<script src="~/lib/codemirror/keymap/sublime.js"></script>
-	<script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-	<script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
-	<script src="~/lib/codemirror/mode/css/css.js"></script>
-	<script src="~/lib/codemirror/mode/xml/xml.js"></script>
+	<script src="~/lib/codemirror/codemirror.min.js"></script>
+	<script src="~/lib/codemirror/keymap/sublime.min.js"></script>
+	<script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.min.js"></script>
+	<script src="~/lib/codemirror/mode/javascript/javascript.min.js"></script>
+	<script src="~/lib/codemirror/mode/css/css.min.js"></script>
+	<script src="~/lib/codemirror/mode/xml/xml.min.js"></script>
 	<script>
 		var url = new URL(location.href);
 		var type = url.searchParams.get("type");

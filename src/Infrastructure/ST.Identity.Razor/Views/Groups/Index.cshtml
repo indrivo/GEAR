@@ -25,12 +25,12 @@
 				<thead>
 				<tr>
 					<th>Name</th>
-					<th>Created</th>
-					<th>Author</th>
-					<th>ModifiedBy</th>
-					<th>Changed</th>
-					<th>IsDeleted</th>
-					<th>Actions</th>
+                    <th>@Localizer["created"]</th>
+                    <th>@Localizer["author"]</th>
+					<th>@Localizer["modified_by"]</th>
+                    <th>@Localizer["changed"]</th>
+                    <th>@Localizer["is_deleted"]</th>
+                    <th>@Localizer["list_actions"]</th>
 				</tr>
 				</thead>
 				<tbody></tbody>
@@ -40,13 +40,13 @@
 </div>
 
 @section Scripts{
-	<script>
+    <script>
 		function getTokenAntiForgery() {
 			const token = '@Html.AntiForgeryToken()';
 			return $(token).val();
 		}
 	</script>
-	<script language="javascript" type="text/javascript">
+    <script language="javascript" type="text/javascript">
 		$(document).ready(function($) {
 			const tableId = '#groupTable';
 			if ($.fn.DataTable.isDataTable(tableId)) {
@@ -87,9 +87,9 @@
 					{
 						"render": function(data, type, row, meta) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window.translate("edit")}</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=CreateAlert('${row.id
-								}'); >Delete</button>
+								}'); >${window.translate("delete")}</button>
 									</div>`;
 						}
 					}
