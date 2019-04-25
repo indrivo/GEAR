@@ -22,9 +22,9 @@
 	var user = await UserManager.GetUserAsync(User);
 	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
 	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
-	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
+	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
-	<!DOCTYPE html />
+	<!DOCTYPE html>
 	<html>
 	<head>
 		<meta charset="utf-8" />

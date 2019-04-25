@@ -77,6 +77,18 @@ DataInjector.prototype.GetAll = function (table) {
 
 
 /**
+ * Get all items with include
+ * @param {any} table
+ */
+DataInjector.prototype.GetAllWithInclude = function (table) {
+	return window.load("/api/DataInjector/GetAllWithInclude",
+		{
+			tableName: table
+		});
+}
+
+
+/**
  * Get all with filters
  * @param {any} table
  * @param {any} filters
@@ -85,7 +97,7 @@ DataInjector.prototype.GetAllWhere = function (table, filters) {
 	return window.load("/api/DataInjector/GetAllWhere",
 		{
 			tableName: table,
-			filters: filters
+			filters: JSON.stringify(filters)
 		});
 }
 
@@ -97,6 +109,19 @@ DataInjector.prototype.GetAllWhere = function (table, filters) {
  */
 DataInjector.prototype.GetById = function (table, itemId) {
 	return window.load("/api/DataInjector/GetById",
+		{
+			tableName: table,
+			id: itemId
+		});
+}
+
+/**
+ * Get bey id with include
+ * @param {any} table
+ * @param {any} itemId
+ */
+DataInjector.prototype.GetByIdWithInclude = function (table, itemId) {
+	return window.load("/api/DataInjector/GetByIdWithInclude",
 		{
 			tableName: table,
 			id: itemId

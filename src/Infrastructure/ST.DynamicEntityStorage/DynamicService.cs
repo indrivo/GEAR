@@ -20,8 +20,10 @@ using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
+using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Shared;
+using ST.Shared.Extensions;
 
 namespace ST.DynamicEntityStorage
 {
@@ -258,6 +260,75 @@ namespace ST.DynamicEntityStorage
             return result;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Get all with include as dictionary collection
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="expression"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>>
+            GetAllWithIncludeAsDictionaryAsync(string entity, Expression<Func<Dictionary<string, object>, bool>> expression = null, IEnumerable<Filter> filters = null)
+        {
+            var listWithoutInclude = await GetAll(entity, expression, filters);
+            if (!listWithoutInclude.IsSuccess) return listWithoutInclude;
+            var table = _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .FirstOrDefault(x => x.Name == entity);
+            if (table == null) return listWithoutInclude;
+            var fieldReferences = table.TableFields
+                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == "3000")).ToList();
+            if (!fieldReferences.Any()) return listWithoutInclude;
+            foreach (var item in listWithoutInclude.Result)
+            {
+                var includes = await IncludeSingleForDictionaryObjectAsync(item, fieldReferences);
+                if (includes.Any())
+                {
+                    item.AddRange(includes);
+                }
+            }
+
+            return listWithoutInclude;
+        }
+
+        /// <summary>
+        /// Include for single
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="fieldReferences"></param>
+        /// <returns></returns>
+        private async Task<Dictionary<string, object>> IncludeSingleForDictionaryObjectAsync(IReadOnlyDictionary<string, object> item,
+            IEnumerable<TableModelFields> fieldReferences)
+        {
+            var additionalProps = new Dictionary<string, object>();
+
+            foreach (var reference in fieldReferences)
+            {
+                var tableName = reference.TableFieldConfigValues
+                    .FirstOrDefault(x => x.TableFieldConfig.Code == "3000")?.Value;
+                if (!item.ContainsKey(reference.Name)) continue;
+                var refId = item[reference.Name];
+                if (refId == null)
+                {
+                    additionalProps.Add($"{reference.Name}Reference", null);
+                    continue;
+                }
+                Guid.TryParse(refId.ToString(), out var parsedId);
+                if (parsedId == Guid.Empty)
+                {
+                    additionalProps.Add($"{reference.Name}Reference", null);
+                    continue;
+                }
+                var obj = await GetById(tableName, parsedId);
+                additionalProps.Add($"{reference.Name}Reference", obj.Result);
+            }
+
+            return additionalProps;
+        }
+
         /// <summary>
         /// Get filters
         /// </summary>
@@ -312,6 +383,34 @@ namespace ST.DynamicEntityStorage
             result.Result = data.Result.Values.FirstOrDefault();
             result.IsSuccess = true;
             return result;
+        }
+
+        /// <summary>
+        /// Get by id with include
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Dictionary<string, object>>> GetByIdWithInclude(string entity, Guid id)
+        {
+            var obj = await GetById(entity, id);
+            if (!obj.IsSuccess) return obj;
+            var table = _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .FirstOrDefault(x => x.Name == entity);
+            if (table == null) return obj;
+            var fieldReferences = table.TableFields
+                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == "3000")).ToList();
+            if (!fieldReferences.Any()) return obj;
+            var includes = await IncludeSingleForDictionaryObjectAsync(obj.Result, fieldReferences);
+            if (includes.Any())
+            {
+                obj.Result.AddRange(includes);
+            }
+
+            return obj;
         }
 
         /// <inheritdoc />
