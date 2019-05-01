@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 
 namespace ST.Cache.Razor.Controllers
@@ -39,6 +40,7 @@ namespace ST.Cache.Razor.Controllers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IActionResult> RemoveItem([Required]string key)
         {
             await _cacheService.RemoveAsync(key);
@@ -49,10 +51,16 @@ namespace ST.Cache.Razor.Controllers
         /// Flush all
         /// </summary>
         /// <returns></returns>
+        [Route("[controller]/[action]")]
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel))]
         public IActionResult FlushAll()
         {
             _cacheService.FlushAll();
-            return StatusCode(200);
+            return Json(new ResultModel
+            {
+                IsSuccess = true
+            });
         }
     }
 }

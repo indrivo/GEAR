@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ST.Cache.Abstractions;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Controls.Querry;
@@ -17,8 +18,6 @@ using ST.Identity.Abstractions;
 using ST.Identity.CacheModels;
 using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Organization.Utils;
@@ -185,7 +184,7 @@ namespace ST.WebHost.Controllers
 			}
 			settings.IsConfigured = true;
 			var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
-			await System.IO.File.WriteAllTextAsync(Installation.Application.AppSettingsFilepath(_hostingEnvironment), result);
+			await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
 			Installation.Application.InitMigrations(new string[] { });
 
 			await _permissionService.RefreshCache();

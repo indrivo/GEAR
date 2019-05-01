@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ST.Core.Helpers;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.Pages;
 
-namespace ST.Configuration.Seed
+namespace ST.PageRender.Razor.Helpers
 {
     public static class PageManager
     {

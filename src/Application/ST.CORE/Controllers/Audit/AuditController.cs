@@ -13,8 +13,6 @@ using ST.Core.Attributes;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;

@@ -1,0 +1,30 @@
+﻿.tabs {
+    margin: 0.5em;
+}
+
+.bjs-powered-by-lightbox {
+    display: none;
+}
+
+.shw-rside-bpm {
+    right: 0em !important;
+    width: 40em !important;
+    display: block !important;
+}
+
+.right-sidebar-bpm {
+    right: -40em;
+    width: 40em;
+    position: fixed;
+    display: none;
+    z-index: 1100;
+    background: #ffffff;
+    top: 0px;
+    padding-bottom: 20px;
+    height: 100%;
+    -webkit-box-shadow: 5px 1px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 5px 1px 40px rgba(0, 0, 0, 0.1);
+    -webkit-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}

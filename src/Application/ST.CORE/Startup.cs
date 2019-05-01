@@ -19,8 +19,6 @@ using ST.Entities.Extensions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.Services;
 using ST.Identity.Versioning;
 using ST.Localization;
@@ -29,7 +27,7 @@ using ST.MPass.Gov;
 using ST.Notifications.Extensions;
 using ST.PageRender.Razor.Extensions;
 using ST.Procesess.Data;
-using ST.WebHost.LoggerTargets;
+using ST.Process.Razor.Extensions;
 using ST.WebHost.Services.Abstractions;
 using TreeIsoService = ST.WebHost.Services.TreeIsoService;
 
@@ -173,10 +171,11 @@ namespace ST.WebHost
 			services.AddSignalR<ApplicationDbContext, ApplicationUser, ApplicationRole>();
 
 			//Run background service
-			services.AddHostedService<HostedTimeService>();
+			//services.AddHostedService<HostedTimeService>();
 
 			services.AddScoped<ILocalService, LocalService>();
 			services.AddPageRender();
+			services.AddProcesses();
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
 
 

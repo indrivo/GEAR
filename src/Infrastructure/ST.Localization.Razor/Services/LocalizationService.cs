@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Localization.Razor.Services.Abstractions;
 using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 using YandexTranslateCSharpSdk;
@@ -86,7 +87,7 @@ namespace ST.Localization.Razor.Services
                     obj.WriteTo(writer);
                 }
 
-                var langsFile = _env.ContentRootFileProvider.GetFileInfo("appsettings.json");
+                var langsFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
 
                 using (Stream str = new FileStream(langsFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
@@ -133,7 +134,7 @@ namespace ST.Localization.Razor.Services
 
             if (existsInConfig || fileExists)
             {
-                var langsFile = _env.ContentRootFileProvider.GetFileInfo("appsettings.json");
+                var langsFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
                 using (Stream str = new FileStream(langsFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
                 using (var sReader = new StreamReader(str))

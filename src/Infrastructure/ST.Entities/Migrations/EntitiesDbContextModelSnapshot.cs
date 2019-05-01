@@ -17,7 +17,7 @@ namespace ST.Entities.Migrations
             modelBuilder
                 .HasDefaultSchema("Entities")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
@@ -84,197 +84,6 @@ namespace ST.Entities.Migrations
                     b.HasIndex("TrackAuditId");
 
                     b.ToTable("TrackAuditDetails");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.EntityType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsSystem");
-
-                    b.Property<string>("MachineName");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("EntityTypes");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValues", b =>
-                {
-                    b.Property<Guid>("TableModelFieldId");
-
-                    b.Property<Guid>("TableFieldConfigId");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("TableModelFieldId", "TableFieldConfigId");
-
-                    b.HasIndex("TableFieldConfigId");
-
-                    b.ToTable("TableFieldConfigValues");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .HasColumnType("char(4)");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid>("TableFieldTypeId");
-
-                    b.Property<string>("Type");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableFieldTypeId");
-
-                    b.ToTable("TableFieldConfigs");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldGroups", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("GroupName");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TableFieldGroups");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .HasColumnType("char(2)");
-
-                    b.Property<string>("DataType");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid>("TableFieldGroupsId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableFieldGroupsId");
-
-                    b.ToTable("TableFieldTypes");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("EntityType");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsPartOfDbContext");
-
-                    b.Property<bool>("IsSystem");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("Table");
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelFields", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("AllowNull");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("DataType");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("DisplayName");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsSystem");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<bool>("Synchronized");
-
-                    b.Property<Guid>("TableFieldTypeId");
-
-                    b.Property<Guid>("TableId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableFieldTypeId");
-
-                    b.HasIndex("TableId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("TableFields");
                 });
 
             modelBuilder.Entity("ST.Entities.Models.Forms.Attrs", b =>
@@ -1157,6 +966,197 @@ namespace ST.Entities.Migrations
                     b.ToTable("Templates");
                 });
 
+            modelBuilder.Entity("ST.Entities.Models.Tables.EntityType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
+
+                    b.Property<string>("MachineName");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("EntityTypes");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigValues", b =>
+                {
+                    b.Property<Guid>("TableModelFieldId");
+
+                    b.Property<Guid>("TableFieldConfigId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("TableModelFieldId", "TableFieldConfigId");
+
+                    b.HasIndex("TableFieldConfigId");
+
+                    b.ToTable("TableFieldConfigValues");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigs", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .HasColumnType("char(4)");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid>("TableFieldTypeId");
+
+                    b.Property<string>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableFieldTypeId");
+
+                    b.ToTable("TableFieldConfigs");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldGroups", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("GroupName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TableFieldGroups");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldTypes", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .HasColumnType("char(2)");
+
+                    b.Property<string>("DataType");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid>("TableFieldGroupsId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableFieldGroupsId");
+
+                    b.ToTable("TableFieldTypes");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("EntityType");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsPartOfDbContext");
+
+                    b.Property<bool>("IsSystem");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Table");
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableModelFields", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("AllowNull");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("DataType");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("DisplayName");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
+
+                    b.Property<bool>("Synchronized");
+
+                    b.Property<Guid>("TableFieldTypeId");
+
+                    b.Property<Guid>("TableId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableFieldTypeId");
+
+                    b.HasIndex("TableId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("TableFields");
+                });
+
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1231,121 +1231,11 @@ namespace ST.Entities.Migrations
                     b.ToTable("ViewModelFields");
                 });
 
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("ApplicationRoleId");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("FieldAccessType");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("TableModelFieldId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationRoleId");
-
-                    b.HasIndex("TableModelFieldId");
-
-                    b.ToTable("EntityFieldPermissions");
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccessType");
-
-                    b.Property<Guid>("ApplicationRoleId");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("TableModelId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationRoleId");
-
-                    b.HasIndex("TableModelId");
-
-                    b.ToTable("EntityPermissions");
-                });
-
             modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
                 {
                     b.HasOne("ST.Audit.Models.TrackAudit")
                         .WithMany("AuditDetailses")
                         .HasForeignKey("TrackAuditId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValues", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", "TableFieldConfig")
-                        .WithMany()
-                        .HasForeignKey("TableFieldConfigId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelField")
-                        .WithMany("TableFieldConfigValues")
-                        .HasForeignKey("TableModelFieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", "TableFieldType")
-                        .WithMany("TableFieldConfigs")
-                        .HasForeignKey("TableFieldTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldGroups", "TableFieldGroups")
-                        .WithMany("TableFieldTypes")
-                        .HasForeignKey("TableFieldGroupsId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelFields", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", "TableFieldType")
-                        .WithMany()
-                        .HasForeignKey("TableFieldTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "Table")
-                        .WithMany("TableFields")
-                        .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -1408,7 +1298,7 @@ namespace ST.Entities.Migrations
                         .HasForeignKey("MetaId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableField")
+                    b.HasOne("ST.Entities.Models.Tables.TableModelFields", "TableField")
                         .WithMany()
                         .HasForeignKey("TableFieldId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -1421,7 +1311,7 @@ namespace ST.Entities.Migrations
                         .HasForeignKey("SettingsId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "Table")
+                    b.HasOne("ST.Entities.Models.Tables.TableModel", "Table")
                         .WithMany()
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1484,7 +1374,7 @@ namespace ST.Entities.Migrations
                         .HasForeignKey("BlockCategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
+                    b.HasOne("ST.Entities.Models.Tables.TableModel", "TableModel")
                         .WithMany()
                         .HasForeignKey("TableModelId");
                 });
@@ -1529,9 +1419,51 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigValues", b =>
+                {
+                    b.HasOne("ST.Entities.Models.Tables.TableFieldConfigs", "TableFieldConfig")
+                        .WithMany()
+                        .HasForeignKey("TableFieldConfigId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ST.Entities.Models.Tables.TableModelFields", "TableModelField")
+                        .WithMany("TableFieldConfigValues")
+                        .HasForeignKey("TableModelFieldId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigs", b =>
+                {
+                    b.HasOne("ST.Entities.Models.Tables.TableFieldTypes", "TableFieldType")
+                        .WithMany("TableFieldConfigs")
+                        .HasForeignKey("TableFieldTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldTypes", b =>
+                {
+                    b.HasOne("ST.Entities.Models.Tables.TableFieldGroups", "TableFieldGroups")
+                        .WithMany("TableFieldTypes")
+                        .HasForeignKey("TableFieldGroupsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Entities.Models.Tables.TableModelFields", b =>
+                {
+                    b.HasOne("ST.Entities.Models.Tables.TableFieldTypes", "TableFieldType")
+                        .WithMany()
+                        .HasForeignKey("TableFieldTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ST.Entities.Models.Tables.TableModel", "Table")
+                        .WithMany("TableFields")
+                        .HasForeignKey("TableId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModel", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
+                    b.HasOne("ST.Entities.Models.Tables.TableModel", "TableModel")
                         .WithMany()
                         .HasForeignKey("TableModelId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1539,29 +1471,13 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModelFields", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelFields")
+                    b.HasOne("ST.Entities.Models.Tables.TableModelFields", "TableModelFields")
                         .WithMany()
                         .HasForeignKey("TableModelFieldsId");
 
                     b.HasOne("ST.Entities.Models.ViewModels.ViewModel")
                         .WithMany("ViewModelFields")
                         .HasForeignKey("ViewModelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelField")
-                        .WithMany()
-                        .HasForeignKey("TableModelFieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
-                        .WithMany()
-                        .HasForeignKey("TableModelId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

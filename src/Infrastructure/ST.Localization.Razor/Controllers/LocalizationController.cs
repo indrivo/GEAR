@@ -463,6 +463,7 @@ namespace ST.Localization.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public JsonResult GetTranslationsForCurrentLanguage()
         {
             var lang = HttpContext.Session.GetString("lang");

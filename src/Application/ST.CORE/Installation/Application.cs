@@ -10,9 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ST.Configuration.Seed;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Services;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
@@ -26,30 +26,13 @@ namespace ST.WebHost.Installation
 	public static class Application
 	{
 		/// <summary>
-		/// Get file path
-		/// </summary>
-		public static string AppSettingsFilepath(IHostingEnvironment hostingEnvironment)
-		{
-			var path = "appsettings.json";
-			if (hostingEnvironment.IsDevelopment())
-			{
-				path = "appsettings.Development.json";
-			}
-			else if (hostingEnvironment.IsEnvironment("Stage"))
-			{
-				path = "appsettings.Stage.json";
-			}
-			return path;
-		}
-
-		/// <summary>
 		/// Get settings
 		/// </summary>
 		public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
 		{
 			try
 			{
-				using (var r = new StreamReader(AppSettingsFilepath(hostingEnvironment)))
+				using (var r = new StreamReader(ResourceProvider.AppSettingsFilepath(hostingEnvironment)))
 				{
 					var json = r.ReadToEnd();
 					return JsonConvert.DeserializeObject<AppSettingsModel.RootObject>(json);

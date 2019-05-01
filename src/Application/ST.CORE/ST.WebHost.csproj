@@ -146,9 +146,6 @@
   <ItemGroup>
     <None Include="appsettings.Stage.json" />
     <None Include="Views\Home\Contact.cshtml" />
-    <None Include="Views\Process\Create.cshtml" />
-    <None Include="Views\Process\Edit.cshtml" />
-    <None Include="Views\Process\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\Communication.Razor\ST.Email.Razor\ST.Email.Razor.csproj" />
@@ -161,7 +158,7 @@
     <ProjectReference Include="..\..\Infrastructure\ST.Localization.Razor\ST.Localization.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Notifications\ST.Notifications.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\ST.Processes\ST.Procesess.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Process.Razor\ST.Process.Razor.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Installation\SystemEntitySeed\DynamicEntities\GoalPartyRequirement.json">

@@ -17,7 +17,6 @@ using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
 using ST.MultiTenant.Helpers;

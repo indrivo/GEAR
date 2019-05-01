@@ -7,7 +7,6 @@ using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstractions;
 using ST.WebHost.ViewModels.ViewModels;
 
@@ -18,7 +17,6 @@ namespace ST.WebHost.Controllers
 	{
 		#region Inject
 
-		private readonly IBaseBusinessRepository<ApplicationDbContext> _repository;
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly INotificationHub _hub;
 		private readonly ApplicationDbContext _context;
@@ -29,15 +27,12 @@ namespace ST.WebHost.Controllers
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="repository"></param>
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
 		/// <param name="service"></param>
-		public HomeController(IBaseBusinessRepository<ApplicationDbContext> repository,
-			UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicService service)
+		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicService service)
 		{
-			_repository = repository;
 			_userManager = userManager;
 			_hub = hub;
 			_context = context;

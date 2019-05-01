@@ -1,18 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Core;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Security.Enums;
 
 namespace ST.Entities.Security.Models
 {
     public class EntityPermission : ExtendedModel
     {
         /// <summary>
-        /// Entity access type
+        /// Accesses
         /// </summary>
-        [Required]
-        public EntityAccessType AccessType { get; set; } = EntityAccessType.FullControl;
+        public IEnumerable<EntityPermissionAccess> EntityPermissionAccesses { get; set; }
 
         /// <summary>
         /// Reference to roles

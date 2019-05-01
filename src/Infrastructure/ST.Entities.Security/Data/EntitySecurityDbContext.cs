@@ -19,13 +19,19 @@ namespace ST.Entities.Security.Data
         /// <summary>
         /// Entity permissions
         /// </summary>
-        public virtual DbSet<EntityPermission> EntityPermissions { get; set; }
+        public DbSet<EntityPermission> EntityPermissions { get; set; }
 
         /// <summary>
         /// Entity field permissions
         /// </summary>
-        public virtual DbSet<EntityFieldPermission> EntityFieldPermissions { get; set; }
+        public DbSet<EntityFieldPermission> EntityFieldPermissions { get; set; }
 
+        /// <summary>
+        /// Entity access by role
+        /// </summary>
+        public DbSet<EntityPermissionAccess> EntityPermissionAccesses { get; set; }
+
+        /// <inheritdoc />
         /// <summary>
         /// On model creating
         /// </summary>

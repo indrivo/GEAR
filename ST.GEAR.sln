@@ -69,9 +69,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Cache.Abstractions", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Cache.Razor", "src\Infrastructure\ST.Cache.Razor\ST.Cache.Razor.csproj", "{ADD6F75B-8BCC-459D-9F18-F6A1CBC44FE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Entities.Security", "src\Infrastructure\ST.Entities.Security\ST.Entities.Security.csproj", "{78FC1EC0-47C0-46A5-83C7-95E87733C8D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Entities.Security", "src\Infrastructure\ST.Entities.Security\ST.Entities.Security.csproj", "{78FC1EC0-47C0-46A5-83C7-95E87733C8D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Identity.Abstractions", "src\Infrastructure\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj", "{D462F202-4646-4DF9-8670-A47E9EA9B34E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Identity.Abstractions", "src\Infrastructure\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj", "{D462F202-4646-4DF9-8670-A47E9EA9B34E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Process.Razor", "src\Infrastructure\ST.Process.Razor\ST.Process.Razor.csproj", "{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -242,6 +244,12 @@ Global
 		{D462F202-4646-4DF9-8670-A47E9EA9B34E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D462F202-4646-4DF9-8670-A47E9EA9B34E}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{D462F202-4646-4DF9-8670-A47E9EA9B34E}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,6 +288,7 @@ Global
 		{ADD6F75B-8BCC-459D-9F18-F6A1CBC44FE1} = {2C7A5DBC-40F5-4646-BB03-DCB2C45E08C1}
 		{78FC1EC0-47C0-46A5-83C7-95E87733C8D6} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
 		{D462F202-4646-4DF9-8670-A47E9EA9B34E} = {8347A3F9-F58E-4EC6-BE16-4F7FCDD438BC}
+		{08E1B492-B0F0-42B5-9F84-8F22BEEDEAB7} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}
