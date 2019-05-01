@@ -46,8 +46,8 @@ $(document).ready(function () {
 
 
 	//Set app name
-	$("#appName").text(settings.app.name);
-	$("#PageTitle").text(settings.navigation.current);
+	$("#appName").html(settings.app.name);
+	$("#PageTitle").html(settings.navigation.current);
 
 
 
@@ -58,16 +58,30 @@ $(document).ready(function () {
 
 
 
-	//Set localization config
-	let translateIcon = settings.localization.current.identifier;
-	if (translateIcon == "en") {
-		translateIcon = "gb";
+	function getIdentifier(idt) {
+		switch (idt) {
+			case "en": {
+				idt = "gb";
+			} break;
+			case "ja": {
+				idt = "jp";
+			} break;
+			case "zh": {
+				idt = "cn";
+			} break;
+			case "uk": {
+				idt = "ua";
+			} break;
+			case "el": {
+				idt = "gr";
+			} break;
+		}
+		return idt;
 	}
+	//Set localization config
+	let translateIcon = getIdentifier(settings.localization.current.identifier);
 	$("#currentlanguage").addClass(`flag-icon flag-icon-${translateIcon}`);
 	const languageBlock = $("#languageRegion");
-	function getIdentifier(idt) {
-		return (idt == "en") ? "gb" : idt;
-	}
 
 	$.each(settings.localization.languages, function (index, lang) {
 		const language = `<a href="/Localization/ChangeLanguage?identifier=${lang.identifier}" class="dropdown-item language-event">
@@ -84,12 +98,13 @@ $(document).ready(function () {
 	//Log Out
 	$('.sa-logout').click(function () {
 		swal({
-			title: "Are you sure?",
-			text: "You are going to de-authenticate yourself!",
+			title: window.translate("confirm_log_out_question"),
+			text: window.translate("log_out_message"),
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#DD6B55",
-			confirmButtonText: "Yes, log out!"
+			confirmButtonText: window.translate("confirm_logout"),
+			cancelButtonText: window.translate("cancel")
 		}).then((result) => {
 			if (result.value) {
 				$.ajax({

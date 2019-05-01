@@ -292,6 +292,7 @@
 					showCancelButton: true,
 					confirmButtonColor: "#DD6B55",
 					confirmButtonText: "Yes, delete it!",
+					cancelButtonText: window.translate("cancel"),
 					closeOnConfirm: false
 				}).then(() => {
 						$.ajax({
@@ -325,6 +326,7 @@
 					showCancelButton: true,
 					confirmButtonColor: "#DD6B55",
 					confirmButtonText: "Yes, delete it!",
+					cancelButtonText: window.translate("cancel"),
 					closeOnConfirm: false
 				}).then(() => {
 						$.ajax({
@@ -439,7 +441,8 @@
 					type: "warning",
 					showCancelButton: true,
 					confirmButtonColor: "#DD6B55",
-					confirmButtonText: "Yes, create"
+					confirmButtonText: "Yes, create",
+					cancelButtonText: window.translate("cancel")
 				}).then(function (result) {
 					$.ajax({
 						url: "@Url.Action("GenerateViewModel", "ViewModel")",

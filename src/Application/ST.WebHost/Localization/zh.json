@@ -168,5 +168,11 @@
   "add_organization_info": "新的组织将增加。",
   "get_languages": "语言表",
   "add_language_info": "新的语言，将增加。",
-  "layout_list": "布置列表"
+  "layout_list": "布置列表",
+  "layouts_add_info": "新的布局将增加。",
+  "add_layout": "加布局",
+  "confirm_logout": "是的，记录了！",
+  "log_out_message": "你要去进行身份验证自己！",
+  "confirm_log_out_question": "你确定吗？",
+  "cancel": "取消"
 }

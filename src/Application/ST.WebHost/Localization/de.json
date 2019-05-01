@@ -168,5 +168,11 @@
   "add_organization_info": "Neue Organisation Hinzugefügt werden.",
   "get_languages": "Sprache Liste",
   "add_language_info": "Neue Sprache Hinzugefügt werden.",
-  "layout_list": "Layout Liste"
+  "layout_list": "Layout Liste",
+  "layouts_add_info": "Neues layout Hinzugefügt wird.",
+  "add_layout": "Hinzufügen layout",
+  "confirm_logout": "Ja, melden Sie sich!",
+  "log_out_message": "Sie gehen zu de-authentifizieren Sie sich!",
+  "confirm_log_out_question": "Sind Sie sicher?",
+  "cancel": "Abbrechen"
 }

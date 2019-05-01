@@ -168,5 +168,11 @@
   "add_organization_info": "New organization will be added.",
   "get_languages": "Language list",
   "add_language_info": "New language will be added.",
-  "layout_list": "Layout list"
+  "layout_list": "Layout list",
+  "layouts_add_info": "New layout will be added.",
+  "add_layout": "Add layout",
+  "confirm_logout": "Yes, log out!",
+  "log_out_message": "You are going to de-authenticate yourself!",
+  "confirm_log_out_question": "Are you sure?",
+  "cancel": "Cancel"
 }

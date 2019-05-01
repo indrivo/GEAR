@@ -168,5 +168,11 @@
   "add_organization_info": "Νέα οργάνωση θα πρέπει να προστεθεί.",
   "get_languages": "Λίστα γλωσσών",
   "add_language_info": "Νέα γλώσσα, θα πρέπει να προστεθεί.",
-  "layout_list": "Διάταξη λίστα"
+  "layout_list": "Διάταξη λίστα",
+  "layouts_add_info": "Νέα διάταξη θα πρέπει να προστεθεί.",
+  "add_layout": "Προσθήκη διάταξης",
+  "confirm_logout": "Ναι, log out!",
+  "log_out_message": "Θα de-authenticate τον εαυτό σας!",
+  "confirm_log_out_question": "Είσαι σίγουρος;",
+  "cancel": "Ακύρωση"
 }

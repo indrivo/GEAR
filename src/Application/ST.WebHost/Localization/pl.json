@@ -168,5 +168,11 @@
   "add_organization_info": "Nowa organizacja będzie dodany.",
   "get_languages": "Lista języków ",
   "add_language_info": "Nowy język zostanie dodany.",
-  "layout_list": "Lista układ "
+  "layout_list": "Lista układ ",
+  "layouts_add_info": "Nowy układ będzie dodany.",
+  "add_layout": "Dodawanie układu",
+  "confirm_logout": "Tak, wyjdź!",
+  "log_out_message": "Masz zamiar de autoryzować się!",
+  "confirm_log_out_question": "Jesteś pewien?",
+  "cancel": "Anuluj"
 }

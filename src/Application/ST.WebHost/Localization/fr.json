@@ -168,5 +168,11 @@
   "add_organization_info": "La nouvelle organisation sera ajouté.",
   "get_languages": "Liste des langues",
   "add_language_info": "De nouvelles langues seront ajoutées.",
-  "layout_list": "Mise en page de la liste"
+  "layout_list": "Mise en page de la liste",
+  "layouts_add_info": "Nouvelle mise en page sera ajoutée.",
+  "add_layout": "Ajouter une mise en page",
+  "confirm_logout": "Oui, connectez-vous!",
+  "log_out_message": "Vous allez de-authentifiez-vous!",
+  "confirm_log_out_question": "Êtes-vous sûr?",
+  "cancel": "Annuler"
 }

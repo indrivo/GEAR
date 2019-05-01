@@ -168,5 +168,11 @@
   "add_organization_info": "De nieuwe organisatie zal worden toegevoegd.",
   "get_languages": "Taal lijst",
   "add_language_info": "De nieuwe taal wordt toegevoegd.",
-  "layout_list": "Lay-out lijst"
+  "layout_list": "Lay-out lijst",
+  "layouts_add_info": "Nieuwe lay-out worden toegevoegd.",
+  "add_layout": "Toevoegen lay-out",
+  "confirm_logout": "Ja, log out!",
+  "log_out_message": "U gaat de verificatie zelf!",
+  "confirm_log_out_question": "Bent u zeker?",
+  "cancel": "Annuleren"
 }

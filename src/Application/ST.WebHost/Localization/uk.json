@@ -168,5 +168,11 @@
   "add_organization_info": "Нова організація буде додано.",
   "get_languages": "Список мов ",
   "add_language_info": "Новий мову буде додано.",
-  "layout_list": "Список макет "
+  "layout_list": "Список макет ",
+  "layouts_add_info": "Новий макет буде доданий.",
+  "add_layout": "Додавання макета",
+  "confirm_logout": "Так, вийдіть!",
+  "log_out_message": "Ви збираєтеся де-прийняти себе!",
+  "confirm_log_out_question": "Ви впевнені?",
+  "cancel": "Скасувати"
 }

@@ -168,5 +168,11 @@
   "add_organization_info": "Nueva organización será añadido.",
   "get_languages": "Lista de idiomas",
   "add_language_info": "Nuevo idioma será añadido.",
-  "layout_list": "Diseño de la lista"
+  "layout_list": "Diseño de la lista",
+  "layouts_add_info": "Nuevo diseño será añadido.",
+  "add_layout": "Agregar diseño",
+  "confirm_logout": "Sí, la sesión!",
+  "log_out_message": "Usted va a de-autenticarse a sí mismo!",
+  "confirm_log_out_question": "Estás seguro?",
+  "cancel": "Cancelar"
 }

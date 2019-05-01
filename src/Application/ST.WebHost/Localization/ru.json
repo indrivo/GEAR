@@ -168,5 +168,11 @@
   "add_organization_info": "Новая организация будет добавлена.",
   "get_languages": "Список языков ",
   "add_language_info": "Новый язык будет добавлен.",
-  "layout_list": "Список макет "
+  "layout_list": "Список макет ",
+  "layouts_add_info": "Новый макет будет добавлен.",
+  "add_layout": "Добавление макета",
+  "confirm_logout": "Да, выйдите!",
+  "log_out_message": "Вы собираетесь де-авторизовать себя!",
+  "confirm_log_out_question": "Вы уверены?",
+  "cancel": "Отменить"
 }

@@ -168,5 +168,11 @@
   "add_organization_info": "新しい組織が追加されます。",
   "get_languages": "言語一覧",
   "add_language_info": "新しい言語が追加されます。",
-  "layout_list": "レイアウト一覧"
+  "layout_list": "レイアウト一覧",
+  "layouts_add_info": "新しいレイアウトが追加されます。",
+  "add_layout": "レイアウトに追加",
+  "confirm_logout": "あり、いったんログアウトしてからです！",
+  "log_out_message": "おde-認証す。",
+  "confirm_log_out_question": "ご確認ください。",
+  "cancel": "消"
 }

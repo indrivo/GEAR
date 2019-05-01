@@ -89,7 +89,8 @@
 									text: response.message,
 									type: "success",
 									confirmButtonColor: "#55ce63",
-									confirmButtonText: "Ok",
+                                    confirmButtonText: "Ok",
+                                    cancelButtonText: window.translate("cancel"),
 									closeOnConfirm: true
 								}).then((result) => {
 									if (result.value) {

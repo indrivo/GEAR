@@ -12,7 +12,8 @@ function DeleteData(object) {
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		confirmButtonText: object.confirmButtonText
+		confirmButtonText: object.confirmButtonText,
+		cancelButtonText: window.translate("cancel")
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({

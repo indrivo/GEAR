@@ -117,7 +117,8 @@
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		confirmButtonText: window.translate("scaffold_modal_confirm")
+		confirmButtonText: window.translate("scaffold_modal_confirm"),
+		cancelButtonText: window.translate("cancel")
 	}).then((result) => {
 		if (result.value) {
 			location.href = `@Url.Action("Scaffold", "Page")?tableId=${id}`;
