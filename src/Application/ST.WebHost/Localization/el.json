@@ -167,5 +167,6 @@
   "add_organization": "Προσθέστε Οργάνωση",
   "add_organization_info": "Νέα οργάνωση θα πρέπει να προστεθεί.",
   "get_languages": "Λίστα γλωσσών",
-  "add_language_info": "Νέα γλώσσα, θα πρέπει να προστεθεί."
+  "add_language_info": "Νέα γλώσσα, θα πρέπει να προστεθεί.",
+  "layout_list": "Διάταξη λίστα"
 }

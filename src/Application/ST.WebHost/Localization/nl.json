@@ -167,5 +167,6 @@
   "add_organization": "Toevoegen Organisatie",
   "add_organization_info": "De nieuwe organisatie zal worden toegevoegd.",
   "get_languages": "Taal lijst",
-  "add_language_info": "De nieuwe taal wordt toegevoegd."
+  "add_language_info": "De nieuwe taal wordt toegevoegd.",
+  "layout_list": "Lay-out lijst"
 }

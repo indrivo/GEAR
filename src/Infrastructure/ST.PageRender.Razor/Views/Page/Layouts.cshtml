@@ -1,11 +1,11 @@
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = "Layout list";
+	ViewData["Title"] = Localizer["layout_list"];
 }
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Layouts</h4>
-		<h6 class="card-subtitle">List of layouts</h6>
+		<h4 class="card-title">@Localizer["layouts"]</h4>
+		<h6 class="card-subtitle">@Localizer["layout_list"]</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
@@ -14,7 +14,7 @@
 							<a asp-action="Create" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add layout
 							</a>
-							<small>New layout will be added.</small>
+							<small>@Localizer["layouts_add_info"]</small>
 						</div>
 					</div>
 				</div>
@@ -22,7 +22,7 @@
 			<table class="table table-striped table-bordered" id="layoutTable">
 				<thead>
 					<tr>
-						<th>Name</th>
+						<th>@Localizer["name"]</th>
                         <th>@Localizer["description"]</th>
 						<th>@Localizer["created"]</th>
 						<th>@Localizer["changed"]</th>

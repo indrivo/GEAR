@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{7AE24405-9DE2-4131-904B-F3ED0F6B104B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.WebHost", "src\Application\ST.CORE\ST.WebHost.csproj", "{40176C9E-00F0-4D6A-8F20-2C50980BD656}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.WebHost", "src\Application\ST.WebHost\ST.WebHost.csproj", "{40176C9E-00F0-4D6A-8F20-2C50980BD656}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.ProcessEngine", "src\Application\ST.ProcessEngine\ST.ProcessEngine.csproj", "{8254C29C-252F-4F22-A5D4-6DBC58BD8E7D}"
 EndProject

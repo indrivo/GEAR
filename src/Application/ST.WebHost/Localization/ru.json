@@ -167,5 +167,6 @@
   "add_organization": "Добавить Организацию",
   "add_organization_info": "Новая организация будет добавлена.",
   "get_languages": "Список языков ",
-  "add_language_info": "Новый язык будет добавлен."
+  "add_language_info": "Новый язык будет добавлен.",
+  "layout_list": "Список макет "
 }

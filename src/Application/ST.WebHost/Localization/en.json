@@ -167,5 +167,6 @@
   "add_organization": "Add Organization",
   "add_organization_info": "New organization will be added.",
   "get_languages": "Language list",
-  "add_language_info": "New language will be added."
+  "add_language_info": "New language will be added.",
+  "layout_list": "Layout list"
 }

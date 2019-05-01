@@ -167,5 +167,6 @@
   "add_organization": "Dodaj Organizację",
   "add_organization_info": "Nowa organizacja będzie dodany.",
   "get_languages": "Lista języków ",
-  "add_language_info": "Nowy język zostanie dodany."
+  "add_language_info": "Nowy język zostanie dodany.",
+  "layout_list": "Lista układ "
 }

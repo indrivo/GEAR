@@ -167,5 +167,6 @@
   "add_organization": "Adaugă Organizația",
   "add_organization_info": "Noua organizație va fi adăugat.",
   "get_languages": "Limba listă",
-  "add_language_info": "Limbi noi vor fi adăugate."
+  "add_language_info": "Limbi noi vor fi adăugate.",
+  "layout_list": "Layout lista"
 }

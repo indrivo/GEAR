@@ -167,5 +167,6 @@
   "add_organization": "添加的组织",
   "add_organization_info": "新的组织将增加。",
   "get_languages": "语言表",
-  "add_language_info": "新的语言，将增加。"
+  "add_language_info": "新的语言，将增加。",
+  "layout_list": "布置列表"
 }

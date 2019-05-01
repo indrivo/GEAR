@@ -167,5 +167,6 @@
   "add_organization": "追加機関",
   "add_organization_info": "新しい組織が追加されます。",
   "get_languages": "言語一覧",
-  "add_language_info": "新しい言語が追加されます。"
+  "add_language_info": "新しい言語が追加されます。",
+  "layout_list": "レイアウト一覧"
 }

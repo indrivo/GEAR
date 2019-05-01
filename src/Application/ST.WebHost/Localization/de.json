@@ -167,5 +167,6 @@
   "add_organization": "Add-Organisation",
   "add_organization_info": "Neue Organisation Hinzugefügt werden.",
   "get_languages": "Sprache Liste",
-  "add_language_info": "Neue Sprache Hinzugefügt werden."
+  "add_language_info": "Neue Sprache Hinzugefügt werden.",
+  "layout_list": "Layout Liste"
 }
