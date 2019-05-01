@@ -4,6 +4,7 @@ using ST.MultiTenant.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
 
 namespace ST.MultiTenant.Services

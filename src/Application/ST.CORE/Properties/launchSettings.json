@@ -16,7 +16,7 @@
       },
       "applicationUrl": "http://localhost:9099/"
     },
-    "ST.CORE Development": {
+    "ST.WebHost Development": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -24,7 +24,7 @@
       },
       "applicationUrl": "http://localhost:9099/"
     },
-    "ST.CORE Production": {
+    "ST.WebHost Production": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -32,7 +32,7 @@
       },
       "applicationUrl": "http://localhost:9099/"
     },
-    "ST.CORE Stage": {
+    "ST.WebHost Stage": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

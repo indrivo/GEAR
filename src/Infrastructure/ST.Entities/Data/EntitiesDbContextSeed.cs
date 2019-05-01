@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Models.Forms;
-using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.Table;
 
 namespace ST.Entities.Data

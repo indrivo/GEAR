@@ -16,7 +16,8 @@ using ST.Identity.Data.MultiTenants;
 using ST.Identity.Data.Permissions;
 using ST.Organization.Utils;
 using ST.Organization.ViewModels;
-using ST.Shared;
+using ST.Core;
+using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Identity.Razor.Controllers
 {
@@ -207,7 +208,7 @@ namespace ST.Identity.Razor.Controllers
             {
                 if (!_entitiesDbContext.EntityTypes.Any(x => x.MachineName == tenantMachineName))
                 {
-                    _entitiesDbContext.EntityTypes.Add(new Entities.Models.Tables.EntityType
+                    _entitiesDbContext.EntityTypes.Add(new EntityType
                     {
                         MachineName = tenantMachineName,
                         Author = "System",

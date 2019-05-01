@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Audit.Contexts
 {
@@ -25,13 +25,13 @@ namespace ST.Audit.Contexts
         /// <summary>
         /// Audit tracking entity
         /// </summary>
-        public DbSet<TrackAudit> TrackAudits { get; set; }
+        public virtual DbSet<TrackAudit> TrackAudits { get; set; }
 
         /// <inheritdoc />
         /// <summary>
         /// Audit tracking details
         /// </summary>
-        public DbSet<TrackAuditDetails> TrackAuditDetails { get; set; }
+        public virtual DbSet<TrackAuditDetails> TrackAuditDetails { get; set; }
 
         /// <inheritdoc />
         /// <summary>

@@ -1,15 +1,7 @@
 using NLog;
 using NLog.Targets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using ST.CORE.Extensions;
-using ST.Notifications.Hubs;
 
-namespace ST.CORE.LoggerTargets
+namespace ST.WebHost.LoggerTargets
 {
 	[Target("CustomLogger")]
 	public sealed class LoggerTarget : TargetWithLayout

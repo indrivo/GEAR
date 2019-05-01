@@ -1,14 +1,13 @@
-﻿using ST.Identity.Services.Abstractions;
-using System;
+﻿using System;
 
 namespace ST.Identity.CacheModels
 {
-    public class TenantSettings : ICacheModel
+    public class TenantSettings
     {
         /// <summary>
         /// Allow access to tenant
         /// </summary>
-        public  bool AllowAccess { get; set; }
+        public bool AllowAccess { get; set; }
 
         /// <summary>
         /// Tenant name

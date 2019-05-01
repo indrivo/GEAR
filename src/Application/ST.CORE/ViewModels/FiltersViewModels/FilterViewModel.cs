@@ -1,4 +1,4 @@
-namespace ST.CORE.ViewModels.FiltersViewModels
+namespace ST.WebHost.ViewModels.FiltersViewModels
 {
 	public class FilterViewModel
 	{

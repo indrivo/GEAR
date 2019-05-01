@@ -5,6 +5,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Data.Permissions

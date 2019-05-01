@@ -13,6 +13,7 @@ using ST.BaseBusinessRepository;
 using ST.Email.Razor.ViewModels.NotificationsViewModels;
 using ST.Entities.Extensions;
 using ST.Entities.ViewModels.DynamicEntities;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Config;

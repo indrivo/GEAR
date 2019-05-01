@@ -12,7 +12,8 @@ using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Razor.ViewModels.GroupViewModels;
-using ST.Shared;
+using ST.Core;
+using ST.Identity.Abstractions;
 
 namespace ST.Identity.Razor.Controllers
 {

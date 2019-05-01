@@ -7,19 +7,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
+using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.RenderTemplates;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.PageRender.Razor.Helpers;
-using ST.Shared;
-using ST.Shared.Attributes;
+using ST.Core;
+using ST.Core.Attributes;
+using ST.Identity.Abstractions;
 
 namespace ST.PageRender.Razor.Controllers
 {

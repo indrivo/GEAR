@@ -153,5 +153,19 @@
   "organization": "Organizatie",
   "sessions": "Sesiuni",
   "authentification_type": "Tip autentificare",
-  "is_deleted": "Este sters"
+  "is_deleted": "Este sters",
+  "users_add_info": "Utilizator nou va fi adăugat.",
+  "user_list": "Lista de utilizatori",
+  "name": "Numele",
+  "import_ad_user": "Import Ad utilizatorului",
+  "roles_add_info": "Noul rol va fi adăugat.",
+  "client_name": "Nume Client",
+  "permissions": "Permisiuni",
+  "group_add_info": "Noul grup va fi adăugat.",
+  "organization_list": "Organizația lista",
+  "organization_info": "Aceasta este lista de organizații din sistem, în cazul în care sistemul va fi multi organizare va folosi mai mulți chiriași",
+  "add_organization": "Adaugă Organizația",
+  "add_organization_info": "Noua organizație va fi adăugat.",
+  "get_languages": "Limba listă",
+  "add_language_info": "Limbi noi vor fi adăugate."
 }

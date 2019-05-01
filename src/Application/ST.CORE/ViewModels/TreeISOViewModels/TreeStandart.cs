@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ST.CORE.ViewModels.TreeISOViewModels
+namespace ST.WebHost.ViewModels.TreeISOViewModels
 {
 	public class TreeStandard
 	{

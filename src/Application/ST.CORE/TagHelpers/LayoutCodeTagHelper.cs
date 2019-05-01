@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using ST.Configuration.Services.Abstraction;
 
-namespace ST.CORE.TagHelpers
+namespace ST.WebHost.TagHelpers
 {
 	[HtmlTargetElement("layout-css-code")]
 	public class LayoutCssCodeTagHelper : TagHelper

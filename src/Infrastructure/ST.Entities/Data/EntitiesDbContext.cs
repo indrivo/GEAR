@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using ST.Audit.Contexts;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Extensions;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Pages;
 using ST.Entities.Models.RenderTemplates;
-using ST.Entities.Models.Tables;
 using ST.Entities.Models.ViewModels;
+using ST.Entities.Security.Data;
 
 namespace ST.Entities.Data
 {
-    public class EntitiesDbContext : TrackerDbContext
+    public class EntitiesDbContext : EntitySecurityDbContext
     {
         /// <summary>
         /// Schema

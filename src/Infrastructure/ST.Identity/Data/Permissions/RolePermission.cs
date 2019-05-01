@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using ST.Shared;
+using ST.Core;
+using ST.Identity.Abstractions;
 
 namespace ST.Identity.Data.Permissions
 {

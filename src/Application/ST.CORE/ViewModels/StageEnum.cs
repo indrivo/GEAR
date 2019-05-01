@@ -1,4 +1,4 @@
-namespace ST.CORE.ViewModels
+namespace ST.WebHost.ViewModels
 {
 	public static class StageEnum
 	{

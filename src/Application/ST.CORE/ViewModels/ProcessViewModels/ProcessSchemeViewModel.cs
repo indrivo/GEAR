@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace ST.CORE.ViewModels.ProcessViewModels
+namespace ST.WebHost.ViewModels.ProcessViewModels
 {
 	public class ProcessSchemeViewModel
 	{

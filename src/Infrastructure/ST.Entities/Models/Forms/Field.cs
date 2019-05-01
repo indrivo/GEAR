@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
-using ST.Entities.Models.Tables;
-using ST.Shared;
+using ST.Core;
+using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Entities.Models.Forms
 {

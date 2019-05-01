@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ST.CORE.ViewModels.ProcessViewModels;
+using ST.Core;
 using ST.Entities.Extensions;
 using ST.Identity.Data;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Data;
 using ST.Procesess.Models;
-using ST.Shared;
+using ST.WebHost.ViewModels.ProcessViewModels;
 
-namespace ST.CORE.Controllers.Processes
+namespace ST.WebHost.Controllers.Processes
 {
 	public class ProcessController : Controller
 	{
@@ -202,7 +202,7 @@ namespace ST.CORE.Controllers.Processes
 		}
 
 		/// <summary>
-		/// Process diagran list
+		/// Process diagram list
 		/// </summary>
 		/// <param name="param"></param>
 		/// <returns></returns>

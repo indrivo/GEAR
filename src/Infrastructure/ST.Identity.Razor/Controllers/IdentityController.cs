@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
+using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;

@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace ST.CORE.Extensions
+namespace ST.WebHost.Extensions
 {
-	class ResultConverter : JsonConverter
+	public class ResultConverter : JsonConverter
 	{
 		public override bool CanConvert(Type objectType)
 		{

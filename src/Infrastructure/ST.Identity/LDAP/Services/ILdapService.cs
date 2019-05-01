@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.LDAP.Models;
 
 namespace ST.Identity.LDAP.Services
 {

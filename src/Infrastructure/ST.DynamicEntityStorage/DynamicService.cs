@@ -20,10 +20,10 @@ using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
-using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.DynamicEntities;
-using ST.Shared;
-using ST.Shared.Extensions;
+using ST.Core;
+using ST.Core.Extensions;
+using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.DynamicEntityStorage
 {

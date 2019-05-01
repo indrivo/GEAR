@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using ST.Entities.Data;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.UserProfiles;
 
-namespace ST.CORE.TagHelpers
+namespace ST.WebHost.TagHelpers
 {
 	[HtmlTargetElement("list")]
 	public class ListTagHelper : TagHelper

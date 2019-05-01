@@ -1,10 +1,9 @@
-@using ST.Identity.Data.UserProfiles
-@inject UserManager<ApplicationUser> userManager
-@model ST.Entities.Models.Home.HomeViewModel
+@using ST.Identity.Abstractions
+@inject UserManager<ApplicationUser> UserManager
 @inject IStringLocalizer Localizer
 @{
 	ViewData["Title"] = Localizer["title_home"];
-	var user = await userManager.GetUserAsync(User);
+	var user = await UserManager.GetUserAsync(User);
 }
 
 <link rel="stylesheet" type="text/css" href="~/lib/chartist/chartist.min.css" />

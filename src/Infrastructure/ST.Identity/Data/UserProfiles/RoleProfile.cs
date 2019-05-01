@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.Permissions;
 
 namespace ST.Identity.Data.UserProfiles

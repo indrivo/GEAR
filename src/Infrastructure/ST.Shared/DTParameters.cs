@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace ST.Shared
+namespace ST.Core
 {
     public class DTResult<T>
     {

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
-using ST.Entities.Models.Tables;
-using ST.Identity.Data.UserProfiles;
+using ST.Identity.Abstractions;
 
-namespace ST.CORE.TagHelpers
+namespace ST.WebHost.TagHelpers
 {
 	[HtmlTargetElement("dform")]
 	public class FormTagHelper : TagHelper

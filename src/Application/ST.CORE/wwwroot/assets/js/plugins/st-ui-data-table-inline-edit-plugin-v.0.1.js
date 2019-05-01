@@ -135,14 +135,14 @@ function inlineEdit() {
 					break;
 				case "uniqueidentifier":
 					{
-						const div = document.createElement("input-group mb-3");
+						const div = document.createElement("div");
+						div.setAttribute("class", "input-group mb-3");
 						const dropdown = document.createElement("select");
 						dropdown.setAttribute("class", "inline-update-event data-input form-control");
 						dropdown.setAttribute("data-prop-id", propId);
 						dropdown.setAttribute("data-id", cellId);
 						dropdown.setAttribute("data-entity", tableId);
 						dropdown.setAttribute("data-type", "uniqueidentifier");
-						dropdown.style.width = "80%";
 						dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), '');
 						//Populate dropdown
 						const data = load(`/PageRender/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
@@ -156,10 +156,17 @@ function inlineEdit() {
 							dropdown.value = value;
 						}
 						div.appendChild(dropdown);
+						const addOptionDiv = document.createElement("div");
+						addOptionDiv.setAttribute("class", "input-group-append");
 						const addOption = document.createElement("a");
 						addOption.setAttribute("class", "btn btn-success");
-						addOption.innerHTML = "<i class='fa fa-plus'></i>";
-						div.appendChild(addOption);
+						const plus = document.createElement("span");
+						plus.setAttribute("class", "fa fa-plus");
+						plus.style.color = "white";
+						addOption.appendChild(plus);
+						addOption.addEventListener("click", addNewToReference);
+						addOptionDiv.appendChild(addOption);
+						div.appendChild(addOptionDiv);
 						container = div;
 						$(columns[i]).html(container);
 						$(columns[i]).find(".inline-update-event").on("change", onInputEvent);
@@ -169,6 +176,23 @@ function inlineEdit() {
 		}
 	}
 	$(this).on("click", completeEditInline);
+}
+
+function addNewToReference() {
+	var dropdown = $(this).parent().parent().find("select");
+	const entityName = dropdown.attr("data-ref-entity");
+	if (!entityName) {
+		$.toast({
+			heading: "No refernce",
+			text: "",
+			position: 'bottom-right',
+			loaderBg: '#ff6849',
+			icon: 'error',
+			hideAfter: 2500,
+			stack: 6
+		});
+	}
+	console.log(entityName);
 }
 
 /**

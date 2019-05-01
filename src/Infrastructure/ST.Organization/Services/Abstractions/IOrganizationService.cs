@@ -1,6 +1,7 @@
 ﻿using ST.Identity.Data.UserProfiles;
 using System;
 using System.Collections.Generic;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
 
 namespace ST.MultiTenant.Services.Abstractions

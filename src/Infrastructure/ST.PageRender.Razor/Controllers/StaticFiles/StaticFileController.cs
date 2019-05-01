@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ST.Shared.Attributes;
+using ST.Core.Attributes;
 
 namespace ST.PageRender.Razor.Controllers.StaticFiles
 {

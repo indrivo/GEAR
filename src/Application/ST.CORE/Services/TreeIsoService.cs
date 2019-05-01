@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
-using ST.Configuration.Services.Abstraction;
-using ST.CORE.Services.Abstractions;
-using ST.CORE.ViewModels.TreeISOViewModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.DynamicEntityStorage.Extensions;
-using ST.Entities.Models.Tables;
+using ST.Entities.Abstractions.Models.Tables;
+using ST.WebHost.Services.Abstractions;
+using ST.WebHost.ViewModels.TreeISOViewModels;
 
-namespace ST.CORE.Services
+namespace ST.WebHost.Services
 {
 	public class TreeIsoService : ITreeIsoService
 	{

@@ -29,6 +29,8 @@
     <Compile Remove="Migrations\20190106181633_Initial.cs" />
     <Compile Remove="Migrations\20190114144934_Initial.cs" />
     <Compile Remove="Migrations\20190115164528_Initial.cs" />
+    <Compile Remove="Migrations\20190429125415_AddAclForEntities.cs" />
+    <Compile Remove="Migrations\20190429125415_AddAclForEntities.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" Version="5.0.0" />
@@ -43,7 +45,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ST.Audit\ST.Audit.csproj" />
     <ProjectReference Include="..\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
-    <ProjectReference Include="..\ST.Shared\ST.Shared.csproj" />
+    <ProjectReference Include="..\ST.Entities.Security\ST.Entities.Security.csproj" />
+    <ProjectReference Include="..\ST.Shared\ST.Core.csproj" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties SysEntities_1json__JSONSchema="http://json.schemastore.org/asmdef" /></VisualStudio></ProjectExtensions>
 </Project>

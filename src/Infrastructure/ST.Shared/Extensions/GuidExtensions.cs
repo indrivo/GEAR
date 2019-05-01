@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace ST.Shared.Extensions
+namespace ST.Core.Extensions
 {
     public static class GuidExtensions
     {

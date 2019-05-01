@@ -1,4 +1,4 @@
-namespace ST.CORE
+namespace ST.WebHost
 {
 	public static class Program
 	{

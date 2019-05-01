@@ -1,7 +1,7 @@
 ﻿using System;
 using ST.BaseRepository;
 
-namespace ST.Shared
+namespace ST.Core
 {
     public class ExtendedModel : BaseModel
     {

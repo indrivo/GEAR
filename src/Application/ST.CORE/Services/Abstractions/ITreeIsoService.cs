@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels.TreeISOViewModels;
-using ST.Entities.Models.Tables;
+using ST.Entities.Abstractions.Models.Tables;
+using ST.WebHost.ViewModels.TreeISOViewModels;
 
-namespace ST.CORE.Services.Abstractions
+namespace ST.WebHost.Services.Abstractions
 {
 	public interface ITreeIsoService
 	{

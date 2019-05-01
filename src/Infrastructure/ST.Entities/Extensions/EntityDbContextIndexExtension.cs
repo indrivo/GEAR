@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Models.Forms;
 using ST.Entities.Models.Pages;
-using ST.Entities.Models.Tables;
 using ST.Entities.Models.ViewModels;
 
 namespace ST.Entities.Extensions

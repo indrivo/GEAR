@@ -1,5 +1,5 @@
 ﻿using ST.BaseBusinessRepository;
-using ST.Entities.Models.Tables;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.ViewModels.Table;
 
 namespace ST.Entities.Services.Abstraction

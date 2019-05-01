@@ -12,7 +12,7 @@ using ST.DynamicEntityStorage.Services;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Entities.ViewModels.DynamicEntities;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.DynamicEntityStorage
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ST.Shared.Extensions
+namespace ST.Core.Extensions
 {
     public static class DictionaryExtensions
     {

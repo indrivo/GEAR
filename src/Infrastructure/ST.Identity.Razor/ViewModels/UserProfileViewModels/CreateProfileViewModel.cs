@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ST.Entities.Models.Tables;
+using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Identity.Razor.ViewModels.UserProfileViewModels
 {

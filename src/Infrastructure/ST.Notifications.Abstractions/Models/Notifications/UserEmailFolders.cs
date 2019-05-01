@@ -1,4 +1,4 @@
-﻿using ST.Shared;
+﻿using ST.Core;
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ST.Identity.Abstractions;
 
 namespace ST.Identity.Data.Permissions
 {

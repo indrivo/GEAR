@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.BaseBusinessRepository;
-using ST.CORE.Services.Abstractions;
 using ST.Entities.Data;
+using ST.WebHost.Services.Abstractions;
 
-namespace ST.CORE.Controllers.Custom
+namespace ST.WebHost.Controllers.Custom
 {
 	public class IsoStandardController : Controller
 	{

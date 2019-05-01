@@ -6,25 +6,25 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using ST.CORE.ViewModels.InstallerModels;
+using ST.Cache.Abstractions;
+using ST.Core;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Controls.Querry;
 using ST.Entities.Data;
-using ST.Entities.Models.Tables;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
 using ST.Identity.CacheModels;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
-using ST.Identity.Services.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
+using ST.Identity.Data.Permissions;
+using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Organization.Utils;
-using ST.Shared;
+using ST.WebHost.ViewModels.InstallerModels;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	public class InstallerController : Controller
 	{
@@ -89,6 +89,7 @@ namespace ST.CORE.Controllers
 		/// <param name="notify"></param>
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
+		/// <param name="dynamicService"></param>
 		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService)
 		{
 			_entitiesDbContext = entitiesDbContext;

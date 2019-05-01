@@ -18,6 +18,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
 using ST.CORE.Extensions;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Enums;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;

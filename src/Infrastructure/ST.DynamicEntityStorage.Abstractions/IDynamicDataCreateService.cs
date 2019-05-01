@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {

@@ -153,5 +153,19 @@
   "organization": "Organization",
   "sessions": "Sessions",
   "authentification_type": "Authentication Type",
-  "is_deleted": "Is deleted"
+  "is_deleted": "Is deleted",
+  "users_add_info": "New user will be added.",
+  "user_list": "User list",
+  "name": "Name",
+  "import_ad_user": "Import Ad user",
+  "roles_add_info": "New role will be added.",
+  "client_name": "Client Name",
+  "permissions": "Permissions",
+  "group_add_info": "New group will be added.",
+  "organization_list": "Organization list",
+  "organization_info": "This is the list of organizations in the system, in case the system will be multi organization will use more tenants",
+  "add_organization": "Add Organization",
+  "add_organization_info": "New organization will be added.",
+  "get_languages": "Language list",
+  "add_language_info": "New language will be added."
 }

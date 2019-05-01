@@ -25,8 +25,9 @@ using ST.PageRender.Razor.Helpers;
 using ST.PageRender.Razor.Services.Abstractions;
 using ST.PageRender.Razor.ViewModels.PageViewModels;
 using ST.PageRender.Razor.ViewModels.TableColumnsViewModels;
-using ST.Shared;
-using ST.Shared.Attributes;
+using ST.Core;
+using ST.Core.Attributes;
+using ST.Identity.Abstractions;
 
 namespace ST.PageRender.Razor.Controllers
 {

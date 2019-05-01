@@ -20,7 +20,7 @@
 			</blockquote>
 				<form asp-action="Create" role="form">
 					<div class="form-body">
-						<h3 class="card-title">Role Info</h3>
+						<h3 class="card-title">@Localizer["role_info"]</h3>
 						<hr>
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 						<div class="row p-t-20">
@@ -62,7 +62,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-									<label class="control-label">Permissions</label>
+									<label class="control-label">@Localizer["permissions"]</label>
 									<select id="SelectedPermissionId" disabled multiple name="SelectedPermissionId" class="form-control">
 									</select>
 								</div>

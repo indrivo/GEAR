@@ -1,4 +1,4 @@
-namespace ST.Application.Razor.ViewModels
+namespace ST.WebHost.ViewModels.ViewModels
 {
 	public class ErrorViewModel
 	{

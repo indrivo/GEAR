@@ -1,7 +1,7 @@
-﻿using ST.Entities.Models.Tables;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using ST.Shared;
+using ST.Core;
+using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Entities.Models.ViewModels
 {

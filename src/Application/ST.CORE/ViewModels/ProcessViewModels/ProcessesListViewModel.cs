@@ -1,7 +1,7 @@
 
 using ST.Procesess.Models;
 
-namespace ST.CORE.ViewModels.ProcessViewModels
+namespace ST.WebHost.ViewModels.ProcessViewModels
 {
 	public class ProcessesListViewModel: STProcessSchema
 	{

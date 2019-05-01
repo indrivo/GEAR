@@ -7,15 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
-using ST.CORE.ViewModels;
+using ST.Core;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
-using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.TableTypes;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
-using ST.Shared;
 
-namespace ST.CORE.Controllers.Entity
+namespace ST.WebHost.Controllers.Entity
 {
 	/// <inheritdoc />
 	/// <summary>

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
-using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.DynamicEntities;
 
 namespace ST.Entities.Controls.Builders

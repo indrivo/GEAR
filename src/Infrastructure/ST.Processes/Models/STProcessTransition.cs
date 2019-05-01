@@ -3,7 +3,7 @@ using ST.Audit.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Procesess.Models
 {

@@ -1,6 +1,6 @@
 using ST.Audit.Models;
 
-namespace ST.CORE.ViewModels.AuditViewModels
+namespace ST.WebHost.ViewModels.AuditViewModels
 {
 	public class TrackAuditDetailVersions : TrackAuditDetails
 	{

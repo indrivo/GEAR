@@ -2,7 +2,7 @@ using System.Linq;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	public class HandlerController : Controller
 	{

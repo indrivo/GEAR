@@ -3,7 +3,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,8 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ST.Configuration.Seed;
-using ST.CORE.Extensions;
-using ST.CORE.ViewModels.InstallerModels;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
@@ -21,8 +18,10 @@ using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
+using ST.WebHost.Extensions;
+using ST.WebHost.ViewModels.InstallerModels;
 
-namespace ST.CORE.Installation
+namespace ST.WebHost.Installation
 {
 	public static class Application
 	{
@@ -94,7 +93,7 @@ namespace ST.CORE.Installation
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
 				{
 					var conf = services.GetService<IConfiguration>();
-					EntitiesDbContextSeed.SeedAsync(context, conf, Shared.Settings.TenantId)
+					EntitiesDbContextSeed.SeedAsync(context, conf, Core.Settings.TenantId)
 						.Wait();
 				})
 				.MigrateDbContext<ProcessesDbContext>()
@@ -221,7 +220,7 @@ namespace ST.CORE.Installation
 				.AddJsonFile("appsettings.json", optional: false)
 				.Build();
 
-			return WebHost.CreateDefaultBuilder(args)
+			return Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
 				.UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
 				.UseConfiguration(config)
 				.StartLogging()

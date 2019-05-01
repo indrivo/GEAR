@@ -9,12 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ST.Identity.Data.Permissions;
+using ST.Core;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Enums;
 using ST.Identity.Data.UserProfiles;
 using ST.Identity.Models.RolesViewModels;
 using ST.Identity.Models.UserViewModels;
 using ST.Identity.Data;
-using ST.Shared;
 
 namespace ST.Configuration.Seed
 {

@@ -6,8 +6,8 @@
 <input type="hidden" id="hiddenID"/>
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Groups</h4>
-		<h6 class="card-subtitle">List of groups</h6>
+		<h4 class="card-title">@Localizer["groups"]</h4>
+		<h6 class="card-subtitle">@Localizer["groups_index_title"]</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
@@ -16,7 +16,7 @@
 							<a asp-action="Create" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_group"]
 							</a>
-							<small>New group will be added.</small>
+							<small>@Localizer["group_add_info"]</small>
 						</div>
 					</div>
 				</div>
@@ -24,7 +24,7 @@
 			<table class="table table-striped table-bordered" id="groupTable">
 				<thead>
 				<tr>
-					<th>Name</th>
+					<th>@Localizer["name"]</th>
                     <th>@Localizer["created"]</th>
                     <th>@Localizer["author"]</th>
 					<th>@Localizer["modified_by"]</th>

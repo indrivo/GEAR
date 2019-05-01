@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ST.Core;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
@@ -22,7 +23,6 @@ using ST.Identity.Razor.ViewModels.ApiClientViewModels;
 using ST.Identity.Razor.ViewModels.PermissionViewModels;
 using ST.Identity.Razor.ViewModels.RoleViewModels;
 using ST.Notifications.Abstractions;
-using ST.Shared;
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 
 namespace ST.Identity.Razor.Controllers

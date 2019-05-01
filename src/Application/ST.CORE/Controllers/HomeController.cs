@@ -3,14 +3,15 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ST.Application.Razor.ViewModels;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Identity.Data.UserProfiles;
+using ST.Identity.Abstractions;
 using ST.Identity.Data;
+using ST.Identity.Data.UserProfiles;
 using ST.Notifications.Abstractions;
+using ST.WebHost.ViewModels.ViewModels;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	[Authorize]
 	public class HomeController : Controller
@@ -51,7 +52,7 @@ namespace ST.CORE.Controllers
 		public IActionResult Index()
 		{
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
-			ViewBag.TotalSessions = _hub.GetSessionsCount();	
+			ViewBag.TotalSessions = _hub.GetSessionsCount();
 			return View("Index");
 		}
 

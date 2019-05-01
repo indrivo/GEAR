@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
+using ST.Core;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.ViewModels.DynamicEntities;
-using ST.Shared;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {

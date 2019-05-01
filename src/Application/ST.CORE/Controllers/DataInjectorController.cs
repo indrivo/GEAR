@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ST.BaseBusinessRepository;
+using ST.Core.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Data;
-using ST.Shared.Extensions;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	[Route("api/[controller]/[action]")]
 	[Authorize]
