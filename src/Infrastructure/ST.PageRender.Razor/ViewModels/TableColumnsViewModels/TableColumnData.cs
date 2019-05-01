@@ -1,5 +1,5 @@
 using System;
-using ST.Entities.Models.Tables;
+using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.PageRender.Razor.ViewModels.TableColumnsViewModels
 {

@@ -3,19 +3,43 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
+using ST.Core;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.Shared;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {
     public interface IDynamicDataGetService
     {
+        /// <summary>
+        /// Get all with include as dictionary
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="expression"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAllWithIncludeAsDictionaryAsync(string entity,
+            Expression<Func<Dictionary<string, object>, bool>> expression = null, IEnumerable<Filter> filters = null);
 
+        /// <summary>
+        /// Get all
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="expression"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
         Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll(string entity,
             Expression<Func<Dictionary<string, object>, bool>> expression = null, IEnumerable<Filter> filters = null);
 
         Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null)
             where TEntity : ExtendedModel;
+
+        /// <summary>
+        /// Get by id with include
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<ResultModel<Dictionary<string, object>>> GetByIdWithInclude(string entity, Guid id);
 
         /// <summary>
         /// Get by id as dictionary

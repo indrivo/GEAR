@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ST.Cache.Abstractions\ST.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Organization\ST.MultiTenant.csproj" />
   </ItemGroup>

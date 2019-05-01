@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Models.Forms;
-using ST.Entities.Models.Tables;
 
 namespace ST.Entities.ViewModels.Form
 {

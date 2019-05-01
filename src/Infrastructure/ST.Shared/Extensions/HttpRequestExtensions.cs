@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Http;
 
-namespace ST.Shared.Extensions
+namespace ST.Core.Extensions
 {
 	public static class HttpRequestExtensions
 	{

@@ -47,6 +47,7 @@ $(document).ready(function () {
 
 	//Set app name
 	$("#appName").text(settings.app.name);
+	$("#PageTitle").text(settings.navigation.current);
 
 
 

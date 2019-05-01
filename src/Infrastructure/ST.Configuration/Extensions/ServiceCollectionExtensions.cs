@@ -16,21 +16,24 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using ST.BaseBusinessRepository;
+using ST.Cache.Abstractions;
+using ST.Cache.Extensions;
+using ST.Cache.Services;
 using ST.Configuration.Seed;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
+using ST.Entities.Security.Extensions;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
 using ST.Files.Abstraction;
 using ST.Files.Providers;
 using ST.Files.Services;
+using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.Extensions;
 using ST.Identity.Filters;
 using ST.Identity.Services;
@@ -43,8 +46,6 @@ using ST.Notifications.Abstraction;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Providers;
 using ST.Notifications.Services;
-using ST.Procesess.Abstraction;
-using ST.Procesess.Parsers;
 using Swashbuckle.AspNetCore.Swagger;
 using constants = ST.Identity.DbSchemaNameConstants;
 using Identity_IProfileService = IdentityServer4.Services.IProfileService;
@@ -161,6 +162,7 @@ namespace ST.Configuration.Extensions
                 .AddDefaultTokenProviders();
             services.AddAuthorizationBasedOnCache<ApplicationDbContext>();
             services.AddLdapAuthorization<ApplicationDbContext>();
+            services.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
             return services;
         }
 
@@ -180,7 +182,6 @@ namespace ST.Configuration.Extensions
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
-            services.AddTransient<IProcessParser, ProcessParser>();
             services.AddTransient<IOrganizationService, OrganizationService>();
             services.UseCustomCacheService(env, "127.0.0.1", systemIdentifier);
             return services;
@@ -232,10 +233,16 @@ namespace ST.Configuration.Extensions
 
                 options.SwaggerDoc("v1.0", new Info
                 {
-                    Title = "CORE HTTP API",
+                    Title = "GEAR APP HTTP API",
                     Version = "v1.0",
-                    Description = "CORE Service HTTP API",
-                    TermsOfService = "Terms Of Service"
+                    Description = "GEAR Service HTTP API",
+                    TermsOfService = "Terms Of Service",
+                    Contact = new Contact
+                    {
+                        Url = "http://indrivo.com",
+                        Email = "support@indrivo.com",
+                        Name = "Indrivo SRL"
+                    }
                 });
 
                 // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute

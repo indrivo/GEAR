@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Cache.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Identity.Extensions;

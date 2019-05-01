@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ST.CORE.ViewModels.InstallerModels
+namespace ST.WebHost.ViewModels.InstallerModels
 {
 	public class SetupOrganizationViewModel
 	{

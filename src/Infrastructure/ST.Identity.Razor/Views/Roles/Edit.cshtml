@@ -17,7 +17,7 @@
 					@Html.HiddenFor(x => x.TenantId)
 					<input type="hidden" asp-for="Id" />
 					<div class="form-body">
-						<h3 class="card-title">Role Info</h3>
+						<h3 class="card-title">@Localize["role_info"]</h3>
 							<h3 class="m-b-0">Client @Model.ClientName</h3>
 						<hr>
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>

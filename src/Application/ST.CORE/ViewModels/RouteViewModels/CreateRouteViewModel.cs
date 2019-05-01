@@ -1,4 +1,4 @@
-namespace ST.CORE.ViewModels.RouteViewModels
+namespace ST.WebHost.ViewModels.RouteViewModels
 {
 	public class CreateRouteViewModel
 	{

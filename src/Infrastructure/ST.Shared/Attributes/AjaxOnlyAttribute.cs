@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
-using ST.Shared.Extensions;
+using ST.Core.Extensions;
 
-namespace ST.Shared.Attributes
+namespace ST.Core.Attributes
 {
 	/// <summary>
 	/// Check if is a ajax request

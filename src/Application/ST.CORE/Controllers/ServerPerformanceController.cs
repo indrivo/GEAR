@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ST.Configuration.Services;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	public class ServerPerformanceController : Controller
 	{

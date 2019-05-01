@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
-using ST.Entities.Models.Tables;
 
 namespace ST.DynamicEntityStorage.Extensions
 {

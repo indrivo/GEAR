@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Procesess.Models
 {

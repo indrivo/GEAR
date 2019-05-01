@@ -111,11 +111,6 @@
       "destination": "wwwroot/lib/MaterialDesign-Webfont/"
     },
     {
-      "provider": "unpkg",
-      "library": "bpmn-js@0.27.0",
-      "destination": "wwwroot/lib/bpmn-js/"
-    },
-    {
       "provider": "jsdelivr",
       "library": "chartist-plugin-tooltip@0.0.11",
       "destination": "wwwroot/lib/chartist-plugin-tooltip/"

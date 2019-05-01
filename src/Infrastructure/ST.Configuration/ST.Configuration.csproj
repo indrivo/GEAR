@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="customEntities.json" />
     <None Remove="EntitiesConfiguration.json" />
     <None Remove="FieldTypes.json" />
@@ -55,6 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ST.Cache\ST.Cache.csproj" />
     <ProjectReference Include="..\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Files\ST.Files.csproj" />
@@ -62,10 +69,6 @@
     <ProjectReference Include="..\ST.Notifications\ST.Notifications.csproj" />
     <ProjectReference Include="..\ST.Organization\ST.MultiTenant.csproj" />
     <ProjectReference Include="..\ST.Processes\ST.Procesess.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

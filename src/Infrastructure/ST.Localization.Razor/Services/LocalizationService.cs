@@ -8,8 +8,10 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Localization.Razor.Services.Abstractions;
 using ST.Localization.Razor.ViewModels.LocalizationViewModels;
+using YandexTranslateCSharpSdk;
 
 namespace ST.Localization.Razor.Services
 {
@@ -19,6 +21,7 @@ namespace ST.Localization.Razor.Services
         private readonly IHostingEnvironment _env;
         private readonly IStringLocalizer _localizer;
         private readonly IDistributedCache _cache;
+        private readonly YandexTranslateSdk _yandexTranslateSdk;
 
         public LocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env,
             IStringLocalizer localizer, IDistributedCache cache)
@@ -27,6 +30,8 @@ namespace ST.Localization.Razor.Services
             _locConfig = locConfig;
             _localizer = localizer;
             _cache = cache;
+            _yandexTranslateSdk = new YandexTranslateSdk();
+            _yandexTranslateSdk.ApiKey = "trnsl.1.1.20190428T193614Z.41a78cdc7c5bb298.e25c6bd03beee1462ab0d452f9d2a86c1fc6013f";
         }
 
         /// <summary>
@@ -55,7 +60,7 @@ namespace ST.Localization.Razor.Services
                 response.Errors.Add(new ErrorModel
                 {
                     Key = string.Empty,
-                    Message = "Language aleardy exists."
+                    Message = "Language already exists."
                 });
                 response.IsSuccess = false;
             }
@@ -66,15 +71,23 @@ namespace ST.Localization.Razor.Services
                 using (var sWriter = new StreamWriter(stream))
                 using (var writer = new JsonTextWriter(sWriter))
                 {
-                    var keys = _localizer.GetAllForLanguage("en").Select(ls => ls.Name);
-                    var dict = keys.ToDictionary<string, string, string>(key => key, key => null);
+                    var keys = _localizer.GetAllForLanguage("en").ToList();
+                    var dict = new Dictionary<string, string>();
+                    foreach (var item in keys)
+                    {
+                        var translated = _yandexTranslateSdk
+                            .TranslateText(item.Value, $"en-{model.Identifier}")
+                            .GetAwaiter()
+                            .GetResult();
+                        dict.Add(item.Name, translated);
+                    }
                     var obj = JObject.FromObject(dict);
 
                     writer.Formatting = Formatting.Indented;
                     obj.WriteTo(writer);
                 }
 
-                var langsFile = _env.ContentRootFileProvider.GetFileInfo("appsettings.json");
+                var langsFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
 
                 using (Stream str = new FileStream(langsFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
@@ -121,7 +134,7 @@ namespace ST.Localization.Razor.Services
 
             if (existsInConfig || fileExists)
             {
-                var langsFile = _env.ContentRootFileProvider.GetFileInfo("appsettings.json");
+                var langsFile = _env.ContentRootFileProvider.GetFileInfo(ResourceProvider.AppSettingsFilepath(_env));
                 using (Stream str = new FileStream(langsFile.PhysicalPath, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite))
                 using (var sReader = new StreamReader(str))

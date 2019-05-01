@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Identity.Data.UserProfiles
 {

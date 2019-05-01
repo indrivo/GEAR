@@ -1,16 +1,16 @@
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using ST.Notifications.Abstraction;
-using ST.Notifications.Hubs;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.Permissions;
 using ST.Notifications.Abstractions;
+using ST.Notifications.Hubs;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace ST.CORE.LoggerTargets
+namespace ST.WebHost.LoggerTargets
 {
 	public class HostedTimeService : IHostedService, IDisposable
 	{

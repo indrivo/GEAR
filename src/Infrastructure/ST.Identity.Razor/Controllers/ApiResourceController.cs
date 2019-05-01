@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Identity.Razor.Controllers
 {

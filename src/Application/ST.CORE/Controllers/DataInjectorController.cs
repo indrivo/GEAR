@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ST.BaseBusinessRepository;
+using ST.Core.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Data;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	[Route("api/[controller]/[action]")]
 	[Authorize]
@@ -124,6 +126,21 @@ namespace ST.CORE.Controllers
 		}
 
 		/// <summary>
+		/// Get item by id
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<JsonResult> GetByIdWithInclude(string tableName, Guid id)
+		{
+			var (isValid, errors) = await IsValid(tableName);
+			if (!isValid) return new JsonResult(errors);
+			var rq = await _dynamicService.GetByIdWithInclude(tableName, id);
+			return Json(rq);
+		}
+
+		/// <summary>
 		/// Get all items
 		/// </summary>
 		/// <param name="tableName"></param>
@@ -147,7 +164,7 @@ namespace ST.CORE.Controllers
 		{
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
-			var rq = await _dynamicService.GetAll(tableName);
+			var rq = await _dynamicService.GetAllWithIncludeAsDictionaryAsync(tableName);
 			return Json(rq);
 		}
 
@@ -158,12 +175,41 @@ namespace ST.CORE.Controllers
 		/// <param name="filters"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<JsonResult> GetAllWhere(string tableName, IEnumerable<Filter> filters = null)
+		public async Task<JsonResult> GetAllWhere(string tableName, string filters)
 		{
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
-			var rq = await _dynamicService.Table(tableName).GetAll<dynamic>(null, filters);
+			var f = ParseFilters(filters);
+			var rq = await _dynamicService.Table(tableName).GetAll<dynamic>(null, f);
 			return Json(rq);
+		}
+
+		/// <summary>
+		/// Parse filters
+		/// </summary>
+		/// <param name="filters"></param>
+		/// <returns></returns>
+		private static IEnumerable<Filter> ParseFilters(string filters)
+		{
+			if (string.IsNullOrEmpty(filters)) return null;
+			try
+			{
+				var f = JsonConvert.DeserializeObject<IEnumerable<Filter>>(filters).ToList();
+				foreach (var filter in f)
+				{
+					if (filter.Value == null) continue;
+					if (filter.Value.ToString().IsGuid())
+					{
+						Guid.TryParse(filter.Value?.ToString(), out var val);
+						filter.Value = val;
+					}
+				}
+				return f;
+			}
+			catch
+			{
+				return null;
+			}
 		}
 	}
 }

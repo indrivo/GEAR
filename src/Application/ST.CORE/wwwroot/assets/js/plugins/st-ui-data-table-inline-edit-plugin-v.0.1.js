@@ -18,14 +18,6 @@ $(".dynamic-table")
 		$(".inline-edit").on("click", inlineEdit);
 	});
 
-//field types
-const fieldTypes = [
-	"uniqueidentifier",
-	"nvarchar",
-	"datetime",
-	"int32"
-];
-
 
 /**
  * Start inline edit for row
@@ -95,13 +87,13 @@ function inlineEdit() {
 				case "bool":
 					{
 						const div = document.createElement("div");
-						div.setAttribute("class", "checkbox checkbox-success form-group");
-						//div.style.marginLeft = "40%";
-						//div.style.marginLeft = "40%";
+						div.setAttribute("class", "checkbox checkbox-success");
+						div.style.marginTop = "-1em";
+						div.style.marginLeft = "2em";
 						const label = document.createElement("label");
 						label.setAttribute("for", "test");
 						const el = document.createElement("input");
-						el.setAttribute("class", "inline-update-event data-input form-control");
+						el.setAttribute("class", "inline-update-event data-input");
 						el.setAttribute("data-prop-id", propId);
 						el.setAttribute("data-id", cellId);
 						el.setAttribute("type", "checkbox");
@@ -109,7 +101,10 @@ function inlineEdit() {
 						el.setAttribute("data-type", "bool");
 						el.setAttribute("id", "test");
 						el.setAttribute("name", "test");
-						el.value = value;
+						el.style.maxWidth = "1em";
+						if (value) {
+							el.setAttribute("checked", "checked");
+						}
 
 						div.appendChild(el);
 						div.appendChild(label);
@@ -140,6 +135,8 @@ function inlineEdit() {
 					break;
 				case "uniqueidentifier":
 					{
+						const div = document.createElement("div");
+						div.setAttribute("class", "input-group mb-3");
 						const dropdown = document.createElement("select");
 						dropdown.setAttribute("class", "inline-update-event data-input form-control");
 						dropdown.setAttribute("data-prop-id", propId);
@@ -158,7 +155,19 @@ function inlineEdit() {
 							}
 							dropdown.value = value;
 						}
-						container = dropdown;
+						div.appendChild(dropdown);
+						const addOptionDiv = document.createElement("div");
+						addOptionDiv.setAttribute("class", "input-group-append");
+						const addOption = document.createElement("a");
+						addOption.setAttribute("class", "btn btn-success");
+						const plus = document.createElement("span");
+						plus.setAttribute("class", "fa fa-plus");
+						plus.style.color = "white";
+						addOption.appendChild(plus);
+						addOption.addEventListener("click", addNewToReference);
+						addOptionDiv.appendChild(addOption);
+						div.appendChild(addOptionDiv);
+						container = div;
 						$(columns[i]).html(container);
 						$(columns[i]).find(".inline-update-event").on("change", onInputEvent);
 					}
@@ -167,6 +176,23 @@ function inlineEdit() {
 		}
 	}
 	$(this).on("click", completeEditInline);
+}
+
+function addNewToReference() {
+	var dropdown = $(this).parent().parent().find("select");
+	const entityName = dropdown.attr("data-ref-entity");
+	if (!entityName) {
+		$.toast({
+			heading: "No refernce",
+			text: "",
+			position: 'bottom-right',
+			loaderBg: '#ff6849',
+			icon: 'error',
+			hideAfter: 2500,
+			stack: 6
+		});
+	}
+	console.log(entityName);
 }
 
 /**
@@ -203,7 +229,10 @@ function completeEditInline() {
 			const value = inspect.val();
 
 			switch (type) {
-				case fieldTypes[0]: {
+				case "bool": {
+					obj[parsedPropName] = inspect.prop("checked");
+				} break;
+				case "uniqueidentifier": {
 					const refEntity = inspect.attr("data-ref-entity");
 					const refObject = service.GetById(refEntity, value);
 					if (refObject.is_success) {
@@ -240,7 +269,18 @@ function onInputEvent() {
 	const rowId = $(this).attr("data-id");
 	const entityId = $(this).attr("data-entity");
 	const propId = $(this).attr("data-prop-id");
-	const value = $(this).val();
+	const type = $(this).attr("data-type");
+	let value = "";
+	switch (type) {
+		case "bool":
+			{
+				value = $(this).prop("checked");
+			} break;
+		default: {
+			value = $(this).val();
+		} break;
+	}
+
 	const req = load(`/PageRender/SaveTableCellData`,
 		{
 			entityId: entityId,

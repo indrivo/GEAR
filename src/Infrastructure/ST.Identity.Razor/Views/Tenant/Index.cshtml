@@ -1,15 +1,15 @@
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = "Tenant list";
+	ViewData["Title"] = Localizer["organization_list"];
 }
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Tenants</h4>
-		<h6 class="card-subtitle">List of tenants</h6>
+		<h4 class="card-title">@Localizer["tenants"]</h4>
+		<h6 class="card-subtitle">@Localizer["organization_list"]</h6>
 		<div class="row">
 			<div class="col-md-12">
 				<blockquote>
-					This is the list of organizations in the system, in case the system will be multi organization will use more tenants
+					@Localizer["organization_info"]
 				</blockquote>
 			</div>
 		</div>
@@ -19,9 +19,9 @@
 					<div class="mr-auto">
 						<div class="form-group">
 							<a asp-action="Create" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add tenant
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_organization"]
 							</a>
-							<small>New tenant will be added.</small>
+							<small>@Localizer["add_organization_info"]</small>
 						</div>
 					</div>
 				</div>

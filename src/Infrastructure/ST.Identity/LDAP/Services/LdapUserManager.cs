@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.LDAP.Models;
 
 namespace ST.Identity.LDAP.Services
 {

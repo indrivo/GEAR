@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+
+    {
+      "provider": "unpkg",
+      "library": "bpmn-js@0.27.0",
+      "destination": "wwwroot/lib/bpmn/",
+      "files": [
+        "dist/bpmn-modeler.development.js",
+        "dist/bpmn-modeler.production.min.js",
+        "dist/bpmn-navigated-viewer.development.js",
+        "dist/bpmn-navigated-viewer.production.min.js",
+        "dist/bpmn-viewer.development.js",
+        "dist/bpmn-viewer.production.min.js",
+        "dist/assets/diagram-js.css",
+        "dist/assets/bpmn-font/css/bpmn-codes.css",
+        "dist/assets/bpmn-font/css/bpmn-embedded.css",
+        "dist/assets/bpmn-font/css/bpmn.css",
+        "dist/assets/bpmn-font/font/bpmn.eot",
+        "dist/assets/bpmn-font/font/bpmn.svg",
+        "dist/assets/bpmn-font/font/bpmn.ttf",
+        "dist/assets/bpmn-font/font/bpmn.woff"
+      ]
+    }
+  ]
+}

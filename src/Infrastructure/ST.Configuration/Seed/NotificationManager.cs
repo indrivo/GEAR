@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Entities.Extensions;
 using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.Configuration.Seed

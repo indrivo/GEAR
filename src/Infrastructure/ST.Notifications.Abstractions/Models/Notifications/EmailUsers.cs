@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {

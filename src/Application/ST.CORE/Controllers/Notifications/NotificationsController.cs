@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.BaseBusinessRepository;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.Permissions;
 using ST.Notifications.Abstractions;
 
-namespace ST.CORE.Controllers.Notifications
+namespace ST.WebHost.Controllers.Notifications
 {
 	public class NotificationsController : Controller
 	{

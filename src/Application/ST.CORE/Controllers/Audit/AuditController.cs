@@ -1,26 +1,25 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
+using ST.Cache.Abstractions;
+using ST.Core;
+using ST.Core.Attributes;
 using ST.Entities.Data;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
-using ST.Procesess.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ST.CORE.ViewModels.AuditViewModels;
+using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
-using ST.Shared;
-using ST.Shared.Attributes;
+using ST.Procesess.Data;
+using ST.WebHost.ViewModels.AuditViewModels;
 
-namespace ST.CORE.Controllers.Audit
+namespace ST.WebHost.Controllers.Audit
 {
 	public class AuditController : BaseController
 	{

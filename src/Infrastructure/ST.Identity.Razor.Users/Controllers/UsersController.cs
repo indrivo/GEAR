@@ -11,21 +11,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.BaseBusinessRepository;
+using ST.Cache.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
-using ST.Identity.Services.Abstractions;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
-using ST.Shared;
-using ST.Shared.Attributes;
+using ST.Core;
+using ST.Core.Attributes;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Enums;
 
 namespace ST.Identity.Razor.Users.Controllers
 {

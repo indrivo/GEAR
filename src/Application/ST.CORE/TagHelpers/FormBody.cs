@@ -1,5 +1,5 @@
 
-namespace ST.CORE.TagHelpers
+namespace ST.WebHost.TagHelpers
 {
 	public enum FormStyle
 	{

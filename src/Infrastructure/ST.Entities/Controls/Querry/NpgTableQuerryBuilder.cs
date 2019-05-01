@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text;
 using Npgsql;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Constants;
 using ST.Entities.Controls.Builders;
-using ST.Entities.Models.Tables;
 using ST.Entities.ViewModels.Table;
 
 namespace ST.Entities.Controls.Querry

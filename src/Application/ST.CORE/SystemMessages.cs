@@ -1,4 +1,4 @@
-namespace ST.CORE
+namespace ST.WebHost
 {
     /// <summary>
     /// System Error, Warning or Info message strings.

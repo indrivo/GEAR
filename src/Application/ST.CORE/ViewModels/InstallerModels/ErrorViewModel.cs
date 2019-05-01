@@ -1,4 +1,4 @@
-namespace ST.CORE.ViewModels.InstallerModels
+namespace ST.WebHost.ViewModels.InstallerModels
 {
     public class ErrorViewModel
     {

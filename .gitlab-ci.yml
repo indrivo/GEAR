@@ -5,7 +5,7 @@ stages:
 
 cache:
   paths:
-    - src/Application/ST.CORE/wwwroot/lib/
+    - src/Application/ST.WebHost/wwwroot/lib/
 test_projects:
   stage: test
   script:
@@ -20,13 +20,13 @@ deploy_core_service:
     name: st_core
     url: "http://bpmn-dev.cs1.soft-tehnica.com"
   before_script:
-    - pushd "./src/Application/ST.CORE"
+    - pushd "./src/Application/ST.WebHost"
     - dotnet restore
   script:
     - dotnet publish -c Release -o ./dist
     - >-
       lftp -c "open -u %FTP_USER%,%FTP_PASSWORD% %FTP_HOST%; mirror --only-newer
-      --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./ST.CORE"
+      --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./ST.WebHost"
 
 deploy_core_service_stage:
   stage: deploy-core
@@ -36,12 +36,12 @@ deploy_core_service_stage:
     name: st_core_stage
     url: "http://bpmn-test.cs1.soft-tehnica.com/"
   before_script:
-    - pushd "./src/Application/ST.CORE"
+    - pushd "./src/Application/ST.WebHost"
     - dotnet restore
   script:
     - dotnet publish -c Stage -o ./dist
     - bower install
     - >-
       lftp -c "open -u %FTP_USER%,%FTP_PASSWORD% %FTP_HOST%; mirror --only-newer
-      --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./StageEnv/ST.CORE"
+      --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./StageEnv/ST.WebHost"
 

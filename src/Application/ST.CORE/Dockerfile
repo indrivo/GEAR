@@ -3,7 +3,6 @@ COPY ./ /app
 WORKDIR /app
 
 RUN dotnet restore
-RUN bower install
 RUN dotnet build
 
 EXPOSE 9099/tcp

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.UserProfiles;
 

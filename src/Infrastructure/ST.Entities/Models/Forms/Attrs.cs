@@ -1,6 +1,6 @@
 ﻿
 using System;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {

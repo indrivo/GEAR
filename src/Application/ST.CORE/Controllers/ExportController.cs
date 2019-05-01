@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ST.Configuration.Services;
-using ST.Shared;
+using ST.Core;
 
-namespace ST.CORE.Controllers
+namespace ST.WebHost.Controllers
 {
 	[Authorize(Roles = Settings.SuperAdmin)]
 	public class DataController : Controller

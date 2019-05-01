@@ -1,5 +1,5 @@
 ﻿using System;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Entities.ViewModels.Form
 {

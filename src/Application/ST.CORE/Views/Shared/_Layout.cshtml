@@ -1,30 +1,24 @@
-@using ST.Identity.Data.UserProfiles
 @using Microsoft.AspNetCore.Http
-@using ST.Configuration.Seed
 @using ST.Identity.Abstractions
 @using ST.Localization.Razor.ViewModels.LocalizationViewModels
+@using ST.PageRender.Razor.Helpers
 
 
 @inject UserManager<ApplicationUser> UserManager
 @inject ILocalService LocalService
 @inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
-@inject IHttpContextAccessor Accesor
+@inject IHttpContextAccessor Accessor
 
-
+<!DOCTYPE html>
 @if (User.Identity.IsAuthenticated)
 {
-	var layoutId = (Guid?)ViewData["layoutId"];
-	if (layoutId == null)
-	{
-		layoutId = PageManager.Layouts[0];
-	}
+	var layoutId = (Guid?)ViewData["layoutId"] ?? PageManager.Layouts[0];
 
 	var user = await UserManager.GetUserAsync(User);
-	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
+	var id = Accessor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
 	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
-	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
+	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
-	<!DOCTYPE html />
 	<html>
 	<head>
 		<meta charset="utf-8" />
@@ -38,9 +32,9 @@
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
 		<application layout-id="@layoutId">
@@ -80,7 +74,8 @@
 				};
 				s.navigation = {
 					view: view,
-					controller: controller
+					controller: controller,
+					current: "@ViewData["Title"]"
 				};
 				s.layout = {
 					id: "@layoutId"
@@ -99,7 +94,8 @@
 				};
 				s.navigation = {
 					view: view,
-					controller : controller
+					controller: controller,
+					current: "@ViewData["Title"]"
 				};
 
 				s.user = {
@@ -115,8 +111,8 @@
 				s.localization = {
 					languages: window.load("/Localization/GetLanguagesAsJson"),
 					current: {
-						identifier: "@language.Identifier",
-						name: "@language.Name"
+						identifier: "@language?.Identifier",
+						name: "@language?.Name"
 					}
 				};
 				localStorage.setItem("settings", JSON.stringify(s));
@@ -131,12 +127,12 @@
 		<script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
 		<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
 		<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
+		@RenderSection("Scripts", false)
 	</body>
 </html>
 }
 else
 {
-@RenderBody()
+	@RenderBody()
+	@RenderSection("Scripts", false)
 }
-
-@RenderSection("Scripts", required: false)

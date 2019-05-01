@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.Shared;
+using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {

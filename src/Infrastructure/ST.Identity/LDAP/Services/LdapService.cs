@@ -6,9 +6,11 @@ using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Novell.Directory.Ldap;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Ldap.Models;
+using ST.Identity.Abstractions.Ldap.Models.Interfaces;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.LDAP.Models;
-using ST.Identity.LDAP.Models.Interfaces;
+using LdapEntry = ST.Identity.Abstractions.Ldap.Models.LdapEntry;
 
 namespace ST.Identity.LDAP.Services
 {
@@ -67,9 +69,9 @@ namespace ST.Identity.LDAP.Services
         /// <param name="groupName"></param>
         /// <param name="getChildGroups"></param>
         /// <returns></returns>
-        public ICollection<Models.LdapEntry> GetGroups(string groupName, bool getChildGroups = false)
+        public ICollection<LdapEntry> GetGroups(string groupName, bool getChildGroups = false)
         {
-            var groups = new Collection<Models.LdapEntry>();
+            var groups = new Collection<LdapEntry>();
 
             var filter = $"(&(objectClass=group)(cn={groupName}))";
 
@@ -102,7 +104,7 @@ namespace ST.Identity.LDAP.Services
                         continue;
                     }
 
-                    foreach (var child in GetChildren<Models.LdapEntry>(string.Empty, entry.DN))
+                    foreach (var child in GetChildren<LdapEntry>(string.Empty, entry.DN))
                     {
                         groups.Add(child);
                     }
@@ -133,7 +135,7 @@ namespace ST.Identity.LDAP.Services
         /// </summary>
         /// <param name="groups"></param>
         /// <returns></returns>
-        public List<ApplicationUser> GetUsersInGroups(ICollection<Models.LdapEntry> groups)
+        public List<ApplicationUser> GetUsersInGroups(ICollection<LdapEntry> groups)
         {
             var users = new List<ApplicationUser>();
 
@@ -364,7 +366,7 @@ namespace ST.Identity.LDAP.Services
             var objectCategory = "*";
             var objectClass = "*";
 
-            if (typeof(T) == typeof(Models.LdapEntry))
+            if (typeof(T) == typeof(LdapEntry))
             {
                 objectClass = "group";
                 objectCategory = "group";
@@ -492,9 +494,9 @@ namespace ST.Identity.LDAP.Services
         /// <param name="distinguishedName"></param>
         /// <param name="attributeSet"></param>
         /// <returns></returns>
-        private Models.LdapEntry CreateEntryFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
+        private LdapEntry CreateEntryFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
         {
-            return new Models.LdapEntry
+            return new LdapEntry
             {
                 ObjectSid = attributeSet.getAttribute("objectSid")?.StringValue,
                 ObjectGuid = attributeSet.getAttribute("objectGUID")?.StringValue,

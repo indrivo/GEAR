@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ST.Core;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
-using ST.Shared;
 
-namespace ST.CORE.Controllers.Notifications
+namespace ST.WebHost.Controllers.Notifications
 {
 	[Authorize]
 	public class NotificationTypeController : Controller

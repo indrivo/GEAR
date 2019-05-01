@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +11,8 @@ using Microsoft.Extensions.Options;
 using ST.BaseBusinessRepository;
 using ST.Localization.Razor.Services.Abstractions;
 using ST.Localization.Razor.ViewModels.LocalizationViewModels;
-using ST.Shared;
+using ST.Core;
+using YandexTranslateCSharpSdk;
 
 namespace ST.Localization.Razor.Controllers
 {
@@ -19,6 +22,7 @@ namespace ST.Localization.Razor.Controllers
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IStringLocalizer _localize;
         private readonly ILocalizationService _localizationService;
+        private readonly YandexTranslateSdk _yandexTranslateSdk;
 
         /// <summary>
         /// Constructor
@@ -32,6 +36,8 @@ namespace ST.Localization.Razor.Controllers
             _locConfig = locConfig;
             _localize = localize;
             _localizationService = localizationService;
+            _yandexTranslateSdk = new YandexTranslateSdk();
+            _yandexTranslateSdk.ApiKey = "trnsl.1.1.20190428T193614Z.41a78cdc7c5bb298.e25c6bd03beee1462ab0d452f9d2a86c1fc6013f";
         }
 
         /// <summary>
@@ -335,6 +341,36 @@ namespace ST.Localization.Razor.Controllers
         }
 
         /// <summary>
+        /// Translate all keys from english
+        /// </summary>
+        /// <param name="englishText"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> Translate([Required]string englishText)
+        {
+            var result = new ResultModel
+            {
+                Errors = new List<IErrorModel>()
+            };
+            if (string.IsNullOrEmpty(englishText))
+            {
+                result.Errors.Add(new ErrorModel("EmptyKey", "Key is empty!"));
+                return Json(result);
+            }
+            var languages = _locConfig.Value.Languages.ToDictionary(f => f.Identifier, f => f.Name);
+            var dict = new Dictionary<string, string>();
+            foreach (var (key, _) in languages)
+            {
+                if (key == "en") continue;
+                var translated = await _yandexTranslateSdk.TranslateText(englishText, $"en-{key}");
+                dict.Add(key, translated);
+            }
+
+            result.Result = dict;
+            result.IsSuccess = true;
+            return Json(result);
+        }
+
+        /// <summary>
         /// Add language
         /// </summary>
         /// <param name="model"></param>
@@ -427,6 +463,7 @@ namespace ST.Localization.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public JsonResult GetTranslationsForCurrentLanguage()
         {
             var lang = HttpContext.Session.GetString("lang");

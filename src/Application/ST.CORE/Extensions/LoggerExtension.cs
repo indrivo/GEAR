@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
-using NLog.Web;
-using NLog;
 using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Web;
 
-namespace ST.CORE.Extensions
+namespace ST.WebHost.Extensions
 {
 	public static class LoggerExtension
 	{

@@ -2,7 +2,7 @@ using System;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace ST.CORE.Attributes
+namespace ST.Core.Attributes
 {
 	/// <summary>
 	/// Filter to set size limits for request form data

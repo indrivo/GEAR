@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ST.Shared
+namespace ST.Core
 {
     public static class Settings
     {

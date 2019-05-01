@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
-    <ProjectReference Include="..\ST.Shared\ST.Shared.csproj" />
+    <ProjectReference Include="..\ST.Shared\ST.Core.csproj" />
   </ItemGroup>
 
 </Project>

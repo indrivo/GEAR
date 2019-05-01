@@ -1,40 +1,39 @@
-@using ST.Identity.Data.UserProfiles
-@model ST.Identity.Data.UserProfiles.ApplicationUser
+@model ST.Identity.Abstractions.ApplicationUser
 
 @{
-	ViewData["Title"] = "User Details";
+    ViewData["Title"] = "User Details";
 }
 
 
 
 <div class="box-header with-border">
-	<h3 class="box-title">User Details <code>@Model.Email</code></h3>
+    <h3 class="box-title">User Details <code>@Model.Email</code></h3>
 </div>
 
 
-<form asp-action="Details" role="form" class="ui form">
-	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-	<input type="hidden" asp-for="Id" />
-	<div class="box-body">
-		<div class="ui form">
-			<label asp-for="UserName">First Name: </label>
-			<label asp-for="UserName"> @Model.UserName</label>
-		</div>
-		<div class="form-group">
-			<label asp-for="Email">Last Name: </label>
-			<label asp-for="Email"> @Model.Email</label>
-		</div>
-		<div class="form-group">
-			<label asp-for="PhoneNumber">Phone Number: </label>
-			<label asp-for="PhoneNumber"> @Model.PhoneNumber</label>
-		</div>
-	</div>
-	<!-- /.box-body -->
-	<br />
-	<div class="box-footer">
-		<a asp-action="Edit" class="ui primary button" asp-route-id="@Model.Id">Edit</a> |
-		<a asp-action="Index" class="ui  button">Back to List</a>
-	</div>
+<form role="form" class="ui form">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="box-body">
+        <div class="ui form">
+            <label asp-for="UserName">First Name: </label>
+            <label asp-for="UserName"> @Model.UserName</label>
+        </div>
+        <div class="form-group">
+            <label asp-for="Email">Last Name: </label>
+            <label asp-for="Email"> @Model.Email</label>
+        </div>
+        <div class="form-group">
+            <label asp-for="PhoneNumber">Phone Number: </label>
+            <label asp-for="PhoneNumber"> @Model.PhoneNumber</label>
+        </div>
+    </div>
+    <!-- /.box-body -->
+    <br />
+    <div class="box-footer">
+        <a asp-action="Edit" class="ui primary button" asp-route-id="@Model.Id">Edit</a> |
+        <a asp-action="Index" class="ui  button">Back to List</a>
+    </div>
 </form>
 
 

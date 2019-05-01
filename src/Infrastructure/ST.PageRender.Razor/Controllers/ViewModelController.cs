@@ -12,8 +12,8 @@ using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.ViewModels;
-using ST.Shared;
-using ST.Shared.Attributes;
+using ST.Core;
+using ST.Core.Attributes;
 
 namespace ST.PageRender.Razor.Controllers
 {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using ST.Configuration.Services.Abstraction;
 
-namespace ST.CORE.TagHelpers
+namespace ST.WebHost.TagHelpers
 {
 	[HtmlTargetElement("application-styles")]
 	public sealed class LayoutCssScriptsTagHelper : TagHelper

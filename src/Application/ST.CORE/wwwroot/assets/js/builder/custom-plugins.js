@@ -34,7 +34,6 @@ function getScripts() {
 		"/js/site.js",
 		"/lib/jsrender/jsrender.min.js",
 		"/lib/jsviews/jsviews.min.js",
-		"/js/signalr/dist/browser/signalr.js",
 		"/assets/js/builder/after-load.js"
 	];
 

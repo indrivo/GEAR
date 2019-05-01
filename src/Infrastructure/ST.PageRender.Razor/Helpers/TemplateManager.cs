@@ -2,11 +2,11 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ST.Cache.Abstractions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Entities.Models.RenderTemplates;
-using ST.Identity.Services.Abstractions;
-using ST.Shared;
+using ST.Core;
+using ST.Core.Helpers;
 
 namespace ST.PageRender.Razor.Helpers
 {

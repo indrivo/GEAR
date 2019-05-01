@@ -3,10 +3,9 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using ST.BaseRepository;
-using ST.Identity.Data.Permissions;
-using ApplicationUser = ST.Identity.Data.UserProfiles.ApplicationUser;
-using AuthGroup = ST.Identity.Data.Permissions.AuthGroup;
-using UserGroup = ST.Identity.Data.Permissions.UserGroup;
+using ApplicationUser = ST.Identity.Abstractions.ApplicationUser;
+using AuthGroup = ST.Identity.Abstractions.AuthGroup;
+using UserGroup = ST.Identity.Abstractions.UserGroup;
 
 namespace ST.Identity.Data.Groups
 {

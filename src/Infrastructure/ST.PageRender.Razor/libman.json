@@ -9,6 +9,15 @@
     {
       "library": "moment.js@2.24.0",
       "destination": "wwwroot/lib/moment.js/"
+    },
+    {
+      "library": "grapesjs@0.14.57",
+      "destination": "wwwroot/lib/grapesjs/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "grapesjs-preset-webpage@0.1.9",
+      "destination": "wwwroot/lib/grapesjs-preset-webpage/"
     }
   ]
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ST.Identity.Abstractions;
 using ST.Identity.Data.Permissions;
 
 namespace ST.Identity.Models.RolesViewModels

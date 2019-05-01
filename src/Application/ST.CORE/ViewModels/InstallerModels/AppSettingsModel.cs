@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ST.CORE.ViewModels.InstallerModels
+namespace ST.WebHost.ViewModels.InstallerModels
 {
 	public class AppSettingsModel
 	{
