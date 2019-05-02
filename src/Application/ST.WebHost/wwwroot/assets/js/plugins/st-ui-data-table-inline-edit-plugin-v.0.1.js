@@ -15,7 +15,51 @@ if (typeof jQuery === 'undefined') {
 
 $(".dynamic-table")
 	.on("draw.dt", function (e, settings, json) {
+		$(".inline-edit").off("click", inlineEdit);
 		$(".inline-edit").on("click", inlineEdit);
+		const table = $(this).DataTable();
+		const buttons = table.buttons();
+		let match = false;
+		for (let i = 0; i < buttons.length; i++) {
+			if (buttons[i].node.innerHTML.indexOf("fa-plus") != -1) {
+				match = true;
+			}
+		}
+
+		if (!match) {
+			table.button().add(0, {
+				action: function (e, dt, button, config) {
+					var t = $(button).closest(".card").find(".dynamic-table");
+					const row = document.createElement("tr");
+					row.setAttribute("isNew", "true");
+					const columns = dt.columns().context[0].aoColumns;
+					for (let i in columns) {
+						if (!columns[i].bVisible) continue;
+						const cell = document.createElement("td");
+						
+						if (columns[i].sTitle === window.translate("list_actions")) {
+							cell.innerHTML = "actions";
+						}
+						else {
+							if (columns[i].config.column.tableModelFields) {
+								const cellContent = document.createElement("div");
+								cellContent
+								cell.appendChild(cellContent);
+							}
+							else {
+								cell.innerHTML = "-";
+							}
+						}
+						
+						row.appendChild(cell);
+					}
+					$(t).attr("add-mode", "true");
+					console.log(columns);
+					$("tbody", t).prepend(row);
+				},
+				text: '<i class="fa fa-plus"></i>'
+			});
+		}
 	});
 
 
@@ -178,6 +222,7 @@ function inlineEdit() {
 	$(this).on("click", completeEditInline);
 }
 
+
 function addNewToReference() {
 	var dropdown = $(this).parent().parent().find("select");
 	const entityName = dropdown.attr("data-ref-entity");
@@ -185,14 +230,79 @@ function addNewToReference() {
 		$.toast({
 			heading: "No refernce",
 			text: "",
-			position: 'bottom-right',
+			position: 'top-right',
 			loaderBg: '#ff6849',
 			icon: 'error',
 			hideAfter: 2500,
 			stack: 6
 		});
+		return;
 	}
-	console.log(entityName);
+
+	swal({
+		title: `Add new ${entityName}`,
+		html:
+			'<input id="add_new_ref" class="swal2-input">',
+		showCancelButton: true,
+		preConfirm: function () {
+			return new Promise(function (resolve) {
+				resolve([
+					$('#add_new_ref').val()
+				])
+			})
+		},
+		onOpen: function () {
+			$('#add_new_ref').focus()
+		}
+	}).then(function (result) {
+		if (result.value) {
+			const context = new DataInjector();
+			const obj = {
+				name: result.value[0]
+			};
+			const res = context.Add(entityName, obj);
+			if (res) {
+				if (res.is_success) {
+					const new_id = res.result;
+					const detail = context.GetById(entityName, new_id);
+					if (detail.is_success) {
+						dropdown.append(new Option(detail.result.Name, new_id));
+					}
+					$.toast({
+						heading: 'Info',
+						text: `A new item has been added`,
+						position: 'top-right',
+						loaderBg: '#ff6849',
+						icon: 'success',
+						hideAfter: 3500,
+						stack: 6
+					});
+				} else {
+					$.toast({
+						heading: res.error_keys[0].message,
+						text: "",
+						position: 'bottom-right',
+						loaderBg: '#ff6849',
+						icon: 'error',
+						hideAfter: 2500,
+						stack: 6
+					});
+				}
+			} else {
+				$.toast({
+					heading: "Fail to save data",
+					text: "",
+					position: 'bottom-right',
+					loaderBg: '#ff6849',
+					icon: 'error',
+					hideAfter: 2500,
+					stack: 6
+				});
+			}
+		}
+	});
+
+
 }
 
 /**
@@ -292,7 +402,7 @@ function onInputEvent() {
 		$.toast({
 			heading: 'Data was saved with success',
 			text: `You change ${value} value`,
-			position: 'bottom-right',
+			position: 'top-right',
 			loaderBg: '#ff6849',
 			icon: 'success',
 			hideAfter: 3500,
@@ -302,7 +412,7 @@ function onInputEvent() {
 		$.toast({
 			heading: req.error_keys[0].message,
 			text: "",
-			position: 'bottom-right',
+			position: 'top-right',
 			loaderBg: '#ff6849',
 			icon: 'error',
 			hideAfter: 3500,

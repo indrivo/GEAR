@@ -167,6 +167,9 @@ $.each(tables,
 					function (index, column) {
 						rows += `<th translate='${column.translate}'>${column.name}</th>`;
 						renderColumns.push({
+							config: {
+								column: column
+							},
 							data: null,
 							"render": function (data, type, row, meta) {
 								return `<div class="data-cell" data-viewmodel="${viewmodelId}" data-id="${row.id
@@ -388,7 +391,7 @@ $.each(tables,
 				blurable: true
 			},
 			"scrollX": true,
-			scrollCollapse: true,
+			"scrollCollapse": true,
 			"autoWidth": true,
 			"processing": true, // for show progress bar
 			"serverSide": true, // for process server side

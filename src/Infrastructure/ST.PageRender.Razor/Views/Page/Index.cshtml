@@ -29,7 +29,7 @@
 			<table class="table table-striped table-bordered" id="pagTable">
 				<thead>
 					<tr>
-						<th>Name</th>
+						<th>@Localizer["name"]</th>
 						<th>Path</th>
 						<th>Title</th>
                         <th>@Localizer["description"]</th>
@@ -50,13 +50,13 @@
 
 
 @section Scripts{
-	<script type="text/javascript" language="javascript">
+    <script type="text/javascript" language="javascript">
 		function getTokenAntiForgery() {
 			const token = '@Html.AntiForgeryToken()';
 			return $(token).val();
 		}
 	</script>
-	<script type="text/javascript" language="javascript">
+    <script type="text/javascript" language="javascript">
 		$(document).ready(function($) {
 
 			const ent = load("/PageRender/GetViewModels");
@@ -201,7 +201,7 @@
 							return `
 	<div class="btn-group">
           <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Actions
+            ${window.translate("list_actions")}
           </button>
           <div class="dropdown-menu">
            <a class="dropdown-item" href="${row.path}">Preview</a>

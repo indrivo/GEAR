@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ST.Audit.Extensions;
 using ST.BaseBusinessRepository;
 using ST.BaseRepository;
@@ -170,6 +172,7 @@ namespace ST.PageRender.Razor.Controllers
             var obj = _context.ViewModels
                 .Include(x => x.TableModel)
                 .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.TableModelFields)
                 .FirstOrDefault(x => !x.IsDeleted && x.Id.Equals(viewModelId));
 
             if (obj != null)
@@ -181,6 +184,10 @@ namespace ST.PageRender.Razor.Controllers
             {
                 IsSuccess = true,
                 Result = obj
+            }, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
         }
 

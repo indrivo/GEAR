@@ -89,15 +89,11 @@
       "Script": "<script type=\"text/javascript\" src=\"/js/site.js\"></script>"
     },
     {
-      "Order": 12,
-      "Script": "<script src=\"/js/signalr/dist/browser/signalr.js\"></script>"
-    },
-    {
-      "Order": 13,
+      "Order": 11,
       "Script": "<script src=\"/lib/jsrender/jsrender.min.js\"></script>"
     },
     {
-      "Order": 14,
+      "Order": 12,
       "Script": "<script src=\"/lib/jsviews/jsviews.min.js\"></script>"
     }
   ]
