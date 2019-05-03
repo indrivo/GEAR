@@ -5,7 +5,7 @@ using ST.Core;
 namespace ST.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class EntityType : ExtendedModel
+    public class EntityType : BaseModel
     {
         /// <summary>
         /// Name of Schema

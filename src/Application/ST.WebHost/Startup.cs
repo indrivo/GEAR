@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ST.Backup.Extensions;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
 using ST.DynamicEntityStorage.Extensions;
@@ -162,8 +163,6 @@ namespace ST.WebHost
 			services.Configure<LdapSettings>(Configuration.GetSection(nameof(LdapSettings)));
 			//Add configured swagger
 			services.AddSwagger(Configuration, HostingEnvironment);
-			//Repository
-			services.AddBussinessRepository();
 
 			//Register dynamic table repository
 			services.RegisterDynamicDataServices<EntitiesDbContext>();
@@ -172,6 +171,8 @@ namespace ST.WebHost
 
 			//Run background service
 			//services.AddHostedService<HostedTimeService>();
+
+			services.RegisterBackupRunner(Configuration);
 
 			services.AddScoped<ILocalService, LocalService>();
 			services.AddPageRender();

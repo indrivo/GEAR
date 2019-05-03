@@ -9,7 +9,7 @@ namespace ST.Identity.Data.Permissions
     /// <summary>
     /// Group's permissions
     /// </summary>
-    public class GroupPermission: ExtendedModel
+    public class GroupPermission: BaseModel
     {
         /// <summary>
         /// The group this permission refers to

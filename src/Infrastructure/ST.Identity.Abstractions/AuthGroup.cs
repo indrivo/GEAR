@@ -12,7 +12,7 @@ namespace ST.Identity.Abstractions
 	/// </summary>
 	[DebuggerDisplay(@"\{{" + nameof(Name) + @",nq}\}")]
 	[TrackEntity(Option = TrackEntityOption.SelectedFields)]
-    public class AuthGroup : ExtendedModel
+    public class AuthGroup : BaseModel
 	{
         /// <summary>
         /// Name of the Group

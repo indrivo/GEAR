@@ -149,10 +149,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\Communication.Razor\ST.Email.Razor\ST.Email.Razor.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\ST.Backup.Razor\ST.Backup.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Cache.Razor\ST.Cache.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Cache\ST.Cache.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Configuration\ST.Configuration.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\ST.Files\ST.Files.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Form.Razor\ST.Forms.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Identity.Razor\ST.Identity.Razor.csproj" />
     <ProjectReference Include="..\..\Infrastructure\ST.Localization.Razor\ST.Localization.Razor.csproj" />

@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Option : ExtendedModel
+    public class Option : BaseModel
     {
         public string Label { get; set; }
         public string Value { get; set; }

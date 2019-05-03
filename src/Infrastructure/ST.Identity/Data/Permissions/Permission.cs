@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Identity.Data.Permissions
 {
-    public class Permission : ExtendedModel
+    public class Permission : BaseModel
     {
         /// <summary>
         /// Permission name

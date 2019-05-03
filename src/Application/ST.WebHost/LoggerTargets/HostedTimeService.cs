@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.Permissions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Hubs;
 using ILogger = Microsoft.Extensions.Logging.ILogger;

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using ST.BaseBusinessRepository;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Controls.Querry;
 using ST.Entities.Services.Abstraction;
@@ -297,7 +297,7 @@ namespace ST.Entities.Services
         {
             var result = new SynchronizeTableViewModel();
             var fields = new List<CreateTableFieldViewModel>();
-            var baseProps = typeof(ExtendedModel).GetProperties().Select(x => x.Name);
+            var baseProps = typeof(BaseModel).GetProperties().Select(x => x.Name);
             var entity = prop.PropertyType.GenericTypeArguments[0];
 
             if (entity.Name == "ApplicationUser")

@@ -4,7 +4,7 @@ using ST.Core;
 
 namespace ST.Procesess.Models
 {
-    public class STTransitionActor : ExtendedModel
+    public class STTransitionActor : BaseModel
     {
         /// <summary>
         /// Name of actor

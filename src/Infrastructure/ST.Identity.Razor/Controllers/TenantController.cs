@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ST.BaseBusinessRepository;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Identity.Attributes;
@@ -39,11 +38,6 @@ namespace ST.Identity.Razor.Controllers
         private readonly EntitiesDbContext _entitiesDbContext;
 
         /// <summary>
-        /// Inject Business repository
-        /// </summary>
-        private IBaseBusinessRepository<ApplicationDbContext> Repository { get; }
-
-        /// <summary>
         /// Inject logger
         /// </summary>
         private readonly ILogger<TenantController> _logger;
@@ -56,15 +50,13 @@ namespace ST.Identity.Razor.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="repository"></param>
         /// <param name="context"></param>
         /// <param name="logger"></param>
         /// <param name="entitiesDbContext"></param>
         /// <param name="service"></param>
-        public TenantController(IBaseBusinessRepository<ApplicationDbContext> repository,
+        public TenantController(
             ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IDynamicService service)
         {
-            Repository = repository;
             Context = context;
             _logger = logger;
             _entitiesDbContext = entitiesDbContext;
@@ -203,9 +195,11 @@ namespace ST.Identity.Razor.Controllers
                 ModelState.AddModelError(string.Empty, "Tenant exists");
                 return View(data);
             }
-            var response = Repository.Add<Tenant, Tenant>(model);
-            if (response.IsSuccess)
+
+            Context.Tenants.Add(model);
+            try
             {
+                await Context.SaveChangesAsync();
                 if (!_entitiesDbContext.EntityTypes.Any(x => x.MachineName == tenantMachineName))
                 {
                     _entitiesDbContext.EntityTypes.Add(new EntityType
@@ -223,15 +217,13 @@ namespace ST.Identity.Razor.Controllers
 
                 return RedirectToAction(nameof(Index), "Tenant");
             }
-            else
+            catch (Exception e)
             {
-                foreach (var e in response.Errors)
-                {
-                    ModelState.AddModelError(e.Key, e.Message);
-                }
-
-                return View(data);
+                ModelState.AddModelError("Fail", e.Message);
             }
+
+            return View(data);
+
         }
 
         /// <summary>
@@ -243,10 +235,10 @@ namespace ST.Identity.Razor.Controllers
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
         public IActionResult Edit(Guid id)
         {
-            var response = Repository.GetById<Tenant, Tenant>(id);
-            if (response.IsSuccess)
+            var response = Context.Tenants.FirstOrDefault(x => x.Id == id);
+            if (response != null)
             {
-                return View(response.Result);
+                return View(response);
             }
 
             return RedirectToAction(nameof(Index), "Tenant");
@@ -262,20 +254,19 @@ namespace ST.Identity.Razor.Controllers
         public IActionResult Edit(Tenant model)
         {
             if (!ModelState.IsValid) return View(model);
-            var response = Repository.Refresh<Tenant, Tenant>(model);
-            if (response.IsSuccess)
+            Context.Tenants.Update(model);
+
+            try
             {
+                Context.SaveChanges();
                 return RedirectToAction(nameof(Index), "Tenant");
             }
-            else
+            catch (Exception e)
             {
-                foreach (var e in response.Errors)
-                {
-                    ModelState.AddModelError(e.Key, e.Message);
-                }
-
-                return View(model);
+                ModelState.AddModelError("Fail", e.Message);
             }
+
+            return View(model);
         }
 
 

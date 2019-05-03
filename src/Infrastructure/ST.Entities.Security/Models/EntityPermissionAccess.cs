@@ -5,7 +5,7 @@ using ST.Entities.Security.Enums;
 
 namespace ST.Entities.Security.Models
 {
-    public class EntityPermissionAccess : ExtendedModel
+    public class EntityPermissionAccess : BaseModel
     {
         /// <summary>
         /// Entity access type

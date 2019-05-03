@@ -25,7 +25,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.2" />
     <PackageReference Include="Novell.Directory.Ldap.NETStandard2_0" Version="3.1.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
-    <PackageReference Include="ST.BaseBusinessRepository" Version="1.1.4-alpha" />
     <PackageReference Include="ST.MPass.Gov" Version="0.1.4-alpha" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
@@ -35,7 +34,6 @@
     <ProjectReference Include="..\ST.Cache.Abstractions\ST.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
-    <ProjectReference Include="..\ST.Shared\ST.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -16,13 +16,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.CORE.Extensions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.LDAP.Services;
 using ST.Identity.Razor.Extensions;
 using ST.Identity.Razor.ViewModels.AccountViewModels;
@@ -703,8 +701,6 @@ namespace ST.Identity.Razor.Controllers
                     break;
                 case "LinkedIn":
                     picture = info.Principal.FindFirstValue("image");
-                    break;
-                default:
                     break;
             }
 

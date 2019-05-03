@@ -8,7 +8,7 @@ using ST.Core;
 namespace ST.Procesess.Models
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class STProcessSchema : ExtendedModel
+    public class STProcessSchema : BaseModel
     {
         /// <summary>
         /// Store Xml schema

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using ST.BaseBusinessRepository;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.ViewModels.DynamicEntities;
 
@@ -23,7 +23,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<ResultModel> Exists<TEntity>(Guid id) where TEntity : ExtendedModel;
+        Task<ResultModel> Exists<TEntity>(Guid id) where TEntity : BaseModel;
 
         /// <summary>
         /// Create entity definition
@@ -31,7 +31,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <typeparam name="TViewModel"></typeparam>
         /// <returns></returns>
-        Task<TViewModel> CreateEntityDefinition<TEntity, TViewModel>(string tableSchema) where TEntity : ExtendedModel
+        Task<TViewModel> CreateEntityDefinition<TEntity, TViewModel>(string tableSchema) where TEntity : BaseModel
             where TViewModel : EntityViewModel;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <typeparam name="TEntity"></typeparam>
         /// <typeparam name="TViewModel"></typeparam>
         /// <returns></returns>
-        Task<TViewModel> CreateWithoutBaseModel<TEntity, TViewModel>() where TEntity : ExtendedModel where TViewModel : EntityViewModel;
+        Task<TViewModel> CreateWithoutBaseModel<TEntity, TViewModel>() where TEntity : BaseModel where TViewModel : EntityViewModel;
         /// <summary>
         /// Parse from dictionary to object
         /// </summary>
@@ -85,7 +85,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        DynamicObject Table<TEntity>() where TEntity : ExtendedModel;
+        DynamicObject Table<TEntity>() where TEntity : BaseModel;
 
         /// <summary>
         /// Filter list
@@ -97,7 +97,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <param name="length"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Expression<Func<T, bool>> predicate = null) where T : ExtendedModel;
+        Task<(List<T>, int)> Filter<T>(string search, string sortOrder, int start, int length, Expression<Func<T, bool>> predicate = null) where T : BaseModel;
 
         /// <summary>
         /// Filter dynamic entity data

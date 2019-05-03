@@ -5,7 +5,7 @@ using ST.Core;
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {
-    public class Email : ExtendedModel
+    public class Email : BaseModel
     {
         public string Subject { get; set; }
         public string Message { get; set; }

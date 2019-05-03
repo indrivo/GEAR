@@ -5,17 +5,19 @@ using ST.Core.Extensions;
 
 namespace ST.Core.Attributes
 {
-	/// <summary>
-	/// Check if is a ajax request
-	/// </summary>
+	/// <inheritdoc />
+    /// <summary>
+    /// Check if is a ajax request
+    /// </summary>
 	public class AjaxOnlyAttribute : ActionMethodSelectorAttribute
 	{
-		/// <summary>
-		/// Check ajax
-		/// </summary>
-		/// <param name="routeContext"></param>
-		/// <param name="action"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
+        /// <summary>
+        /// Check ajax
+        /// </summary>
+        /// <param name="routeContext"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
 		public override bool IsValidForRequest(RouteContext routeContext, ActionDescriptor action)
 		{
 			return routeContext.HttpContext.Request.IsAjaxRequest();

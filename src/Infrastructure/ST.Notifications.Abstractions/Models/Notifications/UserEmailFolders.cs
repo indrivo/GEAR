@@ -2,7 +2,7 @@
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {
-    public class UserEmailFolders : ExtendedModel
+    public class UserEmailFolders : BaseModel
     {
         public string Name { get; set; }
         public string Description { get; set; }

@@ -8,7 +8,7 @@ using ST.Entities.Models.Enums;
 namespace ST.Entities.Models.Forms
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class FormFieldEvent : ExtendedModel
+    public class FormFieldEvent : BaseModel
     {
         /// <summary>
         /// Name what describe event handler

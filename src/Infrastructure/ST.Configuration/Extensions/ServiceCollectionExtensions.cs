@@ -15,11 +15,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 using ST.Cache.Extensions;
 using ST.Cache.Services;
-using ST.Configuration.Seed;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
@@ -28,9 +26,6 @@ using ST.Entities.Security.Extensions;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
-using ST.Files.Abstraction;
-using ST.Files.Providers;
-using ST.Files.Services;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
@@ -289,12 +284,11 @@ namespace ST.Configuration.Extensions
         {
             var castleContainer = new WindsorContainer();
             IoC.Container = castleContainer;
-            var formsContext = services.BuildServiceProvider().GetService<EntitiesDbContext>();
-            var bbRep = services.BuildServiceProvider().GetService<IBaseBusinessRepository<EntitiesDbContext>>();
+            var context = services.BuildServiceProvider().GetService<EntitiesDbContext>();
             var env = services.BuildServiceProvider().GetService<IHostingEnvironment>();
 
             //Notifications
-            var notificationConfig = new DbNotificationConfig { DbContext = formsContext };
+            var notificationConfig = new DbNotificationConfig { DbContext = context };
             castleContainer.Register(Component.For<INotificationProvider>().ImplementedBy<DbNotificationProvider>()
                 .DependsOn(Dependency.OnValue("config", notificationConfig)));
             castleContainer.Register(Component.For<INotificationProvider>().ImplementedBy<EmailNotificationProvider>());
@@ -315,15 +309,8 @@ namespace ST.Configuration.Extensions
             castleContainer.Register(Component.For<ICacheService>()
                 .ImplementedBy<CacheService>());
 
-            //Files
-            var fileConfig = new FileConfig { DbContext = formsContext, WebRootPath = env.WebRootPath };
-            castleContainer.Register(Component.For<IFileProvider>().ImplementedBy<DocumentProvider>()
-                .DependsOn(Dependency.OnValue("config", fileConfig)));
-            castleContainer.Register(Component.For<FileManager>()
-                .DependsOn(Dependency.OnComponent<IFileProvider, DocumentProvider>()));
-
             //Seed
-            var synchronizerParams = new Dictionary<string, object> { { "context", formsContext }, { "repository", bbRep } };
+            var synchronizerParams = new Dictionary<string, object> { { "context", context }};
             castleContainer.Register(Component.For<EntitySynchronizer>().DependsOn(synchronizerParams));
             return WindsorRegistrationHelper.CreateServiceProvider(castleContainer, services);
         }

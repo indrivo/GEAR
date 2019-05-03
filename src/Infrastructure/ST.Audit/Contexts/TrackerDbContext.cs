@@ -64,7 +64,7 @@ namespace ST.Audit.Contexts
         /// <returns></returns>
         public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
         {
-            if (!(entity is ExtendedModel trackable)) return base.Add(entity);
+            if (!(entity is BaseModel trackable)) return base.Add(entity);
             trackable.Changed = DateTime.Now;
             trackable.Version = trackable.Version + 1;
             return base.Update(entity);
@@ -79,7 +79,7 @@ namespace ST.Audit.Contexts
         /// <returns></returns>
         public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
         {
-            if (!(entity is ExtendedModel trackable)) return base.Add(entity);
+            if (!(entity is BaseModel trackable)) return base.Add(entity);
             trackable.Created = DateTime.Now;
             trackable.Changed = DateTime.Now;
             //trackable.Version = 1;

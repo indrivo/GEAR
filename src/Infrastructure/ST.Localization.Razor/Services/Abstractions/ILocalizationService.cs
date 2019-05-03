@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 
 namespace ST.Localization.Razor.Services.Abstractions

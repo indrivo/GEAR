@@ -8,7 +8,7 @@ using ST.Core;
 namespace ST.Procesess.Models
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class STProcessTransition : ExtendedModel
+    public class STProcessTransition : BaseModel
     {
         /// <summary>
         /// Name of transition

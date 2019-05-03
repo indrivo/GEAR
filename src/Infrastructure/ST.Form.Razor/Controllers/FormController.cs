@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
@@ -23,13 +22,12 @@ using ST.Forms.Razor.ViewModels.FormsViewModels;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Core;
 using ST.Core.Attributes;
-using ST.Entities.Abstractions.Models.Tables;
+using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using Settings = ST.Core.Settings;
 
@@ -44,11 +42,6 @@ namespace ST.Forms.Razor.Controllers
 	{
 		#region Inject
 		private IFormService FormService { get; }
-
-		/// <summary>
-		/// Inject re
-		/// </summary>
-		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
 
 		/// <summary>
 		/// Inject dynamic service
@@ -67,17 +60,15 @@ namespace ST.Forms.Razor.Controllers
 		/// <param name="organizationService"></param>
 		/// <param name="formService"></param>
 		/// <param name="cacheService"></param>
-		/// <param name="repository"></param>
 		/// <param name="service"></param>
 		public FormController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
 			INotify<ApplicationRole> notify, IOrganizationService organizationService, IFormService formService,
 			ICacheService cacheService,
-			IBaseBusinessRepository<EntitiesDbContext> repository, IDynamicService service)
+			 IDynamicService service)
 			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 			FormService = formService;
-			Repository = repository;
 			_service = service;
 		}
 
@@ -86,9 +77,9 @@ namespace ST.Forms.Razor.Controllers
 		/// </summary>
 		/// <returns></returns>
 		public IActionResult Create()
-		{
-			ViewData["models"] = Repository.GetAll<TableModel>(x => x.IsDeleted == false);
-			ViewData["formTypes"] = Repository.GetAll<FormType>(x => x.IsDeleted == false).OrderBy(s => s.Code);
+        {
+            ViewData["models"] = Context.Table.Where(x => !x.IsDeleted).ToList();
+			ViewData["formTypes"] = Context.FormTypes.Where(x => !x.IsDeleted).ToList().OrderBy(s => s.Code);
 			return View();
 		}
 
@@ -100,8 +91,8 @@ namespace ST.Forms.Razor.Controllers
 		/// <param name="formType"></param>
 		/// <returns></returns>
 		public IActionResult Generate(string mode, Guid tableId, Guid formType)
-		{
-			ViewBag.FormType = Repository.GetSingle<FormType>(formType);
+        {
+            ViewBag.FormType = Context.FormTypes.FirstOrDefault(x => x.Id == formType);
 			return View();
 		}
 

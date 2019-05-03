@@ -9,7 +9,7 @@ using ST.Entities.Abstractions.Models.Tables;
 namespace ST.Entities.Models.Pages
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class Page : ExtendedModel
+    public class Page : BaseModel
     {
         public PageType PageType { get; set; }
         public Guid PageTypeId { get; set; }
@@ -32,7 +32,7 @@ namespace ST.Entities.Models.Pages
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class PageScript : ExtendedModel, IPageItem
+    public class PageScript : BaseModel, IPageItem
     {
         public Guid PageId { get; set; }
         public string Script { get; set; }
@@ -40,7 +40,7 @@ namespace ST.Entities.Models.Pages
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class PageStyle : ExtendedModel, IPageItem
+    public class PageStyle : BaseModel, IPageItem
     {
         public Guid PageId { get; set; }
         public string Script { get; set; }
@@ -48,7 +48,7 @@ namespace ST.Entities.Models.Pages
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class PageSettings : ExtendedModel
+    public class PageSettings : BaseModel
     {
         public string Identifier { get; set; }
         public string Name { get; set; }
@@ -61,7 +61,7 @@ namespace ST.Entities.Models.Pages
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class PageType : ExtendedModel
+    public class PageType : BaseModel
     {
         [Required]
         public string Name { get; set; }
@@ -70,14 +70,14 @@ namespace ST.Entities.Models.Pages
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class BlockCategory : ExtendedModel
+    public class BlockCategory : BaseModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class Block : ExtendedModel
+    public class Block : BaseModel
     {
         public virtual string Name { get; set; }
         public string Description { get; set; }
@@ -92,7 +92,7 @@ namespace ST.Entities.Models.Pages
     }
 
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class BlockAttribute : ExtendedModel
+    public class BlockAttribute : BaseModel
     {
         public string Name { get; set; }
         public string Value { get; set; }

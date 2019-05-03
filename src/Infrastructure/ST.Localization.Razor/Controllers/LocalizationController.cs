@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using ST.BaseBusinessRepository;
 using ST.Localization.Razor.Services.Abstractions;
 using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 using ST.Core;
+using ST.Core.Helpers;
 using YandexTranslateCSharpSdk;
 
 namespace ST.Localization.Razor.Controllers

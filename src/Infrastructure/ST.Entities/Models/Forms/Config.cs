@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Config : ExtendedModel
+    public class Config : BaseModel
     {
         public bool Fieldset { get; set; }
         public string Legend { get; set; }

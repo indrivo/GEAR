@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {
-    public class SystemNotifications : ExtendedModel
+    public class SystemNotifications : BaseModel
     {
         public string Subject { get; set; }
         public string Content { get; set; }

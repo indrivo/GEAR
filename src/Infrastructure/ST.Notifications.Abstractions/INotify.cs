@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.Notifications.Abstractions

@@ -4,7 +4,7 @@ using ST.Core;
 
 namespace ST.Entities.Models.RenderTemplates
 {
-    public class Template : ExtendedModel
+    public class Template : BaseModel
     {
         /// <summary>
         /// Template name

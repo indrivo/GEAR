@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Entities.Controls.Querry;
 using ST.Entities.ViewModels.DynamicEntities;
 

@@ -3,27 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using ST.BaseBusinessRepository;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Data;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.ViewModels.Table;
 
-namespace ST.Configuration.Seed
+namespace ST.Entities.Data
 {
     public class EntitySynchronizer
     {
         private readonly string _connectionString;
         private readonly EntitiesDbContext _context;
-        private readonly IBaseBusinessRepository<EntitiesDbContext> _repository;
+        private readonly EntitiesDbContext _repository;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="repository"></param>
         /// <param name="context"></param>
-		public EntitySynchronizer(IBaseBusinessRepository<EntitiesDbContext> repository,
+		public EntitySynchronizer(EntitiesDbContext repository,
             EntitiesDbContext context)
         {
             _repository = repository;
@@ -68,9 +66,11 @@ namespace ST.Configuration.Seed
         /// <param name="table"></param>
         private void CompleteSyncEntity(SynchronizeTableViewModel tableModel, TableModel table)
         {
-            var resultModel = _repository
-                    .GetAllIncluding<TableModel>(x => x.Include(s => s.TableFields), x => x.Id == table.Id).AsNoTracking()
-                    .FirstOrDefault();
+            var resultModel = _repository.Table
+                .Include(x => x.TableFields)
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Id == table.Id);
+
             if (resultModel == null) return;
             {
                 if (tableModel.IsStaticFromEntityFramework)

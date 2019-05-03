@@ -5,7 +5,7 @@ using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Entities.Models.ViewModels
 {
-    public class ViewModel : ExtendedModel
+    public class ViewModel : BaseModel
     {
         public TableModel TableModel { get; set; }
         public Guid TableModelId { get; set; }
@@ -13,7 +13,7 @@ namespace ST.Entities.Models.ViewModels
         public IEnumerable<ViewModelFields> ViewModelFields { get; set; }
     }
 
-    public class ViewModelFields : ExtendedModel
+    public class ViewModelFields : BaseModel
     {
         public string Name { get; set; }
         public Guid ViewModelId { get; set; }

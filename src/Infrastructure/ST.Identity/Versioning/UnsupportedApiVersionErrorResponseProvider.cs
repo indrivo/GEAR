@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 
 namespace ST.Identity.Versioning
 {

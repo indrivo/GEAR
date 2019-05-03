@@ -8,7 +8,7 @@ using ST.Entities.Abstractions.Models.Tables;
 namespace ST.Entities.Models.Forms
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class Field : ExtendedModel
+    public class Field : BaseModel
     {
         /// <summary>
         /// Html tag

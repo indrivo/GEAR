@@ -5,7 +5,7 @@ using ST.Core;
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {
-    public class EmailUsers : ExtendedModel
+    public class EmailUsers : BaseModel
     {
         public Guid EmailId { get; set; }
         public Guid UserEmailFolderId { get; set; }

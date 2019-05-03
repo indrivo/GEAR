@@ -4,7 +4,7 @@ using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Attrs : ExtendedModel
+    public class Attrs : BaseModel
     {
         public string Key { get; set; }
         public string Value { get; set; }

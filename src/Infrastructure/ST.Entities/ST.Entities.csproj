@@ -38,9 +38,6 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
-    <PackageReference Include="ST.BaseBusinessRepository" Version="1.1.4-alpha" />
-    <PackageReference Include="ST.BaseRepository.Abstractions" Version="2.1.2" />
-    <PackageReference Include="ST.EventBus.Core" Version="1.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ST.Audit\ST.Audit.csproj" />

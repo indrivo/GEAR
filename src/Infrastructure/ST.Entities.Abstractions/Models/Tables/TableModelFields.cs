@@ -7,7 +7,7 @@ using ST.Core;
 namespace ST.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class TableModelFields : ExtendedModel
+    public class TableModelFields : BaseModel
     {
         /// <summary>
         /// AllowNull

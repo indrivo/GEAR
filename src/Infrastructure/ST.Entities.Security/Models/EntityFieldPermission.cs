@@ -6,7 +6,7 @@ using ST.Entities.Security.Enums;
 
 namespace ST.Entities.Security.Models
 {
-    public class EntityFieldPermission : ExtendedModel
+    public class EntityFieldPermission : BaseModel
     {
         /// <summary>
         /// Reference to entity field

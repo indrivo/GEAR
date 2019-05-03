@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
+using ST.Core.Helpers;
 
 namespace ST.Cache.Razor.Controllers
 {

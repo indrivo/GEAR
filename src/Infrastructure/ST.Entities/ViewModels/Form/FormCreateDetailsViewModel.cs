@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Entities.ViewModels.Form
 {
-    public class FormCreateDetailsViewModel : ExtendedModel
+    public class FormCreateDetailsViewModel : Core.BaseModel
     {
         /// <summary>
         /// Form name

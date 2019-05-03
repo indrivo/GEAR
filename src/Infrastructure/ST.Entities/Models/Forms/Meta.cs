@@ -2,7 +2,7 @@
 
 namespace ST.Entities.Models.Forms
 {
-    public class Meta : ExtendedModel
+    public class Meta : BaseModel
     {
         public string Group { get; set; }
         public string Icon { get; set; }

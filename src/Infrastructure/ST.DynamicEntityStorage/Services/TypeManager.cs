@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 
 namespace ST.DynamicEntityStorage.Services
 {

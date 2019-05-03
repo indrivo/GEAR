@@ -15,9 +15,9 @@ namespace ST.Core.Extensions
         public static Dictionary<TKey, TValue> AddRange<TKey, TValue>(this Dictionary<TKey, TValue> context, Dictionary<TKey, TValue> newItems)
         {
             if (context == null) context = new Dictionary<TKey, TValue>();
-            foreach (var (key, value) in newItems)
+            foreach (var item in newItems)
             {
-                context.Add(key, value);
+                context.Add(item.Key, item.Value);
             }
 
             return context;

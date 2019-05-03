@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ST.Audit.Extensions;
-using ST.BaseBusinessRepository;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Constants;
 using ST.Entities.Data;
@@ -873,7 +873,7 @@ namespace ST.Entities.Services
             }
             var fields = new Dictionary<string, string>();
 
-            var baseFields = typeof(ExtendedModel).GetProperties();
+            var baseFields = typeof(BaseModel).GetProperties();
             foreach (var field in form.Fields)
             {
                 var tableField = form.Table.TableFields.FirstOrDefault(x => x.Id == field.TableFieldId);

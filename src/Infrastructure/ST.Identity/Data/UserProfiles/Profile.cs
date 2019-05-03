@@ -7,7 +7,7 @@ using ST.Core;
 namespace ST.Identity.Data.UserProfiles
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class Profile : ExtendedModel
+    public class Profile : BaseModel
     {
         [Required]
         public string ProfileName { get; set; }

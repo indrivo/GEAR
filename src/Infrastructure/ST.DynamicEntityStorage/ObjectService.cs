@@ -66,7 +66,7 @@ namespace ST.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            var proprieties = typeof(ExtendedModel).GetProperties().Select(x => x.Name).ToList();
+            var proprieties = typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
 
             model = await ViewModelBuilder.ResolveAsync(context, model);
 
@@ -181,7 +181,7 @@ namespace ST.DynamicEntityStorage
                                 TypeAttributes.AnsiClass |
                                 TypeAttributes.BeforeFieldInit |
                                 TypeAttributes.AutoLayout
-                                , typeof(ExtendedModel));
+                                , typeof(BaseModel));
             return typeBuilder;
         }
         /// <summary>

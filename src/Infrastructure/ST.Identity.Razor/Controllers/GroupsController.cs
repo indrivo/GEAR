@@ -10,7 +10,6 @@ using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.Razor.ViewModels.GroupViewModels;
 using ST.Core;
 using ST.Identity.Abstractions;
@@ -149,7 +148,8 @@ namespace ST.Identity.Razor.Controllers
 			};
 			try
 			{
-				GroupRepository.Create(authGroup, User.Identity.Name);
+                Context.AuthGroups.Add(authGroup);
+                Context.SaveChanges();
 				return RedirectToAction(nameof(Index));
 			}
 			catch (DbUpdateException)
@@ -167,7 +167,7 @@ namespace ST.Identity.Razor.Controllers
 			if (!id.HasValue) return NotFound();
 
 
-			var authGroup = GroupRepository.GetSingle<AuthGroup>(id.Value);
+            var authGroup = Context.AuthGroups.FirstOrDefault(x => x.Id == id.Value);
 			if (authGroup == null)
 				return NotFound();
 			return View(authGroup);
@@ -185,14 +185,15 @@ namespace ST.Identity.Razor.Controllers
 
 			if (!ModelState.IsValid) return View(authGroup);
 			try
-			{
-				GroupRepository.Update(authGroup, User.Identity.Name);
-			}
+            {
+                authGroup.ModifiedBy = User.Identity.Name;
+
+                Context.AuthGroups.Update(authGroup);
+                Context.SaveChanges();
+            }
 			catch (DbUpdateConcurrencyException)
 			{
 				if (!AuthGroupExists(authGroup.Id)) return NotFound();
-
-				throw;
 			}
 
 			return RedirectToAction("Index");
@@ -246,7 +247,8 @@ namespace ST.Identity.Razor.Controllers
 			{
 				return Json(null);
 			}
-			var result = GroupRepository.GetSingle<AuthGroup>(group => group.Name == groupName);
+
+            var result = Context.AuthGroups.FirstAsync(group => group.Name == groupName);
 			return Json(result != null);
 		}
 	}

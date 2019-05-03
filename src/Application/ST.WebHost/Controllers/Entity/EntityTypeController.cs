@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ST.BaseBusinessRepository;
 using ST.Core;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
@@ -25,16 +24,13 @@ namespace ST.WebHost.Controllers.Entity
 	{
 		private EntitiesDbContext Context { get; }
 
-		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
 		/// <summary>
 		/// Inject logger
 		/// </summary>
 		private readonly ILogger<EntityTypeController> _logger;
 
-		public EntityTypeController(IBaseBusinessRepository<EntitiesDbContext> repository, IConfiguration configuration,
-			EntitiesDbContext context, ILogger<EntityTypeController> logger)
+		public EntityTypeController(EntitiesDbContext context, ILogger<EntityTypeController> logger)
 		{
-			Repository = repository;
 			Context = context;
 			_logger = logger;
 		}
@@ -172,20 +168,18 @@ namespace ST.WebHost.Controllers.Entity
 		public IActionResult Create(EntityTypeCreateViewModel model)
 		{
 			if (!ModelState.IsValid) return View(model);
-			var response = Repository.Add<EntityType, EntityTypeCreateViewModel>(model);
-			if (response.IsSuccess)
+			try
 			{
+				Context.EntityTypes.Add(model.Adapt<EntityType>());
+				Context.SaveChanges();
 				return RedirectToAction(nameof(Index), "EntityType");
 			}
-			else
+			catch (Exception e)
 			{
-				foreach (var e in response.Errors)
-				{
-					ModelState.AddModelError(e.Key, e.Message);
-				}
-
-				return View(model);
+				ModelState.AddModelError("fail", e.Message);
 			}
+
+			return View(model);
 		}
 
 		/// <summary>
@@ -197,10 +191,10 @@ namespace ST.WebHost.Controllers.Entity
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
 		public IActionResult Edit(Guid id)
 		{
-			var response = Repository.GetById<EntityType, EntityTypeUpdateViewModel>(id);
-			if (response.IsSuccess)
+			var response = Context.EntityTypes.FirstOrDefault(x => x.Id == id);
+			if (response != null)
 			{
-				return View(response.Result);
+				return View(response.Adapt<EntityTypeUpdateViewModel>());
 			}
 
 			return RedirectToAction(nameof(Index), "EntityType");
@@ -216,20 +210,19 @@ namespace ST.WebHost.Controllers.Entity
 		public IActionResult Edit(EntityTypeUpdateViewModel model)
 		{
 			if (!ModelState.IsValid) return View(model);
-			var response = Repository.Refresh<EntityType, EntityTypeUpdateViewModel>(model);
-			if (response.IsSuccess)
+
+			try
 			{
+				Context.EntityTypes.Update(model.Adapt<EntityType>());
+				Context.SaveChanges();
 				return RedirectToAction(nameof(Index), "EntityType");
 			}
-			else
+			catch (Exception e)
 			{
-				foreach (var e in response.Errors)
-				{
-					ModelState.AddModelError(e.Key, e.Message);
-				}
-
-				return View(model);
+				ModelState.AddModelError("fail", e.Message);
 			}
+
+			return View(model);
 		}
 
 

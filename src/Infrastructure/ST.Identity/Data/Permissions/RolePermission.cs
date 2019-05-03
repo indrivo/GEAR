@@ -11,7 +11,7 @@ namespace ST.Identity.Data.Permissions
     /// a many-to-many relationship between these two 
     /// models
     /// </summary>
-    public class RolePermission : ExtendedModel
+    public class RolePermission : BaseModel
     {
         /// <summary>
         /// The Id of the Role

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 
 namespace ST.DynamicEntityStorage.Abstractions.Extensions

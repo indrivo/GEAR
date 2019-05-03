@@ -6,7 +6,7 @@ using ST.Core;
 namespace ST.Entities.Models.Forms
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class FormType : ExtendedModel
+    public class FormType : BaseModel
     {
         public string Name { get; set; }
         public string Description { get; set; }

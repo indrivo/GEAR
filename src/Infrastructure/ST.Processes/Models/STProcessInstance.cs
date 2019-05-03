@@ -4,7 +4,7 @@ using ST.Core;
 
 namespace ST.Procesess.Models
 {
-    public class STProcessInstance : ExtendedModel
+    public class STProcessInstance : BaseModel
     {
         /// <summary>
         /// Get user who was started this instance 

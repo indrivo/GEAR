@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ST.BaseRepository;
+using ST.Core;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Data.MultiTenants;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
 {
@@ -51,7 +48,5 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
 		/// Authentication Type
 		/// </summary>
 		public AuthenticationType AuthenticationType { get; set; }
-
-		public  Guid? TenantId { get; set; }
 	}
 }

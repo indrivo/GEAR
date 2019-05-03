@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Entities.ViewModels.DynamicEntities;
 using ST.Notifications.Abstraction;
 

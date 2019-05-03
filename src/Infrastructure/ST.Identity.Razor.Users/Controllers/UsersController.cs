@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.ViewModels.DynamicEntities;
@@ -25,6 +24,7 @@ using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 
@@ -40,11 +40,6 @@ namespace ST.Identity.Razor.Users.Controllers
         private ILogger<UsersController> Logger { get; }
 
         /// <summary>
-        /// Inject custom repository 
-        /// </summary>
-        private IBaseBusinessRepository<ApplicationDbContext> Repository { get; }
-
-        /// <summary>
         /// Inject Ldap User Manager
         /// </summary>
         private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
@@ -55,13 +50,11 @@ namespace ST.Identity.Razor.Users.Controllers
             UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
             INotify<ApplicationRole> notify, IOrganizationService organizationService,
              ICacheService cacheService,
-            LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger,
-            IBaseBusinessRepository<ApplicationDbContext> repository)
+            LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger)
             : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
         {
             _ldapUserManager = ldapUserManager;
             Logger = logger;
-            Repository = repository;
         }
 
 
@@ -103,7 +96,7 @@ namespace ST.Identity.Razor.Users.Controllers
         public async Task<IActionResult> Create(CreateUserViewModel model)
         {
             model.Roles = RoleManager.Roles.AsEnumerable();
-            model.Groups = Repository.GetAll<AuthGroup>();
+            model.Groups = await ApplicationDbContext.AuthGroups.ToListAsync();
             model.Profiles = new List<EntityViewModel>();
             model.Tenants = ApplicationDbContext.Tenants.AsEnumerable();
 
@@ -396,7 +389,7 @@ namespace ST.Identity.Razor.Users.Controllers
 
             var roles = RoleManager.Roles.AsEnumerable();
             var groups = ApplicationDbContext.AuthGroups.AsEnumerable();
-            var userGroup = Repository.GetAll<UserGroup>(s => s.UserId == applicationUser.Id)
+            var userGroup = ApplicationDbContext.UserGroups.Where(x => x.UserId == applicationUser.Id).ToList()
                 .Select(s => s.AuthGroupId.ToString()).ToList();
             var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
             var userRoles = userRolesNames.Select(item => roles.FirstOrDefault(x => x.Name == item)?.Id.ToString())
@@ -444,7 +437,7 @@ namespace ST.Identity.Razor.Users.Controllers
             var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
             var roles = RoleManager.Roles.AsEnumerable();
             var groupsList = ApplicationDbContext.AuthGroups.AsEnumerable();
-            var userGroupListList = Repository.GetAll<UserGroup>(s => s.UserId == applicationUser.Id)
+            var userGroupListList = ApplicationDbContext.UserGroups.Where(x => x.UserId == applicationUser.Id).ToList()
                 .Select(s => s.AuthGroupId.ToString()).ToList();
             var userRolesNames = await UserManager.GetRolesAsync(applicationUser);
             var userRoleList = userRolesNames
@@ -604,18 +597,24 @@ namespace ST.Identity.Razor.Users.Controllers
             var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
 
-            var usersList = filtered.Select(o => new UserListItemViewModel
+            var usersList = filtered.Select(o =>
             {
-                Id = o.Id,
-                UserName = o.UserName,
-                CreatedDate = o.Created.ToShortDateString(),
-                CreatedBy = o.Author,
-                ModifiedBy = o.ModifiedBy,
-                Changed = o.Changed.ToShortDateString(),
-                Roles = UserManager.GetRolesAsync(o).GetAwaiter().GetResult(),
-                Sessions = hub.GetSessionsCountByUserId(Guid.Parse(o.Id)),
-                AuthenticationType = o.AuthenticationType.ToString(),
-                Organization = ApplicationDbContext.Tenants.FirstOrDefault(x => x.Id == o.TenantId)?.Name
+                var sessions = hub.GetSessionsCountByUserId(Guid.Parse(o.Id));
+                var roles = UserManager.GetRolesAsync(o).GetAwaiter().GetResult();
+                var org = ApplicationDbContext.Tenants.FirstOrDefault(x => x.Id == o.TenantId)?.Name;
+                return new UserListItemViewModel
+                {
+                    Id = o.Id,
+                    UserName = o.UserName,
+                    CreatedDate = o.Created.ToShortDateString(),
+                    CreatedBy = o.Author,
+                    ModifiedBy = o.ModifiedBy,
+                    Changed = o.Changed.ToShortDateString(),
+                    Roles = roles,
+                    Sessions = sessions,
+                    AuthenticationType = o.AuthenticationType.ToString(),
+                    Organization = org
+                };
             });
 
             var finalResult = new DTResult<UserListItemViewModel>

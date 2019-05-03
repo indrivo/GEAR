@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using ST.Audit.Enums;
-using ST.BaseRepository;
+using ST.Core;
 
 namespace ST.Audit.Models
 {

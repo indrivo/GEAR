@@ -1,4 +1,4 @@
-﻿using ST.BaseBusinessRepository;
+﻿using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.ViewModels.Table;
 
@@ -32,6 +32,7 @@ namespace ST.Entities.Services.Abstraction
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns><see cref="ResultModel"/></returns>
         /// Type of <see langword="bool"/>
@@ -42,6 +43,7 @@ namespace ST.Entities.Services.Abstraction
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="columnName"></param>
         /// <returns><see cref="ResultModel"/></returns>
         /// Type of <see langword="bool"/>
@@ -52,6 +54,7 @@ namespace ST.Entities.Services.Abstraction
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <param name="constraint"></param>
         /// <param name="columnName"></param>
         /// <returns><see cref="ResultModel"/></returns>
@@ -64,6 +67,7 @@ namespace ST.Entities.Services.Abstraction
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <returns><see cref="ResultModel"/></returns>
         /// Type of <see langword="bool"/>
         ResultModel<bool> CheckTableValues(string connectionString, string tableName, string tableSchema);
@@ -73,6 +77,7 @@ namespace ST.Entities.Services.Abstraction
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
+        /// <param name="tableSchema"></param>
         /// <returns><see cref="ResultModel"/></returns>
         /// Type of <see langword="bool"/>
         ResultModel<bool> DropTable(string connectionString, string tableName, string tableSchema);

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.EntityFrameworkCore;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 using ST.Configuration.Services.Abstraction;
 using ST.Entities.Data;
@@ -19,6 +18,7 @@ using ST.Entities.Settings;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.PageRender.Razor.Helpers;
 
@@ -404,7 +404,7 @@ namespace ST.PageRender.Razor.Services
                 Template = GetTemplate(x.Name, x.DataType)
             }));
 
-            var props = typeof(ExtendedModel).GetProperties().ToList();
+            var props = typeof(BaseModel).GetProperties().ToList();
 
             fields.AddRange(props.Select(x => new ViewModelFields
             {

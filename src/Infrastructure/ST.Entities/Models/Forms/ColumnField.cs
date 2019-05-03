@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {
-    public class ColumnField : ExtendedModel
+    public class ColumnField : BaseModel
     {
         public Guid ColumnId { get; set; }
         public Guid FieldId { get; set; }

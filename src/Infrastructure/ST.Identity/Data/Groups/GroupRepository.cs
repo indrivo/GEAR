@@ -2,16 +2,15 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using ST.BaseRepository;
 using ApplicationUser = ST.Identity.Abstractions.ApplicationUser;
-using AuthGroup = ST.Identity.Abstractions.AuthGroup;
 using UserGroup = ST.Identity.Abstractions.UserGroup;
 
 namespace ST.Identity.Data.Groups
 {
-    public class GroupRepository<TContext> : Repository<TContext>, IGroupRepository<TContext, ApplicationUser> where TContext : ApplicationDbContext
+    public class GroupRepository<TContext> : IGroupRepository<TContext, ApplicationUser> where TContext : ApplicationDbContext
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly TContext _context;
 
         #region Predefined GroupResults and Errros
 
@@ -31,11 +30,12 @@ namespace ST.Identity.Data.Groups
         private readonly GroupResult _emptyUserResult;
         #endregion Predefined GroupResults and Errros
 
-        public GroupRepository(TContext context, UserManager<ApplicationUser> userManager) : base(context)
+        public GroupRepository(UserManager<ApplicationUser> userManager, TContext context)
         {
             _emptyGroupNameResult = GroupResult.Failed(_emptyGroupError);
             _emptyUserResult = GroupResult.Failed(_emptyUserError);
             _userManager = userManager;
+            _context = context;
         }
 
         public GroupResult AddUserToGroup(ApplicationUser user, string groupName)
@@ -44,7 +44,7 @@ namespace ST.Identity.Data.Groups
             if (!validationResult.Succeeded)
                 return validationResult;
 
-            var group = GetSingle<AuthGroup>(gr => gr.Name == groupName);
+            var group = _context.AuthGroups.FirstOrDefault(x => x.Name == groupName);
             if (group == null)
             {
                 return GroupResult.Failed(new GroupActionError
@@ -55,7 +55,7 @@ namespace ST.Identity.Data.Groups
             }
             else
             {
-                var alreadyExists = context.UserGroups
+                var alreadyExists = _context.UserGroups
                     .Any(ug => ug.UserId == user.Id
                         && ug.AuthGroupId == group.Id);
 
@@ -76,8 +76,8 @@ namespace ST.Identity.Data.Groups
 
                 try
                 {
-                    context.UserGroups.Add(groupUserPair);
-                    context.SaveChanges();
+                    _context.UserGroups.Add(groupUserPair);
+                    _context.SaveChanges();
                     return GroupResult.Success;
                 }
                 catch (Exception ex)
@@ -116,8 +116,8 @@ namespace ST.Identity.Data.Groups
 
         public bool UserIsInGroup(ApplicationUser user, string groupName)
         {
-            var group = GetSingle<AuthGroup>(ag => ag.Name == groupName);
-            return context.UserGroups.Any(ug => ug.UserId == user.Id && ug.AuthGroupId == group.Id);
+            var group = _context.AuthGroups.FirstOrDefault(x => x.Name == groupName);
+            return _context.UserGroups.Any(ug => ug.UserId == user.Id && ug.AuthGroupId == group.Id);
         }
 
         public bool UserIsInGroup(ClaimsPrincipal user, string groupName)

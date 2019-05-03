@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Razor.Controllers
 {
@@ -16,16 +14,15 @@ namespace ST.Identity.Razor.Controllers
 	[Route("api/[controller]")]
 	public class IdentityController : Controller
 	{
-		private IBaseBusinessRepository<ApplicationDbContext> Repository { get; }
-
 		private UserManager<ApplicationUser> UserManager { get; }
 
-		public IdentityController(UserManager<ApplicationUser> userManager,
-			IBaseBusinessRepository<ApplicationDbContext> repository)
-		{
-			UserManager = userManager;
-			Repository = repository;
-		}
+        private readonly ApplicationDbContext _context;
+
+		public IdentityController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        {
+            UserManager = userManager;
+            _context = context;
+        }
 
 		/// <summary>
 		///     Get user group
@@ -43,7 +40,7 @@ namespace ST.Identity.Razor.Controllers
 					IsSuccess = false,
 					Result = string.Empty
 				});
-			var courtId = Repository.GetAll<UserGroup>(s => s.UserId == user.Id).Select(s => s.AuthGroupId)
+			var courtId = _context.UserGroups.Where(s => s.UserId == user.Id).ToList().Select(s => s.AuthGroupId)
 				.FirstOrDefault();
 			return Json(new ResultModel
 			{

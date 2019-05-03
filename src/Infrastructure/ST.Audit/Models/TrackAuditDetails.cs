@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using ST.BaseRepository;
+using ST.Core;
 
 namespace ST.Audit.Models
 {
@@ -26,10 +26,5 @@ namespace ST.Audit.Models
         /// Value
         /// </summary>
         public string Value { get; set; }
-
-        /// <summary>
-        /// Tenant id
-        /// </summary>
-        public Guid? TenantId { get; set; }
     }
 }

@@ -9,7 +9,7 @@ using ST.Core;
 namespace ST.Procesess.Models
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class STProcess : ExtendedModel
+    public class STProcess : BaseModel
     {
         /// <summary>
         /// Name of process

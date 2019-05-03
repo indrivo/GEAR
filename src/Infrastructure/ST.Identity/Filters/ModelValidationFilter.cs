@@ -3,7 +3,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using ST.BaseBusinessRepository;
+using ST.Core.Helpers;
 
 namespace ST.Identity.Filters
 {

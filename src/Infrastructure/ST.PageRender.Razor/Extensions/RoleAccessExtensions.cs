@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ST.BaseRepository;
+using ST.Core;
 
 namespace ST.PageRender.Razor.Extensions
 {

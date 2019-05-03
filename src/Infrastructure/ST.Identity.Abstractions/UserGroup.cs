@@ -3,7 +3,7 @@ using ST.Core;
 
 namespace ST.Identity.Abstractions
 {
-	public class UserGroup : ExtendedModel
+	public class UserGroup : BaseModel
 	{
 	    public AuthGroup AuthGroup { get; set; }
 		public Guid AuthGroupId { get; set; }

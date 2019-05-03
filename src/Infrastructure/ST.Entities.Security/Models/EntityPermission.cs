@@ -6,7 +6,7 @@ using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Entities.Security.Models
 {
-    public class EntityPermission : ExtendedModel
+    public class EntityPermission : BaseModel
     {
         /// <summary>
         /// Accesses

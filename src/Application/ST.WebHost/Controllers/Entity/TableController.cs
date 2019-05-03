@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Constants;
@@ -25,7 +26,6 @@ using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
@@ -47,15 +47,12 @@ namespace ST.WebHost.Controllers.Entity
 		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext,
 			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
 			IOrganizationService organizationService,
-			ILogger<TableController> logger, IHostingEnvironment env, IBaseBusinessRepository<EntitiesDbContext> repository, ICacheService cacheService)
+			ILogger<TableController> logger, IHostingEnvironment env, ICacheService cacheService)
 			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
 		{
 			_logger = logger;
-			Repository = repository;
 			ConnectionString = DbUtil.GetConnectionString(configuration, env);
 		}
-
-		private IBaseBusinessRepository<EntitiesDbContext> Repository { get; }
 
 		private (DbProviderType, string) ConnectionString { get; set; }
 
@@ -70,7 +67,7 @@ namespace ST.WebHost.Controllers.Entity
 		{
 			var model = new CreateTableViewModel
 			{
-				EntityTypes = Repository.GetAll<EntityType>(x => x.IsDeleted == false)
+				EntityTypes = Context.EntityTypes.Where(x => !x.IsDeleted).ToList()
 			};
 			return View(model);
 		}
@@ -109,16 +106,21 @@ namespace ST.WebHost.Controllers.Entity
 					Description = model.Description,
 					TenantId = CurrentUserTenantId
 				};
-				var table = Repository.Add<TableModel, CreateTableViewModel>(m);
-
-				if (!table.IsSuccess) return View(model);
-				var resultModel = await Repository
-					.GetAllIncluding<TableModel>(x => x.Include(s => s.TableFields), x => x.Id == table.Result)
-					.AsNoTracking().FirstOrDefaultAsync();
-				var sqlService = GetSqlService();
-				var response = sqlService.CreateSqlTable(resultModel, ConnectionString.Item2);
-				if (response.Result)
-					return RedirectToAction("Edit", "Table", new { id = table.Result, tab = "one" });
+				try
+				{
+					var table = m.Adapt<TableModel>();
+					await Context.Table.AddAsync(table);
+					await Context.SaveChangesAsync();
+					var sqlService = GetSqlService();
+					var response = sqlService.CreateSqlTable(table, ConnectionString.Item2);
+					if (response.Result)
+						return RedirectToAction("Edit", "Table", new { id = table.Id, tab = "one" });
+				}
+				catch (Exception e)
+				{
+					ModelState.AddModelError("fail", e.Message);
+					return View(model);
+				}
 
 				return View(model);
 			}
@@ -181,15 +183,13 @@ namespace ST.WebHost.Controllers.Entity
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
 		public async Task<IActionResult> Edit(Guid id, string tab)
 		{
-			var model = Repository.GetById<TableModel, UpdateTableViewModel>(id);
-			if (!model.IsSuccess) return RedirectToAction("Index", "Table", new { page = 1, perPage = 10 });
-			model.Result.TableFields = Repository.GetAll<TableModelFields>(x => x.TableId == id);
-			if (model.Result.ModifiedBy != null)
-				model.Result.ModifiedBy = ApplicationDbContext.Users
-					.SingleOrDefaultAsync(m => m.Id == model.Result.ModifiedBy).Result.NormalizedUserName.ToLower();
-			model.Result.Groups = await Context.TableFieldGroups.Include(s => s.TableFieldTypes).ToListAsync();
-			model.Result.TabName = tab;
-			return View(model.Result);
+			var table = await Context.Table.Include(x => x.TableFields).FirstOrDefaultAsync(x => x.Id == id);
+			if (table == null) return NotFound();
+			var model = table.Adapt<UpdateTableViewModel>();
+
+			model.Groups = await Context.TableFieldGroups.Include(s => s.TableFieldTypes).ToListAsync();
+			model.TabName = tab;
+			return View(model);
 
 		}
 
@@ -207,15 +207,17 @@ namespace ST.WebHost.Controllers.Entity
 				return View(model);
 			}
 
-			var table = Repository.Refresh<TableModel, UpdateTableViewModel>(model);
-
-			if (table.IsSuccess)
+			try
 			{
+				Context.Table.Update(model.Adapt<TableModel>());
+				Context.SaveChanges();
 				return RedirectToAction(nameof(Index), "Table");
 			}
-
-			ModelState.AddModelError(string.Empty, "Something went wrong on server");
-			return View(model);
+			catch
+			{
+				ModelState.AddModelError(string.Empty, "Something went wrong on server");
+				return View(model);
+			}
 		}
 
 		/// <summary>
@@ -226,8 +228,26 @@ namespace ST.WebHost.Controllers.Entity
 		[HttpDelete]
 		public JsonResult RemoveTableModel(Guid tableId)
 		{
-			var response = Repository.RemoveByParams<TableModel>(s => s.Id == tableId);
-			Repository.RemoveByParams<TableModelFields>(s => s.TableId == tableId);
+			var response = new ResultModel
+			{
+				Errors = new List<IErrorModel>()
+			};
+			var table = Context.Table.FirstOrDefault(x => x.Id == tableId);
+			if (table == null)
+			{
+				response.Errors.Add(new ErrorModel("fail", "Entity not found!"));
+				return Json(response);
+			}
+			try
+			{
+				Context.Table.Remove(table);
+				Context.SaveChanges();
+				response.IsSuccess = true;
+			}
+			catch
+			{
+				response.Errors.Add(new ErrorModel("fail", "Fail to save data"));
+			}
 			return Json(response);
 		}
 
@@ -240,7 +260,7 @@ namespace ST.WebHost.Controllers.Entity
 		[HttpGet]
 		public async Task<IActionResult> AddField(Guid id, string type)
 		{
-			var entitiesList = await Repository.GetAll<TableModel>().ToListAsync();
+			var entitiesList = await Context.Table.ToListAsync();
 			var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Name == type.Trim());
 			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id);
 			var configurations = new List<FieldConfigViewModel>();
@@ -277,7 +297,7 @@ namespace ST.WebHost.Controllers.Entity
 		[HttpPost]
 		public async Task<IActionResult> AddField(CreateTableFieldViewModel field)
 		{
-			var entitiesList = await Repository.GetAll<TableModel>().ToListAsync();
+			var entitiesList = await Context.Table.ToListAsync();
 			var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
 			var tableName = table?.Name;
 			var schema = table?.EntityType;
@@ -339,14 +359,20 @@ namespace ST.WebHost.Controllers.Entity
 			}
 
 			model.TableFieldConfigValues = configValues;
-			var req = Repository.Add<TableModelFields, TableModelFields>(model);
-			if (req.IsSuccess)
+
+			try
+			{
+				Context.TableFields.Add(model);
+				Context.SaveChanges();
 				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
-			else
+			}
+			catch
 			{
 				ModelState.AddModelError(string.Empty, "Fail to apply changes to database!");
-				return View(field);
 			}
+
+
+			return View(field);
 		}
 
 		/// <summary>
@@ -473,16 +499,24 @@ namespace ST.WebHost.Controllers.Entity
 				}
 
 				model.TableFieldConfigValues = configValues;
-				Repository.Refresh<TableModelFields, TableModelFields>(model);
+				try
+				{
+					Context.TableFields.Update(model);
+					Context.SaveChanges();
+					return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
+				}
+				catch
+				{
+					ModelState.AddModelError("Fail", "Fail on update data to database!");
+				}
+
 				//foreach (var item in model.TableFieldConfigValues)
 				//{
 				//	Context.TableFieldConfigValues.Update(item);
 				//	Context.SaveChanges();
 				//}
-
-				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
 			}
-			ModelState.AddModelError("Fail", "Fail on update data to database!");
+
 			return View(field);
 		}
 

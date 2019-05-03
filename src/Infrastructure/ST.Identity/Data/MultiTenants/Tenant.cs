@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ST.BaseRepository;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using ST.Core;
 
 namespace ST.Identity.Data.MultiTenants
 {
@@ -14,7 +16,7 @@ namespace ST.Identity.Data.MultiTenants
         /// Name for system
         /// </summary>
         [Required]
-        public  string MachineName { get; set; }
+        public string MachineName { get; set; }
         /// <summary>
         /// Description for this tenant
         /// </summary>
@@ -28,5 +30,17 @@ namespace ST.Identity.Data.MultiTenants
         /// Address
         /// </summary>
         public string Address { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// </summary>
+        [NotMapped]
+        public override Guid? TenantId { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// </summary>
+        [NotMapped]
+        public override int Version { get; set; }
     }
 }

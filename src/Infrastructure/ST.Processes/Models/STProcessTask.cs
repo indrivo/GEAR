@@ -8,7 +8,7 @@ using ST.Core;
 namespace ST.Procesess.Models
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class STProcessTask : ExtendedModel
+    public class STProcessTask : BaseModel
     {
         /// <summary>
         /// Name of task

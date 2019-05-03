@@ -4,7 +4,7 @@ using ST.Core;
 
 namespace ST.Entities.Models.Forms
 {
-    public class Row : ExtendedModel
+    public class Row : BaseModel
     {
         public IEnumerable<Column> Columns { get; set; }
         public Config Config { get; set; }

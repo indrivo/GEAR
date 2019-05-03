@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ST.BaseBusinessRepository;
 using ST.Cache.Abstractions;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
@@ -30,11 +29,6 @@ namespace ST.Identity.Razor.Controllers
     public class RolesController : BaseController
     {
         #region Inject
-
-        /// <summary>
-        /// Inject Base Business repository
-        /// </summary>
-        private IBaseBusinessRepository<ApplicationDbContext> Repository { get; }
 
         /// <summary>
         /// Inject configuration db context
@@ -71,18 +65,16 @@ namespace ST.Identity.Razor.Controllers
         /// <param name="logger"></param>
         /// <param name="permissionService"></param>
         /// <param name="cacheService"></param>
-        /// <param name="repository"></param>
         /// <param name="configurationDbContext"></param>
         public RolesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
             UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, SignInManager<ApplicationUser> signInManager,
             ILogger<RolesController> logger, IPermissionService permissionService, ICacheService cacheService,
-            IBaseBusinessRepository<ApplicationDbContext> repository, ConfigurationDbContext configurationDbContext)
+             ConfigurationDbContext configurationDbContext)
             : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
         {
             _signInManager = signInManager;
             _logger = logger;
             _permissionService = permissionService;
-            Repository = repository;
             ConfigurationDbContext = configurationDbContext;
         }
 
@@ -343,7 +335,7 @@ namespace ST.Identity.Razor.Controllers
 
             var model = new UpdateRoleViewModel
             {
-                Profiles = Repository.GetAll<Profile>(x => x.IsDeleted == false),
+                Profiles = ApplicationDbContext.Profiles.Where(x => !x.IsDeleted).ToList(),
                 Id = applicationRole.Id,
                 ClientName = ConfigurationDbContext.Clients.FirstOrDefault(x => x.Id.Equals(applicationRole.ClientId))
                     ?.ClientName,

@@ -2,7 +2,7 @@
 
 namespace ST.Entities.Models.Forms
 {
-    public class Settings : ExtendedModel
+    public class Settings : BaseModel
     {
     }
 }

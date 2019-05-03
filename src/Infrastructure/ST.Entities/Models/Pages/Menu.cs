@@ -4,14 +4,14 @@ using ST.Core;
 
 namespace ST.Entities.Models.Pages
 {
-    public class Menu : ExtendedModel
+    public class Menu : BaseModel
     {
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
     }
 
-    public class MenuItem : ExtendedModel
+    public class MenuItem : BaseModel
     {
         [Required]
         public string Name { get; set; }
