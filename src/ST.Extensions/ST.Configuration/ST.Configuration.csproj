@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="customEntities.json" />
+    <None Remove="EntitiesConfiguration.json" />
+    <None Remove="FieldTypes.json" />
+    <None Remove="FormTypes.json" />
+    <None Remove="FormValidations.json" />
+    <None Remove="IdentityConfiguration.json" />
+    <None Remove="NotificationTypes.json" />
+    <None Remove="ProfileEntities.json" />
+    <None Remove="SysEntities.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CustomEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EntitiesConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormValidations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IdentityConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotificationTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SysEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="ST.Localization" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ST.Cache.Extension\ST.Cache\ST.Cache.csproj" />
+    <ProjectReference Include="..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
+    <ProjectReference Include="..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
+    <ProjectReference Include="..\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
+    <ProjectReference Include="..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />
+  </ItemGroup>
+
+</Project>
