@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>ST.Procesess</AssemblyName>
+    <RootNamespace>ST.Procesess</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <Configurations>Debug;Release;Stage</Configurations>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="4.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="BPMN.Sharp">
+      <HintPath>libs\BPMN.Sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
+  </ItemGroup>
+</Project>
+
