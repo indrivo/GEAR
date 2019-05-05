@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ST.Identity.Razor.ViewModels.GroupViewModels
+namespace ST.Identity.Groups.Razor.ViewModels.GroupViewModels
 {
 	public class CreateGroupViewModel
 	{
