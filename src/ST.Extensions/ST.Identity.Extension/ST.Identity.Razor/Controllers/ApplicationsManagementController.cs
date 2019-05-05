@@ -21,7 +21,7 @@ using ST.Identity.Data.UserProfiles;
 using ST.Identity.Extensions;
 using ST.Identity.Razor.ViewModels.ApiClientViewModels;
 using ST.Identity.Razor.ViewModels.PermissionViewModels;
-using ST.Identity.Razor.ViewModels.RoleViewModels;
+using ST.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using ST.Notifications.Abstractions;
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 

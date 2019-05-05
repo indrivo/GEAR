@@ -11,20 +11,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
+using ST.Core;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Razor.ViewModels.RoleViewModels;
+using ST.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
-using ST.Core;
 
-namespace ST.Identity.Razor.Controllers
+namespace ST.Identity.Roles.Razor.Controllers
 {
     public class RolesController : BaseController
     {
@@ -450,13 +450,11 @@ namespace ST.Identity.Razor.Controllers
                     await ApplicationDbContext.SaveChangesAsync();
                 }
 
-                var permissions = new List<string>();
                 var rolePermissionList = new List<RolePermission>();
                 foreach (var _ in model.SelectedPermissionId)
                 {
                     var permission = await ApplicationDbContext.Permissions.SingleOrDefaultAsync(x => x.Id == Guid.Parse(_));
                     if (permission == null) continue;
-                    permissions.Add(permission.PermissionKey);
                     rolePermissionList.Add(new RolePermission
                     {
                         PermissionCode = permission.PermissionKey,
