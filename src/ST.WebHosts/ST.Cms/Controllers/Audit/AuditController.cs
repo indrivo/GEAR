@@ -13,25 +13,22 @@ using ST.Core.Attributes;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Procesess.Data;
 using ST.Cms.ViewModels.AuditViewModels;
+using ST.Core.BaseControllers;
+using ST.Identity.Data.MultiTenants;
 
 namespace ST.Cms.Controllers.Audit
 {
-	public class AuditController : BaseController
+	public class AuditController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
 	{
 		/// <summary>
 		/// Inject process db context
 		/// </summary>
 		private readonly ProcessesDbContext _processesDbContext;
 
-		public AuditController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager,
-			RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
-			IOrganizationService organizationService, ProcessesDbContext processesDbContext, ICacheService cacheService)
-			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
+		public AuditController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ProcessesDbContext processesDbContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
 			_processesDbContext = processesDbContext;
 		}

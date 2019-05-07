@@ -1,15 +1,14 @@
-﻿using ST.Identity.Data.UserProfiles;
-using ST.Identity.Data;
-using ST.MultiTenant.Services.Abstractions;
+﻿using ST.Identity.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
+using ST.MultiTenant.Abstractions;
 
 namespace ST.MultiTenant.Services
 {
-    public class OrganizationService : IOrganizationService
+    public class OrganizationService : IOrganizationService<Tenant>
     {
         /// <summary>
         /// Inject context

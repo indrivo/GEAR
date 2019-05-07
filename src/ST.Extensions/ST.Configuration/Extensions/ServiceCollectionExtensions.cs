@@ -29,14 +29,15 @@ using ST.Entities.Utils;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
+using ST.Identity.Data.MultiTenants;
 using ST.Identity.Extensions;
 using ST.Identity.Filters;
 using ST.Identity.Services;
 using ST.Identity.Services.Abstractions;
 using ST.Identity.Versioning;
 using ST.MPass.Gov;
+using ST.MultiTenant.Abstractions;
 using ST.MultiTenant.Services;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstraction;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Providers;
@@ -177,7 +178,7 @@ namespace ST.Configuration.Extensions
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
-            services.AddTransient<IOrganizationService, OrganizationService>();
+            services.AddTransient<IOrganizationService<Tenant>, OrganizationService>();
             services.UseCustomCacheService(env, "127.0.0.1", systemIdentifier);
             return services;
         }

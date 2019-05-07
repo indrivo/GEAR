@@ -20,8 +20,8 @@ using ST.Identity.Data;
 using ST.Identity.Data.MultiTenants;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
-using ST.Organization.Utils;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.MultiTenant.Helpers;
 
 namespace ST.Cms.Controllers
 {

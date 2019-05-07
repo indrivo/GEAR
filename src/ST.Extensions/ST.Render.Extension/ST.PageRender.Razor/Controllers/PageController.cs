@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,37 +15,31 @@ using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.PageRender.Razor.ViewModels.PageViewModels;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
+using ST.Identity.Data.MultiTenants;
 using ST.PageRender.Razor.Helpers;
 
 namespace ST.PageRender.Razor.Controllers
 {
-    public class PageController : BaseController
+    public class PageController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         /// <summary>
         /// Inject  page render
         /// </summary>
         private readonly IPageRender _pageRender;
-        private readonly IHostingEnvironment _env;
         private readonly IFormService _formService;
-        private readonly ICacheService _cacheService;
 
-        public PageController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-            INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService,
-            IPageRender pageRender, IHostingEnvironment env, IFormService formService)
-            : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
+
+        public PageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IPageRender pageRender, IFormService formService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
-            _cacheService = cacheService;
             _pageRender = pageRender;
-            _env = env;
             _formService = formService;
         }
 
@@ -216,7 +209,7 @@ namespace ST.PageRender.Razor.Controllers
             {
                 Context.Update(page);
                 Context.SaveChanges();
-                await _cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
+                await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                 return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
             }
             catch (Exception e)
@@ -393,7 +386,7 @@ namespace ST.PageRender.Razor.Controllers
                     Context.PageSettings.Update(settings);
                     Context.Pages.Update(page);
                     await Context.SaveChangesAsync();
-                    await _cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
+                    await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                     return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
                 }
                 catch (Exception e)
@@ -500,7 +493,7 @@ namespace ST.PageRender.Razor.Controllers
             try
             {
                 Context.SaveChanges();
-                _cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
+                CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                 return Json(new { message = "Page was delete with success!", success = true });
             }
             catch (Exception e)
@@ -581,7 +574,7 @@ namespace ST.PageRender.Razor.Controllers
             try
             {
                 Context.SaveChanges();
-                await _cacheService.RemoveAsync($"_page_dynamic_{pageId}");
+                await CacheService.RemoveAsync($"_page_dynamic_{pageId}");
                 result.IsSuccess = true;
             }
             catch (Exception ex)

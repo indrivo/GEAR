@@ -1,11 +1,10 @@
 @using ST.Entities.Constants
+
 @model ST.Entities.ViewModels.Table.CreateTableFieldViewModel
 
 @{
 	ViewData["Title"] = "EditField";
-
 }
-
 
 <div class="row">
 	<div class="col-lg-12">
@@ -15,11 +14,11 @@
 			</div>
 			<div class="card-body">
 				<form asp-action="EditField" role="form">
-					<input type="hidden" asp-for="Id" />
-					<input type="hidden" asp-for="TableId" />
-					<input type="hidden" asp-for="TableFieldTypeId" />
-					<input type="hidden" asp-for="DataType" />
-					<input type="hidden" asp-for="Parameter" />
+					<input type="hidden" asp-for="Id"/>
+					<input type="hidden" asp-for="TableId"/>
+					<input type="hidden" asp-for="TableFieldTypeId"/>
+					<input type="hidden" asp-for="DataType"/>
+					<input type="hidden" asp-for="Parameter"/>
 					<div class="form-body">
 						<h3 class="card-title">General information about field.</h3>
 						<hr>
@@ -28,7 +27,7 @@
 							<div class="col-md-6">
 								<div class="form-group">
 									<label asp-for="Name" class="control-label"></label>
-									<input asp-for="Name" value="@Model.Name" class="form-control" readonly="readonly" />
+									<input asp-for="Name" value="@Model.Name" class="form-control" readonly="readonly"/>
 									<span asp-validation-for="Name" class="text-danger"></span>
 								</div>
 							</div>
@@ -46,7 +45,7 @@
 							<div class="col-md-6">
 								<div class="form-group">
 									<label asp-for="DisplayName" class="control-label"></label>
-									<input asp-for="DisplayName" class="form-control" />
+									<input asp-for="DisplayName" class="form-control"/>
 									<span asp-validation-for="DisplayName" class="text-danger"></span>
 								</div>
 							</div>
@@ -62,7 +61,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-									<div class="header">Field configuration.</div><br />
+									<div class="header">Field configuration.</div><br/>
 
 									@if (Model.Configurations.Any())
 									{
@@ -72,53 +71,55 @@
 											if (Model.Parameter == FieldType.EntityReference)
 											{
 												<div class="field">
-													<p>@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></p>
-													<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" class="form-control" />
-													<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
-													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+													<p>
+														@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i>
+													</p>
+													<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" class="form-control"/>
+													<input type="hidden" name="Configurations[@i].Name" value="@item.Name"/>
+													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId"/>
 												</div>
 											}
 											else
 											{
 												<div class="field">
-													<p>@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></p>
+													<p>
+														@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i>
+													</p>
 													@switch (item.Type)
 													{
 														case "int":
 														case "decimal":
-															<input disabled name="Configurations[@i].Value" value="@item.Value" type="number" class="form-control" />
+															<input disabled name="Configurations[@i].Value" value="@item.Value" type="number" class="form-control"/>
 															break;
 														case "string":
-															<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
+															<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control"/>
 															break;
 														case "bool":
 															<div class="ui slider checkbox">
-																<input disabled type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked" />
+																<input disabled type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked"/>
 																<label for="@Model.AllowNull">Set default value true or false.</label>
 															</div>
 															break;
 														case "char":
-															<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="1" class="form-control" />
+															<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="1" class="form-control"/>
 															break;
 														case "time":
 														case "datetime":
 														case "date":
 															<div class="ui slider checkbox">
-																<input disabled type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked" />
+																<input disabled type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked"/>
 																<label for="@Model.AllowNull">Set default value current date or time.</label>
 															</div>
 															break;
 														default:
-															<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
+															<input disabled name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control"/>
 															break;
-
 													}
-													<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
-													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+													<input type="hidden" name="Configurations[@i].Name" value="@item.Name"/>
+													<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId"/>
 												</div>
 											}
 											i++;
-
 										}
 									}
 								</div>
@@ -140,7 +141,8 @@
 		</div>
 	</div>
 </div>
+
 @section Scripts
-	{
+{
 	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

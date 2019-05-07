@@ -6,51 +6,44 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ST.Audit.Extensions;
 using ST.Cache.Abstractions;
-using ST.Entities.Data;
-using ST.Identity.Abstractions;
-using ST.Identity.Data;
-using ST.Identity.Data.MultiTenants;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
-using ST.MultiTenant.Services.Abstractions;
-using ST.Notifications.Abstractions;
+using ST.Core.Abstractions;
+using ST.Core.Extensions;
 
-namespace ST.MultiTenant.Helpers
+namespace ST.Core.BaseControllers
 {
     [Authorize]
-    public class BaseController : Controller, ITenant
+    public abstract class BaseController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : Controller
+        where TUser : IdentityUser, IBaseModel
+        where TRole : IdentityRole<string>, IBaseModel
+        where TTenant : BaseModel
+        where TIdentityContext : DbContext
+        where TEntityContext : DbContext
     {
         /// <summary>
-        /// Inject organization dataService
+        /// Inject notify service
         /// </summary>
-        protected readonly IOrganizationService OrganizationService;
+        protected readonly TNotify Notify;
 
         /// <summary>
-        /// Inject notifier
+        /// Inject app context
         /// </summary>
-        protected readonly INotify<ApplicationRole> Notify;
+        protected readonly TIdentityContext ApplicationDbContext;
 
         /// <summary>
-        /// Entity DbContext
+        /// Inject entities db context
         /// </summary>
-        protected readonly EntitiesDbContext Context;
-
-        /// <summary>
-        /// Application DbContext 
-        /// </summary>
-        protected readonly ApplicationDbContext ApplicationDbContext;
+        protected readonly TEntityContext Context;
 
         /// <summary>
         /// Inject UserManager
         /// </summary>
-        protected readonly UserManager<ApplicationUser> UserManager;
+        protected readonly UserManager<TUser> UserManager;
 
         /// <summary>
         /// Inject RoleManager
         /// </summary>
-        protected readonly RoleManager<ApplicationRole> RoleManager;
+        protected readonly RoleManager<TRole> RoleManager;
 
         /// <summary>
         /// Cache Service
@@ -58,7 +51,17 @@ namespace ST.MultiTenant.Helpers
         protected readonly ICacheService CacheService;
 
 
-        /// <inheritdoc />
+        protected BaseController(UserManager<TUser> userManager, RoleManager<TRole> roleManager, ICacheService cacheService,
+            TIdentityContext applicationDbContext, TEntityContext context, TNotify notify)
+        {
+            UserManager = userManager;
+            RoleManager = roleManager;
+            CacheService = cacheService;
+            ApplicationDbContext = applicationDbContext;
+            Context = context;
+            Notify = notify;
+        }
+
         /// <summary>
         /// Tenant id
         /// </summary>
@@ -77,24 +80,12 @@ namespace ST.MultiTenant.Helpers
             }
         }
 
-        public BaseController(EntitiesDbContext context, ApplicationDbContext applicationDbContext, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, ICacheService cacheService)
-        {
-            Context = context;
-            ApplicationDbContext = applicationDbContext;
-            UserManager = userManager;
-            RoleManager = roleManager;
-            Notify = notify;
-            OrganizationService = organizationService;
-            CacheService = cacheService;
-        }
-
-
         /// <summary>
         /// Get Current User async
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        protected async Task<ApplicationUser> GetCurrentUserAsync()
+        protected async Task<TUser> GetCurrentUserAsync()
         {
             return await UserManager.GetUserAsync(User);
         }
@@ -104,7 +95,7 @@ namespace ST.MultiTenant.Helpers
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        protected ApplicationUser GetCurrentUser()
+        protected TUser GetCurrentUser()
         {
             return GetCurrentUserAsync().GetAwaiter().GetResult();
         }
@@ -114,11 +105,11 @@ namespace ST.MultiTenant.Helpers
         /// </summary>
         /// <returns></returns>
         [NonAction]
-        protected async Task<Tenant> GetOrganizationOfUser()
+        protected async Task<TTenant> GetOrganizationOfUser()
         {
             var user = await GetCurrentUserAsync();
             if (user == null) return default;
-            return await ApplicationDbContext.Tenants.FirstOrDefaultAsync(x => x.Id == user.TenantId);
+            return await ApplicationDbContext.Set<TTenant>().FirstOrDefaultAsync(x => x.Id == user.TenantId);
         }
     }
 }

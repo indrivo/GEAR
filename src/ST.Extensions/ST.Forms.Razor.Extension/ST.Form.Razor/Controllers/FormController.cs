@@ -22,13 +22,13 @@ using ST.Forms.Razor.ViewModels.FormsViewModels;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
+using ST.Identity.Data.MultiTenants;
 using Settings = ST.Core.Settings;
 
 namespace ST.Forms.Razor.Controllers
@@ -37,46 +37,34 @@ namespace ST.Forms.Razor.Controllers
 	/// <summary>
 	/// Forms manipulation
 	/// </summary>
-	[Authorize]
-	public class FormController : BaseController
-	{
+	public class FormController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    {
 		#region Inject
-		private IFormService FormService { get; }
+
+        /// <summary>
+        /// Inject form service
+        /// </summary>
+        private IFormService FormService { get; }
 
 		/// <summary>
 		/// Inject dynamic service
 		/// </summary>
 		private readonly IDynamicService _service;
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="applicationDbContext"></param>
-		/// <param name="userManager"></param>
-		/// <param name="roleManager"></param>
-		/// <param name="notify"></param>
-		/// <param name="organizationService"></param>
-		/// <param name="formService"></param>
-		/// <param name="cacheService"></param>
-		/// <param name="service"></param>
-		public FormController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-			INotify<ApplicationRole> notify, IOrganizationService organizationService, IFormService formService,
-			ICacheService cacheService,
-			 IDynamicService service)
-			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
-		{
-			FormService = formService;
-			_service = service;
-		}
 
-		/// <summary>
-		/// Create new form
-		/// </summary>
-		/// <returns></returns>
-		public IActionResult Create()
+        public FormController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicService service, IFormService formService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        {
+            _service = service;
+            FormService = formService;
+        }
+
+
+        /// <summary>
+        /// Create new form
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Create()
         {
             ViewData["models"] = Context.Table.Where(x => !x.IsDeleted).ToList();
 			ViewData["formTypes"] = Context.FormTypes.Where(x => !x.IsDeleted).ToList().OrderBy(s => s.Code);

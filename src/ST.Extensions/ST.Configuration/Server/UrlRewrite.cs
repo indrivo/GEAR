@@ -10,13 +10,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ST.Audit.Extensions;
 using ST.Core;
+using ST.Core.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Configuration.Server
 {

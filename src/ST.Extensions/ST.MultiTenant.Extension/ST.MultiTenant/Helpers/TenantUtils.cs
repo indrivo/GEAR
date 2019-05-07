@@ -1,4 +1,4 @@
-﻿namespace ST.Organization.Utils
+﻿namespace ST.MultiTenant.Helpers
 {
     public static class TenantUtils
     {

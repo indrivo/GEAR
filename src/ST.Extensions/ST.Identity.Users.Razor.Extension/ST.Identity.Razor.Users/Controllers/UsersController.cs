@@ -18,21 +18,27 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.LDAP.Services;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Data.MultiTenants;
 
 namespace ST.Identity.Razor.Users.Controllers
 {
-    public class UsersController : BaseController
+    public class UsersController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injections
+
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        {
+            _ldapUserManager = ldapUserManager;
+            Logger = logger;
+        }
 
         /// <summary>
         /// Logger
@@ -46,16 +52,6 @@ namespace ST.Identity.Razor.Users.Controllers
 
         #endregion
 
-        public UsersController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-            UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-            INotify<ApplicationRole> notify, IOrganizationService organizationService,
-             ICacheService cacheService,
-            LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger)
-            : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
-        {
-            _ldapUserManager = ldapUserManager;
-            Logger = logger;
-        }
 
 
         /// <summary>
