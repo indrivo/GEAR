@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ST.Core;
+using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Razor.ViewModels.GroupViewModels;
-using ST.Core;
-using ST.Identity.Abstractions;
+using ST.Identity.Groups.Razor.ViewModels.GroupViewModels;
 
-namespace ST.Identity.Razor.Controllers
+namespace ST.Identity.Groups.Razor.Controllers
 {
 	[Authorize]
 	public class GroupsController : Controller

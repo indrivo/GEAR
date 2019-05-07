@@ -1,12 +1,12 @@
-﻿using ST.Identity.Data.UserProfiles;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ST.Core.Abstractions;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
 
-namespace ST.MultiTenant.Services.Abstractions
+namespace ST.MultiTenant.Abstractions
 {
-    public interface IOrganizationService
+    public interface IOrganizationService<TTenant>
+        where TTenant : IBaseModel
     {
         /// <summary>
         /// Get users for organization
@@ -20,7 +20,7 @@ namespace ST.MultiTenant.Services.Abstractions
         /// </summary>
         /// <param name="organization"></param>
         /// <returns></returns>
-        IEnumerable<ApplicationUser> GetUsersByOrganization(Tenant organization);
+        IEnumerable<ApplicationUser> GetUsersByOrganization(TTenant organization);
 
         /// <summary>
         /// Get users by role
@@ -48,13 +48,13 @@ namespace ST.MultiTenant.Services.Abstractions
         /// Get all tenants
         /// </summary>
         /// <returns></returns>
-        IEnumerable<Tenant> GetAllTenants();
+        IEnumerable<TTenant> GetAllTenants();
 
         /// <summary>
         /// Get tenant by id
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        Tenant GetTenantById(Guid tenantId);
+        TTenant GetTenantById(Guid tenantId);
     }
 }

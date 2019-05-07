@@ -11,24 +11,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
+using ST.Core;
+using ST.Core.BaseControllers;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
+using ST.Identity.Data.MultiTenants;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
-using ST.Identity.Razor.ViewModels.RoleViewModels;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
+using ST.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
-using ST.Core;
 
-namespace ST.Identity.Razor.Controllers
+namespace ST.Identity.Roles.Razor.Controllers
 {
-    public class RolesController : BaseController
+    public class RolesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Inject
+
+        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        {
+            _signInManager = signInManager;
+            _logger = logger;
+            _permissionService = permissionService;
+            ConfigurationDbContext = configurationDbContext;
+        }
 
         /// <summary>
         /// Inject configuration db context
@@ -52,31 +60,6 @@ namespace ST.Identity.Razor.Controllers
 
         #endregion
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="applicationDbContext"></param>
-        /// <param name="userManager"></param>
-        /// <param name="roleManager"></param>
-        /// <param name="notify"></param>
-        /// <param name="organizationService"></param>
-        /// <param name="signInManager"></param>
-        /// <param name="logger"></param>
-        /// <param name="permissionService"></param>
-        /// <param name="cacheService"></param>
-        /// <param name="configurationDbContext"></param>
-        public RolesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-            UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify, IOrganizationService organizationService, SignInManager<ApplicationUser> signInManager,
-            ILogger<RolesController> logger, IPermissionService permissionService, ICacheService cacheService,
-             ConfigurationDbContext configurationDbContext)
-            : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
-        {
-            _signInManager = signInManager;
-            _logger = logger;
-            _permissionService = permissionService;
-            ConfigurationDbContext = configurationDbContext;
-        }
 
         /// <summary>
         /// RoleProfile / Add
@@ -450,13 +433,11 @@ namespace ST.Identity.Razor.Controllers
                     await ApplicationDbContext.SaveChangesAsync();
                 }
 
-                var permissions = new List<string>();
                 var rolePermissionList = new List<RolePermission>();
                 foreach (var _ in model.SelectedPermissionId)
                 {
                     var permission = await ApplicationDbContext.Permissions.SingleOrDefaultAsync(x => x.Id == Guid.Parse(_));
                     if (permission == null) continue;
-                    permissions.Add(permission.PermissionKey);
                     rolePermissionList.Add(new RolePermission
                     {
                         PermissionCode = permission.PermissionKey,

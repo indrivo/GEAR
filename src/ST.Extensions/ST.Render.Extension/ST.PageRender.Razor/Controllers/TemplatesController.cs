@@ -11,37 +11,25 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.RenderTemplates;
 using ST.Identity.Data;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.PageRender.Razor.Helpers;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
+using ST.Identity.Data.MultiTenants;
 
 namespace ST.PageRender.Razor.Controllers
 {
 	[Authorize(Roles = Settings.SuperAdmin)]
-	public class TemplatesController : BaseController
-	{
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="applicationDbContext"></param>
-		/// <param name="userManager"></param>
-		/// <param name="roleManager"></param>
-		/// <param name="notify"></param>
-		/// <param name="organizationService"></param>
-		/// <param name="cacheService"></param>
-		public TemplatesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
-			IOrganizationService organizationService, ICacheService cacheService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
-		{
-		}
+	public class TemplatesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    {
+        public TemplatesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        {
+        }
 
-		/// <summary>
+        /// <summary>
 		/// Load page types with ajax
 		/// </summary>
 		/// <param name="param"></param>

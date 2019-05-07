@@ -8,26 +8,23 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
 using ST.Identity.Data;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
+using ST.Identity.Data.MultiTenants;
 
 namespace ST.PageRender.Razor.Controllers
 {
-	public class BlockCategoryController : BaseController
-	{
-		public BlockCategoryController(EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-			INotify<ApplicationRole> notify, ICacheService cacheService,
-			IOrganizationService organizationService) : base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
-		{
-		}
+	public class BlockCategoryController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    {
+        public BlockCategoryController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        {
+        }
 
-		/// <summary>
+        /// <summary>
 		/// Load page types with ajax
 		/// </summary>
 		/// <param name="param"></param>

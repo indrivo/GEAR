@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using ST.Core.Extensions;
 
 namespace ST.Audit.Extensions
 {
@@ -272,7 +273,7 @@ namespace ST.Audit.Extensions
                 var tenantIdProp = eventArgs.Entry.Entity.GetType().GetProperty("TenantId");
                 if (tenantIdProp != null)
                 {
-                    audit.TenantId = tenantIdProp.GetValue(eventArgs.Entry.Entity)?.ToString()?.ToGuid();
+                    audit.TenantId = tenantIdProp.GetValue(eventArgs.Entry.Entity)?.ToString().ToGuid();
                 }
 
                 var auditDetails = new List<TrackAuditDetails>();
@@ -419,44 +420,6 @@ namespace ST.Audit.Extensions
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Parse string to Guid
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static Guid ToGuid(this string id)
-        {
-            if (string.IsNullOrEmpty(id)) return Guid.Empty;
-            try
-            {
-                return Guid.Parse(id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return Guid.Empty;
-        }
-        /// <summary>
-        /// Parse string to Guid
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static Guid? TryToGuid(this string id)
-        {
-            if (string.IsNullOrEmpty(id)) return null;
-            try
-            {
-                return Guid.Parse(id);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return null;
         }
     }
 }

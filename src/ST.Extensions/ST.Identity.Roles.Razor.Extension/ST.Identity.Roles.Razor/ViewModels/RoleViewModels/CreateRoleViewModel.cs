@@ -4,7 +4,7 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 
-namespace ST.Identity.Razor.ViewModels.RoleViewModels
+namespace ST.Identity.Roles.Razor.ViewModels.RoleViewModels
 {
 	public class CreateRoleViewModel
 	{

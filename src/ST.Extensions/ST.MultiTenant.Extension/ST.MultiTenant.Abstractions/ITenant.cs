@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ST.MultiTenant.Services.Abstractions
+namespace ST.MultiTenant.Abstractions
 {
     public interface ITenant
     {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 
-namespace ST.Identity.Razor.ViewModels.RoleViewModels
+namespace ST.Identity.Roles.Razor.ViewModels.RoleViewModels
 {
 	public class UpdateRoleViewModel
 	{

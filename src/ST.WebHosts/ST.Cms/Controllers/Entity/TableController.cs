@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
 using ST.Core;
+using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions.Models.Tables;
@@ -25,9 +26,8 @@ using ST.Entities.ViewModels.Table;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
+using ST.Identity.Data.MultiTenants;
 using ST.Identity.Data.Permissions;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Services.Abstractions;
 using ST.Notifications.Abstractions;
 
 namespace ST.Cms.Controllers.Entity
@@ -37,18 +37,14 @@ namespace ST.Cms.Controllers.Entity
 	/// <summary>
 	/// Forms manipulation
 	/// </summary>
-	public class TableController : BaseController
+	public class TableController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
 	{
 		/// <summary>
 		/// Inject logger
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
-		public TableController(IConfiguration configuration, EntitiesDbContext context, ApplicationDbContext applicationDbContext,
-			UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, INotify<ApplicationRole> notify,
-			IOrganizationService organizationService,
-			ILogger<TableController> logger, IHostingEnvironment env, ICacheService cacheService)
-			: base(context, applicationDbContext, userManager, roleManager, notify, organizationService, cacheService)
+		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
 			_logger = logger;
 			ConnectionString = DbUtil.GetConnectionString(configuration, env);
@@ -183,14 +179,16 @@ namespace ST.Cms.Controllers.Entity
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
 		public async Task<IActionResult> Edit(Guid id, string tab)
 		{
-			var table = await Context.Table.Include(x => x.TableFields).FirstOrDefaultAsync(x => x.Id == id);
+			var table = await Context.Table.FirstOrDefaultAsync(x => x.Id == id);
 			if (table == null) return NotFound();
 			var model = table.Adapt<UpdateTableViewModel>();
-
+			model.TableFields = await Context.TableFields.Where(x => x.TableId == table.Id).ToListAsync();
+			if (model.ModifiedBy != null)
+				model.ModifiedBy = ApplicationDbContext.Users
+				.SingleOrDefaultAsync(m => m.Id == model.ModifiedBy).Result.NormalizedUserName.ToLower();
 			model.Groups = await Context.TableFieldGroups.Include(s => s.TableFieldTypes).ToListAsync();
 			model.TabName = tab;
 			return View(model);
-
 		}
 
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -69,10 +70,7 @@ namespace ST.eCommerce
                 opts.Scope.Add("eCommerce");
                 opts.Events = new OpenIdConnectEvents
                 {
-                    OnTokenValidated = async ctx =>
-                    {
-                        //Ignore
-                    }
+                    OnTokenValidated = ctx => Task.CompletedTask
                 };
             });
 

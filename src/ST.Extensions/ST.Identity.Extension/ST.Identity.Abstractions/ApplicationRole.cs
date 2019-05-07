@@ -2,15 +2,15 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
+using ST.Core.Abstractions;
 
 namespace ST.Identity.Abstractions
 {
-    /// <inheritdoc />
     /// <summary>
     /// Represents the Role of the user
     /// </summary>
     [TrackEntity(Option = TrackEntityOption.SelectedFields)]
-    public class ApplicationRole : IdentityRole<string>
+    public class ApplicationRole : IdentityRole<string>, IBaseModel
     {
         /// <inheritdoc />
         /// <summary>
@@ -38,25 +38,30 @@ namespace ST.Identity.Abstractions
         {
             Name = roleName
         };
+        /// <inheritdoc />
         /// <summary>
         /// Stores Id of the User that created the object
         /// </summary>
         public string Author { get; set; }
+        /// <inheritdoc />
         /// <summary>
         /// Stores the time when object was created
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public DateTime Created { get; set; }
+        /// <inheritdoc />
         /// <summary>
         /// Stores the Id of the User that modified the object. Nullable
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public string ModifiedBy { get; set; }
+        /// <inheritdoc />
         /// <summary>
         /// Stores the time when object was modified. Nullable
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public DateTime Changed { get; set; }
+        /// <inheritdoc />
         /// <summary>
         ///  Stores state of the Object. True if object is deleted and false otherwise
         /// </summary>
@@ -85,11 +90,13 @@ namespace ST.Identity.Abstractions
 	    [TrackField(Option = TrackFieldOption.Allow)]
         public override string Name { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Tenant id
         /// </summary>
         public Guid? TenantId { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Version
         /// </summary>
