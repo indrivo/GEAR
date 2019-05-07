@@ -49,7 +49,8 @@ namespace ST.Backup.BackgroundServices
         /// <param name="state"></param>
         private void Execute(object state)
         {
-            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (!_settings.Enabled) return;
+            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var directoryPath = Path.Combine(userProfilePath, $"backup\\{_settings.BackupFolder}");
             if (!Directory.Exists(directoryPath))
             {

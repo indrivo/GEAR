@@ -29,38 +29,174 @@ $(".dynamic-table")
 		if (!match) {
 			table.button().add(0, {
 				action: function (e, dt, button, config) {
-					var t = $(button).closest(".card").find(".dynamic-table");
+					const card = $(button).closest(".card");
+					var t = card.find(".dynamic-table");
 					const row = document.createElement("tr");
 					row.setAttribute("isNew", "true");
 					const columns = dt.columns().context[0].aoColumns;
 					for (let i in columns) {
+						//Ignore hidden column
 						if (!columns[i].bVisible) continue;
-						const cell = document.createElement("td");
-						
-						if (columns[i].sTitle === window.translate("list_actions")) {
-							cell.innerHTML = "actions";
-						}
-						else {
-							if (columns[i].config.column.tableModelFields) {
-								const cellContent = document.createElement("div");
-								cellContent
-								cell.appendChild(cellContent);
+						let cell = document.createElement("td");
+						if (columns[i].sTitle === '#') {
+							cell.innerHTML = "-";
+						} else
+							if (columns[i].sTitle === window.translate("list_actions")) {
+								cell.innerHTML = `<div class="btn-group" role="group" aria-label="Action buttons">
+								<a href="javascript:void(0)" class='btn add-new-item btn-success btn-sm'><i class="fa fa-check"></i></a>
+								<a href="javascript:void(0)" class='btn cancel-new-item btn-danger btn-sm'><i class="fa fa-close"></i></a>
+								</div>`;
+								$(cell).find(".cancel-new-item").on("click", cancelNewItem);
+								$(cell).find(".add-new-item").on("click", addNewItem);
 							}
-							else {
-								cell.innerHTML = "-";
-							}
-						}
-						
+							else
+								cell = getAddRowCell(columns[i], cell);
+
+
 						row.appendChild(cell);
 					}
 					$(t).attr("add-mode", "true");
-					console.log(columns);
 					$("tbody", t).prepend(row);
+					$(card).find(".CustomizeColumns").find(".toggle-columns").addClass("disabled");
+					alert("In construction");
 				},
 				text: '<i class="fa fa-plus"></i>'
 			});
 		}
 	});
+
+
+function cancelNewItem() {
+	const context = $(this);
+	context.off("click", cancelNewItem);
+	context.parent().find(".add-new-item").off("click", addNewItem);
+	conte
+	context.closest("tr").remove();
+}
+
+function addNewItem(){
+	const context = $(this);
+	context.closest("tr")
+	alert("In construction");
+	context.off("click", addNewItem);
+}
+
+
+function getAddRowCell(column, cell) {
+	if (column.config.column.tableModelFields) {
+		const cellContent = document.createElement("div");
+		console.log(column.config.column);
+		const tableId = column.config.column.tableModelFields.table.id;
+		const propId = column.config.column.tableModelFields.id;
+		switch (column.config.column.tableModelFields.dataType) {
+			case "nvarchar":
+				{
+					const el = document.createElement("input");
+					el.setAttribute("class", "inline-add-event data-new form-control");
+					el.setAttribute("data-prop-id", propId);
+					el.setAttribute("type", "text");
+					el.setAttribute("data-entity", tableId);
+					el.setAttribute("data-type", "nvarchar");
+
+					cellContent.appendChild(el);
+
+				}
+				break;
+			case "int32":
+				{
+					const el = document.createElement("input");
+					el.setAttribute("class", "inline-add-event data-new form-control");
+					el.setAttribute("data-prop-id", propId);
+					el.setAttribute("type", "number");
+					el.setAttribute("data-entity", tableId);
+					el.setAttribute("data-type", "nvarchar");
+
+					cellContent.appendChild(el);
+				} break;
+			case "bool":
+				{
+					const div = document.createElement("div");
+					div.setAttribute("class", "checkbox checkbox-success");
+					div.style.marginTop = "-1em";
+					div.style.marginLeft = "2em";
+					const label = document.createElement("label");
+					label.setAttribute("for", "test");
+					const el = document.createElement("input");
+					el.setAttribute("class", "inline-add-event");
+					el.setAttribute("data-prop-id", propId);
+					el.setAttribute("type", "checkbox");
+					el.setAttribute("data-entity", tableId);
+					el.setAttribute("data-type", "bool");
+					el.setAttribute("id", "test");
+					el.setAttribute("name", "test");
+					el.style.maxWidth = "1em";
+
+					div.appendChild(el);
+					div.appendChild(label);
+					cellContent.appendChild(div);
+				}
+				break;
+			case "datetime":
+			case "date":
+				{
+					const el = document.createElement("input");
+					el.setAttribute("class", "inline-add-event data-new form-control");
+					el.setAttribute("data-prop-id", propId);
+					el.setAttribute("type", "text");
+					el.setAttribute("data-entity", tableId);
+					el.setAttribute("data-type", "datetime");
+					cellContent.appendChild(el);
+					$(columns[i]).html(container);
+					$(columns[i]).find(".inline-add-event")
+						.on("change", function () { })
+						.datepicker({
+							format: 'dd/mm/yyyy'
+						}).addClass("datepicker");
+				} break;
+			case "uniqueidentifier":
+				{
+					const div = document.createElement("div");
+					div.setAttribute("class", "input-group mb-3");
+					const dropdown = document.createElement("select");
+					dropdown.setAttribute("class", "inline-add-event data-new form-control");
+					dropdown.setAttribute("data-prop-id", propId);
+					dropdown.setAttribute("data-entity", tableId);
+					dropdown.setAttribute("data-type", "uniqueidentifier");
+					dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), '');
+					//Populate dropdown
+					const data = load(`/PageRender/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
+					if (data) {
+						if (data.is_success) {
+							$.each(data.result.data, function (index, obj) {
+								dropdown.options[dropdown.options.length] = new Option(obj.Name, obj.Id);
+							});
+							dropdown.setAttribute("data-ref-entity", data.result.entityName);
+						}
+					}
+					div.appendChild(dropdown);
+					const addOptionDiv = document.createElement("div");
+					addOptionDiv.setAttribute("class", "input-group-append");
+					const addOption = document.createElement("a");
+					addOption.setAttribute("class", "btn btn-success");
+					const plus = document.createElement("span");
+					plus.setAttribute("class", "fa fa-plus");
+					plus.style.color = "white";
+					addOption.appendChild(plus);
+					addOption.addEventListener("click", addNewToReference);
+					addOptionDiv.appendChild(addOption);
+					div.appendChild(addOptionDiv);
+					cellContent.appendChild(div);
+				}
+				break;
+		}
+		cell.appendChild(cellContent);
+	}
+	else {
+		cell.innerHTML = "-";
+	}
+
+	return cell;
+}
 
 
 /**

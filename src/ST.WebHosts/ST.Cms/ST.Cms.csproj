@@ -230,7 +230,6 @@
 	  <_XdtTransform>$(MSBuildThisFileDirectory)Web.$(Configuration).config</_XdtTransform>
 	  <_TargetWebConfig>$(PublishDir)Web.config</_TargetWebConfig>
 	</PropertyGroup>
-	<PackageReference Include="Microsoft.AspNetCore.All" />
 	<Exec Command="dotnet transform-xdt --xml &quot;$(_SourceWebConfig)&quot; --transform &quot;$(_XdtTransform)&quot; --output &quot;$(_TargetWebConfig)&quot;" Condition="Exists('$(_XdtTransform)')" />
   </Target>
 </Project>

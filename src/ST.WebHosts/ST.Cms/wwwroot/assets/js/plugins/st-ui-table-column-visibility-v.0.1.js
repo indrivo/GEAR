@@ -43,7 +43,7 @@ $(".table")
 				.html(
 					`<div class="col-md-2" style="margin-left: -1em;">
 												<a data-id="#${$(this)[0].id
-					}" style="margin-bottom: 0.5em;" class="list-side-toggle btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a></div>`);
+					}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a></div>`);
 			$(".list-side-toggle").click(function () {
 				toggleRightListSideBar($(this).attr("data-id"));
 			});

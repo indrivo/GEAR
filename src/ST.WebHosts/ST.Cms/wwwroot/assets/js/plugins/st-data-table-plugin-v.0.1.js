@@ -186,9 +186,9 @@ $.each(tables,
 										${getRenderRowActions(row, viewmodelData, hasEditPage, hasInlineEdit, editPageLink)}
 										${hasDeleteRestore
 								? `${row.isDeleted
-									? `<a href="#" class='btn restore-item btn-warning btn-sm' onclick="restoreItem('${row.id
+									? `<a href="javascript:void(0)" class='btn restore-item btn-warning btn-sm' onclick="restoreItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Restore</a>`
-									: `<a href="#" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
+									: `<a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
 									}', '#${listId}', '${viewmodelData.result.id}')">Delete</a>`}`
 								: ``}
 										</div>`;
@@ -209,7 +209,7 @@ $.each(tables,
 			if (row.isDeleted) return "";
 			return `${hasInlineEdit
 				? `	<a data-viewmodel="${viewmodelData.result.id
-				}" class="inline-edit btn btn-warning btn-sm" href="#">Edit inline</a>`
+				}" class="inline-edit btn btn-warning btn-sm" href="javascript:void(0)">Edit inline</a>`
 				: ``}
 
 										${hasEditPage
