@@ -30,17 +30,13 @@ using ST.PageRender.Razor.Extensions;
 using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
+using ST.Core.Extensions;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
 {
 	public class Startup
 	{
-		/// <summary>
-		/// Cookie name
-		/// </summary>
-		private const string CookieName = ".ST.ISO.Data";
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -109,6 +105,9 @@ namespace ST.Cms
 		{
 			var migrationsAssembly = typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
 
+			//Register system config
+			services.RegisterSystemConfig(Configuration);
+
 			services.Configure<SecurityStampValidatorOptions>(options =>
 			{
 				// enables immediate logout, after updating the user's stat.
@@ -128,7 +127,7 @@ namespace ST.Cms
 			});
 
 			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
-				.AddApplicationSpecificServices(HostingEnvironment, CookieName)
+				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddMPassSigningCredentials(new MPassSigningCredentials
 				{
 					ServiceProviderCertificate =

@@ -170,5 +170,5 @@
 
 
 @section Scripts{
-	<script src="~/assets/js/entity/entityValidation.js" asp-append-version="true"></script>
+	@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

@@ -7,6 +7,11 @@ namespace ST.Entities.ViewModels.Table
 {
     public class CreateTableViewModel
     {
+        /// <summary>
+        /// Entity name
+        /// </summary>
+        [Required(AllowEmptyStrings = false)]
+        [RegularExpression(@"^\S*$", ErrorMessage = "No white space allowed")]
         public string Name { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Select a schema for this table model")]

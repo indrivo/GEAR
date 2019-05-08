@@ -18,6 +18,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using ST.Cache.Abstractions;
 using ST.Cache.Extensions;
 using ST.Cache.Services;
+using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
@@ -168,9 +169,9 @@ namespace ST.Configuration.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="env"></param>
-        /// <param name="systemIdentifier"></param>
+        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, string systemIdentifier)
+        public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, IConfiguration configuration)
         {
             services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
             services.AddTransient<IEmailSender, EmailSender>();
@@ -179,6 +180,12 @@ namespace ST.Configuration.Extensions
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
             services.AddTransient<IOrganizationService<Tenant>, OrganizationService>();
+            var systemIdentifier = configuration.GetSection(nameof(SystemConfig))
+                .GetValue<string>(nameof(SystemConfig.MachineIdentifier));
+
+            if (string.IsNullOrEmpty(systemIdentifier))
+                throw new NullReferenceException("System identifier was not registered in appsettings file");
+
             services.UseCustomCacheService(env, "127.0.0.1", systemIdentifier);
             return services;
         }
@@ -311,7 +318,7 @@ namespace ST.Configuration.Extensions
                 .ImplementedBy<CacheService>());
 
             //Seed
-            var synchronizerParams = new Dictionary<string, object> { { "context", context }};
+            var synchronizerParams = new Dictionary<string, object> { { "context", context } };
             castleContainer.Register(Component.For<EntitySynchronizer>().DependsOn(synchronizerParams));
             return WindsorRegistrationHelper.CreateServiceProvider(castleContainer, services);
         }

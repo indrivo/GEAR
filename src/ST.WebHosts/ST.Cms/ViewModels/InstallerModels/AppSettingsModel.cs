@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using ST.Backup;
+using ST.Core;
 
 namespace ST.Cms.ViewModels.InstallerModels
 {
@@ -71,6 +73,11 @@ namespace ST.Cms.ViewModels.InstallerModels
 		public class RootObject
 		{
 			/// <summary>
+			/// System config data
+			/// </summary>
+			public SystemConfig SystemConfig { get; set; }
+
+			/// <summary>
 			/// Connection Strings
 			/// </summary>
 			public ConnectionStrings ConnectionStrings { get; set; }
@@ -98,6 +105,11 @@ namespace ST.Cms.ViewModels.InstallerModels
 			/// WebClients
 			/// </summary>
 			public Dictionary<string, Dictionary<string, string>> WebClients { get; set; }
+
+			/// <summary>
+			/// Backup settings
+			/// </summary>
+			public BackupSettings BackupSettings { get; set; }
 		}
 	}
 }

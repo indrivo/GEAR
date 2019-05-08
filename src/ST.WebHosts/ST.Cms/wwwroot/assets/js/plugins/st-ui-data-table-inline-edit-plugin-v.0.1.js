@@ -1,5 +1,5 @@
 /* Table inline edit
- * A plugin for inline edit
+ * A plugin for inline edit on dynamic tables 
  *
  * v1.0.0
  *
@@ -12,6 +12,8 @@
 if (typeof jQuery === 'undefined') {
 	throw new Error('Inline edit plugin require JQuery');
 }
+
+const defaultNotEditFieldContainer = "-";
 
 $(".dynamic-table")
 	.on("draw.dt", function (e, settings, json) {
@@ -39,7 +41,7 @@ $(".dynamic-table")
 						if (!columns[i].bVisible) continue;
 						let cell = document.createElement("td");
 						if (columns[i].sTitle === '#') {
-							cell.innerHTML = "-";
+							cell.innerHTML = defaultNotEditFieldContainer;
 						} else
 							if (columns[i].sTitle === window.translate("list_actions")) {
 								cell.innerHTML = `<div class="btn-group" role="group" aria-label="Action buttons">
@@ -57,8 +59,7 @@ $(".dynamic-table")
 					}
 					$(t).attr("add-mode", "true");
 					$("tbody", t).prepend(row);
-					$(card).find(".CustomizeColumns").find(".toggle-columns").addClass("disabled");
-					alert("In construction");
+					toggleVisibilityColumnsButton(button, true);
 				},
 				text: '<i class="fa fa-plus"></i>'
 			});
@@ -66,28 +67,68 @@ $(".dynamic-table")
 	});
 
 
+/**
+ * Toggle button disable state
+ * @param {*} context 
+ * @param {*} state 
+ */
+function toggleVisibilityColumnsButton(context, state) {
+	if (state) {
+		context.closest(".card")
+			.find(".CustomizeColumns")
+			.find(".toggle-columns")
+			.addClass("disabled");
+	} else {
+		context.closest(".card")
+			.find(".CustomizeColumns")
+			.find(".toggle-columns")
+			.removeClass("disabled");
+	}
+}
+
+
+/**
+ * Cancel add new item
+ */
 function cancelNewItem() {
 	const context = $(this);
 	context.off("click", cancelNewItem);
 	context.parent().find(".add-new-item").off("click", addNewItem);
-	conte
+	toggleVisibilityColumnsButton(context, false);
 	context.closest("tr").remove();
 }
 
-function addNewItem(){
+
+function addNewItem() {
 	const context = $(this);
-	context.closest("tr")
-	alert("In construction");
+	context.closest("tr");
+
+	toggleVisibilityColumnsButton(context, false);
 	context.off("click", addNewItem);
 }
 
 
+/**
+ * Return new cell container for field definition 
+ * by data type and references
+ * @param {*} column 
+ * @param {*} cell 
+ */
 function getAddRowCell(column, cell) {
 	if (column.config.column.tableModelFields) {
 		const cellContent = document.createElement("div");
 		console.log(column.config.column);
+
+		//entity ref id
 		const tableId = column.config.column.tableModelFields.table.id;
+
+		//store the id of table field
 		const propId = column.config.column.tableModelFields.id;
+
+		//required state
+		const allowNull = column.config.column.tableModelFields.allowNull;
+
+		//create ui container element by field data type
 		switch (column.config.column.tableModelFields.dataType) {
 			case "nvarchar":
 				{
@@ -97,6 +138,10 @@ function getAddRowCell(column, cell) {
 					el.setAttribute("type", "text");
 					el.setAttribute("data-entity", tableId);
 					el.setAttribute("data-type", "nvarchar");
+					if (!allowNull) {
+						alert();
+						el.setAttribute("required", "required");
+					}
 
 					cellContent.appendChild(el);
 
@@ -110,6 +155,9 @@ function getAddRowCell(column, cell) {
 					el.setAttribute("type", "number");
 					el.setAttribute("data-entity", tableId);
 					el.setAttribute("data-type", "nvarchar");
+					if (!allowNull) {
+						el.setAttribute("required", "required");
+					}
 
 					cellContent.appendChild(el);
 				} break;
@@ -192,7 +240,7 @@ function getAddRowCell(column, cell) {
 		cell.appendChild(cellContent);
 	}
 	else {
-		cell.innerHTML = "-";
+		cell.innerHTML = defaultNotEditFieldContainer;
 	}
 
 	return cell;

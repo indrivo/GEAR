@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
 using ST.Core;
@@ -27,7 +28,10 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// Name
         /// </summary>
+        [Required]
+        [RegularExpression(@"^\S*$", ErrorMessage = "No white space allowed")]
         public string Name { get; set; }
+
         /// <summary>
         /// Display name
         /// </summary>
@@ -50,7 +54,7 @@ namespace ST.Entities.Abstractions.Models.Tables
         public TableModel Table { get; set; }
 
         /// <summary>
-        /// Parrent table id
+        /// Parent table id
         /// </summary>
         public Guid TableId { get; set; }
 
