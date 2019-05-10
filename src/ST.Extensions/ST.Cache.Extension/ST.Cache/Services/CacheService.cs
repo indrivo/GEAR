@@ -2,9 +2,11 @@
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using ST.Cache.Abstractions;
+using ST.Cache.Exceptions;
 
 namespace ST.Cache.Services
 {
@@ -15,13 +17,22 @@ namespace ST.Cache.Services
         /// </summary>
         private readonly IDistributedCache _cache;
 
+
+        /// <summary>
+        /// Redis host
+        /// </summary>
+        private readonly string _redisHost;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="cache"></param>
-        public CacheService(IDistributedCache cache)
+        /// <param name="options"></param>
+        public CacheService(IDistributedCache cache, IOptions<RedisConnectionConfig> options)
         {
             _cache = cache;
+            if (options.Value == null) throw new InvalidCacheConfigurationException();
+            _redisHost = $"{options.Value.Host}:{options.Value.Port}";
         }
 
         /// <summary>
@@ -74,7 +85,7 @@ namespace ST.Cache.Services
         /// <returns></returns>
         public virtual IEnumerable<RedisKey> GetAllKeys()
         {
-            var conn = new RedisConnection();
+            var conn = new RedisConnection(_redisHost);
             return conn.GetAll();
         }
 
@@ -85,7 +96,7 @@ namespace ST.Cache.Services
         /// <returns></returns>
         public virtual IEnumerable<RedisKey> GetAllByPatternFilter(string pattern)
         {
-            var conn = new RedisConnection();
+            var conn = new RedisConnection(_redisHost);
             return conn.GetByPatternFilter(pattern);
         }
 
@@ -100,11 +111,11 @@ namespace ST.Cache.Services
         /// Is redis connected
         /// </summary>
         /// <returns></returns>
-        public virtual bool IsConnected() => new RedisConnection().IsConnected();
+        public virtual bool IsConnected() => new RedisConnection(_redisHost).IsConnected();
 
         /// <summary>
         /// Flush all keys
         /// </summary>
-        public virtual void FlushAll() => new RedisConnection().FlushAll();
+        public virtual void FlushAll() => new RedisConnection(_redisHost).FlushAll();
     }
 }

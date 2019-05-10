@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ST.Audit.Enums;
 using ST.Audit.Extensions;
@@ -22,6 +23,7 @@ using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
+using ST.Identity.Abstractions;
 
 namespace ST.DynamicEntityStorage
 {
@@ -57,8 +59,16 @@ namespace ST.DynamicEntityStorage
         {
             get
             {
-                return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
-                           ?.ToGuid() ?? Settings.TenantId;
+                Guid? val = _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
+                              ?.ToGuid() ?? Settings.TenantId;
+                var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
+                if (val != Guid.Empty) return val;
+                var user = userManager.GetUserAsync(_httpContextAccessor?.HttpContext?.User).GetAwaiter()
+                    .GetResult();
+                var userClaims = userManager.GetClaimsAsync(user).GetAwaiter().GetResult();
+                val = userClaims?.FirstOrDefault(x => x.Type == "tenant" && !string.IsNullOrEmpty(x.Value))?.Value?.ToGuid();
+
+                return val;
             }
         }
 

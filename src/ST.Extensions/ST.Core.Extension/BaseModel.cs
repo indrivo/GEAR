@@ -20,7 +20,6 @@ namespace ST.Core
             Changed = DateTime.UtcNow;
         }
 
-        /// <inheritdoc />
         /// <summary>Stores Id of the Object</summary>
         public Guid Id { get; set; }
 

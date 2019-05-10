@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ST.Cache.Abstractions;
+using ST.Cms.Abstractions;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
@@ -21,6 +23,8 @@ using ST.Identity.Data.MultiTenants;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.Core.Abstractions;
+using ST.Identity.Abstractions.Enums;
 using ST.MultiTenant.Helpers;
 
 namespace ST.Cms.Controllers
@@ -78,6 +82,13 @@ namespace ST.Cms.Controllers
 		private readonly bool _isConfigured;
 
 		/// <summary>
+		/// Queue for run background tasks
+		/// </summary>
+		private IBackgroundTaskQueue Queue { get; }
+
+		private readonly IServiceScopeFactory _serviceScopeFactory;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="hostingEnvironment"></param>
@@ -89,10 +100,12 @@ namespace ST.Cms.Controllers
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
 		/// <param name="dynamicService"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService)
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_dynamicService = dynamicService;
+			Queue = queue;
+			_serviceScopeFactory = serviceScopeFactory;
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_signInManager = signInManager;
@@ -271,6 +284,141 @@ namespace ST.Cms.Controllers
 			//sign in user
 			await _signInManager.SignInAsync(superUser, true);
 			return RedirectToAction("Index", "Home");
+		}
+
+
+		/// <summary>
+		/// Sync commerce data 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> SyncCommerceAccountAsync([FromBody]SyncEcommerceAccountViewModel model)
+		{
+			var response = new ResultModel
+			{
+				Errors = new List<IErrorModel>()
+			};
+
+			if (!ModelState.IsValid)
+			{
+				response.Errors.Add(new ErrorModel("validate", "Model is not valid!"));
+				return Json(response);
+			}
+
+			var tenantMachineName = TenantUtils.GetTenantMachineName(model.CompanyName);
+			if (string.IsNullOrEmpty(tenantMachineName))
+			{
+				response.Errors.Add(new ErrorModel(string.Empty, "Invalid name for organization"));
+				return Json(response);
+			}
+
+			var tenantExist =
+				await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName);
+			if (tenantExist)
+			{
+				response.Errors.Add(new ErrorModel(string.Empty,
+					"Invalid name for organization because is used for another organization or organization was configured"));
+				return Json(response);
+			}
+
+			var tenant = new Tenant
+			{
+				Name = model.CompanyName,
+				MachineName = tenantMachineName,
+				Created = DateTime.Now,
+				Changed = DateTime.Now,
+				Author = "System"
+			};
+
+			var userExist = await _applicationDbContext.Users.FirstOrDefaultAsync(x => string.Equals(x.Email, model.User.Email, StringComparison.CurrentCultureIgnoreCase));
+			if (userExist != null)
+			{
+				response.Errors.Add(new ErrorModel(string.Empty,
+					"Invalid user!"));
+				return Json(response);
+			}
+
+			var user = new ApplicationUser
+			{
+				UserName = model.User.UserName,
+				Email = model.User.Email,
+				AuthenticationType = AuthenticationType.Local,
+				TenantId = tenant.Id,
+				Created = DateTime.Now,
+				Changed = DateTime.Now,
+				Author = "System",
+				ModifiedBy = "System"
+			};
+
+			Queue.QueueBackgroundWorkItem(async token =>
+			{
+				using (var scope = _serviceScopeFactory.CreateScope())
+				{
+					var scopedServices = scope.ServiceProvider;
+					var service = scopedServices.GetRequiredService<ISyncInstaller>();
+					var localUser = user;
+					var localTenant = tenant;
+					var localData = model;
+					await service.RegisterCommerceUser(localUser, localTenant, localData);
+				}
+			});
+
+			////To remove
+			//var userCreate = await _signInManager.UserManager.CreateAsync(user, model.Password);
+			//if (!userCreate.Succeeded)
+			//{
+			//	response.Errors.Add(new ErrorModel("fail", "Fail to create user!"));
+			//	return Json(response);
+			//}
+
+			//await _signInManager.UserManager.AddToRoleAsync(user, "Company Administrator");
+			//await _applicationDbContext.Tenants.AddAsync(tenant);
+
+			////Update super user information
+			//await _applicationDbContext.SaveChangesAsync();
+
+			////Create dynamic tables for configured tenant
+			//await _dynamicService.CreateDynamicTables(tenant.Id, tenantMachineName);
+
+			////Register new tenant to cache
+			//await _cacheService.Set($"_tenant_{tenant.MachineName}", new TenantSettings
+			//{
+			//	AllowAccess = true,
+			//	TenantId = tenant.Id,
+			//	TenantName = tenant.MachineName
+			//});
+
+			////Seed entity
+			//await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
+			//{
+			//	Changed = DateTime.Now,
+			//	Created = DateTime.Now,
+			//	IsSystem = true,
+			//	Author = "System",
+			//	MachineName = tenant.MachineName,
+			//	Name = tenant.MachineName,
+			//	TenantId = tenant.Id
+			//});
+
+			//await _entitiesDbContext.SaveChangesAsync();
+
+			////Send welcome message to user
+			//await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(user.Id) }, new SystemNotifications
+			//{
+			//	Content = $"Welcome to ISO DMS {model.User.FullName}",
+			//	Subject = "Info",
+			//	NotificationTypeId = NotificationType.Info
+			//});
+
+			//await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+			//{
+			//	Content = $"{model.User.Email} was added into system as Company administrator",
+			//	Subject = "Info",
+			//	NotificationTypeId = NotificationType.Info
+			//});
+			response.IsSuccess = true;
+			return Json(response);
 		}
 
 		/// <summary>

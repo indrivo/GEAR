@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Cache.Abstractions;
+using ST.Cache.Exceptions;
 using ST.Cache.Services;
 
 namespace ST.Cache.Extensions
@@ -12,14 +14,18 @@ namespace ST.Cache.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="environment"></param>
-        /// <param name="ip"></param>
+        /// <param name="configuration"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public static IServiceCollection UseCustomCacheService(this IServiceCollection services, IHostingEnvironment environment, string ip = "127.0.0.1", string instance = "ST.CORE")
+        public static IServiceCollection UseCustomCacheService(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string instance = "ST.CORE")
         {
+            var redisSection = configuration.GetSection("RedisConnection");
+            var redisConfig = redisSection.Get<RedisConnectionConfig>();
+            if (redisConfig == null) throw new InvalidCacheConfigurationException();
+            services.Configure<RedisConnectionConfig>(redisSection);
             services.AddDistributedRedisCache(opts =>
             {
-                opts.Configuration = ip;
+                opts.Configuration = redisConfig.Host;
                 opts.InstanceName = $"{instance}.{environment.EnvironmentName}@";
             });
             services.AddTransient<ICacheService, CacheService>();

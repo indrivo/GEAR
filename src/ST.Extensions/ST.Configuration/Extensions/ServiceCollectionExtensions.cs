@@ -186,7 +186,7 @@ namespace ST.Configuration.Extensions
             if (string.IsNullOrEmpty(systemIdentifier))
                 throw new NullReferenceException("System identifier was not registered in appsettings file");
 
-            services.UseCustomCacheService(env, "127.0.0.1", systemIdentifier);
+            services.UseCustomCacheService(env, configuration, systemIdentifier);
             return services;
         }
 
@@ -308,8 +308,11 @@ namespace ST.Configuration.Extensions
             //Register notifier 
             castleContainer.Register(Component.For<INotify<ApplicationRole>>().ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
 
+            //Register user manager
+            castleContainer.Register(Component.For<UserManager<ApplicationUser>>());
+
             //Dynamic data dataService
-            castleContainer.Register(Component.For<IDynamicService>()
+           castleContainer.Register(Component.For<IDynamicService>()
                 .ImplementedBy<DynamicService<EntitiesDbContext>>()
                 .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 

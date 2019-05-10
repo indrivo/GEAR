@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
+using ST.Identity.Services.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 
@@ -35,18 +38,24 @@ namespace ST.Notifications.Services
         private readonly ILogger<Notify<TContext, TRole, TUser>> _logger;
 
         /// <summary>
+        /// Email sender
+        /// </summary>
+        private readonly IEmailSender _emailSender;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataService"></param>
         /// <param name="context"></param>
         /// <param name="hub"></param>
         /// <param name="logger"></param>
-        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger)
+        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender)
         {
             _dataService = dataService;
             _context = context;
             _hub = hub;
             _logger = logger;
+            _emailSender = emailSender;
         }
         /// <inheritdoc />
         /// <summary>
@@ -109,8 +118,15 @@ namespace ST.Notifications.Services
         {
             var users = usersIds.ToList();
             _hub.SentNotification(users, notification);
+            var emails = new HashSet<string>();
             foreach (var user in users)
             {
+                var u = _context.Users.FirstOrDefault(x => x.Id.ToGuid() == user);
+                if (u != null)
+                {
+                    emails.Add(u.Email);
+                }
+
                 notification.Id = Guid.NewGuid();
                 notification.UserId = user;
                 var response = await _dataService.AddWithReflection(notification);
@@ -119,6 +135,7 @@ namespace ST.Notifications.Services
                     _logger.LogError("Fail to add new notification in database");
                 }
             }
+            await _emailSender.SendEmailAsync(emails, notification.Content, notification.Subject);
         }
         /// <inheritdoc />
         /// <summary>

@@ -22,7 +22,7 @@ using ST.Identity.Data.MultiTenants;
 
 namespace ST.PageRender.Razor.Controllers
 {
-	[Authorize(Roles = Settings.SuperAdmin)]
+	[Authorize]
 	public class TemplatesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         public TemplatesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
@@ -36,6 +36,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AjaxOnly]
+        [Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult LoadPages(DTParameters param)
 		{
 			var filtered = Context.Filter<Template>(param.Search.Value, param.SortOrder, param.Start,
@@ -51,11 +52,12 @@ namespace ST.PageRender.Razor.Controllers
 			};
 			return Json(finalResult);
 		}
-		/// <summary>
-		/// Index view
-		/// </summary>
-		/// <returns></returns>
-		public IActionResult Index()
+        /// <summary>
+        /// Index view
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public IActionResult Index()
 		{
 			return View();
 		}
@@ -65,7 +67,8 @@ namespace ST.PageRender.Razor.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Create()
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public IActionResult Create()
 		{
 			return View();
 		}
@@ -76,7 +79,8 @@ namespace ST.PageRender.Razor.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public async Task<IActionResult> Create([Required]Template model)
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public async Task<IActionResult> Create([Required]Template model)
 		{
 			if (Context.Templates.Any(x => x.Name == model.Name))
 			{
@@ -111,7 +115,8 @@ namespace ST.PageRender.Razor.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public IActionResult Edit(Guid id)
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public IActionResult Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
 			var model = Context.Templates.FirstOrDefault(x => x.Id.Equals(id));
@@ -126,7 +131,8 @@ namespace ST.PageRender.Razor.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public async Task<IActionResult> Edit(Template model)
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public async Task<IActionResult> Edit(Template model)
 		{
 			if (model == null) return NotFound();
 			var dataModel = Context.Templates.FirstOrDefault(x => x.Id.Equals(model.Id));
@@ -165,7 +171,8 @@ namespace ST.PageRender.Razor.Controllers
 		/// <returns></returns>
 		[Route("api/[controller]/[action]")]
 		[ValidateAntiForgeryToken]
-		[HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        [Authorize(Roles = Settings.SuperAdmin)]
+        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		public async Task<JsonResult> Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete template!", success = false });

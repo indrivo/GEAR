@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Core.Abstractions;
+using ST.Core.Services;
 
 namespace ST.Core.Extensions
 {
@@ -14,6 +16,8 @@ namespace ST.Core.Extensions
         public static IServiceCollection RegisterSystemConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SystemConfig>(configuration.GetSection(nameof(SystemConfig)));
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             return services;
         }
     }

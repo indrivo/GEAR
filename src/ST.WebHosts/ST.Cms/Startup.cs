@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Backup.Extensions;
+using ST.Cms.Abstractions;
+using ST.Cms.Services;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
 using ST.DynamicEntityStorage.Extensions;
@@ -31,6 +33,7 @@ using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core.Extensions;
+using ST.Identity.Models.EmailViewModels;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -160,6 +163,7 @@ namespace ST.Cms
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
 			services.Configure<LdapSettings>(Configuration.GetSection(nameof(LdapSettings)));
+
 			//Add configured swagger
 			services.AddSwagger(Configuration, HostingEnvironment);
 
@@ -177,6 +181,10 @@ namespace ST.Cms
 			services.AddPageRender();
 			services.AddProcesses();
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
+			services.AddTransient<ISyncInstaller, SyncInstaller>();
+
+			//Register email credentials
+			services.Configure<EmailSettingsViewModel>(Configuration.GetSection("EmailSettings"));
 
 
 			if (Installation.Application.IsHostedOnLinux())
