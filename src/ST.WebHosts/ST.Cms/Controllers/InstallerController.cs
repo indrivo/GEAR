@@ -351,7 +351,7 @@ namespace ST.Cms.Controllers
 				ModifiedBy = "System"
 			};
 
-			Queue.QueueBackgroundWorkItem(async token =>
+			Queue.PushQueueBackgroundWorkItem(async token =>
 			{
 				using (var scope = _serviceScopeFactory.CreateScope())
 				{
@@ -364,59 +364,6 @@ namespace ST.Cms.Controllers
 				}
 			});
 
-			////To remove
-			//var userCreate = await _signInManager.UserManager.CreateAsync(user, model.Password);
-			//if (!userCreate.Succeeded)
-			//{
-			//	response.Errors.Add(new ErrorModel("fail", "Fail to create user!"));
-			//	return Json(response);
-			//}
-
-			//await _signInManager.UserManager.AddToRoleAsync(user, "Company Administrator");
-			//await _applicationDbContext.Tenants.AddAsync(tenant);
-
-			////Update super user information
-			//await _applicationDbContext.SaveChangesAsync();
-
-			////Create dynamic tables for configured tenant
-			//await _dynamicService.CreateDynamicTables(tenant.Id, tenantMachineName);
-
-			////Register new tenant to cache
-			//await _cacheService.Set($"_tenant_{tenant.MachineName}", new TenantSettings
-			//{
-			//	AllowAccess = true,
-			//	TenantId = tenant.Id,
-			//	TenantName = tenant.MachineName
-			//});
-
-			////Seed entity
-			//await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
-			//{
-			//	Changed = DateTime.Now,
-			//	Created = DateTime.Now,
-			//	IsSystem = true,
-			//	Author = "System",
-			//	MachineName = tenant.MachineName,
-			//	Name = tenant.MachineName,
-			//	TenantId = tenant.Id
-			//});
-
-			//await _entitiesDbContext.SaveChangesAsync();
-
-			////Send welcome message to user
-			//await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(user.Id) }, new SystemNotifications
-			//{
-			//	Content = $"Welcome to ISO DMS {model.User.FullName}",
-			//	Subject = "Info",
-			//	NotificationTypeId = NotificationType.Info
-			//});
-
-			//await _notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
-			//{
-			//	Content = $"{model.User.Email} was added into system as Company administrator",
-			//	Subject = "Info",
-			//	NotificationTypeId = NotificationType.Info
-			//});
 			response.IsSuccess = true;
 			return Json(response);
 		}

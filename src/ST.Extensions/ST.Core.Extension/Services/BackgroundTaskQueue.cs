@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ST.Core.Abstractions;
@@ -14,7 +12,7 @@ namespace ST.Core.Services
             new ConcurrentQueue<Func<CancellationToken, Task>>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
 
-        public void QueueBackgroundWorkItem(
+        public void PushQueueBackgroundWorkItem(
             Func<CancellationToken, Task> workItem)
         {
             if (workItem == null)

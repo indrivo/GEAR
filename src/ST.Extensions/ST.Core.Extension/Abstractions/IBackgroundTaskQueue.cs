@@ -6,7 +6,7 @@ namespace ST.Core.Abstractions
 {
     public interface IBackgroundTaskQueue
     {
-        void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
+        void PushQueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
 
         Task<Func<CancellationToken, Task>> DequeueAsync(
             CancellationToken cancellationToken);

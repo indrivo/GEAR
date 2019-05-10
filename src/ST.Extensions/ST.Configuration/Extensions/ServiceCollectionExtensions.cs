@@ -306,7 +306,8 @@ namespace ST.Configuration.Extensions
             castleContainer.Register(Component.For<Notificator>().Named("Email")
                 .DependsOn(Dependency.OnComponent<INotificationProvider, EmailNotificationProvider>()));
             //Register notifier 
-            castleContainer.Register(Component.For<INotify<ApplicationRole>>().ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
+            castleContainer.Register(Component.For<INotify<ApplicationRole>>()
+                .ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
 
             //Register user manager
             castleContainer.Register(Component.For<UserManager<ApplicationUser>>());
