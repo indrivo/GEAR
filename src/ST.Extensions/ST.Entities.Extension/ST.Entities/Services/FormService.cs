@@ -605,6 +605,7 @@ namespace ST.Entities.Services
         {
             var fields = _context.TableFields
                 .Include(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
                 .Where(x => x.TableId == tableId);
 
             return new JsonResult(new ResultModel

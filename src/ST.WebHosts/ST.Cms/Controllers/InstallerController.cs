@@ -295,7 +295,7 @@ namespace ST.Cms.Controllers
 		[HttpPost]
 		public async Task<JsonResult> SyncCommerceAccountAsync([FromBody]SyncEcommerceAccountViewModel model)
 		{
-			var response = new ResultModel
+			var response = new ResultModel<CommerceSyncResultViewModel>
 			{
 				Errors = new List<IErrorModel>()
 			};
@@ -365,6 +365,11 @@ namespace ST.Cms.Controllers
 			});
 
 			response.IsSuccess = true;
+			response.Result = new CommerceSyncResultViewModel
+			{
+				TenantId = tenant.Id,
+				TenantMachineName = tenantMachineName
+			};
 			return Json(response);
 		}
 

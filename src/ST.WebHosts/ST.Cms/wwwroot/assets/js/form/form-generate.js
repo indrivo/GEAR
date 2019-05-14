@@ -189,7 +189,17 @@ Form.prototype.pushTextarea = function (model) {
 
 
 Form.prototype.getReferenceTable = function (conf) {
-	const refFields = load(`/Form/GetEntityReferenceFields?entityName=${conf[0].value}&&entitySchema=${conf[1].value}`);
+	const schema = conf.filter(x => {
+		return x.tableFieldConfig.name === "ForeingSchemaTable";
+	});
+	const entity = conf.filter(x => {
+		return x.tableFieldConfig.name === "ForeingTable";
+	});
+	console.log(entity, schema);
+	if (!entity || !schema) {
+		alert("Error on identify reference table definition!");
+	}
+	const refFields = load(`/Form/GetEntityReferenceFields?entityName=${entity[0].value}&&entitySchema=${schema[0].value}`);
 	return refFields.map(field => {
 		return {
 			label: field.name,
@@ -299,6 +309,7 @@ Form.prototype.getReferenceSelectOnChangeTable = function (tableId, fieldId) {
  */
 Form.prototype.pushSelect = function (model) {
 	const fieldId = st.newGuid();
+	const fieldReference = this.getReferenceTable(model.fieldConfigurations);
 	const field = {
 		[fieldId]: {
 			"tag": "select",
@@ -309,7 +320,7 @@ Form.prototype.pushSelect = function (model) {
 				"required": false,
 				"className": "",
 				"tableFieldId": model.fieldTypeId,
-				"fieldReference": this.getReferenceTable(model.fieldConfigurations)
+				"fieldReference": fieldReference
 			},
 			"meta": {
 				"group": "common",
