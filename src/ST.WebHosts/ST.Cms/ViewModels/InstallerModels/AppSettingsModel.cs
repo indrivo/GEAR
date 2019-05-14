@@ -1,4 +1,9 @@
 using System.Collections.Generic;
+using ST.Backup;
+using ST.Cache.Abstractions;
+using ST.Core;
+using ST.Identity.Models.EmailViewModels;
+using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 
 namespace ST.Cms.ViewModels.InstallerModels
 {
@@ -36,27 +41,13 @@ namespace ST.Cms.ViewModels.InstallerModels
 			public string Path { get; set; }
 		}
 
-		public class Language
-		{
-			public string Identifier { get; set; }
-			public string Name { get; set; }
-		}
-
-		public class LocalizationConfig
-		{
-			public List<Language> Languages { get; set; }
-			public string Path { get; set; }
-			public string SessionStoreKeyName { get; set; }
-			public string DefaultLanguage { get; set; }
-		}
-
 		public class Credentials
 		{
 			public string DomainUserName { get; set; }
 			public string Password { get; set; }
 		}
 
-		public class LdapSettings
+		public sealed class LdapSettings
 		{
 			public string ServerName { get; set; }
 			public int ServerPort { get; set; }
@@ -68,8 +59,13 @@ namespace ST.Cms.ViewModels.InstallerModels
 			public string DomainDistinguishedName { get; set; }
 		}
 
-		public class RootObject
+		public sealed class RootObject
 		{
+			/// <summary>
+			/// System config data
+			/// </summary>
+			public SystemConfig SystemConfig { get; set; }
+
 			/// <summary>
 			/// Connection Strings
 			/// </summary>
@@ -85,7 +81,7 @@ namespace ST.Cms.ViewModels.InstallerModels
 			/// <summary>
 			/// Localization Config
 			/// </summary>
-			public LocalizationConfig LocalizationConfig { get; set; }
+			public LocalizationConfigModel LocalizationConfig { get; set; }
 			/// <summary>
 			/// Is Configured
 			/// </summary>
@@ -98,6 +94,21 @@ namespace ST.Cms.ViewModels.InstallerModels
 			/// WebClients
 			/// </summary>
 			public Dictionary<string, Dictionary<string, string>> WebClients { get; set; }
+
+			/// <summary>
+			/// Backup settings
+			/// </summary>
+			public BackupSettings BackupSettings { get; set; }
+
+			/// <summary>
+			/// Email settings
+			/// </summary>
+			public EmailSettingsViewModel EmailSettings { get; set; }
+
+			/// <summary>
+			/// Redis connection configuration
+			/// </summary>
+			public RedisConnectionConfig RedisConnection { get; set; }
 		}
 	}
 }

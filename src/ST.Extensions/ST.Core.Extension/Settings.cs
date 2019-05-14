@@ -29,4 +29,12 @@ namespace ST.Core
             public const string CategoryRequirements = "CategoryRequirements";
         }
     }
+
+    public class SystemConfig
+    {
+        /// <summary>
+        /// This property value is used for cookie name and redis reserved key
+        /// </summary>
+        public static string MachineIdentifier { get; set; }
+    }
 }

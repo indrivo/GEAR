@@ -26,5 +26,12 @@ namespace ST.Audit.Models
         /// Value
         /// </summary>
         public string Value { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Ignore version field
+        /// </summary>
+        [NotMapped]
+        public override int Version { get; set; }
     }
 }

@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ST.Cache.Abstractions;
+using ST.Cms.Abstractions;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
@@ -21,6 +23,8 @@ using ST.Identity.Data.MultiTenants;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.Core.Abstractions;
+using ST.Identity.Abstractions.Enums;
 using ST.MultiTenant.Helpers;
 
 namespace ST.Cms.Controllers
@@ -78,6 +82,13 @@ namespace ST.Cms.Controllers
 		private readonly bool _isConfigured;
 
 		/// <summary>
+		/// Queue for run background tasks
+		/// </summary>
+		private IBackgroundTaskQueue Queue { get; }
+
+		private readonly IServiceScopeFactory _serviceScopeFactory;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="hostingEnvironment"></param>
@@ -89,10 +100,12 @@ namespace ST.Cms.Controllers
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
 		/// <param name="dynamicService"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService)
+		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_dynamicService = dynamicService;
+			Queue = queue;
+			_serviceScopeFactory = serviceScopeFactory;
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_signInManager = signInManager;
@@ -271,6 +284,93 @@ namespace ST.Cms.Controllers
 			//sign in user
 			await _signInManager.SignInAsync(superUser, true);
 			return RedirectToAction("Index", "Home");
+		}
+
+
+		/// <summary>
+		/// Sync commerce data 
+		/// </summary>
+		/// <param name="model"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> SyncCommerceAccountAsync([FromBody]SyncEcommerceAccountViewModel model)
+		{
+			var response = new ResultModel<CommerceSyncResultViewModel>
+			{
+				Errors = new List<IErrorModel>()
+			};
+
+			if (!ModelState.IsValid)
+			{
+				response.Errors.Add(new ErrorModel("validate", "Model is not valid!"));
+				return Json(response);
+			}
+
+			var tenantMachineName = TenantUtils.GetTenantMachineName(model.CompanyName);
+			if (string.IsNullOrEmpty(tenantMachineName))
+			{
+				response.Errors.Add(new ErrorModel(string.Empty, "Invalid name for organization"));
+				return Json(response);
+			}
+
+			var tenantExist =
+				await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName);
+			if (tenantExist)
+			{
+				response.Errors.Add(new ErrorModel(string.Empty,
+					"Invalid name for organization because is used for another organization or organization was configured"));
+				return Json(response);
+			}
+
+			var tenant = new Tenant
+			{
+				Name = model.CompanyName,
+				MachineName = tenantMachineName,
+				Created = DateTime.Now,
+				Changed = DateTime.Now,
+				Author = "System"
+			};
+
+			var userExist = await _applicationDbContext.Users.FirstOrDefaultAsync(x => string.Equals(x.Email, model.User.Email, StringComparison.CurrentCultureIgnoreCase));
+			if (userExist != null)
+			{
+				response.Errors.Add(new ErrorModel(string.Empty,
+					"Invalid user!"));
+				return Json(response);
+			}
+
+			var user = new ApplicationUser
+			{
+				UserName = model.User.UserName,
+				Email = model.User.Email,
+				AuthenticationType = AuthenticationType.Local,
+				TenantId = tenant.Id,
+				Created = DateTime.Now,
+				Changed = DateTime.Now,
+				Author = "System",
+				ModifiedBy = "System"
+			};
+
+			Queue.PushQueueBackgroundWorkItem(async token =>
+			{
+				using (var scope = _serviceScopeFactory.CreateScope())
+				{
+					var scopedServices = scope.ServiceProvider;
+					var service = scopedServices.GetRequiredService<ISyncInstaller>();
+					var localUser = user;
+					var localTenant = tenant;
+					var localData = model;
+					await service.RegisterCommerceUser(localUser, localTenant, localData);
+				}
+			});
+
+			response.IsSuccess = true;
+			response.Result = new CommerceSyncResultViewModel
+			{
+				TenantId = tenant.Id,
+				TenantMachineName = tenantMachineName
+			};
+			return Json(response);
 		}
 
 		/// <summary>

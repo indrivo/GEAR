@@ -524,34 +524,44 @@ namespace ST.Cms.Controllers.Entity
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public JsonResult DeleteField(string id)
+		public JsonResult DeleteField([Required]string id)
 		{
-			var field = Context.TableFields.First(x => x.Id == Guid.Parse(id));
-			var table = Context.Table.First(x => x.Id == field.TableId);
+			var field = Context.TableFields.FirstOrDefault(x => x.Id == Guid.Parse(id));
+			if (field == null)
+			{
+				return Json(false);
+			}
+			var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
+			if (table == null)
+			{
+				return Json(false);
+			}
 			ITablesService sqlService = GetSqlService();
 			var checkColumn = sqlService.CheckColumnValues(ConnectionString.Item2, table.Name, table.EntityType, field.Name);
 			if (checkColumn.Result)
 			{
 				return Json(false);
 			}
-			else
-			{
-				var fieldType = Context.TableFieldTypes.First(x => x.Name == FieldType.EntityReference).Id;
-				if (field.TableFieldTypeId == fieldType)
-				{
-					// ?? posibil eroare
-					var configtype = Context.TableFieldConfigs.First(x => x.TableFieldTypeId == fieldType).Id;
-					var configValue = Context.TableFieldConfigValues.First(x =>
-						x.TableFieldConfigId == configtype && x.TableModelFieldId == field.Id).Value;
-					sqlService.DropConstraint(ConnectionString.Item2, table.Name, table.EntityType, configValue, field.Name);
-				}
 
-				var dropColumn = sqlService.DropColumn(ConnectionString.Item2, table.Name, table.EntityType, field.Name);
-				if (!dropColumn.Result) return Json(false);
-				Context.TableFields.Remove(field);
-				Context.SaveChanges();
-				return Json(true);
+			var fieldType = Context.TableFieldTypes.FirstOrDefault(x => x.Name == FieldType.EntityReference);
+			if (fieldType == null)
+			{
+				return Json(false);
 			}
+			if (field.TableFieldTypeId == fieldType.Id)
+			{
+				// ?? posibil eroare
+				var configtype = Context.TableFieldConfigs.First(x => x.TableFieldTypeId == fieldType.Id).Id;
+				var configValue = Context.TableFieldConfigValues.First(x =>
+					x.TableFieldConfigId == configtype && x.TableModelFieldId == field.Id).Value;
+				sqlService.DropConstraint(ConnectionString.Item2, table.Name, table.EntityType, configValue, field.Name);
+			}
+
+			var dropColumn = sqlService.DropColumn(ConnectionString.Item2, table.Name, table.EntityType, field.Name);
+			if (!dropColumn.Result) return Json(false);
+			Context.TableFields.Remove(field);
+			Context.SaveChanges();
+			return Json(true);
 		}
 
 		/// <summary>

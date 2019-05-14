@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using ST.Entities.Abstractions.Models.Tables;
 
 namespace ST.Entities.ViewModels.Table
@@ -8,6 +9,7 @@ namespace ST.Entities.ViewModels.Table
     {
         public Guid Id { get; set; }
 
+        [RegularExpression(@"^\S*$", ErrorMessage = "No white space allowed")]
         public string Name { get; set; }
 
         public string EntityType { get; set; }

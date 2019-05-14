@@ -68,10 +68,11 @@ function renderForm(formId, place) {
 					$(formRef).attr("novalidate", "");
 					$(formRef).prepend("<div><ul class='server-errors'></ul></div>");
 					$("input,select,textarea").not("[type=submit]").addClass("form-control");
+					//convert default datetime fields to pretty picker
 					$('input[type=date]').datepicker({
-						format: 'dd/mm/yyyy',
-						//startDate: '-3d'
+						format: 'dd/mm/yyyy'
 					}).addClass("datepicker").attr("type", "text");
+					//attach validations for input fields
 					$("input,select,textarea").not("[type=submit]").jqBootstrapValidation(
 						{
 							submitSuccess: function($form, event) {

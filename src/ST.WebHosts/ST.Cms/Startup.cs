@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Backup.Extensions;
+using ST.Cms.Abstractions;
+using ST.Cms.Services;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
 using ST.DynamicEntityStorage.Extensions;
@@ -30,17 +32,14 @@ using ST.PageRender.Razor.Extensions;
 using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
+using ST.Core.Extensions;
+using ST.Identity.Models.EmailViewModels;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
 {
 	public class Startup
 	{
-		/// <summary>
-		/// Cookie name
-		/// </summary>
-		private const string CookieName = ".ST.ISO.Data";
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -109,6 +108,9 @@ namespace ST.Cms
 		{
 			var migrationsAssembly = typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
 
+			//Register system config
+			services.RegisterSystemConfig(Configuration);
+
 			services.Configure<SecurityStampValidatorOptions>(options =>
 			{
 				// enables immediate logout, after updating the user's stat.
@@ -128,7 +130,7 @@ namespace ST.Cms
 			});
 
 			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
-				.AddApplicationSpecificServices(HostingEnvironment, CookieName)
+				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddMPassSigningCredentials(new MPassSigningCredentials
 				{
 					ServiceProviderCertificate =
@@ -161,6 +163,7 @@ namespace ST.Cms
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
 			services.Configure<LdapSettings>(Configuration.GetSection(nameof(LdapSettings)));
+
 			//Add configured swagger
 			services.AddSwagger(Configuration, HostingEnvironment);
 
@@ -178,6 +181,10 @@ namespace ST.Cms
 			services.AddPageRender();
 			services.AddProcesses();
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
+			services.AddTransient<ISyncInstaller, SyncInstaller>();
+
+			//Register email credentials
+			services.Configure<EmailSettingsViewModel>(Configuration.GetSection("EmailSettings"));
 
 
 			if (Installation.Application.IsHostedOnLinux())

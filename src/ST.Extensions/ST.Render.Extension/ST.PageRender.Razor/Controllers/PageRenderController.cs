@@ -172,6 +172,7 @@ namespace ST.PageRender.Razor.Controllers
                 .Include(x => x.TableModel)
                 .Include(x => x.ViewModelFields)
                 .ThenInclude(x => x.TableModelFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
                 .FirstOrDefault(x => !x.IsDeleted && x.Id.Equals(viewModelId));
 
             if (obj != null)

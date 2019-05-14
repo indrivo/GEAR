@@ -24,6 +24,7 @@ namespace ST.MultiTenant.Services
             _context = context;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get all users for organization
         /// </summary>
@@ -49,6 +50,7 @@ namespace ST.MultiTenant.Services
             return _context.Users.Where(x => x.TenantId == organizationId && x.IsDeleted);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get tenant id
         /// </summary>
@@ -59,6 +61,7 @@ namespace ST.MultiTenant.Services
             return _context.Tenants.FirstOrDefault(x => x.Id == tenantId);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get all users for organization
         /// </summary>
@@ -66,10 +69,10 @@ namespace ST.MultiTenant.Services
         /// <returns></returns>
         public IEnumerable<ApplicationUser> GetUsersByOrganization(Tenant organization)
         {
-            if (organization == null) return default(IEnumerable<ApplicationUser>);
-            return _context.Users.Where(x => x.TenantId == organization.Id);
+            return organization == null ? default(IEnumerable<ApplicationUser>) : _context.Users.Where(x => x.TenantId == organization.Id);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get users by organization and role
         /// </summary>
@@ -79,13 +82,14 @@ namespace ST.MultiTenant.Services
         public IEnumerable<ApplicationUser> GetUsersByOrganization(Guid organizationId, Guid roleId)
         {
             var role = _context.Roles.FirstOrDefault(x => x.Id.ToLower() == roleId.ToString().ToLower());
-            if (role == null) return default(IEnumerable<ApplicationUser>);
+            if (role == null) return default;
             var usersId = _context.UserRoles.Where(x => x.RoleId.ToLower() == roleId.ToString().ToLower())
                 .ToList()
                 .Select(x => x.UserId).ToList();
             return _context.Users.Where(x => x.TenantId == organizationId && usersId.Contains(x.Id));
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get all users for organization
         /// </summary>

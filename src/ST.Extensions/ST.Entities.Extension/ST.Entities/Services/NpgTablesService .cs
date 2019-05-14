@@ -71,7 +71,8 @@ namespace ST.Entities.Services
             var returnModel = new ResultModel<bool>
             {
                 IsSuccess = false,
-                Result = false
+                Result = false,
+                Errors = new List<IErrorModel>()
             };
             if (!string.IsNullOrEmpty(connectionString))
             {
@@ -96,15 +97,14 @@ namespace ST.Entities.Services
 
                     return returnModel;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    returnModel.Errors.Add(new ErrorModel("exception", ex.ToString()));
                     return returnModel;
                 }
             }
-            else
-            {
-                return returnModel;
-            }
+
+            return returnModel;
         }
 
         /// <inheritdoc />
