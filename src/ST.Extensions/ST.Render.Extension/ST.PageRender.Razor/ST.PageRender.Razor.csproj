@@ -20,7 +20,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +36,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\assets\js\index.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\css\" />
     <Folder Include="wwwroot\lib\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="wwwroot\assets\js\index.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
