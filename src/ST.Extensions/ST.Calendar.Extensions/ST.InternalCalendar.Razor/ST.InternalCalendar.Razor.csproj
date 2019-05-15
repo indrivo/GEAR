@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="libman.json" />
+    <None Remove="wwwroot\lib\fullcalendar\fullcalendar.css" />
+    <None Remove="wwwroot\lib\fullcalendar\fullcalendar.js" />
+    <None Remove="wwwroot\lib\fullcalendar\fullcalendar.min.css" />
+    <None Remove="wwwroot\lib\fullcalendar\fullcalendar.min.js" />
+    <None Remove="wwwroot\lib\fullcalendar\fullcalendar.print.css" />
+    <None Remove="wwwroot\lib\fullcalendar\fullcalendar.print.min.css" />
+    <None Remove="wwwroot\lib\fullcalendar\gcal.js" />
+    <None Remove="wwwroot\lib\fullcalendar\gcal.min.js" />
+    <None Remove="wwwroot\lib\fullcalendar\locale-all.js" />
+    <None Remove="wwwroot\lib\fullcalendar\locale\af.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="libman.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" />
+    <Content Update="**\*.cshtml" Pack="false" />
+    <Content Include="wwwroot\**\*">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\calendar\js\internal-calendar-plugin-v1.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\fullcalendar.css" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\fullcalendar.js" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\fullcalendar.min.css" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\fullcalendar.min.js" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\fullcalendar.print.css" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\fullcalendar.print.min.css" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\gcal.js" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\gcal.min.js" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\locale-all.js" />
+    <EmbeddedResource Remove="wwwroot\lib\fullcalendar\locale\af.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="wwwroot\calendar\js\internal-calendar-plugin-v1.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

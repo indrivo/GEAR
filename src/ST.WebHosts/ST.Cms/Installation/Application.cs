@@ -20,6 +20,7 @@ using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
 using ST.Cms.Extensions;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.Report.Dynamic.Data;
 
 namespace ST.Cms.Installation
 {
@@ -80,6 +81,7 @@ namespace ST.Cms.Installation
 						.Wait();
 				})
 				.MigrateDbContext<ProcessesDbContext>()
+				.MigrateDbContext<DynamicReportDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()
 				.MigrateDbContext<ApplicationDbContext>((context, services) =>
 			   {

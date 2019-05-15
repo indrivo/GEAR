@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,9 @@ using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core.Extensions;
 using ST.Identity.Models.EmailViewModels;
+using ST.InternalCalendar.Razor.Extensions;
+using ST.Report.Dynamic.Data;
+using ST.Report.Dynamic.Extensions;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -180,6 +184,12 @@ namespace ST.Cms
 			services.AddScoped<ILocalService, LocalService>();
 			services.AddPageRender();
 			services.AddProcesses();
+			services.AddInternalCalendar();
+			services.AddDynamicReportModule<DynamicReportDbContext>();
+			services.AddDbContext<DynamicReportDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration, HostingEnvironment);
+				});
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
 			services.AddTransient<ISyncInstaller, SyncInstaller>();
 
