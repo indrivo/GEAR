@@ -7,6 +7,11 @@ namespace ST.Report.Dynamic.Data
 {
     public class DynamicReportDbContext : DbContext, IReportContext
     {
+        /// <summary>
+        /// Schema
+        /// Do not remove this
+        /// </summary>
+        public const string Schema = "Report";
         public DynamicReportDbContext(DbContextOptions options) : base(options)
         {
 
@@ -30,6 +35,7 @@ namespace ST.Report.Dynamic.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.HasDefaultSchema(Schema);
         }
     }
 

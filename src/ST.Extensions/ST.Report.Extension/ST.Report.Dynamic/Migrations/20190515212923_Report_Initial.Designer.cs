@@ -10,13 +10,14 @@ using ST.Report.Dynamic.Data;
 namespace ST.Report.Dynamic.Migrations
 {
     [DbContext(typeof(DynamicReportDbContext))]
-    [Migration("20190515135640_Initial")]
-    partial class Initial
+    [Migration("20190515212923_Report_Initial")]
+    partial class Report_Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("Report")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
@@ -95,7 +96,7 @@ namespace ST.Report.Dynamic.Migrations
 
             modelBuilder.Entity("ST.Report.Abstractions.Models.DynamicReportDbModel", b =>
                 {
-                    b.HasOne("ST.Report.Abstractions.Models.DynamicReportFolder")
+                    b.HasOne("ST.Report.Abstractions.Models.DynamicReportFolder", "DynamicReportFolder")
                         .WithMany("Reports")
                         .HasForeignKey("DynamicReportFolderId")
                         .OnDelete(DeleteBehavior.Cascade);

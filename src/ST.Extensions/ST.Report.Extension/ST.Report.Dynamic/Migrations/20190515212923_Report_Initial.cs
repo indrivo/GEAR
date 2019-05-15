@@ -3,12 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ST.Report.Dynamic.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Report_Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "Report");
+
             migrationBuilder.CreateTable(
                 name: "DynamicReportsFolders",
+                schema: "Report",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -28,6 +32,7 @@ namespace ST.Report.Dynamic.Migrations
 
             migrationBuilder.CreateTable(
                 name: "DynamicReports",
+                schema: "Report",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -55,6 +60,7 @@ namespace ST.Report.Dynamic.Migrations
                     table.ForeignKey(
                         name: "FK_DynamicReports_DynamicReportsFolders_DynamicReportFolderId",
                         column: x => x.DynamicReportFolderId,
+                        principalSchema: "Report",
                         principalTable: "DynamicReportsFolders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -62,6 +68,7 @@ namespace ST.Report.Dynamic.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_DynamicReports_DynamicReportFolderId",
+                schema: "Report",
                 table: "DynamicReports",
                 column: "DynamicReportFolderId");
         }
@@ -69,10 +76,12 @@ namespace ST.Report.Dynamic.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DynamicReports");
+                name: "DynamicReports",
+                schema: "Report");
 
             migrationBuilder.DropTable(
-                name: "DynamicReportsFolders");
+                name: "DynamicReportsFolders",
+                schema: "Report");
         }
     }
 }
