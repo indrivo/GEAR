@@ -1,0 +1,263 @@
+﻿
+@{
+    ViewData["Title"] = "RunDynamic";
+}
+
+<style>
+    #queryResultTable {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #queryResultTable td, #queryResultTable th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #queryResultTable tr:nth-child(even) {
+        background-color: wheat;
+    }
+
+    #queryResultTable tr:hover {
+        background-color: #ddd;
+    }
+
+    #queryResultTable th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
+</style>
+<button class="btn btn-info m-t-20 text-white" id="generateReport">Run Report</button>
+<a class="btn btn-info m-t-20 text-white" asp-action="EditDynamic" asp-route-id="@ViewBag.ReportId">Edit Report</a>
+<button class="btn btn-danger m-t-20 text-white" id="deleteReport">Delete Report</button>
+
+<div class="m-t-30 bg-white">
+    <table id="queryResultTable"></table>
+</div>
+<canvas class="col-10" id="myChart" style="width:1000px; height:278px"></canvas>
+
+@section Scripts
+    {
+    <script>
+        function generateChart(type, dataArray) {
+            debugger;
+            var chartLabels = [];
+            var tableValues = [];
+            var colorSets = [];
+
+            if (type == 'pie') {
+                var obj = $.parseJSON(dataArray);
+                for (i = 0; i < 1; i++) {
+                    for (j = 0; j < obj[i].Columns.length; j++) {
+                        chartLabels.push(obj[i].Columns[j].Column);
+                    }
+                }
+                for (i = 0; i < obj.length; i++) {
+                    for (j = 0; j < obj[i].Columns.length; j++) {
+                        tableValues.push(obj[i].Columns[j].Value);
+                    }
+                }
+            }
+
+            if (type == 'line' || type == "bar") {
+                tableValues = $.parseJSON(dataArray);
+                var addingValue = 1;
+                //var startDateTime2 = new Date(@ViewBag.StartDate);
+                var startDateTime = new Date(2019,0,1);
+                if ($("#timeFrameTypeSelect").val() == "Week") {
+                    addingValue = 7;
+                }
+                if ($("#timeFrameTypeSelect").val() == "Month") {
+                    addingValue = 30;
+                }
+                tableValues.forEach(function () {
+                    chartLabels.push(startDateTime.toDateString());
+                    startDateTime.setDate(startDateTime.getDate() + addingValue);
+                });
+            }
+
+            if (type == 'doughnut') {
+                var obj = $.parseJSON(result.queryData);
+                console.log(obj);
+            }
+
+            tableValues.forEach(function () {
+                colorSets.push(getRandomColor());
+            });
+
+            //Change for colors
+            if (type == 'line') {
+                colorSets = [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ];
+            }
+
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: type,
+                data: {
+                    label: '# of Votes',
+                    labels: chartLabels,
+                    datasets: [{
+                        data: tableValues,
+                        backgroundColor: colorSets,
+                        borderColor: colorSets,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        //script for generation of report
+        $('#generateReport').click(function() {
+            debugger;
+            var data = {
+                id: '@ViewBag.ReportId'
+            }
+
+            //Send data and receive model
+            $.ajax({
+                url: '@Url.Action("RunDynamicById", "DynamicReports")',
+                content: "application/json; charset=utf-8",
+                type: 'POST',
+                data: data,
+                success: function(result) {
+                    debugger;
+                    if (result.success == true) {
+                        swal({
+                            position: 'top-end',
+                            type: 'success',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+
+                        document.getElementById("queryResultTable").innerHTML = "";
+                        const canvas = document.getElementById("myChart");
+
+                        const context = canvas.getContext('2d');
+                        context.clearRect(0, 0, '1000px', '278px');
+
+                        if (result.graphType == "List") {
+                            //Parse Response to create tables
+                            var obj = $.parseJSON(result.queryData);
+                            var tableHeaderString = "";
+                            var tableValuesString = "";
+
+                            for (i = 0; i < 1; i++) {
+                                for (j = 0; j < obj[i].Columns.length; j++) {
+                                    tableHeaderString += "<td>" + obj[i].Columns[j].Column + "</td>";
+                                }
+                            }
+
+                            tableHeaderString = "<tr>" + tableHeaderString + "</tr>";
+
+                            for (i = 0; i < obj.length; i++) {
+                                tableValuesString += "<tr>";
+                                for (j = 0; j < obj[i].Columns.length; j++) {
+                                    tableValuesString += "<td>" + obj[i].Columns[j].Value + "</td>";
+                                }
+                                tableValuesString += "</tr>";
+                            }
+                            document.getElementById("queryResultTable").innerHTML =
+                                tableHeaderString + tableValuesString;
+                        }
+
+                        if (result.graphType == "Pie") {
+                            generateChart('pie', result.queryData);
+                        }
+                        if (result.graphType == "Line") {
+                            generateChart('line', result.queryData);
+                        }
+                        if (result.graphType == "Bar") {
+                            generateChart('bar', result.queryData);
+                        }
+                        if (result.graphType == "Doughnut") {
+                            generateChart('doughnut', result.queryData);
+                        }
+
+
+                    } else {
+                        swal({
+                            position: 'top-end',
+                            type: 'error',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    ShowError(jqXHR.status);
+                }
+            });
+
+        });
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
+    <script>
+        $('#deleteReport').click(function(e) {
+                const  data = {
+                    id : '@ViewBag.ReportId'  
+                };
+                $.ajax({
+                    url: '@Url.Action("DeleteReport", "DynamicReports")',
+                    content: "application/json; charset=utf-8",
+                    type: 'POST',
+                    data: data,
+                    success: function(result) {
+                        debugger;
+                        if (result.success == true) {
+                            swal({
+                                position: 'top-end',
+                                type: 'success',
+                                title: result.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                window.location.replace('@Url.Action("Index", "Home")');
+                            });
+                    } else {
+                        swal({
+                            position: 'top-end',
+                            type: 'error',
+                            title: result.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    ShowError(jqXHR.status);
+                }
+            });
+
+        });
+    </script>
+}
