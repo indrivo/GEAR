@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.Entities.Data;
@@ -9,9 +10,10 @@ using ST.Entities.Data;
 namespace ST.Entities.Migrations
 {
     [DbContext(typeof(EntitiesDbContext))]
-    partial class EntitiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190515132646_docExtension")]
+    partial class docExtension
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,8 +307,6 @@ namespace ST.Entities.Migrations
                     b.Property<string>("Link");
 
                     b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Status");
 
                     b.Property<string>("TargetGroup");
 

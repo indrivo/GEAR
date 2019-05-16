@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.Entities.Data;
@@ -9,9 +10,10 @@ using ST.Entities.Data;
 namespace ST.Entities.Migrations
 {
     [DbContext(typeof(EntitiesDbContext))]
-    partial class EntitiesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190515075714_documents")]
+    partial class documents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,8 +298,6 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Extension");
-
                     b.Property<string>("File");
 
                     b.Property<bool>("IsDeleted");
@@ -305,8 +305,6 @@ namespace ST.Entities.Migrations
                     b.Property<string>("Link");
 
                     b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Status");
 
                     b.Property<string>("TargetGroup");
 

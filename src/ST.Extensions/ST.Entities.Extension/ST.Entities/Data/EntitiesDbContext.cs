@@ -37,6 +37,7 @@ namespace ST.Entities.Data
         public DbSet<TableFieldGroups> TableFieldGroups { get; set; }
         public DbSet<TableModelFields> TableFields { get; set; }
         public DbSet<TableFieldTypes> TableFieldTypes { get; set; }
+        public DbSet<Document> Documents { get; set; }
 
         #endregion Table
 
@@ -111,7 +112,7 @@ namespace ST.Entities.Data
         public EntitiesDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<EntitiesDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=sa@sqlserver10;Database=ISODMS.DEV;");
             return new EntitiesDbContext(optionsBuilder.Options);
         }
     }
