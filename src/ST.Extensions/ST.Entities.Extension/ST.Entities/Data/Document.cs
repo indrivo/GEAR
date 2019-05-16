@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ST.Identity.Abstractions;
 
 namespace ST.Entities.Data
 {
-   public class Document : BaseModel
+    public class Document : BaseModel
     {
         public string CodDocument { get; set; }
         public string Title { get; set; }
@@ -16,5 +17,8 @@ namespace ST.Entities.Data
         public string Comment { get; set; }
         public string Extension { get; set; }
         public string Status { get; set; }
+        public ApplicationUser Responsible { get; set; }
+        public Guid ResponsibleId { get; set; }
+        public string ExternalLink { get; set; }
     }
 }

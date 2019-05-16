@@ -14,7 +14,7 @@ namespace ST.PageRender.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPageRender(this IServiceCollection services)
+        public static IServiceCollection AddPageRenderModule(this IServiceCollection services)
         {
             services.AddTransient<IPageRender, Services.PageRender>();
             services.AddTransient<IMenuService, MenuService<IDynamicService>>();

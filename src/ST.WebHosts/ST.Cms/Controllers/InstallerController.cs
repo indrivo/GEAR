@@ -47,11 +47,6 @@ namespace ST.Cms.Controllers
 		private readonly ApplicationDbContext _applicationDbContext;
 
 		/// <summary>
-		/// Inject local dataService
-		/// </summary>
-		private readonly ILocalService _localService;
-
-		/// <summary>
 		/// Inject SignIn Manager
 		/// </summary>
 		private readonly SignInManager<ApplicationUser> _signInManager;
@@ -100,7 +95,7 @@ namespace ST.Cms.Controllers
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
 		/// <param name="dynamicService"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
+		public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_dynamicService = dynamicService;
@@ -109,7 +104,6 @@ namespace ST.Cms.Controllers
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_signInManager = signInManager;
-			_localService = localService;
 			_permissionService = permissionService;
 			_cacheService = cacheService;
 			_notify = notify;
@@ -258,9 +252,6 @@ namespace ST.Cms.Controllers
 			});
 
 			await _entitiesDbContext.SaveChangesAsync();
-
-			//For core change name as installer change
-			_localService.SetAppName("core", model.SiteName);
 
 			//Create system tables
 			await Installation.Application.SyncDefaultEntityFrameWorkEntities(tenant.Id);

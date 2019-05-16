@@ -1,15 +1,15 @@
 
 <div class="col-lg-12">
 	<div class="card">
-		<div class="card-block">
+		<div class="card-body">
 			<div class="table-responsive">
 				<div class="m-t-40">
 					<div class="d-flex">
 						<div class="mr-auto">
-							<div class="form-group">								
-									<a asp-action="Create" class="btn btn-primary btn-sm text-white">
-										<i class="icon wb-plus" aria-hidden="true"></i>Add Iso File
-									</a>						
+							<div class="form-group">
+								<a asp-action="Create" class="btn btn-primary btn-sm text-white">
+									<i class="icon wb-plus" aria-hidden="true"></i>Add Iso File
+								</a>
 
 								<small>New File will be added.</small>
 							</div>
@@ -22,11 +22,15 @@
 							<th>Title</th>
 							<th>Created</th>
 							<th>Author</th>
-							@*<th>Path</th>*@
+							@*
+								<th>Path</th>*@
 							<th>Cod Document</th>
 							<th>Description</th>
 							<th>Target Group</th>
 							<th>Status</th>
+							<th>External link</th>
+							<th>Responsible</th>
+							<th>Version</th>
 							<th style="max-width: 100px">Actions</th>
 						</tr>
 					</thead>
@@ -70,16 +74,26 @@
                 { "data": "description" },
 				{ "data": "targetGroup" },
 				{ "data": "status" },
-                
-			 
+					{
+						"data": "externalLink",
+						render: function (data, type, full, meta) {
+							if (full.externalLink)
+								return `<a href="${full.externalLink}">${full.externalLink}</a>`;
+							else return "-";
+							}
+					},
+				{ "data": "responsible" },
+				{ "data": "version" },
+
+
 				{
                     render: function (data, type, full, meta) {
 						const viewBtn = `<a class="btn btn-info btn-sm text-white" href="@Url.Action("Download", "InsertedFiles")?id=${full.id}">View</a>`;
 						const editBtn = `<a class="btn btn-info btn-sm text-white" href="@Url.Action("Edit")?id=${full.id}">Edit</a>`;
-						return `<div class="btn-group" role="group" aria-label="Action buttons">${viewBtn + editBtn}</div>`;                        
+						return `<div class="btn-group" role="group" aria-label="Action buttons">${viewBtn + editBtn}</div>`;
                     }
-                }           
-               
+                }
+
                 ]
         });
     });

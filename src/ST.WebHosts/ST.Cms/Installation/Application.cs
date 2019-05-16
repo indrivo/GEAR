@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using ST.Cache.Abstractions;
 using ST.Configuration.Seed;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
@@ -174,10 +175,13 @@ namespace ST.Cms.Installation
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
 				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
+				var cacheService = serviceScope.ServiceProvider.GetService<ICacheService>();
+
 				var isConfigured = IsConfigured(env);
 
 				if (!isConfigured) return;
 				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
+				cacheService.FlushAll();
 				await permissionService.RefreshCache();
 				await service.RegisterInMemoryDynamicTypes();
 			}

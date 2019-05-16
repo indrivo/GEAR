@@ -12,7 +12,7 @@ namespace ST.Backup.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterBackupRunner(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection RegisterDatabaseBackupRunnerModule(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<BackupSettings>(configuration.GetSection(nameof(BackupSettings)));
 

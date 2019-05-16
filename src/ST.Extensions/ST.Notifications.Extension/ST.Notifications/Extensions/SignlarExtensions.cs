@@ -12,11 +12,11 @@ namespace ST.Notifications.Extensions
     public static class SignlarExtensions
     {
         /// <summary>
-        /// Use signalR from ST.Notifications By Soft-Tehnica
+        /// Use signalR from ST.Notifications By Indrivo
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseSignalR(this IApplicationBuilder app)
+        public static IApplicationBuilder UseSignalRModule(this IApplicationBuilder app)
         {
             app.UseSignalR(routes =>
             {
@@ -29,11 +29,11 @@ namespace ST.Notifications.Extensions
             return app;
         }
         /// <summary>
-        /// Add SignalR from ST.Notifications By Soft-Tehnica
+        /// Add SignalR from ST.Notifications By Indrivo
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSignalR<TContext, TUser, TRole>(this IServiceCollection services) where TContext : IdentityDbContext<TUser, TRole, string>
+        public static IServiceCollection AddSignalRModule<TContext, TUser, TRole>(this IServiceCollection services) where TContext : IdentityDbContext<TUser, TRole, string>
             where TUser : IdentityUser where TRole : IdentityRole<string>
         {
             services.AddSignalR(options =>

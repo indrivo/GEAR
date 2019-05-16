@@ -11,7 +11,7 @@ namespace ST.DynamicEntityStorage.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterDynamicDataServices<TContext>(this IServiceCollection services) where TContext : EntitiesDbContext
+        public static IServiceCollection AddDynamicDataProviderModule<TContext>(this IServiceCollection services) where TContext : EntitiesDbContext
         {
             services.AddTransient<IDynamicService, DynamicService<TContext>>();
             services.AddTransient<IDynamicDataGetService, DynamicService<TContext>>();

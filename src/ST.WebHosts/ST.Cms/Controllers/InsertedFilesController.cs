@@ -4,28 +4,33 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ST.Cms.ViewModels.FilesViewModels;
 using ST.Core;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
+using ST.Identity.Data;
 
 namespace ST.Cms.Controllers
 {
-    public class InsertedFilesController : Controller
-    {
+	public class InsertedFilesController : Controller
+	{
 		private readonly EntitiesDbContext _context;
+		private readonly ApplicationDbContext _applicationDbContext;
 
-		public InsertedFilesController(EntitiesDbContext context)
+		public InsertedFilesController(EntitiesDbContext context, ApplicationDbContext applicationDbContext)
 		{
-			_context = context;			
+			_context = context;
+			_applicationDbContext = applicationDbContext;
 		}
 
 		public IActionResult Index()
-        {
+		{
 			var list = _context.Documents.ToList();
 			return View(list);
-        }
+		}
 		public IActionResult _InsertedFiles()
 		{
 			return PartialView();
@@ -33,45 +38,59 @@ namespace ST.Cms.Controllers
 
 		public IActionResult Create()
 		{
-			return View();
+			var model = LoadViewRequirements();
+			return View(model);
 		}
-		[HttpPost]
-		public async Task<IActionResult> Create([Bind("Title,CodDocument,Status,Description,TargetGroup")] Document insertedFile, List<IFormFile> files)
-		{
-			if (ModelState.IsValid)
-			{							
 
-				string extension = Path.GetExtension(files.FirstOrDefault().FileName);
+		[NonAction]
+		private DocumentCreateUpdateViewModel LoadViewRequirements(DocumentCreateUpdateViewModel model = null)
+		{
+			if (model == null) model = new DocumentCreateUpdateViewModel();
+			model.AvailableUsers = _applicationDbContext.Users.Where(x => !x.IsDeleted).ToList();
+			return model;
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Create( DocumentCreateUpdateViewModel model)
+		{
+			model = LoadViewRequirements(model);
+			if (model.FileBlob == null)
+			{
+				ModelState.AddModelError(string.Empty, "No attached file!");
+				return View(model);
+			}
+			if (ModelState.IsValid)
+			{
+
+				string extension = Path.GetExtension(model.FileBlob?.FileName);
 				Console.WriteLine(extension);
 
 				// full path to file in temp location
 				var filePath = Path.GetTempFileName();
-				Console.WriteLine("Inserted Title"+ insertedFile.Title);
-				insertedFile.Id = Guid.NewGuid();
-				insertedFile.Author = User.Identity.Name;
-				insertedFile.Extension = extension;
-				insertedFile.File = filePath;
-				insertedFile.Status = "Draft";
-				
-				_context.Documents.Add(insertedFile);
-				
-				_context.SaveChanges();
-				
-				long size = files.Sum(f => f.Length);
+				Console.WriteLine("Inserted Title" + model.Title);
+				model.Id = Guid.NewGuid();
+				model.Author = User.Identity.Name;
+				model.Extension = extension;
+				model.File = filePath;
+				model.Status = "Draft";
+				model.Version = 1;
 
-				foreach (var formFile in files)
+				_context.Documents.Add(model);
+
+				_context.SaveChanges();
+
+				long size = model.FileBlob.Length;
+
+				if (size > 0)
 				{
-					if (formFile.Length > 0)
+					using (var stream = new FileStream(filePath, FileMode.Create))
 					{
-						using (var stream = new FileStream(filePath, FileMode.Create))
-						{
-							await formFile.CopyToAsync(stream);
-						}
+						await model.FileBlob?.CopyToAsync(stream);
 					}
 				}
 				return RedirectToAction("Index", "Files");
 			}
-			return View(insertedFile);
+			return View(model);
 		}
 		[HttpPost]
 
@@ -93,8 +112,11 @@ namespace ST.Cms.Controllers
 					Description = x.Description,
 					TargetGroup = x.TargetGroup,
 					Extension = x.Extension,
-					Status=x.Status,
-					File = x.File
+					Status = x.Status,
+					File = x.File,
+					ExternalLink = x.ExternalLink,
+					Version = x.Version,
+					Responsible = _applicationDbContext.Users.FirstOrDefault(y => y.Id == x.ResponsibleId.ToString())?.UserName
 				});
 
 				var finalResult = new DTResult<ListIsoFileViewModel>
@@ -126,16 +148,16 @@ namespace ST.Cms.Controllers
 			return result.ToList();
 		}
 
-		
+
 		public FileResult Download()
 		{
-			
-			string id = HttpContext.Request.Query["id"].ToString();			
+
+			string id = HttpContext.Request.Query["id"].ToString();
 			var Gid = Guid.Parse(id);
-			Document doc = _context.Documents.Where(x => x.Id == Gid).FirstOrDefault();				
+			Document doc = _context.Documents.Where(x => x.Id == Gid).FirstOrDefault();
 
 			byte[] fileBytes = System.IO.File.ReadAllBytes(@doc.File);
-			string fileName = doc.Title+doc.Extension;
+			string fileName = doc.Title + doc.Extension;
 			return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
 		}
 
@@ -153,19 +175,20 @@ namespace ST.Cms.Controllers
 			{
 				return NotFound();
 			}
-			return View(doc);
+
+			var model = LoadViewRequirements(doc.Adapt<DocumentCreateUpdateViewModel>());
+
+			return View(model);
 		}
 
 		// POST: Periods/Edit/5
 		// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
 		// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
-		
-		public async Task<IActionResult> Edit(Guid id, [Bind("Title, CodDocument, Status, Description, TargetGroup")] Document doc)
+
+		public async Task<IActionResult> Edit(DocumentCreateUpdateViewModel doc)
 		{
-			Console.WriteLine("id=" + id + " doc.id=" + doc.Id);
-			Console.WriteLine(doc.Title + " " + doc.Link);
-			var currentDoc = _context.Documents.Where(x => x.Id == id).FirstOrDefault();
+			var currentDoc = _context.Documents.FirstOrDefault(x => x.Id == doc.Id);
 			if (currentDoc != null)
 			{
 				currentDoc.Title = doc.Title;
@@ -173,6 +196,9 @@ namespace ST.Cms.Controllers
 				currentDoc.Status = doc.Status;
 				currentDoc.Description = doc.Description;
 				currentDoc.TargetGroup = doc.TargetGroup;
+				currentDoc.Version = ++doc.Version;
+				currentDoc.ExternalLink = doc.ExternalLink;
+				currentDoc.ResponsibleId = doc.ResponsibleId;
 			}
 			//if (id != doc.Id)
 			//{
@@ -184,13 +210,13 @@ namespace ST.Cms.Controllers
 			//	try
 			//	{
 			//_context.Update(doc);
-					await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync();
 			//	}
 			//	catch (Exception ex)
 			//	{
 			//		c
 			//	}
-				return RedirectToAction("Index", "Files");
+			return RedirectToAction("Index", "Files");
 			//}
 			//return View(doc);
 		}
@@ -207,7 +233,7 @@ namespace ST.Cms.Controllers
 		public string Created { get; set; }
 		public string Title { get; set; }
 		public string Path { get; set; }
-				
+
 		public string Author { get; set; }
 		public string CodDocument { get; set; }
 		public string Description { get; set; }
@@ -217,5 +243,8 @@ namespace ST.Cms.Controllers
 		public string Comment { get; set; }
 		public string Extension { get; set; }
 		public string Status { get; set; }
+		public string Responsible { get; set; }
+		public int Version { get; set; }
+		public string ExternalLink { get; set; }
 	}
 }

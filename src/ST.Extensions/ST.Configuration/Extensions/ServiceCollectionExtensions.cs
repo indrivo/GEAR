@@ -28,6 +28,7 @@ using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.MultiTenants;
@@ -131,7 +132,7 @@ namespace ST.Configuration.Extensions
         /// <param name="migrationsAssembly"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDbContextAndIdentity(this IServiceCollection services,
+        public static IServiceCollection AddIdentityModule(this IServiceCollection services,
             IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly, IHostingEnvironment environment)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -160,9 +161,9 @@ namespace ST.Configuration.Extensions
             services.AddAuthorizationBasedOnCache<ApplicationDbContext>();
             services.AddLdapAuthorization<ApplicationDbContext>();
             services.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
+            services.Configure<LdapSettings>(configuration.GetSection(nameof(LdapSettings)));
             return services;
         }
-
 
         /// <summary>
         /// Add services relative to this application
@@ -221,7 +222,7 @@ namespace ST.Configuration.Extensions
         /// <param name="configuration"></param>
         /// <param name="env"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration,
+        public static IServiceCollection AddSwaggerModule(this IServiceCollection services, IConfiguration configuration,
             IHostingEnvironment env)
         {
             // prevent from mapping "sub" claim to name identifier.
@@ -313,9 +314,9 @@ namespace ST.Configuration.Extensions
             castleContainer.Register(Component.For<UserManager<ApplicationUser>>());
 
             //Dynamic data dataService
-           castleContainer.Register(Component.For<IDynamicService>()
-                .ImplementedBy<DynamicService<EntitiesDbContext>>()
-                .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
+            castleContainer.Register(Component.For<IDynamicService>()
+                 .ImplementedBy<DynamicService<EntitiesDbContext>>()
+                 .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
             //Cache service
             castleContainer.Register(Component.For<ICacheService>()
@@ -332,7 +333,7 @@ namespace ST.Configuration.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddConfiguredCors(this IServiceCollection services)
+        public static IServiceCollection AddOriginCorsModule(this IServiceCollection services)
         {
             services.AddCors(options =>
             {

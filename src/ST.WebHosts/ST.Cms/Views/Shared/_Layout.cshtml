@@ -1,130 +1,34 @@
-@using Microsoft.AspNetCore.Http
-@using ST.Identity.Abstractions
-@using ST.Identity.Data.MultiTenants
-@using ST.Localization.Razor.ViewModels.LocalizationViewModels
-@using ST.MultiTenant.Abstractions
 @using ST.PageRender.Razor.Helpers
-
-
-@inject UserManager<ApplicationUser> UserManager
-@inject ILocalService LocalService
-@inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
-@inject IHttpContextAccessor Accessor
-@inject IOrganizationService<Tenant> TenantService
 
 <!DOCTYPE html>
 @if (User.Identity.IsAuthenticated)
 {
-	var layoutId = (Guid?)ViewData["layoutId"] ?? PageManager.Layouts[0];
+	var layoutId = (Guid?) ViewData["layoutId"] ?? PageManager.Layouts[0];
 
-	var user = await UserManager.GetUserAsync(User);
-	var id = Accessor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
-	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
-	var organization =  TenantService.GetTenantById(user.TenantId.GetValueOrDefault(Guid.Empty));
-	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
-
-<html>
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
-	<title>@ViewData["Title"] - ISO</title>
-	<layout-css-code layout-id="@layoutId"></layout-css-code>
-	<application-styles layout-id="@layoutId"></application-styles>
-	@RenderSection("PreScripts", required: false)
-	<application-scripts layout-id="@layoutId"></application-scripts>
-	@RenderSection("Styles", required: false)
-	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
-</head>
-<body class="fix-header fix-sidebar card-no-border">
+	<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css"/>
+		<title>@ViewData["Title"] - ISO</title>
+		<layout-css-code layout-id="@layoutId"></layout-css-code>
+		<application-styles layout-id="@layoutId"></application-styles>
+		@RenderSection("PreScripts", required: false)
+		<application-scripts layout-id="@layoutId"></application-scripts>
+		@RenderSection("Styles", required: false)
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body class="fix-header fix-sidebar card-no-border">
 	<application layout-id="@layoutId">
 		@RenderBody()
 	</application>
 
-	<script>
-			window.load = function (uri, data = null, type = "get") {
-				try {
-					const url = new URL(location.href);
-					uri = `${url.origin}${uri}`;
-
-					const req = $.ajax({
-						url: uri,
-						type: type,
-						data: data,
-						async: false
-					});
-					return JSON.parse(req.responseText);
-				} catch (exp) {
-					console.log(exp);
-					return null;
-				}
-			};
-			const notificator = new Notificator();
-			st = new ST();
-			const controller = "@ViewContext?.RouteData?.Values["controller"]?.ToString()";
-			const view = "@ViewContext?.RouteData?.Values["action"]?.ToString()";
-
-			const storageSettings = localStorage.getItem("settings");
-			if (storageSettings) {
-				var s = JSON.parse(storageSettings);
-				s.user = {
-					userName: "@user.UserName",
-					email: "@user.Email",
-					id: "@user.Id",
-					organization: "@organization.Name"
-				};
-				s.navigation = {
-					view: view,
-					controller: controller,
-					current: "@ViewData["Title"]"
-				};
-				s.layout = {
-					id: "@layoutId"
-				};
-				s.localization.current = {
-					identifier: "@language?.Identifier",
-					name: "@language?.Name"
-				};
-
-				localStorage.setItem("settings", JSON.stringify(s));
-			} else {
-				const s = {
-					layout: {
-						id : "@layoutId"
-					}
-				};
-				s.navigation = {
-					view: view,
-					controller: controller,
-					current: "@ViewData["Title"]"
-				};
-
-				s.user = {
-					userName: "@user.UserName",
-					email: "@user.Email",
-					id: "@user.Id",
-					organization: "@organization.Name"
-				};
-
-				s.app = {
-					name : "@LocalService.GetAppName("core")"
-				};
-
-				s.localization = {
-					languages: window.load("/Localization/GetLanguagesAsJson"),
-					current: {
-						identifier: "@language?.Identifier",
-						name: "@language?.Name"
-					}
-				};
-				localStorage.setItem("settings", JSON.stringify(s));
-			}
-	</script>
+	<partial name="_LayoutScriptPartial"/>
 	<layout-js-code layout-id="@layoutId"></layout-js-code>
 
 	<script src="~/assets/js/form/formeo.min.js"></script>
@@ -135,12 +39,12 @@
 	<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
 	<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 	@RenderSection("Scripts", false)
-	<partial name="_AssistenceChat"/>
-</body>
-</html>
+	<partial name="_AssistanceChat" model="layoutId"/>
+	</body>
+	</html>
 }
 else
 {
-@RenderBody()
-@RenderSection("Scripts", false)
+	@RenderBody()
+	@RenderSection("Scripts", false)
 }
