@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
 using ST.Core;
+using ST.Core.Abstractions;
 using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
@@ -44,9 +45,16 @@ namespace ST.Cms.Controllers.Entity
 		/// </summary>
 		private readonly ILogger<TableController> _logger;
 
-		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+		/// <summary>
+		/// Queue for run background tasks
+		/// </summary>
+		private IBackgroundTaskQueue Queue { get; }
+
+
+		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
 			_logger = logger;
+			Queue = queue;
 			ConnectionString = DbUtil.GetConnectionString(configuration, env);
 		}
 
@@ -56,8 +64,7 @@ namespace ST.Cms.Controllers.Entity
 		/// Create table
 		/// </summary>
 		/// <returns></returns>
-
-		// GET: Users/Create
+		[HttpGet]
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableCreate)]
 		public IActionResult Create()
 		{
@@ -73,14 +80,11 @@ namespace ST.Cms.Controllers.Entity
 		/// </summary>
 		/// <returns></returns>
 		[NonAction]
-		private ITablesService GetSqlService()
-		{
-			return ConnectionString.Item1.Equals(DbProviderType.MsSqlServer) ?
-															new TablesService()
-															: ConnectionString.Item1.Equals(DbProviderType.PostgreSql)
-															? new NpgTablesService()
-															: null;
-		}
+		private ITablesService GetSqlService() => ConnectionString.Item1.Equals(DbProviderType.MsSqlServer) ?
+			new TablesService()
+			: ConnectionString.Item1.Equals(DbProviderType.PostgreSql)
+				? new NpgTablesService()
+				: null;
 
 		/// <summary>
 		/// Create a table
@@ -362,6 +366,7 @@ namespace ST.Cms.Controllers.Entity
 			{
 				Context.TableFields.Add(model);
 				Context.SaveChanges();
+				RefreshRuntimeTypes();
 				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
 			}
 			catch
@@ -371,6 +376,15 @@ namespace ST.Cms.Controllers.Entity
 
 
 			return View(field);
+		}
+
+		[NonAction]
+		private void RefreshRuntimeTypes()
+		{
+			Queue.PushQueueBackgroundWorkItem(async token =>
+			{
+
+			});
 		}
 
 		/// <summary>

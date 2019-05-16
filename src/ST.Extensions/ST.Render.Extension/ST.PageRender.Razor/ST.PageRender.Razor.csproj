@@ -42,7 +42,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\css\" />
-    <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\lib\bootstrap-datepicker\" />
+    <Folder Include="wwwroot\lib\grapesjs-preset-webpage\src\" />
   </ItemGroup>
 
   <ItemGroup>

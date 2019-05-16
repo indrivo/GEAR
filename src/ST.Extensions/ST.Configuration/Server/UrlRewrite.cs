@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Entities.Data;
@@ -31,6 +32,8 @@ namespace ST.Configuration.Server
             app.Use(async (ctx, next) =>
             {
                 var env = ctx.RequestServices.GetRequiredService<IConfiguration>();
+                var cache = ctx.RequestServices.GetRequiredService<ICacheService>();
+                var db = ctx.RequestServices.GetRequiredService<EntitiesDbContext>();
                 var isConfigured = env.GetValue<bool>("IsConfigured");
                 if (!isConfigured)
                 {
