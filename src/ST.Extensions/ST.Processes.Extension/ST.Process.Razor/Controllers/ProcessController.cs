@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ST.Core;
-using ST.Entities.Extensions;
+using ST.Core.Helpers;
 using ST.Identity.Data;
 using ST.Procesess.Abstraction;
 using ST.Procesess.Data;

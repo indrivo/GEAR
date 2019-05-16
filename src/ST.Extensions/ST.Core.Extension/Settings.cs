@@ -12,25 +12,11 @@ namespace ST.Core
 
         public struct Tables
         {
-            public const string Nomenclature = "Nomenclature";
-            public const string NomKpiCategory = "NomKPICategory";
-            public const string NomMeasurement = "NomMeasurement";
-            public const string NomPeriod = "NomPeriod";
-            public const string NomFulfillment = "NomFulfillment";
-            public const string NomGoal = "NomGoal";
-            public const string NomRequirement = "NomRequirement";
-            public const string NomInterestedPartyType = "NomInterestedPartyType";
-            public const string NomInterestedParty = "NomInterestedParty";
-            public const string Kpi = "KPI";
-            public const string PartyRequirement = "PartyRequirement";
-            public const string GoalPartyRequirement = "GoalPartyRequirement";
-            public const string Standards = "Standards";
-            public const string StandardCategories = "StandardCategories";
-            public const string CategoryRequirements = "CategoryRequirements";
+            public const string CustomTable = "CustomTableName";
         }
     }
 
-    public class SystemConfig
+    public sealed class SystemConfig
     {
         /// <summary>
         /// This property value is used for cookie name and redis reserved key

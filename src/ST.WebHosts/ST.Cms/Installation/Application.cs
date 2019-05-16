@@ -31,20 +31,7 @@ namespace ST.Cms.Installation
 		/// Get settings
 		/// </summary>
 		public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
-		{
-			try
-			{
-				using (var r = new StreamReader(ResourceProvider.AppSettingsFilepath(hostingEnvironment)))
-				{
-					var json = r.ReadToEnd();
-					return JsonConvert.DeserializeObject<AppSettingsModel.RootObject>(json);
-				}
-			}
-			catch
-			{
-				return default;
-			}
-		}
+			=> JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(ResourceProvider.AppSettingsFilepath(hostingEnvironment));
 
 
 		/// <summary>
@@ -126,8 +113,7 @@ namespace ST.Cms.Installation
 		/// Create dynamic tables
 		/// </summary>
 		/// <param name="tenantId"></param>
-		/// <param name="schemaName"></param>
-		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId, string schemaName = null)
+		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId)
 		{
 			//Seed EntityFrameWork entities
 			var entities = TablesService.GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext));

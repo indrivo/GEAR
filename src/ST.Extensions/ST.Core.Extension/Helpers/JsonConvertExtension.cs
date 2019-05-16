@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Mapster;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace ST.Entities.Extensions
+namespace ST.Core.Helpers
 {
     public static class JsonParser
     {
