@@ -1008,7 +1008,7 @@ namespace ST.DynamicEntityStorage
         /// Register in memory
         /// </summary>
         /// <returns></returns>
-        public virtual async Task RegisterInMemoryDynamicTypes()
+        public virtual async Task RegisterInMemoryDynamicTypesAsync()
         {
             var tables = await _context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
             foreach (var table in tables)
@@ -1055,11 +1055,11 @@ namespace ST.DynamicEntityStorage
         /// <param name="schemaName"></param>
         public async Task CreateDynamicTables(Guid tenantId, string schemaName = null)
         {
-            var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
+            var entitiesList = new List<SeedEntity>
             {
-                EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
-                EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
-                EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
             };
 
             foreach (var item in entitiesList)

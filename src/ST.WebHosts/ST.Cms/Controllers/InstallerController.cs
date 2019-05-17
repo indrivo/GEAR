@@ -262,7 +262,7 @@ namespace ST.Cms.Controllers
 			await Installation.Application.SeedDynamicDataAsync();
 
 			//Register in memory types
-			await _dynamicService.RegisterInMemoryDynamicTypes();
+			await _dynamicService.RegisterInMemoryDynamicTypesAsync();
 
 			//Send welcome message to user
 			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id) }, new SystemNotifications

@@ -13,6 +13,7 @@ using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
 using ST.Entities.Utils;
 using ST.Entities.ViewModels.Table;
+using ST.Forms.Abstractions;
 using ST.Identity.Data;
 
 namespace ST.Configuration.Services
@@ -28,14 +29,15 @@ namespace ST.Configuration.Services
             var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
             var dynamicService = IoC.Resolve<IDynamicService>();
             var applicationDbContext = IoC.Resolve<ApplicationDbContext>();
+            var formContext = IoC.Resolve<IFormContext>();
 
             var dynamicEntities = entitiesDbContext.Table
                 .Where(x => !x.IsPartOfDbContext)
                 .Include(x => x.TableFields);
 
-            var entityFrameWorkEntities = entitiesDbContext.Table
-                .Where(x => x.IsPartOfDbContext)
-                .Include(x => x.TableFields);
+            //var entityFrameWorkEntities = entitiesDbContext.Table
+            //    .Where(x => x.IsPartOfDbContext)
+            //    .Include(x => x.TableFields);
 
             var dynamicData = new Dictionary<string, IEnumerable<object>>();
             var frameworkData = new Dictionary<string, IEnumerable<object>>();
@@ -63,7 +65,7 @@ namespace ST.Configuration.Services
             var zipStream = ExportDataIO.CreateZipArchive(new Dictionary<string, MemoryStream>
             {
                 {
-                    "forms.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Forms.Include(x => x.Table)
+                    "forms.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(formContext.Forms
                         .Include(x => x.Columns)
                         .Include(x => x.Rows)
                         .Include(x => x.Fields)

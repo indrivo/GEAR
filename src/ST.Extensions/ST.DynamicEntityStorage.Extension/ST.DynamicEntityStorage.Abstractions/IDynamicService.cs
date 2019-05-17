@@ -15,7 +15,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// Register in memory
         /// </summary>
         /// <returns></returns>
-        Task RegisterInMemoryDynamicTypes();
+        Task RegisterInMemoryDynamicTypesAsync();
 
         /// <summary>
         /// Check if exists

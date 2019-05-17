@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Backup.Extensions;
+using ST.Cache.Extensions;
 using ST.Cms.Abstractions;
 using ST.Cms.Services;
 using ST.Configuration.Extensions;
@@ -35,6 +36,9 @@ using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
 using ST.Report.Dynamic.Extensions;
+using ST.Entities.Abstractions.Extensions;
+using ST.Forms.Abstractions.Extensions;
+using ST.Forms.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -170,6 +174,7 @@ namespace ST.Cms
 				//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
 			});
 
+			//Register MPass
 			services.AddMPassSigningCredentials(new MPassSigningCredentials
 			{
 				ServiceProviderCertificate =
@@ -185,6 +190,8 @@ namespace ST.Cms
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
+			//---------------------------------------Entity Module-------------------------------------
+			services.AddEntityModule<EntitiesDbContext>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -213,12 +220,22 @@ namespace ST.Cms
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 
+			//-----------------------------------------Form Module-------------------------------------
+			services.AddFormModule<FormDbContext>();
+			services.AddDbContext<FormDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
+			});
+
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
 			services.AddDbContext<DynamicReportDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration, HostingEnvironment);
 				});
+
+			//---------------------------------Custom cache Module-------------------------------------
+			services.UseCustomCacheModule(HostingEnvironment, Configuration);
 
 			//----------------------------------------Email Module-------------------------------------
 			services.Configure<EmailSettingsViewModel>(Configuration.GetSection("EmailSettings"));

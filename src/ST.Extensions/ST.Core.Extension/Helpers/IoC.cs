@@ -1,6 +1,7 @@
 using System;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using Castle.Windsor.MsDependencyInjection;
 
 namespace ST.Core.Helpers
 {
@@ -60,6 +61,29 @@ namespace ST.Core.Helpers
             if (_container == null) _container = new WindsorContainer();
             _container.Register(Component.For<TAbstraction>()
                 .ImplementedBy<TImplementation>());
+        }
+
+        /// <summary>
+        /// Register new service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        /// <typeparam name="TImplementation"></typeparam>
+        public static void RegisterScopedService<TAbstraction, TImplementation>(TImplementation instance) where TImplementation : class, TAbstraction where TAbstraction : class
+        {
+            if (_container == null) _container = new WindsorContainer();
+            _container.Register(Component.For<TAbstraction>().Instance(instance)
+                        .LifestyleCustom<MsScopedLifestyleManager>());
+        }
+
+        /// <summary>
+        /// Check if service is registered
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <returns></returns>
+        public static bool IsServiceRegistered<TService>()
+        {
+            if (_container == null) _container = new WindsorContainer();
+            return _container.Kernel.HasComponent(typeof(TService));
         }
 
         /// <summary>

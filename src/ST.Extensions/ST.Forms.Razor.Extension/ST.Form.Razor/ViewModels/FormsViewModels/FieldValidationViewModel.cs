@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Entities.Abstractions.Models;
-using ST.Entities.Models.Forms;
+using ST.Forms.Abstractions.Models.FormModels;
 
 namespace ST.Forms.Razor.ViewModels.FormsViewModels
 {

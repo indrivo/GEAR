@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using ST.Core.Abstractions;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Extensions;
-using ST.Entities.Models.Forms;
 using ST.Entities.Models.Pages;
 using ST.Entities.Models.RenderTemplates;
 using ST.Entities.Models.ViewModels;
@@ -10,7 +10,7 @@ using ST.Entities.Security.Data;
 
 namespace ST.Entities.Data
 {
-    public class EntitiesDbContext : EntitySecurityDbContext
+    public class EntitiesDbContext : EntitySecurityDbContext, IEntityContext
     {
         /// <summary>
         /// Schema
@@ -18,6 +18,7 @@ namespace ST.Entities.Data
         /// </summary>
         public const string Schema = "Entities";
 
+        /// <inheritdoc />
         /// <summary>
         /// Options
         /// </summary>
@@ -37,30 +38,7 @@ namespace ST.Entities.Data
         public DbSet<TableFieldGroups> TableFieldGroups { get; set; }
         public DbSet<TableModelFields> TableFields { get; set; }
         public DbSet<TableFieldTypes> TableFieldTypes { get; set; }
-        public DbSet<Document> Documents { get; set; }
-
         #endregion Table
-
-        #region Forms
-
-        public DbSet<Attrs> Attrs { get; set; }
-        public DbSet<ColumnField> ColumnFields { get; set; }
-        public DbSet<Column> Columns { get; set; }
-        public DbSet<Config> Configs { get; set; }
-        public DbSet<DisabledAttr> DisabledAttrs { get; set; }
-        public DbSet<Field> Fields { get; set; }
-        public DbSet<FormType> FormTypes { get; set; }
-        public DbSet<Form> Forms { get; set; }
-        public DbSet<Meta> Meta { get; set; }
-        public DbSet<Option> Options { get; set; }
-        public DbSet<RowColumn> RowColumns { get; set; }
-        public DbSet<Row> Rows { get; set; }
-        public DbSet<Models.Forms.Settings> Settings { get; set; }
-        public DbSet<StageRows> StageRows { get; set; }
-        public DbSet<Stage> Stages { get; set; }
-        public DbSet<FormFieldEvent> FormFieldEvents { get; set; }
-
-        #endregion Forms
 
         #region  Pages
         public DbSet<Page> Pages { get; set; }
@@ -89,31 +67,18 @@ namespace ST.Entities.Data
             builder.Entity<TableFieldConfigs>().HasKey(ug => new { ug.Id });
             builder.Entity<TableFieldConfigValues>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
             builder.Entity<TableModelFields>().HasOne(typeof(TableFieldTypes), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Field>().HasOne(model => model.TableField).WithMany().HasForeignKey(model => model.TableFieldId).OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Form>().HasOne(model => model.Type).WithMany().HasForeignKey(model => model.TypeId).OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Attrs>().HasOne(model => model.Row).WithMany().HasForeignKey(model => model.RowId).OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Row>().HasMany(model => model.Attrs).WithOne(x => x.Row).OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Field>().HasMany(model => model.Attrs).WithOne(x => x.Field).OnDelete(DeleteBehavior.Cascade);
             builder.RegisterIndexes();
         }
-    }
 
-    /// <summary>
-    /// Context factory design
-    /// </summary>
-    public class EntitiesDbContextFactory : IDesignTimeDbContextFactory<EntitiesDbContext>
-    {
         /// <inheritdoc />
         /// <summary>
-        /// For creating migrations
+        /// Set entity
         /// </summary>
-        /// <param name="args"></param>
+        /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public EntitiesDbContext CreateDbContext(string[] args)
+        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
-            var optionsBuilder = new DbContextOptionsBuilder<EntitiesDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new EntitiesDbContext(optionsBuilder.Options);
+            return Set<TEntity>();
         }
     }
 }

@@ -14,6 +14,9 @@
 	<Copyright>Soft-tehnica 2019</Copyright>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Configuration\CustomEntities.json" />
+  </ItemGroup>
+  <ItemGroup>
 	<None Remove="app_offline.htm" />
 	<None Remove="ExtraStatic\modeler.js" />
 	<None Remove="Static\Pages\performanceserver\performanceserver.html" />
@@ -60,6 +63,9 @@
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
 	<EmbeddedResource Include="bpmConfig.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Configuration\CustomEntities.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Static\Embedded Resources\user.jpg">
@@ -149,6 +155,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Razor.Extension\ST.Email.Razor\ST.Email.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Form.Razor\ST.Forms.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.Razor\ST.Identity.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />

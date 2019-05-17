@@ -115,7 +115,7 @@ function startFormEditor() {
 						$.toast({
 							heading: data.error_keys[0].message,
 							text: "",
-							position: 'bottom-right',
+							position: 'top-right',
 							loaderBg: '#ff6849',
 							icon: 'error',
 							hideAfter: 3500,

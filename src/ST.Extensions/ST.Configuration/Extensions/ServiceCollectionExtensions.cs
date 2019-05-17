@@ -15,18 +15,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
-using ST.Cache.Abstractions;
-using ST.Cache.Extensions;
-using ST.Cache.Services;
-using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Security.Extensions;
-using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
+using ST.Forms;
+using ST.Forms.Abstractions;
+using ST.Forms.Data;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
@@ -179,15 +176,8 @@ namespace ST.Configuration.Extensions
             services.AddTransient<IMPassService, MPassService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
-            services.AddTransient<IFormService, FormService<EntitiesDbContext>>();
+            services.AddTransient<IFormService, FormService<FormDbContext>>();
             services.AddTransient<IOrganizationService<Tenant>, OrganizationService>();
-            var systemIdentifier = configuration.GetSection(nameof(SystemConfig))
-                .GetValue<string>(nameof(SystemConfig.MachineIdentifier));
-
-            if (string.IsNullOrEmpty(systemIdentifier))
-                throw new NullReferenceException("System identifier was not registered in appsettings file");
-
-            services.UseCustomCacheService(env, configuration, systemIdentifier);
             return services;
         }
 
@@ -317,10 +307,6 @@ namespace ST.Configuration.Extensions
             castleContainer.Register(Component.For<IDynamicService>()
                  .ImplementedBy<DynamicService<EntitiesDbContext>>()
                  .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
-
-            //Cache service
-            castleContainer.Register(Component.For<ICacheService>()
-                .ImplementedBy<CacheService>());
 
             //Seed
             var synchronizerParams = new Dictionary<string, object> { { "context", context } };

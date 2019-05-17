@@ -14,16 +14,19 @@ using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Abstractions;
 using ST.Core.BaseControllers;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
+using ST.DynamicEntityStorage.Services;
+using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Constants;
 using ST.Entities.Data;
 using ST.Entities.Services;
 using ST.Entities.Services.Abstraction;
-using ST.Entities.Settings;
 using ST.Entities.Utils;
 using ST.Entities.ViewModels.Table;
+using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
@@ -50,12 +53,26 @@ namespace ST.Cms.Controllers.Entity
 		/// </summary>
 		private IBackgroundTaskQueue Queue { get; }
 
+		/// <summary>
+		/// Inject form context
+		/// </summary>
+		private readonly IFormContext _formContext;
 
-		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+		/// <summary>
+		/// Inject dynamic service
+		/// </summary>
+		private readonly IDynamicService _dynamicService;
+
+
+		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IDynamicService dynamicService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
 			_logger = logger;
 			Queue = queue;
+			_formContext = formContext;
+			_dynamicService = dynamicService;
 			ConnectionString = DbUtil.GetConnectionString(configuration, env);
+			formContext.ValidateNullAbstractionContext();
+			Context.Validate();
 		}
 
 		private (DbProviderType, string) ConnectionString { get; set; }
@@ -378,12 +395,17 @@ namespace ST.Cms.Controllers.Entity
 			return View(field);
 		}
 
+		/// <summary>
+		/// Refresh runtime types on entity change structure
+		/// </summary>
 		[NonAction]
 		private void RefreshRuntimeTypes()
 		{
 			Queue.PushQueueBackgroundWorkItem(async token =>
 			{
-
+				//TODO: Need to update only edited dynamic runtime type
+				TypeManager.Clear();
+				await _dynamicService.RegisterInMemoryDynamicTypesAsync();
 			});
 		}
 
@@ -575,6 +597,8 @@ namespace ST.Cms.Controllers.Entity
 			if (!dropColumn.Result) return Json(false);
 			Context.TableFields.Remove(field);
 			Context.SaveChanges();
+			//Call to refresh runtime dynamic types
+			RefreshRuntimeTypes();
 			return Json(true);
 		}
 
@@ -599,27 +623,25 @@ namespace ST.Cms.Controllers.Entity
 			{
 				return Json(new { success = false, message = "Table has value" });
 			}
-			else
-			{
-				var isUsedForms = Context.Forms.Any(x => x.TableId == id);
-				var isUsedProfiles = ApplicationDbContext.Profiles.Any(x => x.EntityId == id);
-				if (isUsedForms || isUsedProfiles)
-				{
-					return Json(new { success = false, message = "Table is used" });
-				}
 
-				try
-				{
-					sqlService.DropTable(ConnectionString.Item2, table.Name, table.EntityType);
-					Context.Table.Remove(table);
-					Context.SaveChanges();
-					return Json(new { success = true, message = "Delete success" });
-				}
-				catch (Exception e)
-				{
-					_logger.LogError(e.Message);
-					return Json(new { success = false, message = "Same error on delete!" });
-				}
+			var isUsedForms = _formContext.Forms.Any(x => x.TableId == id);
+			var isUsedProfiles = ApplicationDbContext.Profiles.Any(x => x.EntityId == id);
+			if (isUsedForms || isUsedProfiles)
+			{
+				return Json(new { success = false, message = "Table is used" });
+			}
+
+			try
+			{
+				sqlService.DropTable(ConnectionString.Item2, table.Name, table.EntityType);
+				Context.Table.Remove(table);
+				Context.SaveChanges();
+				return Json(new { success = true, message = "Delete success" });
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e.Message);
+				return Json(new { success = false, message = "Same error on delete!" });
 			}
 		}
 	}

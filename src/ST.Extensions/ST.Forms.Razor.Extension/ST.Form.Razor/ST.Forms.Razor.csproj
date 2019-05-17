@@ -13,8 +13,8 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
-    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
     <ProjectReference Include="..\..\ST.Notifications.Extension\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Forms.Abstractions\ST.Forms.Abstractions.csproj" />
   </ItemGroup>
 </Project>

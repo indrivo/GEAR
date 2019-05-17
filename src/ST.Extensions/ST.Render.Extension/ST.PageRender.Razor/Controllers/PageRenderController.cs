@@ -12,12 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using ST.Audit.Extensions;
 using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Settings;
 using ST.Identity.Data;
 using ST.PageRender.Razor.Extensions;
 using ST.PageRender.Razor.Helpers;
@@ -28,6 +26,8 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions.Constants;
+using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 
 namespace ST.PageRender.Razor.Controllers
@@ -58,6 +58,10 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         private readonly IMenuService _menuService;
 
+        /// <summary>
+        /// Inject form context
+        /// </summary>
+        private readonly IFormContext _formContext;
 
         /// <summary>
         /// Inject user manager
@@ -75,16 +79,18 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="pageRender"></param>
         /// <param name="menuService"></param>
         /// <param name="userManager"></param>
+        /// <param name="formContext"></param>
         public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IMenuService menuService, UserManager<ApplicationUser> userManager)
+            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext)
         {
             _context = context;
             _appContext = appContext;
             _service = service;
             _menuService = menuService;
             _userManager = userManager;
+            _formContext = formContext;
             _pageRender = pageRender;
         }
 
@@ -206,16 +212,17 @@ namespace ST.PageRender.Razor.Controllers
             var objType = _service.Table(entity.TableModel.Name).Type;
             var obj = Activator.CreateInstance(objType);
             var referenceFields = obj.GetType().GetProperties()
-                .Where(x => !x.PropertyType.GetTypeInfo().FullName.StartsWith("System"))
+                .Where(x => !x.PropertyType.GetTypeInfo()?.FullName?.StartsWith("System") ?? false)
                 .ToList();
             foreach (var refField in referenceFields)
             {
                 var refPropName = refField.Name;
                 try
                 {
-                    var refType = obj.GetType().GetProperty(refPropName).PropertyType;
-                    var newInstance = Activator.CreateInstance(refType);
-                    obj.GetType().GetProperty(refPropName).SetValue(obj, newInstance);
+                    var refTypeProperty = obj.GetType().GetProperty(refPropName);
+                    if (refTypeProperty == null) continue;
+                    var newInstance = Activator.CreateInstance(refTypeProperty.PropertyType);
+                    refTypeProperty.SetValue(obj, newInstance);
                 }
                 catch (Exception e)
                 {
@@ -464,7 +471,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetForms()
         {
-            var forms = _context.Forms.Where(x => !x.IsDeleted).ToList();
+            var forms = _formContext.Forms.Where(x => !x.IsDeleted).ToList();
 
             return new JsonResult(forms);
         }
@@ -533,7 +540,7 @@ namespace ST.PageRender.Razor.Controllers
                 result.Errors.Add(new ErrorModel("Null", "Data is not defined!"));
                 return Json(result);
             }
-            var form = _context.Forms.FirstOrDefault(x => x.Id.Equals(model.FormId));
+            var form = _formContext.Forms.FirstOrDefault(x => x.Id.Equals(model.FormId));
             if (form == null)
             {
                 result.Errors.Add(new ErrorModel("Null", "Form not found!"));
