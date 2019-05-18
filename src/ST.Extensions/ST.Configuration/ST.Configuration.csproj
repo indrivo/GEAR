@@ -17,8 +17,6 @@
   <ItemGroup>
     <None Remove="EntitiesConfiguration.json" />
     <None Remove="FieldTypes.json" />
-    <None Remove="FormTypes.json" />
-    <None Remove="FormValidations.json" />
     <None Remove="IdentityConfiguration.json" />
     <None Remove="NotificationTypes.json" />
     <None Remove="ProfileEntities.json" />
@@ -30,12 +28,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="FieldTypes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormTypes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormValidations.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="IdentityConfiguration.json">
