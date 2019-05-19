@@ -1058,7 +1058,7 @@ namespace ST.DynamicEntityStorage
             var entitiesList = new List<SeedEntity>
             {
                 JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
-                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/CustomEntities.json")),
                 JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
             };
 

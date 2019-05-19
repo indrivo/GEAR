@@ -30,34 +30,6 @@
     </Content>
   </ItemGroup>
   
-
-  <ItemGroup>
-    <Content Include="wwwroot\FormModulePlugins\css\formeo.css">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\st-data-form-validation-plugin-v.0.1.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\st-form-generate-new-form-plugin-v.0.1.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\st-form-prototype-library-v.0.1.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\st-form-render-plugin-v.0.1.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\formeo.min.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\formeo.min.js.gz">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\FormModulePlugins\js\st-data-form-plugin-v.0.1.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />

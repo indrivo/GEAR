@@ -62,14 +62,14 @@ namespace ST.Cms.Installation
 		/// <returns></returns>
 		private static IWebHost Migrate(this IWebHost webHost)
 		{
-			webHost.MigrateDbContext<EntitiesDbContext>(async (context, services) =>
-					{
-						await EntitiesDbContextSeed<EntitiesDbContext>.SeedAsync(context, Core.Settings.TenantId);
-					})
-				.MigrateDbContext<FormDbContext>(async (context, services) =>
-					{
-						await FormDbContextSeed<FormDbContext>.SeedAsync(context, Core.Settings.TenantId);
-					})
+			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
+				   {
+					   EntitiesDbContextSeed<EntitiesDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+				   })
+				.MigrateDbContext<FormDbContext>((context, services) =>
+				   {
+					   FormDbContextSeed<FormDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+				   })
 				.MigrateDbContext<ProcessesDbContext>()
 				.MigrateDbContext<DynamicReportDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()

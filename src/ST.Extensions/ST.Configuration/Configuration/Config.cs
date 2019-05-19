@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using ST.Identity.Data.Permissions;
 using ApiResource = IdentityServer4.Models.ApiResource;
 using Client = IdentityServer4.Models.Client;
@@ -131,26 +134,28 @@ namespace ST.Configuration.Configuration
         /// <param name="resources"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static IEnumerable<identityModels.IdentityResource> GetSeedResources(this IEnumerable<identityModels.IdentityResource> resources, ConfigurationDbContext context)
+        public static IEnumerable<identityModels.IdentityResource> GetSeedResources(this IEnumerable<IdentityResource> resources, ConfigurationDbContext context)
         {
-            if (!context.Database.IsNpgsql())
-            {
-                return resources;
-            }
             var resourceIndex = 1;
-            var userClaimIndex = 1;
-
-            var seed = new List<identityModels.IdentityResource>();
             foreach (var item in resources)
             {
-                item.Id = resourceIndex++;
-                foreach (var userClaim in item.UserClaims)
+                var obj = new identityModels.IdentityResource
                 {
-                    userClaim.Id = userClaimIndex++;
-                }
-                seed.Add(item);
+                    Id = resourceIndex++,
+                    Required = item.Required,
+                    Enabled = item.Enabled,
+                    Created = DateTime.Now,
+                    NonEditable = false,
+                    Description = item.Description,
+                    DisplayName = item.DisplayName,
+                    Emphasize = item.Emphasize,
+                    Name = item.Name,
+                    ShowInDiscoveryDocument = item.ShowInDiscoveryDocument,
+                    Updated = DateTime.Now
+                };
+                
+                yield return obj;
             }
-            return seed;
         }
 
         /// <summary>
@@ -159,25 +164,31 @@ namespace ST.Configuration.Configuration
         /// <param name="apiResources"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static IEnumerable<identityModels.ApiResource> GetSeedApiResources(this IEnumerable<identityModels.ApiResource> apiResources, ConfigurationDbContext context)
+        public static IEnumerable<identityModels.ApiResource> GetSeedApiResources(this IEnumerable<ApiResource> apiResources, ConfigurationDbContext context)
         {
-            if (!context.Database.IsNpgsql())
-            {
-                return apiResources;
-            }
             var apiIndex = 1;
-            var data = new List<identityModels.ApiResource>();
             var scopeIndex = context.ApiResources.Count() + 1;
-            foreach (var apiResource in apiResources)
+            var dataResources = apiResources.Adapt<IEnumerable<identityModels.ApiResource>>().ToList();
+            foreach (var apiResource in dataResources)
             {
                 foreach (var scope in apiResource.Scopes)
                 {
                     scope.Id = scopeIndex++;
                 }
                 apiResource.Id = apiIndex++;
-                data.Add(apiResource);
+                yield return apiResource;
             }
-            return data;
+        }
+
+
+        /// <summary>
+        /// Generate index
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        private static int GenerateIndex(string format)
+        {
+            return Convert.ToInt32(format);
         }
 
         /// <summary>
@@ -186,86 +197,115 @@ namespace ST.Configuration.Configuration
         /// <param name="clients"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static IEnumerable<identityModels.Client> GetSeedClients(this IEnumerable<identityModels.Client> clients, ConfigurationDbContext context)
+        public static IEnumerable<identityModels.Client> GetSeedClients(this IEnumerable<Client> clients, ConfigurationDbContext context)
         {
-            if (!context.Database.IsNpgsql())
-            {
-                return clients;
-            }
-            var response = new List<identityModels.Client>();
+            //TODO: Replace with ToEntity() from AutoMapper extensions, the current version of AutoMapper and Identity.Server4 crash
             var index = 1;
-            var redirectIndex = 1;
-            var propIndex = 1;
-            var grantTypeIndex = 1;
-            var clientSecretIndex = 1;
-            var redirectUriIndex = 1;
-            var scopeIndex = 1;
-            var resIndex = 1;
-            var allowedCorsOriginIndex = 1;
-            //var scopes = new Dictionary<string, int>();
-            try
+            var enumerateClients = clients.ToList();
+            foreach (var client in enumerateClients)
             {
-                foreach (var client in clients)
+                var retClient = new identityModels.Client
                 {
-                    client.Id = index++;
-
-                    foreach (var restriction in client.IdentityProviderRestrictions)
+                    Id = index++,
+                    Enabled = client.Enabled,
+                    Created = DateTime.Now,
+                    AbsoluteRefreshTokenLifetime = client.AbsoluteRefreshTokenLifetime,
+                    AccessTokenLifetime = client.AccessTokenLifetime,
+                    AccessTokenType = client.AccessTokenLifetime,
+                    AllowAccessTokensViaBrowser = client.AllowAccessTokensViaBrowser,
+                    AllowOfflineAccess = client.AllowOfflineAccess,
+                    AllowPlainTextPkce = client.AllowPlainTextPkce,
+                    AllowRememberConsent = client.AllowRememberConsent,
+                    AllowedCorsOrigins = client.AllowedCorsOrigins.Select(x => new identityModels.ClientCorsOrigin
                     {
-                        restriction.Id = resIndex++;
-                    }
-
-                    foreach (var redirectUri in client.PostLogoutRedirectUris)
+                        Id = GenerateIndex($"{index}{client.AllowedCorsOrigins.IndexOf(x)}"),
+                        ClientId = index,
+                        Origin = x
+                    }).ToList(),
+                    ClientId = client.ClientId,
+                    AllowedGrantTypes = client.AllowedGrantTypes.Select(x => new identityModels.ClientGrantType
                     {
-                        redirectUri.Id = redirectIndex++;
-                    }
-
-                    foreach (var allowedCorsOrigin in client.AllowedCorsOrigins)
+                        Id = GenerateIndex($"{index}{client.AllowedGrantTypes.IndexOf(x)}"),
+                        ClientId = index,
+                        GrantType = x
+                    }).ToList(),
+                    AllowedScopes = client.AllowedScopes.Select(x => new identityModels.ClientScope
                     {
-                        allowedCorsOrigin.Id = allowedCorsOriginIndex++;
-                    }
-
-                    foreach (var property in client.Properties)
+                        Id = GenerateIndex($"{index}{client.AllowedScopes.IndexOf(x)}"),
+                        ClientId = index,
+                        Scope = x
+                    }).ToList(),
+                    AlwaysIncludeUserClaimsInIdToken = client.AlwaysIncludeUserClaimsInIdToken,
+                    AlwaysSendClientClaims = client.AlwaysSendClientClaims,
+                    AuthorizationCodeLifetime = client.AuthorizationCodeLifetime,
+                    BackChannelLogoutSessionRequired = client.BackChannelLogoutSessionRequired,
+                    BackChannelLogoutUri = client.BackChannelLogoutUri,
+                    Claims = client.Claims.Select(x => new identityModels.ClientClaim()
                     {
-                        property.Id = propIndex++;
-                    }
-
-                    foreach (var grantType in client.AllowedGrantTypes)
+                        Id = GenerateIndex($"{index}{client.Claims.IndexOf(x)}"),
+                        ClientId = index,
+                        Value = x.Value,
+                        Type = x.Type
+                    }).ToList(),
+                    ClientClaimsPrefix = client.ClientClaimsPrefix,
+                    ClientName = client.ClientName,
+                    ClientSecrets = client.ClientSecrets.Select(x => new identityModels.ClientSecret()
                     {
-                        grantType.Id = grantTypeIndex++;
-                    }
-
-                    foreach (var scope in client.AllowedScopes)
+                        Id = GenerateIndex($"{index}{client.ClientSecrets.IndexOf(x)}"),
+                        ClientId = index,
+                        Value = x.Value,
+                        Type = x.Type,
+                        Created = DateTime.Now,
+                        Description = x.Description,
+                        Expiration = x.Expiration
+                    }).ToList(),
+                    Description = client.Description,
+                    ClientUri = client.ClientUri,
+                    ConsentLifetime = client.ConsentLifetime,
+                    DeviceCodeLifetime = client.DeviceCodeLifetime,
+                    EnableLocalLogin = client.EnableLocalLogin,
+                    FrontChannelLogoutSessionRequired = client.FrontChannelLogoutSessionRequired,
+                    FrontChannelLogoutUri = client.FrontChannelLogoutUri,
+                    IdentityProviderRestrictions = client.IdentityProviderRestrictions.Select(x => new identityModels.ClientIdPRestriction
                     {
-                        scope.Id = scopeIndex++;
-                        //if (scopes.ContainsKey(scope.Scope))
-                        //{
-                        //    scope.Id = scopes[scope.Scope];
-                        //}
-                        //else
-                        //{
-                        //    scope.Id = scopeIndex++;
-                        //    scopes.Add(scope.Scope, scope.Id);
-                        //}
-                    }
-
-                    foreach (var clientSecret in client.ClientSecrets)
+                        Id = GenerateIndex($"{index}{client.IdentityProviderRestrictions.IndexOf(x)}"),
+                        ClientId = index,
+                        Provider = x
+                    }).ToList(),
+                    IdentityTokenLifetime = client.IdentityTokenLifetime,
+                    IncludeJwtId = client.IncludeJwtId,
+                    LastAccessed = DateTime.Now,
+                    LogoUri = client.LogoUri,
+                    NonEditable = false,
+                    PairWiseSubjectSalt = client.PairWiseSubjectSalt,
+                    PostLogoutRedirectUris = client.PostLogoutRedirectUris.Select(x => new identityModels.ClientPostLogoutRedirectUri
                     {
-                        clientSecret.Id = clientSecretIndex++;
-                    }
-
-                    foreach (var redirect in client.RedirectUris)
+                        Id = GenerateIndex($"{index}{client.PostLogoutRedirectUris.IndexOf(x)}"),
+                        ClientId = index,
+                        PostLogoutRedirectUri = x
+                    }).ToList(),
+                    ProtocolType = client.ProtocolType,
+                    RedirectUris = client.RedirectUris.Select(x => new identityModels.ClientRedirectUri
                     {
-                        redirect.Id = redirectUriIndex++;
-                    }
-                    response.Add(client);
-                }
+                        Id = GenerateIndex($"{index}{client.RedirectUris.IndexOf(x)}"),
+                        ClientId = index,
+                        RedirectUri = x
+                    }).ToList(),
+                    RefreshTokenUsage = (int)client.RefreshTokenUsage,
+                    RefreshTokenExpiration = (int)client.RefreshTokenExpiration,
+                    RequireClientSecret = client.RequireClientSecret,
+                    RequireConsent = client.RequireConsent,
+                    RequirePkce = client.RequirePkce,
+                    SlidingRefreshTokenLifetime = client.SlidingRefreshTokenLifetime,
+                    UpdateAccessTokenClaimsOnRefresh = client.UpdateAccessTokenClaimsOnRefresh,
+                    Updated = DateTime.Now,
+                    UserCodeType = client.UserCodeType,
+                    UserSsoLifetime = client.UserSsoLifetime
+                };
 
+                yield return retClient;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            return response;
+
         }
 
         /// <summary>
