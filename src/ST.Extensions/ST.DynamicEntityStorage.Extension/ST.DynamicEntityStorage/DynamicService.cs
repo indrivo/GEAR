@@ -22,13 +22,14 @@ using ST.Entities.ViewModels.DynamicEntities;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Identity.Abstractions;
 
 namespace ST.DynamicEntityStorage
 {
     /// <inheritdoc />
-    public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext
+    public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext, IEntityContext
     {
         /// <summary>
         /// Inject db context
@@ -1010,7 +1011,8 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public virtual async Task RegisterInMemoryDynamicTypesAsync()
         {
-            var tables = await _context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
+            var context = IoC.Resolve<IEntityContext>();
+            var tables = await context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
             foreach (var table in tables)
             {
                 await new ObjectService(table.Name).ResolveAsync(_context, _httpContextAccessor);

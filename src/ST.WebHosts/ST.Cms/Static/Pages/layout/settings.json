@@ -11,10 +11,6 @@
   "IsSystem": true,
   "PageStyles": [
     {
-      "Order": 0,
-      "Script": "<link href=\"/assets/css/formeo.css\" rel=\"stylesheet\" />"
-    },
-    {
       "Order": 1,
       "Script": "<link rel=\"stylesheet\" type=\"text/css\" href=\"/lib/twitter-bootstrap/css/bootstrap.min.css\" />"
     },

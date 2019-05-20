@@ -30,13 +30,33 @@ namespace ST.Entities.Data
         }
 
         #region Table
-
+        /// <summary>
+        /// Entity types
+        /// </summary>
         public DbSet<EntityType> EntityTypes { get; set; }
+        /// <summary>
+        /// Tables
+        /// </summary>
         public DbSet<TableModel> Table { get; set; }
+        /// <summary>
+        /// Table configs
+        /// </summary>
         public DbSet<TableFieldConfigs> TableFieldConfigs { get; set; }
+        /// <summary>
+        /// Table config values
+        /// </summary>
         public DbSet<TableFieldConfigValues> TableFieldConfigValues { get; set; }
+        /// <summary>
+        /// Field groups
+        /// </summary>
         public DbSet<TableFieldGroups> TableFieldGroups { get; set; }
+        /// <summary>
+        /// Table fields
+        /// </summary>
         public DbSet<TableModelFields> TableFields { get; set; }
+        /// <summary>
+        /// Field types
+        /// </summary>
         public DbSet<TableFieldTypes> TableFieldTypes { get; set; }
         #endregion Table
 

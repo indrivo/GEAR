@@ -14,17 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="wwwroot\FormModulePlugins\css\formeo.css" />
-    <None Remove="wwwroot\FormModulePlugins\js\formeo.min.js" />
-    <None Remove="wwwroot\FormModulePlugins\js\formeo.min.js.gz" />
-    <None Remove="wwwroot\FormModulePlugins\js\st-data-form-plugin-v.0.1.js" />
-    <None Remove="wwwroot\FormModulePlugins\js\st-data-form-validation-plugin-v.0.1.js" />
-    <None Remove="wwwroot\FormModulePlugins\js\st-form-generate-new-form-plugin-v.0.1.js" />
-    <None Remove="wwwroot\FormModulePlugins\js\st-form-prototype-library-v.0.1.js" />
-    <None Remove="wwwroot\FormModulePlugins\js\st-form-render-plugin-v.0.1.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="libman.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

@@ -3,13 +3,14 @@
 <!DOCTYPE html>
 @if (User.Identity.IsAuthenticated)
 {
-	var layoutId = (Guid?) ViewData["layoutId"] ?? PageManager.Layouts[0];
+	var layoutId = (Guid?)ViewData["layoutId"] ?? PageManager.Layouts[0];
 
 	<html>
 	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css"/>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
+		<link rel="stylesheet" type="text/css" href="~/assets/FormModulePlugins/css/formeo.css" />
 		<title>@ViewData["Title"] - ISO</title>
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
@@ -24,27 +25,26 @@
 		<![endif]-->
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
-	<application layout-id="@layoutId">
-		@RenderBody()
-	</application>
+		<application layout-id="@layoutId">
+			@RenderBody()
+		</application>
+		<partial name="_LayoutScriptPartial" model="layoutId" />
+		<layout-js-code layout-id="@layoutId"></layout-js-code>
 
-	<partial name="_LayoutScriptPartial"/>
-	<layout-js-code layout-id="@layoutId"></layout-js-code>
-
-	<script src="~/assets/js/form/formeo.min.js"></script>
-	<script src="~/assets/js/form/form-generate.js" asp-append-version="true"></script>
-	<script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
-	<script src="~/js/signalar.js" asp-append-version="true"></script>
-	<script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
-	<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
-	<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
-	@RenderSection("Scripts", false)
-	<partial name="_AssistanceChat" model="layoutId"/>
+		<script src="~/assets/FormModulePlugins/js/formeo.min.js"></script>
+		<script src="~/assets/FormModulePlugins/js/st-form-prototype-library-v.0.1.js" asp-append-version="true"></script>
+		<script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+		<script src="~/js/signalar.js" asp-append-version="true"></script>
+		<script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+		<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
+		<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
+		@RenderSection("Scripts", false)
+		<partial name="_AssistanceChat" model="layoutId" />
 	</body>
-	</html>
+</html>
 }
 else
 {
-	@RenderBody()
-	@RenderSection("Scripts", false)
+@RenderBody()
+@RenderSection("Scripts", false)
 }

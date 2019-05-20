@@ -24,6 +24,7 @@ using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Cms.ViewModels.InstallerModels;
 using ST.Core.Abstractions;
+using ST.Entities.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.MultiTenant.Helpers;
 
@@ -39,7 +40,7 @@ namespace ST.Cms.Controllers
 		/// <summary>
 		/// Inject entity db context
 		/// </summary>
-		private readonly EntitiesDbContext _entitiesDbContext;
+		private readonly IEntityContext _entitiesDbContext;
 
 		/// <summary>
 		/// Inject application context

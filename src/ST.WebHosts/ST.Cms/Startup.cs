@@ -39,6 +39,7 @@ using ST.Report.Dynamic.Extensions;
 using ST.Entities.Abstractions.Extensions;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
+using ST.Forms.Razor.Extensions;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -226,6 +227,8 @@ namespace ST.Cms
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
+
+			services.AddFormStaticFilesModule();
 
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
