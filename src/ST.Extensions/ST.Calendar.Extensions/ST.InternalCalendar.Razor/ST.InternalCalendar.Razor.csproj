@@ -36,10 +36,4 @@
   <ItemGroup>
     <Content Remove="wwwroot\calendar\js\internal-calendar-plugin-v1.js" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="wwwroot\calendar\js\internal-calendar-plugin-v1.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
 </Project>

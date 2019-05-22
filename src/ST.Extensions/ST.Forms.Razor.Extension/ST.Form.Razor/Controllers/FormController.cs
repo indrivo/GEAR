@@ -209,7 +209,7 @@ namespace ST.Forms.Razor.Controllers
             if (formId == null) return default;
             var form = _formContext.Forms.FirstOrDefault(x => x.Id == formId);
             if (form == null) return Json(default(TableModel));
-            var table = Context.Table.FirstOrDefault(x => x.Id == formId);
+            var table = Context.Table.FirstOrDefault(x => x.Id == form.TableId);
             return Json(table);
         }
 

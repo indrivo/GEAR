@@ -47,13 +47,14 @@ namespace ST.Forms
         public virtual ResultModel DeleteForm(Guid id)
         {
             var form = _context.Forms.FirstOrDefault(x => x.Id == id);
-            if (form == null) return new ResultModel
-            {
-                Errors = new List<IErrorModel>
+            if (form == null)
+                return new ResultModel
                 {
-                    new ErrorModel("", "Form not found")
-                }
-            };
+                    Errors = new List<IErrorModel>
+                    {
+                        new ErrorModel("", "Form not found")
+                    }
+                };
             _context.Forms.Remove(form);
             try
             {
@@ -70,7 +71,7 @@ namespace ST.Forms
                 {
                     Errors = new List<IErrorModel>
                     {
-                        new ErrorModel("",e.ToString())
+                        new ErrorModel("", e.ToString())
                     }
                 };
             }
@@ -112,13 +113,14 @@ namespace ST.Forms
                 .Include(x => x.Stages)
                 .FirstOrDefault(x => x.Id == id);
 
-            if (response == null) return new ResultModel<FormViewModel>
-            {
-                Errors = new List<IErrorModel>
+            if (response == null)
+                return new ResultModel<FormViewModel>
                 {
-                    new ErrorModel("", "Form not found")
-                }
-            };
+                    Errors = new List<IErrorModel>
+                    {
+                        new ErrorModel("", "Form not found")
+                    }
+                };
 
             var form = new FormViewModel
             {
@@ -223,14 +225,14 @@ namespace ST.Forms
                     {
                         Label = f.Label,
                         Type = new List<AttrTagViewModel>
+                        {
+                            new AttrTagViewModel
                             {
-                                new AttrTagViewModel
-                                {
-                                    Label = f.TypeLabel,
-                                    Value = f.Value,
-                                    Selected = true
-                                }
-                            },
+                                Label = f.TypeLabel,
+                                Value = f.Value,
+                                Selected = true
+                            }
+                        },
                         Value = f.Value,
                         Selected = f.Selected
                     });
@@ -381,7 +383,9 @@ namespace ST.Forms
                                             var disabled = new List<DisabledAttr>();
                                             if (field.Value.Config.DisabledAttrs != null)
                                             {
-                                                disabled.AddRange(field.Value.Config.DisabledAttrs.Select(dis => new DisabledAttr { Name = dis }));
+                                                disabled.AddRange(
+                                                    field.Value.Config.DisabledAttrs.Select(dis =>
+                                                        new DisabledAttr {Name = dis}));
                                             }
 
                                             var opt = new List<Option>();
@@ -418,11 +422,13 @@ namespace ST.Forms
                                                     opt.Add(o);
                                                 }
                                             }
+
                                             //add new Field
                                             fields.Add(new Field
                                             {
                                                 Order = order++,
-                                                TableFieldId = field.Value.Attrs?.FirstOrDefault(x => x.Key == "tableFieldId").Value?.TryToGuid(),
+                                                TableFieldId = field.Value.Attrs
+                                                    ?.FirstOrDefault(x => x.Key == "tableFieldId").Value?.TryToGuid(),
                                                 Attrs = field.Value.Attrs?.Select(x => new Attrs
                                                 {
                                                     Key = x.Key,
@@ -471,6 +477,7 @@ namespace ST.Forms
                         }
                     }
                 }
+
                 if (model.EditMode)
                 {
                     form.Author = model.Author;
@@ -556,8 +563,10 @@ namespace ST.Forms
         /// <returns></returns>
         public virtual JsonResult GetEntityReferenceFields(string entityName, string entitySchema)
         {
-            if (string.IsNullOrEmpty(entityName) || string.IsNullOrEmpty(entitySchema)) return new JsonResult(default(Collection<TableModelFields>));
-            var table = _entityContext.Table.Include(x => x.TableFields).FirstOrDefault(x => x.Name == entityName && x.EntityType == entitySchema);
+            if (string.IsNullOrEmpty(entityName) || string.IsNullOrEmpty(entitySchema))
+                return new JsonResult(default(Collection<TableModelFields>));
+            var table = _entityContext.Table.Include(x => x.TableFields)
+                .FirstOrDefault(x => x.Name == entityName && x.EntityType == entitySchema);
             if (table == null) return new JsonResult(default(Collection<TableModelFields>));
             return new JsonResult(table.TableFields.Select(x => new
             {
@@ -634,10 +643,12 @@ namespace ST.Forms
         /// <param name="redirectUrl"></param>
         /// <param name="headerName"></param>
         /// <returns></returns>
-        public virtual async Task<FormCreateDetailsViewModel> GenerateFormByEntity(Guid entityId, string name, string redirectUrl, string headerName)
+        public virtual async Task<FormCreateDetailsViewModel> GenerateFormByEntity(Guid entityId, string name,
+            string redirectUrl, string headerName)
         {
             if (entityId == Guid.Empty) return default;
-            var entity = await _entityContext.Table.Include(x => x.TableFields).FirstOrDefaultAsync(x => x.Id == entityId);
+            var entity = await _entityContext.Table.Include(x => x.TableFields)
+                .FirstOrDefaultAsync(x => x.Id == entityId);
             if (entity == null) return default;
             var formType = _context.FormTypes.FirstOrDefault();
             if (formType == null) return default;
@@ -702,13 +713,7 @@ namespace ST.Forms
                             "tableFieldId", field.Id.ToString()
                         },
                         {
-                            "fieldReference", string.Empty
-                        },
-                        {
                             "required", (!field.AllowNull).ToString()
-                        },
-                        {
-                            "type", fieldConfig.Type
                         }
                     },
                     FMap = "attrs.value",
@@ -717,7 +722,7 @@ namespace ST.Forms
                     {
                         Editable = true,
                         Label = field.DisplayName,
-                        DisabledAttrs = new List<string> { "type" }
+                        DisabledAttrs = new List<string> {"type"}
                     },
                     Meta = new MetaViewModel
                     {
@@ -727,6 +732,16 @@ namespace ST.Forms
                     },
                     Tag = fieldConfig.Tag
                 });
+
+                if (field.DataType != TableFieldDataType.Guid)
+                {
+                    fields[key].Attrs.Add("type", fieldConfig.Type);
+                }
+                else
+                {
+                    fields[key].Options = new List<OptionsViewModel>();
+                    fields[key].Attrs.Add("fieldReference", string.Empty);
+                }
             }
 
             var buttonId = Guid.NewGuid();
@@ -742,10 +757,9 @@ namespace ST.Forms
                 Order = order,
                 Config = new ConfigViewModel
                 {
-
                     HideLabel = true,
                     Label = "Button",
-                    DisabledAttrs = new List<string> { "type" }
+                    DisabledAttrs = new List<string> {"type"}
                 },
                 Meta = new MetaViewModel
                 {
@@ -827,7 +841,7 @@ namespace ST.Forms
                             stageId, new StageViewModel
                             {
                                 Id = stageId,
-                                Rows = new List<Guid>{ rowId }
+                                Rows = new List<Guid> {rowId}
                             }
                         }
                     },
@@ -837,8 +851,8 @@ namespace ST.Forms
                             rowId, new RowViewModel
                             {
                                 Id = rowId,
-                                Columns =new List<Guid>{ colId },
-                                Attrs = new Dictionary<string, string>{ { "className", "f-row"}},
+                                Columns = new List<Guid> {colId},
+                                Attrs = new Dictionary<string, string> {{"className", "f-row"}},
                                 Config = new ConfigViewModel(),
                             }
                         }
@@ -865,7 +879,8 @@ namespace ST.Forms
         }
 
 
-        public virtual ResultModel<IDictionary<string, string>> GetValuesForEditForm(Form form, IDictionary<string, object> objDict)
+        public virtual ResultModel<IDictionary<string, string>> GetValuesForEditForm(Form form,
+            IDictionary<string, object> objDict)
         {
             var result = new ResultModel<IDictionary<string, string>>();
 
@@ -877,6 +892,7 @@ namespace ST.Forms
                 };
                 return result;
             }
+
             var fields = new Dictionary<string, string>();
 
             var baseFields = typeof(BaseModel).GetProperties();
@@ -887,6 +903,7 @@ namespace ST.Forms
                 result.Errors.Add(new ErrorModel("ArgumentNull", "Form doesn't have a reference to table"));
                 return result;
             }
+
             foreach (var field in form.Fields)
             {
                 var tableField = table.TableFields.FirstOrDefault(x => x.Id == field.TableFieldId);

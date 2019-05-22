@@ -36,20 +36,5 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\assets\js\index.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\assets\css\" />
-    <Folder Include="wwwroot\lib\bootstrap-datepicker\" />
-    <Folder Include="wwwroot\lib\grapesjs-preset-webpage\src\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="wwwroot\assets\js\index.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
+  
 </Project>
