@@ -4,32 +4,34 @@
 	var styles = (IEnumerable<PageStyle>)ViewBag.Styles;
 }
 
-<style>
-	.delEvt:hover {
-		color: red;
-		cursor: pointer;
-	}
-
-	.edit:hover {
-		color: orange;
-		cursor: pointer;
-	}
-
-	.delEvt, .edit {
-		font-size: 1.5em;
-		padding-left: 1em;
-		float: right;
-	}
-
-	.save {
-		margin: 1em;
-		width: 7em;
-	}
-</style>
-
+@section Styles
+{
+	<style>
+    	.delEvt:hover {
+    		color: red;
+    		cursor: pointer;
+    	}
+    
+    	.edit:hover {
+    		color: orange;
+    		cursor: pointer;
+    	}
+    
+    	.delEvt, .edit {
+    		font-size: 1.5em;
+    		padding-left: 1em;
+    		float: right;
+    	}
+    
+    	.save {
+    		margin: 1em;
+    		width: 7em;
+    	}
+    </style>
+}
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Styles of page</h4>
+		<h4 class="card-title">Page styles</h4>
 		<h6 class="card-subtitle">You can order styles by drag and drop</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
@@ -60,6 +62,8 @@
 	</div>
 </div>
 
+<input type="hidden" id="pageId" value="@ViewBag.PageId"/>
+
 @section Scripts{
 	<script src="~/assets/js/builder/drag-and-drop-list.js"></script>
 	<script>
@@ -75,7 +79,6 @@
 			$(this).addClass("fa-check");
 
 			$(".fa-check").on("click", function (e) {
-				alert("f1");
 				const t = $(this).parent().children()[0];
 				const value = $(t).val();
 				$(t).replaceWith(`<code>${value}</code>`);
@@ -128,9 +131,8 @@
 
 		$("#addScript").on("click", function () {
 			const script = document.createElement("li");
-			const first = $("#columns li:first-child");
 			const order = $("#columns").children().length;
-			const pageId = first.attr("pageId");
+			const pageId = $("#pageId").val();
 			script.setAttribute("class", "list-group-item column");
 			script.setAttribute("pageId", pageId);
 			script.setAttribute("order", order);

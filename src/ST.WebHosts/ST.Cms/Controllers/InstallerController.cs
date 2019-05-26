@@ -240,7 +240,7 @@ namespace ST.Cms.Controllers
 			//Update super user information
 			await _applicationDbContext.SaveChangesAsync();
 
-			//Seed entity 
+			//Seed entity
 			await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
 			{
 				Changed = DateTime.Now,
@@ -280,7 +280,7 @@ namespace ST.Cms.Controllers
 
 
 		/// <summary>
-		/// Sync commerce data 
+		/// Sync commerce data
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -340,7 +340,8 @@ namespace ST.Cms.Controllers
 				Created = DateTime.Now,
 				Changed = DateTime.Now,
 				Author = "System",
-				ModifiedBy = "System"
+				ModifiedBy = "System",
+				IsEditable = true
 			};
 
 			Queue.PushQueueBackgroundWorkItem(async token =>

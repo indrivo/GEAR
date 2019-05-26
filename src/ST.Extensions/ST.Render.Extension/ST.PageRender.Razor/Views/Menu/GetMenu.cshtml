@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-striped table-bordered" id="menuTable">
+            <table class="table table-striped table-bordered" id="menuItemsTable">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -58,7 +58,7 @@
     </script>
     <script type="text/javascript" language="javascript">
         $(document).ready(function ($) {
-        			const tableId = '#menuTable';
+        			const tableId = '#menuItemsTable';
       $(tableId)
 	        .on("draw.dt", function (e, settings, json) {
             $(".role-access").on("click", menuItemClickHandler);
@@ -117,7 +117,7 @@
 				alertText: "Are you sure that you want to leave this menu item?",
 				confirmButtonText: "Yes, delete it!",
 				rowId: rowId,
-				tableId: "#pageTable",
+				tableId: "#menuItemsTable",
 				urlForDelete: '@Url.Action("DeleteMenuItem")',
 				type: "warning",
 				onDeleteSuccess: "Menu has been deleted.",

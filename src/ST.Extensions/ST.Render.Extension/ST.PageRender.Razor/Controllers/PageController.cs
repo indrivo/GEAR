@@ -74,6 +74,7 @@ namespace ST.PageRender.Razor.Controllers
             if (pageId == Guid.Empty) return NotFound();
             var scripts = await _pageRender.GetPageScripts(pageId);
             ViewBag.Scripts = scripts.Result.ToList();
+            ViewBag.PageId = pageId;
             return View();
         }
 
@@ -88,6 +89,7 @@ namespace ST.PageRender.Razor.Controllers
             if (pageId == Guid.Empty) return NotFound();
             var styles = await _pageRender.GetPageStyles(pageId);
             ViewBag.Styles = styles.Result.ToList();
+            ViewBag.PageId = pageId;
             return View();
         }
 
@@ -210,7 +212,8 @@ namespace ST.PageRender.Razor.Controllers
                 Context.Update(page);
                 Context.SaveChanges();
                 await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
-                return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+                //return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+                return RedirectToAction("GetCode", new { type = model.Type, id = model.PageId});
             }
             catch (Exception e)
             {

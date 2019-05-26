@@ -84,7 +84,7 @@ function createNotification(n) {
 		<div class="mail-contnet">
 			<h5>${n.subject}</h5> <span class="mail-desc">${n.content}</span>
 				<span class="time">
-					${formatEmailDate(n.created)}
+					${n.created}
 				</span>
 		</div>`;
 	const block = `
@@ -95,14 +95,6 @@ function createNotification(n) {
 	return block;
 }
 
-/**
- * Format date from api
- * @param {any} d
- */
-function formatEmailDate(d) {
-	const date = new Date(Date.parse(d));
-	return date;
-}
 /**
  * Show notifications on page load
  */
@@ -161,9 +153,9 @@ function emailNotifications(folderId) {
 			const all = data.result.notifications.values;
 			for (const e in all) {
 				const arr = [all[e].Subject, all[e].Message, all[e].Author.Email, all[e].Author.UserName];
-				const d = formatEmailDate(all[e].Created);
+
 				const userId = all[e].Author.Id;
-				const create = CreateEmailNotification(arr, userId, all[e].Id, d);
+				const create = CreateEmailNotification(arr, userId, all[e].Id, all[e].Created);
 				$("#emailNotificationsContent").prepend(create);
 				const count = $("#emailNotificationsContent").find("a").length;
 				$("#emailNotificationsCounter").html(count);

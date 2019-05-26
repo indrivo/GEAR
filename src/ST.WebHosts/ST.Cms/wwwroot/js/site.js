@@ -42,6 +42,18 @@ function DeleteData(object) {
 	});
 }
 
+//------------------------------------------------------------------------------------//
+//								Random color
+//------------------------------------------------------------------------------------//
+window.getRandomColor = function () {
+	const letters = '0123456789ABCDEF';
+	let color = '#';
+	for (var i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+	}
+	return color;
+};
+
 
 //------------------------------------------------------------------------------------//
 //								Templates
@@ -81,7 +93,7 @@ TemplateManager.prototype.removeTemplate = function (identifier) {
 }
 
 /**
- * Register template into 
+ * Register template into
  * @param {any} identifier
  */
 TemplateManager.prototype.registerTemplate = function (identifier) {
@@ -247,7 +259,7 @@ Notificator.prototype.sendNotification = function (data) {
 };
 /**
  * Get folders
- *@returns {any} Folders data 
+ *@returns {any} Folders data
  */
 Notificator.prototype.getFolders = function () {
 	const settings = localStorage.getItem("settings");
@@ -293,7 +305,7 @@ function loadEmailFolders() {
 
 /**
  * Get all notifications
- *@returns {any} Folders data 
+ *@returns {any} Folders data
  */
 Notificator.prototype.getAllNotifications = function () {
 	var data = null;
@@ -674,7 +686,7 @@ ST.prototype.populateForm = function (frm, data) {
 };
 
 /**
- * Get template from server 
+ * Get template from server
  * @param {any} relPath Path of template
  * @returns {string} Return template
  */

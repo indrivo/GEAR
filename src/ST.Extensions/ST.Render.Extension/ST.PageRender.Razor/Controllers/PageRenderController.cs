@@ -36,18 +36,22 @@ namespace ST.PageRender.Razor.Controllers
     public class PageRenderController : Controller
     {
         #region InjectRegion
+
         /// <summary>
         /// DB context
         /// </summary>
         private readonly EntitiesDbContext _context;
+
         /// <summary>
         /// App Context
         /// </summary>
         private readonly ApplicationDbContext _appContext;
+
         /// <summary>
         /// Inject Data Service
         /// </summary>
         private readonly IDynamicService _service;
+
         /// <summary>
         /// Inject page render
         /// </summary>
@@ -99,7 +103,7 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <param name="pageId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Index([Required]Guid pageId)
+        public async Task<IActionResult> Index([Required] Guid pageId)
         {
             var page = await _pageRender.GetPageAsync(pageId);
             if (page == null) return NotFound();
@@ -172,7 +176,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="viewModelId"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult GetViewModelById([Required]Guid viewModelId)
+        public JsonResult GetViewModelById([Required] Guid viewModelId)
         {
             var obj = _context.ViewModels
                 .Include(x => x.TableModel)
@@ -230,7 +234,7 @@ namespace ST.PageRender.Razor.Controllers
                 }
             }
 
-            return Json(new { row = obj });
+            return Json(new {row = obj});
         }
 
         /// <summary>
@@ -269,7 +273,6 @@ namespace ST.PageRender.Razor.Controllers
 
             if (!page.IsLayout && page.LayoutId != null)
             {
-
                 var layout = _context.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
 
                 if (layout != null && layout.PageScripts.Any())
@@ -307,7 +310,6 @@ namespace ST.PageRender.Razor.Controllers
 
             if (!page.IsLayout && page.LayoutId != null)
             {
-
                 var layout = _context.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
 
                 if (layout != null && layout.PageStyles.Any())
@@ -344,6 +346,7 @@ namespace ST.PageRender.Razor.Controllers
             {
                 //Ignore
             }
+
             return string.Empty;
         }
 
@@ -354,7 +357,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Roles = Settings.SuperAdmin)]
-        public async Task<JsonResult> GetMenuItemRoles([Required]Guid menuId)
+        public async Task<JsonResult> GetMenuItemRoles([Required] Guid menuId)
         {
             if (menuId == Guid.Empty) return Json(new ResultModel());
             var roles = await _menuService.GetMenuRoles(menuId);
@@ -388,7 +391,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = Settings.SuperAdmin)]
-        public async Task<JsonResult> UpdateMenuItemRoleAccess([Required]Guid menuId, IList<string> roles)
+        public async Task<JsonResult> UpdateMenuItemRoleAccess([Required] Guid menuId, IList<string> roles)
         {
             return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
         }
@@ -407,7 +410,6 @@ namespace ST.PageRender.Razor.Controllers
             if (table == null) return Json(null);
             var instance = _service.Table(table.Name);
             return Json(await instance.GetAll<object>());
-
         }
 
         /// <summary>
@@ -450,7 +452,8 @@ namespace ST.PageRender.Razor.Controllers
 
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
 
-            var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn, param.Start,
+            var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
+                param.Start,
                 param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin));
 
             var finalResult = new DTResult<object>
@@ -540,6 +543,7 @@ namespace ST.PageRender.Razor.Controllers
                 result.Errors.Add(new ErrorModel("Null", "Data is not defined!"));
                 return Json(result);
             }
+
             var form = _formContext.Forms.FirstOrDefault(x => x.Id.Equals(model.FormId));
             if (form == null)
             {
@@ -573,16 +577,18 @@ namespace ST.PageRender.Razor.Controllers
                 if (id == null)
                 {
                     result.Errors
-                    .Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
+                        .Add(new ErrorModel("Fail", "No object id passed on form, try to refresh page and try again"));
                     return Json(result);
                 }
+
                 var oldObj = await instance.GetById<object>(id.Value.ToGuid());
                 if (!oldObj.IsSuccess)
                 {
                     result.Errors
-                    .Add(new ErrorModel("Fail", "Data missed, check if this data exist!"));
+                        .Add(new ErrorModel("Fail", "Data missed, check if this data exist!"));
                     return Json(result);
                 }
+
                 obj = oldObj.Result;
             }
 
@@ -594,6 +600,7 @@ namespace ST.PageRender.Razor.Controllers
                 {
                     var prop = obj.GetType().GetProperty(field.Name);
                     if (prop == null) continue;
+
                     if (prop.PropertyType == typeof(Guid))
                     {
                         if (item.Value == null)
@@ -604,6 +611,16 @@ namespace ST.PageRender.Razor.Controllers
                         {
                             prop.SetValue(obj, Guid.Parse(item.Value));
                         }
+                    }
+                    else if (prop.PropertyType == typeof(bool))
+                    {
+                        bool.TryParse(item.Value, out var value);
+                        prop.SetValue(obj, value);
+                    }
+                    else if (prop.PropertyType == typeof(int))
+                    {
+                        int.TryParse(item.Value, out var value);
+                        prop.SetValue(obj, value);
                     }
                     else
                     {
@@ -645,13 +662,15 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
         {
-            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to delete!", success = false });
-            var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
+                return Json(new {message = "Fail to delete!", success = false});
+            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+                .FirstOrDefault(x => x.Id.Equals(viewModelId));
+            if (viewModel == null) return Json(new {message = "Fail to delete!", success = false});
             var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
+            if (!response.IsSuccess) return Json(new {message = "Fail to delete!", success = false});
 
-            return Json(new { message = "Item was deleted!", success = true });
+            return Json(new {message = "Item was deleted!", success = true});
         }
 
 
@@ -666,15 +685,16 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
         {
-            if (ids == null) return Json(new { message = "Fail to delete!", success = false });
-            var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+            if (ids == null) return Json(new {message = "Fail to delete!", success = false});
+            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+                .FirstOrDefault(x => x.Id.Equals(viewModelId));
+            if (viewModel == null) return Json(new {message = "Fail to delete!", success = false});
             foreach (var id in ids)
             {
                 await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
             }
 
-            return Json(new { message = "Items was deleted!", success = true });
+            return Json(new {message = "Items was deleted!", success = true});
         }
 
         /// <summary>
@@ -688,13 +708,15 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
         {
-            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty) return Json(new { message = "Fail to restore!", success = false });
-            var viewModel = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
+            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
+                return Json(new {message = "Fail to restore!", success = false});
+            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+                .FirstOrDefault(x => x.Id.Equals(viewModelId));
+            if (viewModel == null) return Json(new {message = "Fail to restore!", success = false});
             var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new { message = "Fail to restore!", success = false });
+            if (!response.IsSuccess) return Json(new {message = "Fail to restore!", success = false});
 
-            return Json(new { message = "Item was restored!", success = true });
+            return Json(new {message = "Item was restored!", success = true});
         }
 
 
@@ -715,7 +737,8 @@ namespace ST.PageRender.Razor.Controllers
                 Json(result);
             }
 
-            var viewModel = await _context.ViewModels.Include(x => x.ViewModelFields).FirstOrDefaultAsync(x => x.Id == viewModelId);
+            var viewModel = await _context.ViewModels.Include(x => x.ViewModelFields)
+                .FirstOrDefaultAsync(x => x.Id == viewModelId);
             if (viewModel == null)
             {
                 result.Errors = new List<IErrorModel>
@@ -749,7 +772,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [AjaxOnly]
         [HttpGet]
-        public async Task<JsonResult> GetRowReferences([Required]Guid entityId, [Required]Guid propertyId)
+        public async Task<JsonResult> GetRowReferences([Required] Guid entityId, [Required] Guid propertyId)
         {
             var response = new ResultModel();
             var refProp = _context.Table
@@ -853,47 +876,48 @@ namespace ST.PageRender.Razor.Controllers
                 switch (property.DataType)
                 {
                     case TableFieldDataType.Guid:
-                        {
-                            Guid.TryParse(value, out var parsed);
-                            row.Result[property.Name] = parsed;
-                        }
+                    {
+                        Guid.TryParse(value, out var parsed);
+                        row.Result[property.Name] = parsed;
+                    }
                         break;
                     case TableFieldDataType.Boolean:
-                        {
-                            bool.TryParse(value, out var val);
-                            row.Result[property.Name] = val;
-                        }
+                    {
+                        bool.TryParse(value, out var val);
+                        row.Result[property.Name] = val;
+                    }
                         break;
                     case TableFieldDataType.Int:
+                    {
+                        try
                         {
-                            try
-                            {
-                                row.Result[property.Name] = Convert.ToInt32(value);
-                            }
-                            catch
-                            {
-                                row.Result[property.Name] = value;
-                            }
+                            row.Result[property.Name] = Convert.ToInt32(value);
                         }
+                        catch
+                        {
+                            row.Result[property.Name] = value;
+                        }
+                    }
                         break;
                     case TableFieldDataType.Decimal:
+                    {
+                        try
                         {
-                            try
-                            {
-                                row.Result[property.Name] = Convert.ToDecimal(value);
-                            }
-                            catch
-                            {
-                                row.Result[property.Name] = value;
-                            }
+                            row.Result[property.Name] = Convert.ToDecimal(value);
                         }
+                        catch
+                        {
+                            row.Result[property.Name] = value;
+                        }
+                    }
                         break;
                     case TableFieldDataType.Date:
                     case TableFieldDataType.DateTime:
-                        {
-                            DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed);
-                            row.Result[property.Name] = parsed;
-                        }
+                    {
+                        DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                            out var parsed);
+                        row.Result[property.Name] = parsed;
+                    }
                         break;
                     default:
                         row.Result[property.Name] = value;

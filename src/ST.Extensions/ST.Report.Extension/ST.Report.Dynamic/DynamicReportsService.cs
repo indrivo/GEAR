@@ -256,7 +256,7 @@ namespace ST.Report.Dynamic
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT Distinct TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA LIKE 'indrivo'";
+                    command.CommandText = "SELECT Distinct TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA LIKE 'system'";
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -288,7 +288,7 @@ namespace ST.Report.Dynamic
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT TABLE_SCHEMA FROM information_schema.TABLES WHERE TABLE_NAME LIKE '" + tableName + "' AND TABLE_SCHEMA = 'indrivo'";
+                    command.CommandText = "SELECT TABLE_SCHEMA FROM information_schema.TABLES WHERE TABLE_NAME LIKE '" + tableName + "' AND TABLE_SCHEMA = 'system'";
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -316,7 +316,7 @@ namespace ST.Report.Dynamic
             //var props = typeof(TContext).GetProperties().FirstOrDefault(x => x.Name.Equals(tableName) &&
             //                                                                   x.PropertyType.IsGenericType && x.PropertyType.GetGenericArguments().Any())
             //    ?.PropertyType.GetGenericArguments()[0].GetProperties().Where(x => (!x.PropertyType.IsClass && !x.PropertyType.IsInterface) || x.PropertyType == typeof(string)).Select(x => x.Name).ToList();
-            var query = $"SELECT column_name FROM information_schema.columns WHERE table_schema = 'indrivo' AND table_name = '{tableName}'";
+            var query = $"SELECT column_name FROM information_schema.columns WHERE table_schema = 'system' AND table_name = '{tableName}'";
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 connection.Open();
@@ -392,7 +392,7 @@ namespace ST.Report.Dynamic
                             "   JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME INNER JOIN " +
                             "(SELECT i1.TABLE_NAME, i2.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1 INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON " +
                             "i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY') PT ON PT.TABLE_NAME = PK.TABLE_NAME " +
-                            "Where CU.COLUMN_NAME = '" + columnName + "' AND PK.TABLE_SCHEMA = 'indrivo'";
+                            "Where CU.COLUMN_NAME = '" + columnName + "' AND PK.TABLE_SCHEMA = 'system'";
 
                         using (var reader = command.ExecuteReader())
                         {
