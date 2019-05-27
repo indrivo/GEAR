@@ -66,8 +66,8 @@ function TemplateManager() { }
  * @param {any} identifierName
  */
 TemplateManager.prototype.getTemplate = function (identifierName) {
-	const template = localStorage.getItem(identifierName);
-	if (template) return template;
+	//const template = localStorage.getItem(identifierName);
+	//if (template) return template;
 	const serverTemplate = load("/Templates/GetTemplateByIdentifier",
 		{
 			identifier: identifierName
@@ -202,18 +202,12 @@ $(document).ready(function () {
 			const requirementId = $(tree).attr("db-tree-requirement");
 			const data = loadTree(`/IsoStandard/GetTreeData?standardEntityId=${standardId}&&categoryEntityId=${categoryId}&&requirementEntityId=${requirementId}`);
 			if (data.is_success) {
-				const st = new ST();
-				Promise.all([st.getTemplate("standard.html"), st.getTemplate("category.html"), st.getTemplate("requirements.html")])
-					.then(function (values) {
-						$.templates("IsoCategory", values[1]);
-						$.templates("IsoRequirements", values[2]);
-						$.templates("IsoTree", values[0]);
-						const content = $.render["IsoTree"](data);
-						$(tree).html(content);
-					})
-					.catch(function (err) {
-						console.log(err);
-					});
+				const templateManager = new TemplateManager();
+				$.templates("IsoCategory", templateManager.getTemplate("template_category.html"));
+				$.templates("IsoRequirements", templateManager.getTemplate("template_requirements.html"));
+				$.templates("IsoTree", templateManager.getTemplate("template_standard.html"));
+				const content = $.render["IsoTree"](data);
+				$(tree).html(content);
 			}
 		}
 	});
@@ -720,7 +714,7 @@ Notificator.prototype.getCurrentUser = function () {
 			data.created = new Date();
 			response = data;
 			if (response.is_success)
-					localStorage.setItem("current_user", JSON.stringify(data));
+				localStorage.setItem("current_user", JSON.stringify(data));
 			return response;
 		},
 		error: function (error) {

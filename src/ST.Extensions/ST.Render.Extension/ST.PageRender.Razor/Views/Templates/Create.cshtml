@@ -2,87 +2,87 @@
 @inject IStringLocalizer Localizer
 
 @{
-	ViewData["Title"] = "Create new template";
+    ViewData["Title"] = "Create new template";
 }
 
-<link rel="stylesheet" type="text/css" href="~/lib/codemirror/lib/codemirror.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
 <link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
 
 <div class="card card-outline-primary">
-	<div class="card-header">
-		<h4 class="mb-0 text-white">Add template </h4>
-	</div>
-	<div class="card-body">
-		<form asp-action="Create" role="form">
-			<div class="form-body">
-				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-				<div class="row p-t-20">
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label" asp-for="Name"></label>
-							<input class="form-control" type="text" asp-for="Name" />
-							<span asp-validation-for="Name" class="text-danger"></span><br />
-							<small>Name of the template</small>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label" asp-for="Description"></label>
-							<textarea class="form-control" type="text" asp-for="Description"></textarea>
-							<span asp-validation-for="Description" class="text-danger"></span><br />
-							<small>Description of the template</small>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="col-md-12">
-							<div class="form-group">
-								<textarea id="code" style="height:100em" asp-for="Value">@Model.Value</textarea>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row button-group">
-				<div class="col-lg-2 col-md-3">
-					<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
-				</div>
-				<div class="col-lg-2 col-md-3">
-					<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
-				</div>
-				<div class="col-lg-2 col-md-3">
-					<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
-				</div>
-			</div>
-		</form>
-	</div>
+    <div class="card-header">
+        <h4 class="mb-0 text-white">Add template </h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" role="form">
+            <div class="form-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row p-t-20">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Name"></label>
+                            <input class="form-control" type="text" asp-for="Name" />
+                            <span asp-validation-for="Name" class="text-danger"></span><br />
+                            <small>Name of the template</small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Description"></label>
+                            <textarea class="form-control" type="text" asp-for="Description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span><br />
+                            <small>Description of the template</small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <textarea id="code" style="height:100em" asp-for="Value">@Model.Value</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 
 @section Scripts {
-	<script src="~/lib/codemirror/lib/codemirror.js"></script>
-	<script src="~/lib/codemirror/keymap/sublime.js"></script>
-	<script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-	<script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
-	<script src="~/lib/codemirror/mode/css/css.js"></script>
-	<script src="~/lib/codemirror/mode/xml/xml.js"></script>
-	<script>
-		var editor = CodeMirror.fromTextArea(document.getElementById("code"),
-			{
-				lineNumbers: true,
-				mode: "xml",
-				keyMap: "sublime",
-				autoCloseBrackets: true,
-				matchBrackets: true,
-				showCursorWhenSelecting: true,
-				theme: "monokai",
-				tabSize: 2
-			});
+    <script src="~/lib/codemirror/codemirror.min.js"></script>
+    <script src="~/lib/codemirror/keymap/sublime.js"></script>
+    <script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
+    <script src="~/lib/codemirror/mode/css/css.js"></script>
+    <script src="~/lib/codemirror/mode/xml/xml.js"></script>
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"),
+            {
+                lineNumbers: true,
+                mode: "xml",
+                keyMap: "sublime",
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                showCursorWhenSelecting: true,
+                theme: "monokai",
+                tabSize: 2
+            });
 
-		editor.on('change', function () {
-			editor.save();
-		});
+        editor.on('change', function () {
+            editor.save();
+        });
 
-		editor.setSize(null, 700);
-	</script>
-	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        editor.setSize(null, 700);
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
