@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
     <ProjectReference Include="..\ST.Cache.Abstractions\ST.Cache.Abstractions.csproj" />
   </ItemGroup>
 

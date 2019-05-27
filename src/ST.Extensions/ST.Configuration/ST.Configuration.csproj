@@ -15,11 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="customEntities.json" />
     <None Remove="EntitiesConfiguration.json" />
     <None Remove="FieldTypes.json" />
-    <None Remove="FormTypes.json" />
-    <None Remove="FormValidations.json" />
     <None Remove="IdentityConfiguration.json" />
     <None Remove="NotificationTypes.json" />
     <None Remove="ProfileEntities.json" />
@@ -27,19 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="CustomEntities.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="EntitiesConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="FieldTypes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormTypes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormValidations.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="IdentityConfiguration.json">
@@ -65,6 +53,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ST.Cache.Extension\ST.Cache\ST.Cache.csproj" />
     <ProjectReference Include="..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
+    <ProjectReference Include="..\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
     <ProjectReference Include="..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
     <ProjectReference Include="..\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
     <ProjectReference Include="..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />

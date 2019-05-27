@@ -32,7 +32,7 @@ namespace ST.Configuration.Seed
             {
                 try
                 {
-                    var clients = Config.GetClients(clientUrls).Select(x => x.ToEntity()).GetSeedClients(context);
+                    var clients = Config.GetClients(clientUrls).GetSeedClients(context);
                     await context.Clients.AddRangeAsync(clients);
                     await context.SaveChangesAsync();
                 }
@@ -45,7 +45,7 @@ namespace ST.Configuration.Seed
             //Seed Identity resources
             if (!context.IdentityResources.Any())
             {
-                var resources = Config.GetResources().Select(x => x.ToEntity()).GetSeedResources(context);
+                var resources = Config.GetResources().GetSeedResources(context);
                 await context.IdentityResources.AddRangeAsync(resources);
 
                 await context.SaveChangesAsync();
@@ -54,7 +54,7 @@ namespace ST.Configuration.Seed
             //Seed api resources
             if (!context.ApiResources.Any())
             {
-                var apiResources = Config.GetApis().Select(x => x.ToEntity()).GetSeedApiResources(context);
+                var apiResources = Config.GetApis().GetSeedApiResources(context);
                 context.ApiResources.AddRange(apiResources);
                 await context.SaveChangesAsync();
             }

@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Backup.Extensions;
+using ST.Cache.Extensions;
 using ST.Cms.Abstractions;
 using ST.Cms.Services;
 using ST.Configuration.Extensions;
@@ -21,9 +21,7 @@ using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Extensions;
 using ST.Identity.Abstractions;
-using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
-using ST.Identity.Services;
 using ST.Identity.Versioning;
 using ST.Localization;
 using ST.Localization.Razor.Extensions;
@@ -38,12 +36,32 @@ using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
 using ST.Report.Dynamic.Extensions;
+using ST.Entities.Abstractions.Extensions;
+using ST.Forms.Abstractions.Extensions;
+using ST.Forms.Data;
+using ST.Forms.Razor.Extensions;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
 {
 	public class Startup
 	{
+		/// <summary>
+		/// Migrations Assembly
+		/// </summary>
+		private static readonly string MigrationsAssembly =
+			typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
+
+		/// <summary>
+		/// AppSettings configuration
+		/// </summary>
+		private IConfiguration Configuration { get; }
+
+		/// <summary>
+		/// Hosting configuration
+		/// </summary>
+		private IHostingEnvironment HostingEnvironment { get; }
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -56,16 +74,13 @@ namespace ST.Cms
 		}
 
 		/// <summary>
-		/// AppSettings configuration
+		/// Configure cms app
 		/// </summary>
-		private IConfiguration Configuration { get; }
-
-		/// <summary>
-		/// Hosting configuration
-		/// </summary>
-		private IHostingEnvironment HostingEnvironment { get; }
-
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		/// <param name="app"></param>
+		/// <param name="env"></param>
+		/// <param name="loggerFactory"></param>
+		/// <param name="languages"></param>
+		/// <param name="lifetime"></param>
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
@@ -88,30 +103,36 @@ namespace ST.Cms
 				app.UseExceptionHandler("/Home/Error");
 			}
 
-			app.UseUrlRewrite();
+			//-----------------------Custom url redirection Usage-------------------------------------
+			app.UseUrlRewriteModule();
 
+			//----------------------------------Origin Cors Usage-------------------------------------
 			app.UseConfiguredCors(Configuration);
 
+			//--------------------------------------Swagger Usage-------------------------------------
 			app.UseSwagger()
-				.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "ST.CORE API v1.0"); });
+				.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "ST.BPMN API v1.0"); });
 
-			app.UseLocalization(languages);
+			//----------------------------------Localization Usage-------------------------------------
+			app.UseLocalizationModule(languages);
+
+			//---------------------------------------SignalR Usage-------------------------------------
+			app.UseSignalRModule();
+
+			//----------------------------------Static files Usage-------------------------------------
+			app.UseDefaultFiles();
+			app.UseStaticFiles();
+
+			//-------------------------Register on app start event-------------------------------------
 			lifetime.ApplicationStarted.Register(() =>
 			{
 				Installation.Application.OnApplicationStarted(app);
 			});
-			// Microsoft.AspNetCore.StaticFiles: API for starting the application from wwwroot.
-			// Uses default files as index.html.
-			app.UseDefaultFiles();
-			app.UseStaticFiles();
-			app.UseSignalR();
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
-			var migrationsAssembly = typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
-
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 
@@ -121,9 +142,9 @@ namespace ST.Cms
 				options.ValidationInterval = TimeSpan.Zero;
 			});
 
-			services.AddConfiguredCors();
+			//--------------------------------------Cors origin Module-------------------------------------
+			services.AddOriginCorsModule();
 
-			services.AddLocalization(Configuration);
 			services.AddDbContext<EntitiesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
@@ -133,14 +154,9 @@ namespace ST.Cms
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
 			});
 
-			services.AddDbContextAndIdentity(Configuration, HostingEnvironment, migrationsAssembly, HostingEnvironment)
+			//------------------------------Identity Module-------------------------------------
+			services.AddIdentityModule(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
-				.AddMPassSigningCredentials(new MPassSigningCredentials
-				{
-					ServiceProviderCertificate =
-						new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
-					IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
-				})
 				.AddDistributedMemoryCache()
 				.AddMvc()
 				.AddJsonOptions(x =>
@@ -149,7 +165,7 @@ namespace ST.Cms
 				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-			.AddIdentityServer(Configuration, HostingEnvironment, migrationsAssembly)
+			.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
 			.AddHealthChecks(checks =>
 			{
 				//var minutes = 1;
@@ -159,6 +175,15 @@ namespace ST.Cms
 				//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
 			});
 
+			//Register MPass
+			services.AddMPassSigningCredentials(new MPassSigningCredentials
+			{
+				ServiceProviderCertificate =
+					new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
+				IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
+			});
+
+			//---------------------------------Api version Module-------------------------------------
 			services.AddApiVersioning(options =>
 			{
 				options.ReportApiVersions = true;
@@ -166,34 +191,56 @@ namespace ST.Cms
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
-			services.Configure<LdapSettings>(Configuration.GetSection(nameof(LdapSettings)));
+			//---------------------------------------Entity Module-------------------------------------
+			services.AddEntityModule<EntitiesDbContext>();
 
-			//Add configured swagger
-			services.AddSwagger(Configuration, HostingEnvironment);
+			//---------------------------Dynamic repository Module-------------------------------------
+			services.AddDynamicDataProviderModule<EntitiesDbContext>();
 
-			//Register dynamic table repository
-			services.RegisterDynamicDataServices<EntitiesDbContext>();
-			//Add signaler
-			services.AddSignalR<ApplicationDbContext, ApplicationUser, ApplicationRole>();
+			//--------------------------------------SignalR Module-------------------------------------
+			services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();
 
-			//Run background service
+			//---------------------------Background services ------------------------------------------
 			//services.AddHostedService<HostedTimeService>();
 
-			services.RegisterBackupRunner(Configuration);
+			//--------------------------------------Swagger Module-------------------------------------
+			services.AddSwaggerModule(Configuration, HostingEnvironment);
 
-			services.AddScoped<ILocalService, LocalService>();
-			services.AddPageRender();
-			services.AddProcesses();
-			services.AddInternalCalendar();
+			//---------------------------------Localization Module-------------------------------------
+			services.AddLocalizationModule(Configuration);
+
+			//------------------------------Database backup Module-------------------------------------
+			services.RegisterDatabaseBackupRunnerModule(Configuration);
+
+			//------------------------------------Processes Module-------------------------------------
+			services.AddPageRenderModule();
+
+			//------------------------------------Processes Module-------------------------------------
+			services.AddProcessesModule();
+
+			//----------------------------Internal calendar Module-------------------------------------
+			services.AddInternalCalendarModule();
+
+			//-----------------------------------------Form Module-------------------------------------
+			services.AddFormModule<FormDbContext>();
+			services.AddDbContext<FormDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
+			});
+
+			services.AddFormStaticFilesModule();
+
+			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
 			services.AddDbContext<DynamicReportDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration, HostingEnvironment);
 				});
-			services.AddTransient<ITreeIsoService, TreeIsoService>();
-			services.AddTransient<ISyncInstaller, SyncInstaller>();
 
-			//Register email credentials
+			//---------------------------------Custom cache Module-------------------------------------
+			services.UseCustomCacheModule(HostingEnvironment, Configuration);
+
+			//----------------------------------------Email Module-------------------------------------
 			services.Configure<EmailSettingsViewModel>(Configuration.GetSection("EmailSettings"));
 
 
@@ -205,7 +252,11 @@ namespace ST.Cms
 				});
 			}
 
-			//Register dependencies
+			//------------------------------------------Custom ISO-------------------------------------
+			services.AddTransient<ITreeIsoService, TreeIsoService>();
+			services.AddTransient<ISyncInstaller, SyncInstaller>();
+
+			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();
 		}
 	}

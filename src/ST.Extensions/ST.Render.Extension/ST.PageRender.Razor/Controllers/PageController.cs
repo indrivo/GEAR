@@ -13,7 +13,6 @@ using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.Models.Pages;
-using ST.Entities.Services.Abstraction;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
@@ -22,6 +21,7 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.BaseControllers;
 using ST.Core.Helpers;
+using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
 using ST.PageRender.Razor.Helpers;
@@ -74,6 +74,7 @@ namespace ST.PageRender.Razor.Controllers
             if (pageId == Guid.Empty) return NotFound();
             var scripts = await _pageRender.GetPageScripts(pageId);
             ViewBag.Scripts = scripts.Result.ToList();
+            ViewBag.PageId = pageId;
             return View();
         }
 
@@ -88,6 +89,7 @@ namespace ST.PageRender.Razor.Controllers
             if (pageId == Guid.Empty) return NotFound();
             var styles = await _pageRender.GetPageStyles(pageId);
             ViewBag.Styles = styles.Result.ToList();
+            ViewBag.PageId = pageId;
             return View();
         }
 
@@ -210,7 +212,8 @@ namespace ST.PageRender.Razor.Controllers
                 Context.Update(page);
                 Context.SaveChanges();
                 await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
-                return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+                //return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+                return RedirectToAction("GetCode", new { type = model.Type, id = model.PageId});
             }
             catch (Exception e)
             {

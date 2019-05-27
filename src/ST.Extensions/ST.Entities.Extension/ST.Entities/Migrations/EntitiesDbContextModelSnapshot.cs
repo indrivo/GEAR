@@ -17,7 +17,7 @@ namespace ST.Entities.Migrations
             modelBuilder
                 .HasDefaultSchema("Entities")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
@@ -86,233 +86,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("TrackAuditDetails");
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.Attrs", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid?>("FieldId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Key");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("RowId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Type");
-
-                    b.Property<string>("Value");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.HasIndex("RowId");
-
-                    b.ToTable("Attrs");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Column", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassName");
-
-                    b.Property<Guid>("ConfigId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("FormId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("RowId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConfigId");
-
-                    b.HasIndex("FormId");
-
-                    b.HasIndex("RowId");
-
-                    b.ToTable("Columns");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.ColumnField", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<Guid>("ColumnId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("FieldId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<int>("Order");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ColumnFields");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Config", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("Editable");
-
-                    b.Property<bool>("Fieldset");
-
-                    b.Property<bool>("HideLabel");
-
-                    b.Property<bool>("InputGroup");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Label");
-
-                    b.Property<string>("Legend");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.Property<string>("Width");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Configs");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.DisabledAttr", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<Guid>("ConfigId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConfigId");
-
-                    b.ToTable("DisabledAttrs");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Field", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<Guid?>("ColumnId");
-
-                    b.Property<Guid>("ConfigId");
-
-                    b.Property<string>("Content");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("FMap");
-
-                    b.Property<Guid>("FormId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<Guid>("MetaId");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<int>("Order");
-
-                    b.Property<Guid?>("TableFieldId");
-
-                    b.Property<string>("Tag");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ColumnId");
-
-                    b.HasIndex("ConfigId");
-
-                    b.HasIndex("FormId");
-
-                    b.HasIndex("MetaId");
-
-                    b.HasIndex("TableFieldId");
-
-                    b.ToTable("Fields");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Form", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.EntityType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -327,38 +101,99 @@ namespace ST.Entities.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<bool>("IsSystem");
+
+                    b.Property<string>("MachineName");
+
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("PostUrl");
-
-                    b.Property<string>("RedirectUrl");
-
-                    b.Property<Guid>("SettingsId");
-
-                    b.Property<Guid>("TableId");
-
                     b.Property<Guid?>("TenantId");
-
-                    b.Property<Guid>("TypeId");
 
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SettingsId");
-
-                    b.HasIndex("TableId");
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("Forms");
+                    b.ToTable("EntityTypes");
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.FormFieldEvent", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValues", b =>
+                {
+                    b.Property<Guid>("TableModelFieldId");
+
+                    b.Property<Guid>("TableFieldConfigId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("TableModelFieldId", "TableFieldConfigId");
+
+                    b.HasIndex("TableFieldConfigId");
+
+                    b.ToTable("TableFieldConfigValues");
+                });
+
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .HasColumnType("char(4)");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid>("TableFieldTypeId");
+
+                    b.Property<string>("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableFieldTypeId");
+
+                    b.ToTable("TableFieldConfigs");
+                });
+
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldGroups", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("GroupName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TableFieldGroups");
+                });
+
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .HasColumnType("char(2)");
+
+                    b.Property<string>("DataType");
+
+                    b.Property<string>("Name");
+
+                    b.Property<Guid>("TableFieldGroupsId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableFieldGroupsId");
+
+                    b.ToTable("TableFieldTypes");
+                });
+
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -371,14 +206,13 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<int>("Event");
-
-                    b.Property<Guid>("FieldId");
-
-                    b.Property<string>("Handler")
-                        .IsRequired();
+                    b.Property<string>("EntityType");
 
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsPartOfDbContext");
+
+                    b.Property<bool>("IsSystem");
 
                     b.Property<string>("ModifiedBy");
 
@@ -391,26 +225,29 @@ namespace ST.Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FieldId");
+                    b.HasIndex("TenantId");
 
-                    b.ToTable("FormFieldEvents");
+                    b.ToTable("Table");
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.FormType", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelFields", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("AllowNull");
 
                     b.Property<string>("Author");
 
                     b.Property<DateTime>("Changed");
 
-                    b.Property<string>("Code")
-                        .HasColumnType("char(4)");
-
                     b.Property<DateTime>("Created");
 
+                    b.Property<string>("DataType");
+
                     b.Property<string>("Description");
+
+                    b.Property<string>("DisplayName");
 
                     b.Property<bool>("IsDeleted");
 
@@ -418,7 +255,14 @@ namespace ST.Entities.Migrations
 
                     b.Property<string>("ModifiedBy");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<bool>("Synchronized");
+
+                    b.Property<Guid>("TableFieldTypeId");
+
+                    b.Property<Guid>("TableId");
 
                     b.Property<Guid?>("TenantId");
 
@@ -426,223 +270,13 @@ namespace ST.Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FormTypes");
-                });
+                    b.HasIndex("TableFieldTypeId");
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.Meta", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasIndex("TableId");
 
-                    b.Property<string>("Author");
+                    b.HasIndex("TenantId");
 
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Group");
-
-                    b.Property<string>("Icon");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Meta");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Option", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassName");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("FieldId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("Label");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<bool>("Selected");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<string>("TypeLabel");
-
-                    b.Property<string>("TypeValue");
-
-                    b.Property<string>("Value");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FieldId");
-
-                    b.ToTable("Options");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Row", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<Guid>("ConfigId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("FormId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("StageId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConfigId");
-
-                    b.HasIndex("FormId");
-
-                    b.HasIndex("StageId");
-
-                    b.ToTable("Rows");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.RowColumn", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<Guid>("ColumnId");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("RowId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RowColumns");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Settings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Settings");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Stage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("FormId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("SettingsId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FormId");
-
-                    b.HasIndex("SettingsId");
-
-                    b.ToTable("Stages");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.StageRows", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("RowId");
-
-                    b.Property<Guid>("StageId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StageRows");
+                    b.ToTable("TableFields");
                 });
 
             modelBuilder.Entity("ST.Entities.Models.Pages.Block", b =>
@@ -966,197 +600,6 @@ namespace ST.Entities.Migrations
                     b.ToTable("Templates");
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Tables.EntityType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsSystem");
-
-                    b.Property<string>("MachineName");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("EntityTypes");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigValues", b =>
-                {
-                    b.Property<Guid>("TableModelFieldId");
-
-                    b.Property<Guid>("TableFieldConfigId");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("TableModelFieldId", "TableFieldConfigId");
-
-                    b.HasIndex("TableFieldConfigId");
-
-                    b.ToTable("TableFieldConfigValues");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigs", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .HasColumnType("char(4)");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid>("TableFieldTypeId");
-
-                    b.Property<string>("Type");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableFieldTypeId");
-
-                    b.ToTable("TableFieldConfigs");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldGroups", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("GroupName");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TableFieldGroups");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldTypes", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .HasColumnType("char(2)");
-
-                    b.Property<string>("DataType");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid>("TableFieldGroupsId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableFieldGroupsId");
-
-                    b.ToTable("TableFieldTypes");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("EntityType");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsPartOfDbContext");
-
-                    b.Property<bool>("IsSystem");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("Table");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableModelFields", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("AllowNull");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("DataType");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("DisplayName");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsSystem");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name");
-
-                    b.Property<bool>("Synchronized");
-
-                    b.Property<Guid>("TableFieldTypeId");
-
-                    b.Property<Guid>("TableId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableFieldTypeId");
-
-                    b.HasIndex("TableId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("TableFields");
-                });
-
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1231,6 +674,102 @@ namespace ST.Entities.Migrations
                     b.ToTable("ViewModelFields");
                 });
 
+            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("ApplicationRoleId");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("FieldAccessType");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid>("TableModelFieldId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationRoleId");
+
+                    b.HasIndex("TableModelFieldId");
+
+                    b.ToTable("EntityFieldPermissions");
+                });
+
+            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("ApplicationRoleId");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid>("TableModelId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationRoleId");
+
+                    b.HasIndex("TableModelId");
+
+                    b.ToTable("EntityPermissions");
+                });
+
+            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermissionAccess", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AccessType");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<Guid>("EntityPermissionId");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityPermissionId");
+
+                    b.ToTable("EntityPermissionAccesses");
+                });
+
             modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
                 {
                     b.HasOne("ST.Audit.Models.TrackAudit")
@@ -1239,132 +778,46 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.Attrs", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValues", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Forms.Field", "Field")
-                        .WithMany("Attrs")
-                        .HasForeignKey("FieldId")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", "TableFieldConfig")
+                        .WithMany()
+                        .HasForeignKey("TableFieldConfigId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Models.Forms.Row", "Row")
-                        .WithMany("Attrs")
-                        .HasForeignKey("RowId")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelField")
+                        .WithMany("TableFieldConfigValues")
+                        .HasForeignKey("TableModelFieldId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.Column", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Forms.Config", "Config")
-                        .WithMany()
-                        .HasForeignKey("ConfigId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.Form")
-                        .WithMany("Columns")
-                        .HasForeignKey("FormId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.Row")
-                        .WithMany("Columns")
-                        .HasForeignKey("RowId");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.DisabledAttr", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Forms.Config")
-                        .WithMany("DisabledAttrs")
-                        .HasForeignKey("ConfigId")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", "TableFieldType")
+                        .WithMany("TableFieldConfigs")
+                        .HasForeignKey("TableFieldTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.Field", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Forms.Column")
-                        .WithMany("Fields")
-                        .HasForeignKey("ColumnId");
-
-                    b.HasOne("ST.Entities.Models.Forms.Config", "Config")
-                        .WithMany()
-                        .HasForeignKey("ConfigId")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldGroups", "TableFieldGroups")
+                        .WithMany("TableFieldTypes")
+                        .HasForeignKey("TableFieldGroupsId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.HasOne("ST.Entities.Models.Forms.Form", "Form")
-                        .WithMany("Fields")
-                        .HasForeignKey("FormId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.Meta", "Meta")
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelFields", b =>
+                {
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", "TableFieldType")
                         .WithMany()
-                        .HasForeignKey("MetaId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Tables.TableModelFields", "TableField")
-                        .WithMany()
-                        .HasForeignKey("TableFieldId")
+                        .HasForeignKey("TableFieldTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
 
-            modelBuilder.Entity("ST.Entities.Models.Forms.Form", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Forms.Settings", "Settings")
-                        .WithMany()
-                        .HasForeignKey("SettingsId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Tables.TableModel", "Table")
-                        .WithMany()
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "Table")
+                        .WithMany("TableFields")
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.FormType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.FormFieldEvent", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Forms.Field", "Field")
-                        .WithMany("FieldEvents")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Option", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Forms.Field")
-                        .WithMany("Options")
-                        .HasForeignKey("FieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Row", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Forms.Config", "Config")
-                        .WithMany()
-                        .HasForeignKey("ConfigId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.Form")
-                        .WithMany("Rows")
-                        .HasForeignKey("FormId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.Stage")
-                        .WithMany("Rows")
-                        .HasForeignKey("StageId");
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Forms.Stage", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Forms.Form")
-                        .WithMany("Stages")
-                        .HasForeignKey("FormId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Forms.Settings", "Settings")
-                        .WithMany()
-                        .HasForeignKey("SettingsId");
                 });
 
             modelBuilder.Entity("ST.Entities.Models.Pages.Block", b =>
@@ -1374,7 +827,7 @@ namespace ST.Entities.Migrations
                         .HasForeignKey("BlockCategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Models.Tables.TableModel", "TableModel")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
                         .WithMany()
                         .HasForeignKey("TableModelId");
                 });
@@ -1419,51 +872,9 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigValues", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Tables.TableFieldConfigs", "TableFieldConfig")
-                        .WithMany()
-                        .HasForeignKey("TableFieldConfigId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Entities.Models.Tables.TableModelFields", "TableModelField")
-                        .WithMany("TableFieldConfigValues")
-                        .HasForeignKey("TableModelFieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldConfigs", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Tables.TableFieldTypes", "TableFieldType")
-                        .WithMany("TableFieldConfigs")
-                        .HasForeignKey("TableFieldTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableFieldTypes", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Tables.TableFieldGroups", "TableFieldGroups")
-                        .WithMany("TableFieldTypes")
-                        .HasForeignKey("TableFieldGroupsId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Models.Tables.TableModelFields", b =>
-                {
-                    b.HasOne("ST.Entities.Models.Tables.TableFieldTypes", "TableFieldType")
-                        .WithMany()
-                        .HasForeignKey("TableFieldTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ST.Entities.Models.Tables.TableModel", "Table")
-                        .WithMany("TableFields")
-                        .HasForeignKey("TableId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModel", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Tables.TableModel", "TableModel")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
                         .WithMany()
                         .HasForeignKey("TableModelId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1471,13 +882,37 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModelFields", b =>
                 {
-                    b.HasOne("ST.Entities.Models.Tables.TableModelFields", "TableModelFields")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelFields")
                         .WithMany()
                         .HasForeignKey("TableModelFieldsId");
 
                     b.HasOne("ST.Entities.Models.ViewModels.ViewModel")
                         .WithMany("ViewModelFields")
                         .HasForeignKey("ViewModelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
+                {
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelField")
+                        .WithMany()
+                        .HasForeignKey("TableModelFieldId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
+                {
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
+                        .WithMany()
+                        .HasForeignKey("TableModelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermissionAccess", b =>
+                {
+                    b.HasOne("ST.Entities.Security.Models.EntityPermission", "EntityPermission")
+                        .WithMany("EntityPermissionAccesses")
+                        .HasForeignKey("EntityPermissionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

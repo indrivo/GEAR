@@ -188,7 +188,12 @@
 				},
 				"columns": [
 					{ "data": "settings.name" },
-					{ "data": "path" },
+					{ 
+						"data": "path",
+					 	"render": function(data, type, row, meta) {
+							return `<a href="${row.path}">${row.path}</a>`;
+					 	}
+					 },
 					{ "data": "settings.title" },
 					{ "data": "settings.description" },
 					{ "data": "created" },

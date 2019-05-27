@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo SRL</Company>
+    <Description>Form Abstractions</Description>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
+    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

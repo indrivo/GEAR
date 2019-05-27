@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Models.Forms;
 using ST.Entities.Models.Pages;
 using ST.Entities.Models.ViewModels;
 
 namespace ST.Entities.Extensions
 {
-    public static class EntityDbContextIndexExtension
+    internal static class EntityDbContextIndexExtension
     {
         /// <summary>
         /// Register indexes of EntitiesDbContext
@@ -23,9 +22,6 @@ namespace ST.Entities.Extensions
 
             builder.Entity<TableModelFields>()
                .HasIndex(x => x.TenantId);
-
-            builder.Entity<Form>()
-                .HasIndex(x => x.TenantId);
 
             builder.Entity<Page>()
                .HasIndex(x => x.TenantId);

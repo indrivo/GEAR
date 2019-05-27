@@ -22,13 +22,14 @@ using ST.Entities.ViewModels.DynamicEntities;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Identity.Abstractions;
 
 namespace ST.DynamicEntityStorage
 {
     /// <inheritdoc />
-    public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext
+    public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext, IEntityContext
     {
         /// <summary>
         /// Inject db context
@@ -1008,9 +1009,10 @@ namespace ST.DynamicEntityStorage
         /// Register in memory
         /// </summary>
         /// <returns></returns>
-        public virtual async Task RegisterInMemoryDynamicTypes()
+        public virtual async Task RegisterInMemoryDynamicTypesAsync()
         {
-            var tables = await _context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
+            var context = IoC.Resolve<IEntityContext>();
+            var tables = await context.Table.Where(x => !x.IsPartOfDbContext).ToListAsync();
             foreach (var table in tables)
             {
                 await new ObjectService(table.Name).ResolveAsync(_context, _httpContextAccessor);
@@ -1055,11 +1057,11 @@ namespace ST.DynamicEntityStorage
         /// <param name="schemaName"></param>
         public async Task CreateDynamicTables(Guid tenantId, string schemaName = null)
         {
-            var entitiesList = new List<EntitiesDbContextSeed.SeedEntity>
+            var entitiesList = new List<SeedEntity>
             {
-                EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
-                EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "CustomEntities.json")),
-                EntitiesDbContextSeed.ReadData(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/CustomEntities.json")),
+                JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "ProfileEntities.json"))
             };
 
             foreach (var item in entitiesList)

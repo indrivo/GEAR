@@ -23,11 +23,11 @@ namespace ST.Configuration.Server
     public static class UrlRewrite
     {
         /// <summary>
-        /// Use custom error pages
+        /// Use custom url rewrite module
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static void UseUrlRewrite(this IApplicationBuilder app)
+        public static void UseUrlRewriteModule(this IApplicationBuilder app)
         {
             app.Use(async (ctx, next) =>
             {

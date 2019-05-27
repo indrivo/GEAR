@@ -12,7 +12,7 @@ namespace ST.Process.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddProcesses(this IServiceCollection services)
+        public static IServiceCollection AddProcessesModule(this IServiceCollection services)
         {
             services.AddTransient<IProcessParser, ProcessParser>();
             services.ConfigureOptions(typeof(ProcessesFileConfiguration));

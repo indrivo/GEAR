@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using ST.Core.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 
 namespace ST.DynamicEntityStorage.Abstractions.Extensions
@@ -49,6 +50,34 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             out int totalCount, Func<T, bool> dbSearch = null) where T : class
         {
             var rh = dbSearch != null ? context.Set<T>().Where(dbSearch).ToList() : context.Set<T>().ToList();
+
+            var result = rh.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
+
+            totalCount = result.Count;
+
+            result = result.Skip(start).Take(length).ToList();
+
+            result = result.Order(sortOrder);
+
+            return result.Adapt<List<T>>();
+        }
+
+        /// <summary>
+        /// Custom filter for js data-table
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="search"></param>
+        /// <param name="sortOrder"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="totalCount"></param>
+        /// <param name="dbSearch"></param>
+        /// <returns></returns>
+        public static List<T> FilterAbstractContext<T>(this IDbContext context, string search, string sortOrder, int start, int length,
+            out int totalCount, Func<T, bool> dbSearch = null) where T : class, IBaseModel
+        {
+            var rh = dbSearch != null ? context.SetEntity<T>().Where(dbSearch).ToList() : context.SetEntity<T>().ToList();
 
             var result = rh.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 

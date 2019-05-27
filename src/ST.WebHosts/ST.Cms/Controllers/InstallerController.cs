@@ -24,6 +24,7 @@ using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Cms.ViewModels.InstallerModels;
 using ST.Core.Abstractions;
+using ST.Entities.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.MultiTenant.Helpers;
 
@@ -39,17 +40,12 @@ namespace ST.Cms.Controllers
 		/// <summary>
 		/// Inject entity db context
 		/// </summary>
-		private readonly EntitiesDbContext _entitiesDbContext;
+		private readonly IEntityContext _entitiesDbContext;
 
 		/// <summary>
 		/// Inject application context
 		/// </summary>
 		private readonly ApplicationDbContext _applicationDbContext;
-
-		/// <summary>
-		/// Inject local dataService
-		/// </summary>
-		private readonly ILocalService _localService;
 
 		/// <summary>
 		/// Inject SignIn Manager
@@ -100,7 +96,7 @@ namespace ST.Cms.Controllers
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
 		/// <param name="dynamicService"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, ILocalService localService, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
+		public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_dynamicService = dynamicService;
@@ -109,7 +105,6 @@ namespace ST.Cms.Controllers
 			_hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_signInManager = signInManager;
-			_localService = localService;
 			_permissionService = permissionService;
 			_cacheService = cacheService;
 			_notify = notify;
@@ -245,7 +240,7 @@ namespace ST.Cms.Controllers
 			//Update super user information
 			await _applicationDbContext.SaveChangesAsync();
 
-			//Seed entity 
+			//Seed entity
 			await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
 			{
 				Changed = DateTime.Now,
@@ -259,9 +254,6 @@ namespace ST.Cms.Controllers
 
 			await _entitiesDbContext.SaveChangesAsync();
 
-			//For core change name as installer change
-			_localService.SetAppName("core", model.SiteName);
-
 			//Create system tables
 			await Installation.Application.SyncDefaultEntityFrameWorkEntities(tenant.Id);
 
@@ -271,7 +263,7 @@ namespace ST.Cms.Controllers
 			await Installation.Application.SeedDynamicDataAsync();
 
 			//Register in memory types
-			await _dynamicService.RegisterInMemoryDynamicTypes();
+			await _dynamicService.RegisterInMemoryDynamicTypesAsync();
 
 			//Send welcome message to user
 			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id) }, new SystemNotifications
@@ -288,7 +280,7 @@ namespace ST.Cms.Controllers
 
 
 		/// <summary>
-		/// Sync commerce data 
+		/// Sync commerce data
 		/// </summary>
 		/// <param name="model"></param>
 		/// <returns></returns>
@@ -348,7 +340,8 @@ namespace ST.Cms.Controllers
 				Created = DateTime.Now,
 				Changed = DateTime.Now,
 				Author = "System",
-				ModifiedBy = "System"
+				ModifiedBy = "System",
+				IsEditable = true
 			};
 
 			Queue.PushQueueBackgroundWorkItem(async token =>

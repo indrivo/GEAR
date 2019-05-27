@@ -3,32 +3,35 @@
 	var scripts = (IEnumerable<PageScript>)ViewBag.Scripts;
 }
 
-<style>
-	.delEvt:hover {
-		color: red;
-		cursor: pointer;
-	}
-
-	.edit:hover {
-		color: orange;
-		cursor: pointer;
-	}
-
-	.delEvt, .edit {
-		font-size: 1.5em;
-		padding-left: 1em;
-		float: right;
-	}
-
-	.save {
-		margin: 1em;
-		width: 7em;
-	}
-</style>
+@section Styles
+{
+	<style>
+    	.delEvt:hover {
+    		color: red;
+    		cursor: pointer;
+    	}
+    
+    	.edit:hover {
+    		color: orange;
+    		cursor: pointer;
+    	}
+    
+    	.delEvt, .edit {
+    		font-size: 1.5em;
+    		padding-left: 1em;
+    		float: right;
+    	}
+    
+    	.save {
+    		margin: 1em;
+    		width: 7em;
+    	}
+    </style>
+}
 
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">Scripts of page</h4>
+		<h4 class="card-title">Page scripts</h4>
 		<h6 class="card-subtitle">You can order scripts by drag and drop</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
@@ -58,6 +61,8 @@
 		</div>
 	</div>
 </div>
+
+<input type="hidden" id="pageId" value="@ViewBag.PageId"/>
 
 @section Scripts{
 	<script src="~/assets/js/builder/drag-and-drop-list.js"></script>
@@ -126,9 +131,8 @@
 
 		$("#addScript").on("click", function () {
 			const script = document.createElement("li");
-			const first = $("#columns li:first-child");
 			const order = $("#columns").children().length;
-			const pageId = first.attr("pageId");
+			const pageId = $("#pageId").val();
 			script.setAttribute("class", "list-group-item column");
 			script.setAttribute("pageId", pageId);
 			script.setAttribute("order", order);

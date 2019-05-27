@@ -1,12 +1,9 @@
 @using ST.Localization
 @using Microsoft.AspNetCore.Http
-@using ST.Identity.Abstractions
 @using ST.Localization.Razor.ViewModels.LocalizationViewModels
 
-@inject ILocalService LocalService
 @inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
 @inject IHttpContextAccessor Accesor
-@inject IStringLocalizer Localizer
 
 @{
 	Layout = null;
@@ -23,7 +20,7 @@
 	<title>@Localizer["welcome"]</title>
 	<link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="~/css/style.css" />
-	<link rel="stylesheet" type="text/css" href="~/css/colors/megna-dark.css" />
+	<link rel="stylesheet" type="text/css" href="~/css/colors/green.css.css" />
 	<link type="text/css" rel="stylesheet" href="~/lib/limonte-sweetalert2/sweetalert2.min.css" />
 </head>
 <body>

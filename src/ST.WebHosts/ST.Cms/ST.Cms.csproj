@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -14,10 +14,7 @@
 	<Copyright>Soft-tehnica 2019</Copyright>
   </PropertyGroup>
   <ItemGroup>
-	<Compile Remove="Controllers\Identity\**" />
-	<Content Remove="Controllers\Identity\**" />
-	<EmbeddedResource Remove="Controllers\Identity\**" />
-	<None Remove="Controllers\Identity\**" />
+    <Content Remove="Configuration\CustomEntities.json" />
   </ItemGroup>
   <ItemGroup>
 	<None Remove="app_offline.htm" />
@@ -66,6 +63,9 @@
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
 	<EmbeddedResource Include="bpmConfig.json">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</EmbeddedResource>
+	<EmbeddedResource Include="Configuration\CustomEntities.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Static\Embedded Resources\user.jpg">
@@ -155,6 +155,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Razor.Extension\ST.Email.Razor\ST.Email.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Form.Razor\ST.Forms.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.Razor\ST.Identity.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
@@ -163,57 +164,6 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Report.Extension\ST.Report.Dynamic.Razor\ST.Report.Dynamic.Razor.csproj" />
   </ItemGroup>
   <ItemGroup>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\GoalPartyRequirement.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\CategoryRequirements.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\StandardCategories.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\Standards.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\PartyRequirement.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\Requirement.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\DynamicEntities\KPI.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\BaseVocabulary\VocabularyList.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\FulfillmentCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedParty.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\InterestedPartyCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\NomRequirement.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\RequirementCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\ObjectiveCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\PeriodCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\MeasurementCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
-	<Content Update="Installation\SystemEntitySeed\Vocabulary\VocabularyItems\KpiCategory.json">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
 	<Content Update="menus.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>

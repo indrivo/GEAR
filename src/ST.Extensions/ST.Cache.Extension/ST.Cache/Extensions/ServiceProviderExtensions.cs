@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Cache.Abstractions;
 using ST.Cache.Exceptions;
 using ST.Cache.Services;
+using ST.Core;
+using ST.Core.Helpers;
 
 namespace ST.Cache.Extensions
 {
@@ -15,10 +18,19 @@ namespace ST.Cache.Extensions
         /// <param name="services"></param>
         /// <param name="environment"></param>
         /// <param name="configuration"></param>
-        /// <param name="instance"></param>
+        /// <param name="customSystemIdentifier"></param>
         /// <returns></returns>
-        public static IServiceCollection UseCustomCacheService(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string instance = "ST.CORE")
+        public static IServiceCollection UseCustomCacheModule(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
         {
+            if (customSystemIdentifier == null)
+            {
+                var systemIdentifier = configuration.GetSection(nameof(SystemConfig))
+                    .GetValue<string>(nameof(SystemConfig.MachineIdentifier));
+
+                if (string.IsNullOrEmpty(systemIdentifier))
+                    throw new NullReferenceException("System identifier was not registered in appsettings file");
+                customSystemIdentifier = systemIdentifier;
+            }
             var redisSection = configuration.GetSection("RedisConnection");
             var redisConfig = redisSection.Get<RedisConnectionConfig>();
             if (redisConfig == null) throw new InvalidCacheConfigurationException();
@@ -26,9 +38,10 @@ namespace ST.Cache.Extensions
             services.AddDistributedRedisCache(opts =>
             {
                 opts.Configuration = redisConfig.Host;
-                opts.InstanceName = $"{instance}.{environment.EnvironmentName}@";
+                opts.InstanceName = $"{customSystemIdentifier}.{environment.EnvironmentName}@";
             });
             services.AddTransient<ICacheService, CacheService>();
+            IoC.RegisterService<ICacheService, CacheService>();
             return services;
         }
     }

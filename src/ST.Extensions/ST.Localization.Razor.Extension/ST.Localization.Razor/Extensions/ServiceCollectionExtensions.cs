@@ -23,7 +23,7 @@ namespace ST.Localization.Razor.Extensions
         /// <param name="app"></param>
         /// <param name="language"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseLocalization(this IApplicationBuilder app,
+        public static IApplicationBuilder UseLocalizationModule(this IApplicationBuilder app,
             IOptionsSnapshot<LocalizationConfig> language)
         {
             var supportedCultures = language.Value.Languages.Select(str => new CultureInfo(str.Identifier)).ToList();
@@ -51,7 +51,7 @@ namespace ST.Localization.Razor.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection AddLocalization(this IServiceCollection services,
+        public static IServiceCollection AddLocalizationModule(this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddTransient<ILocalizationService, LocalizationService>();

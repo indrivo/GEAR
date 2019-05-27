@@ -10,7 +10,7 @@ namespace ST.InternalCalendar.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInternalCalendar(this IServiceCollection services)
+        public static IServiceCollection AddInternalCalendarModule(this IServiceCollection services)
         {
             services.ConfigureOptions(typeof(InternalCalendarFileConfiguration));
             return services;

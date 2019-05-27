@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using ST.Cache.Abstractions;
 using ST.Configuration.Seed;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
@@ -20,6 +20,7 @@ using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
 using ST.Cms.Extensions;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.Forms.Data;
 using ST.Report.Dynamic.Data;
 
 namespace ST.Cms.Installation
@@ -30,20 +31,7 @@ namespace ST.Cms.Installation
 		/// Get settings
 		/// </summary>
 		public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
-		{
-			try
-			{
-				using (var r = new StreamReader(ResourceProvider.AppSettingsFilepath(hostingEnvironment)))
-				{
-					var json = r.ReadToEnd();
-					return JsonConvert.DeserializeObject<AppSettingsModel.RootObject>(json);
-				}
-			}
-			catch
-			{
-				return default;
-			}
-		}
+			=> JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(ResourceProvider.AppSettingsFilepath(hostingEnvironment));
 
 
 		/// <summary>
@@ -75,11 +63,13 @@ namespace ST.Cms.Installation
 		private static IWebHost Migrate(this IWebHost webHost)
 		{
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
-				{
-					var conf = services.GetService<IConfiguration>();
-					EntitiesDbContextSeed.SeedAsync(context, conf, Core.Settings.TenantId)
-						.Wait();
-				})
+				   {
+					   EntitiesDbContextSeed<EntitiesDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+				   })
+				.MigrateDbContext<FormDbContext>((context, services) =>
+				   {
+					   FormDbContextSeed<FormDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+				   })
 				.MigrateDbContext<ProcessesDbContext>()
 				.MigrateDbContext<DynamicReportDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()
@@ -125,11 +115,10 @@ namespace ST.Cms.Installation
 		/// Create dynamic tables
 		/// </summary>
 		/// <param name="tenantId"></param>
-		/// <param name="schemaName"></param>
-		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId, string schemaName = null)
+		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId)
 		{
 			//Seed EntityFrameWork entities
-			var entities = TablesService.GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext));
+			var entities = TablesService.GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext), typeof(FormDbContext), typeof(DynamicReportDbContext));
 
 			foreach (var ent in entities)
 			{
@@ -174,12 +163,15 @@ namespace ST.Cms.Installation
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
 				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
+				var cacheService = serviceScope.ServiceProvider.GetService<ICacheService>();
+
 				var isConfigured = IsConfigured(env);
 
 				if (!isConfigured) return;
 				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
+				cacheService.FlushAll();
 				await permissionService.RefreshCache();
-				await service.RegisterInMemoryDynamicTypes();
+				await service.RegisterInMemoryDynamicTypesAsync();
 			}
 		}
 
