@@ -33,6 +33,18 @@ $(".dynamic-table")
 				action: function (e, dt, button, config) {
 					const card = $(button).closest(".card");
 					var t = card.find(".dynamic-table");
+					if ($(t).attr("add-mode") === "true") {
+						$.toast({
+							heading: "Already is a new line in editing, after finishing it will be possible to add a new line!",
+							text: "",
+							position: 'top-right',
+							loaderBg: '#ff6849',
+							icon: 'error',
+							hideAfter: 3500,
+							stack: 6
+						});
+						return;
+					}
 					const row = document.createElement("tr");
 					row.setAttribute("isNew", "true");
 					const columns = dt.columns().context[0].aoColumns;
@@ -51,9 +63,11 @@ $(".dynamic-table")
 								$(cell).find(".cancel-new-item").on("click", cancelNewItem);
 								$(cell).find(".add-new-item").on("click", addNewItem);
 							}
-							else
-								cell = getAddRowCell(columns[i], cell);
-
+							else {
+								var newCell = getAddRowCell(columns[i], cell);
+								cell = newCell.cell;
+								row.setAttribute("entityName", newCell.entityName);
+							}
 
 						row.appendChild(cell);
 					}
@@ -96,15 +110,67 @@ function cancelNewItem() {
 	context.parent().find(".add-new-item").off("click", addNewItem);
 	toggleVisibilityColumnsButton(context, false);
 	context.closest("tr").remove();
+	cancelTableAddMode(context);
 }
 
-
 function addNewItem() {
-	const context = $(this);
-	context.closest("tr");
+	const context = $(this);	
+	const rowContext = context.closest("tr");
+	const entityName = rowContext.attr("entityName");
+	const data = getRowData(rowContext);
+	const dataContext = new DataInjector();
+	const req = dataContext.Add(entityName, data);
+	if (req.is_success) {
+		$.toast({
+			heading: 'New row added',
+			text: `info`,
+			position: 'top-right',
+			loaderBg: '#ff6849',
+			icon: 'success',
+			hideAfter: 3500,
+			stack: 6
+		});
+	}
+	else {
+		$.toast({
+			heading: req.error_keys[0].message,
+			text: "",
+			position: 'top-right',
+			loaderBg: '#ff6849',
+			icon: 'error',
+			hideAfter: 3500,
+			stack: 6
+		});
+	}
 
+	//TODO: Finish add inline edit
 	toggleVisibilityColumnsButton(context, false);
 	context.off("click", addNewItem);
+	cancelTableAddMode(context);
+}
+
+function cancelTableAddMode(context) {
+	context.closest("table").attr("add-mode", "false");
+}
+
+function getRowData(context) {
+	const data = $(context).find(".data-new");
+	const obj = {};
+	for (let i = 0; i < data.length; i++) {
+		const f = $(data[i]);
+		switch (f.attr("data-type")) {
+			case "nvarchar":
+			case "datetime":
+			case "date":
+			case "int32": {
+				obj[f.attr("data-prop-name")] = f.val();
+			} break;
+			case "bool": {
+				obj[f.attr("data-prop-name")] = f.prop("checked");
+			} break;
+		}
+	}
+	return obj;
 }
 
 
@@ -115,135 +181,150 @@ function addNewItem() {
  * @param {*} cell 
  */
 function getAddRowCell(column, cell) {
-	if (column.config.column.tableModelFields) {
-		const cellContent = document.createElement("div");
-		console.log(column.config.column);
-
-		//entity ref id
-		const tableId = column.config.column.tableModelFields.table.id;
-
-		//store the id of table field
-		const propId = column.config.column.tableModelFields.id;
-
-		//required state
-		const allowNull = column.config.column.tableModelFields.allowNull;
-
-		//create ui container element by field data type
-		switch (column.config.column.tableModelFields.dataType) {
-			case "nvarchar":
-				{
-					const el = document.createElement("input");
-					el.setAttribute("class", "inline-add-event data-new form-control");
-					el.setAttribute("data-prop-id", propId);
-					el.setAttribute("type", "text");
-					el.setAttribute("data-entity", tableId);
-					el.setAttribute("data-type", "nvarchar");
-					if (!allowNull) {
-						alert();
-						el.setAttribute("required", "required");
-					}
-
-					cellContent.appendChild(el);
-
-				}
-				break;
-			case "int32":
-				{
-					const el = document.createElement("input");
-					el.setAttribute("class", "inline-add-event data-new form-control");
-					el.setAttribute("data-prop-id", propId);
-					el.setAttribute("type", "number");
-					el.setAttribute("data-entity", tableId);
-					el.setAttribute("data-type", "nvarchar");
-					if (!allowNull) {
-						el.setAttribute("required", "required");
-					}
-
-					cellContent.appendChild(el);
-				} break;
-			case "bool":
-				{
-					const div = document.createElement("div");
-					div.setAttribute("class", "checkbox checkbox-success");
-					div.style.marginTop = "-1em";
-					div.style.marginLeft = "2em";
-					const label = document.createElement("label");
-					label.setAttribute("for", "test");
-					const el = document.createElement("input");
-					el.setAttribute("class", "inline-add-event");
-					el.setAttribute("data-prop-id", propId);
-					el.setAttribute("type", "checkbox");
-					el.setAttribute("data-entity", tableId);
-					el.setAttribute("data-type", "bool");
-					el.setAttribute("id", "test");
-					el.setAttribute("name", "test");
-					el.style.maxWidth = "1em";
-
-					div.appendChild(el);
-					div.appendChild(label);
-					cellContent.appendChild(div);
-				}
-				break;
-			case "datetime":
-			case "date":
-				{
-					const el = document.createElement("input");
-					el.setAttribute("class", "inline-add-event data-new form-control");
-					el.setAttribute("data-prop-id", propId);
-					el.setAttribute("type", "text");
-					el.setAttribute("data-entity", tableId);
-					el.setAttribute("data-type", "datetime");
-					cellContent.appendChild(el);
-					$(columns[i]).html(container);
-					$(columns[i]).find(".inline-add-event")
-						.on("change", function () { })
-						.datepicker({
-							format: 'dd/mm/yyyy'
-						}).addClass("datepicker");
-				} break;
-			case "uniqueidentifier":
-				{
-					const div = document.createElement("div");
-					div.setAttribute("class", "input-group mb-3");
-					const dropdown = document.createElement("select");
-					dropdown.setAttribute("class", "inline-add-event data-new form-control");
-					dropdown.setAttribute("data-prop-id", propId);
-					dropdown.setAttribute("data-entity", tableId);
-					dropdown.setAttribute("data-type", "uniqueidentifier");
-					dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), '');
-					//Populate dropdown
-					const data = load(`/PageRender/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
-					if (data) {
-						if (data.is_success) {
-							$.each(data.result.data, function (index, obj) {
-								dropdown.options[dropdown.options.length] = new Option(obj.Name, obj.Id);
-							});
-							dropdown.setAttribute("data-ref-entity", data.result.entityName);
-						}
-					}
-					div.appendChild(dropdown);
-					const addOptionDiv = document.createElement("div");
-					addOptionDiv.setAttribute("class", "input-group-append");
-					const addOption = document.createElement("a");
-					addOption.setAttribute("class", "btn btn-success");
-					const plus = document.createElement("span");
-					plus.setAttribute("class", "fa fa-plus");
-					plus.style.color = "white";
-					addOption.appendChild(plus);
-					addOption.addEventListener("click", addNewToReference);
-					addOptionDiv.appendChild(addOption);
-					div.appendChild(addOptionDiv);
-					cellContent.appendChild(div);
-				}
-				break;
-		}
-		cell.appendChild(cellContent);
-	}
-	else {
+	if (!column.config.column.tableModelFields) {
 		cell.innerHTML = defaultNotEditFieldContainer;
+		return {
+			cell: cell,
+			entityName: ""
+		};
 	}
 
-	return cell;
+	const cellContent = document.createElement("div");
+
+	//entity ref id
+	const tableId = column.config.column.tableModelFields.table.id;
+
+	//store entity name
+	const entityName = column.config.column.tableModelFields.table.name;
+
+	//store the id of table field
+	const propId = column.config.column.tableModelFields.id;
+
+	//store prop name
+	const propName = column.config.column.tableModelFields.name;
+
+	//required state
+	const allowNull = column.config.column.tableModelFields.allowNull;
+
+	//create ui container element by field data type
+	switch (column.config.column.tableModelFields.dataType) {
+		case "nvarchar":
+			{
+				const el = document.createElement("input");
+				el.setAttribute("class", "inline-add-event data-new form-control");
+				el.setAttribute("data-prop-id", propId);
+				el.setAttribute("data-prop-name", propName);
+				el.setAttribute("type", "text");
+				el.setAttribute("data-entity", tableId);
+				el.setAttribute("data-type", "nvarchar");
+				if (!allowNull) {
+					el.setAttribute("required", "required");
+				}
+
+				cellContent.appendChild(el);
+
+			}
+			break;
+		case "int32":
+			{
+				const el = document.createElement("input");
+				el.setAttribute("class", "inline-add-event data-new form-control");
+				el.setAttribute("data-prop-id", propId);
+				el.setAttribute("data-prop-name", propName);
+				el.setAttribute("type", "number");
+				el.setAttribute("data-entity", tableId);
+				el.setAttribute("data-type", "nvarchar");
+				if (!allowNull) {
+					el.setAttribute("required", "required");
+				}
+
+				cellContent.appendChild(el);
+			} break;
+		case "bool":
+			{
+				const div = document.createElement("div");
+				div.setAttribute("class", "checkbox checkbox-success");
+				div.style.marginTop = "-1em";
+				div.style.marginLeft = "2em";
+				const label = document.createElement("label");
+				label.setAttribute("for", "test");
+				const el = document.createElement("input");
+				el.setAttribute("class", "inline-add-event");
+				el.setAttribute("data-prop-id", propId);
+				el.setAttribute("data-prop-name", propName);
+				el.setAttribute("type", "checkbox");
+				el.setAttribute("data-entity", tableId);
+				el.setAttribute("data-type", "bool");
+				el.setAttribute("id", "test");
+				el.setAttribute("name", "test");
+				el.style.maxWidth = "1em";
+
+				div.appendChild(el);
+				div.appendChild(label);
+				cellContent.appendChild(div);
+			}
+			break;
+		case "datetime":
+		case "date":
+			{
+				const el = document.createElement("input");
+				el.setAttribute("class", "inline-add-event data-new form-control");
+				el.setAttribute("data-prop-id", propId);
+				el.setAttribute("data-prop-name", propName);
+				el.setAttribute("type", "text");
+				el.setAttribute("data-entity", tableId);
+				el.setAttribute("data-type", "datetime");
+				cellContent.appendChild(el);
+				$(columns[i]).html(container);
+				$(columns[i]).find(".inline-add-event")
+					.on("change", function () { })
+					.datepicker({
+						format: 'dd/mm/yyyy'
+					}).addClass("datepicker");
+			} break;
+		case "uniqueidentifier":
+			{
+				const div = document.createElement("div");
+				div.setAttribute("class", "input-group mb-3");
+				const dropdown = document.createElement("select");
+				dropdown.setAttribute("class", "inline-add-event data-new form-control");
+				dropdown.setAttribute("data-prop-id", propId);
+				dropdown.setAttribute("data-prop-name", propName);
+				dropdown.setAttribute("data-entity", tableId);
+				dropdown.setAttribute("data-type", "uniqueidentifier");
+				dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), '');
+				//Populate dropdown
+				const data = load(`/PageRender/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
+				if (data) {
+					if (data.is_success) {
+						$.each(data.result.data, function (index, obj) {
+							dropdown.options[dropdown.options.length] = new Option(obj.Name, obj.Id);
+						});
+						dropdown.setAttribute("data-ref-entity", data.result.entityName);
+					}
+				}
+				div.appendChild(dropdown);
+				const addOptionDiv = document.createElement("div");
+				addOptionDiv.setAttribute("class", "input-group-append");
+				const addOption = document.createElement("a");
+				addOption.setAttribute("class", "btn btn-success");
+				const plus = document.createElement("span");
+				plus.setAttribute("class", "fa fa-plus");
+				plus.style.color = "white";
+				addOption.appendChild(plus);
+				addOption.addEventListener("click", addNewToReference);
+				addOptionDiv.appendChild(addOption);
+				div.appendChild(addOptionDiv);
+				cellContent.appendChild(div);
+			}
+			break;
+	}
+	cell.appendChild(cellContent);
+
+	return {
+		cell: cell,
+		entityName: entityName
+	};
 }
 
 
