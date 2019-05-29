@@ -65,7 +65,7 @@ namespace ST.Core.BaseControllers
         /// <summary>
         /// Tenant id
         /// </summary>
-        public Guid? CurrentUserTenantId
+        protected Guid? CurrentUserTenantId
         {
             get
             {

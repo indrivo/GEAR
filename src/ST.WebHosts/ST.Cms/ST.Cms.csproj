@@ -23,8 +23,6 @@
 	<None Remove="Static\Templates\category.html" />
 	<None Remove="Static\Templates\folders.html" />
 	<None Remove="Static\Templates\folders_layout.html" />
-	<None Remove="Static\Templates\formDefaultTemplate.html" />
-	<None Remove="Static\Templates\listDefaultTemplate.html" />
 	<None Remove="Static\Templates\notifications.html" />
 	<None Remove="Static\Templates\preview.html" />
 	<None Remove="Static\Templates\profilefields.html" />
@@ -116,12 +114,6 @@
 	<EmbeddedResource Include="Static\Templates\folders_layout.html">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\formDefaultTemplate.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\listDefaultTemplate.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Static\Templates\notifications.html">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
@@ -158,6 +150,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.Razor\ST.Identity.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Processes.Extension\ST.Process.Razor\ST.Process.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />

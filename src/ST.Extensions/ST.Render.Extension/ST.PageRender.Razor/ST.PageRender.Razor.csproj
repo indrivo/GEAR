@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <None Remove="libman.json" />
+    <None Remove="Templates\formDefaultTemplate.html" />
+    <None Remove="Templates\listDefaultTemplate.html" />
   </ItemGroup>
   
   <ItemGroup>
@@ -35,6 +37,15 @@
     <Content Include="wwwroot\**\*">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\formDefaultTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\listDefaultTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   
 </Project>

@@ -193,9 +193,11 @@ function loadTree(uri, data = null, type = "get") {
 }
 
 $(document).ready(function () {
+	//find all trees in page
 	let trees = $(".custom-tree-iso");
 	$.each(trees, function (index, tree) {
 
+		//Check if is not in edit mode
 		if (!(location.href.indexOf("about:blank") !== -1)) {
 			const standardId = $(tree).attr("db-tree-standard");
 			const categoryId = $(tree).attr("db-tree-category");

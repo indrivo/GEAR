@@ -347,7 +347,7 @@ namespace ST.Cms.Controllers.Entity
 			}
 
 			var sqlService = GetSqlService();
-			field = field.CreateSqlField(ConnectionString);
+			field = field.CreateSqlField();
 			var insertField = sqlService.AddFieldSql(field, tableName, ConnectionString.Item2, true, schema);
 			// Save field model in the dataBase
 			if (!insertField.Result)
@@ -647,7 +647,7 @@ namespace ST.Cms.Controllers.Entity
 	}
 	public static class FieldExtension
 	{
-		public static CreateTableFieldViewModel CreateSqlField(this CreateTableFieldViewModel field, (DbProviderType, string) connection)
+		public static CreateTableFieldViewModel CreateSqlField(this CreateTableFieldViewModel field)
 		{
 			switch (field.Parameter)
 			{

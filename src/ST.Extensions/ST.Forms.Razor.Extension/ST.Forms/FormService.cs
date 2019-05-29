@@ -71,7 +71,7 @@ namespace ST.Forms
                 {
                     Errors = new List<IErrorModel>
                     {
-                        new ErrorModel("", e.ToString())
+                        new ErrorModel(string.Empty, e.ToString())
                     }
                 };
             }
@@ -118,7 +118,7 @@ namespace ST.Forms
                 {
                     Errors = new List<IErrorModel>
                     {
-                        new ErrorModel("", "Form not found")
+                        new ErrorModel(string.Empty, "Form not found")
                     }
                 };
 
