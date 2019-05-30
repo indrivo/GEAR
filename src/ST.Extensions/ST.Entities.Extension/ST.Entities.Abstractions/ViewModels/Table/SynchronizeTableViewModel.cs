@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ST.Entities.ViewModels.Table
+namespace ST.Entities.Abstractions.ViewModels.Table
 {
     public class SynchronizeTableViewModel
     {

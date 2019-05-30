@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ST.Entities.ViewModels.TableTypes
+namespace ST.Entities.Abstractions.ViewModels.TableTypes
 {
     public class EntityTypeCreateViewModel
     {

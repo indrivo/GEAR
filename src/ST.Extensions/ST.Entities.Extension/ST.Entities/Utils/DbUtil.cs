@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
 
 namespace ST.Entities.Utils
 {
@@ -57,21 +55,6 @@ namespace ST.Entities.Utils
 
             return result;
         }
-
-        /// <summary>
-        /// GetConnectionString Sql table service
-        /// </summary>
-        /// <param name="databaseProvider"></param>
-        /// <returns></returns>
-        public static ITablesService GetSqlTableService(DbProviderType databaseProvider)
-        {
-            return databaseProvider.Equals(DbProviderType.MsSqlServer)
-                ? new TablesService()
-                : databaseProvider.Equals(DbProviderType.PostgreSql)
-                    ? new NpgTablesService()
-                    : null;
-        }
-
     }
 
     public enum DbProviderType

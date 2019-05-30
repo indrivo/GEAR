@@ -55,7 +55,6 @@ namespace ST.Cms.Controllers.Custom
 				new ErrorModel(Guid.NewGuid().ToString(), "Entities does not exist!")
 			};
 			return Json(result);
-
 		}
 	}
 }

@@ -1,8 +1,11 @@
-﻿using ST.Core.Helpers;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.ViewModels.Table;
+using ST.Entities.Abstractions.ViewModels.Table;
 
-namespace ST.Entities.Services.Abstraction
+namespace ST.Entities.Abstractions
 {
     public interface ITablesService
     {
@@ -81,5 +84,11 @@ namespace ST.Entities.Services.Abstraction
         /// <returns><see cref="ResultModel"/></returns>
         /// Type of <see langword="bool"/>
         ResultModel<bool> DropTable(string connectionString, string tableName, string tableSchema);
+
+        Task CreateSchemaAsync(string schemaName, string connectionString);
+
+        IEnumerable<string> GetSchemas(string connectionString);
+
+        IEnumerable<SynchronizeTableViewModel> GetEntitiesFromDbContexts(params Type[] contexts);
     }
 }

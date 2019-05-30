@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Core.Helpers;
 using ST.Email.Razor.ViewModels.NotificationsViewModels;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Config;

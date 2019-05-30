@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Entities.Abstractions.Models.Tables;
 
-namespace ST.Entities.ViewModels.Table
+namespace ST.Entities.Abstractions.ViewModels.Table
 {
     public class UpdateTableViewModel
     {

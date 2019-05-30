@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ST.Core.Helpers;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.Notifications.Abstraction
 {

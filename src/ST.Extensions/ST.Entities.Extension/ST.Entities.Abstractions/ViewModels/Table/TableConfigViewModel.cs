@@ -1,4 +1,4 @@
-﻿namespace ST.Entities.ViewModels.Table
+﻿namespace ST.Entities.Abstractions.ViewModels.Table
 {
     public class TableConfigViewModel
     {

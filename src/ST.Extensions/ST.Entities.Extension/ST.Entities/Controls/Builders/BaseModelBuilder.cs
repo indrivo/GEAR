@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ST.Entities.ViewModels.BaseModel;
+using ST.Entities.Abstractions.ViewModels.BaseModel;
 
 namespace ST.Entities.Controls.Builders
 {

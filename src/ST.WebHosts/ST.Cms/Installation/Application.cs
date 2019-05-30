@@ -13,13 +13,16 @@ using ST.Configuration.Seed;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
-using ST.Entities.Services;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
 using ST.Cms.Extensions;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.Entities.Abstractions;
+using ST.Entities.Abstractions.Query;
+using ST.Entities.EntityBuilder.Postgres;
+using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Forms.Data;
 using ST.Report.Dynamic.Data;
 
@@ -118,7 +121,7 @@ namespace ST.Cms.Installation
 		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId)
 		{
 			//Seed EntityFrameWork entities
-			var entities = TablesService.GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext), typeof(FormDbContext), typeof(DynamicReportDbContext));
+			var entities = IoC.Resolve<ITablesService>().GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext), typeof(FormDbContext), typeof(DynamicReportDbContext));
 
 			foreach (var ent in entities)
 			{
@@ -168,6 +171,11 @@ namespace ST.Cms.Installation
 				var isConfigured = IsConfigured(env);
 
 				if (!isConfigured) return;
+				//TODO: Check connection type and register
+				IoC.RegisterService<IQueryTableBuilder, NpgTableQueryBuilder>();
+				IoC.RegisterService<IEntityQueryBuilder, NpgEntityQueryBuilder>();
+				IoC.RegisterService<ITablesService, NpgTablesService>();
+
 				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 				cacheService.FlushAll();
 				await permissionService.RefreshCache();

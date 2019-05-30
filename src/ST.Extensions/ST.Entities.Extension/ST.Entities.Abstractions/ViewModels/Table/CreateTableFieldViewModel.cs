@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ST.Entities.ViewModels.Table
+namespace ST.Entities.Abstractions.ViewModels.Table
 {
     public class CreateTableFieldViewModel
     {

@@ -9,10 +9,11 @@ using Newtonsoft.Json;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
+using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
 using ST.Entities.Utils;
-using ST.Entities.ViewModels.Table;
 using ST.Forms.Abstractions;
 using ST.Identity.Data;
 
@@ -129,44 +130,39 @@ namespace ST.Configuration.Services
             ExportDataIO.Decompress(memStream, async zip =>
            {
                var context = IoC.Resolve<EntitiesDbContext>();
-               var provider = context.GetProviderType();
-
-               var tableService = DbUtil.GetSqlTableService(provider);
+               var tableService = IoC.Resolve<ITablesService>();
                var dynamicContext = IoC.Resolve<IDynamicService>();
                var dynamicValues = await zip.Entries.GetDataFromZipArchiveEntry<IDictionary<string, IEnumerable<object>>>("dynamicEntitiesData.json");
                if (dynamicValues == null) return;
 
                //Import dynamic entities
                var dynamicEntities = await zip.Entries.GetDataFromZipArchiveEntry<List<TableModel>>("dynamicEntities.json");
-               if (dynamicEntities != null)
+               if (dynamicEntities == null) return;
+               foreach (var entity in dynamicEntities)
                {
-                   foreach (var entity in dynamicEntities)
+                   if (await context.Table.AnyAsync(x => x.Name == entity.Name && x.TenantId == entity.TenantId))
+                       continue;
+                   await context.Table.AddAsync(entity);
+                   tableService.CreateSqlTable(entity, context.GetConnectionString());
+                   foreach (var tableField in entity.TableFields)
                    {
-                       if (!await context.Table.AnyAsync(x => x.Name == entity.Name && x.TenantId == entity.TenantId))
+                       tableService.AddFieldSql(new CreateTableFieldViewModel
                        {
-                           await context.Table.AddAsync(entity);
-                           tableService.CreateSqlTable(entity, context.GetConnectionString());
-                           foreach (var tableField in entity.TableFields)
-                           {
-                               tableService.AddFieldSql(new CreateTableFieldViewModel
-                               {
-                                   Name = tableField.Name,
-                                   DisplayName = tableField.DisplayName,
-                                   AllowNull = tableField.AllowNull,
-                                   Id = tableField.Id,
-                                   TableId = entity.Id,
-                                   DataType = tableField.DataType,
-                                   Description = tableField.Description
-                               }, entity.Name, context.GetConnectionString(), true, entity.EntityType);
-                           }
-                           if (dynamicValues.ContainsKey(entity.Name))
-                           {
-                               await dynamicContext.Table(entity.Name).AddRange(dynamicValues[entity.Name]);
-                           }
-                       }
+                           Name = tableField.Name,
+                           DisplayName = tableField.DisplayName,
+                           AllowNull = tableField.AllowNull,
+                           Id = tableField.Id,
+                           TableId = entity.Id,
+                           DataType = tableField.DataType,
+                           Description = tableField.Description
+                       }, entity.Name, context.GetConnectionString(), true, entity.EntityType);
                    }
-                   await context.SaveChangesAsync();
+                   if (dynamicValues.ContainsKey(entity.Name))
+                   {
+                       await dynamicContext.Table(entity.Name).AddRange(dynamicValues[entity.Name]);
+                   }
                }
+               await context.SaveChangesAsync();
            });
 
             result.IsSuccess = true;

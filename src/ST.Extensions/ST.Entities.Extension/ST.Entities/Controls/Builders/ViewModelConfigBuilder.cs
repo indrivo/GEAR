@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Entities.Data;
-using ST.Entities.ViewModels.DynamicEntities;
 
 namespace ST.Entities.Controls.Builders
 {

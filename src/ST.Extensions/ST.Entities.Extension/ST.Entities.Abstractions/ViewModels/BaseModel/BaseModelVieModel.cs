@@ -1,9 +1,9 @@
-﻿namespace ST.Entities.ViewModels.BaseModel
+﻿namespace ST.Entities.Abstractions.ViewModels.BaseModel
 {
    public  class BaseModelVieModel
     {
 	    /// <summary>
-	    /// Max lenght for string types
+	    /// Max length for string types
 	    /// </summary>
 	    public int MaxLenght { get; set; }
 

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
+using ST.Entities.Controls.QueryAbstractions;
 
-namespace ST.Entities.Controls.Querry
+namespace ST.Entities.EntityBuilder.Postgres.Controls.Query
 {
-    public static class EntityQuerryBuilder
+    public class NpgEntityQueryBuilder : EntityQueryBuilder
     {
-        private static string GetWhereString(EntityViewModel viewModel, string nullName = "null",
+        protected override string GetWhereString(EntityViewModel viewModel, string nullName = "null",
             string isNullName = "isnull")
         {
             var where = new StringBuilder();
@@ -24,13 +25,13 @@ namespace ST.Entities.Controls.Querry
                 {
                     where.AppendFormat(
                         tempField.Type == nullName
-                            ? "AND ([{0}] is null or [{0}]=@{0}) "
-                            : "AND ([{0}] is not null or [{0}]=@{0}) ", field.Key);
+                            ? "AND (\"{0}\" is null or \"{0}\"=@{0}) "
+                            : "AND (\"{0}\" is not null or \"{0}\"=@{0}) ", field.Key);
                     nullFields.Remove(tempField);
                 }
                 else
                 {
-                    where.AppendFormat("AND [{0}]=@{0} ", field.Key);
+                    where.AppendFormat("AND \"{0}\"=@{0} ", field.Key);
                 }
             }
 
@@ -38,62 +39,53 @@ namespace ST.Entities.Controls.Querry
             {
                 foreach (var field in nullFields)
                     where.AppendFormat(field.Type == nullName
-                        ? "AND ([{0}] is null ) "
-                        : "AND ([{0}] is not null ) ", field.ColumnName);
+                        ? "AND (\"{0}\" is null ) "
+                        : "AND (\"{0}\" is not null ) ", field.ColumnName);
             }
 
             return where.ToString();
         }
 
-        /*
-                public static string DeleteByEntity(EntityViewModel viewModel)
-                {
-                    var sql = new StringBuilder();
-                    sql.AppendFormat("UPDATE [{0}].[{1}] SET IsDeleted=1 WHERE Id=@Id ", viewModel.TableSchema,
-                        viewModel.TableName);
-                    return sql.ToString();
-                }*/
-
-        public static string DeleteByIdQuerry(EntityViewModel viewModel, bool completeDelete = false)
+        public override string DeleteByIdQuery(EntityViewModel viewModel, bool completeDelete = false)
         {
             var sql = new StringBuilder();
             sql.AppendFormat(
                 completeDelete
-                    ? "DELETE FROM [{0}].[{1}] WHERE Id=@Id "
-                    : "UPDATE [{0}].[{1}] SET IsDeleted=1 WHERE Id=@Id", viewModel.TableSchema, viewModel.TableName);
+                    ? "DELETE FROM \"{0}\".\"{1}\" WHERE \"Id\"=@Id "
+                    : "UPDATE \"{0}\".\"{1}\" SET \"IsDeleted\"=1 WHERE \"Id\"=@Id", viewModel.TableSchema, viewModel.TableName);
 
             return sql.ToString();
         }
 
-        // Trebuie de rectificat deoarece posibil probleme de securizare ca parameterId vine ca parametru
-        public static string DeleteByIdQuerry(EntityViewModel viewModel, Guid parameterId, bool completeDelete = false)
+        public override string DeleteByIdQuery(EntityViewModel viewModel, Guid parameterId, bool completeDelete = false)
         {
             var sql = new StringBuilder();
             if (completeDelete)
-                sql.AppendFormat("DELETE FROM [{0}].[{1}] WHERE Id='{2}' ", viewModel.TableName, viewModel.TableSchema,
+                sql.AppendFormat("DELETE FROM \"{0}\".\"{1}\" WHERE \"Id\"='{2}' ", viewModel.TableName, viewModel.TableSchema,
                     parameterId);
             else
-                sql.AppendFormat("UPDATE [{0}].[{1}] SET IsDeleted=1 WHERE Id='{2}' ", viewModel.TableSchema,
+                sql.AppendFormat("UPDATE \"{0}\".\"{1}\" SET \"IsDeleted\"=1 WHERE \"Id\"='{2}' ", viewModel.TableSchema,
                     viewModel.TableName,
                     parameterId);
 
             return sql.ToString();
         }
 
-        public static string DeleteByParamQuerry(string tableName, string paramenterName, string parameter,
+        //TODO: Table schema
+        public override string DeleteByParamQuery(string tableName, string parameterName, string parameter,
             bool completeDelete = false)
         {
             var sql = new StringBuilder();
 
             sql.AppendFormat(
-                completeDelete ? "DELETE FROM {0} WHERE [{1}]='{2}'" : "UPDATE [{1}] SET IsDeleted=1 WHERE [{1}]=@{1}",
-                tableName, paramenterName, parameter);
+                completeDelete ? "DELETE FROM \"{0}\" WHERE \"{1}\"='{2}'" : "UPDATE \"{1}\" SET \"IsDeleted\"=1 WHERE \"{1}\"=@{1}",
+                tableName, parameterName, parameter);
 
             return sql.ToString();
         }
 
 
-        public static string DeleteByParamQuerry(EntityViewModel viewModel, bool completeDelete = false)
+        public override string DeleteByParamQuery(EntityViewModel viewModel, bool completeDelete = false)
         {
             var sql = new StringBuilder();
 
@@ -103,18 +95,15 @@ namespace ST.Entities.Controls.Querry
 
             sql.AppendFormat(
                 completeDelete
-                    ? "DELETE FROM [{0}].[{1}] WHERE 1=1 {2} "
-                    : "UPDATE [{0}].[{1}] SET IsDeleted=1 WHERE 1=1 {2} ", viewModel.TableSchema, viewModel.TableName,
+                    ? "DELETE FROM \"{0}\".\"{1}\" WHERE 1=1 {2} "
+                    : "UPDATE \"{0}\".\"{1}\" SET \"IsDeleted\"=1 WHERE 1=1 {2} ", viewModel.TableSchema, viewModel.TableName,
                 whereString);
 
             return sql.ToString();
-
-            //        sql.AppendFormat("DELETE FROM {0} WHERE [{1}]='{2}'", viewModel.TableName, paramenterName, parameter);
-            //        return sql.ToString();
         }
 
 
-        public static string GetByColumnParameterAndPaginationQuerry(EntityViewModel viewModel, string parameterName,
+        public override string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel, string parameterName,
             string parameter, int perPage, int currentPage)
         {
             var sql = new StringBuilder();
@@ -123,18 +112,18 @@ namespace ST.Entities.Controls.Querry
             var last = viewModel.Fields.Last();
 
             foreach (var item in viewModel.Fields)
-                fieldsData.AppendFormat(!item.Equals(last) ? "[{0}], " : "[{0}] ", item.ColumnName);
+                fieldsData.AppendFormat(!item.Equals(last) ? "\"{0}\", " : "\"{0}\" ", item.ColumnName);
 
 
             sql.AppendFormat(
-                "SELECT {0} FROM [{1}].[{2}] WHERE {3}='{4}' ORDER BY Id OFFSET {5} * ({6} -1) ROWS FETCH NEXT {5} ROWS ONLY"
+                "SELECT \"{0}\" FROM \"{1}\".\"{2}\" WHERE {3}='{4}' ORDER BY \"Id\" OFFSET {5} * ({6} -1) ROWS FETCH NEXT {5} ROWS ONLY"
                 , fieldsData, viewModel.TableSchema, viewModel.TableName, parameterName, parameter, perPage,
                 currentPage);
             return sql.ToString();
         }
 
 
-        public static string GetByColumnParameterAndPaginationQuerry(EntityViewModel viewModel, int perPage,
+        public override string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel, int perPage,
             int currentPage)
         {
             var sql = new StringBuilder();
@@ -142,17 +131,17 @@ namespace ST.Entities.Controls.Querry
 
             var last = viewModel.Fields.Last();
             foreach (var item in viewModel.Fields)
-                fieldsData.AppendFormat(!item.Equals(last) ? "[{0}], " : "[{0}] ", item.ColumnName);
+                fieldsData.AppendFormat(!item.Equals(last) ? "\"{0}\", " : "\"{0}\" ", item.ColumnName);
 
             var whereString = GetWhereString(viewModel);
 
             sql.AppendFormat(
-                "SELECT {0} FROM [{1}].[{2}] WHERE 1=1 {3} ORDER BY Id OFFSET {4} * ({5} -1) ROWS FETCH NEXT {4} ROWS ONLY"
+                "SELECT \"{0}\" FROM \"{1}\".\"{2}\" WHERE 1=1 {3} ORDER BY \"Id\" OFFSET {4} * ({5} -1) ROWS FETCH NEXT {4} ROWS ONLY"
                 , fieldsData, viewModel.TableSchema, viewModel.TableName, whereString, perPage, currentPage);
             return sql.ToString();
         }
 
-        public static string GetByColumnParameterAndPaginationQuerry(EntityViewModel viewModel,
+        public override string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters, int perPage, int currentPage)
         {
             var sql = new StringBuilder();
@@ -163,11 +152,11 @@ namespace ST.Entities.Controls.Querry
             var lastField = viewModel.Fields.Last();
             foreach (var field in viewModel.Fields)
             {
-                fields.AppendFormat("[{0}] ", field.ColumnName);
+                fields.AppendFormat("\"{0}\" ", field.ColumnName);
                 if (lastField != field) fields.Append(", ");
             }
 
-            sql.AppendFormat("SELECT {2} FROM [{0}].[{1}] WHERE 1=1 ", viewModel.TableSchema, viewModel.TableName,
+            sql.AppendFormat("SELECT \"{2}\" FROM \"{0}\".\"{1}\" WHERE 1=1 ", viewModel.TableSchema, viewModel.TableName,
                 fields);
 
             var where = GetWhereString(viewModel);
@@ -179,7 +168,7 @@ namespace ST.Entities.Controls.Querry
         }
 
 
-        public static string GetByColumnParameterQuerry(EntityViewModel viewModel,
+        public override string GetByColumnParameterQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters)
         {
             var sql = new StringBuilder();
@@ -187,20 +176,31 @@ namespace ST.Entities.Controls.Querry
             var paramsData = new StringBuilder();
 
             var fields =
-                viewModel.Fields.Where(x => x.Type != "Single" && x.Type != "Multiple" && x.Type != "EntityName");
+                viewModel.Fields.Where(x => x.Type != "Single" && x.Type != "Multiple" && x.Type != "EntityName")
+                    .ToList();
 
             var last = fields.Last();
             foreach (var item in fields)
-                fieldsData.AppendFormat(item.Equals(last) ? "[{0}] " : "[{0}], ", item.ColumnName);
+                fieldsData.AppendFormat(item.Equals(last) ? "\"{0}\" " : "\"{0}\", ", item.ColumnName);
 
             foreach (var param in parameters)
-                paramsData.AppendFormat("AND [{0}] = @{0} ", param.Key);
-            sql.AppendFormat("SELECT {0} FROM [{1}].[{2}] WHERE 1=1 {3}", fieldsData, viewModel.TableSchema,
+            {
+                if (param.Value != null)
+                {
+                    paramsData.AppendFormat("AND \"{0}\" = @{0} ", param.Key);
+                }
+                else
+                {
+                    paramsData.AppendFormat("AND \"{0}\" IS NULL ", param.Key);
+                }
+            }
+
+            sql.AppendFormat("SELECT {0} FROM \"{1}\".\"{2}\" WHERE 1=1 {3}", fieldsData, viewModel.TableSchema,
                 viewModel.TableName, paramsData);
             return sql.ToString();
         }
 
-        public static string GetByColumnParameterQuerry(EntityViewModel viewModel)
+        public override string GetByColumnParameterQuery(EntityViewModel viewModel)
         {
             var sql = new StringBuilder();
             var fieldsData = new StringBuilder();
@@ -212,43 +212,43 @@ namespace ST.Entities.Controls.Querry
             var last = fields.Last();
 
             foreach (var item in fields)
-                fieldsData.AppendFormat(item.Equals(last) ? "[{0}] " : "[{0}], ", item.ColumnName);
+                fieldsData.AppendFormat(item.Equals(last) ? "\"{0}\" " : "\"{0}\", ", item.ColumnName);
 
             var whereString = GetWhereString(viewModel);
             //                paramsData.AppendFormat("AND {0} = @{0} ", param.Value);
-            sql.AppendFormat("SELECT {0} FROM [{1}].[{2}] WHERE 1=1 {3}", fieldsData, viewModel.TableSchema,
+            sql.AppendFormat("SELECT \"{0}\" FROM \"{1}\".\"{2}\" WHERE 1=1 {3}", fieldsData, viewModel.TableSchema,
                 viewModel.TableName, whereString);
             return sql.ToString();
         }
 
 
-        public static string GetByIdQuerry(EntityViewModel viewModel)
+        public override string GetByIdQuery(EntityViewModel viewModel)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat("SELECT * FROM [{0}].[{1}] WHERE Id=@Id", viewModel.TableSchema, viewModel.TableName);
+            sql.AppendFormat("SELECT * FROM \"{0}\".\"{1}\" WHERE \"Id\"=@Id", viewModel.TableSchema, viewModel.TableName);
             return sql.ToString();
         }
 
-        public static string GetCountByParameter(EntityViewModel viewModel, string parameterName, string parameter)
+        public override string GetCountByParameter(EntityViewModel viewModel, string parameterName, string parameter)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat("SELECT COUNT({0}) FROM [{1}].[{2}] WHERE [{3}]='{4}'", viewModel.Fields[0].ColumnName,
+            sql.AppendFormat("SELECT COUNT(\"{0}\") FROM \"{1}\".\"{2}\" WHERE \"{3}\"='{4}'", viewModel.Fields[0].ColumnName,
                 viewModel.TableSchema, viewModel.TableName, parameterName, parameter);
             return sql.ToString();
         }
 
-        public static string GetCountByParameters(EntityViewModel viewModel)
+        public override string GetCountByParameters(EntityViewModel viewModel)
         {
             var sql = new StringBuilder();
             var whereString = GetWhereString(viewModel);
 
-            sql.AppendFormat("SELECT COUNT({0}) FROM [{1}].[{2}] WHERE 1=1 {3} ", viewModel.Fields[0].ColumnName,
+            sql.AppendFormat("SELECT COUNT(\"{0}\") FROM \"{1}\".\"{2}\" WHERE 1=1 {3} ", viewModel.Fields[0].ColumnName,
                 viewModel.TableSchema,
                 viewModel.TableName, whereString);
             return sql.ToString();
         }
 
-        public static string GetCountByParameter(EntityViewModel viewModel, Dictionary<string, object> parameters)
+        public override string GetCountByParameter(EntityViewModel viewModel, Dictionary<string, object> parameters)
         {
             var sql = new StringBuilder();
 
@@ -258,20 +258,20 @@ namespace ST.Entities.Controls.Querry
                 var lastWhereKey = parameters.Last().Key;
                 foreach (var param in parameters)
                 {
-                    where.AppendFormat("[{0}]=@{0}", param.Key);
+                    where.AppendFormat("\"{0}\"=@{0}", param.Key);
                     if (param.Key != lastWhereKey)
                         where.Append(" AND ");
                 }
             }
 
-            sql.AppendFormat("SELECT COUNT(Id) FROM [{0}].[{1}] ",
+            sql.AppendFormat("SELECT COUNT(\"Id\") FROM \"{0}\".\"{1}\" ",
                 viewModel.TableSchema, viewModel.TableName);
             if (where.Length != 0)
                 sql.AppendFormat("WHERE {0} ", where);
             return sql.ToString();
         }
 
-        public static string InsertQuerry(EntityViewModel viewModel)
+        public override string InsertQuery(EntityViewModel viewModel)
         {
             var parameters = new StringBuilder();
             var values = new StringBuilder();
@@ -281,54 +281,54 @@ namespace ST.Entities.Controls.Querry
             foreach (var item in viewModel.Fields)
                 if (!item.Equals(last))
                 {
-                    parameters.AppendFormat("[{0}],", item.ColumnName);
+                    parameters.AppendFormat("\"{0}\",", item.ColumnName);
                     values.AppendFormat("@{0},", item.ColumnName);
                 }
                 else
                 {
-                    parameters.AppendFormat("[{0}] ", item.ColumnName);
+                    parameters.AppendFormat("\"{0}\" ", item.ColumnName);
                     values.AppendFormat("@{0} ", item.ColumnName);
                 }
 
-            sql.AppendFormat("INSERT INTO [{0}].[{1}]({2}) VALUES({3})", viewModel.TableSchema, viewModel.TableName,
+            sql.AppendFormat("INSERT INTO \"{0}\".\"{1}\"({2}) VALUES({3})", viewModel.TableSchema, viewModel.TableName,
                 parameters, values);
             return sql.ToString();
         }
 
-        public static string UpdateQuerry(EntityViewModel viewModel, Guid parameterId)
+        public override string UpdateQuery(EntityViewModel viewModel, Guid parameterId)
         {
             var sql = new StringBuilder();
             var fieldsData = new StringBuilder();
             var where = new StringBuilder();
-            sql.AppendFormat("UPDATE {0} SET ", viewModel.TableName);
-            where.AppendFormat(" WHERE Id='{0}'", parameterId);
+            sql.AppendFormat("UPDATE \"{1}\".\"{0}\" SET ", viewModel.TableName, viewModel.TableSchema);
+            where.AppendFormat(" WHERE \"Id\"='{0}'", parameterId);
             var last = viewModel.Fields.Last();
             foreach (var item in viewModel.Fields)
-                fieldsData.AppendFormat(!item.Equals(last) ? "[{0}]=@{1}, " : "[{0}]=@{1}", item.ColumnName,
+                fieldsData.AppendFormat(!item.Equals(last) ? "\"{0}\"=@{1}, " : "\"{0}\"=@{1}", item.ColumnName,
                     item.ColumnName);
             sql.Append(fieldsData);
             sql.Append(where);
             return sql.ToString();
         }
 
-        public static string UpdateQuerry(EntityViewModel viewModel)
+        public override string UpdateQuery(EntityViewModel viewModel)
         {
             var sql = new StringBuilder();
             var fieldsData = new StringBuilder();
             var where = new StringBuilder();
-            sql.AppendFormat("UPDATE [{0}].[{1}] SET ", viewModel.TableSchema, viewModel.TableName);
-            where.AppendFormat(" WHERE Id=@Id");
+            sql.AppendFormat("UPDATE \"{0}\".\"{1}\" SET ", viewModel.TableSchema, viewModel.TableName);
+            where.AppendFormat(" WHERE \"Id\"=@Id");
             var last = viewModel.Fields.Last();
 
             foreach (var item in viewModel.Fields)
-                fieldsData.AppendFormat(!item.Equals(last) ? "[{0}]=@{1}, " : "[{0}]=@{1}", item.ColumnName,
+                fieldsData.AppendFormat(!item.Equals(last) ? "\"{0}\"=@{1}, " : "\"{0}\"=@{1}", item.ColumnName,
                     item.ColumnName);
             sql.Append(fieldsData);
             sql.Append(where);
             return sql.ToString();
         }
 
-        public static string GetByIncludeParam(EntityViewModel parrentTable, EntityViewModel childTable,
+        public override string GetByIncludeParam(EntityViewModel parrentTable, EntityViewModel childTable,
             string fieldName)
         {
             var sql = new StringBuilder();
@@ -339,14 +339,14 @@ namespace ST.Entities.Controls.Querry
                 var last = parrentTable.Fields.Last();
                 foreach (var field in parrentTable.Fields)
                 {
-                    fields.AppendFormat("[{0}]", field.ColumnName);
+                    fields.AppendFormat("\"{0}\"", field.ColumnName);
                     if (field != last) fields.Append(", ");
                 }
             }
 
-            idIn.AppendFormat("SELECT {2} FROM [{0}].[{1}] WHERE Id = @Id ", parrentTable.TableSchema,
+            idIn.AppendFormat("SELECT \"{2}\" FROM \"{0}\".\"{1}\" WHERE \"Id\" = @Id ", parrentTable.TableSchema,
                 parrentTable.TableName, fieldName);
-            sql.AppendFormat("SELECT {3} FROM [{0}].[{1}] WHERE Id IN ({2})", childTable.TableSchema,
+            sql.AppendFormat("SELECT \"{3}\" FROM \"{0}\".\"{1}\" WHERE \"Id\" IN ({2})", childTable.TableSchema,
                 childTable.TableName, idIn, fields);
             return sql.ToString();
         }

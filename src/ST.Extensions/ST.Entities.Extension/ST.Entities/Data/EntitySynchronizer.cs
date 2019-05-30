@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using ST.Core.Helpers;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
-using ST.Entities.ViewModels.Table;
+using ST.Entities.Abstractions.ViewModels.Table;
 
 namespace ST.Entities.Data
 {
@@ -116,9 +116,7 @@ namespace ST.Entities.Data
                 }
                 else
                 {
-                    ITablesService sqlService = _context.Database.IsNpgsql()
-                        ? new NpgTablesService() : _context.Database.IsSqlServer()
-                            ? new TablesService() : null;
+                    var sqlService = IoC.Resolve<ITablesService>();
 
                     if (sqlService == null) return;
                     var response = sqlService.CreateSqlTable(table: resultModel, connectionString: _connectionString);

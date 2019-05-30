@@ -146,6 +146,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.InternalCalendar.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Razor.Extension\ST.Email.Razor\ST.Email.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Form.Razor\ST.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.Razor\ST.Identity.Razor.csproj" />

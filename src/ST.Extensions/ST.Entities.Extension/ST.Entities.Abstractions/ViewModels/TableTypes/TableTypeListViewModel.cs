@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ST.Entities.ViewModels.TableTypes
+namespace ST.Entities.Abstractions.ViewModels.TableTypes
 {
     public class EntityTypeListViewModel
     {

@@ -1,22 +1,23 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using Npgsql;
 using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
+using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Controls.Builders;
-using ST.Entities.ViewModels.Table;
+using ST.Entities.Controls.QueryAbstractions;
 
-namespace ST.Entities.Controls.Querry
+namespace ST.Entities.EntityBuilder.MsSql.Controls.Query
 {
-    public static class NpgTableQuerryBuilder
+    public class MsSqlTableQueryBuilder : TableQueryBuilder
     {
-        public static string AddFieldQuerry(CreateTableFieldViewModel field, string tableName, string tableSchema)
+        public override string AddFieldQuery(CreateTableFieldViewModel field, string tableName, string tableSchema)
         {
             var sql = new StringBuilder();
             var alterSql = new StringBuilder();
-            sql.AppendFormat(" ALTER TABLE \"{1}\".\"{0}\" ", tableName, tableSchema);
-            sql.AppendFormat("ADD COLUMN \"{0}\"", field.Name);
+            sql.AppendFormat(" ALTER TABLE [{1}].[{0}] ", tableName, tableSchema);
+            sql.AppendFormat("ADD  [{0}]", field.Name);
             var defaultValue = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.DefaultValue)?.Value;
             switch (field.DataType.Trim())
             {
@@ -36,7 +37,7 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "uniqueidentifier":
-                    sql.Append(" uuid");
+                    sql.Append(" uniqueidentifier");
                     break;
 
                 case "date":
@@ -45,12 +46,12 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "datetime":
-                    sql.Append(" TIMESTAMP");
+                    sql.Append(" datetime");
                     if (defaultValue != null) sql.AppendFormat(" default {0} ", defaultValue);
                     break;
 
                 case "datetime2":
-                    sql.Append(" TIMESTAMP");
+                    sql.Append(" datetime2");
                     if (defaultValue != null) sql.AppendFormat(" default {0} ", defaultValue);
                     break;
 
@@ -60,14 +61,14 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "nvarchar":
-                    var maxLength = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
-                    if (string.IsNullOrEmpty(maxLength) || maxLength.Trim() == "0") sql.AppendFormat(" varchar(3999)");
-                    else sql.AppendFormat(" varchar({0})", maxLength);
+                    var maxLenght = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
+                    if (string.IsNullOrEmpty(maxLenght) || maxLenght.Trim() == "0") sql.AppendFormat(" nvarchar(max)");
+                    else sql.AppendFormat(" nvarchar({0})", maxLenght);
                     if (defaultValue != null) sql.AppendFormat(" default '{0}' ", defaultValue);
                     break;
 
                 case "double":
-                    sql.Append(" double precision");
+                    sql.Append(" double");
                     if (defaultValue != null) sql.AppendFormat(" default '{0}' ", defaultValue);
                     break;
 
@@ -81,7 +82,7 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "bool":
-                    sql.Append(" boolean");
+                    sql.Append(" bit");
                     if (!field.AllowNull)
                     {
                         if (defaultValue != null) sql.AppendFormat(" default '{0}' ", defaultValue);
@@ -96,71 +97,72 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 default:
-                    sql.AppendFormat(" varchar({0})", "10");
+                    sql.AppendFormat(" nvarchar({0})", "10");
                     if (defaultValue != null) sql.AppendFormat(" default '{0}'", defaultValue);
                     break;
             }
 
-            if (!field.AllowNull) sql.Append(" NOT NULL"); else sql.Append(" NULL");
+            if (!field.AllowNull) sql.Append(" NOT NULL");
 
             if (field.Parameter == FieldType.EntityReference || field.Parameter == FieldType.File)
             {
-                var foreignTableName =
+                var foreingTableName =
                     field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
-                var foreignSchemaTableName = field.Configurations.FirstOrDefault(x => x.ConfigCode == "9999")?.Value;
-                var constraintName = foreignTableName + "_" + field.Name;
-                if (foreignTableName != null)
-                    sql.AppendFormat(" ,ADD CONSTRAINT FK_{0} FOREIGN KEY (\"{3}\") REFERENCES \"{4}\".\"{1}\"({2})", constraintName,
-                        foreignTableName, "\"Id\"", field.Name, foreignSchemaTableName);
+                var foreingTableSchemaName =
+                   field.Configurations.FirstOrDefault(x => x.ConfigCode.Equals("9999"))?.Value;
+                var constraintName = foreingTableName + "_" + field.Name;
+                if (foreingTableName != null)
+                    sql.AppendFormat(" CONSTRAINT FK_{0} FOREIGN KEY REFERENCES {3}.{1}({2})", constraintName,
+                        foreingTableName, "Id", foreingTableSchemaName);
             }
 
-            sql.AppendFormat("{0}", alterSql.ToString());
+            sql.AppendFormat("{0}", alterSql);
             return sql.ToString();
         }
 
-        public static string CheckColumnValues(string tableName, string tableSchema, string columnName)
+        public override string CheckColumnValues(string tableName, string columnName, string tableSchema)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat("  SELECT * FROM \"{1}\".\"{0}\" WHERE {2} is not null", tableName, tableSchema, columnName);
+            sql.AppendFormat("  SELECT * FROM {2}.{0} WHERE {1} is not null", tableName, columnName, tableSchema);
             return sql.ToString();
         }
 
-        public static string CheckTableValues(string tableName, string tableSchema)
+        public override string CheckTableValues(string tableName, string tableSchema)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat(" SELECT TOP 1 * FROM \"{1}\".\"{0}\"", tableName, tableSchema);
+            sql.AppendFormat(" SELECT TOP 1 * FROM {1}.{0}", tableName, tableSchema);
             return sql.ToString();
         }
 
-        public static string CreateQuerry(TableModel table)
+        public override string CreateQuery(TableModel table)
         {
             var sql = new StringBuilder();
             var alterSql = new StringBuilder();
             var baseModelFields = BaseModelBuilder.CreateBaseModel(table.EntityType);
-            sql.AppendFormat("CREATE TABLE \"{1}\".\"{0}\" (", table.Name, table.EntityType);
+            sql.AppendFormat("CREATE TABLE [{1}].[{0}] (", table.Name, table.EntityType);
             foreach (var item in baseModelFields)
             {
-                sql.AppendFormat(" \"{0}\"", item.Name);
+                sql.AppendFormat(" [{0}]", item.Name);
                 switch (item.DataType.Trim())
                 {
                     case "uniqueidentifier":
-                        sql.Append(" uuid");
+                        sql.Append(" uniqueidentifier");
                         break;
 
                     case "datetime":
-                        sql.Append(" TIMESTAMP");
+                        sql.Append(" datetime");
                         break;
 
                     case "nvarchar":
-                        sql.AppendFormat(" varchar({0})", item.MaxLenght);
+                        sql.AppendFormat(" nvarchar({0})", item.MaxLenght);
                         break;
 
                     case "bit":
-                        sql.Append(" boolean");
+                        sql.Append(" bit");
                         break;
 
                     default:
-                        sql.AppendFormat(" varchar({0})", item.MaxLenght);
+                        sql.AppendFormat(" nvarchar({0})", item.MaxLenght);
                         break;
                 }
 
@@ -169,45 +171,56 @@ namespace ST.Entities.Controls.Querry
                 sql.Append(",");
             }
 
-            sql.AppendFormat(" CONSTRAINT PK_{0} PRIMARY KEY ({1})", table.Name, "\"Id\"");
-            sql.AppendFormat("{0})", alterSql.ToString());
-            return sql.ToString();
-        }
-        /// <summary>
-        /// Drop column
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnName"></param>
-        /// <param name="tableSchema"></param>
-        /// <returns></returns>
-        public static string DropColumn(string tableName, string columnName, string tableSchema)
-        {
-            var sql = new StringBuilder();
-            sql.AppendFormat("ALTER TABLE \"{2}\".\"{0}\" DROP COLUMN {1}", tableName, columnName, tableSchema);
+            sql.AppendFormat(" CONSTRAINT PK_{0} PRIMARY KEY ({1})", table.Name, "Id");
+            sql.AppendFormat("{0})", alterSql);
             return sql.ToString();
         }
 
-        public static string DropConstraint(string tableName, string constraint, string columnName, string tableSchema)
+        public override string DropColumn(string tableName, string tableSchema, string columnName)
+        {
+            var sql = new StringBuilder();
+            sql.AppendFormat("ALTER TABLE {2}.{0} DROP COLUMN {1}", tableName, columnName, tableSchema);
+            return sql.ToString();
+        }
+
+        public override string DropConstraint(string tableName, string tableSchema, string constraint, string columnName)
         {
             var sql = new StringBuilder();
             var contraint = "FK_" + constraint + "_" + columnName;
-            sql.AppendFormat("ALTER TABLE \"{2}\".\"{0}\" DROP constraint  {1}", tableName, contraint, tableSchema);
+            sql.AppendFormat("ALTER TABLE {2}.{0} DROP constraint  {1}", tableName, contraint, tableSchema);
             return sql.ToString();
         }
 
-        public static string DropTable(string tableName, string tableSchema)
+        public override string DropTable(string tableName, string tableSchema)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat("DROP TABLE \"{1}\".\"{0}\"", tableName, tableSchema);
+            sql.AppendFormat("DROP TABLE {1}.{0}", tableName, tableSchema);
             return sql.ToString();
         }
 
-        public static string UpdateFieldQuerry(CreateTableFieldViewModel field, string tableName, string tableSchema)
+        public override string GetColumnsQuery(string tableName)
+        {
+            var sql = new StringBuilder();
+            sql.AppendFormat(
+                "select COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, DATETIME_PRECISION,IS_NULLABLE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = '{0}'",
+                tableName);
+            return sql.ToString();
+        }
+
+        public override string GetTablesQuery()
+        {
+            var sql = new StringBuilder();
+            sql.AppendFormat("SELECT * FROM INFORMATION_SCHEMA.TABLES");
+            //  sql.AppendFormat("USE [BPMNS.db] GO SELECT * FROM INFORMATION_SCHEMA.TABLES", dataBase);
+            return sql.ToString();
+        }
+
+        public override string UpdateFieldQuery(CreateTableFieldViewModel field, string tableName, string tableSchema)
         {
             var sql = new StringBuilder();
             var alterSql = new StringBuilder();
-            sql.AppendFormat(" ALTER TABLE \"{1}\".\"{0}\" ", tableName, tableSchema);
-            sql.AppendFormat(" ALTER COLUMN \"{0}\" TYPE", field.Name);
+            sql.AppendFormat(" ALTER TABLE [{1}].[{0}] ", tableName, tableSchema);
+            sql.AppendFormat(" ALTER COLUMN [{0}] ", field.Name);
             var defaultValue = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.DefaultValue)?.Value;
             switch (field.DataType.Trim())
             {
@@ -227,7 +240,7 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "uniqueidentifier":
-                    sql.Append(" uuid");
+                    sql.Append(" uniqueidentifier");
                     break;
 
                 case "date":
@@ -236,13 +249,13 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "datetime":
-                    sql.Append(" TIMESTAMP");
+                    sql.Append(" datetime");
                     if (defaultValue != null) sql.AppendFormat(" default {0} ", defaultValue);
                     else sql.AppendFormat(" default drop");
                     break;
 
                 case "datetime2":
-                    sql.Append(" TIMESTAMP");
+                    sql.Append(" datetime2");
                     if (defaultValue != null) sql.AppendFormat(" default {0} ", defaultValue);
                     else sql.AppendFormat(" default drop");
                     break;
@@ -254,14 +267,13 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "nvarchar":
-                    var maxLength = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
-                    if (string.IsNullOrEmpty(maxLength) || maxLength.Trim() == "0") sql.AppendFormat(" varchar(3999)");
-                    else sql.AppendFormat(" varchar({0})", maxLength);
-                    if (defaultValue != null) sql.AppendFormat(" default '{0}' ", defaultValue);
+                    var maxLenght = field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ContentLen)?.Value;
+                    sql.AppendFormat(" nvarchar({0})", maxLenght);
+                    if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
                     break;
 
                 case "double":
-                    sql.Append(" double precision");
+                    sql.Append(" double");
                     if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
                     break;
 
@@ -273,7 +285,7 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 case "bool":
-                    sql.Append(" boolean");
+                    sql.Append(" bit");
                     if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
                     break;
 
@@ -283,21 +295,21 @@ namespace ST.Entities.Controls.Querry
                     break;
 
                 default:
-                    sql.AppendFormat(" varchar({0})", "10");
+                    sql.AppendFormat(" nvarchar({0})", "10");
                     if (defaultValue != null) sql.AppendFormat(" default'{0}'", defaultValue);
                     break;
             }
-            sql.AppendFormat(", ALTER COLUMN \"{0}\" ", field.Name);
-            sql.Append(!field.AllowNull ? "SET NOT NULL" : "DROP NOT NULL");
 
-            //if (field.Parameter == FieldType.EntityReference)
-            //{
-            //    var foreignTableName =
-            //        field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
-            //    var foreignTableSchemaName =
-            //        field.Configurations.FirstOrDefault(x => x.ConfigCode == "9999");
-            //    sql.AppendFormat(" FOREIGN KEY REFERENCES \"{2}\".\"{0}\"({1})", foreignTableName, "\"Id\"", foreignTableSchemaName);
-            //}
+            if (!field.AllowNull) sql.Append(" NOT NULL");
+
+            if (field.Parameter == FieldType.EntityReference)
+            {
+                var foreingTableName =
+                    field.Configurations.FirstOrDefault(x => x.Name == FieldConfig.ForeingTable)?.Value;
+                //var foreingTableSchemaName =
+                //    field.Configurations.FirstOrDefault(x => x.ConfigCode.Equals("9999"))?.Value;
+                sql.AppendFormat(" FOREIGN KEY REFERENCES {2}.{0}({1})", foreingTableName, "Id", tableSchema);
+            }
 
             sql.AppendFormat("{0}", alterSql);
             return sql.ToString();
@@ -308,7 +320,7 @@ namespace ST.Entities.Controls.Querry
         /// </summary>
         /// <param name="schemaName"></param>
         /// <returns></returns>
-        public static string GetSchemaSqlScript(string schemaName)
+        public override string GetSchemaSqlScript(string schemaName)
         {
             var sql = $"CREATE SCHEMA {schemaName}";
             return sql;
@@ -318,19 +330,19 @@ namespace ST.Entities.Controls.Querry
         /// Get all schema
         /// </summary>
         /// <returns></returns>
-        public static string GetDbSchemesSqlScript()
+        public override string GetDbSchemesSqlScript()
         {
-            return "SELECT \"schema_name\" FROM \"information_schema\".schemata";
+            return "SELECT schema_name FROM information_schema.schemata";
         }
 
         /// <summary>
-        /// Check if Npg server is available
+        /// Check if Sql server is available
         /// </summary>
         /// <param name="connectionString"></param>
         /// <returns></returns>
-        public static (bool, string) IsNpgServerConnected(string connectionString)
+        public override (bool, string) IsSqlServerConnected(string connectionString)
         {
-            using (var connection = new NpgsqlConnection(connectionString))
+            using (var connection = new SqlConnection(connectionString))
             {
                 try
                 {
@@ -339,13 +351,6 @@ namespace ST.Entities.Controls.Querry
                 }
                 catch (Exception e)
                 {
-                    if (e.Data.Contains("SqlState"))
-                    {
-                        if (e.Data["SqlState"].ToString() == "3D000")
-                        {
-                            return (true, "");
-                        }
-                    }
                     return (false, e.ToString());
                 }
                 finally

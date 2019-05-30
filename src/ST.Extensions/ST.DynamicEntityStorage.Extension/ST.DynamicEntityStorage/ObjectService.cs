@@ -11,8 +11,8 @@ using ST.DynamicEntityStorage.Exceptions;
 using ST.DynamicEntityStorage.Services;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
-using ST.Entities.ViewModels.DynamicEntities;
 using ST.Core;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage
 {

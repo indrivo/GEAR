@@ -19,13 +19,12 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Services;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
+using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
-using ST.Entities.Services;
-using ST.Entities.Services.Abstraction;
 using ST.Entities.Utils;
-using ST.Entities.ViewModels.Table;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Attributes;
@@ -97,11 +96,7 @@ namespace ST.Cms.Controllers.Entity
 		/// </summary>
 		/// <returns></returns>
 		[NonAction]
-		private ITablesService GetSqlService() => ConnectionString.Item1.Equals(DbProviderType.MsSqlServer) ?
-			new TablesService()
-			: ConnectionString.Item1.Equals(DbProviderType.PostgreSql)
-				? new NpgTablesService()
-				: null;
+		private static ITablesService GetSqlService() => IoC.Resolve<ITablesService>();
 
 		/// <summary>
 		/// Create a table
