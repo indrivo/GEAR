@@ -11,6 +11,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
     public enum MethodName
     {
         GetAllWithInclude,
+        GetAllWhitOutInclude,
         GetByIdWithReflection,
         AddWithReflection,
         UpdateWithReflection,
@@ -40,12 +41,16 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             try
             {
                 var method = dynamicObject.Service.GetType().GetMethod(call.ToString())
-                    .MakeGenericMethod(types?.ToArray() ?? new[] { typeof(object) });
+                    ?.MakeGenericMethod(types?.ToArray() ?? new[] { typeof(object) });
 
-                var task = (Task)method.Invoke(dynamicObject.Service, parameters?.ToArray());
-                task.Wait();
-                var res = ((dynamic)task).Result;
-                result.Result = res.Result;
+                if (method != null)
+                {
+                    var task = (Task)method.Invoke(dynamicObject.Service, parameters?.ToArray());
+                    task.Wait();
+                    var res = ((dynamic)task).Result;
+                    result.Result = res.Result;
+                }
+
                 result.IsSuccess = true;
                 return result;
             }
@@ -108,7 +113,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         /// <param name="func"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null, IEnumerable<Filter> filters = null) where TEntity : class
+        public static Task<ResultModel<IEnumerable<TEntity>>> GetAllWithInclude<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null, IEnumerable<Filter> filters = null) where TEntity : class
         {
             return Task.Run(() =>
             {
@@ -118,6 +123,31 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
 
                 //var param = func == null ? null : Delegate.CreateDelegate(genericFunc, func.Target, func.Method);
                 var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllWithInclude,
+                    new List<Type> { obj.Type, obj.Type }, new List<dynamic> { null, filters });
+
+                if (!req.IsSuccess) return result;
+                result.IsSuccess = true;
+                result.Result = req.Result.Adapt<IEnumerable<TEntity>>();
+                result.Result = func != null ? result.Result.Where(func).ToList() : result.Result.ToList();
+                return result;
+            });
+        }
+
+
+        /// <summary>
+        /// Add new item
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="func"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        public static Task<ResultModel<IEnumerable<TEntity>>> GetAll<TEntity>(this DynamicObject obj, Func<TEntity, bool> func = null, IEnumerable<Filter> filters = null) where TEntity : class
+        {
+            return Task.Run(() =>
+            {
+                var result = new ResultModel<IEnumerable<TEntity>>();
+                var req = obj.Invoke<IEnumerable<TEntity>>(MethodName.GetAllWhitOutInclude,
                     new List<Type> { obj.Type, obj.Type }, new List<dynamic> { null, filters });
 
                 if (!req.IsSuccess) return result;

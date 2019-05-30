@@ -20,6 +20,9 @@ namespace ST.DynamicEntityStorage.Abstractions
         Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAllWithIncludeAsDictionaryAsync(string entity,
             Expression<Func<Dictionary<string, object>, bool>> expression = null, IEnumerable<Filter> filters = null);
 
+        Task<ResultModel<IEnumerable<TOutput>>> GetAllWhitOutInclude<TEntity, TOutput>(
+            Func<TEntity, bool> predicate = null, IEnumerable<Filter> filters = null) where TEntity : BaseModel;
+
         /// <summary>
         /// Get all
         /// </summary>

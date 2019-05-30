@@ -143,12 +143,6 @@ window.translate = function (key) {
 //	window.forceTranslate();
 //});
 
-
-//On page load translate all
-$(document).ready(function () {
-	window.forceTranslate();
-});
-
 //Translate page content
 window.forceTranslate = function () {
 	new Promise((resolve, reject) => {
@@ -219,59 +213,64 @@ $(document).ready(function () {
 //------------------------------------------------------------------------------------//
 //								External Connections
 //------------------------------------------------------------------------------------//
-
-
-var connection = new signalR.HubConnectionBuilder()
-	.withUrl("/rtn", signalR.HttpTransportType.LongPolling)
-	.build();
-
-
-//On receive email
-connection.on("SendClientEmailNotification", (...data) => {
-	$("#notificationEmailAlarm").show();
-	var create = CreateEmailNotification(data, data[4], "");
-	$("#emailNotificationsContent").prepend(create);
-	var count = $("#emailNotificationsContent").find("a").length;
-	$("#emailNotificationsCounter").html(count);
-});
-
-
-//On receive notification
-connection.on("SendClientNotification", (notification) => {
-	performNotification(notification);
-});
-
-
 function performNotification(notification) {
 	$("#notificationAlarm").show();
 	const template = createNotification(notification);
 	$("#notificationList").prepend(template);
 }
 
-//Start connection
-connection.start();
-
 $(document).ready(function () {
-	startUserConnection();
-	loadEmails();
-	loadNotifications();
-	$("#clearNotificationsEvent").on("click",
-		function () {
-			$("#notificationList").html(null);
-			$("#notificationAlarm").hide();
-			const notificator = new Notificator();
-			notificator.clearNotificationsOnCurrentUser();
+	var connPromise = new Promise((resolve, reject) => {
+		var connection = new signalR.HubConnectionBuilder()
+			.withUrl("/rtn", signalR.HttpTransportType.LongPolling)
+			.build();
+		resolve(connection);
+	});
+
+
+	connPromise.then(connection => {
+		//On receive email
+		connection.on("SendClientEmailNotification", (...data) => {
+			$("#notificationEmailAlarm").show();
+			var create = CreateEmailNotification(data, data[4], "");
+			$("#emailNotificationsContent").prepend(create);
+			var count = $("#emailNotificationsContent").find("a").length;
+			$("#emailNotificationsCounter").html(count);
 		});
+
+
+		//On receive notification
+		connection.on("SendClientNotification", (notification) => {
+			performNotification(notification);
+		});
+		//Start connection
+		connection.start().then(() => {
+			const notificator = new Notificator();
+			const user = notificator.getCurrentUser();
+			connection.invoke("OnLoad", user.result.id)
+				.catch(err => console.error(err.toString()));
+		});
+		
+	});
+
+	var loadUserNotifications = new Promise((resolve, reject) => {
+		loadNotifications();
+	});
+
+	var loadUserEmails = new Promise((resolve, reject) => {
+		loadEmails();
+	});
+
+	Promise.all([loadUserNotifications, loadUserEmails]).then(function (values) {
+		$("#clearNotificationsEvent").on("click",
+			function () {
+				$("#notificationList").html(null);
+				$("#notificationAlarm").hide();
+				const notificator = new Notificator();
+				notificator.clearNotificationsOnCurrentUser();
+			});
+	});
 });
-
-
-function startUserConnection() {
-	const notificator = new Notificator();
-	const user = notificator.getCurrentUser();
-	connection.invoke("OnLoad", user.result.id)
-		.catch(err => console.error(err.toString()));
-}
-
 
 /**
  * Template creator for email

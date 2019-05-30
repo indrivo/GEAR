@@ -38,7 +38,7 @@ namespace ST.Cms.Services
 		public async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
-			var standards = await _service.Table(standardEntity.Name).GetAll<dynamic>();
+			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>();
 			var tree = new List<TreeStandard>();
 			if (!standards.IsSuccess) return res;
 			foreach (var standard in standards.Result)
@@ -110,7 +110,7 @@ namespace ST.Cms.Services
 		{
 			var res = new List<TreeRequirement>();
 			//x => x.CategoryId == categoryId && x.ParentRequirementId == parentRequirementId
-			var requirements = await _service.Table(requirementEntity).GetAll<dynamic>(null,
+			var requirements = await _service.Table(requirementEntity).GetAllWithInclude<dynamic>(null,
 				new List<Filter>
 				{
 					new Filter

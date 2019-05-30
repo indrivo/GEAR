@@ -100,6 +100,27 @@ namespace ST.DynamicEntityStorage
         }
 
         /// <summary>
+        /// Get all without include
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <typeparam name="TOutput"></typeparam>
+        /// <param name="predicate"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAllWhitOutInclude<TEntity, TOutput>(Func<TEntity, bool> predicate = null, IEnumerable<Filter> filters = null) where TEntity : BaseModel
+        {
+            var result = new ResultModel<IEnumerable<TOutput>>();
+            var data = await GetAll(FuncToExpression(predicate), filters);
+            if (!data.IsSuccess) return result;
+            var model = GetObject<TEntity>(data.Result)?.ToList();
+            if (model == null) return result;
+            result.IsSuccess = true;
+            var adapt = model.Adapt<IEnumerable<TOutput>>();
+            result.Result = adapt.ToList();
+            return result;
+        }
+
+        /// <summary>
         /// Func to expression
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -249,6 +270,7 @@ namespace ST.DynamicEntityStorage
         }
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Get all  as dictionary collection
         /// </summary>

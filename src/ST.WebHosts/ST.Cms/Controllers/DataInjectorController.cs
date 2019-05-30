@@ -180,7 +180,7 @@ namespace ST.Cms.Controllers
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
 			var f = ParseFilters(filters);
-			var rq = await _dynamicService.Table(tableName).GetAll<dynamic>(null, f);
+			var rq = await _dynamicService.Table(tableName).GetAllWithInclude<dynamic>(null, f);
 			return Json(rq);
 		}
 

@@ -167,7 +167,7 @@ namespace ST.PageRender.Razor.Controllers
             if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
             var table = config.Value;
             var instance = _service.Table(table);
-            return Json(await instance.GetAll<object>());
+            return Json(await instance.GetAllWithInclude<object>());
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace ST.PageRender.Razor.Controllers
                 .FirstOrDefault(x => x.Id.Equals(entityId));
             if (table == null) return Json(null);
             var instance = _service.Table(table.Name);
-            return Json(await instance.GetAll<object>());
+            return Json(await instance.GetAllWithInclude<object>());
         }
 
         /// <summary>
@@ -507,7 +507,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> LoadDataFromEntity(string entityName)
         {
-            var list = await _service.Table(entityName).GetAll<object>();
+            var list = await _service.Table(entityName).GetAllWithInclude<object>();
             return new JsonResult(list.Result);
         }
 

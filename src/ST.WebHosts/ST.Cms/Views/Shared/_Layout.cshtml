@@ -18,6 +18,7 @@
 		<partial name="_BootstrapThemeScripts" />
 		<application-scripts layout-id="@layoutId"></application-scripts>
 		@RenderSection("Styles", required: false)
+		<script src="~/assets/js/site.js" asp-append-version="true"></script>
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
 		<application layout-id="@layoutId">
@@ -26,7 +27,6 @@
 		<partial name="_LayoutScriptPartial" model="layoutId" />
 		<layout-js-code layout-id="@layoutId"></layout-js-code>
 		<partial name="_FormModuleLayoutScripts" />
-		<script src="~/js/site.js" asp-append-version="true"></script>
 		<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
 		<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 		@RenderSection("Scripts", false)

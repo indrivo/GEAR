@@ -46,7 +46,7 @@ namespace ST.Configuration.Services
             //Extract values from from dynamic entities
             foreach (var entity in dynamicEntities)
             {
-                var req = await dynamicService.Table(entity.Name).GetAll<object>();
+                var req = await dynamicService.Table(entity.Name).GetAllWithInclude<object>();
                 if (req.IsSuccess)
                 {
                     dynamicData.Add(entity.Name, req.Result);
