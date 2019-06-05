@@ -19,27 +19,8 @@
 @model Guid
 
 <script>
-			window.load = function (uri, data = null, type = "get") {
-				try {
-					const url = new URL(location.href);
-					uri = `${url.origin}${uri}`;
-
-					const req = $.ajax({
-						url: uri,
-						type: type,
-						data: data,
-						async: false
-					});
-					return JSON.parse(req.responseText);
-				} catch (exp) {
-					console.log(exp);
-					return null;
-				}
-			};
 			const notificator = new Notificator();
-			st = new ST();
-			const controller = "@ViewContext?.RouteData?.Values["controller"]?.ToString()";
-			const view = "@ViewContext?.RouteData?.Values["action"]?.ToString()";
+			var st = new ST();
 
 			const storageSettings = localStorage.getItem("settings");
 			if (storageSettings) {
@@ -49,11 +30,6 @@
 					email: "@user.Email",
 					id: "@user.Id",
 					organization: "@organization.Name"
-				};
-				s.navigation = {
-					view: view,
-					controller: controller,
-					current: "@ViewData["Title"]"
 				};
 				s.layout = {
 					id: "@Model"
@@ -70,21 +46,12 @@
 						id : "@Model"
 					}
 				};
-				s.navigation = {
-					view: view,
-					controller: controller,
-					current: "@ViewData["Title"]"
-				};
 
 				s.user = {
 					userName: "@user.UserName",
 					email: "@user.Email",
 					id: "@user.Id",
 					organization: "@organization.Name"
-				};
-
-				s.app = {
-					name : "27001 Expert"
 				};
 
 				s.localization = {

@@ -22,10 +22,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />
+    <!--<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />-->
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ST.CORE.Razor\ST.CORE.Razor.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms.Abstractions\ST.Forms.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />

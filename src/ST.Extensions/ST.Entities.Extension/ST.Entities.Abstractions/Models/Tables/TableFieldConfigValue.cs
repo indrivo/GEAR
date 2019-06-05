@@ -5,12 +5,12 @@ using ST.Audit.Enums;
 namespace ST.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class TableFieldConfigValues
+    public class TableFieldConfigValue
     {
         /// <summary>
         /// TableModelField
         /// </summary>
-        public TableModelFields TableModelField { get; set; }
+        public TableModelField TableModelField { get; set; }
 
         /// <summary>
         /// TableModelField Id

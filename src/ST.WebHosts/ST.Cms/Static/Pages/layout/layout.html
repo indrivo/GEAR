@@ -1,49 +1,26 @@
-	<!-- ============================================================== -->
-<!-- Loader - style you can find in spinners.css -->
-<!-- ============================================================== -->
 <div class="preloader">
 	<svg class="circular" viewBox="25 25 50 50">
 		<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
 	</svg>
 </div>
-<!-- ============================================================== -->
-<!-- Main wrapper - style you can find in pages.scss -->
-<!-- ============================================================== -->
 <div id="main-wrapper">
-	<!-- ============================================================== -->
-	<!-- Topbar header - style you can find in pages.scss -->
-	<!-- ============================================================== -->
 	<header class="topbar">
 		<nav class="navbar top-navbar navbar-expand-md navbar-light">
-			<!-- ============================================================== -->
-			<!-- Logo -->
-			<!-- ============================================================== -->
 			<div class="navbar-header">
 				<a class="navbar-brand" style="width:100%" href="/Home">
-					<!-- Logo icon -->
 					<b>
-						<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-						<!-- Dark Logo icon -->
 						<img src="/images/logo-icon.png" alt="homepage" class="dark-logo" />
-						<!-- Light Logo icon -->
 						<img src="/images/logo-light-icon.png" alt="homepage" class="light-logo" />
 					</b>
-					<!--End Logo icon -->
-					<!-- Logo text -->
 					<span>
-						<span class="" alt="homepage"><b id="appName">  </b></span>
+						<span class="" alt="homepage">
+							<b>{AppName}</b>
+						</span>
 					</span>
 				</a>
 			</div>
-			<!-- ============================================================== -->
-			<!-- End Logo -->
-			<!-- ============================================================== -->
 			<div class="navbar-collapse">
-				<!-- ============================================================== -->
-				<!-- toggle and nav items -->
-				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0 ">
-					<!-- This is  -->
 					<li class="nav-item">
 						<a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)">
 							<i class="ti-menu"></i>
@@ -54,29 +31,22 @@
 							<i class="ti-arrow-circle-left"></i>
 						</a>
 					</li>
-					<!-- ============================================================== -->
-					<!-- Comment -->
-					<!-- ============================================================== -->
-
 				</ul>
-
-
-
-				<!-- ============================================================== -->
-				<!-- User profile and search -->
-				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
 					<li class="nav-item hidden-sm-down">
 						<form class="app-search">
-							<input type="text" class="form-control" placeholder="Search for..."> <a class="srh-btn"><i class="ti-search"></i></a>
+							<input type="text" class="form-control" placeholder="Search for...">
+							<a class="srh-btn">
+								<i class="ti-search"></i>
+							</a>
 						</form>
 					</li>
-					<!--Notification-->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<i class="mdi mdi-message"></i>
-							<!-- Here is the alarm of new notification-->
-							<div style="display: none" id="notificationAlarm" class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+							<div style="display: none" id="notificationAlarm" class="notify">
+								<span class="heartbit"></span> <span class="point"></span>
+							</div>
 						</a>
 						<div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown">
 							<ul>
@@ -87,21 +57,19 @@
 									<div id="notificationList" class="message-center"></div>
 								</li>
 								<li>
-									<a id="clearNotificationsEvent" class="nav-link text-center" href="javascript:void(0);"> <strong translate="clear_notifications">Clear Notifications</strong> <i class="fa fa-angle-right"></i> </a>
+									<a id="clearNotificationsEvent" class="nav-link text-center" href="javascript:void(0);">
+										<strong translate="clear_notifications">Clear Notifications</strong> <i class="fa fa-angle-right"></i>
+									</a>
 								</li>
 							</ul>
 						</div>
 					</li>
-					<!-- ============================================================== -->
-					<!-- End Comment -->
-					<!-- ============================================================== -->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<i class="mdi mdi-email"></i>
-							<div style="display: none" id="notificationEmailAlarm" class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+							<div style="display: none" id="notificationEmailAlarm" class="notify">
+								<span class="heartbit"></span> <span class="point"></span>
+							</div>
 						</a>
 						<div class="dropdown-menu dropdown-menu-right mailbox animated bounceInDown" aria-labelledby="2">
 							<ul>
@@ -115,38 +83,55 @@
 
 								</li>
 								<li>
-									<a id="SeeAllEmails" class="nav-link text-center" href="javascript:void(0);"> <strong translate="see_all_e-mails">See emails</strong> <i class="fa fa-angle-right"></i> </a>
+									<a id="SeeAllEmails" class="nav-link text-center" href="javascript:void(0);">
+										<strong translate="see_all_e-mails">See emails</strong> <i class="fa fa-angle-right"></i>
+									</a>
 								</li>
 							</ul>
 						</div>
 					</li>
-					<!-- ============================================================== -->
-					<!-- End Messages -->
-					<!-- ============================================================== -->
-
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="userImage profile-pic" /></a>
+						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<img class="userImage profile-pic" src="{UserImagePath}" />
+						</a>
 						<div class="dropdown-menu dropdown-menu-right animated flipInY">
 							<ul class="dropdown-user">
 								<li>
 									<div class="dw-user-box">
-										<div class="u-img"><img class="userImage"></div>
+										<div class="u-img">
+											<img class="userImage" src="{UserImagePath}" alt="" />
+										</div>
 										<div class="u-text">
-											<h4 id="UserName"></h4>
-											<p class="text-muted" id="UserEmail"></p><a asp-action="Edit" asp-route-id="@user.Id" asp-controller="Users" class="btn btn-rounded btn-danger btn-sm" translate="view_profile">View Profile</a>
+											<h4>{UserName}</h4>
+											<p class="text-muted">{UserEmail}</p>
+											<a href="#" class="btn btn-rounded btn-danger btn-sm" translate="view_profile">View Profile</a>
 										</div>
 									</div>
 								</li>
 								<li role="separator" class="divider"></li>
-								<li><a href="/Users/Profile"><i class="ti-user"></i> <span translate="my_profile">My profile</span></a></li>
-								<li><a href="#"><i class="ti-email"></i> <span translate="inbox">Inbox</span></a></li>
+								<li>
+									<a href="/Users/Profile">
+										<i class="ti-user"></i> <span translate="my_profile">My profile</span>
+									</a>
+								</li>
+								<li>
+									<a href="#">
+										<i class="ti-email"></i> <span translate="inbox">Inbox</span>
+									</a>
+								</li>
 								<li role="separator" class="divider"></li>
-								<li><a href="#" class="sa-logout"><i class="fa fa-power-off"></i> <span translate="logout">Log Out</span></a></li>
+								<li>
+									<a href="#" class="sa-logout">
+										<i class="fa fa-power-off"></i> <span translate="logout">Log Out</span>
+									</a>
+								</li>
 							</ul>
 						</div>
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i id="currentlanguage"></i></a>
+						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i id="currentlanguage"></i>
+						</a>
 						<div id="languageRegion" class="dropdown-menu  dropdown-menu-right animated bounceInDown">
 
 						</div>
@@ -155,134 +140,81 @@
 			</div>
 		</nav>
 	</header>
-	<!-- ============================================================== -->
-	<!-- End Topbar header -->
-	<!-- ============================================================== -->
-	<!-- ============================================================== -->
-	<!-- Left Sidebar - style you can find in sidebar.scss  -->
-	<!-- ============================================================== -->
-
 	<aside class="left-sidebar">
-		<!-- Sidebar scroll-->
 		<div class="scroll-sidebar">
-			<!-- Sidebar navigation-->
 			<nav class="sidebar-nav">
 				<ul id="sidebarnav"></ul>
 			</nav>
-			<!-- End Sidebar navigation -->
 		</div>
-		<!-- End Sidebar scroll-->
-		<!-- Bottom points-->
 		<div class="sidebar-footer">
-			<!-- item-->
-			<a href="" class="link" data-toggle="tooltip" title="Settings"><i class="ti-settings"></i></a>
-			<!-- item-->
-			<a href="" class="link" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a>
-			<!-- item-->
-			<a href="#" class="link sa-logout" title="Logout" data-toggle="tooltip"><i class="mdi mdi-power"></i></a>
+			<a href="" class="link" data-toggle="tooltip" title="Settings">
+				<i class="ti-settings"></i>
+			</a>
+			<a href="" class="link" data-toggle="tooltip" title="Email">
+				<i class="mdi mdi-gmail"></i>
+			</a>
+			<a href="#" class="link sa-logout" title="Logout" data-toggle="tooltip">
+				<i class="mdi mdi-power"></i>
+			</a>
 		</div>
-		<!-- End Bottom points-->
 	</aside>
-	<!-- ============================================================== -->
-	<!-- End Left Sidebar - style you can find in sidebar.scss  -->
-	<!-- ============================================================== -->
-	<!-- ============================================================== -->
-	<!-- Page wrapper  -->
-	<!-- ============================================================== -->
 	<div class="page-wrapper">
-		<!-- ============================================================== -->
-		<!-- Container fluid  -->
-		<!-- ============================================================== -->
 		<div class="container-fluid">
-			<!-- ============================================================== -->
-			<!-- Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
 			<div class="row page-titles">
 				<div class="col-md-6 col-8 align-self-center">
-					<h3 class="text-themecolor mb-0 mt-0" id="PageTitle">Dashboard</h3>
+					<h3 class="text-themecolor mb-0 mt-0">{PageTitle}</h3>
 					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-						<li class="breadcrumb-item active" id="currentController"></li>
-						<li class="breadcrumb-item active" id="currentView"></li>
+						<li class="breadcrumb-item">
+							<a href="javascript:void(0)">Home</a>
+						</li>
+						<li class="breadcrumb-item active">{RouteController}</li>
+						<li class="breadcrumb-item active">{RouteView}</li>
 					</ol>
 				</div>
 				<div class="col-md-6 col-4 align-self-center">
-					<button class="right-side-toggle waves-effect waves-light btn-info btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
+					<button class="right-side-toggle waves-effect waves-light btn-info btn-circle btn-sm pull-right m-l-10">
+						<i class="ti-settings text-white"></i>
+					</button>
 				</div>
 			</div>
-			<!-- ============================================================== -->
-			<!-- End Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
 			<div class="renderBody">
 				<div>
 					@RenderBody()
 				</div>
 			</div>
-
-			<!-- ============================================================== -->
-			<!-- End Page Content -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Right sidebar -->
-			<!-- ============================================================== -->
-			<!-- .right-sidebar -->
 			<div class="right-sidebar right-sidebar-central">
 				<div class="slimscrollright">
-					<div class="rpanel-title"> <b translate="service_panel">Service Panel</b> <span><i class="ti-close right-side-toggle"></i></span> </div>
+					<div class="rpanel-title">
+						<b translate="service_panel">Service Panel</b>
+						<span>
+							<i class="ti-close right-side-toggle"></i>
+						</span>
+					</div>
 					<div class="r-panel-body">
 						<ul id="themecolors" class="m-t-20">
-							<li><b>With Light sidebar</b></li>
-							<li><a href="javascript:void(0)" data-theme="default" class="default-theme">1</a></li>
-							<li><a href="javascript:void(0)" data-theme="green" class="green-theme">2</a></li>
-							<li><a href="javascript:void(0)" data-theme="red" class="red-theme">3</a></li>
-							<li><a href="javascript:void(0)" data-theme="blue" class="blue-theme working">4</a></li>
-							<li><a href="javascript:void(0)" data-theme="purple" class="purple-theme">5</a></li>
-							<li><a href="javascript:void(0)" data-theme="megna" class="megna-theme">6</a></li>
-							<li class="d-block m-t-30"><b>With Dark sidebar</b></li>
-							<li><a href="javascript:void(0)" data-theme="default-dark" class="default-dark-theme">7</a></li>
-							<li><a href="javascript:void(0)" data-theme="green-dark" class="green-dark-theme">8</a></li>
-							<li><a href="javascript:void(0)" data-theme="red-dark" class="red-dark-theme">9</a></li>
-							<li><a href="javascript:void(0)" data-theme="blue-dark" class="blue-dark-theme">10</a></li>
-							<li><a href="javascript:void(0)" data-theme="purple-dark" class="purple-dark-theme">11</a></li>
-							<li><a href="javascript:void(0)" data-theme="megna-dark" class="megna-dark-theme ">12</a></li>
+							<li>
+								<b>In coming...</b>
+							</li>
 						</ul>
 					</div>
 				</div>
 			</div>
-			<!-- ============================================================== -->
-			<!-- End Right sidebar -->
-			<!-- ============================================================== -->
-
-
 			<div class="right-sidebar list-sidebar-central">
 				<div class="slimscrollright">
-					<div class="rpanel-title"> <b translate="column-list">List Columns</b> <span><i class="ti-close list-side-toggle"></i></span> </div>
+					<div class="rpanel-title">
+						<b translate="column-list">List Columns</b>
+						<span>
+							<i class="ti-close list-side-toggle"></i>
+						</span>
+					</div>
 					<div class="r-panel-body">
 
 					</div>
 				</div>
 			</div>
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-		<!-- ============================================================== -->
-		<!-- ============================================================== -->
-		<!-- footer -->
-		<!-- ============================================================== -->
 		<footer class="footer">
-			© 2019 ISO DMS
+			© {SystemYear} ISO DMS
 		</footer>
-		<!-- ============================================================== -->
-		<!-- End footer -->
-		<!-- ============================================================== -->
 	</div>
-	<!-- ============================================================== -->
-	<!-- End Page wrapper  -->
-	<!-- ============================================================== -->
 </div>
-<!-- ============================================================== -->
-<!-- End Wrapper -->
-<!-- ============================================================== -->

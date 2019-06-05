@@ -8,7 +8,7 @@ using ST.Core;
 namespace ST.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class TableModelFields : BaseModel
+    public class TableModelField : BaseModel
     {
         /// <summary>
         /// AllowNull
@@ -49,6 +49,11 @@ namespace ST.Entities.Abstractions.Models.Tables
         public bool IsSystem { get; set; }
 
         /// <summary>
+        /// Is used for all tenant or only for default
+        /// </summary>
+        public  bool IsCommon { get; set; }
+
+        /// <summary>
         /// Parent TableModel
         /// </summary>
         public TableModel Table { get; set; }
@@ -61,7 +66,7 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// TableFieldType
         /// </summary>
-        public TableFieldTypes TableFieldType { get; set; }
+        public TableFieldType TableFieldType { get; set; }
 
         /// <summary>
         /// TableFieldType id
@@ -71,6 +76,6 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// Lists of TableFieldConfigValues for TableModelField
         /// </summary>
-        public ICollection<TableFieldConfigValues> TableFieldConfigValues { get; set; }
+        public ICollection<TableFieldConfigValue> TableFieldConfigValues { get; set; }
     }
 }

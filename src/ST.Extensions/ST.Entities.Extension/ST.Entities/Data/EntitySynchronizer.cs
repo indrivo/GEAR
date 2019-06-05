@@ -85,9 +85,9 @@ namespace ST.Entities.Data
                                 configViewModel.Name = fieldConfigList.Single(x => x.Code == configViewModel.ConfigCode).Name;
                             }
                         // Save field model in the dataBase
-                        var configValues = new List<TableFieldConfigValues>();
+                        var configValues = new List<TableFieldConfigValue>();
                         var fieldTypeId = fieldTypeList.Single(x => x.Code == item.TableFieldCode).Id;
-                        var model = new TableModelFields
+                        var model = new TableModelField
                         {
                             DataType = item.DataType,
                             DisplayName = item.DisplayName,
@@ -102,7 +102,7 @@ namespace ST.Entities.Data
                             foreach (var configItem in item.Configurations)
                             {
                                 var configId = fieldConfigList.Single(x => x.Code == configItem.ConfigCode).Id;
-                                configValues.Add(new TableFieldConfigValues
+                                configValues.Add(new TableFieldConfigValue
                                 {
                                     TableFieldConfigId = configId,
                                     TableModelFieldId = model.Id,
@@ -144,9 +144,9 @@ namespace ST.Entities.Data
                         // Save field model in the dataBase
                         if (!insertField.Result) continue;
                         {
-                            var configValues = new List<TableFieldConfigValues>();
+                            var configValues = new List<TableFieldConfigValue>();
                             var fieldTypeId = fieldTypeList.Single(x => x.Code == item.TableFieldCode).Id;
-                            var model = new TableModelFields
+                            var model = new TableModelField
                             {
                                 DataType = item.DataType,
                                 TableId = resultModel.Id,
@@ -160,7 +160,7 @@ namespace ST.Entities.Data
                             foreach (var configItem in item.Configurations)
                             {
                                 var configId = fieldConfigList.Single(x => x.Code == configItem.ConfigCode).Id;
-                                configValues.Add(new TableFieldConfigValues
+                                configValues.Add(new TableFieldConfigValue
                                 {
                                     TableFieldConfigId = configId,
                                     TableModelFieldId = model.Id,

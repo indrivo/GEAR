@@ -63,5 +63,12 @@ namespace ST.Notifications.Abstractions
         /// <param name="userId"></param>
         /// <returns></returns>
         bool IsUserOnline(Guid userId);
+
+        /// <summary>
+        /// Get notification by id
+        /// </summary>
+        /// <param name="notificationId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Dictionary<string, object>>> GetNotificationById(Guid notificationId);
     }
 }

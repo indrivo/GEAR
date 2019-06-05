@@ -350,8 +350,8 @@ namespace ST.Cms.Controllers.Entity
 				ModelState.AddModelError(string.Empty, "Fail to apply changes to database!");
 				return View(field);
 			}
-			var configValues = new List<TableFieldConfigValues>();
-			var model = new TableModelFields
+			var configValues = new List<TableFieldConfigValue>();
+			var model = new TableModelField
 			{
 				DataType = field.DataType,
 				TableId = field.TableId,
@@ -364,7 +364,7 @@ namespace ST.Cms.Controllers.Entity
 			};
 			foreach (var item in field.Configurations)
 			{
-				configValues.Add(new TableFieldConfigValues
+				configValues.Add(new TableFieldConfigValue
 				{
 					TableFieldConfigId = item.ConfigId,
 					TableModelFieldId = model.Id,
@@ -504,8 +504,8 @@ namespace ST.Cms.Controllers.Entity
 			// Save field model structure in the dataBase
 			if (updateStructure.IsSuccess)
 			{
-				var configValues = new List<TableFieldConfigValues>();
-				var model = new TableModelFields
+				var configValues = new List<TableFieldConfigValue>();
+				var model = new TableModelField
 				{
 					Id = field.Id,
 					DataType = field.DataType,
@@ -519,7 +519,7 @@ namespace ST.Cms.Controllers.Entity
 				};
 				foreach (var item in field.Configurations)
 				{
-					configValues.Add(new TableFieldConfigValues
+					configValues.Add(new TableFieldConfigValue
 					{
 						TableFieldConfigId = item.ConfigId,
 						TableModelFieldId = model.Id,

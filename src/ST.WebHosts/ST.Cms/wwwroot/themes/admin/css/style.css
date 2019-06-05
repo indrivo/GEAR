@@ -8,19 +8,19 @@
 /*Preloader*/
 @import 'https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900';
 
-@import url(../lib/font-awesome/css/font-awesome.min.css);
+@import url(../../../lib/font-awesome/css/font-awesome.min.css);
 
-@import url(../lib/simple-line-icons/css/simple-line-icons.min.css);
+@import url(../../../lib/simple-line-icons/css/simple-line-icons.min.css);
 
 @import url(../css/icons/themify-icons/themify-icons.css);
 
-@import url(../lib/flag-icon-css/css/flag-icon.min.css);
+@import url(../../../lib/flag-icon-css/css/flag-icon.min.css);
 
-@import url(../lib/MaterialDesign-Webfont/css/materialdesignicons.min.css);
+@import url(../../../lib/MaterialDesign-Webfont/css/materialdesignicons.min.css);
 
 @import url(../css/spinners.css);
 
-@import url(../lib/animate.css/animate.min.css);
+@import url(../../../lib/animate.css/animate.min.css);
 
 .table thead tr th a {
 	color: white !important;

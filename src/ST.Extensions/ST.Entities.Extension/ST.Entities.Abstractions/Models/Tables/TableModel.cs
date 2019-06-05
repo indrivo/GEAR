@@ -36,6 +36,6 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// Lists of fields for TableModel
         /// </summary>
-        public ICollection<TableModelFields> TableFields { get; set; }
+        public ICollection<TableModelField> TableFields { get; set; }
     }
 }

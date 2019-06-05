@@ -90,29 +90,11 @@
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
 									<a class="btn btn-warning btn-sm" href="@Url.Action("RunDynamic")?id=${row.id}">Display</a>
 									<a class="btn btn-info btn-sm" href="@Url.Action("EditDynamic")?id=${row.id}">Edit</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
-								}'); >Delete</button>
 									</div>`;
 						}
 					}
 				]
 			});
 		});
-
-		function createAlert(rowId) {
-			const object = {
-				alertTitle: "Delete this report?",
-				alertText: "Are you sure that you want to leave this report?",
-				confirmButtonText: "Yes, delete it!",
-				rowId: rowId,
-				tableId: "#reportTable",
-				urlForDelete: '@Url.Action("Delete")',
-				type:"warning",
-				onDeleteSuccess: "Report has been deleted.",
-				onDeleteFail: "Something wrong",
-				onServerNoResponse:"Api not respond or not have permissions."
-			};
-			DeleteData(object);
-		}
     </script>
 }

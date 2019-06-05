@@ -33,7 +33,7 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// TableFieldType
         /// </summary>
-        public TableFieldTypes TableFieldType { get; set; }
+        public TableFieldType TableFieldType { get; set; }
 
         /// <summary>
         /// TableFieldType id

@@ -7,7 +7,7 @@ using ST.Audit.Enums;
 namespace ST.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class TableFieldTypes
+    public class TableFieldType
     {
         /// <summary>
         /// TableFieldType Id

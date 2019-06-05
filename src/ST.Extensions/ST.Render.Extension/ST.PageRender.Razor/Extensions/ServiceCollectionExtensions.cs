@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.PageRender.Razor.Helpers;
@@ -18,6 +19,7 @@ namespace ST.PageRender.Razor.Extensions
         {
             services.AddTransient<IPageRender, Services.PageRender>();
             services.AddTransient<IMenuService, MenuService<IDynamicService>>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
             return services;
         }

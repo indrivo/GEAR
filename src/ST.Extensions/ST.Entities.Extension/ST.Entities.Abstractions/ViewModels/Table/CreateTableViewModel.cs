@@ -23,7 +23,7 @@ namespace ST.Entities.Abstractions.ViewModels.Table
 
         public IEnumerable<EntityType> EntityTypes { get; set; }
 
-        public IEnumerable<TableModelFields> TableFields { get; set; }
+        public IEnumerable<TableModelField> TableFields { get; set; }
 
         public string Description { get; set; }
         public  Guid? TenantId { get; set; }

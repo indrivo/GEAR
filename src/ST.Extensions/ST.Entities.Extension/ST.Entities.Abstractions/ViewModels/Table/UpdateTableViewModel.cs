@@ -14,7 +14,7 @@ namespace ST.Entities.Abstractions.ViewModels.Table
 
         public string EntityType { get; set; }
 
-        public IEnumerable<TableModelFields> TableFields { get; set; }
+        public IEnumerable<TableModelField> TableFields { get; set; }
 
         public string Description { get; set; }
 

@@ -113,7 +113,7 @@ namespace ST.Cms.TagHelpers
 		/// </summary>
 		/// <param name="field"></param>
 		/// <returns></returns>
-		private async Task<string> GetInputBody(TableModelFields field)
+		private async Task<string> GetInputBody(TableModelField field)
 		{
 			//TODO: On config type render inout body
 			var configurations = await _dbContext.TableFieldConfigValues
@@ -155,7 +155,7 @@ namespace ST.Cms.TagHelpers
 		/// </summary>
 		/// <param name="field"></param>
 		/// <returns></returns>
-		private async Task<string> GetTableFieldBody(TableModelFields field)
+		private async Task<string> GetTableFieldBody(TableModelField field)
 		{
 			return string.Format(FormField.FieldBodyTemplate, field.Id, await GetInputBody(field), field.Description, field.DisplayName ?? field.Name);
 		}

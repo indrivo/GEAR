@@ -28,6 +28,7 @@ namespace ST.Cms.TagHelpers
 		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
+			output.TagName = "div";
 			var content = new StringBuilder();
 			if (LayoutId == null)
 			{
@@ -69,6 +70,7 @@ namespace ST.Cms.TagHelpers
 		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
+			output.TagName = "div";
 			if (LayoutId == null)
 			{
 				output.Content.SetHtmlContent(string.Empty);

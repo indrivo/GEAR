@@ -181,7 +181,7 @@ namespace ST.PageRender.Razor.Controllers
             var obj = _context.ViewModels
                 .Include(x => x.TableModel)
                 .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.TableModelFields)
+                .ThenInclude(x => x.TableModelField)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .FirstOrDefault(x => !x.IsDeleted && x.Id.Equals(viewModelId));
 
@@ -234,7 +234,7 @@ namespace ST.PageRender.Razor.Controllers
                 }
             }
 
-            return Json(new {row = obj});
+            return Json(new { row = obj });
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace ST.PageRender.Razor.Controllers
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
                 .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.TableModelFields)
+                .ThenInclude(x => x.TableModelField)
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(default(DTResult<object>));
@@ -663,14 +663,14 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
-                return Json(new {message = "Fail to delete!", success = false});
+                return Json(new { message = "Fail to delete!", success = false });
             var viewModel = _context.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new {message = "Fail to delete!", success = false});
+            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
             var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new {message = "Fail to delete!", success = false});
+            if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
 
-            return Json(new {message = "Item was deleted!", success = true});
+            return Json(new { message = "Item was deleted!", success = true });
         }
 
 
@@ -685,16 +685,24 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
         {
-            if (ids == null) return Json(new {message = "Fail to delete!", success = false});
+            if (ids == null) return Json(new { message = "Fail to delete!", success = false });
             var viewModel = _context.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new {message = "Fail to delete!", success = false});
-            foreach (var id in ids)
+            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+            try
             {
-                await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                foreach (var id in ids)
+                {
+                    if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
+                    await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { message = e.Message, success = false });
             }
 
-            return Json(new {message = "Items was deleted!", success = true});
+            return Json(new { message = "Items was deleted!", success = true });
         }
 
         /// <summary>
@@ -709,14 +717,14 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
-                return Json(new {message = "Fail to restore!", success = false});
+                return Json(new { message = "Fail to restore!", success = false });
             var viewModel = _context.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new {message = "Fail to restore!", success = false});
+            if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
             var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new {message = "Fail to restore!", success = false});
+            if (!response.IsSuccess) return Json(new { message = "Fail to restore!", success = false });
 
-            return Json(new {message = "Item was restored!", success = true});
+            return Json(new { message = "Item was restored!", success = true });
         }
 
 
@@ -876,48 +884,48 @@ namespace ST.PageRender.Razor.Controllers
                 switch (property.DataType)
                 {
                     case TableFieldDataType.Guid:
-                    {
-                        Guid.TryParse(value, out var parsed);
-                        row.Result[property.Name] = parsed;
-                    }
+                        {
+                            Guid.TryParse(value, out var parsed);
+                            row.Result[property.Name] = parsed;
+                        }
                         break;
                     case TableFieldDataType.Boolean:
-                    {
-                        bool.TryParse(value, out var val);
-                        row.Result[property.Name] = val;
-                    }
+                        {
+                            bool.TryParse(value, out var val);
+                            row.Result[property.Name] = val;
+                        }
                         break;
                     case TableFieldDataType.Int:
-                    {
-                        try
                         {
-                            row.Result[property.Name] = Convert.ToInt32(value);
+                            try
+                            {
+                                row.Result[property.Name] = Convert.ToInt32(value);
+                            }
+                            catch
+                            {
+                                row.Result[property.Name] = value;
+                            }
                         }
-                        catch
-                        {
-                            row.Result[property.Name] = value;
-                        }
-                    }
                         break;
                     case TableFieldDataType.Decimal:
-                    {
-                        try
                         {
-                            row.Result[property.Name] = Convert.ToDecimal(value);
+                            try
+                            {
+                                row.Result[property.Name] = Convert.ToDecimal(value);
+                            }
+                            catch
+                            {
+                                row.Result[property.Name] = value;
+                            }
                         }
-                        catch
-                        {
-                            row.Result[property.Name] = value;
-                        }
-                    }
                         break;
                     case TableFieldDataType.Date:
                     case TableFieldDataType.DateTime:
-                    {
-                        DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                            out var parsed);
-                        row.Result[property.Name] = parsed;
-                    }
+                        {
+                            DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                                out var parsed);
+                            row.Result[property.Name] = parsed;
+                        }
                         break;
                     default:
                         row.Result[property.Name] = value;

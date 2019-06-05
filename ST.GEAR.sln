@@ -125,9 +125,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.MultiTenant.Razor", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.CORE.Razor", "src\ST.Extensions\ST.CORE.Razor\ST.CORE.Razor.csproj", "{977C43F3-FE9C-416E-B73E-259A5DF41341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Entities.EntityBuilder.MsSql", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj", "{9F68CC74-9147-497E-B15F-70A2D5A7F2DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Entities.EntityBuilder.MsSql", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj", "{9F68CC74-9147-497E-B15F-70A2D5A7F2DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Entities.EntityBuilder.Postgres", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj", "{B7AB42C6-3D13-4A40-B1DE-850917E795C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Entities.EntityBuilder.Postgres", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj", "{B7AB42C6-3D13-4A40-B1DE-850917E795C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Identity.Profile", "src\ST.Extensions\ST.Identity.Extension\ST.Identity.Profile\ST.Identity.Profile.csproj", "{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Identity.Profile.Abstractions", "src\ST.Extensions\ST.Identity.Extension\ST.Identity.Profile.Abstractions\ST.Identity.Profile.Abstractions.csproj", "{400C2124-8B49-49E0-B15F-C940A30DF2FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -382,6 +386,18 @@ Global
 		{B7AB42C6-3D13-4A40-B1DE-850917E795C9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B7AB42C6-3D13-4A40-B1DE-850917E795C9}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{B7AB42C6-3D13-4A40-B1DE-850917E795C9}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -448,6 +464,8 @@ Global
 		{977C43F3-FE9C-416E-B73E-259A5DF41341} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
 		{9F68CC74-9147-497E-B15F-70A2D5A7F2DA} = {4B6C8C28-B2EC-4EDD-B6D8-F90B125CB109}
 		{B7AB42C6-3D13-4A40-B1DE-850917E795C9} = {4B6C8C28-B2EC-4EDD-B6D8-F90B125CB109}
+		{6D6984F4-EB54-4107-AED8-DFA3F0E7B890} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
+		{400C2124-8B49-49E0-B15F-C940A30DF2FE} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

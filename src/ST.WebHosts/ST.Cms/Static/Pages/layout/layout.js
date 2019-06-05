@@ -59,11 +59,9 @@ $(document).ready(function () {
 						</a>`;
 			languageBlock.append(language);
 		});
-
-		return localStorage;
 	});
 
-	localizationPromise.then(localStorage => {
+	localizationPromise.then(() => {
 		$(".language-event").on("click", function () {
 			localStorage.removeItem("translations");
 		});
@@ -97,21 +95,7 @@ $(document).ready(function () {
 	});
 
 	Promise.all([loadMenusPromise, localizationPromise, emailPromise]).then(function (values) {
-		//Set current view and controller
-		$("#currentController").html(settings.navigation.controller);
-		$("#currentView").html(settings.navigation.view);
-
-		//Set app name
-		$("#appName").html(settings.app.name);
-		$("#PageTitle").html(settings.navigation.current);
-
-
-		//Set user details
-		$("#UserName").text(settings.user.userName);
-		$("#UserEmail").text(settings.user.email);
-		$(".userImage").attr("src", `/Users/GetImage?id=${settings.user.id}`);
-
-
+		window.forceTranslate();
 		//Log Out
 		$('.sa-logout').click(function () {
 			swal({

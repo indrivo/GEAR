@@ -20,10 +20,10 @@ namespace ST.Entities.Controls.Builders
             };
 
 
-            var baseModelFields = BaseModelBuilder.CreateBaseModel(table.EntityType).Adapt<List<TableModelFields>>();
+            var baseModelFields = BaseModelBuilder.CreateBaseModel(table.EntityType).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
 
-            List<TableModelFields> resultList;
+            List<TableModelField> resultList;
             if (hasConfig)
             {
                 model.Fields = dbContext.ViewModelConfig(model.TableName);
@@ -32,7 +32,7 @@ namespace ST.Entities.Controls.Builders
             else
             {
                 resultList = baseModelFields
-                    .Concat(table.TableFields ?? new List<TableModelFields>())
+                    .Concat(table.TableFields ?? new List<TableModelField>())
                     .ToList();
             }
 
@@ -49,7 +49,7 @@ namespace ST.Entities.Controls.Builders
 
         public static EntityViewModel Create(EntitiesDbContext dbContext, EntityViewModel model)
         {
-            var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelFields>>();
+            var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
 
 
@@ -83,7 +83,7 @@ namespace ST.Entities.Controls.Builders
         /// <returns></returns>
         public static EntityViewModel Resolve(EntitiesDbContext dbContext, EntityViewModel model)
         {
-            var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelFields>>();
+            var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
 
 

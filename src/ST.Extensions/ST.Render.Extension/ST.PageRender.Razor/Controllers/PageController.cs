@@ -213,7 +213,7 @@ namespace ST.PageRender.Razor.Controllers
                 Context.SaveChanges();
                 await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                 //return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
-                return RedirectToAction("GetCode", new { type = model.Type, id = model.PageId});
+                return RedirectToAction("GetCode", new { type = model.Type, id = model.PageId });
             }
             catch (Exception e)
             {
@@ -429,6 +429,7 @@ namespace ST.PageRender.Razor.Controllers
                     PageType = x.PageType,
                     ModifiedBy = x.ModifiedBy,
                     IsDeleted = x.IsDeleted,
+                    Layout = Context.Pages.Include(g => g.Settings).FirstOrDefault(y => y.Id == x.LayoutId),
                     SettingsId = x.SettingsId,
                     PageTypeId = x.PageTypeId,
                     IsSystem = x.IsSystem,

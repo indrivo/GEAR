@@ -45,7 +45,7 @@ namespace ST.Entities.Data
         /// <summary>
         /// Table config values
         /// </summary>
-        public DbSet<TableFieldConfigValues> TableFieldConfigValues { get; set; }
+        public DbSet<TableFieldConfigValue> TableFieldConfigValues { get; set; }
         /// <summary>
         /// Field groups
         /// </summary>
@@ -53,11 +53,11 @@ namespace ST.Entities.Data
         /// <summary>
         /// Table fields
         /// </summary>
-        public DbSet<TableModelFields> TableFields { get; set; }
+        public DbSet<TableModelField> TableFields { get; set; }
         /// <summary>
         /// Field types
         /// </summary>
-        public DbSet<TableFieldTypes> TableFieldTypes { get; set; }
+        public DbSet<TableFieldType> TableFieldTypes { get; set; }
         #endregion Table
 
         #region  Pages
@@ -83,10 +83,10 @@ namespace ST.Entities.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
-            builder.Entity<TableFieldTypes>().HasKey(ug => new { ug.Id });
+            builder.Entity<TableFieldType>().HasKey(ug => new { ug.Id });
             builder.Entity<TableFieldConfigs>().HasKey(ug => new { ug.Id });
-            builder.Entity<TableFieldConfigValues>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
-            builder.Entity<TableModelFields>().HasOne(typeof(TableFieldTypes), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<TableFieldConfigValue>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
+            builder.Entity<TableModelField>().HasOne(typeof(TableFieldType), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.RegisterIndexes();
         }
 

@@ -334,7 +334,7 @@ namespace ST.DynamicEntityStorage
         /// <param name="fieldReferences"></param>
         /// <returns></returns>
         private async Task<Dictionary<string, object>> IncludeSingleForDictionaryObjectAsync(IReadOnlyDictionary<string, object> item,
-            IEnumerable<TableModelFields> fieldReferences)
+            IEnumerable<TableModelField> fieldReferences)
         {
             var additionalProps = new Dictionary<string, object>();
 

@@ -13,7 +13,21 @@ if (typeof jQuery === 'undefined') {
 	throw new Error('Table column visibility require JQuery');
 }
 
-function getVisibility(id) {
+function TableColumnsVisibility() {
+
+}
+
+$(document).ready(function () {
+	$(".table")
+		.on("preInit.dt", function () {
+			new TableColumnsVisibility().init(this);
+		});
+});
+
+TableColumnsVisibility.prototype.constructor = TableColumnsVisibility;
+
+
+TableColumnsVisibility.prototype.getVisibility = function (id) {
 	const cookie = getCookie(`_list_${id}`);
 	const visibleItems = [];
 	const hiddenItems = [];
@@ -32,22 +46,27 @@ function getVisibility(id) {
 	};
 }
 
-$(".table")
-	.on("preInit.dt",
-		function () {
-			const cols = getVisibility(`#${$(this).attr("id")}`);
-			$(`#${$(this).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
-			$(`#${$(this).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
+TableColumnsVisibility.prototype.renderTemplate = function (ctx) {
+	return `<div class="col-md-2" style="margin-left: -1em;">
+				<a data-id="#${$(ctx)[0].id
+		}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a></div>`;
+};
 
-			$("div.CustomizeColumns")
-				.html(
-					`<div class="col-md-2" style="margin-left: -1em;">
-												<a data-id="#${$(this)[0].id
-					}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a></div>`);
-			$(".list-side-toggle").click(function () {
-				toggleRightListSideBar($(this).attr("data-id"));
-			});
-		});
+TableColumnsVisibility.prototype.init = function (ctx) {
+	const cols = this.getVisibility(`#${$(ctx).attr("id")}`);
+	$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
+	$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
+	const template = this.renderTemplate(ctx);
+
+	$("div.CustomizeColumns").html(template);
+	this.registerInitEvents();
+};
+
+TableColumnsVisibility.prototype.registerInitEvents = function () {
+	$(".list-side-toggle").click(function () {
+		new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
+	});
+};
 
 function IsChecked(state) {
 	if (state) return "checked";
@@ -55,7 +74,18 @@ function IsChecked(state) {
 }
 
 
-function toggleRightListSideBar(id) {
+TableColumnsVisibility.prototype.modalContainer = ".list-sidebar-central .slimscrollright .r-panel-body";
+
+TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
+	return `<div class="checkbox checkbox-info">
+							<input type="checkbox" ${vis} data-table="${id}" id="_check_${data.idx
+		}" class="complete-activity-trigger vis-check" data-id="${
+		data.idx}">
+					<label  for="_check_${data.idx}">${data.sTitle}</label>
+					</div>`;
+};
+
+TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
 	try {
 		const cols = $(id).DataTable().settings()[0].aoColumns;
 		var items = "";
@@ -71,14 +101,7 @@ function toggleRightListSideBar(id) {
 				if (display) {
 					vis = IsChecked(display.values[data.idx]);
 				}
-				items += `<li class="list-group-item">
-							<div class="checkbox checkbox-info">
-							<input type="checkbox" ${vis} data-table="${id}" id="_check_${data.idx
-					}" class="complete-activity-trigger vis-check" data-id="${
-					data.idx}">
-					<label  for="_check_${data.idx}">${data.sTitle}</label>
-					</div>
-				</li>`;
+				items += `<li class="list-group-item">${new TableColumnsVisibility().renderCheckBox(data, id, vis)}</li>`;
 			});
 
 		const container =
@@ -91,66 +114,68 @@ function toggleRightListSideBar(id) {
 				</div>
 			</div><div class="to-do-widget"><ul class="todo-list list-group m-b-0">${
 			items}</ul</div>`;
-		$(".list-sidebar-central .slimscrollright .r-panel-body").html(container);
+		$(new TableColumnsVisibility().modalContainer).html(container);
 
 		$("#selAllCols").on("click", function () {
-			dataStateChange(this, true);
+			new TableColumnsVisibility().dataStateChange(this, true, id);
 		});
 
 		$("#deselAllCols").on("click", function () {
-			dataStateChange(this, false);
+			new TableColumnsVisibility().dataStateChange(this, false, id);
 		});
 
-		function dataStateChange(ref, state) {
-			const inputs = $($(ref)
-				.parent()
-				.parent()
-				.parent()
-				.children()[1])
-				.find("input[type=checkbox]");
-
-			for (let input = 0; input < inputs.length; input++) {
-				inputs[input].checked = state;
-				dataChanged(inputs[input]);
-			}
-		}
-
 		$(".vis-check").change(function () {
-			dataChanged(this);
+			new TableColumnsVisibility().dataChanged(this, id);
 		});
 	} catch (error) {
 		console.log(error);
 	}
 
-	function dataChanged(ref) {
-		const checked = $(ref).is(":checked");
-		const idd = $(ref).attr("data-id");
-		const tabled = $(ref).attr("data-table");
-		const cookie = getCookie(`_list_${tabled}`);
-
-		if (cookie) {
-			const data = JSON.parse(cookie);
-			data.values[idd] = checked;
-			data.columns[idd] = idd;
-
-			setCookie(`_list_${tabled}`, JSON.stringify(data), 9999);
-		} else {
-			const nrCols = $(id).DataTable().settings()[0].aoColumns.length;
-			const newCookie = {
-				columns: [],
-				values: []
-			};
-			for (let i = 0; i < nrCols; i++) {
-				newCookie.values[i] = i;
-				newCookie.columns[i] = true;
-			}
-			newCookie.values[idd] = checked;
-			newCookie.columns[idd] = idd;
-			setCookie(`_list_${tabled}`, JSON.stringify(newCookie), 9999);
-		}
-		$(tabled).DataTable().columns([idd]).visible(checked);
-	}
-
 	$(".list-sidebar-central").slideDown(50);
 	$(".list-sidebar-central").toggleClass("shw-rside");
 }
+
+
+TableColumnsVisibility.prototype.dataStateChange = function (ref, state, id) {
+	const inputs = $($(ref)
+		.parent()
+		.parent()
+		.parent()
+		.children()[1])
+		.find("input[type=checkbox]");
+
+	for (let input = 0; input < inputs.length; input++) {
+		inputs[input].checked = state;
+		new TableColumnsVisibility().dataChanged(inputs[input], id);
+	}
+}
+
+
+TableColumnsVisibility.prototype.dataChanged = function (ref, id) {
+	const checked = $(ref).is(":checked");
+	const idd = $(ref).attr("data-id");
+	const tabled = $(ref).attr("data-table");
+	const cookie = getCookie(`_list_${tabled}`);
+
+	if (cookie) {
+		const data = JSON.parse(cookie);
+		data.values[idd] = checked;
+		data.columns[idd] = idd;
+
+		setCookie(`_list_${tabled}`, JSON.stringify(data), 9999);
+	} else {
+		const nrCols = $(id).DataTable().settings()[0].aoColumns.length;
+		const newCookie = {
+			columns: [],
+			values: []
+		};
+		for (let i = 0; i < nrCols; i++) {
+			newCookie.values[i] = i;
+			newCookie.columns[i] = true;
+		}
+		newCookie.values[idd] = checked;
+		newCookie.columns[idd] = idd;
+		setCookie(`_list_${tabled}`, JSON.stringify(newCookie), 9999);
+	}
+	$(tabled).DataTable().columns([idd]).visible(checked);
+};

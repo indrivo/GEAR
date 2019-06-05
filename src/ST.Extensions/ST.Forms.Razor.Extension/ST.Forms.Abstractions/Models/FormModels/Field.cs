@@ -52,7 +52,7 @@ namespace ST.Forms.Abstractions.Models.FormModels
         /// Ignored on migration
         /// </summary>
         [NotMapped]
-        public TableModelFields TableField { get; set; }
+        public TableModelField TableField { get; set; }
 
         public Guid? TableFieldId { get; set; }
 

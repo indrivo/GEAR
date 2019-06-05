@@ -20,7 +20,7 @@ namespace ST.Entities.Extensions
             builder.Entity<EntityType>()
                 .HasIndex(x => x.TenantId);
 
-            builder.Entity<TableModelFields>()
+            builder.Entity<TableModelField>()
                .HasIndex(x => x.TenantId);
 
             builder.Entity<Page>()

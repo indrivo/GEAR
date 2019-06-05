@@ -120,7 +120,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("EntityTypes");
                 });
 
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValues", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValue", b =>
                 {
                     b.Property<Guid>("TableModelFieldId");
 
@@ -172,7 +172,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("TableFieldGroups");
                 });
 
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -230,7 +230,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("Table");
                 });
 
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelFields", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelField", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -248,6 +248,8 @@ namespace ST.Entities.Migrations
                     b.Property<string>("Description");
 
                     b.Property<string>("DisplayName");
+
+                    b.Property<bool>("IsCommon");
 
                     b.Property<bool>("IsDeleted");
 
@@ -651,6 +653,8 @@ namespace ST.Entities.Migrations
 
                     b.Property<int>("Order");
 
+                    b.Property<Guid?>("TableModelFieldId");
+
                     b.Property<Guid?>("TableModelFieldsId");
 
                     b.Property<string>("Template");
@@ -665,7 +669,7 @@ namespace ST.Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TableModelFieldsId");
+                    b.HasIndex("TableModelFieldId");
 
                     b.HasIndex("TenantId");
 
@@ -778,14 +782,14 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValues", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigValue", b =>
                 {
                     b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", "TableFieldConfig")
                         .WithMany()
                         .HasForeignKey("TableFieldConfigId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelField")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelField", "TableModelField")
                         .WithMany("TableFieldConfigValues")
                         .HasForeignKey("TableModelFieldId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -793,13 +797,13 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldConfigs", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", "TableFieldType")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldType", "TableFieldType")
                         .WithMany("TableFieldConfigs")
                         .HasForeignKey("TableFieldTypeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableFieldType", b =>
                 {
                     b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldGroups", "TableFieldGroups")
                         .WithMany("TableFieldTypes")
@@ -807,9 +811,9 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelFields", b =>
+            modelBuilder.Entity("ST.Entities.Abstractions.Models.Tables.TableModelField", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldTypes", "TableFieldType")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableFieldType", "TableFieldType")
                         .WithMany()
                         .HasForeignKey("TableFieldTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -882,9 +886,9 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Models.ViewModels.ViewModelFields", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelFields")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelField", "TableModelField")
                         .WithMany()
-                        .HasForeignKey("TableModelFieldsId");
+                        .HasForeignKey("TableModelFieldId");
 
                     b.HasOne("ST.Entities.Models.ViewModels.ViewModel")
                         .WithMany("ViewModelFields")
@@ -894,7 +898,7 @@ namespace ST.Entities.Migrations
 
             modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelFields", "TableModelField")
+                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelField", "TableModelField")
                         .WithMany()
                         .HasForeignKey("TableModelFieldId")
                         .OnDelete(DeleteBehavior.Cascade);

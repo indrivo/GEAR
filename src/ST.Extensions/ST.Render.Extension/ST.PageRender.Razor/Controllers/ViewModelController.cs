@@ -231,7 +231,7 @@ namespace ST.PageRender.Razor.Controllers
 			if (Guid.Empty == id) return NotFound();
 			ViewBag.Data = _context.ViewModelFields
 				.Where(x => x.ViewModelId.Equals(id))
-				.Include(x => x.TableModelFields)
+				.Include(x => x.TableModelField)
 				.OrderBy(x => x.Order).ToList();
 			return View();
 		}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -49,6 +48,7 @@ namespace ST.Notifications.Services
         /// <param name="context"></param>
         /// <param name="hub"></param>
         /// <param name="logger"></param>
+        /// <param name="emailSender"></param>
         public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender)
         {
             _dataService = dataService;
@@ -57,6 +57,7 @@ namespace ST.Notifications.Services
             _logger = logger;
             _emailSender = emailSender;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Send Notification
@@ -117,7 +118,7 @@ namespace ST.Notifications.Services
         public async Task SendNotificationAsync(IEnumerable<Guid> usersIds, SystemNotifications notification)
         {
             var users = usersIds.ToList();
-            _hub.SentNotification(users, notification);
+            _hub.SendNotification(users, notification);
             var emails = new HashSet<string>();
             foreach (var user in users)
             {
@@ -186,6 +187,17 @@ namespace ST.Notifications.Services
             }
             return notifications;
         }
+
+        /// <summary>
+        /// Get notification by id
+        /// </summary>
+        /// <param name="notificationId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Dictionary<string, object>>> GetNotificationById(Guid notificationId)
+        {
+            return await _dataService.GetById<SystemNotifications>(notificationId);
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Mark notification as read 
