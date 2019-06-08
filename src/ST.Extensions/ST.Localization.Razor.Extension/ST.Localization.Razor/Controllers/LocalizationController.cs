@@ -473,7 +473,7 @@ namespace ST.Localization.Razor.Controllers
                 return Json(null);
             }
 
-            var translations = _localize.GetAllForLanguage(lang);
+            var translations = _localize.GetAllForLanguage(lang).OrderBy(x => x.Value);
             var json = translations.ToDictionary(trans => trans.Name, trans => trans.Value);
             return Json(json);
         }

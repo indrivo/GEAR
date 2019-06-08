@@ -333,8 +333,15 @@ namespace ST.Identity.Razor.Controllers
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
             var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Email);
-            if (user != null && !user.IsDeleted)
+            if (user != null)
             {
+                if (user.IsDeleted)
+                {
+                    ModelState.AddModelError(string.Empty, "User is disabled by admin.");
+                    return View(model);
+                }
+
+
                 if (user.AuthenticationType == AuthenticationType.Ad)
                 {
                     var ldapUser = await _ldapUserManager.FindByNameAsync(model.Email);
@@ -378,7 +385,7 @@ namespace ST.Identity.Razor.Controllers
                 return View(model);
             }
 
-            ModelState.AddModelError(string.Empty, "User is disabled by admin.");
+            ModelState.AddModelError(string.Empty, "Invalid credentials!");
             return View(model);
         }
         /// <summary>

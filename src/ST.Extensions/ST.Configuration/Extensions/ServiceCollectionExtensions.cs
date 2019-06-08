@@ -201,7 +201,6 @@ namespace ST.Configuration.Extensions
                     opts.Authority = uri;
                     opts.RequireHttpsMetadata = false;
                 });
-            services.AddAuthorization();
             return services;
         }
 
@@ -281,37 +280,35 @@ namespace ST.Configuration.Extensions
         /// <returns></returns>
         public static IServiceProvider AddWindsorContainers(this IServiceCollection services)
         {
-            var castleContainer = new WindsorContainer();
-            IoC.Container = castleContainer;
             var context = services.BuildServiceProvider().GetService<EntitiesDbContext>();
             //var env = services.BuildServiceProvider().GetService<IHostingEnvironment>();
 
             //Notifications
             var notificationConfig = new DbNotificationConfig { DbContext = context };
-            castleContainer.Register(Component.For<INotificationProvider>().ImplementedBy<DbNotificationProvider>()
+            IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<DbNotificationProvider>()
                 .DependsOn(Dependency.OnValue("config", notificationConfig)));
-            castleContainer.Register(Component.For<INotificationProvider>().ImplementedBy<EmailNotificationProvider>());
-            castleContainer.Register(Component.For<INotificationBuilder>().ImplementedBy<NotificationBuilder>());
-            castleContainer.Register(Component.For<Notificator>().Named("Db")
+            IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<EmailNotificationProvider>());
+            IoC.Container.Register(Component.For<INotificationBuilder>().ImplementedBy<NotificationBuilder>());
+            IoC.Container.Register(Component.For<Notificator>().Named("Db")
                 .DependsOn(Dependency.OnComponent<INotificationProvider, DbNotificationProvider>()));
-            castleContainer.Register(Component.For<Notificator>().Named("Email")
+            IoC.Container.Register(Component.For<Notificator>().Named("Email")
                 .DependsOn(Dependency.OnComponent<INotificationProvider, EmailNotificationProvider>()));
             //Register notifier 
-            castleContainer.Register(Component.For<INotify<ApplicationRole>>()
+            IoC.Container.Register(Component.For<INotify<ApplicationRole>>()
                 .ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
 
             //Register user manager
-            castleContainer.Register(Component.For<UserManager<ApplicationUser>>());
+            IoC.Container.Register(Component.For<UserManager<ApplicationUser>>());
 
             //Dynamic data dataService
-            castleContainer.Register(Component.For<IDynamicService>()
+            IoC.Container.Register(Component.For<IDynamicService>()
                  .ImplementedBy<DynamicService<EntitiesDbContext>>()
                  .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
             //Seed
             var synchronizerParams = new Dictionary<string, object> { { "context", context } };
-            castleContainer.Register(Component.For<EntitySynchronizer>().DependsOn(synchronizerParams));
-            return WindsorRegistrationHelper.CreateServiceProvider(castleContainer, services);
+            IoC.Container.Register(Component.For<EntitySynchronizer>().DependsOn(synchronizerParams));
+            return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
 
         /// <summary>

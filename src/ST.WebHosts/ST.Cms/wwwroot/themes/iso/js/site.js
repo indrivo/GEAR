@@ -1,7 +1,7 @@
 "use strict";
 
 /************************************************
-					Custom js
+					Customize system theme js
 ************************************************/
 
 const settings = JSON.parse(localStorage.getItem("settings"));
@@ -40,15 +40,21 @@ TableColumnsVisibility.prototype.init = function (ctx) {
 TableColumnsVisibility.prototype.registerInitEvents = function () {
 
 	//Delete multiple rows
-	$("#deleteMultipleRows").on("click", function () {
+	$(".deleteMultipleRows").on("click", function () {
 		const cTable = $(this).closest(".card").find(".dynamic-table");
 		if (cTable) {
-			new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+			if (typeof TableBuilder !== 'undefined') {
+				new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+			}
 		}
 	});
 
+	$(".add_new_inline").on("click", function () {
+		new TableInlineEdit().addNewHandler(this);
+	});
+
 	//Items on page
-	$("#tablePaginationView a").on("click", function () {
+	$(".tablePaginationView a").on("click", function () {
 		const ctx = $(this);
 		const onPageValue = ctx.data("page");
 		const onPageText = ctx.text();
@@ -63,55 +69,102 @@ TableColumnsVisibility.prototype.registerInitEvents = function () {
 		$("#hiddenColumnsModal").modal();
 	});
 };
-//Override table select
-TableBuilder.prototype.dom = '<"CustomTableHeadBar">rtip';
-RenderTableSelect.prototype.settings.classNameText = '';
-RenderTableSelect.prototype.settings.select.selector = "td:not(.not-selectable):first-child .checkbox-container";
-RenderTableSelect.prototype.selectHandler = function (context) {
-	const row = $(context).closest('tr');
-	const table = row.closest("table").DataTable();
-	if (row.hasClass("selected")) {
-		table.row(row).deselect();
-	} else {
-		table.row(row).select();
-	}
-};
-
-RenderTableSelect.prototype.selectHeadHandler = function (context) {
-	const table = $(context).closest(".card").find(".dynamic-table");
-	const dTable = table.DataTable();
-	const rows = table.find("tbody tr");
-	const isChecked = $(context).prop("checked");
-	rows.each((index, item) => {
-		const input = $(item).find("td div.checkbox-container").find("input");
-		if (isChecked) {
-			dTable.row(item).select();
+if (typeof TableBuilder !== 'undefined') {
+	//Override table select
+	TableBuilder.prototype.dom = '<"CustomTableHeadBar">rtip';
+	RenderTableSelect.prototype.settings.classNameText = '';
+	RenderTableSelect.prototype.settings.select.selector = "td:not(.not-selectable):first-child .checkbox-container";
+	RenderTableSelect.prototype.selectHandler = function (context) {
+		const row = $(context).closest('tr');
+		const table = row.closest("table").DataTable();
+		if (row.hasClass("selected")) {
+			table.row(row).deselect();
 		} else {
-			dTable.row(item).deselect();
+			table.row(row).select();
 		}
-		if (input) input.prop("checked", isChecked);
-	});
-};
+	};
 
-RenderTableSelect.prototype.selectTemplateCommom = function (id, handler) {
-	return `<div class="checkbox-container">
+	RenderTableSelect.prototype.selectHeadHandler = function (context) {
+		const table = $(context).closest(".card").find(".dynamic-table");
+		const dTable = table.DataTable();
+		const rows = table.find("tbody tr");
+		const isChecked = $(context).prop("checked");
+		rows.each((index, item) => {
+			const input = $(item).find("td div.checkbox-container").find("input");
+			if (isChecked) {
+				dTable.row(item).select();
+			} else {
+				dTable.row(item).deselect();
+			}
+			if (input) input.prop("checked", isChecked);
+		});
+	};
+
+	RenderTableSelect.prototype.selectTemplateCommom = function (id, handler) {
+		return `<div class="checkbox-container">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" onchange="${handler}" class="custom-control-input" id="_select${id}"
                                            required>
                                     <label class="custom-control-label" for="_select${id}"></label>
                                 </div>
                             </div>`;
-};
+	};
 
-RenderTableSelect.prototype.settings.headContent = function () {
-	const id = st.newGuid();
-	return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHeadHandler(this)");
-}.call();
+	RenderTableSelect.prototype.settings.headContent = function () {
+		const id = st.newGuid();
+		return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHeadHandler(this)");
+	}.call();
 
-RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
-	const id = st.newGuid();
-	return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHandler(this)");
-};
+	RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
+		const id = st.newGuid();
+		return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHandler(this)");
+	};
+
+	//Table actions
+	TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dataX) {
+		return `${dataX.hasDeleteRestore
+			? `${row.isDeleted
+				? `<a href="javascript:void(0)" onclick="new TableBuilder().restoreItem('${row.id
+				}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">restore</i></a>`
+				: `<a href="javascript:void(0)" onclick="new TableBuilder().deleteItem('${row.id
+				}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">delete</i></a>`}`
+			: ``}`;
+	};
+
+
+	TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
+		if (row.isDeleted) return "";
+		return `${dataX.hasInlineEdit
+			? `	<a class="inline-edit" data-viewmodel="${dataX.viewmodelData.result.id
+			}" href="javascript:void(0)"><i class="material-icons">edit</i></a>`
+			: ``}`;
+	};
+
+
+	TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
+		if (row.isDeleted) return "";
+		return `${dataX.hasEditPage ? `<a href="${dataX.editPageLink}?itemId=${row.id
+			}&&listId=${dataX.viewmodelData.result.id}"><i class="material-icons">edit</i></a>`
+			: ``}`;
+	};
+
+	TableBuilder.prototype.replaceTableSystemTranslations = function () {
+		const customReplace = new Array();
+		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
+		customReplace.push({ Key: "processing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
+		const searialData = JSON.stringify(customReplace);
+		return searialData;
+	};
+}
+
+
+
+
+if (typeof TableInlineEdit !== 'undefined') {
+	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
+		return;
+	};
+}
 
 //override notification populate container
 Notificator.prototype.addNewNotificationToContainer = function (notification) {
@@ -181,7 +234,7 @@ $(document).ready(function () {
 				.parent()
 				.addClass("active");
 			makeMenuActive(renderMenuContainer.find(`a[href='${location.href}']`));
-			window.forceTranslate();
+			window.forceTranslate("#left-nav-bar");
 		}
 	});
 
@@ -636,13 +689,12 @@ function toggleFullScreen() {
 
 
 
-
 $(document).ready(function () {
+
+
     /* -------------------
-    *
-    *   Navigation start
-    *
-    * -------------------- */
+     *  Navigation declaration
+     *  ------------------- */
 
     /**
      * Sets the initial direction of the side-menu triggering arrow
@@ -669,15 +721,204 @@ $(document).ready(function () {
 			} else {
 				burger.text('arrow_back');
 			}
+			adjustTableSizeAfterAnimation();
 		});
 	}
 
-	setInitialStateOfBurgerIcon();
-	modifyBurgerIconWhenToggleSideMenu();
+    /**
+     *
+     * */
+	function adjustTableSizeAfterAnimation() {
+		setTimeout(function () {
+			makeTablesResponsiveIfToWide();
+		}, 400);
+	}
 
     /* -------------------
-    *
-    *   Navigation end
-    *
-    * -------------------- */
+    *  Tables
+    *  ------------------- */
+
+    /**
+     * Depending of container, makes the tables responsive if its width is greater than container width
+     * */
+	function makeTablesResponsiveIfToWide() {
+		var allTables = $('.table');
+		if (allTables) {
+			allTables.each(function (key, currentItem) {
+				var jCurrentItem = $(currentItem);
+				jCurrentItem.removeClass('table-responsive');
+				var currentItemWidth = jCurrentItem.width();
+				var currentItemContainerWidth = jCurrentItem.closest('div').width();
+				if (currentItemWidth > currentItemContainerWidth) {
+					jCurrentItem.addClass('table-responsive')
+				}
+			});
+		}
+
+	}
+
+    /* -------------------
+    *  Events binding
+    *  ------------------- */
+
+    /**
+     * Window resize event binding
+     * */
+	$(window).resize(function () {
+		makeTablesResponsiveIfToWide();
+	});
+
+
+    /* -------------------
+    *  Calling all functions
+    *  ------------------- */
+	setInitialStateOfBurgerIcon();
+	modifyBurgerIconWhenToggleSideMenu();
+	makeTablesResponsiveIfToWide();
+	adjustTableSizeAfterAnimation();
+
+});
+
+
+
+
+
+
+$(document).ready(function () {
+
+	$(document).on('mouseover', function (event) {
+		if ($(event.target).hasClass('info-tooltip')) {
+			const tooltip = event.target;
+			const infoTooltipData = $(event.target).data('content');
+			const infoTooltipContentContainer = createInfoTooltipContentContainer(infoTooltipData);
+			document.body.appendChild(infoTooltipContentContainer);
+			new Popper(tooltip, infoTooltipContentContainer, {
+				placement: 'bottom-start',
+				removeOnDestroy: true
+			});
+
+			$(document).on('mouseover', function (nextEvent) {
+				if (nextEvent.target !== tooltip) {
+					infoTooltipContentContainer.remove();
+				}
+			})
+		}
+	});
+
+
+	function createInfoTooltipContentContainer(innerText) {
+		const infoTooltipContent = document.createElement('div');
+		infoTooltipContent.classList = ['info-tooltip-content p-4'];
+		infoTooltipContent.innerText = innerText;
+		return infoTooltipContent;
+	}
+});
+
+
+
+
+
+
+
+
+
+
+/**
+ * Checks the state of every collapsible and sets the appropriate header button icon
+ * */
+function changeAllCollapseHeaderIcon() {
+	$('.card-header').each(function (index, item) {
+		if (!$(item).find('.btn').hasClass('collapsed')) {
+			$(item).find('.material-icons').first().text('keyboard_arrow_down');
+		} else {
+			$(item).find('.material-icons').first().text('keyboard_arrow_right');
+		}
+	});
+}
+
+function changeAllSpoilerIcons() {
+	$('.spoiler').each(function (index, item) {
+		const targetId = $(item).data('target');
+
+		if (!$('' + targetId).hasClass('show')) {
+			$(item).find('.material-icons').first().text('add');
+		} else {
+			$(item).find('.material-icons').first().text('remove');
+		}
+	});
+}
+
+/**
+ * Expands the first collapse child of provided selector
+ * */
+function expandCollapse(cardLevelSelector) {
+	$(cardLevelSelector).each(function (index, item) {
+		$(item).children('.collapse').first().collapse('show');
+		changeAllCollapseHeaderIcon();
+	});
+}
+
+/**
+ * Entry point
+ * */
+$(document).ready(function () {
+
+    /**
+     * Binds to collapse controls, which closes or opens all collapses on click
+     * */
+	function bindToCollapseControls() {
+		$('#collapse-all').on('click', function () {
+			$('.collapse').collapse('show');
+			changeAllCollapseHeaderIcon();
+			changeAllSpoilerIcons();
+		});
+
+		$('#hide-all').on('click', function () {
+			$('.collapse').collapse('hide');
+			changeAllCollapseHeaderIcon();
+			changeAllSpoilerIcons();
+		});
+	}
+
+    /**
+     * Finds every collapse, binds to click event and changes the icon whenever the collapse is opened or closed
+     * */
+	function bindChangeCollapseHeaderOnToggle() {
+		// find every card header
+		$('.card-header').each(function (index, item) {
+			// binds to .btn click event
+			$(item).find('.btn').first().on('click', function () {
+				if ($(item).find('.btn').hasClass('collapsed')) {
+					$(item).find('.material-icons').first().text('keyboard_arrow_down');
+				} else {
+					$(item).find('.material-icons').first().text('keyboard_arrow_right');
+				}
+			})
+		});
+	}
+
+    /**
+     * Binds to .collapse-parent elements and the parent .collapse on click
+     * */
+	function bindToCollapseParentButton() {
+		$('.collapse-parent').each(function (index, button) {
+			$(button).on('click', function () {
+				$(button).parents('.collapse').first().collapse('hide');
+				changeAllCollapseHeaderIcon();
+			});
+		});
+	}
+
+	function bindToSpoilerClick() {
+		$('.spoiler').each(function (index, item) {
+			$(item).on('click', function () {
+				changeAllSpoilerIcons();
+			})
+		});
+	}
+
+	bindToCollapseControls();
+	bindToCollapseParentButton();
+	bindChangeCollapseHeaderOnToggle();
+	bindToSpoilerClick();
 });

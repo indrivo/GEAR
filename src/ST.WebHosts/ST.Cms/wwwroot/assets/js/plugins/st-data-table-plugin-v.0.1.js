@@ -115,48 +115,35 @@ function TableBuilder() { };
 TableBuilder.constructor = TableBuilder;
 
 TableBuilder.prototype.restoreItem = function (rowId, tableId, viewModelId) {
-	const object = {
-		alertTitle: window.translate("restore_alert"),
-		alertText: "",
-		confirmButtonText: "Yes, restore it!",
-		rowId: rowId,
-		tableId: tableId,
-		urlForDelete: "/PageRender/RestoreItemFromDynamicEntity",
-		type: "warning",
-		onDeleteSuccess: "Item has been restored.",
-		onDeleteFail: "Something wrong",
-		onServerNoResponse: "Api not respond or not have permissions."
-	};
-
 	swal({
-		title: object.alertTitle,
-		text: object.alertText,
-		type: object.type,
+		title: window.translate("restore_alert"),
+		text: "",
+		type: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		confirmButtonText: object.confirmButtonText,
+		confirmButtonText: window.translate("confirm_query_restore"),
 		cancelButtonText: window.translate("cancel")
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: `${object.urlForDelete}`,
+				url: "/PageRender/RestoreItemFromDynamicEntity",
 				type: "post",
 				data: {
-					id: object.rowId,
+					id: rowId,
 					viewModelId: viewModelId
 				},
 				success: function (data) {
 					if (data.success) {
-						const oTable = $(`${object.tableId}`).DataTable();
+						const oTable = $(`${tableId}`).DataTable();
 						oTable.draw();
-						swal("Restored!", object.message, "success");
+						swal(window.translate("restored_complete"), "", "success");
 					} else {
-						swal("Fail!", data.message, "error");
+						swal(window.translate("restore_fail"), data.message, "error");
 					}
 				},
 				error: function () {
-					swal("Fail!", object.onServerNoResponse, "error");
+					swal(window.translate("restore_fail"), window.translate("api_not_respond"), "error");
 				}
 			});
 		}
@@ -164,48 +151,35 @@ TableBuilder.prototype.restoreItem = function (rowId, tableId, viewModelId) {
 }
 
 TableBuilder.prototype.deleteItem = function (rowId, tableId, viewModelId) {
-	const object = {
-		alertTitle: "Delete this item?",
-		alertText: "Are you sure that you want to leave this item?",
-		confirmButtonText: "Yes, delete it!",
-		rowId: rowId,
-		tableId: tableId,
-		urlForDelete: "/PageRender/DeleteItemFromDynamicEntity",
-		type: "warning",
-		onDeleteSuccess: "Item has been deleted.",
-		onDeleteFail: "Something wrong",
-		onServerNoResponse: "Api not respond or not have permissions."
-	};
-
 	swal({
-		title: object.alertText,
-		text: object.alertText,
-		type: object.type,
+		title: window.translate("delete_query_item"),
+		text: "",
+		type: "warning",
 		showCancelButton: true,
 		confirmButtonColor: "#3085d6",
 		cancelButtonColor: "#d33",
-		confirmButtonText: object.confirmButtonText,
+		confirmButtonText: window.translate("delete_confirm_query"),
 		cancelButtonText: window.translate("cancel")
 	}).then((result) => {
 		if (result.value) {
 			$.ajax({
-				url: `${object.urlForDelete}`,
+				url: "/PageRender/DeleteItemFromDynamicEntity",
 				type: "post",
 				data: {
-					id: object.rowId,
+					id: rowId,
 					viewModelId: viewModelId
 				},
 				success: function (data) {
 					if (data.success) {
-						const oTable = $(`${object.tableId}`).DataTable();
+						const oTable = $(`${tableId}`).DataTable();
 						oTable.draw();
-						swal("Deleted!", object.message, "success");
+						swal(window.translate("row_deleted"), "", "success");
 					} else {
-						swal("Fail!", data.message, "error");
+						swal(window.translate("delete_fail"), data.message, "error");
 					}
 				},
 				error: function () {
-					swal("Fail!", object.onServerNoResponse, "error");
+					swal(window.translate("delete_fail"), window.translate("api_not_respond"), "error");
 				}
 			});
 		}
@@ -233,18 +207,39 @@ TableBuilder.prototype.renderCell = function (row, column) {
  * @param {any} hasInlineEdit
  * @param {any} editPageLink
  */
-TableBuilder.prototype.getRenderRowActions = function (row, viewmodelData, hasEditPage, hasInlineEdit, editPageLink) {
-	if (row.isDeleted) return "";
-	return `${hasInlineEdit
-		? `	<a data-viewmodel="${viewmodelData.result.id
-		}" class="inline-edit btn btn-warning btn-sm" href="javascript:void(0)">Edit inline</a>`
-		: ``}
-
-										${hasEditPage
-			? `<a class="btn btn-info btn-sm" href="${editPageLink}?itemId=${row.id
-			}&&listId=${viewmodelData.result.id}">Edit</a>`
-			: ``}`;
+TableBuilder.prototype.getRenderRowActions = function (row, dataX) {
+	const container = this.getTableRowInlineActionButton(row, dataX)
+		+ this.getTableRowEditActionButton(row, dataX)
+		+ this.getTableRowDeleteRestoreActionButton(row, dataX);
+	return container;
 }
+
+TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dataX) {
+	return `${dataX.hasDeleteRestore
+		? `${row.isDeleted
+			? `<a href="javascript:void(0)" class='btn restore-item btn-warning btn-sm' onclick="new TableBuilder().restoreItem('${row.id
+			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')">${window.translate("restore")}</a>`
+			: `<a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick="new TableBuilder().deleteItem('${row.id
+			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')">${window.translate("delete")}</a>`}`
+		: ``}`;
+};
+
+
+TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
+	if (row.isDeleted) return "";
+	return `${dataX.hasInlineEdit
+		? `	<a data-viewmodel="${dataX.viewmodelData.result.id
+		}" class="inline-edit btn btn-warning btn-sm" href="javascript:void(0)">${window.translate("inline_edit")}</a>`
+		: ``}`;
+};
+
+
+TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
+	if (row.isDeleted) return "";
+	return `${dataX.hasEditPage ? `<a class="btn btn-info btn-sm" href="${dataX.editPageLink}?itemId=${row.id
+		}&&listId=${dataX.viewmodelData.result.id}">${window.translate("edit")}</a>`
+		: ``}`;
+};
 
 
 TableBuilder.prototype.deleteSelectedRows = function () {
@@ -384,6 +379,13 @@ TableBuilder.prototype.createdRow = function (row, data, dataIndex) {
 
 TableBuilder.prototype.dom = '<"CustomizeColumns">lBfrtip';
 
+TableBuilder.prototype.replaceTableSystemTranslations = function () {
+	const customReplace = new Array();
+	//customReplace.push({ Key: "propName", Value: "value" });
+	const searialData = JSON.stringify(customReplace);
+	return searialData;
+};
+
 TableBuilder.prototype.renderTable = function (data) {
 	const tableId = `#${data.listId}`;
 	if ($.fn.DataTable.isDataTable(tableId)) {
@@ -391,9 +393,10 @@ TableBuilder.prototype.renderTable = function (data) {
 		$(tableId).dataTable().empty();
 	}
 	const renderTableSelect = new RenderTableSelect();
+
 	$(tableId).DataTable({
 		"language": {
-			"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+			"url": `${location.origin}/api/LocalizationApi/GetJQueryTableTranslations?language=${window.getCookie("language")}&customReplace=${this.replaceTableSystemTranslations()}`,
 		},
 		//rowsGroup: [
 		//	0
@@ -418,10 +421,11 @@ TableBuilder.prototype.renderTable = function (data) {
 				targets: 'no-sort'
 			}
 		],
+colReorder: true,
 		select: renderTableSelect.settings.select,
-		"scrollX": true,
-		"scrollCollapse": true,
-		"autoWidth": true,
+		//"scrollX": true,
+		//"scrollCollapse": true,
+		//"autoWidth": true,
 		"processing": true, // for show progress bar
 		"serverSide": true, // for process server side
 		"filter": true, // this is for disable filter (search box)
@@ -476,12 +480,12 @@ $(document).ready(function () {
 					});
 				});
 
-				viewModelPromise.then(data => {
+				viewModelPromise.then(dataX => {
 					const ctx = new TableBuilder();
-					if (data.viewmodelData.is_success) {
+					if (dataX.viewmodelData.is_success) {
 						const renderColumns = [];
-						if (data.viewmodelData.result.viewModelFields.length > 0) {
-							const columns = $(`#${data.listId} thead tr`);
+						if (dataX.viewmodelData.result.viewModelFields.length > 0) {
+							const columns = $(`#${dataX.listId} thead tr`);
 							columns.html(null);
 							const renderTableSelect = new RenderTableSelect();
 							let rows = `<th class="no-sort">${renderTableSelect.settings.headContent}</th>`;
@@ -493,16 +497,21 @@ $(document).ready(function () {
 								}
 							});
 
-							$.each(data.viewmodelData.result.viewModelFields,
+							$.each(dataX.viewmodelData.result.viewModelFields,
 								function (index, column) {
-									rows += `<th translate='${column.translate}'>${column.name}</th>`;
+									let colName = column.name;
+									if (column.translate) {
+										colName = window.translate(column.translate);
+									} 
+
+									rows += `<th>${colName}</th>`;
 									renderColumns.push({
 										config: {
 											column: column
 										},
 										data: null,
 										"render": function (data, type, row, meta) {
-											return `<div class="data-cell" data-viewmodel="${viewmodelId}" data-id="${row.id
+											return `<div class="data-cell" data-viewmodel="${dataX.viewmodelId}" data-id="${row.id
 												}" data-column-id="${column.id}">${ctx.renderCell(row, column)}</div>`;
 										}
 									});
@@ -513,21 +522,14 @@ $(document).ready(function () {
 								data: null,
 								"render": function (data, type, row, meta) {
 									return `<div class="btn-group" role="group" aria-label="Action buttons">
-										${ctx.getRenderRowActions(row, data.viewmodelData, data.hasEditPage, data.hasInlineEdit, data.editPageLink)}
-										${data.hasDeleteRestore
-											? `${row.isDeleted
-												? `<a href="javascript:void(0)" class='btn restore-item btn-warning btn-sm' onclick="restoreItem('${row.id
-												}', '#${data.listId}', '${data.viewmodelData.result.id}')">Restore</a>`
-												: `<a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick="deleteItem('${row.id
-												}', '#${data.listId}', '${data.viewmodelData.result.id}')">Delete</a>`}`
-											: ``}
-										</div>`;
+										${ctx.getRenderRowActions(row, dataX)}
+											</div>`;
 								}
 							});
 						}
 						new TableBuilder().renderTable({
-							viewmodelId: data.viewmodelId,
-							listId: data.listId,
+							viewmodelId: dataX.viewmodelId,
+							listId: dataX.listId,
 							renderColumns: renderColumns
 						});
 					}

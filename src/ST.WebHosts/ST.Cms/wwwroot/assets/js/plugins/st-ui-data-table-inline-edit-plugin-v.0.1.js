@@ -13,7 +13,83 @@ if (typeof jQuery === 'undefined') {
 	throw new Error('Inline edit plugin require JQuery');
 }
 
-const defaultNotEditFieldContainer = "-";
+function TableInlineEdit() {
+
+}
+
+TableInlineEdit.prototype.constructor = TableInlineEdit;
+
+TableInlineEdit.prototype.defaultNotEditFieldContainer = "-";
+
+TableInlineEdit.prototype.addNewHandler = function (ctx, dt = null) {
+	const card = $(ctx).closest(".card");
+	var t = card.find(".dynamic-table");
+	if (!dt) {
+		dt = t.DataTable();
+	}
+	if ($(t).attr("add-mode") === "true") {
+		$.toast({
+			heading: "Already is a new line in editing, after finishing it will be possible to add a new line!",
+			text: "",
+			position: 'top-right',
+			loaderBg: '#ff6849',
+			icon: 'error',
+			hideAfter: 3500,
+			stack: 6
+		});
+		return;
+	}
+	const row = document.createElement("tr");
+	row.setAttribute("isNew", "true");
+	const columns = dt.columns().context[0].aoColumns;
+
+	for (let i in columns) {
+		//Ignore hidden column
+		if (!columns[i].bVisible) continue;
+		let cell = document.createElement("td");
+		if (columns[i].targets === "no-sort") {
+			cell.innerHTML = this.defaultNotEditFieldContainer;
+		} else
+			if (columns[i].sTitle === window.translate("list_actions")) {
+				cell.innerHTML = `<div class="btn-group" role="group" aria-label="Action buttons">
+								<a href="javascript:void(0)" class='btn add-new-item btn-success btn-sm'><i class="fa fa-check"></i></a>
+								<a href="javascript:void(0)" class='btn cancel-new-item btn-danger btn-sm'><i class="fa fa-close"></i></a>
+								</div>`;
+				$(cell).find(".cancel-new-item").on("click", cancelNewItem);
+				$(cell).find(".add-new-item").on("click", addNewItem);
+			}
+			else {
+				var newCell = this.getAddRowCell(columns[i], cell);
+				cell = newCell.cell;
+				row.setAttribute("entityName", newCell.entityName);
+			}
+
+		row.appendChild(cell);
+	}
+	$(t).attr("add-mode", "true");
+	$("tbody", t).prepend(row);
+	this.toggleVisibilityColumnsButton(ctx, true);
+};
+
+
+/**
+ * Toggle button disable state
+ * @param {*} context 
+ * @param {*} state 
+ */
+TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
+	if (state) {
+		ctx.closest(".card")
+			.find(".CustomizeColumns")
+			.find(".toggle-columns")
+			.addClass("disabled");
+	} else {
+		ctx.closest(".card")
+			.find(".CustomizeColumns")
+			.find(".toggle-columns")
+			.removeClass("disabled");
+	}
+}
 
 $(".dynamic-table")
 	.on("draw.dt", function (e, settings, json) {
@@ -31,74 +107,13 @@ $(".dynamic-table")
 		if (!match) {
 			table.button().add(0, {
 				action: function (e, dt, button, config) {
-					const card = $(button).closest(".card");
-					var t = card.find(".dynamic-table");
-					if ($(t).attr("add-mode") === "true") {
-						$.toast({
-							heading: "Already is a new line in editing, after finishing it will be possible to add a new line!",
-							text: "",
-							position: 'top-right',
-							loaderBg: '#ff6849',
-							icon: 'error',
-							hideAfter: 3500,
-							stack: 6
-						});
-						return;
-					}
-					const row = document.createElement("tr");
-					row.setAttribute("isNew", "true");
-					const columns = dt.columns().context[0].aoColumns;
-					for (let i in columns) {
-						//Ignore hidden column
-						if (!columns[i].bVisible) continue;
-						let cell = document.createElement("td");
-						if (columns[i].sTitle === '#') {
-							cell.innerHTML = defaultNotEditFieldContainer;
-						} else
-							if (columns[i].sTitle === window.translate("list_actions")) {
-								cell.innerHTML = `<div class="btn-group" role="group" aria-label="Action buttons">
-								<a href="javascript:void(0)" class='btn add-new-item btn-success btn-sm'><i class="fa fa-check"></i></a>
-								<a href="javascript:void(0)" class='btn cancel-new-item btn-danger btn-sm'><i class="fa fa-close"></i></a>
-								</div>`;
-								$(cell).find(".cancel-new-item").on("click", cancelNewItem);
-								$(cell).find(".add-new-item").on("click", addNewItem);
-							}
-							else {
-								var newCell = getAddRowCell(columns[i], cell);
-								cell = newCell.cell;
-								row.setAttribute("entityName", newCell.entityName);
-							}
-
-						row.appendChild(cell);
-					}
-					$(t).attr("add-mode", "true");
-					$("tbody", t).prepend(row);
-					toggleVisibilityColumnsButton(button, true);
+					new TableInlineEdit().addNewHandler(button, dt);
 				},
 				text: '<i class="fa fa-plus"></i>'
 			});
 		}
 	});
 
-
-/**
- * Toggle button disable state
- * @param {*} context 
- * @param {*} state 
- */
-function toggleVisibilityColumnsButton(context, state) {
-	if (state) {
-		context.closest(".card")
-			.find(".CustomizeColumns")
-			.find(".toggle-columns")
-			.addClass("disabled");
-	} else {
-		context.closest(".card")
-			.find(".CustomizeColumns")
-			.find(".toggle-columns")
-			.removeClass("disabled");
-	}
-}
 
 
 /**
@@ -108,13 +123,13 @@ function cancelNewItem() {
 	const context = $(this);
 	context.off("click", cancelNewItem);
 	context.parent().find(".add-new-item").off("click", addNewItem);
-	toggleVisibilityColumnsButton(context, false);
+	new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
 	context.closest("tr").remove();
 	cancelTableAddMode(context);
 }
 
 function addNewItem() {
-	const context = $(this);	
+	const context = $(this);
 	const rowContext = context.closest("tr");
 	const entityName = rowContext.attr("entityName");
 	const data = getRowData(rowContext);
@@ -144,13 +159,13 @@ function addNewItem() {
 	}
 
 	//TODO: Finish add inline edit
-	toggleVisibilityColumnsButton(context, false);
+	new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
 	context.off("click", addNewItem);
 	cancelTableAddMode(context);
 }
 
-function cancelTableAddMode(context) {
-	context.closest("table").attr("add-mode", "false");
+function cancelTableAddMode(ctx) {
+	ctx.closest("table").attr("add-mode", "false");
 }
 
 function getRowData(context) {
@@ -180,9 +195,9 @@ function getRowData(context) {
  * @param {*} column 
  * @param {*} cell 
  */
-function getAddRowCell(column, cell) {
+TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 	if (!column.config.column.tableModelFields) {
-		cell.innerHTML = defaultNotEditFieldContainer;
+		cell.innerHTML = this.defaultNotEditFieldContainer;
 		return {
 			cell: cell,
 			entityName: ""

@@ -127,7 +127,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
 
                 if (!req.IsSuccess) return result;
                 result.IsSuccess = true;
-                result.Result = req.Result.Adapt<IEnumerable<TEntity>>();
+                result.Result = req.Result.Adapt<IEnumerable<TEntity>>() ?? new List<TEntity>();
                 result.Result = func != null ? result.Result.Where(func).ToList() : result.Result.ToList();
                 return result;
             });

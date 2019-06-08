@@ -171,11 +171,7 @@ namespace ST.Cms.Installation
 				var isConfigured = IsConfigured(env);
 
 				if (!isConfigured) return;
-				//TODO: Check connection type and register
-				IoC.RegisterService<IQueryTableBuilder, NpgTableQueryBuilder>();
-				IoC.RegisterService<IEntityQueryBuilder, NpgEntityQueryBuilder>();
-				IoC.RegisterService<ITablesService, NpgTablesService>();
-
+				
 				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 				cacheService.FlushAll();
 				await permissionService.RefreshCache();

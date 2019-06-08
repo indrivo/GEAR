@@ -12,6 +12,7 @@ using ST.DynamicEntityStorage.Services;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage
@@ -38,13 +39,12 @@ namespace ST.DynamicEntityStorage
         /// <param name="context"></param>
         /// <param name="httpContextAccessor"></param>
         /// <returns></returns>
-        public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context, IHttpContextAccessor httpContextAccessor)
+        public async Task<DynamicObject> ResolveAsync(EntitiesDbContext context,
+            IHttpContextAccessor httpContextAccessor)
         {
+            Arg.NotNull(context, nameof(EntitiesDbContext));
+            Arg.NotNull(httpContextAccessor, nameof(IHttpContextAccessor));
             var entity = _assemblyName.Name;
-            if (entity == "Control")
-            {
-
-            }
             var table = await context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity));
             if (table == null) throw new DynamicTableOperationException($"Table {entity} not found in database!");
             var schema = table.EntityType;
@@ -78,7 +78,7 @@ namespace ST.DynamicEntityStorage
             {
                 if (proprieties.Contains(field.ColumnName)) continue;
 
-                var fieldType = GetTypeFromString(field.Type);
+                var fieldType = DynamicTypeMapper.GetTypeFromString(field.Type);
                 CreateProperty(dynamicClass, field.ColumnName, fieldType);
             }
 
@@ -97,7 +97,8 @@ namespace ST.DynamicEntityStorage
                 }
                 else
                 {
-                    var refType = await Task.Run(async () => await new ObjectService(entityRef.Value).ResolveAsync(context, httpContextAccessor));
+                    var refType = await Task.Run(async () =>
+                        await new ObjectService(entityRef.Value).ResolveAsync(context, httpContextAccessor));
 
                     CreateProperty(dynamicClass, $"{field.ColumnName}Reference", refType.Type);
                 }
@@ -123,7 +124,7 @@ namespace ST.DynamicEntityStorage
         {
             var props = obj.GetType().GetProperties();
 
-            var rq = TypeManager.TryGet(_assemblyName.Name, "");
+            var rq = TypeManager.TryGet(_assemblyName.Name, string.Empty);
             if (!rq.IsSuccess) return obj;
             var resultObject = Activator.CreateInstance(rq.Result);
             foreach (var prop in resultObject.GetType().GetProperties())
@@ -145,6 +146,7 @@ namespace ST.DynamicEntityStorage
 
             return resultObject;
         }
+
         /// <summary>
         /// Implement from object to dictionary
         /// </summary>
@@ -164,8 +166,10 @@ namespace ST.DynamicEntityStorage
             {
                 Console.WriteLine(e);
             }
+
             return dictionary;
         }
+
         /// <summary>
         /// Create a class
         /// </summary>
@@ -175,23 +179,26 @@ namespace ST.DynamicEntityStorage
             var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(_assemblyName, AssemblyBuilderAccess.Run);
             var moduleBuilder = assemblyBuilder.DefineDynamicModule("MainModule");
             var typeBuilder = moduleBuilder.DefineType(_assemblyName.FullName
-                                , TypeAttributes.Public |
-                                TypeAttributes.Class |
-                                TypeAttributes.AutoClass |
-                                TypeAttributes.AnsiClass |
-                                TypeAttributes.BeforeFieldInit |
-                                TypeAttributes.AutoLayout
-                                , typeof(BaseModel));
+                , TypeAttributes.Public |
+                  TypeAttributes.Class |
+                  TypeAttributes.AutoClass |
+                  TypeAttributes.AnsiClass |
+                  TypeAttributes.BeforeFieldInit |
+                  TypeAttributes.AutoLayout
+                , typeof(BaseModel));
             return typeBuilder;
         }
+
         /// <summary>
         /// Create constructor
         /// </summary>
         /// <param name="typeBuilder"></param>
         private static void CreateConstructor(TypeBuilder typeBuilder)
         {
-            typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName);
+            typeBuilder.DefineDefaultConstructor(MethodAttributes.Public | MethodAttributes.SpecialName |
+                                                 MethodAttributes.RTSpecialName);
         }
+
         /// <summary>
         /// Create new property
         /// </summary>
@@ -204,8 +211,11 @@ namespace ST.DynamicEntityStorage
             {
                 var fieldBuilder = typeBuilder.DefineField("_" + propertyName, propertyType, FieldAttributes.Private);
 
-                var propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
-                var getPropMthdBldr = typeBuilder.DefineMethod("get_" + propertyName, MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig, propertyType, Type.EmptyTypes);
+                var propertyBuilder =
+                    typeBuilder.DefineProperty(propertyName, PropertyAttributes.HasDefault, propertyType, null);
+                var getPropMthdBldr = typeBuilder.DefineMethod("get_" + propertyName,
+                    MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig, propertyType,
+                    Type.EmptyTypes);
                 var getIl = getPropMthdBldr.GetILGenerator();
 
                 getIl.Emit(OpCodes.Ldarg_0);
@@ -238,61 +248,6 @@ namespace ST.DynamicEntityStorage
             {
                 Console.WriteLine(e);
             }
-        }
-        /// <summary>
-        /// Get type from string definition
-        /// </summary>
-        /// <param name="stringType"></param>
-        /// <returns></returns>
-        private static Type GetTypeFromString(string stringType)
-        {
-            var type = Type.GetType(string.Empty);
-            switch (stringType)
-            {
-                case "nvarchar":
-                    {
-                        type = typeof(string);
-                    }
-                    break;
-                case "int":
-                case "int32":
-                    {
-                        type = typeof(int);
-                    }
-                    break;
-                case "char":
-                    {
-                        type = typeof(char);
-                    }
-                    break;
-                case "bool":
-                    {
-                        type = typeof(bool);
-                    }
-                    break;
-                case "uniqueidentifier":
-                    {
-                        type = typeof(Guid);
-                    }
-                    break;
-                case "bigint":
-                    {
-                        type = typeof(long);
-                    }
-                    break;
-                case "date":
-                case "datetime":
-                    {
-                        type = typeof(DateTime);
-                    }
-                    break;
-                case "decimal":
-                    {
-                        type = typeof(double);
-                    }
-                    break;
-            }
-            return type;
         }
     }
 }

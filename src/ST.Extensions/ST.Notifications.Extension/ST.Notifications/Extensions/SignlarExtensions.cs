@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Core.Helpers;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Hubs;
 using ST.Notifications.Services;
@@ -29,13 +30,14 @@ namespace ST.Notifications.Extensions
             return app;
         }
         /// <summary>
-        /// Add SignalR from ST.Notifications By Indrivo
+        /// Add SignalR
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection AddSignalRModule<TContext, TUser, TRole>(this IServiceCollection services) where TContext : IdentityDbContext<TUser, TRole, string>
             where TUser : IdentityUser where TRole : IdentityRole<string>
         {
+            Arg.NotNull(services, nameof(services));
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;

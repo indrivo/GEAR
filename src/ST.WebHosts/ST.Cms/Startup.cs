@@ -37,6 +37,8 @@ using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
 using ST.Report.Dynamic.Extensions;
 using ST.Entities.Abstractions.Extensions;
+using ST.Entities.EntityBuilder.Postgres;
+using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
@@ -192,7 +194,7 @@ namespace ST.Cms
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
 			//---------------------------------------Entity Module-------------------------------------
-			services.AddEntityModule<EntitiesDbContext>();
+			services.AddEntityModule<EntitiesDbContext, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();

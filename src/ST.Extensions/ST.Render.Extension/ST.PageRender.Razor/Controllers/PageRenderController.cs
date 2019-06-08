@@ -435,14 +435,17 @@ namespace ST.PageRender.Razor.Controllers
             try
             {
                 var columnIndex = Convert.ToInt32(param.Order[0].Column);
-                var field = viewModel.ViewModelFields.ElementAt(columnIndex);
-                if (field != null)
+                if (viewModel.ViewModelFields.Count() - 1 > columnIndex)
                 {
-                    var column =
-                        viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
-                    sortColumn = column != null
-                        ? $"{column.Name ?? field.Name} {param.SortOrder}"
-                        : $"{field.Name} {param.SortOrder}";
+                    var field = viewModel.ViewModelFields.ElementAt(columnIndex);
+                    if (field != null)
+                    {
+                        var column =
+                            viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
+                        sortColumn = column != null
+                            ? $"{column.Name ?? field.Name} {param.SortOrder}"
+                            : $"{field.Name} {param.SortOrder}";
+                    }
                 }
             }
             catch (Exception e)

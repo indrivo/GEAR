@@ -177,8 +177,13 @@ window.forceTranslate = function (selector = null) {
 		$.each(translations,
 			function (index, item) {
 				let key = $(item).attr("translate");
-				$(item).text(trans[key]);
-				$(item).attr("translated", "");
+				const translation = trans[key];
+				if (translation) {
+					$(item).text(translation);
+					$(item).attr("translated", "");
+				} else {
+					localStorage.removeItem("translations");
+				}
 			});
 		resolve();
 	});
@@ -501,7 +506,7 @@ Notificator.prototype.sendNotification = function (data) {
  *@returns {any} Folders data
  */
 Notificator.prototype.getFolders = function () {
-	const settings = localStorage.getItem("settings");
+	const settings = localStorage.getItem("email_settings");
 	if (settings) {
 		const d = JSON.parse(settings);
 		if (d.hasOwnProperty("email")) {
@@ -510,7 +515,7 @@ Notificator.prototype.getFolders = function () {
 			d.email = {
 				folders: loadEmailFolders()
 			};
-			localStorage.setItem("settings", JSON.stringify(d));
+			localStorage.setItem("email_settings", JSON.stringify(d));
 		}
 	} else {
 		const f = loadEmailFolders();
@@ -519,7 +524,7 @@ Notificator.prototype.getFolders = function () {
 				folders: f
 			}
 		};
-		localStorage.setItem("settings", JSON.stringify(s));
+		localStorage.setItem("email_settings", JSON.stringify(s));
 		return f;
 	}
 };

@@ -87,7 +87,7 @@
       "destination": "wwwroot/lib/echarts/"
     },
     {
-      "library": "twitter-bootstrap@4.3.1",
+      "library": "twitter-bootstrap@4.1.0",
       "destination": "wwwroot/lib/twitter-bootstrap/"
     },
     {
@@ -137,6 +137,14 @@
       "files": [
         "lib/chosen.jquery.min.js",
         "lib/chosen.css"
+      ]
+    },
+    {
+      "library": "popper.js@1.12.3",
+      "destination": "wwwroot/lib/popper.js/",
+      "files": [
+        "popper.min.js",
+        "popper.js"
       ]
     }
   ]
