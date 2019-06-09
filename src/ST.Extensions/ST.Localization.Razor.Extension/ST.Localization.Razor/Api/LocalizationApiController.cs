@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace ST.Localization.Razor.Api
 {
+    [AllowAnonymous]
     [Route("api/[controller]/[action]")]
-    public class LocalizationApiController : ControllerBase
+    public class LocalizationApiController : Controller
     {
         /// <summary>
         /// Get jquery data table translations
@@ -17,6 +19,7 @@ namespace ST.Localization.Razor.Api
         /// <param name="language"></param>
         /// <param name="customReplace"></param>
         /// <returns></returns>
+        [HttpGet]
         public JsonResult GetJQueryTableTranslations(string language, string customReplace = null)
         {
             if (string.IsNullOrEmpty(language))
