@@ -1,8 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using ST.Core;
 
-namespace ST.Entities.Models.RenderTemplates
+namespace ST.PageRender.Abstractions.Models.RenderTemplates
 {
     public class Template : BaseModel
     {

@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using ST.Core.Helpers;
-using ST.Entities.Models.Pages;
+using ST.PageRender.Abstractions.Models.Pages;
 
-namespace ST.Configuration.Services.Abstraction
+namespace ST.PageRender.Razor.Services.Abstractions
 {
     public interface IPageRender
     {

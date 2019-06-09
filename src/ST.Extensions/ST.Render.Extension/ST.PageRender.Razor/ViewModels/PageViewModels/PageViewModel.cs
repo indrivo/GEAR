@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ST.Entities.Models.Pages;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.ViewModels.PageViewModels
 {

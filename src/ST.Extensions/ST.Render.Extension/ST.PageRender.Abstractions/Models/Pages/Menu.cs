@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using ST.Core;
 
-namespace ST.Entities.Models.Pages
+namespace ST.PageRender.Abstractions.Models.Pages
 {
     public class Menu : BaseModel
     {

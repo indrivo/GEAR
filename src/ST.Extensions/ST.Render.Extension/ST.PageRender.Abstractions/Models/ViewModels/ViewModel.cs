@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ST.Core;
 using ST.Entities.Abstractions.Models.Tables;
 
-namespace ST.Entities.Models.ViewModels
+namespace ST.PageRender.Abstractions.Models.ViewModels
 {
     public class ViewModel : BaseModel
     {

@@ -47,9 +47,8 @@ TableColumnsVisibility.prototype.getVisibility = function (id) {
 }
 
 TableColumnsVisibility.prototype.renderTemplate = function (ctx) {
-	return `<div class="col-md-2" style="margin-left: -1em;">
-				<a data-id="#${$(ctx)[0].id
-		}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a></div>`;
+	return `<a data-id="#${$(ctx)[0].id
+		}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a>`;
 };
 
 TableColumnsVisibility.prototype.init = function (ctx) {

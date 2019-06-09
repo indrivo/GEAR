@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using ST.Configuration.Services.Abstraction;
+using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.Cms.TagHelpers
 {

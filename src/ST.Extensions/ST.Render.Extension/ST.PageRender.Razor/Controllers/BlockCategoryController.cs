@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
 using ST.Core;
@@ -15,13 +14,18 @@ using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Controllers
 {
 	public class BlockCategoryController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
-        public BlockCategoryController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        private readonly IDynamicPagesContext _pagesContext;
+
+        public BlockCategoryController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
+            _pagesContext = pagesContext;
         }
 
         /// <summary>
@@ -33,7 +37,7 @@ namespace ST.PageRender.Razor.Controllers
 		[AjaxOnly]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = Context.Filter<BlockCategory>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = _pagesContext.FilterAbstractContext<BlockCategory>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount);
 
@@ -75,8 +79,8 @@ namespace ST.PageRender.Razor.Controllers
 		{
 			try
 			{
-				Context.BlockCategories.Add(model);
-				Context.SaveChanges();
+                _pagesContext.BlockCategories.Add(model);
+                _pagesContext.SaveChanges();
 
 				return RedirectToAction("Index");
 			}
@@ -97,7 +101,7 @@ namespace ST.PageRender.Razor.Controllers
 		public IActionResult Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = Context.BlockCategories.FirstOrDefault(x => x.Id.Equals(id));
+			var model = _pagesContext.BlockCategories.FirstOrDefault(x => x.Id.Equals(id));
 			if (model == null) return NotFound();
 
 			return View(model);
@@ -112,7 +116,7 @@ namespace ST.PageRender.Razor.Controllers
 		public IActionResult Edit(BlockCategory model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = Context.BlockCategories.FirstOrDefault(x => x.Id.Equals(model.Id));
+			var dataModel = _pagesContext.BlockCategories.FirstOrDefault(x => x.Id.Equals(model.Id));
 
 			if (dataModel == null) return NotFound();
 
@@ -122,8 +126,8 @@ namespace ST.PageRender.Razor.Controllers
 			dataModel.Changed = DateTime.Now;
 			try
 			{
-				Context.BlockCategories.Update(dataModel);
-				Context.SaveChanges();
+                _pagesContext.BlockCategories.Update(dataModel);
+                _pagesContext.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
@@ -145,13 +149,13 @@ namespace ST.PageRender.Razor.Controllers
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete block category!", success = false });
-			var page = Context.BlockCategories.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var page = _pagesContext.BlockCategories.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (page == null) return Json(new { message = "Fail to delete block category!", success = false });
 
 			try
 			{
-				Context.BlockCategories.Remove(page);
-				Context.SaveChanges();
+                _pagesContext.BlockCategories.Remove(page);
+                _pagesContext.SaveChanges();
 				return Json(new { message = "Block category was delete with success!", success = true });
 			}
 			catch (Exception e)

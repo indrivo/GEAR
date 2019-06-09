@@ -72,7 +72,8 @@ namespace ST.Core.Helpers
         /// <typeparam name="TImplementation"></typeparam>
         public static void RegisterScopedService<TAbstraction, TImplementation>(TImplementation instance) where TImplementation : class, TAbstraction where TAbstraction : class
         {
-            Container.Register(Component.For<TAbstraction>().Instance(instance)
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>().Instance(instance)
                         .LifestyleCustom<MsScopedLifestyleManager>());
         }
 

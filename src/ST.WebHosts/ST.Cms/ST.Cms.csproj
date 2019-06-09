@@ -157,6 +157,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Processes.Extension\ST.Process.Razor\ST.Process.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender\ST.PageRender.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Report.Extension\ST.Report.Dynamic.Razor\ST.Report.Dynamic.Razor.csproj" />
   </ItemGroup>
   <ItemGroup>

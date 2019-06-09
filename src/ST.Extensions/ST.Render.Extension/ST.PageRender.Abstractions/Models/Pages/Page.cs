@@ -5,23 +5,59 @@ using ST.Audit.Attributes;
 using ST.Audit.Enums;
 using ST.Core;
 using ST.Entities.Abstractions.Models.Tables;
+using ST.PageRender.Abstractions.Models.PagesACL;
 
-namespace ST.Entities.Models.Pages
+namespace ST.PageRender.Abstractions.Models.Pages
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class Page : BaseModel
     {
-        public PageType PageType { get; set; }
-        public Guid PageTypeId { get; set; }
+        /// <summary>
+        /// Page type reference
+        /// </summary>
+        public virtual PageType PageType { get; set; }
+        public virtual Guid PageTypeId { get; set; }
+        /// <summary>
+        /// Store page settings
+        /// </summary>
         public PageSettings Settings { get; set; }
-        public Guid? SettingsId { get; set; }
-        public string Path { get; set; }
-        public bool IsSystem { get; set; }
-        public bool IsLayout { get; set; }
-        public Page Layout { get; set; }
-        public Guid? LayoutId { get; set; }
-        public IEnumerable<PageScript> PageScripts { get; set; }
-        public IEnumerable<PageStyle> PageStyles { get; set; }
+        public virtual Guid? SettingsId { get; set; }
+        /// <summary>
+        /// Virtual path on server
+        /// </summary>
+        public virtual string Path { get; set; }
+        /// <summary>
+        /// Check if page is system
+        /// </summary>
+        public virtual bool IsSystem { get; set; }
+        /// <summary>
+        /// Store if object is layout
+        /// </summary>
+        public virtual bool IsLayout { get; set; }
+        /// <summary>
+        /// Layout reference
+        /// </summary>
+        public virtual Page Layout { get; set; }
+        public virtual Guid? LayoutId { get; set; }
+        /// <summary>
+        /// Page js scripts
+        /// </summary>
+        public virtual IEnumerable<PageScript> PageScripts { get; set; }
+
+        /// <summary>
+        /// Page css files 
+        /// </summary>
+        public virtual IEnumerable<PageStyle> PageStyles { get; set; }
+
+        /// <summary>
+        /// Roles access for pages
+        /// </summary>
+        public virtual IEnumerable<RolePagesAcl> RolePagesAcls { get; set; }
+
+        /// <summary>
+        /// Is enabled to check ACL for user access
+        /// </summary>
+        public virtual bool IsEnabledAcl { get; set; }
     }
 
     public interface IPageItem

@@ -10,14 +10,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using ST.Cache.Abstractions;
-using ST.Configuration.Services.Abstraction;
 using ST.Entities.Data;
-using ST.Entities.Models.Pages;
-using ST.Entities.Models.ViewModels;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
@@ -26,7 +22,11 @@ using ST.Core.Extensions;
 using ST.CORE.Razor.Extensions;
 using ST.Entities.Abstractions.Constants;
 using ST.Identity.Abstractions;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
+using ST.PageRender.Abstractions.Models.ViewModels;
 using ST.PageRender.Razor.Helpers;
+using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.PageRender.Razor.Services
 {
@@ -37,6 +37,8 @@ namespace ST.PageRender.Razor.Services
         /// Context
         /// </summary>
         private readonly EntitiesDbContext _context;
+
+        private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
         /// Inject notifier
@@ -63,7 +65,7 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, IHostingEnvironment env, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IActionContextAccessor actionContextAccessor)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, IHostingEnvironment env, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext)
         {
             _context = context;
             _cacheService = cacheService;
@@ -71,6 +73,7 @@ namespace ST.PageRender.Razor.Services
             _env = env;
             _userManager = userManager;
             _contextAccessor = contextAccessor;
+            _pagesContext = pagesContext;
         }
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
@@ -177,8 +180,8 @@ namespace ST.PageRender.Razor.Services
             page.Settings.HtmlCode = html;
             try
             {
-                _context.Pages.Update(page);
-                _context.SaveChanges();
+                _pagesContext.Pages.Update(page);
+                _pagesContext.SaveChanges();
                 await _cacheService.RemoveAsync($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
                 result.IsSuccess = true;
             }
@@ -237,7 +240,7 @@ namespace ST.PageRender.Razor.Services
             try
             {
                 var layout = pageId == null
-                    ? _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Settings.Name == pageName)
+                    ? _pagesContext.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Settings.Name == pageName)
                     : await GetPageAsync(pageId.Value);
 
                 if (layout == null) return (string.Empty, null);
@@ -278,9 +281,9 @@ namespace ST.PageRender.Razor.Services
             [Required] Guid viewModelId, string addPath = "#", string editPath = "#")
         {
             if (string.IsNullOrEmpty(name) || viewModelId.Equals(Guid.Empty)) return default;
-            var match = _context.Pages.Include(x => x.Settings)
+            var match = _pagesContext.Pages.Include(x => x.Settings)
                 .FirstOrDefault(x => x.Path.ToLower().Equals($"/{path}".ToLower()));
-            var viewModel = _context.ViewModels
+            var viewModel = _pagesContext.ViewModels
                     .Include(x => x.TableModel)
                     .Include(x => x.ViewModelFields)
                     .FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -312,8 +315,8 @@ namespace ST.PageRender.Razor.Services
 
             try
             {
-                _context.Pages.Add(page);
-                _context.SaveChanges();
+                _pagesContext.Pages.Add(page);
+                _pagesContext.SaveChanges();
 
                 var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.html");
                 var reader = new StreamReader(fileInfo.CreateReadStream());
@@ -393,8 +396,8 @@ namespace ST.PageRender.Razor.Services
             };
             try
             {
-                _context.Pages.Add(page);
-                _context.SaveChanges();
+                _pagesContext.Pages.Add(page);
+                _pagesContext.SaveChanges();
                 await SavePageContent(page.Id, template, string.Empty, string.Empty);
                 return new ResultModel
                 {
@@ -423,7 +426,7 @@ namespace ST.PageRender.Razor.Services
             if (pageId == null) return null;
             var cachedPage = await _cacheService.Get<Page>($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
             if (cachedPage != null) return cachedPage;
-            var page = await _context.Pages
+            var page = await _pagesContext.Pages
                 .Include(x => x.PageScripts)
                 .Include(x => x.PageStyles)
                 .Include(x => x.PageType)
@@ -471,10 +474,10 @@ namespace ST.PageRender.Razor.Services
             }));
 
             model.ViewModelFields = fields;
-            await _context.ViewModels.AddAsync(model);
+            await _pagesContext.ViewModels.AddAsync(model);
             try
             {
-                await _context.SaveChangesAsync();
+                await _pagesContext.SaveChangesAsync();
                 return new ResultModel<Guid> { IsSuccess = true, Result = id };
             }
             catch (Exception ex)

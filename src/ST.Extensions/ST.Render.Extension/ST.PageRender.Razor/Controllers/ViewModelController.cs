@@ -8,35 +8,32 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
-using ST.Entities.Data;
-using ST.Entities.Models.ViewModels;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Helpers;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.ViewModels;
+using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.PageRender.Razor.Controllers
 {
     [Authorize]
     public class ViewModelController : Controller
     {
-        /// <summary>
-        /// Context
-        /// </summary>
-        private readonly EntitiesDbContext _context;
-
         private readonly IPageRender _pageRender;
+
+        private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="pageRender"></param>
-        public ViewModelController(EntitiesDbContext context, IPageRender pageRender)
+        /// <param name="pagesContext"></param>
+        public ViewModelController(IPageRender pageRender, IDynamicPagesContext pagesContext)
         {
-            _context = context;
             _pageRender = pageRender;
+            _pagesContext = pagesContext;
         }
 
         /// <summary>
@@ -56,7 +53,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
-            var viewModel = _context.ViewModels.FirstOrDefault(x => x.Id.Equals(id));
+            var viewModel = _pagesContext.ViewModels.FirstOrDefault(x => x.Id.Equals(id));
             if (viewModel == null) return NotFound();
             return View(viewModel);
         }
@@ -69,7 +66,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public IActionResult TemplateEdit([Required]Guid id)
         {
-            var viewModelField = _context.ViewModelFields.FirstOrDefault(x => x.Id.Equals(id));
+            var viewModelField = _pagesContext.ViewModelFields.FirstOrDefault(x => x.Id.Equals(id));
             if (viewModelField == null) return NotFound();
             return View(viewModelField);
         }
@@ -84,7 +81,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (model.Id != Guid.Empty)
             {
-                var dataModel = _context.ViewModelFields.FirstOrDefault(x => x.Id.Equals(model.Id));
+                var dataModel = _pagesContext.ViewModelFields.FirstOrDefault(x => x.Id.Equals(model.Id));
                 if (dataModel == null)
                 {
                     ModelState.AddModelError(string.Empty, "Invalid data entry!");
@@ -92,10 +89,10 @@ namespace ST.PageRender.Razor.Controllers
                 }
 
                 dataModel.Template = model.Template;
-                _context.Update(dataModel);
+                _pagesContext.ViewModelFields.Update(dataModel);
                 try
                 {
-                    _context.SaveChanges();
+                    _pagesContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 catch
@@ -118,7 +115,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (model.Id != Guid.Empty)
             {
-                var dataModel = _context.ViewModels.FirstOrDefault(x => x.Id.Equals(model.Id));
+                var dataModel = _pagesContext.ViewModels.FirstOrDefault(x => x.Id.Equals(model.Id));
                 if (dataModel == null)
                 {
                     ModelState.AddModelError(string.Empty, "Invalid data entry!");
@@ -126,10 +123,10 @@ namespace ST.PageRender.Razor.Controllers
                 }
 
                 dataModel.Name = model.Name;
-                _context.Update(dataModel);
+                _pagesContext.ViewModels.Update(dataModel);
                 try
                 {
-                    _context.SaveChanges();
+                    _pagesContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
                 catch
@@ -180,20 +177,20 @@ namespace ST.PageRender.Razor.Controllers
             }
 
             var pageId = items.First().ViewModelId;
-            var pageScripts = _context.Set<TItem>().Where(x => x.ViewModelId.Equals(pageId)).ToList();
+            var pageScripts = _pagesContext.SetEntity<TItem>().Where(x => x.ViewModelId.Equals(pageId)).ToList();
 
             foreach (var prev in pageScripts)
             {
                 var up = items.FirstOrDefault(x => x.Id.Equals(prev.Id));
                 if (up == null)
                 {
-                    _context.Set<TItem>().Remove(prev);
+                    _pagesContext.SetEntity<TItem>().Remove(prev);
                 }
                 else if (prev.Order != up.Order || prev.Name != up.Name)
                 {
                     prev.Name = up.Name;
                     prev.Order = up.Order;
-                    _context.Set<TItem>().Update(prev);
+                    _pagesContext.SetEntity<TItem>().Update(prev);
                 }
             }
 
@@ -206,12 +203,12 @@ namespace ST.PageRender.Razor.Controllers
 
             if (news.Any())
             {
-                _context.Set<TItem>().AddRange(news);
+                _pagesContext.SetEntity<TItem>().AddRange(news);
             }
 
             try
             {
-                _context.SaveChanges();
+                _pagesContext.SaveChanges();
                 result.IsSuccess = true;
             }
             catch (Exception ex)
@@ -231,7 +228,7 @@ namespace ST.PageRender.Razor.Controllers
         public IActionResult OrderFields([Required]Guid id)
         {
             if (Guid.Empty == id) return NotFound();
-            ViewBag.Data = _context.ViewModelFields
+            ViewBag.Data = _pagesContext.ViewModelFields
                 .Where(x => x.ViewModelId.Equals(id))
                 .Include(x => x.TableModelField)
                 .OrderBy(x => x.Order).ToList();
@@ -249,7 +246,7 @@ namespace ST.PageRender.Razor.Controllers
         [AjaxOnly]
         public JsonResult LoadViewModels(DTParameters param, Guid entityId)
         {
-            var filtered = _context.Filter<ViewModel>(param.Search.Value, param.SortOrder, param.Start,
+            var filtered = _pagesContext.FilterAbstractContext<ViewModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount, x => (entityId != Guid.Empty && x.TableModelId == entityId) || entityId == Guid.Empty);
 
@@ -263,7 +260,7 @@ namespace ST.PageRender.Razor.Controllers
                 x.IsDeleted,
                 x.ModifiedBy,
                 x.Name,
-                Table = _context.Table.FirstOrDefault(y => y.Id.Equals(x.TableModelId))?.Name
+                Table = _pagesContext.Table.FirstOrDefault(y => y.Id.Equals(x.TableModelId))?.Name
             }).Adapt<IEnumerable<object>>();
 
             var finalResult = new DTResult<object>
@@ -287,13 +284,13 @@ namespace ST.PageRender.Razor.Controllers
         public JsonResult Delete(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete view model!", success = false });
-            var page = _context.ViewModels.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+            var page = _pagesContext.ViewModels.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
             if (page == null) return Json(new { message = "Fail to delete view model!", success = false });
 
             try
             {
-                _context.ViewModels.Remove(page);
-                _context.SaveChanges();
+                _pagesContext.ViewModels.Remove(page);
+                _pagesContext.SaveChanges();
                 return Json(new { message = "View model was delete with success!", success = true });
             }
             catch (Exception e)
@@ -315,7 +312,7 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> ChangeViewModelFieldTranslateText([Required]Guid fieldId, [Required]string translatedKey)
         {
             var response = new ResultModel();
-            var field = await _context.ViewModelFields.FirstOrDefaultAsync(x => x.Id == fieldId);
+            var field = await _pagesContext.ViewModelFields.FirstOrDefaultAsync(x => x.Id == fieldId);
             if (field == null)
             {
                 response.Errors.Add(new ErrorModel("not_found", "Field not found!"));
@@ -323,10 +320,10 @@ namespace ST.PageRender.Razor.Controllers
             }
 
             field.Translate = translatedKey;
-            _context.Update(field);
+            _pagesContext.ViewModelFields.Update(field);
             try
             {
-                await _context.SaveChangesAsync();
+                await _pagesContext.SaveChangesAsync();
                 response.IsSuccess = true;
             }
             catch (Exception e)

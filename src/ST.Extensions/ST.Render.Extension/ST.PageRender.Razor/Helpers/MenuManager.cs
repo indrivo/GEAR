@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Mapster;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Entities.Extensions;
-using ST.Entities.Models.Pages;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Helpers
 {

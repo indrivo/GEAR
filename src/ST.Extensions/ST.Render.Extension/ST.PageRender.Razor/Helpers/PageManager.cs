@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.Core.Helpers;
-using ST.Entities.Data;
-using ST.Entities.Models.Pages;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Helpers
 {
@@ -47,7 +47,7 @@ namespace ST.PageRender.Razor.Helpers
         /// </summary>
         public static async Task SyncWebPagesAsync()
         {
-            var context = IoC.Resolve<EntitiesDbContext>();
+            var context = IoC.Resolve<IDynamicPagesContext>();
             //Add page types
             if (!await context.PageTypes.AnyAsync())
             {

@@ -8,7 +8,7 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.Entities.Models.Pages;
+using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.PageRender.Razor.Services

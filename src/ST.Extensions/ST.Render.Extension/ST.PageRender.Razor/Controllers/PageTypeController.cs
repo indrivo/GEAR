@@ -2,29 +2,26 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
-using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Helpers;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Controllers
 {
 	public class PageTypeController : Controller
 	{
-		/// <summary>
-		/// Context
-		/// </summary>
-		private readonly EntitiesDbContext _context;
+        private readonly IDynamicPagesContext _pagesContext;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		public PageTypeController(EntitiesDbContext context)
-		{
-			_context = context;
-		}
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="pagesContext"></param>
+        public PageTypeController(IDynamicPagesContext pagesContext)
+        {
+            _pagesContext = pagesContext;
+        }
 
 		/// <summary>
 		/// Index view
@@ -57,8 +54,8 @@ namespace ST.PageRender.Razor.Controllers
 			{
 				try
 				{
-					_context.PageTypes.Add(model);
-					_context.SaveChanges();
+                    _pagesContext.PageTypes.Add(model);
+                    _pagesContext.SaveChanges();
 					return RedirectToAction("Index");
 				}
 				catch (Exception e)
@@ -79,7 +76,7 @@ namespace ST.PageRender.Razor.Controllers
 		public IActionResult Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = _context.PageTypes.FirstOrDefault(x => x.Id.Equals(id));
+			var model = _pagesContext.PageTypes.FirstOrDefault(x => x.Id.Equals(id));
 			if (model == null) return NotFound();
 
 			return View(model);
@@ -94,7 +91,7 @@ namespace ST.PageRender.Razor.Controllers
 		public IActionResult Edit(PageType model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = _context.PageTypes.FirstOrDefault(x => x.Id.Equals(model.Id));
+			var dataModel = _pagesContext.PageTypes.FirstOrDefault(x => x.Id.Equals(model.Id));
 
 			if (dataModel == null) return NotFound();
 
@@ -104,8 +101,8 @@ namespace ST.PageRender.Razor.Controllers
 			dataModel.Changed = DateTime.Now;
 			try
 			{
-				_context.PageTypes.Update(dataModel);
-				_context.SaveChanges();
+                _pagesContext.PageTypes.Update(dataModel);
+                _pagesContext.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
@@ -125,7 +122,7 @@ namespace ST.PageRender.Razor.Controllers
 		[AjaxOnly]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = _context.Filter<PageType>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = _pagesContext.FilterAbstractContext<PageType>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount);
 
@@ -150,13 +147,13 @@ namespace ST.PageRender.Razor.Controllers
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete page type!", success = false });
-			var page = _context.PageTypes.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var page = _pagesContext.PageTypes.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (page == null) return Json(new { message = "Fail to delete page type!", success = false });
 
 			try
 			{
-				_context.PageTypes.Remove(page);
-				_context.SaveChanges();
+                _pagesContext.PageTypes.Remove(page);
+                _pagesContext.SaveChanges();
 				return Json(new { message = "Page type  was delete with success!", success = true });
 			}
 			catch (Exception e)

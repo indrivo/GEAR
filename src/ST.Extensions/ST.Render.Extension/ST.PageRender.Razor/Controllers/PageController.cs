@@ -9,10 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Cache.Abstractions;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
@@ -24,7 +22,10 @@ using ST.Core.Helpers;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Razor.Helpers;
+using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -35,12 +36,14 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         private readonly IPageRender _pageRender;
         private readonly IFormService _formService;
+        private readonly IDynamicPagesContext _pagesContext;
 
 
-        public PageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IPageRender pageRender, IFormService formService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public PageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             _pageRender = pageRender;
             _formService = formService;
+            _pagesContext = pagesContext;
         }
 
         /// <summary>
@@ -209,8 +212,8 @@ namespace ST.PageRender.Razor.Controllers
 
             try
             {
-                Context.Update(page);
-                Context.SaveChanges();
+                _pagesContext.Pages.Update(page);
+                _pagesContext.SaveChanges();
                 await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                 //return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
                 return RedirectToAction("GetCode", new { type = model.Type, id = model.PageId });
@@ -233,8 +236,8 @@ namespace ST.PageRender.Razor.Controllers
         {
             var model = new PageViewModel
             {
-                PageTypes = Context.PageTypes.ToList(),
-                Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout)
+                PageTypes = _pagesContext.PageTypes.ToList(),
+                Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout)
             };
 
             return View(model);
@@ -250,27 +253,27 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.PageTypes = Context.PageTypes.ToList();
-                model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                model.PageTypes = _pagesContext.PageTypes.ToList();
+                model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                 return View(model);
             }
 
-            var match = Context.Pages.Include(x => x.Settings)
+            var match = _pagesContext.Pages.Include(x => x.Settings)
                 .FirstOrDefault(x => x.Settings.Name.ToLower().Equals(model.Name.ToLower()));
 
             if (match != null)
             {
                 ModelState.AddModelError(string.Empty, "The page name exists, please type another name");
-                model.PageTypes = Context.PageTypes.ToList();
-                model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                model.PageTypes = _pagesContext.PageTypes.ToList();
+                model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                 return View(model);
             }
 
             if (!model.Path.StartsWith("/"))
             {
                 ModelState.AddModelError(string.Empty, "Invalid format for path of page.Example: /PageName ");
-                model.PageTypes = Context.PageTypes.ToList();
-                model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                model.PageTypes = _pagesContext.PageTypes.ToList();
+                model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                 return View(model);
             }
 
@@ -292,14 +295,14 @@ namespace ST.PageRender.Razor.Controllers
 
             try
             {
-                Context.Pages.Add(page);
-                Context.SaveChanges();
+                _pagesContext.Pages.Add(page);
+                _pagesContext.SaveChanges();
             }
             catch (Exception e)
             {
                 ModelState.AddModelError(string.Empty, e.Message);
-                model.PageTypes = Context.PageTypes.ToList();
-                model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                model.PageTypes = _pagesContext.PageTypes.ToList();
+                model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                 return View(model);
             }
             await Notify.SendNotificationAsync(new SystemNotifications
@@ -325,10 +328,10 @@ namespace ST.PageRender.Razor.Controllers
             var model = page.Adapt<PageViewModel>();
             model.Name = page.Settings.Name;
             model.Description = page.Settings.Description;
-            model.PageTypes = Context.PageTypes.AsNoTracking().ToList();
+            model.PageTypes = _pagesContext.PageTypes.AsNoTracking().ToList();
             model.Path = page.Path;
             model.Title = page.Settings.Title;
-            model.Layouts = Context.Pages.AsNoTracking().Include(x => x.Settings).Where(x => x.IsLayout);
+            model.Layouts = _pagesContext.Pages.AsNoTracking().Include(x => x.Settings).Where(x => x.IsLayout);
             return View(model);
         }
 
@@ -344,8 +347,8 @@ namespace ST.PageRender.Razor.Controllers
             {
                 if (model.Id == Guid.Empty && model.SettingsId != Guid.Empty)
                 {
-                    model.PageTypes = Context.PageTypes.ToList();
-                    model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                    model.PageTypes = _pagesContext.PageTypes.ToList();
+                    model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                     ModelState.AddModelError(string.Empty, "Invalid page");
                     return View(model);
                 }
@@ -353,17 +356,17 @@ namespace ST.PageRender.Razor.Controllers
                 if (!model.Path.StartsWith("/"))
                 {
                     ModelState.AddModelError(string.Empty, "Invalid format for path of page.Example: /PageName ");
-                    model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
-                    model.PageTypes = Context.PageTypes.ToList();
+                    model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                    model.PageTypes = _pagesContext.PageTypes.ToList();
                     return View(model);
                 }
 
-                var settings = Context.PageSettings.FirstOrDefault(x => x.Id.Equals(model.SettingsId));
-                var page = Context.Pages.FirstOrDefault(x => x.Id.Equals(model.Id));
+                var settings = _pagesContext.PageSettings.FirstOrDefault(x => x.Id.Equals(model.SettingsId));
+                var page = _pagesContext.Pages.FirstOrDefault(x => x.Id.Equals(model.Id));
                 if (page == null)
                 {
-                    model.PageTypes = Context.PageTypes.ToList();
-                    model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                    model.PageTypes = _pagesContext.PageTypes.ToList();
+                    model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                     ModelState.AddModelError(string.Empty, "Invalid page");
                     return View(model);
                 }
@@ -374,8 +377,8 @@ namespace ST.PageRender.Razor.Controllers
 
                 if (settings == null)
                 {
-                    model.PageTypes = Context.PageTypes.ToList();
-                    model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                    model.PageTypes = _pagesContext.PageTypes.ToList();
+                    model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                     ModelState.AddModelError(string.Empty, "Fail to get page settings");
                     return View(model);
                 }
@@ -386,16 +389,16 @@ namespace ST.PageRender.Razor.Controllers
 
                 try
                 {
-                    Context.PageSettings.Update(settings);
-                    Context.Pages.Update(page);
-                    await Context.SaveChangesAsync();
+                    _pagesContext.PageSettings.Update(settings);
+                    _pagesContext.Pages.Update(page);
+                    await _pagesContext.SaveChangesAsync();
                     await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                     return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
                 }
                 catch (Exception e)
                 {
-                    model.PageTypes = Context.PageTypes.ToList();
-                    model.Layouts = Context.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                    model.PageTypes = _pagesContext.PageTypes.ToList();
+                    model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
                     ModelState.AddModelError(string.Empty, e.Message);
                     return View(model);
                 }
@@ -403,7 +406,7 @@ namespace ST.PageRender.Razor.Controllers
 
             ModelState.AddModelError(string.Empty, "Invalid data input");
 
-            model.PageTypes = Context.PageTypes.ToList();
+            model.PageTypes = _pagesContext.PageTypes.ToList();
             return View(model);
         }
 
@@ -417,7 +420,7 @@ namespace ST.PageRender.Razor.Controllers
         [AjaxOnly]
         public JsonResult LoadPages(DTParameters param)
         {
-            var filtered = Context.Filter<Page>(param.Search.Value, param.SortOrder, param.Start,
+            var filtered = _pagesContext.FilterAbstractContext<Page>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount, x => !x.IsLayout && !x.IsDeleted).Select(x => new Page
                 {
@@ -425,11 +428,11 @@ namespace ST.PageRender.Razor.Controllers
                     Created = x.Created,
                     Changed = x.Changed,
                     Author = x.Author,
-                    Settings = Context.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
+                    Settings = _pagesContext.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
                     PageType = x.PageType,
                     ModifiedBy = x.ModifiedBy,
                     IsDeleted = x.IsDeleted,
-                    Layout = Context.Pages.Include(g => g.Settings).FirstOrDefault(y => y.Id == x.LayoutId),
+                    Layout = _pagesContext.Pages.Include(g => g.Settings).FirstOrDefault(y => y.Id == x.LayoutId),
                     SettingsId = x.SettingsId,
                     PageTypeId = x.PageTypeId,
                     IsSystem = x.IsSystem,
@@ -450,7 +453,7 @@ namespace ST.PageRender.Razor.Controllers
         [AjaxOnly]
         public JsonResult LoadLayouts(DTParameters param)
         {
-            var filtered = Context.Filter<Page>(param.Search.Value, param.SortOrder, param.Start,
+            var filtered = _pagesContext.FilterAbstractContext<Page>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount, x => x.IsLayout && !x.IsDeleted).Select(x => new Page
                 {
@@ -458,7 +461,7 @@ namespace ST.PageRender.Razor.Controllers
                     Created = x.Created,
                     Changed = x.Changed,
                     Author = x.Author,
-                    Settings = Context.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
+                    Settings = _pagesContext.PageSettings.FirstOrDefault(y => y.Id.Equals(x.SettingsId)),
                     PageType = x.PageType,
                     ModifiedBy = x.ModifiedBy,
                     IsDeleted = x.IsDeleted,
@@ -489,14 +492,14 @@ namespace ST.PageRender.Razor.Controllers
         public JsonResult Delete(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete page!", success = false });
-            var page = Context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+            var page = _pagesContext.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
             if (page == null) return Json(new { message = "Fail to delete page!", success = false });
             if (page.IsSystem) return Json(new { message = "Fail to delete system page!", success = false });
-            Context.Pages.Remove(page);
+            _pagesContext.Pages.Remove(page);
 
             try
             {
-                Context.SaveChanges();
+                _pagesContext.SaveChanges();
                 CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                 return Json(new { message = "Page was delete with success!", success = true });
             }
@@ -546,20 +549,20 @@ namespace ST.PageRender.Razor.Controllers
             }
 
             var pageId = items.FirstOrDefault()?.PageId;
-            var pageScripts = Context.Set<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
+            var pageScripts = _pagesContext.SetEntity<TItem>().Where(x => x.PageId.Equals(pageId)).ToList();
 
             foreach (var prev in pageScripts)
             {
                 var up = items.FirstOrDefault(x => x.Id.Equals(prev.Id));
                 if (up == null)
                 {
-                    Context.Set<TItem>().Remove(prev);
+                    _pagesContext.SetEntity<TItem>().Remove(prev);
                 }
                 else if (prev.Order != up.Order || prev.Script != up.Script)
                 {
                     prev.Script = up.Script;
                     prev.Order = up.Order;
-                    Context.Set<TItem>().Update(prev);
+                    _pagesContext.SetEntity<TItem>().Update(prev);
                 }
             }
 
@@ -572,12 +575,12 @@ namespace ST.PageRender.Razor.Controllers
 
             if (news.Any())
             {
-                Context.Set<TItem>().AddRange(news);
+                _pagesContext.SetEntity<TItem>().AddRange(news);
             }
 
             try
             {
-                Context.SaveChanges();
+                _pagesContext.SaveChanges();
                 await CacheService.RemoveAsync($"_page_dynamic_{pageId}");
                 result.IsSuccess = true;
             }

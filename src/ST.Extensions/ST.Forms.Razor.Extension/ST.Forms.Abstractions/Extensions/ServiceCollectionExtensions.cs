@@ -15,14 +15,14 @@ namespace ST.Forms.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection AddFormModule<TFormContext>(this IServiceCollection services) where TFormContext : DbContext, IFormContext
         {
-            Func<IServiceProvider, IFormContext> contextFactory = x =>
+            IFormContext ContextFactory(IServiceProvider x)
             {
                 var context = x.GetService<TFormContext>();
-                if (!IoC.IsServiceRegistered<IFormContext>())
-                    IoC.RegisterScopedService<IFormContext, TFormContext>(context);
+                IoC.RegisterScopedService<IFormContext, TFormContext>(context);
                 return context;
-            };
-            services.AddScoped(contextFactory);
+            }
+
+            services.AddScoped(ContextFactory);
             return services;
         }
     }

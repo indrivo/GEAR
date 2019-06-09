@@ -16,6 +16,7 @@ using ST.Entities.Data;
 using ST.Entities.Utils;
 using ST.Forms.Abstractions;
 using ST.Identity.Data;
+using ST.PageRender.Abstractions;
 
 namespace ST.Configuration.Services
 {
@@ -31,7 +32,7 @@ namespace ST.Configuration.Services
             var dynamicService = IoC.Resolve<IDynamicService>();
             var applicationDbContext = IoC.Resolve<ApplicationDbContext>();
             var formContext = IoC.Resolve<IFormContext>();
-
+            var pageContext = IoC.Resolve<IDynamicPagesContext>();
             var dynamicEntities = entitiesDbContext.Table
                 .Where(x => !x.IsPartOfDbContext)
                 .Include(x => x.TableFields);
@@ -74,7 +75,7 @@ namespace ST.Configuration.Services
                         .Include(x => x.Settings).ToList())))
                 },
                 {
-                    "pages.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Pages
+                    "pages.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(pageContext.Pages
                         .Include(x => x.PageScripts)
                         .Include(x => x.PageStyles)
                         .Include(x => x.PageType)
@@ -84,7 +85,7 @@ namespace ST.Configuration.Services
                     "dynamicEntities.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(dynamicEntities)))
                 },
                 {
-                    "templates.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Templates.ToList())))
+                    "templates.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(pageContext.Templates.ToList())))
                 },
                 {
                     "roles.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.Roles.ToList())))
@@ -102,10 +103,10 @@ namespace ST.Configuration.Services
                     "rolePermissions.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(applicationDbContext.RolePermissions.ToList())))
                 },
                 {
-                    "blocksCategories.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.BlockCategories.ToList())))
+                    "blocksCategories.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(pageContext.BlockCategories.ToList())))
                 },
                 {
-                    "blocks.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(entitiesDbContext.Blocks.ToList())))
+                    "blocks.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(pageContext.Blocks.ToList())))
                 },
                 {
                     "dynamicEntitiesData.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(dynamicData)))

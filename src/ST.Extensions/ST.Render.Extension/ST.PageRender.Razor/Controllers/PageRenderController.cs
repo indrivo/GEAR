@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
@@ -29,6 +28,7 @@ using ST.Core.Helpers;
 using ST.Entities.Abstractions.Constants;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
+using ST.PageRender.Abstractions;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -36,6 +36,8 @@ namespace ST.PageRender.Razor.Controllers
     public class PageRenderController : Controller
     {
         #region InjectRegion
+
+        private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
         /// DB context
@@ -84,10 +86,11 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="menuService"></param>
         /// <param name="userManager"></param>
         /// <param name="formContext"></param>
+        /// <param name="pagesContext"></param>
         public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext)
+            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext)
         {
             _context = context;
             _appContext = appContext;
@@ -95,6 +98,7 @@ namespace ST.PageRender.Razor.Controllers
             _menuService = menuService;
             _userManager = userManager;
             _formContext = formContext;
+            _pagesContext = pagesContext;
             _pageRender = pageRender;
         }
 
@@ -143,7 +147,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetViewModels()
         {
-            var viewModels = _context.ViewModels.Where(x => !x.IsDeleted).ToList();
+            var viewModels = _pagesContext.ViewModels.Where(x => !x.IsDeleted).ToList();
 
             return new JsonResult(viewModels);
         }
@@ -178,7 +182,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetViewModelById([Required] Guid viewModelId)
         {
-            var obj = _context.ViewModels
+            var obj = _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .Include(x => x.ViewModelFields)
                 .ThenInclude(x => x.TableModelField)
@@ -211,7 +215,7 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
         {
-            var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+            var entity = _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (entity == null) return Json(default(ResultModel));
             var objType = _service.Table(entity.TableModel.Name).Type;
             var obj = Activator.CreateInstance(objType);
@@ -244,7 +248,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetBlocks()
         {
-            var blocks = _context.Blocks.Include(x => x.BlockCategory).Where(x => !x.IsDeleted).ToList();
+            var blocks = _pagesContext.Blocks.Include(x => x.BlockCategory).Where(x => !x.IsDeleted).ToList();
             var result = blocks.Select(x => new
             {
                 x.Id,
@@ -267,13 +271,13 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (pageId == Guid.Empty) return Json(default(IEnumerable<string>));
             var scripts = new HashSet<string>();
-            var page = _context.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(pageId));
+            var page = _pagesContext.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(pageId));
 
             if (page == null) return Json(default(IEnumerable<string>));
 
             if (!page.IsLayout && page.LayoutId != null)
             {
-                var layout = _context.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
+                var layout = _pagesContext.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
 
                 if (layout != null && layout.PageScripts.Any())
                 {
@@ -304,13 +308,13 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (pageId == Guid.Empty) return Json(default(IEnumerable<string>));
             var styles = new HashSet<string>();
-            var page = _context.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(pageId));
+            var page = _pagesContext.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(pageId));
 
             if (page == null) return Json(default(IEnumerable<string>));
 
             if (!page.IsLayout && page.LayoutId != null)
             {
-                var layout = _context.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
+                var layout = _pagesContext.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
 
                 if (layout != null && layout.PageStyles.Any())
                 {
@@ -423,7 +427,7 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId)
         {
             if (viewModelId == Guid.Empty) return Json(default(DTResult<object>));
-            var viewModel = await _context.ViewModels
+            var viewModel = await _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
                 .Include(x => x.ViewModelFields)
@@ -489,7 +493,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetPages()
         {
-            var pages = _context.Pages
+            var pages = _pagesContext.Pages
                 .Include(x => x.Settings)
                 .Where(x => !x.IsDeleted && !x.IsLayout)
                 .Select(x => new
@@ -667,7 +671,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
                 return Json(new { message = "Fail to delete!", success = false });
-            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
             var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
@@ -689,7 +693,7 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
         {
             if (ids == null) return Json(new { message = "Fail to delete!", success = false });
-            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
             try
@@ -721,7 +725,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
                 return Json(new { message = "Fail to restore!", success = false });
-            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
             var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
@@ -748,7 +752,7 @@ namespace ST.PageRender.Razor.Controllers
                 Json(result);
             }
 
-            var viewModel = await _context.ViewModels.Include(x => x.ViewModelFields)
+            var viewModel = await _pagesContext.ViewModels.Include(x => x.ViewModelFields)
                 .FirstOrDefaultAsync(x => x.Id == viewModelId);
             if (viewModel == null)
             {

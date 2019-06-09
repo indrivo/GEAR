@@ -4,22 +4,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Helpers;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Controllers
 {
 	public class MenuController : Controller
-	{
-		/// <summary>
-		/// Context
-		/// </summary>
-		private readonly EntitiesDbContext _context;
+    {
 
-		/// <summary>
+        private readonly IDynamicPagesContext _pagesContext;
+
+        /// <summary>
 		/// Inject Data Service
 		/// </summary>
 		private readonly IDynamicService _service;
@@ -29,18 +27,18 @@ namespace ST.PageRender.Razor.Controllers
 		/// </summary>
 		private readonly ICacheService _cacheService;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="service"></param>
-		/// <param name="cacheService"></param>
-		public MenuController(EntitiesDbContext context, IDynamicService service, ICacheService cacheService)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="cacheService"></param>
+        /// <param name="pagesContext"></param>
+        public MenuController(IDynamicService service, ICacheService cacheService, IDynamicPagesContext pagesContext)
 		{
-			_context = context;
-			_service = service;
+            _service = service;
 			_cacheService = cacheService;
-		}
+            _pagesContext = pagesContext;
+        }
 
 		/// <summary>
 		/// Index view
@@ -153,7 +151,7 @@ namespace ST.PageRender.Razor.Controllers
 		{
 			ViewBag.MenuId = menuId;
 			ViewBag.ParentId = parentId;
-			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
+			ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
 			return View();
 		}
 
@@ -165,7 +163,7 @@ namespace ST.PageRender.Razor.Controllers
 		[HttpPost]
 		public async Task<IActionResult> CreateItem(MenuItem model)
 		{
-			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
+			ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
 			if (model != null)
 			{
 				model.AllowedRoles = "Administrator#";
@@ -194,7 +192,7 @@ namespace ST.PageRender.Razor.Controllers
 		[HttpGet]
 		public async Task<IActionResult> EditItem(Guid itemId)
 		{
-			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
+			ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
 			var item = await _service.GetByIdWithReflection<MenuItem, MenuItem>(itemId);
 			if (!item.IsSuccess) return NotFound();
 			return View(item.Result);
@@ -219,7 +217,7 @@ namespace ST.PageRender.Razor.Controllers
 				});
 			}
 
-			ViewBag.Routes = _context.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
+			ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
 			ModelState.AddModelError(string.Empty, "Fail to save!");
 			return View(model);
 		}

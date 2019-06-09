@@ -42,6 +42,8 @@ using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
+using ST.PageRender.Abstractions.Extensions;
+using ST.PageRender.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -214,7 +216,7 @@ namespace ST.Cms
 			//------------------------------Database backup Module-------------------------------------
 			services.RegisterDatabaseBackupRunnerModule(Configuration);
 
-			//------------------------------------Processes Module-------------------------------------
+			//------------------------------------Page render Module-------------------------------------
 			services.AddPageRenderModule();
 
 			//------------------------------------Processes Module-------------------------------------
@@ -231,6 +233,15 @@ namespace ST.Cms
 			});
 
 			services.AddFormStaticFilesModule();
+
+
+			//-----------------------------------------Page Module-------------------------------------
+			services.AddPageModule<DynamicPagesDbContext>();
+			services.AddDbContext<DynamicPagesDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
+			});
+
 
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
