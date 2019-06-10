@@ -171,6 +171,7 @@ namespace ST.Cms.Controllers.Entity
 				Created = o.Created,
 				ModifiedBy = o.ModifiedBy,
 				Description = o.Description,
+				IsPartOfDbContext = o.IsPartOfDbContext,
 				EntityType = o.EntityType,
 				Changed = o.Changed,
 				IsSystem = o.IsSystem,
@@ -312,15 +313,23 @@ namespace ST.Cms.Controllers.Entity
 		public async Task<IActionResult> AddField(CreateTableFieldViewModel field)
 		{
 			var entitiesList = await Context.Table.ToListAsync();
-			var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
+			var table = entitiesList.FirstOrDefault(x => x.Id == field.TableId);
 			var tableName = table?.Name;
 			var schema = table?.EntityType;
 			field.EntitiesList = entitiesList.Select(x => x.Name).ToList();
 			if (table == null)
 			{
-				ModelState.AddModelError(Guid.NewGuid().ToString(), "Table not found");
+				ModelState.AddModelError(string.Empty, "Table not found");
 				return View(field);
 			}
+
+			var baseEntityProps = BaseModel.GetPropsName().Select(x => x.ToLower()).ToList();
+			if (baseEntityProps.Contains(field.Name.Trim().ToLower()))
+			{
+				ModelState.AddModelError(string.Empty, "This field name can't be used, is system name!");
+				return View(field);
+			}
+
 			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == field.TableFieldTypeId).Select(item => new FieldConfigViewModel
 			{
 				Name = item.Name,

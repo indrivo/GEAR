@@ -125,36 +125,31 @@ namespace ST.Entities.EntityBuilder.Postgres
                 IsSuccess = false,
                 Result = false
             };
-            if (!string.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(connectionString)) return returnModel;
+            try
             {
-                try
+                var sqlQuery = QueryTableBuilder.CheckTableValues(tableName, tableSchema);
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var sqlQuery = QueryTableBuilder.CheckTableValues(tableName, tableSchema);
-                    using (var connection = new NpgsqlConnection(connectionString))
+                    var command = new NpgsqlCommand(sqlQuery, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
                     {
-                        var command = new NpgsqlCommand(sqlQuery, connection);
-                        connection.Open();
-                        using (var reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            if (reader.HasRows)
                             {
-                                if (reader.HasRows)
-                                {
-                                    returnModel.Result = true;
-                                }
+                                returnModel.Result = true;
                             }
                         }
                     }
+                }
 
-                    return returnModel;
-                }
-                catch (Exception)
-                {
-                    return returnModel;
-                }
+                return returnModel;
             }
-            else
+            catch (Exception e)
             {
+                returnModel.Errors.Add(new ErrorModel("error", e.Message));
                 return returnModel;
             }
         }

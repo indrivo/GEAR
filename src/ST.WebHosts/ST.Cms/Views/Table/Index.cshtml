@@ -66,7 +66,6 @@
 					"type": "POST"
 				},
 				"columns": [
-
 					{ "data": "name" },
 					{ "data": "entityType" },
 					{ "data": "created" },
@@ -75,26 +74,30 @@
 						data: null,
 						render: function(data, type, row) {
 							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window.translate("edit")}</a>
-									<a class="btn btn-warning btn-sm" onclick="scaffoldClickEvent('${row.id}')" href="#">Scaffold</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</button></div>`;
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window
+								.translate("edit")}</a>
+									<a class="btn btn-warning btn-sm" onclick="scaffoldClickEvent('${row.id
+								}')" href="#">Scaffold</a>
+									${!row.isSystem ? `<a class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</a>` : ``}
+									</div>`;
 						}
 					}
 				]
 			});
 		});
+
 		function CreateAlert(rowId) {
 			const object = {
 				alertTitle: "Delete this table?",
-				alertText: "are you sure that you want to leave this table?",
+				alertText: "Are you sure that you want to leave this table?",
 				confirmButtonText: "Yes, delete it!",
 				rowId: rowId,
 				tableId: "#tableGrid",
 				urlForDelete: '@Url.Action("DeleteTable")',
-				type:"warning",
+				type: "warning",
 				onDeleteSuccess: "Table has been deleted.",
 				onDeleteFail: "Something wrong",
-				onServerNoResponse:"Api not respond or not have permissions."
+				onServerNoResponse: "Api not respond or not have permissions."
 			};
 			DeleteData(object);
 		}
@@ -108,20 +111,20 @@
 				});
 				return;
 			}
-	swal({
-		title: window.translate("scaffold_modal_title"),
-		text: window.translate("scaffold_modal_text"),
-		type: "warning",
-		showCancelButton: true,
-		confirmButtonColor: "#3085d6",
-		cancelButtonColor: "#d33",
-		confirmButtonText: window.translate("scaffold_modal_confirm"),
-		cancelButtonText: window.translate("cancel")
-	}).then((result) => {
-		if (result.value) {
-			location.href = `@Url.Action("Scaffold", "Page")?tableId=${id}`;
+			swal({
+				title: window.translate("scaffold_modal_title"),
+				text: window.translate("scaffold_modal_text"),
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: window.translate("scaffold_modal_confirm"),
+				cancelButtonText: window.translate("cancel")
+			}).then((result) => {
+				if (result.value) {
+					location.href = `@Url.Action("Scaffold", "Page")?tableId=${id}`;
+				}
+			});
 		}
-	});
-}
 	</script>
 }

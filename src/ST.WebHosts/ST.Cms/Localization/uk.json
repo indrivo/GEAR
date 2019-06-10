@@ -235,5 +235,21 @@
   "system_is_translated": "Перекладається",
   "system_current_translation_key": "Поточні ключові перекладу ",
   "system_not_translated": "Елемент не перекладається",
-  "iso_goal": "Мета"
+  "iso_goal": "Мета",
+  "system_field_mapping": "Зіставлення полів ",
+  "system_view_model_field_name": "Ім'я поля з моделі подання",
+  "system_map_table_field": "Поле зіставляється з особи",
+  "system_localization_add_key": "Додати ключ",
+  "system_view_model_mapping_title": "Зіставлення cimpuri в cimpuri частині організації",
+  "system_viewmodel_field_no_reference": "У відкритому, не стосовно юридичної особи",
+  "system_add_new_entity_field": "Додати новий стовпець",
+  "system_table_edit": "Для редагування таблиці",
+  "system_entity_info": "Інформація про організацію ",
+  "system_table_fields": "Полів сутності",
+  "system_entity_general_info": "Загальна інформація про організацію.",
+  "system_data_type": "Тип даних ",
+  "system_allow_null": "Дозволити значення null",
+  "system_field_name": "Ім'я поля ",
+  "system_system_field": "Поле Системи ",
+  "system_no_entity_fields": "Немає полів."
 }

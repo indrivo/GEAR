@@ -343,15 +343,16 @@ namespace ST.Localization.Razor.Controllers
         /// <summary>
         /// Translate all keys from english
         /// </summary>
-        /// <param name="englishText"></param>
+        /// <param name="text"></param>
+        /// <param name="from"></param>
         /// <returns></returns>
-        public async Task<JsonResult> Translate([Required]string englishText)
+        public async Task<JsonResult> Translate([Required]string text, [Required]string from)
         {
             var result = new ResultModel
             {
                 Errors = new List<IErrorModel>()
             };
-            if (string.IsNullOrEmpty(englishText))
+            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(from))
             {
                 result.Errors.Add(new ErrorModel("EmptyKey", "Key is empty!"));
                 return Json(result);
@@ -360,8 +361,8 @@ namespace ST.Localization.Razor.Controllers
             var dict = new Dictionary<string, string>();
             foreach (var (key, _) in languages)
             {
-                if (key == "en") continue;
-                var translated = await _yandexTranslateSdk.TranslateText(englishText, $"en-{key}");
+                if (key == from) continue;
+                var translated = await _yandexTranslateSdk.TranslateText(text, $"{from}-{key}");
                 dict.Add(key, translated);
             }
 

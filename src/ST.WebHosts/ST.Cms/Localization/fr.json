@@ -235,5 +235,21 @@
   "system_is_translated": "Est traduit",
   "system_current_translation_key": "Actuel clé de traduction",
   "system_not_translated": "L'élément n'a pas été traduit",
-  "iso_goal": "Objectif"
+  "iso_goal": "Objectif",
+  "system_field_mapping": "La cartographie des champs",
+  "system_view_model_field_name": "Le nom du champ de vue du modèle",
+  "system_map_table_field": "Champ mappé à l'entité",
+  "system_localization_add_key": "Ajouter une clé",
+  "system_view_model_mapping_title": "Le mappage de champs dans les champs de l'entité",
+  "system_viewmodel_field_no_reference": "Le champ sans la référence à l'entité",
+  "system_add_new_entity_field": "Ajouter une nouvelle colonne",
+  "system_table_edit": "Le montage de la table de",
+  "system_entity_info": "Renseignements sur la société",
+  "system_table_fields": "Les champs d'entité",
+  "system_entity_general_info": "De l'information générale sur l'entité.",
+  "system_data_type": "Type de données",
+  "system_allow_null": "Autoriser les valeurs NULL",
+  "system_field_name": "Nom de champ",
+  "system_system_field": "Système De Champ",
+  "system_no_entity_fields": "Il n'y a pas de champs."
 }

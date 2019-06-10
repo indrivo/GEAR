@@ -1,0 +1,90 @@
+﻿@using ST.Entities.Abstractions.Models.Tables
+@using ST.PageRender.Abstractions.Models.ViewModels
+@{
+    ViewData["Title"] = Localizer["system_view_model_mapping_title"];
+    var viewModel = (ViewModel)ViewBag.ViewModel;
+    var availableTableFields = (IList<TableModelField>)ViewBag.TableFields;
+    var baseProps = (List<string>)ViewBag.BaseProps;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>@Localizer["system_view_model_field_name"]</th>
+                        <th>@Localizer["system_map_table_field"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in viewModel.ViewModelFields.OrderBy(x => x.Name).ToList())
+                    {
+                        <tr data-id="@item.Id">
+                            <td>@item.Name</td>
+                            <td>
+                                @if (!baseProps.Contains(item.Name))
+                                {
+                                    <select class="mapChangeEvent form-control" asp-items="@(new SelectList(availableTableFields, "Id", "Name" , item.TableModelFieldsId))">
+                                        <option value="#">@Localizer["system_viewmodel_field_no_reference"]</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <code>System field</code>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Index" class="btn btn-link"> @Localizer["back"]</a>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(".mapChangeEvent").on("change",
+                function () {
+                    const ctx = $(this);
+                    const tableFieldId = ctx.val();
+                    const viewModelFieldId = ctx.closest("tr").data("id");
+
+                    $.ajax({
+                        url: "@Url.Action("FieldsMapping")",
+                        method: "post",
+                        data: {
+                            viewModelFieldId: viewModelFieldId,
+                            tableFieldId: tableFieldId
+                        },
+                        success: function(data) {
+                            if (data && data.is_success) {
+                                Swal.fire(
+                                    'Info',
+                                    'Field mapped',
+                                    'success'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'Internal Server error!',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function(error) {
+                            Swal.fire(
+                                'Error',
+                                error,
+                                'error'
+                            );
+                        }
+                    });
+                });
+        });
+    </script>
+}

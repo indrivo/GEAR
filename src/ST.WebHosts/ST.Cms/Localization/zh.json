@@ -235,5 +235,21 @@
   "system_is_translated": "是翻译",
   "system_current_translation_key": "目前的翻译的关键",
   "system_not_translated": "元件不翻译",
-  "iso_goal": "目标"
+  "iso_goal": "目标",
+  "system_field_mapping": "射领域",
+  "system_view_model_field_name": "的名义领域的一个模型图",
+  "system_map_table_field": "字段映射的实体",
+  "system_localization_add_key": "加密钥",
+  "system_view_model_mapping_title": "射领域在该领域的实体",
+  "system_viewmodel_field_no_reference": "该领域没有参照的实体",
+  "system_add_new_entity_field": "添加新的栏",
+  "system_table_edit": "编辑的表",
+  "system_entity_info": "实体的信息",
+  "system_table_fields": "实体的领域",
+  "system_entity_general_info": "一般信息有关的实体。",
+  "system_data_type": "数据类型",
+  "system_allow_null": "允许空",
+  "system_field_name": "域名",
+  "system_system_field": "系统领域",
+  "system_no_entity_fields": "有没有领域。"
 }

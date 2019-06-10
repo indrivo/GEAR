@@ -235,5 +235,21 @@
   "system_is_translated": "Vertaald",
   "system_current_translation_key": "Huidige vertaling toets",
   "system_not_translated": "Element niet vertaald",
-  "iso_goal": "Doel"
+  "iso_goal": "Doel",
+  "system_field_mapping": "Velden toewijzen",
+  "system_view_model_field_name": "De naam van het veld van een model-view",
+  "system_map_table_field": "Veld toegewezen aan de entiteit",
+  "system_localization_add_key": "Sleutel toevoegen",
+  "system_view_model_mapping_title": "Velden toewijzen op de velden van de entiteit",
+  "system_viewmodel_field_no_reference": "Het veld zonder de verwijzing naar de entiteit",
+  "system_add_new_entity_field": "Voeg een nieuwe kolom toe",
+  "system_table_edit": "Het bewerken van de tabel van",
+  "system_entity_info": "Entiteit informatie",
+  "system_table_fields": "Entiteit velden",
+  "system_entity_general_info": "Algemene informatie over de entiteit.",
+  "system_data_type": "Gegevens type",
+  "system_allow_null": "Toestaan NULL",
+  "system_field_name": "Veld naam",
+  "system_system_field": "Systeem Veld",
+  "system_no_entity_fields": "Er zijn geen velden."
 }

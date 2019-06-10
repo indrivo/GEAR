@@ -235,5 +235,21 @@
   "system_is_translated": "Übersetzt",
   "system_current_translation_key": "Aktuelle übersetzung Schlüssel",
   "system_not_translated": "Element nicht übersetzt",
-  "iso_goal": "Ziel"
+  "iso_goal": "Ziel",
+  "system_field_mapping": "Mapping von Feldern",
+  "system_view_model_field_name": "Der name des Felds, das von einem model-Ansicht",
+  "system_map_table_field": "Feld zugeordnet, der die Entität",
+  "system_localization_add_key": "Schlüssel hinzufügen",
+  "system_view_model_mapping_title": "Mapping-Felder auf die Felder der Entität",
+  "system_viewmodel_field_no_reference": "Das Feld, ohne den Verweis auf die Entität",
+  "system_add_new_entity_field": "Hinzufügen einer neuen Spalte",
+  "system_table_edit": "Die Bearbeitung der Tabelle",
+  "system_entity_info": "Entity-Informationen",
+  "system_table_fields": "Entitätsfeldern",
+  "system_entity_general_info": "Allgemeine Informationen über die Person.",
+  "system_data_type": "Daten Typ",
+  "system_allow_null": "NULL zulassen",
+  "system_field_name": "Feld-name",
+  "system_system_field": "System-Feld",
+  "system_no_entity_fields": "Es gibt keine Felder."
 }

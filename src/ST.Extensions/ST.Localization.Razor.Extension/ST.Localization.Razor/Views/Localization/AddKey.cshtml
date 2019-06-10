@@ -1,7 +1,7 @@
 @model ST.Localization.Razor.ViewModels.LocalizationViewModels.AddKeyViewModel
 @inject IStringLocalizer Localizer
 @{
-    ViewData["Title"] = "Add key";
+    ViewData["Title"] = Localizer["system_localization_add_key"];
 }
 
 <div class="card card-outline-primary">
@@ -13,7 +13,7 @@
             <div class="form-body">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row pt-2">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label asp-for="NewKey" class="control-label"></label>
                             <input asp-for="NewKey" class="form-control" />
@@ -23,27 +23,22 @@
                 </div>
                 <hr />
                 <div class="row pt-2">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group">
                             @foreach (var item in Model.LocalizedStrings)
                             {
-                                if (item.Key == "en")
-                                {
-                                    <label class="control-label">@Model.Languages[item.Key]</label>
-                                    <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="Insert @Model.Languages[item.Key] translation" asp-for="LocalizedStrings[item.Key]">
-                                        <div class="input-group-append">
-                                            <a id="translate" class="btn btn-success input-group-text" href="#"><span class="fa fa-translate"></span> Translate from english to all</a>
-                                        </div>
+                                <div style="display: none" class="spinner-border text-success spinner_@item.Key" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <label class="control-label">
+                                    @Model.Languages[item.Key]
+                                </label>
+                                <div class="input-group mb-3">
+                                    <textarea class="form-control _translate_@item.Key" asp-for="LocalizedStrings[item.Key]"></textarea>
+                                    <div class="input-group-append">
+                                        <a href="#" data-direction-start="@item.Key" class="btn btn-success input-group-text translateStartEvent" href="#"><span class="fa fa-translate"></span> Translate from @item.Key to all</a>
                                     </div>
-                                }
-                                else
-                                {
-                                    <div class="field">
-                                        <label class="control-label">@Model.Languages[item.Key]</label>
-                                        <input type="text" placeholder="Insert @Model.Languages[item.Key] translation" class="form-control _translate_@item.Key" asp-for="LocalizedStrings[item.Key]" />
-                                    </div>
-                                }
+                                </div>
                             }
                         </div>
                     </div>
@@ -63,38 +58,51 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        $(document).ready(function () {
-            $("#translate").on("click", function () {
-                const englishText = $(this).parent().parent().find("input").val();
-                if (englishText) {
-                    $.ajax({
-                        url: "@Url.Action("Translate")",
-                        data: {
-                            englishText: englishText
-                        },
-                        success: function (data) {
-                            if (data)
-                            {
-                                if (data.is_success) {
+        $(document).ready(function() {
+            $(".translateStartEvent").on("click",
+                function() {
+                    const text = $(this).parent().parent().find("textarea").val();
+                    const direction = $(this).data("direction-start");
+                    
+                    if (text) {
+                        $(`.spinner_${direction}`).css("display", "block");
+                        $.ajax({
+                            url: "@Url.Action("Translate")",
+                            data: {
+                                text: text,
+                                from: direction
+                            },
+                            success: function(data) {
+                                if (data && data.is_success) {
                                     for (let key in data.result) {
                                         $(`._translate_${key}`).val(data.result[key]);
                                     }
                                 } else {
-
+                                    Swal.fire(
+                                        'Error',
+                                        'Internal Server error!',
+                                        'error'
+                                    );
                                 }
+                            },
+                            error: function(error) {
+                                Swal.fire(
+                                    'Error',
+                                    error,
+                                    'error'
+                                );
                             }
-                            else {
-
-                            }
-                        },
-                        error: function (error) {
-
-                        }
-                    });
-                } else {
-
-                }
-            });
+                        }).then(() => {
+                            $(`.spinner_${direction}`).css("display", "none");
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            'No value provided, to translate',
+                            'error'
+                        );
+                    }
+                });
         });
     </script>
 }

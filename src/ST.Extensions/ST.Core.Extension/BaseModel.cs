@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ST.Core.Abstractions;
 
 namespace ST.Core
@@ -58,5 +60,14 @@ namespace ST.Core
         /// Tenant id
         /// </summary>
         public virtual Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Get props name
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<string> GetPropsName()
+        {
+            return typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
+        }
     }
 }

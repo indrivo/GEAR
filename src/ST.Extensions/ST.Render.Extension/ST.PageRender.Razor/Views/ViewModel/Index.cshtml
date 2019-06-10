@@ -40,119 +40,122 @@
 
 
 @section Scripts{
-	<script type="text/javascript" language="javascript">
-		function getTokenAntiForgery() {
-			const token = '@Html.AntiForgeryToken()';
-			return $(token).val();
-		}
-	</script>
-	<script type="text/javascript" language="javascript">
-		$(document).ready(function($) {
-			const ent = load("/PageRender/GetEntities");
-			const model = {};
+    <script type="text/javascript" language="javascript">
+        function getTokenAntiForgery() {
+            const token = '@Html.AntiForgeryToken()';
+            return $(token).val();
+        }
+    </script>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function($) {
+            const ent = load("/PageRender/GetEntities");
+            const model = {};
 
-			$.each(ent,
-				function(index, item) {
-					model[item.id] = item.name;
-				});
+            $.each(ent,
+                function(index, item) {
+                    model[item.id] = item.name;
+                });
 
-			$("#addViewModel").on("click",
-				function() {
-					swal({
-						title: 'Select Entity',
-						input: 'select',
-						inputOptions: model,
-						inputPlaceholder: 'required',
-						showCancelButton: true,
-						inputValidator: function(value) {
-							return new Promise(function(resolve, reject) {
-								if (value !== '') {
-									resolve();
-								} else {
-									reject('You need to select an entity!');
-								}
-							});
-						}
-					}).then(function(result) {
-						if (result.value) {
-							$.ajax({
-								url: "@Url.Action("GenerateViewModel")",
-								type: "post",
-								data: {
-									entityId: result.value
-								},
-								success: function(data) {
-									if (!data) {
-										swal("Fail!", "Internal server error", "error");
-									} else if (data.is_success) {
-										location.href = `/ViewModel/OrderFields?id=${data.result}`;
-									}
-								},
-								error: function() {
-									swal("Fail!", "Internal server error", "error");
-								}
-							});
-						}
-					});
-				});
+            $("#addViewModel").on("click",
+                function() {
+                    swal({
+                        title: 'Select Entity',
+                        input: 'select',
+                        inputOptions: model,
+                        inputPlaceholder: 'required',
+                        showCancelButton: true,
+                        inputValidator: function(value) {
+                            return new Promise(function(resolve, reject) {
+                                if (value !== '') {
+                                    resolve();
+                                } else {
+                                    reject('You need to select an entity!');
+                                }
+                            });
+                        }
+                    }).then(function(result) {
+                        if (result.value) {
+                            $.ajax({
+                                url: "@Url.Action("GenerateViewModel")",
+                                type: "post",
+                                data: {
+                                    entityId: result.value
+                                },
+                                success: function(data) {
+                                    if (!data) {
+                                        swal("Fail!", "Internal server error", "error");
+                                    } else if (data.is_success) {
+                                        location.href = `/ViewModel/OrderFields?id=${data.result}`;
+                                    }
+                                },
+                                error: function() {
+                                    swal("Fail!", "Internal server error", "error");
+                                }
+                            });
+                        }
+                    });
+                });
 
-			const tableId = '#dfTable';
-			if ($.fn.DataTable.isDataTable(tableId)) {
-				$(tableId).dataTable().fnDestroy();
-				$(tableId).dataTable().empty();
-			}
-			$(tableId).DataTable({
-				"language": {
-					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
-				},
-				dom: '<"CustomizeColumns">lBfrtip',
-				"processing": true, // for show progress bar
-				"serverSide": true, // for process server side
-				"filter": true, // this is for disable filter (search box)
-				"orderMulti": false, // for disable multiple column at once
-				"destroy": true,
-				"ajax": {
-					"url": '@Url.Action("LoadViewModels")',
-					"type": "POST"
-				},
-				"columns": [
-					{ "data": "name" },
-					{ "data": "table" },
-					{ "data": "created" },
-					{ "data": "changed" },
-					{ "data": "author" },
-					{ "data": "isDeleted" },
-					{
-						data: null,
-						"render": function(data, type, row, meta) {
-							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
+            const tableId = '#dfTable';
+            if ($.fn.DataTable.isDataTable(tableId)) {
+                $(tableId).dataTable().fnDestroy();
+                $(tableId).dataTable().empty();
+            }
+            $(tableId).DataTable({
+                "language": {
+                    "url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+                },
+                dom: '<"CustomizeColumns">lBfrtip',
+                "processing": true, // for show progress bar
+                "serverSide": true, // for process server side
+                "filter": true, // this is for disable filter (search box)
+                "orderMulti": false, // for disable multiple column at once
+                "destroy": true,
+                "ajax": {
+                    "url": '@Url.Action("LoadViewModels")',
+                    "type": "POST"
+                },
+                "columns": [
+                    { "data": "name" },
+                    { "data": "table" },
+                    { "data": "created" },
+                    { "data": "changed" },
+                    { "data": "author" },
+                    { "data": "isDeleted" },
+                    {
+                        data: null,
+                        "render": function(data, type, row, meta) {
+                            return `<div class="btn-group" role="group" aria-label="Action buttons">
+									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window
+                                .translate("edit")}</a>
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("FieldsMapping")?viewModelId=${
+                                row.id}">${window.translate("system_field_mapping")}</a>
 									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields")?id=${row.id
-								}">Order Fields</a>
+                                }">Order Fields</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
-								}'); >Delete</button>
+                                }');>${window.translate("delete")}</button>
 									</div>`;
-						}
-					}
-				]
-			});		
-		});
+                        }
+                    }
+                ]
+            });
+        });
 
 
-		function createAlert(rowId) {
-			const object = {
-				alertTitle: "Delete this view model?",
-				alertText: "Are you sure that you want to leave this view model?",
-				confirmButtonText: "Yes, delete it!",
-				rowId: rowId,
-				tableId: "#pageTable",
-				urlForDelete: '@Url.Action("Delete")',
-				type: "warning",
-				onDeleteSuccess: "View model has been deleted.",
-				onDeleteFail: "Something wrong",
-				onServerNoResponse: "Api not respond or not have permissions."
-			};
-			DeleteData(object);
-		}
-	</script>
+        function createAlert(rowId) {
+            const object = {
+                alertTitle: "Delete this view model?",
+                alertText: "Are you sure that you want to leave this view model?",
+                confirmButtonText: "Yes, delete it!",
+                rowId: rowId,
+                tableId: "#pageTable",
+                urlForDelete: '@Url.Action("Delete")',
+                type: "warning",
+                onDeleteSuccess: "View model has been deleted.",
+                onDeleteFail: "Something wrong",
+                onServerNoResponse: "Api not respond or not have permissions."
+            };
+            DeleteData(object);
+        }
+    </script>
 }

@@ -235,5 +235,21 @@
   "system_is_translated": "Este tradus",
   "system_current_translation_key": "Cheia pentr traducerea curentă",
   "system_not_translated": "Element care nu este tradus",
-  "iso_goal": "Scopul"
+  "iso_goal": "Scopul",
+  "system_field_mapping": "Mapare câmpuri",
+  "system_view_model_field_name": "Numele de cimp al unui model de vedere",
+  "system_map_table_field": "Cimp mapat la entitate",
+  "system_localization_add_key": "Adaugă cheie",
+  "system_view_model_mapping_title": "Mapare cimpuri la cimpuri ale entitatii",
+  "system_viewmodel_field_no_reference": "Cimp fara referinta la entitate",
+  "system_add_new_entity_field": "Adauga coloana noua",
+  "system_table_edit": "Editarea tabelului",
+  "system_entity_info": "Informații entitate",
+  "system_table_fields": "Coloanele entitatii",
+  "system_entity_general_info": "Informații generale despre entitate.",
+  "system_data_type": "Tip de date",
+  "system_allow_null": "Permite NULL",
+  "system_field_name": "Nume de câmp",
+  "system_system_field": "Cimp de sistem",
+  "system_no_entity_fields": "Nu există nici un câmp."
 }

@@ -235,5 +235,21 @@
   "system_is_translated": "Переводится",
   "system_current_translation_key": "Текущие ключевые перевода ",
   "system_not_translated": "Элемент не переводится",
-  "iso_goal": "Цель"
+  "iso_goal": "Цель",
+  "system_field_mapping": "Сопоставление полей ",
+  "system_view_model_field_name": "Имя поля из модели представления",
+  "system_map_table_field": "Поле сопоставляется с лица",
+  "system_localization_add_key": "Добавить ключ",
+  "system_view_model_mapping_title": "Сопоставление cimpuri в cimpuri части организации",
+  "system_viewmodel_field_no_reference": "В открытом, не в отношении юридического лица",
+  "system_add_new_entity_field": "Добавить новый столбец",
+  "system_table_edit": "Для редактирования таблицы",
+  "system_entity_info": "Информация об организации ",
+  "system_table_fields": "Полей сущности",
+  "system_entity_general_info": "Общая информация об организации.",
+  "system_data_type": "Тип данных ",
+  "system_allow_null": "Разрешить значение null",
+  "system_field_name": "Имя поля ",
+  "system_system_field": "Поле Системы ",
+  "system_no_entity_fields": "Нет полей."
 }

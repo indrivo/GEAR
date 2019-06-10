@@ -86,7 +86,7 @@ namespace ST.Entities.Abstractions
         {
             var result = new SynchronizeTableViewModel();
             var fields = new List<CreateTableFieldViewModel>();
-            var baseProps = typeof(BaseModel).GetProperties().Select(x => x.Name);
+            var baseProps = BaseModel.GetPropsName().ToList();
             var entity = prop.PropertyType.GenericTypeArguments[0];
 
             if (entity.Name == "ApplicationUser")

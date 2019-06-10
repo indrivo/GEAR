@@ -66,7 +66,7 @@ namespace ST.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            var proprieties = typeof(BaseModel).GetProperties().Select(x => x.Name).ToList();
+            var proprieties = BaseModel.GetPropsName().ToList();
 
             model = await ViewModelBuilder.ResolveAsync(context, model);
 

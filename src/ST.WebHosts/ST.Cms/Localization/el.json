@@ -235,5 +235,21 @@
   "system_is_translated": "Έχει μεταφραστεί",
   "system_current_translation_key": "Τρέχουσα μετάφραση κλειδί",
   "system_not_translated": "Το στοιχείο δεν έχει μεταφραστεί",
-  "iso_goal": "Στόχος"
+  "iso_goal": "Στόχος",
+  "system_field_mapping": "Χαρτογράφηση πεδία",
+  "system_view_model_field_name": "Το όνομα του πεδίου από ένα μοντέλο προβολή",
+  "system_map_table_field": "Το πεδίο που αντιστοιχίζεται στο οντότητα",
+  "system_localization_add_key": "Προσθέστε το κλειδί",
+  "system_view_model_mapping_title": "Χαρτογράφηση πεδία στα πεδία της οντότητας",
+  "system_viewmodel_field_no_reference": "Το πεδίο χωρίς την αναφορά στην οντότητα",
+  "system_add_new_entity_field": "Προσθέστε μια νέα στήλη",
+  "system_table_edit": "Η επεξεργασία του πίνακα",
+  "system_entity_info": "Οντότητα πληροφορίες",
+  "system_table_fields": "Οντότητα πεδία",
+  "system_entity_general_info": "Γενικές πληροφορίες για την οντότητα.",
+  "system_data_type": "Τύπος δεδομένων",
+  "system_allow_null": "Επιτρέπουν NULL",
+  "system_field_name": "Όνομα πεδίου",
+  "system_system_field": "Σύστημα Τομέα",
+  "system_no_entity_fields": "Δεν υπάρχουν πεδία."
 }

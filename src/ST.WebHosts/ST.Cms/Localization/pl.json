@@ -235,5 +235,21 @@
   "system_is_translated": "Tłumaczy",
   "system_current_translation_key": "Aktualne słowa tłumaczenia ",
   "system_not_translated": "Element nie tłumaczy",
-  "iso_goal": "Celem"
+  "iso_goal": "Celem",
+  "system_field_mapping": "Mapowanie pól ",
+  "system_view_model_field_name": "Nazwa pola z modelu widoku",
+  "system_map_table_field": "Pole jest mapowany do twarzy",
+  "system_localization_add_key": "Dodać klucz",
+  "system_view_model_mapping_title": "Mapowanie cimpuri w cimpuri części organizacji",
+  "system_viewmodel_field_no_reference": "W otwartym, a nie w odniesieniu do osoby prawnej",
+  "system_add_new_entity_field": "Dodaj nową kolumnę",
+  "system_table_edit": "Do edycji tabeli",
+  "system_entity_info": "Informacje o organizacji ",
+  "system_table_fields": "Pól encji",
+  "system_entity_general_info": "Ogólne informacje o organizacji.",
+  "system_data_type": "Typ danych ",
+  "system_allow_null": "Pozwól wartość null",
+  "system_field_name": "Nazwa pola ",
+  "system_system_field": "Pole Systemu ",
+  "system_no_entity_fields": "Nie ma pól."
 }

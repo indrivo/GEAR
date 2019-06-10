@@ -235,5 +235,21 @@
   "system_is_translated": "Is translated",
   "system_current_translation_key": "Current translation key",
   "system_not_translated": "Element not translated",
-  "iso_goal": "Goal"
+  "iso_goal": "Goal",
+  "system_field_mapping": "Mapping fields",
+  "system_view_model_field_name": "The name of the field of a model view",
+  "system_map_table_field": "Field mapped to the entity",
+  "system_localization_add_key": "Add key",
+  "system_view_model_mapping_title": "Mapping fields on the fields of the entity",
+  "system_viewmodel_field_no_reference": "The field without the reference to the entity",
+  "system_add_new_entity_field": "Add a new column",
+  "system_table_edit": "The editing of the table of",
+  "system_entity_info": "Entity information",
+  "system_table_fields": "Entity fields",
+  "system_entity_general_info": "General information about entity.",
+  "system_data_type": "Data type",
+  "system_allow_null": "Allow NULL",
+  "system_field_name": "Field name",
+  "system_system_field": "System Field",
+  "system_no_entity_fields": "There are no fields."
 }

@@ -21,8 +21,14 @@ namespace ST.PageRender.Razor.Controllers
     [Authorize]
     public class ViewModelController : Controller
     {
+        /// <summary>
+        /// Inject page render
+        /// </summary>
         private readonly IPageRender _pageRender;
 
+        /// <summary>
+        /// Inject context
+        /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
@@ -64,7 +70,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult TemplateEdit([Required]Guid id)
+        public IActionResult TemplateEdit([Required] Guid id)
         {
             var viewModelField = _pagesContext.ViewModelFields.FirstOrDefault(x => x.Id.Equals(id));
             if (viewModelField == null) return NotFound();
@@ -100,6 +106,7 @@ namespace ST.PageRender.Razor.Controllers
                     // ignored
                 }
             }
+
             ModelState.AddModelError(string.Empty, "Invalid data entry!");
             return View(model);
         }
@@ -134,6 +141,7 @@ namespace ST.PageRender.Razor.Controllers
                     // ignored
                 }
             }
+
             ModelState.AddModelError(string.Empty, "Invalid data entry!");
             return View(model);
         }
@@ -144,7 +152,7 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> GenerateViewModel([Required]Guid entityId)
+        public async Task<JsonResult> GenerateViewModel([Required] Guid entityId)
         {
             return Json(await _pageRender.GenerateViewModel(entityId));
         }
@@ -155,7 +163,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="items"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult UpdateViewModelFields([Required]IEnumerable<ViewModelFields> items)
+        public JsonResult UpdateViewModelFields([Required] IEnumerable<ViewModelFields> items)
         {
             return UpdateItems(items.ToList());
         }
@@ -225,7 +233,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult OrderFields([Required]Guid id)
+        public IActionResult OrderFields([Required] Guid id)
         {
             if (Guid.Empty == id) return NotFound();
             ViewBag.Data = _pagesContext.ViewModelFields
@@ -246,9 +254,11 @@ namespace ST.PageRender.Razor.Controllers
         [AjaxOnly]
         public JsonResult LoadViewModels(DTParameters param, Guid entityId)
         {
-            var filtered = _pagesContext.FilterAbstractContext<ViewModel>(param.Search.Value, param.SortOrder, param.Start,
+            var filtered = _pagesContext.FilterAbstractContext<ViewModel>(param.Search.Value, param.SortOrder,
+                param.Start,
                 param.Length,
-                out var totalCount, x => (entityId != Guid.Empty && x.TableModelId == entityId) || entityId == Guid.Empty);
+                out var totalCount,
+                x => (entityId != Guid.Empty && x.TableModelId == entityId) || entityId == Guid.Empty);
 
 
             var sel = filtered.Select(x => new
@@ -283,21 +293,73 @@ namespace ST.PageRender.Razor.Controllers
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(string id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete view model!", success = false });
+            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to delete view model!", success = false});
             var page = _pagesContext.ViewModels.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
-            if (page == null) return Json(new { message = "Fail to delete view model!", success = false });
+            if (page == null) return Json(new {message = "Fail to delete view model!", success = false});
 
             try
             {
                 _pagesContext.ViewModels.Remove(page);
                 _pagesContext.SaveChanges();
-                return Json(new { message = "View model was delete with success!", success = true });
+                return Json(new {message = "View model was delete with success!", success = true});
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return Json(new { message = "Fail to delete view model!", success = false });
+
+            return Json(new {message = "Fail to delete view model!", success = false});
+        }
+
+        /// <summary>
+        /// Fields mapping
+        /// </summary>
+        /// <param name="viewModelId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> FieldsMapping([Required] Guid viewModelId)
+        {
+            var viewModel = await _pagesContext.ViewModels
+                .Include(x => x.TableModel)
+                .ThenInclude(x => x.TableFields)
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.TableModelField)
+                .FirstOrDefaultAsync(x => x.Id == viewModelId);
+            if (viewModel == null) return NotFound();
+
+            var baseProps = BaseModel.GetPropsName();
+            var tableFields = viewModel.TableModel.TableFields.Where(x => !baseProps.Contains(x.Name)).ToList();
+            ViewBag.ViewModel = viewModel;
+            ViewBag.TableFields = tableFields;
+            ViewBag.BaseProps = baseProps;
+            return View();
+        }
+
+        /// <summary>
+        /// Save new mapping
+        /// </summary>
+        /// <param name="viewModelFieldId"></param>
+        /// <param name="tableFieldId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> FieldsMapping([Required] Guid viewModelFieldId, Guid tableFieldId)
+        {
+            var result = new ResultModel();
+            var model = await _pagesContext.ViewModelFields.FirstOrDefaultAsync(x => x.Id == viewModelFieldId);
+            if (model == null) return Json(result);
+            model.TableModelFieldsId = tableFieldId;
+            try
+            {
+                _pagesContext.Update(model);
+                await _pagesContext.SaveChangesAsync();
+                result.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return Json(result);
         }
 
         /// <summary>
@@ -309,7 +371,8 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         [Route("api/[controller]/[action]")]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> ChangeViewModelFieldTranslateText([Required]Guid fieldId, [Required]string translatedKey)
+        public async Task<JsonResult> ChangeViewModelFieldTranslateText([Required] Guid fieldId,
+            [Required] string translatedKey)
         {
             var response = new ResultModel();
             var field = await _pagesContext.ViewModelFields.FirstOrDefaultAsync(x => x.Id == fieldId);

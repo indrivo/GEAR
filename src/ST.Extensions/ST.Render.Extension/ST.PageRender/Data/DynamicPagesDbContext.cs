@@ -109,15 +109,6 @@ namespace ST.PageRender.Data
             //builder.Ignore<EntityPermission>();
             //builder.Ignore<EntityFieldPermission>();
             //builder.Ignore<EntityPermissionAccess>();
-
-            //builder.Entity<ViewModel>()
-            //    .Property(x => x.TableModel).
-            //    .Map(t =>
-            //    {
-            //        t.ToTable("GuildsMembers", "dbo");
-            //        t.MapLeftKey("GuildID");
-            //        t.MapRightKey("MemberID");
-            //    });
         }
     }
 }

@@ -235,5 +235,21 @@
   "system_is_translated": "Está traducido",
   "system_current_translation_key": "Traducción actual de la clave",
   "system_not_translated": "Elemento no se traduce",
-  "iso_goal": "Objetivo"
+  "iso_goal": "Objetivo",
+  "system_field_mapping": "La asignación de campos",
+  "system_view_model_field_name": "El nombre del campo de una vista de modelo",
+  "system_map_table_field": "Campo asignado a la entidad",
+  "system_localization_add_key": "Agregar clave",
+  "system_view_model_mapping_title": "La asignación de campos en los campos de la entidad",
+  "system_viewmodel_field_no_reference": "El campo sin la referencia a la entidad",
+  "system_add_new_entity_field": "Agregar una nueva columna",
+  "system_table_edit": "La edición de la tabla de",
+  "system_entity_info": "La entidad de la información",
+  "system_table_fields": "Los campos de entidad",
+  "system_entity_general_info": "Información General sobre la entidad.",
+  "system_data_type": "Tipo de datos",
+  "system_allow_null": "Permitir valores NULL",
+  "system_field_name": "Nombre de campo",
+  "system_system_field": "Sistema De Campo",
+  "system_no_entity_fields": "No existen campos."
 }

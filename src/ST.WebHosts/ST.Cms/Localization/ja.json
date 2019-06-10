@@ -235,5 +235,21 @@
   "system_is_translated": "翻訳",
   "system_current_translation_key": "現在の翻訳キー",
   "system_not_translated": "要素なの翻訳",
-  "iso_goal": "目標"
+  "iso_goal": "目標",
+  "system_field_mapping": "マッピング分野",
+  "system_view_model_field_name": "の名前のフィールドモデルビュー",
+  "system_map_table_field": "分野にマップされ、企業",
+  "system_localization_add_key": "キーの追加",
+  "system_view_model_mapping_title": "マッピング分野の分野の企業",
+  "system_viewmodel_field_no_reference": "の分野の参考に、企業",
+  "system_add_new_entity_field": "新しい項目として追加",
+  "system_table_edit": "編集のテーブル",
+  "system_entity_info": "企業情報",
+  "system_table_fields": "企業分野",
+  "system_entity_general_info": "一般に関する情報団体をいう。",
+  "system_data_type": "データタイプ",
+  "system_allow_null": "よNULLの場合",
+  "system_field_name": "フィールド名",
+  "system_system_field": "システム分野",
+  "system_no_entity_fields": "ありません。"
 }
