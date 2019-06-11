@@ -251,5 +251,6 @@
   "system_allow_null": "Toestaan NULL",
   "system_field_name": "Veld naam",
   "system_system_field": "Systeem Veld",
-  "system_no_entity_fields": "Er zijn geen velden."
+  "system_no_entity_fields": "Er zijn geen velden.",
+  "system_page_acl": "Toegangscontrole"
 }

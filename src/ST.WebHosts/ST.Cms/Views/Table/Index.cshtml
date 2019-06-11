@@ -78,7 +78,7 @@
 								.translate("edit")}</a>
 									<a class="btn btn-warning btn-sm" onclick="scaffoldClickEvent('${row.id
 								}')" href="#">Scaffold</a>
-									${!row.isSystem ? `<a class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</a>` : ``}
+									${!row.isSystem ? `<a href="#" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</a>` : ``}
 									</div>`;
 						}
 					}

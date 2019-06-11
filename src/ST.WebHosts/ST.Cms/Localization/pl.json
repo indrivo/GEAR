@@ -251,5 +251,6 @@
   "system_allow_null": "Pozwól wartość null",
   "system_field_name": "Nazwa pola ",
   "system_system_field": "Pole Systemu ",
-  "system_no_entity_fields": "Nie ma pól."
+  "system_no_entity_fields": "Nie ma pól.",
+  "system_page_acl": "Kontroli Dostępu "
 }

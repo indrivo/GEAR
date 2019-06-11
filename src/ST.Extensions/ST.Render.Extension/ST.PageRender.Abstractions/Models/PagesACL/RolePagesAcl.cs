@@ -1,10 +1,9 @@
 ﻿using System;
-using ST.Core;
 using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Abstractions.Models.PagesACL
 {
-    public class RolePagesAcl : BaseModel
+    public class RolePagesAcl
     {
         /// <summary>
         /// Page reference
@@ -16,5 +15,10 @@ namespace ST.PageRender.Abstractions.Models.PagesACL
         /// Role id
         /// </summary>
         public Guid RoleId { get; set; }
+
+        /// <summary>
+        /// Allow Access
+        /// </summary>
+        public bool AllowAccess { get; set; }
     }
 }

@@ -251,5 +251,6 @@
   "system_allow_null": "よNULLの場合",
   "system_field_name": "フィールド名",
   "system_system_field": "システム分野",
-  "system_no_entity_fields": "ありません。"
+  "system_no_entity_fields": "ありません。",
+  "system_page_acl": "アクセス制御"
 }

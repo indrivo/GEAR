@@ -649,5 +649,20 @@ namespace ST.PageRender.Razor.Controllers
             }
             return NotFound();
         }
+
+        /// <summary>
+        /// Manage page acl
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> PageAcl([Required] Guid pageId)
+        {
+            var page = await _pagesContext.Pages
+                .Include(x => x.RolePagesAcls)
+                .FirstOrDefaultAsync(x => x.Id == pageId);
+            if (page == null) return NotFound();
+            return View();
+        }
     }
 }

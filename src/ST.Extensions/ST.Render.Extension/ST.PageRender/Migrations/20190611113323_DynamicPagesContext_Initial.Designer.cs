@@ -10,8 +10,8 @@ using ST.PageRender.Data;
 namespace ST.PageRender.Migrations
 {
     [DbContext(typeof(DynamicPagesDbContext))]
-    [Migration("20190609170406_DynamicPagesDbContext_Initial")]
-    partial class DynamicPagesDbContext_Initial
+    [Migration("20190611113323_DynamicPagesContext_Initial")]
+    partial class DynamicPagesContext_Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -207,7 +207,7 @@ namespace ST.PageRender.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<bool?>("IsEnabledAcl");
+                    b.Property<bool>("IsEnabledAcl");
 
                     b.Property<bool>("IsLayout");
 
@@ -377,28 +377,13 @@ namespace ST.PageRender.Migrations
 
             modelBuilder.Entity("ST.PageRender.Abstractions.Models.PagesACL.RolePagesAcl", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
+                    b.Property<Guid>("RoleId");
 
                     b.Property<Guid>("PageId");
 
-                    b.Property<Guid>("RoleId");
+                    b.Property<bool>("AllowAccess");
 
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
+                    b.HasKey("RoleId", "PageId");
 
                     b.HasIndex("PageId");
 

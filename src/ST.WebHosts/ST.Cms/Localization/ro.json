@@ -251,5 +251,6 @@
   "system_allow_null": "Permite NULL",
   "system_field_name": "Nume de câmp",
   "system_system_field": "Cimp de sistem",
-  "system_no_entity_fields": "Nu există nici un câmp."
+  "system_no_entity_fields": "Nu există nici un câmp.",
+  "system_page_acl": "Control Acces"
 }

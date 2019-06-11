@@ -251,5 +251,6 @@
   "system_allow_null": "Consentire NULL",
   "system_field_name": "Nome del campo",
   "system_system_field": "Sistema Settore",
-  "system_no_entity_fields": "Non ci sono campi."
+  "system_no_entity_fields": "Non ci sono campi.",
+  "system_page_acl": "Controllo Di Accesso"
 }

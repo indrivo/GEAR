@@ -251,5 +251,6 @@
   "system_allow_null": "Дозволити значення null",
   "system_field_name": "Ім'я поля ",
   "system_system_field": "Поле Системи ",
-  "system_no_entity_fields": "Немає полів."
+  "system_no_entity_fields": "Немає полів.",
+  "system_page_acl": "Контролю Доступу "
 }

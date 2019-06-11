@@ -87,6 +87,7 @@ namespace ST.PageRender.Data
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
             builder.RegisterIndexes();
+            builder.Entity<RolePagesAcl>().HasKey(x => new { x.RoleId, x.PageId });
 
             builder.Entity<EntityType>().ToTable(nameof(EntityTypes), ParentSchema);
             builder.Entity<TableModel>().ToTable(nameof(Table), ParentSchema);
@@ -99,16 +100,16 @@ namespace ST.PageRender.Data
             builder.Entity<EntityFieldPermission>().ToTable(nameof(EntityFieldPermissions), ParentSchema);
             builder.Entity<EntityPermissionAccess>().ToTable(nameof(EntityPermissionAccesses), ParentSchema);
 
-            //builder.Ignore<EntityType>();
-            //builder.Ignore<TableModel>();
-            //builder.Ignore<TableFieldConfigs>();
-            //builder.Ignore<TableFieldConfigValue>();
-            //builder.Ignore<TableFieldGroups>();
-            //builder.Ignore<TableModelField>();
-            //builder.Ignore<TableFieldType>();
-            //builder.Ignore<EntityPermission>();
-            //builder.Ignore<EntityFieldPermission>();
-            //builder.Ignore<EntityPermissionAccess>();
+            builder.Ignore<EntityType>();
+            builder.Ignore<TableModel>();
+            builder.Ignore<TableFieldConfigs>();
+            builder.Ignore<TableFieldConfigValue>();
+            builder.Ignore<TableFieldGroups>();
+            builder.Ignore<TableModelField>();
+            builder.Ignore<TableFieldType>();
+            builder.Ignore<EntityPermission>();
+            builder.Ignore<EntityFieldPermission>();
+            builder.Ignore<EntityPermissionAccess>();
         }
     }
 }

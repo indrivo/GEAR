@@ -251,5 +251,6 @@
   "system_allow_null": "Permitir valores NULL",
   "system_field_name": "Nombre de campo",
   "system_system_field": "Sistema De Campo",
-  "system_no_entity_fields": "No existen campos."
+  "system_no_entity_fields": "No existen campos.",
+  "system_page_acl": "Control De Acceso"
 }

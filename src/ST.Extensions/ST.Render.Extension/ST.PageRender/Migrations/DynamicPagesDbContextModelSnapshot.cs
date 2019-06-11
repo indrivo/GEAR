@@ -205,7 +205,7 @@ namespace ST.PageRender.Migrations
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<bool?>("IsEnabledAcl");
+                    b.Property<bool>("IsEnabledAcl");
 
                     b.Property<bool>("IsLayout");
 
@@ -375,28 +375,13 @@ namespace ST.PageRender.Migrations
 
             modelBuilder.Entity("ST.PageRender.Abstractions.Models.PagesACL.RolePagesAcl", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
+                    b.Property<Guid>("RoleId");
 
                     b.Property<Guid>("PageId");
 
-                    b.Property<Guid>("RoleId");
+                    b.Property<bool>("AllowAccess");
 
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
+                    b.HasKey("RoleId", "PageId");
 
                     b.HasIndex("PageId");
 

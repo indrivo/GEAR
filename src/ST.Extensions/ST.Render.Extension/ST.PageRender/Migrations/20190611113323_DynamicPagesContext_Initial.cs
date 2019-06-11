@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ST.PageRender.Migrations
 {
-    public partial class DynamicPagesDbContext_Initial : Migration
+    public partial class DynamicPagesContext_Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -382,20 +382,13 @@ namespace ST.PageRender.Migrations
                 schema: "Pages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Author = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: true),
-                    Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Version = table.Column<int>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
                     PageId = table.Column<Guid>(nullable: false),
-                    RoleId = table.Column<Guid>(nullable: false)
+                    RoleId = table.Column<Guid>(nullable: false),
+                    AllowAccess = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RolePagesAcls", x => x.Id);
+                    table.PrimaryKey("PK_RolePagesAcls", x => new { x.RoleId, x.PageId });
                     table.ForeignKey(
                         name: "FK_RolePagesAcls_Pages_PageId",
                         column: x => x.PageId,

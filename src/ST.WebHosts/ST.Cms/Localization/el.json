@@ -251,5 +251,6 @@
   "system_allow_null": "Επιτρέπουν NULL",
   "system_field_name": "Όνομα πεδίου",
   "system_system_field": "Σύστημα Τομέα",
-  "system_no_entity_fields": "Δεν υπάρχουν πεδία."
+  "system_no_entity_fields": "Δεν υπάρχουν πεδία.",
+  "system_page_acl": "Ελέγχου Πρόσβασης"
 }

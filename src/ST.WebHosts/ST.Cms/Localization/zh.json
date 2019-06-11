@@ -251,5 +251,6 @@
   "system_allow_null": "允许空",
   "system_field_name": "域名",
   "system_system_field": "系统领域",
-  "system_no_entity_fields": "有没有领域。"
+  "system_no_entity_fields": "有没有领域。",
+  "system_page_acl": "访问控制"
 }
