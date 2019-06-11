@@ -57,18 +57,12 @@ namespace ST.Cms.Controllers.Entity
 		/// </summary>
 		private readonly IFormContext _formContext;
 
-		/// <summary>
-		/// Inject dynamic service
-		/// </summary>
-		private readonly IDynamicService _dynamicService;
 
-
-		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IDynamicService dynamicService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
 			_logger = logger;
 			Queue = queue;
 			_formContext = formContext;
-			_dynamicService = dynamicService;
 			ConnectionString = DbUtil.GetConnectionString(configuration, env);
 			formContext.ValidateNullAbstractionContext();
 			Context.Validate();
@@ -409,7 +403,8 @@ namespace ST.Cms.Controllers.Entity
 			{
 				//TODO: Need to update only edited dynamic runtime type
 				TypeManager.Clear();
-				await _dynamicService.RegisterInMemoryDynamicTypesAsync();
+				var dynService = IoC.Resolve<IDynamicService>();
+				await dynService.RegisterInMemoryDynamicTypesAsync();
 			});
 		}
 

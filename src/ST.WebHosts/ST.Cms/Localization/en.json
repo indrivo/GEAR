@@ -252,5 +252,12 @@
   "system_field_name": "Field name",
   "system_system_field": "System Field",
   "system_no_entity_fields": "There are no fields.",
-  "system_page_acl": "Access Control"
+  "system_page_acl": "Access Control",
+  "iso_category": "Category",
+  "iso_category_collapse": "Collapse category",
+  "iso_category_parent_requirement": "Parent Requirement",
+  "system_inline_saved": "Data was saved with success",
+  "system_server_not_respond": "Server not respond!",
+  "system_toast_info": "Info",
+  "system_toast_error": "Error!"
 }

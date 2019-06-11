@@ -71,6 +71,7 @@ namespace ST.PageRender.Data
         /// </summary>
         [NotMapped]
         public override DbSet<TableModelField> TableFields { get; set; }
+        /// <inheritdoc />
         /// <summary>
         /// Field types
         /// </summary>
@@ -100,16 +101,16 @@ namespace ST.PageRender.Data
             builder.Entity<EntityFieldPermission>().ToTable(nameof(EntityFieldPermissions), ParentSchema);
             builder.Entity<EntityPermissionAccess>().ToTable(nameof(EntityPermissionAccesses), ParentSchema);
 
-            builder.Ignore<EntityType>();
-            builder.Ignore<TableModel>();
-            builder.Ignore<TableFieldConfigs>();
-            builder.Ignore<TableFieldConfigValue>();
-            builder.Ignore<TableFieldGroups>();
-            builder.Ignore<TableModelField>();
-            builder.Ignore<TableFieldType>();
-            builder.Ignore<EntityPermission>();
-            builder.Ignore<EntityFieldPermission>();
-            builder.Ignore<EntityPermissionAccess>();
+            //builder.Ignore<EntityType>();
+            //builder.Ignore<TableModel>();
+            //builder.Ignore<TableFieldConfigs>();
+            //builder.Ignore<TableFieldConfigValue>();
+            //builder.Ignore<TableFieldGroups>();
+            //builder.Ignore<TableModelField>();
+            //builder.Ignore<TableFieldType>();
+            //builder.Ignore<EntityPermission>();
+            //builder.Ignore<EntityFieldPermission>();
+            //builder.Ignore<EntityPermissionAccess>();
         }
     }
 }

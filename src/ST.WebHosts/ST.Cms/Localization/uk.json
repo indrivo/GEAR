@@ -252,5 +252,12 @@
   "system_field_name": "Ім'я поля ",
   "system_system_field": "Поле Системи ",
   "system_no_entity_fields": "Немає полів.",
-  "system_page_acl": "Контролю Доступу "
+  "system_page_acl": "Контролю Доступу ",
+  "iso_category": "Категорія",
+  "iso_category_collapse": "Скорочує категорію",
+  "iso_category_parent_requirement": "Батьківська Вимога",
+  "system_inline_saved": "Дані були збережені з успіхом",
+  "system_server_not_respond": "Сервер не відповідає!",
+  "system_toast_info": "Інформація",
+  "system_toast_error": "Помилка!"
 }

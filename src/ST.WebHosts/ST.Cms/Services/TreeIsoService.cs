@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
@@ -9,11 +11,17 @@ using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Cms.Services.Abstractions;
 using ST.Cms.ViewModels.TreeISOViewModels;
+using ST.Core;
 
 namespace ST.Cms.Services
 {
 	public class TreeIsoService : ITreeIsoService
 	{
+		/// <summary>
+		/// Tenant entity name what store tenant standard requirement filfullment method 
+		/// </summary>
+		private const string ReqFillEntityName = "RequirementFillMethod";
+
 		/// <summary>
 		/// Inject Data Service
 		/// </summary>
@@ -38,7 +46,15 @@ namespace ST.Cms.Services
 		public async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
-			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>();
+			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>(filters: new List<Filter>
+			{
+				new Filter
+				{
+					Value = false,
+					Criteria = Criteria.Equals,
+					Parameter = nameof(BaseModel.IsDeleted)
+				}
+			});
 			var tree = new List<TreeStandard>();
 			if (!standards.IsSuccess) return res;
 			foreach (var standard in standards.Result)
@@ -54,6 +70,81 @@ namespace ST.Cms.Services
 			res.IsSuccess = true;
 			res.Result = tree;
 			return res;
+		}
+
+		/// <summary>
+		/// Add or update fullfillment method
+		/// </summary>
+		/// <param name="requirementId"></param>
+		/// <param name="fillRequirementId"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public async Task<ResultModel<Guid>> AddOrUpdateStandardRequirementCompleteText(Guid requirementId, Guid? fillRequirementId, string value)
+		{
+			var result = new ResultModel<Guid>();
+			var ctx = _service.Table(ReqFillEntityName);
+			var ctxReq = _service.Table("CategoryRequirements");
+			if (requirementId == Guid.Empty)
+			{
+				result.Errors.Add(new ErrorModel(nameof(ArgumentNullException), "Requirement id not passed"));
+				return result;
+			}
+
+			if (fillRequirementId == null)
+			{
+				if (string.IsNullOrEmpty(value))
+				{
+					result.Errors.Add(new ErrorModel(nameof(ArgumentNullException), "Value must be not null"));
+					return result;
+				}
+				var requirement = await ctxReq.GetById<object>(requirementId);
+				if (!requirement.IsSuccess || requirement.Result == null)
+				{
+					result.Errors.Add(new ErrorModel(nameof(NotFoundResult), "Requirement not found by id"));
+					return result;
+				}
+
+				var o = ctx.GetNewObjectInstance();
+				o.ChangePropValue("Value", value);
+				o.ChangePropValue("RequirementId", requirementId.ToString());
+				var dbResult = await ctx.Add(o);
+				return dbResult;
+			}
+
+			var data = await ctx.GetAllWithInclude<dynamic>(filters: new List<Filter>
+			{
+				new Filter
+				{
+					Value = fillRequirementId,
+					Criteria = Criteria.Equals,
+					Parameter = nameof(BaseModel.Id)
+				}
+			});
+
+			if (data.IsSuccess && data.Result.Any())
+			{
+				var obj = data.Result.FirstOrDefault();
+				if (obj == null)
+				{
+					result.Errors.Add(new ErrorModel(nameof(NullReferenceException), "Something went wrong!"));
+					return result;
+				}
+
+				if (obj.Value.ToString() == value)
+				{
+					result.IsSuccess = true;
+					result.Result = fillRequirementId.Value;
+					return result;
+				}
+				var toSave = ((object)obj).ParseDynamicObjectByType(ctx.Type);
+				toSave.ChangePropValue("Value", value);
+				var dbUpdateResult = await ctx.Update(toSave);
+				return dbUpdateResult;
+			}
+
+			result.Errors = data.Errors;
+
+			return result;
 		}
 
 
@@ -81,6 +172,12 @@ namespace ST.Cms.Services
 					Parameter = "StandardId",
 					Criteria = Criteria.Equals,
 					Value = standardId
+				},
+				new Filter
+				{
+					Value = false,
+					Criteria = Criteria.Equals,
+					Parameter = nameof(BaseModel.IsDeleted)
 				}
 			});
 			var resCats = new List<TreeCategory>();
@@ -124,16 +221,49 @@ namespace ST.Cms.Services
 						Parameter = "ParentRequirementId",
 						Criteria = Criteria.Equals,
 						Value = parentRequirementId
+					},
+					new Filter
+					{
+						Value = false,
+						Criteria = Criteria.Equals,
+						Parameter = nameof(BaseModel.IsDeleted)
 					}
 				});
+			var dueModeCtx = _service.Table(ReqFillEntityName);
 			foreach (var req in requirements.Result)
 			{
-				res.Add(new TreeRequirement
+				var requirement = new TreeRequirement
 				{
 					Name = req.Name,
 					Id = req.Id,
-					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id)
+					Hint = req.Hint ?? string.Empty,
+					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id),
+					Documents = new List<TreeRequirementDocument>(),
+
+				};
+
+				var rq = await dueModeCtx.GetAll<dynamic>(filters: new List<Filter>
+				{
+					new Filter
+					{
+						Parameter = "RequirementId",
+						Value = req.Id,
+						Criteria = Criteria.Equals
+					}
 				});
+				if (rq.IsSuccess)
+				{
+					var dueMode = rq.Result?.FirstOrDefault();
+					requirement.RequirementDueMode = dueMode == null
+						? new RequirementDueMode()
+						: new RequirementDueMode
+						{
+							DueModeId = dueMode.Id,
+							DueModeValue = dueMode.Value
+						};
+				}
+
+				res.Add(requirement);
 			}
 
 			return res;

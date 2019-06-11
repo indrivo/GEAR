@@ -1,4 +1,5 @@
 ﻿using System;
+using ST.Core.Helpers;
 
 namespace ST.DynamicEntityStorage.Abstractions.Extensions
 {
@@ -15,27 +16,34 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         {
             try
             {
-                var propType = obj.GetType().GetProperty(propertyName).PropertyType;
-
+                Arg.NotNull(obj, typeof(object).Name);
+                var prop = obj.GetType().GetProperty(propertyName);
+                if (prop == null) return obj;
+                var propType = prop.PropertyType;
+              
                 if (propType == typeof(string))
                 {
-                    obj.GetType().GetProperty(propertyName).SetValue(obj, value ?? string.Empty);
+                    prop.SetValue(obj, value ?? string.Empty);
                 }
                 else if (propType == typeof(int))
                 {
-                    obj.GetType().GetProperty(propertyName).SetValue(obj, Convert.ToInt32(value));
+                    prop.SetValue(obj, Convert.ToInt32(value));
                 }
                 else if (propType == typeof(DateTime))
                 {
-                    obj.GetType().GetProperty(propertyName).SetValue(obj, DateTime.Parse(value));
+                    prop.SetValue(obj, DateTime.Parse(value));
                 }
                 else if (propType == typeof(bool))
                 {
-                    obj.GetType().GetProperty(propertyName).SetValue(obj, Convert.ToBoolean(value));
+                    prop.SetValue(obj, Convert.ToBoolean(value));
+                }
+                else if (propType == typeof(Guid))
+                {
+                    prop.SetValue(obj, Guid.Parse(value));
                 }
                 else
                 {
-                    obj.GetType().GetProperty(propertyName).SetValue(obj, value);
+                    prop.SetValue(obj, value);
                 }
             }
             catch (Exception e)

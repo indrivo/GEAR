@@ -252,5 +252,12 @@
   "system_field_name": "Nom de champ",
   "system_system_field": "Système De Champ",
   "system_no_entity_fields": "Il n'y a pas de champs.",
-  "system_page_acl": "Contrôle D'Accès"
+  "system_page_acl": "Contrôle D'Accès",
+  "iso_category": "Catégorie",
+  "iso_category_collapse": "Suis réduit à la catégorie",
+  "iso_category_parent_requirement": "Exigence Parent",
+  "system_inline_saved": "Les données ont été sauvegardées avec succès",
+  "system_server_not_respond": "Le serveur répond pas!",
+  "system_toast_info": "Info",
+  "system_toast_error": "Erreur!"
 }

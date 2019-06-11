@@ -252,5 +252,12 @@
   "system_field_name": "Nazwa pola ",
   "system_system_field": "Pole Systemu ",
   "system_no_entity_fields": "Nie ma pól.",
-  "system_page_acl": "Kontroli Dostępu "
+  "system_page_acl": "Kontroli Dostępu ",
+  "iso_category": "Kategoria",
+  "iso_category_collapse": "Zmniejsza kategorię",
+  "iso_category_parent_requirement": "Nadrzędne Wymagania",
+  "system_inline_saved": "Dane zostały zapisane z powodzeniem",
+  "system_server_not_respond": "Serwer nie odpowiada!",
+  "system_toast_info": "Informacje",
+  "system_toast_error": "Błąd!"
 }

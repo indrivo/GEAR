@@ -252,5 +252,12 @@
   "system_field_name": "域名",
   "system_system_field": "系统领域",
   "system_no_entity_fields": "有没有领域。",
-  "system_page_acl": "访问控制"
+  "system_page_acl": "访问控制",
+  "iso_category": "类别",
+  "iso_category_collapse": "把它缩小到的类别",
+  "iso_category_parent_requirement": "父母要求",
+  "system_inline_saved": "数据保存与成功",
+  "system_server_not_respond": "服务器没回应！",
+  "system_toast_info": "的信息",
+  "system_toast_error": "错误！"
 }

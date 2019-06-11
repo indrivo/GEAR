@@ -252,5 +252,12 @@
   "system_field_name": "フィールド名",
   "system_system_field": "システム分野",
   "system_no_entity_fields": "ありません。",
-  "system_page_acl": "アクセス制御"
+  "system_page_acl": "アクセス制御",
+  "iso_category": "カテゴリ",
+  "iso_category_collapse": "わかったの絞り込みカテゴリ",
+  "iso_category_parent_requirement": "親会社の要件",
+  "system_inline_saved": "データの保存に成功",
+  "system_server_not_respond": "サーバーに対応す!",
+  "system_toast_info": "詳細情報",
+  "system_toast_error": "エラー!"
 }

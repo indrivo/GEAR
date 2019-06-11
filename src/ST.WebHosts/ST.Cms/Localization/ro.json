@@ -252,5 +252,12 @@
   "system_field_name": "Nume de câmp",
   "system_system_field": "Cimp de sistem",
   "system_no_entity_fields": "Nu există nici un câmp.",
-  "system_page_acl": "Control Acces"
+  "system_page_acl": "Control Acces",
+  "iso_category": "Categorie",
+  "iso_category_collapse": "Restringe  categoria",
+  "iso_category_parent_requirement": "Cerinta părinte",
+  "system_inline_saved": "Datele au fost salvate cu succes",
+  "system_server_not_respond": "Serverul nu răspunde!",
+  "system_toast_info": "Info",
+  "system_toast_error": "Eroare!"
 }

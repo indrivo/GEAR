@@ -37,6 +37,7 @@ TableColumnsVisibility.prototype.init = function (ctx) {
 	})
 	this.registerInitEvents();
 };
+
 TableColumnsVisibility.prototype.registerInitEvents = function () {
 
 	//Delete multiple rows
@@ -259,7 +260,7 @@ $(document).ready(function () {
 
 	localizationPromise.then(() => {
 		$(".language-event").on("click", function () {
-			localStorage.removeItem("translations");
+			localStorage.removeItem("hasLoadedTranslations");
 		});
 	});
 
@@ -841,9 +842,9 @@ function changeAllSpoilerIcons() {
 		const targetId = $(item).data('target');
 
 		if (!$('' + targetId).hasClass('show')) {
-			$(item).find('.material-icons').first().text('add');
-		} else {
 			$(item).find('.material-icons').first().text('remove');
+		} else {
+			$(item).find('.material-icons').first().text('add');
 		}
 	});
 }

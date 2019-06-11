@@ -136,13 +136,31 @@ TemplateManager.prototype.render = function (identifier, data, helpers) {
 
 //Get translations from storage
 window.translations = function () {
-	const cached = localStorage.getItem("translations");
+	const cached = localStorage.getItem("hasLoadedTranslations");
 	let trans = {};
 	if (!cached) {
 		trans = load("/Localization/GetTranslationsForCurrentLanguage");
-		localStorage.setItem("translations", JSON.stringify(trans));
+		let index = 0;
+		let step = 1;
+		let round = {};
+		for (let key in trans) {
+			round[key] = trans[key];
+			index++;
+			if (index % 200 == 0) {
+				localStorage.setItem(`translations_${step}`, JSON.stringify(round));
+				round = {};
+				step++;
+			}
+		}
+		localStorage.setItem(`translations_${step}`, JSON.stringify(round));
+		localStorage.setItem("transCollectionCount", step);
+		localStorage.setItem("hasLoadedTranslations", "yes")
 	} else {
-		trans = JSON.parse(cached);
+		const count = localStorage.getItem("transCollectionCount");
+		for (let i = 1; i <= count; i++) {
+			const cacheSerialCollection = localStorage.getItem(`translations_${i}`);
+			trans = Object.assign(trans, JSON.parse(cacheSerialCollection));
+		}
 	}
 	window.localTranslations = trans;
 	return trans;
@@ -151,6 +169,18 @@ window.translations = function () {
 
 window.translate = function (key) {
 	if (window.localTranslations) {
+		if (!window.localTranslations.hasOwnProperty(key)) {
+			$.toast({
+				heading: `Key: ${key} is not translated!`,
+				text: "",
+				position: 'top-right',
+				loaderBg: '#ff6849',
+				icon: 'error',
+				hideAfter: 3500,
+				stack: 6
+			});
+			localStorage.removeItem("hasLoadedTranslations");
+		}
 		return window.localTranslations[key];
 	}
 	const trans = window.translations();
@@ -177,12 +207,23 @@ window.forceTranslate = function (selector = null) {
 		$.each(translations,
 			function (index, item) {
 				let key = $(item).attr("translate");
-				const translation = trans[key];
-				if (translation) {
-					$(item).text(translation);
-					$(item).attr("translated", "");
-				} else {
-					localStorage.removeItem("translations");
+				if (key != "none" && key) {
+					const translation = trans[key];
+					if (translation) {
+						$(item).text(translation);
+						$(item).attr("translated", "");
+					} else {
+						$.toast({
+							heading: `Key: ${key} is not translated!`,
+							text: "",
+							position: 'top-right',
+							loaderBg: '#ff6849',
+							icon: 'error',
+							hideAfter: 3500,
+							stack: 6
+						});
+						localStorage.removeItem("hasLoadedTranslations");
+					}
 				}
 			});
 		resolve();

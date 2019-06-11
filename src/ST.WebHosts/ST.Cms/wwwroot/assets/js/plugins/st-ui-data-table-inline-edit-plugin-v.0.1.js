@@ -680,7 +680,7 @@ function onInputEvent() {
 		}, "post");
 	if (req.is_success) {
 		$.toast({
-			heading: 'Data was saved with success',
+			heading: window.translate("system_inline_saved"),
 			text: `You change ${value} value`,
 			position: 'top-right',
 			loaderBg: '#ff6849',

@@ -252,5 +252,12 @@
   "system_field_name": "Όνομα πεδίου",
   "system_system_field": "Σύστημα Τομέα",
   "system_no_entity_fields": "Δεν υπάρχουν πεδία.",
-  "system_page_acl": "Ελέγχου Πρόσβασης"
+  "system_page_acl": "Ελέγχου Πρόσβασης",
+  "iso_category": "Κατηγορία",
+  "iso_category_collapse": "Καταλήξαμε σε κατηγορία",
+  "iso_category_parent_requirement": "Μητρική Απαίτηση",
+  "system_inline_saved": "Τα δεδομένα αποθηκεύτηκαν με επιτυχία",
+  "system_server_not_respond": "Server δεν ανταποκρίνεται!",
+  "system_toast_info": "Πληροφορίες",
+  "system_toast_error": "Σφάλμα!"
 }

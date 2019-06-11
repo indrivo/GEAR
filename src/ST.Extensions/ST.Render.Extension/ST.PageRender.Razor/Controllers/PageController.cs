@@ -37,10 +37,12 @@ namespace ST.PageRender.Razor.Controllers
         private readonly IPageRender _pageRender;
         private readonly IFormService _formService;
         private readonly IDynamicPagesContext _pagesContext;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
 
         public PageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
+            _roleManager = roleManager;
             _pageRender = pageRender;
             _formService = formService;
             _pagesContext = pagesContext;
@@ -662,7 +664,9 @@ namespace ST.PageRender.Razor.Controllers
                 .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id == pageId);
             if (page == null) return NotFound();
-            return View();
+            var roles = _roleManager.Roles.Where(x => !x.IsDeleted).ToList();
+
+            return View(page);
         }
     }
 }

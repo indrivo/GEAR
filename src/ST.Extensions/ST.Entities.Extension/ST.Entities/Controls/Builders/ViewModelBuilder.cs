@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Entities.Data;
@@ -12,13 +13,14 @@ namespace ST.Entities.Controls.Builders
     {
         public static EntityViewModel Create(EntitiesDbContext dbContext, TableModel table, bool hasConfig)
         {
+            Arg.NotNull(dbContext, nameof(EntitiesDbContext));
+            Arg.NotNull(table, nameof(TableModel));
             var model = new EntityViewModel
             {
                 TableName = table.Name,
                 TableSchema = table.EntityType,
                 Fields = new List<EntityFieldsViewModel>()
             };
-
 
             var baseModelFields = BaseModelBuilder.CreateBaseModel(table.EntityType).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
@@ -49,6 +51,8 @@ namespace ST.Entities.Controls.Builders
 
         public static EntityViewModel Create(EntitiesDbContext dbContext, EntityViewModel model)
         {
+            Arg.NotNull(dbContext, nameof(EntitiesDbContext));
+            Arg.NotNull(model, nameof(EntityViewModel));
             var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
 
@@ -65,6 +69,7 @@ namespace ST.Entities.Controls.Builders
 
             return model;
         }
+
         /// <summary>
         /// Populate fields of table
         /// </summary>
@@ -75,6 +80,7 @@ namespace ST.Entities.Controls.Builders
         {
             return Task.Run(() => Resolve(dbContext, model));
         }
+
         /// <summary>
         /// Populate fields of table
         /// </summary>
@@ -83,9 +89,10 @@ namespace ST.Entities.Controls.Builders
         /// <returns></returns>
         public static EntityViewModel Resolve(EntitiesDbContext dbContext, EntityViewModel model)
         {
+            Arg.NotNull(dbContext, nameof(EntitiesDbContext));
+            Arg.NotNull(model, nameof(EntityViewModel));
             var baseModelFields = BaseModelBuilder.CreateBaseModel(model.TableName).Adapt<List<TableModelField>>();
             foreach (var item in baseModelFields) item.IsSystem = true;
-
 
             foreach (var item in baseModelFields)
                 model.Fields.Add(new EntityFieldsViewModel

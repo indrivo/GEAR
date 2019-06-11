@@ -252,5 +252,12 @@
   "system_field_name": "Имя поля ",
   "system_system_field": "Поле Системы ",
   "system_no_entity_fields": "Нет полей.",
-  "system_page_acl": "Контроля Доступа "
+  "system_page_acl": "Контроля Доступа ",
+  "iso_category": "Категория",
+  "iso_category_collapse": "Сокращает категорию",
+  "iso_category_parent_requirement": "Родительское Требование",
+  "system_inline_saved": "Данные были сохранены с успехом",
+  "system_server_not_respond": "Сервер не отвечает!",
+  "system_toast_info": "Информация",
+  "system_toast_error": "Ошибка!"
 }
