@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -32,7 +31,7 @@ namespace ST.PageRender.Razor.Services
 {
     public class PageRender : IPageRender
     {
-        private const string BasePath = "Static/Templates/";
+        private const string BasePath = "Templates/";
         /// <summary>
         /// Context
         /// </summary>
@@ -44,11 +43,6 @@ namespace ST.PageRender.Razor.Services
         /// Inject notifier
         /// </summary>
         private readonly INotify<ApplicationRole> _notify;
-
-        /// <summary>
-        /// Inject hosting env
-        /// </summary>
-        private readonly IHostingEnvironment _env;
 
         /// <summary>
         /// Inject cache service
@@ -65,12 +59,11 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, IHostingEnvironment env, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext)
         {
             _context = context;
             _cacheService = cacheService;
             _notify = notify;
-            _env = env;
             _userManager = userManager;
             _contextAccessor = contextAccessor;
             _pagesContext = pagesContext;
@@ -317,9 +310,8 @@ namespace ST.PageRender.Razor.Services
             {
                 _pagesContext.Pages.Add(page);
                 _pagesContext.SaveChanges();
-
-                var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.html");
-                var reader = new StreamReader(fileInfo.CreateReadStream());
+                var fileStream = new FileStream(Path.Combine(AppContext.BaseDirectory, $"{BasePath}/listDefaultTemplate.html"), FileMode.Open);
+                var reader = new StreamReader(fileStream);
                 var listId = Guid.NewGuid();
 
                 var tableHead = new StringBuilder();
@@ -340,7 +332,8 @@ namespace ST.PageRender.Razor.Services
                 };
 
                 var template = (await reader.ReadToEndAsync()).Inject(dictData);
-
+                reader.Close();
+                fileStream.Close();
                 await SavePageContent(pageId, template, string.Empty, string.Empty);
 
                 await _notify.SendNotificationAsync(new SystemNotifications
@@ -372,13 +365,16 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<ResultModel> GenerateFormPage(Guid formId, string path, string pageName)
         {
-            var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/formDefaultTemplate.html");
-            var reader = new StreamReader(fileInfo.CreateReadStream());
+            var fileStream = new FileStream(Path.Combine(AppContext.BaseDirectory, $"{BasePath}/formDefaultTemplate.html"), FileMode.Open);
+            var reader = new StreamReader(fileStream);
+
             var dictData = new Dictionary<string, string>
             {
                 { "FormId", formId.ToString() }
             };
             var template = (await reader.ReadToEndAsync()).Inject(dictData);
+            reader.Close();
+            fileStream.Close();
             var page = new Page
             {
                 Created = DateTime.Now,
@@ -444,15 +440,16 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<ResultModel<Guid>> GenerateViewModel(Guid entityId)
         {
+            var result = new ResultModel<Guid>();
             var table = _context.Table.Include(x => x.TableFields).FirstOrDefault(x => x.Id.Equals(entityId));
-            if (table == null) return default;
+            if (table == null) return result;
             var id = Guid.NewGuid();
             var fields = new List<ViewModelFields>();
             var model = new ViewModel
             {
                 Id = id,
                 Name = $"{table.Name}_{id}",
-                TableModel = table
+                TableModelId = table.Id
             };
             var c = 0;
 
@@ -460,7 +457,7 @@ namespace ST.PageRender.Razor.Services
             {
                 Order = c++,
                 Name = x.Name,
-                TableModelField = x,
+                TableModelFieldsId = x.Id,
                 Template = GetTemplate(x.Name, x.DataType)
             }));
 
@@ -478,12 +475,15 @@ namespace ST.PageRender.Razor.Services
             try
             {
                 await _pagesContext.SaveChangesAsync();
-                return new ResultModel<Guid> { IsSuccess = true, Result = id };
+                result.IsSuccess = true;
+                result.Result = id;
+                return result;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                return default;
+                result.Errors.Add(new ErrorModel("throw", ex.Message));
+                return result;
             }
         }
 

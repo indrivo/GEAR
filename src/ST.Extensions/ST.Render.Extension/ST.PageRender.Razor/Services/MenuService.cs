@@ -91,7 +91,7 @@ namespace ST.PageRender.Razor.Services
 
             foreach (var t in data)
             {
-                t.SubItems = GetMenu(menus, roles, t.Id).ToArray();
+                t.Children = GetMenu(menus, roles, t.Id).ToArray();
             }
             return data;
         }

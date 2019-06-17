@@ -48,7 +48,8 @@ namespace ST.Core.Helpers
         /// <typeparam name="TImplementation"></typeparam>
         public static void RegisterService<TAbstraction, TImplementation>() where TImplementation : class, TAbstraction where TAbstraction : class
         {
-            Container.Register(Component.For<TAbstraction>()
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>()
                 .ImplementedBy<TImplementation>());
         }
 
@@ -60,7 +61,8 @@ namespace ST.Core.Helpers
         {
             foreach (var serviceInfo in toMapCollection)
             {
-                Container.Register(Component.For(serviceInfo.Key)
+                if (!IsServiceRegistered(serviceInfo.Key))
+                    Container.Register(Component.For(serviceInfo.Key)
                     .ImplementedBy(serviceInfo.Value));
             }
         }

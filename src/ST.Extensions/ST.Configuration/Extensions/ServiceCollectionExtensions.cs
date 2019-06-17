@@ -285,6 +285,9 @@ namespace ST.Configuration.Extensions
 
             //Notifications
             var notificationConfig = new DbNotificationConfig { DbContext = context };
+            if (IoC.IsServiceRegistered<INotificationProvider>())
+                return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
+
             IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<DbNotificationProvider>()
                 .DependsOn(Dependency.OnValue("config", notificationConfig)));
             IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<EmailNotificationProvider>());
@@ -302,8 +305,8 @@ namespace ST.Configuration.Extensions
 
             //Dynamic data dataService
             IoC.Container.Register(Component.For<IDynamicService>()
-                 .ImplementedBy<DynamicService<EntitiesDbContext>>()
-                 .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
+                .ImplementedBy<DynamicService<EntitiesDbContext>>()
+                .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
             //Seed
             var synchronizerParams = new Dictionary<string, object> { { "context", context } };

@@ -132,11 +132,22 @@ namespace ST.Cms
 			{
 				Installation.Application.OnApplicationStarted(app);
 			});
+
+			if (env.IsProduction())
+			{
+				//Use compression
+				app.UseResponseCompression();
+			}
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
+			if (HostingEnvironment.IsProduction())
+			{
+				//Use compression
+				services.AddResponseCompression();
+			}
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 

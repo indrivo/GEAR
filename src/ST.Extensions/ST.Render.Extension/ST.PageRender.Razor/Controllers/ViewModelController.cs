@@ -238,7 +238,7 @@ namespace ST.PageRender.Razor.Controllers
             if (Guid.Empty == id) return NotFound();
             ViewBag.Data = _pagesContext.ViewModelFields
                 .Where(x => x.ViewModelId.Equals(id))
-                .Include(x => x.TableModelField)
+                .Include(x => x.TableModelFields)
                 .OrderBy(x => x.Order).ToList();
             return View();
         }
@@ -323,7 +323,7 @@ namespace ST.PageRender.Razor.Controllers
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
                 .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.TableModelField)
+                .ThenInclude(x => x.TableModelFields)
                 .FirstOrDefaultAsync(x => x.Id == viewModelId);
             if (viewModel == null) return NotFound();
 

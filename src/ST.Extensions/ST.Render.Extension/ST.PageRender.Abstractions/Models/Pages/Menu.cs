@@ -26,6 +26,6 @@ namespace ST.PageRender.Abstractions.Models.Pages
 
     public class MenuViewModel : MenuItem
     {
-        public MenuViewModel[] SubItems { get; set; }
+        public MenuViewModel[] Children { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace ST.PageRender.Abstractions.Models.ViewModels
     {
         public string Name { get; set; }
         public Guid ViewModelId { get; set; }
-        public TableModelField TableModelField { get; set; }
+        public TableModelField TableModelFields { get; set; }
         public Guid? TableModelFieldsId { get; set; }
         public string Translate { get; set; }
         public string Template { get; set; }

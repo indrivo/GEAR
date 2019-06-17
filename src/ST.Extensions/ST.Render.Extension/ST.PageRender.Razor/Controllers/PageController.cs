@@ -661,11 +661,11 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<IActionResult> PageAcl([Required] Guid pageId)
         {
             var page = await _pagesContext.Pages
+                .Include(x => x.Settings)
                 .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id == pageId);
             if (page == null) return NotFound();
             var roles = _roleManager.Roles.Where(x => !x.IsDeleted).ToList();
-
             return View(page);
         }
     }

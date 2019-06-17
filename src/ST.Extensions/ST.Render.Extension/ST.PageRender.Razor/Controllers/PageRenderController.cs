@@ -25,6 +25,8 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.DynamicEntityStorage.Abstractions.Enums;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Constants;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
@@ -112,7 +114,7 @@ namespace ST.PageRender.Razor.Controllers
             var page = await _pageRender.GetPageAsync(pageId);
             if (page == null) return NotFound();
             ViewBag.Page = page;
-
+            
             return View();
         }
 
@@ -171,7 +173,15 @@ namespace ST.PageRender.Razor.Controllers
             if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
             var table = config.Value;
             var instance = _service.Table(table);
-            return Json(await instance.GetAllWithInclude<object>());
+            return Json(await instance.GetAllWithInclude<object>(filters: new List<Filter>
+            {
+                new Filter
+                {
+                    Value = false,
+                    Criteria = Criteria.Equals,
+                    Parameter = nameof(BaseModel.IsDeleted)
+                }
+            }));
         }
 
         /// <summary>
@@ -185,7 +195,7 @@ namespace ST.PageRender.Razor.Controllers
             var obj = _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.TableModelField)
+                .ThenInclude(x => x.TableModelFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .FirstOrDefault(x => !x.IsDeleted && x.Id.Equals(viewModelId));
 
@@ -343,7 +353,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             try
             {
-                var sp = script.Split("src=\"")?[1].Split("\"").FirstOrDefault();
+                var sp = script.Split("src=\"")?[1].Split("\"")?.FirstOrDefault();
                 return sp;
             }
             catch
@@ -431,7 +441,7 @@ namespace ST.PageRender.Razor.Controllers
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
                 .Include(x => x.ViewModelFields)
-                .ThenInclude(x => x.TableModelField)
+                .ThenInclude(x => x.TableModelFields)
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(default(DTResult<object>));
@@ -819,7 +829,7 @@ namespace ST.PageRender.Razor.Controllers
             response.IsSuccess = res.IsSuccess;
             response.Result = new
             {
-                Data = res.Result,
+                Data = res.Result?.Where(x => !(bool)x[nameof(BaseModel.IsDeleted)]).ToList(),
                 EntityName = entityRefName.Value
             };
             return Json(response);

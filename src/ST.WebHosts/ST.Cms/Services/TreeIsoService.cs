@@ -97,6 +97,23 @@ namespace ST.Cms.Services
 					result.Errors.Add(new ErrorModel(nameof(ArgumentNullException), "Value must be not null"));
 					return result;
 				}
+
+				var checkIfExist = await ctx.GetAllWithInclude<dynamic>(filters: new List<Filter>
+				{
+					new Filter
+					{
+						Value = requirementId,
+						Criteria = Criteria.Equals,
+						Parameter = "RequirementId"
+					}
+				});
+
+				if (checkIfExist.Result?.Any() ?? false)
+				{
+					result.Errors.Add(new ErrorModel(nameof(NotFoundResult), "Fail to save, try refresh page!"));
+					return result;
+				}
+
 				var requirement = await ctxReq.GetById<object>(requirementId);
 				if (!requirement.IsSuccess || requirement.Result == null)
 				{
@@ -123,6 +140,12 @@ namespace ST.Cms.Services
 
 			if (data.IsSuccess && data.Result.Any())
 			{
+				if (data.Result.Count() > 2)
+				{
+					result.Errors.Add(new ErrorModel(nameof(NullReferenceException), "Something went wrong, multiple values detected!"));
+					return result;
+				}
+
 				var obj = data.Result.FirstOrDefault();
 				if (obj == null)
 				{

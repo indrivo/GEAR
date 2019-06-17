@@ -78,10 +78,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             var target = obj.Type != typeof(TEntity) ? model.ParseDynamicObjectByType(obj.Type) : model;
             var req = obj.Invoke<Guid>(MethodName.AddWithReflection, new List<Type> { target.GetType() },
                 new List<object> { target });
-            if (!req.IsSuccess) return result;
-            result.IsSuccess = true;
-            result.Result = req.Result.Adapt<Guid>();
-            return result;
+            return req;
         });
 
         /// <summary>
@@ -99,9 +96,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             //var data = obj.ParseListObject(model);
             var req = obj.Invoke<dynamic>(MethodName.AddDataRangeWithReflection, new List<Type> { obj.Type },
                 new List<object> { model });
-            if (!req.IsSuccess) return result;
-            result.IsSuccess = true;
-            return result;
+            return req.Adapt<ResultModel>();
         });
 
         /// <summary>
@@ -167,10 +162,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             if (id == Guid.Empty) return result;
             var req = obj.Invoke<TEntity>(MethodName.GetByIdWithReflection, new List<Type> { obj.Type, obj.Type },
                 new List<object> { id });
-            if (!req.IsSuccess) return result;
-            result.IsSuccess = true;
-            result.Result = req.Result.Adapt<TEntity>();
-            return result;
+            return req;
         });
 
         /// <summary>
@@ -181,13 +173,9 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         public static Task<ResultModel<bool>> Any(this DynamicObject obj)
        => Task.Run(() =>
        {
-           var result = new ResultModel<bool>();
            var req = obj.Invoke<bool>(MethodName.Any, new List<Type> { obj.Type },
                new List<object>());
-           if (!req.IsSuccess) return result;
-           result.IsSuccess = true;
-           result.Result = req.Result;
-           return result;
+           return req;
        });
 
         /// <summary>
@@ -244,10 +232,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             if (model == null) return result;
             var req = obj.Invoke<Guid>(MethodName.UpdateWithReflection, new List<Type> { model.GetType() },
                 new List<dynamic> { model });
-            if (!req.IsSuccess) return result;
-            result.IsSuccess = true;
-            result.Result = req.Result.Adapt<Guid>();
-            return result;
+            return req;
         });
 
         /// <summary>

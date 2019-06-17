@@ -157,6 +157,7 @@ namespace ST.Configuration.Server
                 && !value.StartsWith("/lib")
                 && !value.StartsWith("/assets")
                 && !value.StartsWith("/js")
+                && !value.StartsWith("/themes")
                 && !value.StartsWith("/PageRender")
                 && !value.StartsWith("/Localization")
                 && !value.StartsWith("/favicon.ico")

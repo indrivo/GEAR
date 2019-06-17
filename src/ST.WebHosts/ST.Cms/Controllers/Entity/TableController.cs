@@ -399,7 +399,7 @@ namespace ST.Cms.Controllers.Entity
 		[NonAction]
 		private void RefreshRuntimeTypes()
 		{
-			Queue.PushQueueBackgroundWorkItem(async token =>
+			Queue.PushBackgroundWorkItemInQueue(async token =>
 			{
 				//TODO: Need to update only edited dynamic runtime type
 				TypeManager.Clear();

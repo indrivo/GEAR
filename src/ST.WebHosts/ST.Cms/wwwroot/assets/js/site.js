@@ -282,6 +282,7 @@ $(document).ready(function () {
 //------------------------------------------------------------------------------------//
 
 $(document).ready(function () {
+	if (typeof signalR === 'undefined') return;
 	const notificator = new Notificator();
 	const user = notificator.getCurrentUser();
 	var connPromise = new Promise((resolve, reject) => {

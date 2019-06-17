@@ -24,6 +24,7 @@ using ST.Entities.Abstractions.Query;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Forms.Data;
+using ST.PageRender.Data;
 using ST.Report.Dynamic.Data;
 
 namespace ST.Cms.Installation
@@ -74,6 +75,7 @@ namespace ST.Cms.Installation
 					   FormDbContextSeed<FormDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
 				   })
 				.MigrateDbContext<ProcessesDbContext>()
+				.MigrateDbContext<DynamicPagesDbContext>()
 				.MigrateDbContext<DynamicReportDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()
 				.MigrateDbContext<ApplicationDbContext>((context, services) =>

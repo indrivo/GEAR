@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <None Remove="libman.json" />
-    <None Remove="Templates\formDefaultTemplate.html" />
-    <None Remove="Templates\listDefaultTemplate.html" />
   </ItemGroup>
   
   <ItemGroup>

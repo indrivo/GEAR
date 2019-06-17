@@ -28,11 +28,11 @@ TableColumnsVisibility.prototype.constructor = TableColumnsVisibility;
 
 
 TableColumnsVisibility.prototype.getVisibility = function (id) {
-	const cookie = getCookie(`_list_${id}`);
+	const cacheValue = localStorage.getItem(`_list_${id}`);
 	const visibleItems = [];
 	const hiddenItems = [];
-	if (cookie) {
-		const data = JSON.parse(cookie);
+	if (cacheValue) {
+		const data = JSON.parse(cacheValue);
 
 		for (let i = 0; i < data.values.length; i++) {
 			if (data.values[i]) visibleItems.push(i);
@@ -88,10 +88,10 @@ TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
 	try {
 		const cols = $(id).DataTable().settings()[0].aoColumns;
 		var items = "";
-		const cookie = getCookie(`_list_${id}`);
+		const cacheValue = localStorage.getItem(`_list_${id}`);
 		let display = null;
-		if (cookie) {
-			display = JSON.parse(cookie);
+		if (cacheValue) {
+			display = JSON.parse(cacheValue);
 		}
 
 		$.each(cols,
@@ -154,27 +154,27 @@ TableColumnsVisibility.prototype.dataChanged = function (ref, id) {
 	const checked = $(ref).is(":checked");
 	const idd = $(ref).attr("data-id");
 	const tabled = $(ref).attr("data-table");
-	const cookie = getCookie(`_list_${tabled}`);
+	const cacheValue = localStorage.getItem(`_list_${tabled}`);
 
-	if (cookie) {
-		const data = JSON.parse(cookie);
+	if (cacheValue) {
+		const data = JSON.parse(cacheValue);
 		data.values[idd] = checked;
 		data.columns[idd] = idd;
 
-		setCookie(`_list_${tabled}`, JSON.stringify(data), 9999);
+		localStorage.setItem(`_list_${tabled}`, JSON.stringify(data), 9999);
 	} else {
 		const nrCols = $(id).DataTable().settings()[0].aoColumns.length;
-		const newCookie = {
+		const newCacheValue = {
 			columns: [],
 			values: []
 		};
 		for (let i = 0; i < nrCols; i++) {
-			newCookie.values[i] = i;
-			newCookie.columns[i] = true;
+			newCacheValue.values[i] = i;
+			newCacheValue.columns[i] = true;
 		}
-		newCookie.values[idd] = checked;
-		newCookie.columns[idd] = idd;
-		setCookie(`_list_${tabled}`, JSON.stringify(newCookie), 9999);
+		newCacheValue.values[idd] = checked;
+		newCacheValue.columns[idd] = idd;
+		localStorage.setItem(`_list_${tabled}`, JSON.stringify(newCacheValue), 9999);
 	}
 	$(tabled).DataTable().columns([idd]).visible(checked);
 };

@@ -42,7 +42,6 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, dt = null) {
 	const row = document.createElement("tr");
 	row.setAttribute("isNew", "true");
 	const columns = dt.columns().context[0].aoColumns;
-
 	for (let i in columns) {
 		//Ignore hidden column
 		if (!columns[i].bVisible) continue;
@@ -61,7 +60,8 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, dt = null) {
 			else {
 				var newCell = this.getAddRowCell(columns[i], cell);
 				cell = newCell.cell;
-				row.setAttribute("entityName", newCell.entityName);
+				if (newCell.entityName)
+					row.setAttribute("entityName", newCell.entityName);
 			}
 
 		row.appendChild(cell);
@@ -124,8 +124,8 @@ function cancelNewItem() {
 	context.off("click", cancelNewItem);
 	context.parent().find(".add-new-item").off("click", addNewItem);
 	new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
-	context.closest("tr").remove();
 	cancelTableAddMode(context);
+	context.closest("tr").remove();
 }
 
 function addNewItem() {
@@ -165,6 +165,7 @@ function addNewItem() {
 }
 
 function cancelTableAddMode(ctx) {
+	console.log(ctx);
 	ctx.closest("table").attr("add-mode", "false");
 }
 
@@ -177,7 +178,8 @@ function getRowData(context) {
 			case "nvarchar":
 			case "datetime":
 			case "date":
-			case "int32": {
+			case "int32":
+			case "decimal": {
 				obj[f.attr("data-prop-name")] = f.val();
 			} break;
 			case "bool": {
@@ -237,10 +239,10 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 				}
 
 				cellContent.appendChild(el);
-
 			}
 			break;
 		case "int32":
+		case "decimal":
 			{
 				const el = document.createElement("input");
 				el.setAttribute("class", "inline-add-event data-new form-control");
@@ -342,16 +344,20 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 	};
 }
 
+TableInlineEdit.prototype.renderActiveInlineButton = function (ctx) {
+	ctx.html("Complete");
+	ctx.removeClass("btn-warning").addClass("btn-success");
+};
+
 
 /**
  * Start inline edit for row
  */
 function inlineEdit() {
 	const context = $(this);
-	context.html("Complete");
+	new TableInlineEdit().renderActiveInlineButton(context);
 	context.removeClass("inline-edit");
 	context.addClass("inline-complete");
-	context.removeClass("btn-warning").addClass("btn-success");
 	context.off("click", inlineEdit);
 
 	const viewModelId = $(this).attr("data-viewmodel");
@@ -394,6 +400,7 @@ function inlineEdit() {
 					}
 					break;
 				case "int32":
+				case "decimal":
 					{
 						const el = document.createElement("input");
 						el.setAttribute("class", "inline-update-event data-input form-control");
@@ -472,10 +479,15 @@ function inlineEdit() {
 						const data = load(`/PageRender/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
 						if (data) {
 							if (data.is_success) {
+								const entityName = data.result.entityName;
+								let key = "Name";
+								if (entityName === "Users") {
+									key = "UserName";
+								}
 								$.each(data.result.data, function (index, obj) {
-									dropdown.options[dropdown.options.length] = new Option(obj.Name, obj.Id);
+									dropdown.options[dropdown.options.length] = new Option(obj[key], obj.Id);
 								});
-								dropdown.setAttribute("data-ref-entity", data.result.entityName);
+								dropdown.setAttribute("data-ref-entity", entityName);
 							}
 							dropdown.value = value;
 						}
@@ -661,13 +673,21 @@ function onInputEvent() {
 	const propId = $(this).attr("data-prop-id");
 	const type = $(this).attr("data-type");
 	let value = "";
+	let displaySuccessText = "";
 	switch (type) {
 		case "bool":
 			{
 				value = $(this).prop("checked");
+				displaySuccessText = `You turned ${value ? "on" : "off"} checkbox`;
+			} break;
+		case "uniqueidentifier":
+			{
+				value = $(this).val();
+				displaySuccessText = `Was selected : ${$(this).find('option:selected').text()}`;
 			} break;
 		default: {
 			value = $(this).val();
+			displaySuccessText = `You change ${value} value`;
 		} break;
 	}
 
@@ -681,7 +701,7 @@ function onInputEvent() {
 	if (req.is_success) {
 		$.toast({
 			heading: window.translate("system_inline_saved"),
-			text: `You change ${value} value`,
+			text: displaySuccessText,
 			position: 'top-right',
 			loaderBg: '#ff6849',
 			icon: 'success',

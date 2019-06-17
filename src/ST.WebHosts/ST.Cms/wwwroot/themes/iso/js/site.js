@@ -73,7 +73,7 @@ TableColumnsVisibility.prototype.registerInitEvents = function () {
 if (typeof TableBuilder !== 'undefined') {
 	//Override table select
 	TableBuilder.prototype.dom = '<"CustomTableHeadBar">rtip';
-	RenderTableSelect.prototype.settings.classNameText = '';
+	RenderTableSelect.prototype.settings.classNameText = 'no-sort';
 	RenderTableSelect.prototype.settings.select.selector = "td:not(.not-selectable):first-child .checkbox-container";
 	RenderTableSelect.prototype.selectHandler = function (context) {
 		const row = $(context).closest('tr');
@@ -160,10 +160,14 @@ if (typeof TableBuilder !== 'undefined') {
 
 
 
-
+//override inline edit templates
 if (typeof TableInlineEdit !== 'undefined') {
 	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
 		return;
+	};
+
+	TableInlineEdit.prototype.renderActiveInlineButton = function (ctx) {
+		ctx.find("i").html("check");
 	};
 }
 
@@ -333,6 +337,34 @@ $(document).ready(function () {
 					End Custom js
 ************************************************/
 
+
+/************************************************
+Page Pre Loader Removal After Page Load
+************************************************/
+
+var PreLoader;
+
+$(window).on("load", function () {
+
+	$('.loader-wrapper').not('.incomponent').fadeOut(1000, function () {
+		PreLoader = $(this).detach();
+	});
+
+});
+
+/************************************************
+End Pre Loader Removal After Page Load
+************************************************/
+
+
+/*!
+  * FreakPixels v1.1.0 (http://freakpixels.com/)
+  * Copyright 2011-2018 The FreakPixels Authors 
+  * Licensed under MIT    
+  */
+
+
+"use strict";
 
 /************************************************
 Page Pre Loader Removal After Page Load
@@ -643,18 +675,7 @@ Sidebar Nav Accordion
 
 	}
 
-
-
 	$.fn.setThemeTone();
-
-
-
-
-
-
-
-
-
 
 })(jQuery);
 
@@ -689,237 +710,3 @@ function toggleFullScreen() {
 
 
 
-
-$(document).ready(function () {
-
-
-    /* -------------------
-     *  Navigation declaration
-     *  ------------------- */
-
-    /**
-     * Sets the initial direction of the side-menu triggering arrow
-     * */
-	function setInitialStateOfBurgerIcon() {
-		var sideMenu = $('aside');
-		var burger = $('#isodms-logo');
-		if (sideMenu.hasClass('collapsed')) {
-			burger.text('arrow_forward');
-		} else {
-			burger.text('arrow_back');
-		}
-	}
-
-    /**
-     * Changes the direction of top arrow when opening the side menu
-     * */
-	function modifyBurgerIconWhenToggleSideMenu() {
-		$('#isodms-logo').bind("click", function () {
-			var sideMenu = $('aside');
-			var burger = $('#isodms-logo');
-			if (!sideMenu.hasClass('collapsed')) {
-				burger.text('arrow_forward');
-			} else {
-				burger.text('arrow_back');
-			}
-			adjustTableSizeAfterAnimation();
-		});
-	}
-
-    /**
-     *
-     * */
-	function adjustTableSizeAfterAnimation() {
-		setTimeout(function () {
-			makeTablesResponsiveIfToWide();
-		}, 400);
-	}
-
-    /* -------------------
-    *  Tables
-    *  ------------------- */
-
-    /**
-     * Depending of container, makes the tables responsive if its width is greater than container width
-     * */
-	function makeTablesResponsiveIfToWide() {
-		var allTables = $('.table');
-		if (allTables) {
-			allTables.each(function (key, currentItem) {
-				var jCurrentItem = $(currentItem);
-				jCurrentItem.removeClass('table-responsive');
-				var currentItemWidth = jCurrentItem.width();
-				var currentItemContainerWidth = jCurrentItem.closest('div').width();
-				if (currentItemWidth > currentItemContainerWidth) {
-					jCurrentItem.addClass('table-responsive')
-				}
-			});
-		}
-
-	}
-
-    /* -------------------
-    *  Events binding
-    *  ------------------- */
-
-    /**
-     * Window resize event binding
-     * */
-	$(window).resize(function () {
-		makeTablesResponsiveIfToWide();
-	});
-
-
-    /* -------------------
-    *  Calling all functions
-    *  ------------------- */
-	setInitialStateOfBurgerIcon();
-	modifyBurgerIconWhenToggleSideMenu();
-	makeTablesResponsiveIfToWide();
-	adjustTableSizeAfterAnimation();
-
-});
-
-
-
-
-
-
-$(document).ready(function () {
-
-	$(document).on('mouseover', function (event) {
-		if ($(event.target).hasClass('info-tooltip')) {
-			const tooltip = event.target;
-			const infoTooltipData = $(event.target).data('content');
-			const infoTooltipContentContainer = createInfoTooltipContentContainer(infoTooltipData);
-			document.body.appendChild(infoTooltipContentContainer);
-			new Popper(tooltip, infoTooltipContentContainer, {
-				placement: 'bottom-start',
-				removeOnDestroy: true
-			});
-
-			$(document).on('mouseover', function (nextEvent) {
-				if (nextEvent.target !== tooltip) {
-					infoTooltipContentContainer.remove();
-				}
-			})
-		}
-	});
-
-
-	function createInfoTooltipContentContainer(innerText) {
-		const infoTooltipContent = document.createElement('div');
-		infoTooltipContent.classList = ['info-tooltip-content p-4'];
-		infoTooltipContent.innerText = innerText;
-		return infoTooltipContent;
-	}
-});
-
-
-
-
-
-
-
-
-
-
-/**
- * Checks the state of every collapsible and sets the appropriate header button icon
- * */
-function changeAllCollapseHeaderIcon() {
-	$('.card-header').each(function (index, item) {
-		if (!$(item).find('.btn').hasClass('collapsed')) {
-			$(item).find('.material-icons').first().text('keyboard_arrow_down');
-		} else {
-			$(item).find('.material-icons').first().text('keyboard_arrow_right');
-		}
-	});
-}
-
-function changeAllSpoilerIcons() {
-	$('.spoiler').each(function (index, item) {
-		const targetId = $(item).data('target');
-
-		if (!$('' + targetId).hasClass('show')) {
-			$(item).find('.material-icons').first().text('remove');
-		} else {
-			$(item).find('.material-icons').first().text('add');
-		}
-	});
-}
-
-/**
- * Expands the first collapse child of provided selector
- * */
-function expandCollapse(cardLevelSelector) {
-	$(cardLevelSelector).each(function (index, item) {
-		$(item).children('.collapse').first().collapse('show');
-		changeAllCollapseHeaderIcon();
-	});
-}
-
-/**
- * Entry point
- * */
-$(document).ready(function () {
-
-    /**
-     * Binds to collapse controls, which closes or opens all collapses on click
-     * */
-	function bindToCollapseControls() {
-		$('#collapse-all').on('click', function () {
-			$('.collapse').collapse('show');
-			changeAllCollapseHeaderIcon();
-			changeAllSpoilerIcons();
-		});
-
-		$('#hide-all').on('click', function () {
-			$('.collapse').collapse('hide');
-			changeAllCollapseHeaderIcon();
-			changeAllSpoilerIcons();
-		});
-	}
-
-    /**
-     * Finds every collapse, binds to click event and changes the icon whenever the collapse is opened or closed
-     * */
-	function bindChangeCollapseHeaderOnToggle() {
-		// find every card header
-		$('.card-header').each(function (index, item) {
-			// binds to .btn click event
-			$(item).find('.btn').first().on('click', function () {
-				if ($(item).find('.btn').hasClass('collapsed')) {
-					$(item).find('.material-icons').first().text('keyboard_arrow_down');
-				} else {
-					$(item).find('.material-icons').first().text('keyboard_arrow_right');
-				}
-			})
-		});
-	}
-
-    /**
-     * Binds to .collapse-parent elements and the parent .collapse on click
-     * */
-	function bindToCollapseParentButton() {
-		$('.collapse-parent').each(function (index, button) {
-			$(button).on('click', function () {
-				$(button).parents('.collapse').first().collapse('hide');
-				changeAllCollapseHeaderIcon();
-			});
-		});
-	}
-
-	function bindToSpoilerClick() {
-		$('.spoiler').each(function (index, item) {
-			$(item).on('click', function () {
-				changeAllSpoilerIcons();
-			})
-		});
-	}
-
-	bindToCollapseControls();
-	bindToCollapseParentButton();
-	bindChangeCollapseHeaderOnToggle();
-	bindToSpoilerClick();
-});

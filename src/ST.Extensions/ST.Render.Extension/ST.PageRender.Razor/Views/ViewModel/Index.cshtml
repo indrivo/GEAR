@@ -1,20 +1,20 @@
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = "View Model list";
+	ViewData["Title"] = Localizer["view_models"];
 }
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">View Models</h4>
-		<h6 class="card-subtitle">List of view models</h6>
+		<h4 class="card-title">@Localizer["view_models"]</h4>
+		<h6 class="card-subtitle">@Localizer["view_models_subtitle"]</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
 					<div class="mr-auto">
 						<div class="form-group">
 							<a id="addViewModel" href="#" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add view model
+								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["system_viewmodel_add"]
 							</a>
-							<small>New view model will be added.</small>
+							<small>@Localizer["system_viewmodel_add_description"]</small>
 						</div>
 					</div>
 				</div>
@@ -59,7 +59,7 @@
             $("#addViewModel").on("click",
                 function() {
                     swal({
-                        title: 'Select Entity',
+                        title: window.translate("system_viewmodel_select_entity"),
                         input: 'select',
                         inputOptions: model,
                         inputPlaceholder: 'required',
@@ -69,7 +69,7 @@
                                 if (value !== '') {
                                     resolve();
                                 } else {
-                                    reject('You need to select an entity!');
+                                    reject(window.translate("system_viewmodel_select_entity_not_selected"));
                                 }
                             });
                         }
@@ -83,13 +83,13 @@
                                 },
                                 success: function(data) {
                                     if (!data) {
-                                        swal("Fail!", "Internal server error", "error");
+                                        swal("Fail!", window.translate("system_internal_error"), "error");
                                     } else if (data.is_success) {
                                         location.href = `/ViewModel/OrderFields?id=${data.result}`;
                                     }
                                 },
                                 error: function() {
-                                    swal("Fail!", "Internal server error", "error");
+                                    swal("Fail!", window.translate("system_internal_error"), "error");
                                 }
                             });
                         }
@@ -148,7 +148,7 @@
                 alertText: "Are you sure that you want to leave this view model?",
                 confirmButtonText: "Yes, delete it!",
                 rowId: rowId,
-                tableId: "#pageTable",
+                tableId: "#dfTable",
                 urlForDelete: '@Url.Action("Delete")',
                 type: "warning",
                 onDeleteSuccess: "View model has been deleted.",

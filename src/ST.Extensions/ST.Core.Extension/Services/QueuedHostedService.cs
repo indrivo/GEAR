@@ -27,7 +27,7 @@ namespace ST.Core.Services
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var workItem = await TaskQueue.DequeueAsync(cancellationToken);
+                var workItem = await TaskQueue.RemoveBackgroundWorkItemFromQueueAsync(cancellationToken);
 
                 try
                 {

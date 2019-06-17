@@ -153,6 +153,8 @@ namespace ST.Entities.Data
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                returnModel.IsSuccess = false;
+                returnModel.Errors.Add(new ErrorModel(ex.StackTrace, ex.Message));
                 return returnModel;
             }
 
