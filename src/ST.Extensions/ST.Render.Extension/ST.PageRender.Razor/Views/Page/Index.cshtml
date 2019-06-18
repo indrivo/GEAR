@@ -225,7 +225,7 @@
 									<a class="dropdown-item" href="@Url.Action("PageStyles")?pageId=${row.id
                                 }&type=html">${window.translate("page_styles")}</a>
                                     <a class="dropdown-item" href="@Url.Action("PageAcl")?pageId=${row.id
-                                }&type=html">${window.translate("system_page_acl")}</a>
+                                }">${window.translate("system_page_acl")}</a>
 									${(!row.isSystem) ? `<button type="button" class='dropdown-item' onclick=createAlert('${row.id}'); >${window.translate("delete")}</button>`
 								: ``}
           </div>

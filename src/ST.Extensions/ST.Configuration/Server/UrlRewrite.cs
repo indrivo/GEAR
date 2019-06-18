@@ -176,12 +176,12 @@ namespace ST.Configuration.Server
             var originalPath = ctx.Request.Path.Value;
             ctx.Items["originalPath"] = originalPath;
 
-            var (match, pageId) = Match(context, originalPath, parameters);
+            var (match, page) = Match(context, originalPath, parameters);
 
             if (!match) return false;
             ctx.Request.Path = "/PageRender";
 
-            var newParams = HttpUtility.ParseQueryString($"pageId={pageId}");
+            var newParams = HttpUtility.ParseQueryString($"pageId={page.Id}");
 
             ctx.Request.QueryString = QueryString.Create(newParams.ToKeyValuePair());
 
@@ -195,13 +195,13 @@ namespace ST.Configuration.Server
         /// <param name="path"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private static (bool, Guid) Match(IDynamicPagesContext context, string path, NameValueCollection parameters)
+        private static (bool, Page) Match(IDynamicPagesContext context, string path, NameValueCollection parameters)
         {
             var route = context.Pages.Where(x => !x.IsLayout && !x.IsDeleted).ToList().FirstOrDefault(x => RouteFinder(
                 new ValueTuple<Page, string, List<KeyValuePair<string, string>>>
                     (x, path, parameters.ToKeyValuePair().ToList())));
 
-            return route == null ? default : (true, route.Id);
+            return route == null ? default : (true, route);
         }
 
         /// <summary>

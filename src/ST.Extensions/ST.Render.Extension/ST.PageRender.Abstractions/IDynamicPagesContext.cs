@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Entities.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
+using ST.PageRender.Abstractions.Models.PagesACL;
 using ST.PageRender.Abstractions.Models.RenderTemplates;
 using ST.PageRender.Abstractions.Models.ViewModels;
 
@@ -19,5 +20,6 @@ namespace ST.PageRender.Abstractions
         DbSet<Template> Templates { get; set; }
         DbSet<ViewModel> ViewModels { get; set; }
         DbSet<ViewModelFields> ViewModelFields { get; set; }
+        DbSet<RolePagesAcl> RolePagesAcls { get; set; }
     }
 }

@@ -428,6 +428,7 @@ namespace ST.PageRender.Razor.Services
                 .Include(x => x.PageType)
                 .Include(x => x.Layout)
                 .Include(x => x.Settings)
+                .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id.Equals(pageId));
             await _cacheService.Set($"{PageRenderConstants.PageCacheIdentifier}{pageId}", page);
             return page;

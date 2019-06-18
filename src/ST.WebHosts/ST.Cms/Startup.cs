@@ -228,7 +228,7 @@ namespace ST.Cms
 			services.RegisterDatabaseBackupRunnerModule(Configuration);
 
 			//------------------------------------Page render Module-------------------------------------
-			services.AddPageRenderModule();
+			services.AddPageRenderUiModule();
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();

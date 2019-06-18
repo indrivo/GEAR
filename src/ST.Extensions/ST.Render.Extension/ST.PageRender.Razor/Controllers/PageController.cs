@@ -24,6 +24,7 @@ using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
+using ST.PageRender.Abstractions.Models.PagesACL;
 using ST.PageRender.Razor.Helpers;
 using ST.PageRender.Razor.Services.Abstractions;
 
@@ -394,7 +395,7 @@ namespace ST.PageRender.Razor.Controllers
                     _pagesContext.PageSettings.Update(settings);
                     _pagesContext.Pages.Update(page);
                     await _pagesContext.SaveChangesAsync();
-                    await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
+                    RemovePageFromCache(page.Id);
                     return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
                 }
                 catch (Exception e)
@@ -502,7 +503,7 @@ namespace ST.PageRender.Razor.Controllers
             try
             {
                 _pagesContext.SaveChanges();
-                CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
+                RemovePageFromCache(page.Id);
                 return Json(new { message = "Page was delete with success!", success = true });
             }
             catch (Exception e)
@@ -582,8 +583,8 @@ namespace ST.PageRender.Razor.Controllers
 
             try
             {
-                _pagesContext.SaveChanges();
-                await CacheService.RemoveAsync($"_page_dynamic_{pageId}");
+                await _pagesContext.SaveChangesAsync();
+                RemovePageFromCache(pageId.GetValueOrDefault(Guid.Empty));
                 result.IsSuccess = true;
             }
             catch (Exception ex)
@@ -666,7 +667,113 @@ namespace ST.PageRender.Razor.Controllers
                 .FirstOrDefaultAsync(x => x.Id == pageId);
             if (page == null) return NotFound();
             var roles = _roleManager.Roles.Where(x => !x.IsDeleted).ToList();
+            ViewBag.Roles = roles;
+            var rolesAcl = roles.ToDictionary(x => x, x => page.RolePagesAcls.FirstOrDefault(y => y.RoleId == Guid.Parse(x.Id)));
+            ViewBag.ACL = rolesAcl;
             return View(page);
+        }
+
+        /// <summary>
+        /// Enable/Disable ACL
+        /// </summary>
+        /// <param name="pageId"></param>
+        /// <param name="enableAcl"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> ChangeAclEnableStateAsync([Required]Guid pageId, bool enableAcl)
+        {
+            var rs = new ResultModel();
+            var page = await _pagesContext.Pages
+                .Include(x => x.RolePagesAcls)
+                .FirstOrDefaultAsync(x => x.Id == pageId);
+            if (page == null)
+            {
+                rs.Errors.Add(new ErrorModel(string.Empty, "Page not found!"));
+                return Json(rs);
+            }
+
+            page.IsEnabledAcl = enableAcl;
+            try
+            {
+                _pagesContext.Update(page);
+                if (!enableAcl)
+                {
+                    _pagesContext.RolePagesAcls.RemoveRange(page.RolePagesAcls);
+                }
+                await _pagesContext.SaveChangesAsync();
+                rs.IsSuccess = true;
+                RemovePageFromCache(pageId);
+            }
+            catch (Exception e)
+            {
+                rs.Errors.Add(new ErrorModel(string.Empty, e.Message));
+            }
+            return Json(rs);
+        }
+
+        /// <summary>
+        /// Remove page from cache 
+        /// </summary>
+        /// <param name="pageId"></param>
+        [NonAction]
+        private async void RemovePageFromCache(Guid pageId)
+        {
+            await CacheService.RemoveAsync($"_page_dynamic_{pageId}");
+        }
+
+        /// <summary>
+        /// Change access to page by role id and page id
+        /// </summary>
+        /// <param name="roleId"></param>
+        /// <param name="pageId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> ChangeAccessToPageByRole([Required]Guid roleId, [Required]Guid pageId, bool state)
+        {
+            var rs = new ResultModel();
+            var page = await _pagesContext.Pages
+                .Include(x => x.RolePagesAcls)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == pageId);
+            if (page == null)
+            {
+                rs.Errors.Add(new ErrorModel(string.Empty, "Page not found!"));
+                return Json(rs);
+            }
+
+            var entry = page.RolePagesAcls.FirstOrDefault(x => x.RoleId == roleId);
+            if (entry == null)
+            {
+                _pagesContext.RolePagesAcls.Add(new RolePagesAcl
+                {
+                    RoleId = roleId,
+                    AllowAccess = state,
+                    PageId = page.Id
+                });
+            }
+            else
+            {
+                var model = new RolePagesAcl
+                {
+                    AllowAccess = state,
+                    RoleId = roleId,
+                    PageId = pageId
+                };
+                _pagesContext.RolePagesAcls.Remove(entry);
+                _pagesContext.RolePagesAcls.Add(model);
+            }
+
+            try
+            {
+                await _pagesContext.SaveChangesAsync();
+                rs.IsSuccess = true;
+                RemovePageFromCache(pageId);
+            }
+            catch (Exception e)
+            {
+                rs.Errors.Add(new ErrorModel(string.Empty, e.Message));
+            }
+            return Json(rs);
         }
     }
 }

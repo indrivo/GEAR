@@ -31,6 +31,7 @@ using ST.Entities.Abstractions.Constants;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.PageRender.Abstractions;
+using ST.PageRender.Razor.Attributes;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -109,12 +110,13 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <param name="pageId"></param>
         /// <returns></returns>
+        [AuthorizePage]
         public async Task<IActionResult> Index([Required] Guid pageId)
         {
             var page = await _pageRender.GetPageAsync(pageId);
             if (page == null) return NotFound();
             ViewBag.Page = page;
-            
+
             return View();
         }
 
