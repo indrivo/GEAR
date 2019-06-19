@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Liste predefinite",
   "iso_menu_accomplished": "Indeplinit",
   "iso_menu_interested_party_category": "Categorie parte interesata",
-  "system_inline_edit_add_fail": "Deja este o noua linie de editare, după finisare, va fi posibil de a adăuga o nouă linie!"
+  "system_inline_edit_add_fail": "Deja este o noua linie de editare, după finisare, va fi posibil de a adăuga o nouă linie!",
+  "system_user_change_password": "Schimba parola",
+  "system_user_change_password_for": "Schimbare parolă pentru",
+  "system_user_change_password_info": "Acesta pagina permite schimbarea parolei pentru un utilizator ales",
+  "system_generate_password": "Genereaza parola"
 }

@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Предопределенные списки",
   "iso_menu_accomplished": "Выполнен",
   "iso_menu_interested_party_category": "В категории заинтересованная сторона",
-  "system_inline_edit_add_fail": "Уже есть новая строка в редактировании, после окончания можно будет добавить новую строку!"
+  "system_inline_edit_add_fail": "Уже есть новая строка в редактировании, после окончания можно будет добавить новую строку!",
+  "system_user_change_password": "Смена пароля ",
+  "system_user_change_password_for": "Изменить пароль для",
+  "system_user_change_password_info": "Это страница позволяет сменить пароль для пользователя,",
+  "system_generate_password": "Генерировать пароль"
 }

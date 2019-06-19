@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Vooraf gedefinieerde lijsten",
   "iso_menu_accomplished": "Gemaakt",
   "iso_menu_interested_party_category": "Categorie van sommige belang",
-  "system_inline_edit_add_fail": "Al is een nieuwe lijn in het bewerken van, na het beëindigen van het mogelijk zal zijn om een nieuwe regel toevoegen!"
+  "system_inline_edit_add_fail": "Al is een nieuwe lijn in het bewerken van, na het beëindigen van het mogelijk zal zijn om een nieuwe regel toevoegen!",
+  "system_user_change_password": "Wachtwoord wijzigen",
+  "system_user_change_password_for": "Wachtwoord wijzigen voor",
+  "system_user_change_password_info": "Op deze pagina kunt u het wachtwoord wijzigen voor een gebruiker, in het bijzonder",
+  "system_generate_password": "Wachtwoord genereren"
 }

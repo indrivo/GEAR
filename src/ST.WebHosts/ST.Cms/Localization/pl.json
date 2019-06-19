@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Predefiniowane listy",
   "iso_menu_accomplished": "Wykonany",
   "iso_menu_interested_party_category": "W kategorii zainteresowana strona",
-  "system_inline_edit_add_fail": "Już jest nowy wiersz do edycji, po zakończeniu można będzie dodać nowy wiersz!"
+  "system_inline_edit_add_fail": "Już jest nowy wiersz do edycji, po zakończeniu można będzie dodać nowy wiersz!",
+  "system_user_change_password": "Zmiana hasła ",
+  "system_user_change_password_for": "Zmienić hasło",
+  "system_user_change_password_info": "To jest strona pozwala zmienić hasło dla użytkownika,",
+  "system_generate_password": "Generowanie hasła"
 }

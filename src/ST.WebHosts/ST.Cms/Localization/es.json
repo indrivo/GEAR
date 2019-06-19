@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Predefinidas listas",
   "iso_menu_accomplished": "Hecho",
   "iso_menu_interested_party_category": "Categoría de interés",
-  "system_inline_edit_add_fail": "Ya es una nueva línea en la edición, después de terminar será posible añadir una nueva línea!"
+  "system_inline_edit_add_fail": "Ya es una nueva línea en la edición, después de terminar será posible añadir una nueva línea!",
+  "system_user_change_password": "Cambiar la contraseña",
+  "system_user_change_password_for": "Cambiar la contraseña de",
+  "system_user_change_password_info": "Esta página le permite cambiar la contraseña de un usuario, especialmente",
+  "system_generate_password": "Generar contraseña"
 }

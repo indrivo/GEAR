@@ -22,6 +22,7 @@ using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.BaseControllers;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
@@ -51,7 +52,6 @@ namespace ST.Identity.Razor.Users.Controllers
         private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
 
         #endregion
-
 
 
         /// <summary>
@@ -393,7 +393,7 @@ namespace ST.Identity.Razor.Users.Controllers
 
             var model = new UpdateUserViewModel
             {
-                Id = Guid.Parse(applicationUser.Id),
+                Id = applicationUser.Id.ToGuid(),
                 Email = applicationUser.Email,
                 IsDeleted = applicationUser.IsDeleted,
                 Password = applicationUser.PasswordHash,
@@ -486,25 +486,6 @@ namespace ST.Identity.Razor.Users.Controllers
             user.ModifiedBy = User.Identity.Name;
             user.UserName = model.UserName;
             user.TenantId = model.TenantId;
-            if (!string.IsNullOrEmpty(model.Password) && string.Equals(model.Password, model.RepeatPassword))
-            {
-                if (model.AuthenticationType.Equals(AuthenticationType.Ad))
-                {
-                    var ldapUser = await _ldapUserManager.FindByNameAsync(model.UserName);
-
-                    var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
-                    if (!bind)
-                    {
-                        model.SelectedRoleId = userRoleList;
-                        ModelState.AddModelError("", $"Invalid credentials for AD authentication");
-                        return View(model);
-                    }
-                }
-
-                var hasher = new PasswordHasher<ApplicationUser>();
-                var hashedPassword = hasher.HashPassword(user, model.Password);
-                user.PasswordHash = hashedPassword;
-            }
 
             if (model.UserPhotoUpdateFile != null)
             {
@@ -581,6 +562,75 @@ namespace ST.Identity.Razor.Users.Controllers
         }
 
         /// <summary>
+        /// Get view for change user password
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ChangeUserPassword([Required] Guid? userId)
+        {
+            if (userId == null) return NotFound();
+            var user = await UserManager.FindByIdAsync(userId.Value.ToString());
+            if (user == null) return NotFound();
+            return View(new ChangeUserPasswordViewModel
+            {
+                Email = user.Email,
+                UserName = user.UserName,
+                AuthenticationType = user.AuthenticationType,
+                UserId = user.Id.ToGuid()
+            });
+        }
+
+        /// <summary>
+        /// Apply new password
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserPassword([Required]ChangeUserPasswordViewModel model)
+        {
+            if (model.AuthenticationType.Equals(AuthenticationType.Ad))
+            {
+                var ldapUser = await _ldapUserManager.FindByNameAsync(model.UserName);
+
+                var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
+                if (!bind)
+                {
+                    ModelState.AddModelError("", $"Invalid credentials for AD authentication");
+                    return View(model);
+                }
+            }
+
+            var user = await UserManager.FindByIdAsync(model.UserId.ToString());
+            if (user == null)
+            {
+                ModelState.AddModelError("", "The user is no longer in the system");
+                return View(model);
+            }
+
+            var hasher = new PasswordHasher<ApplicationUser>();
+            var hashedPassword = hasher.HashPassword(user, model.Password);
+            user.PasswordHash = hashedPassword;
+            var result = await UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                await Notify.SendNotificationAsync(new List<Guid> { user.Id.ToGuid() }, new SystemNotifications
+                {
+                    Content = $"Your password was changed to : {model.Password}",
+                    Subject = "Password changed",
+                    NotificationTypeId = NotificationType.Info
+                });
+                return RedirectToAction(nameof(Index));
+            }
+            foreach (var _ in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, _.Description);
+            }
+
+            return View(model);
+        }
+
+        /// <summary>
         /// Load user with ajax
         /// </summary>
         /// <param name="hub"></param>
@@ -593,11 +643,11 @@ namespace ST.Identity.Razor.Users.Controllers
             var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
 
-            var usersList = filtered.Select(o =>
+            var usersList = filtered.Select(async o =>
             {
                 var sessions = hub.GetSessionsCountByUserId(Guid.Parse(o.Id));
-                var roles = UserManager.GetRolesAsync(o).GetAwaiter().GetResult();
-                var org = ApplicationDbContext.Tenants.FirstOrDefault(x => x.Id == o.TenantId)?.Name;
+                var roles = await UserManager.GetRolesAsync(o);
+                var org = await ApplicationDbContext.Tenants.FirstOrDefaultAsync(x => x.Id == o.TenantId);
                 return new UserListItemViewModel
                 {
                     Id = o.Id,
@@ -609,9 +659,9 @@ namespace ST.Identity.Razor.Users.Controllers
                     Roles = roles,
                     Sessions = sessions,
                     AuthenticationType = o.AuthenticationType.ToString(),
-                    Organization = org
+                    Organization = org?.Name
                 };
-            });
+            }).Select(x => x.Result);
 
             var finalResult = new DTResult<UserListItemViewModel>
             {

@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Зумовлені списки",
   "iso_menu_accomplished": "Виконаний",
   "iso_menu_interested_party_category": "У категорії зацікавлена сторона",
-  "system_inline_edit_add_fail": "Вже є нова рядок у редагуванні, після закінчення можна додати новий рядок!"
+  "system_inline_edit_add_fail": "Вже є нова рядок у редагуванні, після закінчення можна додати новий рядок!",
+  "system_user_change_password": "Зміна пароля ",
+  "system_user_change_password_for": "Змінити пароль",
+  "system_user_change_password_info": "Це сторінка дозволяє змінити пароль для користувача,",
+  "system_generate_password": "Генерувати пароль"
 }

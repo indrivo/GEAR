@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "预先定义的清单",
   "iso_menu_accomplished": "做",
   "iso_menu_interested_party_category": "类别一些感兴趣的",
-  "system_inline_edit_add_fail": "已经是一个新的在线编辑，完成后将有可能增加一个新的线!"
+  "system_inline_edit_add_fail": "已经是一个新的在线编辑，完成后将有可能增加一个新的线!",
+  "system_user_change_password": "改变密码",
+  "system_user_change_password_for": "改变密码",
+  "system_user_change_password_info": "这一网页可以让你改变密码为用户，尤其是",
+  "system_generate_password": "生成密码"
 }

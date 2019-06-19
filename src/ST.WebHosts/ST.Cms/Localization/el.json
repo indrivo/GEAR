@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Προκαθορισμένες λίστες",
   "iso_menu_accomplished": "Έκανε",
   "iso_menu_interested_party_category": "Κατηγορία κάποιο ενδιαφέρον",
-  "system_inline_edit_add_fail": "Ήδη είναι σε επεξεργασία, μετά την ολοκλήρωση θα είναι δυνατό να προσθέσετε μια νέα γραμμή."
+  "system_inline_edit_add_fail": "Ήδη είναι σε επεξεργασία, μετά την ολοκλήρωση θα είναι δυνατό να προσθέσετε μια νέα γραμμή.",
+  "system_user_change_password": "Αλλαγή κωδικού πρόσβασης",
+  "system_user_change_password_for": "Να αλλάξετε τον κωδικό πρόσβασης για",
+  "system_user_change_password_info": "Αυτή η σελίδα σας επιτρέπει να αλλάξετε τον κωδικό πρόσβασης για ένα χρήστη, ειδικά",
+  "system_generate_password": "Δημιουργία κωδικού πρόσβασης"
 }

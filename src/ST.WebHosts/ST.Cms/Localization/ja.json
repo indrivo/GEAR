@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "定義済みリスト",
   "iso_menu_accomplished": "作",
   "iso_menu_interested_party_category": "カテゴリの一部の利",
-  "system_inline_edit_add_fail": "既に新たなライン編集後の仕上げが可能で追加！"
+  "system_inline_edit_add_fail": "既に新たなライン編集後の仕上げが可能で追加！",
+  "system_user_change_password": "パスワードの変更",
+  "system_user_change_password_for": "パスワードの変更",
+  "system_user_change_password_info": "このページを変更することができます。パスワードユーザーは、特に",
+  "system_generate_password": "パスワード生成"
 }

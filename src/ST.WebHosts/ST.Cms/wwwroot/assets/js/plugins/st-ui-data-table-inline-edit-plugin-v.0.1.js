@@ -50,7 +50,7 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
 	}
 	const row = document.createElement("tr");
 	row.setAttribute("isNew", "true");
-	const columns = dt.columns().context[0].aoColumns;
+	const columns = jdt.columns().context[0].aoColumns;
 	for (let i in columns) {
 		//Ignore hidden column
 		if (!columns[i].bVisible) continue;

@@ -11,7 +11,7 @@ const tManager = new TemplateManager();
 //Override hide column
 $(".table")
 	.on("preInit.dt", function () {
-		var content = tManager.render("template_headListActions", "");
+		const content = tManager.render("template_headListActions", "");
 		const selector = $("div.CustomTableHeadBar");
 		selector.html(content);
 		window.forceTranslate("div.CustomTableHeadBar");
@@ -222,8 +222,42 @@ function makeMenuActive(target) {
 }
 
 $(document).ready(function () {
+	//Log Out
+	$('.sa-logout').click(function () {
+		swal({
+			title: window.translate("confirm_log_out_question"),
+			text: window.translate("log_out_message"),
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: window.translate("confirm_logout"),
+			cancelButtonText: window.translate("cancel")
+		}).then((result) => {
+			if (result.value) {
+				$.ajax({
+					url: '/Account/LocalLogout',
+					type: "post",
+					dataType: "json",
+					contentType: "application/x-www-form-urlencoded; charset=utf-8",
+					success: function (data) {
+						if (data.success) {
+
+							swal("Success!", data.message, "success");
+							window.location.href = '/Account/Login';
+						} else {
+							swal("Fail!", data.message, "error");
+						}
+					},
+					error: function () {
+						swal("Fail!", "Server no response!", "error");
+					}
+				});
+			};
+		});
+	});
+
 	//Menu render promise
-	var loadMenusPromise = new Promise((resolve, reject) => {
+	const loadMenusPromise = new Promise((resolve, reject) => {
 		const menus = load("/PageRender/GetMenus");
 		resolve(menus);
 	});
@@ -297,39 +331,6 @@ $(document).ready(function () {
 
 	Promise.all([loadMenusPromise, localizationPromise, emailPromise]).then(function (values) {
 		window.forceTranslate();
-		//Log Out
-		$('.sa-logout').click(function () {
-			swal({
-				title: window.translate("confirm_log_out_question"),
-				text: window.translate("log_out_message"),
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonColor: "#DD6B55",
-				confirmButtonText: window.translate("confirm_logout"),
-				cancelButtonText: window.translate("cancel")
-			}).then((result) => {
-				if (result.value) {
-					$.ajax({
-						url: '/Account/LocalLogout',
-						type: "post",
-						dataType: "json",
-						contentType: "application/x-www-form-urlencoded; charset=utf-8",
-						success: function (data) {
-							if (data.success) {
-
-								swal("Success!", data.message, "success");
-								window.location.href = '/Account/Login';
-							} else {
-								swal("Fail!", data.message, "error");
-							}
-						},
-						error: function () {
-							swal("Fail!", "Server no response!", "error");
-						}
-					});
-				};
-			});
-		});
 	});
 });
 

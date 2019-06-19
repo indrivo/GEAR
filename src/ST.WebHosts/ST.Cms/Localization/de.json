@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Vordefinierte Listen",
   "iso_menu_accomplished": "Gemacht",
   "iso_menu_interested_party_category": "Kategorie von Interesse",
-  "system_inline_edit_add_fail": "Schon ist eine neue Linie in der Bearbeitung, nach Fertigstellung wird es möglich sein, um eine neue Zeile hinzuzufügen!"
+  "system_inline_edit_add_fail": "Schon ist eine neue Linie in der Bearbeitung, nach Fertigstellung wird es möglich sein, um eine neue Zeile hinzuzufügen!",
+  "system_user_change_password": "Passwort ändern",
+  "system_user_change_password_for": "Ändern Sie das Passwort für",
+  "system_user_change_password_info": "Auf dieser Seite können Sie das Kennwort ändern, das für einen Benutzer, insbesondere",
+  "system_generate_password": "Passwort generieren"
 }

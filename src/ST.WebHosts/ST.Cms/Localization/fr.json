@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Listes prédéfinies",
   "iso_menu_accomplished": "Fait",
   "iso_menu_interested_party_category": "Catégorie un certain intérêt",
-  "system_inline_edit_add_fail": "Déjà est une nouvelle ligne dans l'édition, après avoir terminé, il sera possible d'ajouter une nouvelle ligne!"
+  "system_inline_edit_add_fail": "Déjà est une nouvelle ligne dans l'édition, après avoir terminé, il sera possible d'ajouter une nouvelle ligne!",
+  "system_user_change_password": "Changer de mot de passe",
+  "system_user_change_password_for": "Changer le mot de passe pour",
+  "system_user_change_password_info": "Cette page vous permet de modifier le mot de passe d'un utilisateur, notamment en",
+  "system_generate_password": "Générer un mot de passe"
 }

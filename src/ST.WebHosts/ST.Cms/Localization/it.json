@@ -310,5 +310,9 @@
   "iso_menu_default_lists": "Liste predefinite",
   "iso_menu_accomplished": "Fatto",
   "iso_menu_interested_party_category": "Categoria di un certo interesse",
-  "system_inline_edit_add_fail": "Già è una nuova linea di montaggio, dopo la rifinitura, sarà possibile aggiungere una nuova riga!"
+  "system_inline_edit_add_fail": "Già è una nuova linea di montaggio, dopo la rifinitura, sarà possibile aggiungere una nuova riga!",
+  "system_user_change_password": "Cambia password",
+  "system_user_change_password_for": "Modificare la password per",
+  "system_user_change_password_info": "Questa pagina ti permette di cambiare la password di un utente in particolare",
+  "system_generate_password": "Generare password"
 }
