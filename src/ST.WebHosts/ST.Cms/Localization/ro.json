@@ -298,5 +298,17 @@
   "iso_objectives": "Obiective",
   "iso_objective_requirement": "Cerința PI ",
   "iso_objective_is_fullfilment": "Indeplinit?",
-  "iso_objective_interessted_part": "Partea interesata"
+  "iso_objective_interessted_part": "Partea interesata",
+  "iso_standard_27001_menu": "Standartul ISO 27001",
+  "iso_menu_controls": "Controale",
+  "iso_menu_asset_category": "Categorii de active",
+  "iso_menu_function": "Funcția",
+  "iso_menu_asset_state": "Stare activ",
+  "iso_menu_company_settings": "Setari companie",
+  "iso_menu_impact": "Impact",
+  "iso_menu_iso_app_settings": "Setările aplicației pentru ISO DMS",
+  "iso_menu_default_lists": "Liste predefinite",
+  "iso_menu_accomplished": "Indeplinit",
+  "iso_menu_interested_party_category": "Categorie parte interesata",
+  "system_inline_edit_add_fail": "Deja este o noua linie de editare, după finisare, va fi posibil de a adăuga o nouă linie!"
 }

@@ -298,5 +298,17 @@
   "iso_objectives": "目的",
   "iso_objective_requirement": "これによって、PI ",
   "iso_objective_is_fullfilment": "になってきている。",
-  "iso_objective_interessted_part": "の関係者"
+  "iso_objective_interessted_part": "の関係者",
+  "iso_standard_27001_menu": "標準ISO27001",
+  "iso_menu_controls": "の制御",
+  "iso_menu_asset_category": "資産",
+  "iso_menu_function": "機能",
+  "iso_menu_asset_state": "状況で活躍",
+  "iso_menu_company_settings": "設定会社",
+  "iso_menu_impact": "の影響",
+  "iso_menu_iso_app_settings": "アプリ設定のためのISO DMS",
+  "iso_menu_default_lists": "定義済みリスト",
+  "iso_menu_accomplished": "作",
+  "iso_menu_interested_party_category": "カテゴリの一部の利",
+  "system_inline_edit_add_fail": "既に新たなライン編集後の仕上げが可能で追加！"
 }

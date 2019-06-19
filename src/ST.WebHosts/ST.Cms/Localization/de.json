@@ -298,5 +298,17 @@
   "iso_objectives": "Die Ziele",
   "iso_objective_requirement": "Die Voraussetzung für die PI ",
   "iso_objective_is_fullfilment": "Gemacht?",
-  "iso_objective_interessted_part": "Die Interessierte Partei"
+  "iso_objective_interessted_part": "Die Interessierte Partei",
+  "iso_standard_27001_menu": "Standard ISO 27001",
+  "iso_menu_controls": "Die Steuerelemente",
+  "iso_menu_asset_category": "Vermögenswerte",
+  "iso_menu_function": "Funktion",
+  "iso_menu_asset_state": "Status aktiv",
+  "iso_menu_company_settings": "Setup-Gesellschaft",
+  "iso_menu_impact": "Die Auswirkungen",
+  "iso_menu_iso_app_settings": "App-Einstellungen für ISO-DMS",
+  "iso_menu_default_lists": "Vordefinierte Listen",
+  "iso_menu_accomplished": "Gemacht",
+  "iso_menu_interested_party_category": "Kategorie von Interesse",
+  "system_inline_edit_add_fail": "Schon ist eine neue Linie in der Bearbeitung, nach Fertigstellung wird es möglich sein, um eine neue Zeile hinzuzufügen!"
 }

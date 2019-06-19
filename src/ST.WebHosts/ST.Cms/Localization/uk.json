@@ -298,5 +298,17 @@
   "iso_objectives": "Цілі",
   "iso_objective_requirement": "Потреба в ІС ",
   "iso_objective_is_fullfilment": "Операція пройшла?",
-  "iso_objective_interessted_part": "Зацікавлена сторона"
+  "iso_objective_interessted_part": "Зацікавлена сторона",
+  "iso_standard_27001_menu": "Стандарт ISO 27001",
+  "iso_menu_controls": "Контроль",
+  "iso_menu_asset_category": "Категорії активів",
+  "iso_menu_function": "Функція",
+  "iso_menu_asset_state": "Статус активний",
+  "iso_menu_company_settings": "Налаштування-компанії",
+  "iso_menu_impact": "Вплив",
+  "iso_menu_iso_app_settings": "Налаштування програми для ISO ДМС",
+  "iso_menu_default_lists": "Зумовлені списки",
+  "iso_menu_accomplished": "Виконаний",
+  "iso_menu_interested_party_category": "У категорії зацікавлена сторона",
+  "system_inline_edit_add_fail": "Вже є нова рядок у редагуванні, після закінчення можна додати новий рядок!"
 }

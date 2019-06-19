@@ -298,5 +298,17 @@
   "iso_objectives": "Cele",
   "iso_objective_requirement": "Zapotrzebowanie na układy SCALONE ",
   "iso_objective_is_fullfilment": "Operacja przebiegła?",
-  "iso_objective_interessted_part": "Zainteresowana strona"
+  "iso_objective_interessted_part": "Zainteresowana strona",
+  "iso_standard_27001_menu": "Standard ISO 27001",
+  "iso_menu_controls": "Kontrola",
+  "iso_menu_asset_category": "Kategorii aktywów",
+  "iso_menu_function": "Funkcja",
+  "iso_menu_asset_state": "Status aktywny",
+  "iso_menu_company_settings": "Ustawienia-firmy",
+  "iso_menu_impact": "Wpływ",
+  "iso_menu_iso_app_settings": "Ustawienia aplikacji dla ISO LCA",
+  "iso_menu_default_lists": "Predefiniowane listy",
+  "iso_menu_accomplished": "Wykonany",
+  "iso_menu_interested_party_category": "W kategorii zainteresowana strona",
+  "system_inline_edit_add_fail": "Już jest nowy wiersz do edycji, po zakończeniu można będzie dodać nowy wiersz!"
 }

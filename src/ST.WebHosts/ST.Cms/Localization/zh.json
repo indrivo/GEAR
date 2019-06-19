@@ -298,5 +298,17 @@
   "iso_objectives": "目标",
   "iso_objective_requirement": "要求PI ",
   "iso_objective_is_fullfilment": "做？",
-  "iso_objective_interessted_part": "感兴趣的缔约方"
+  "iso_objective_interessted_part": "感兴趣的缔约方",
+  "iso_standard_27001_menu": "标准ISO27001",
+  "iso_menu_controls": "控制",
+  "iso_menu_asset_category": "资产",
+  "iso_menu_function": "功能",
+  "iso_menu_asset_state": "状态的活动",
+  "iso_menu_company_settings": "安装公司",
+  "iso_menu_impact": "产生的影响",
+  "iso_menu_iso_app_settings": "应用程序的设置ISO DMS",
+  "iso_menu_default_lists": "预先定义的清单",
+  "iso_menu_accomplished": "做",
+  "iso_menu_interested_party_category": "类别一些感兴趣的",
+  "system_inline_edit_add_fail": "已经是一个新的在线编辑，完成后将有可能增加一个新的线!"
 }

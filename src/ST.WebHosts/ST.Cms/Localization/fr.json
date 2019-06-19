@@ -298,5 +298,17 @@
   "iso_objectives": "Les Objectifs",
   "iso_objective_requirement": "L'exigence de la PI ",
   "iso_objective_is_fullfilment": "Fait?",
-  "iso_objective_interessted_part": "L'intéressé"
+  "iso_objective_interessted_part": "L'intéressé",
+  "iso_standard_27001_menu": "La norme ISO 27001",
+  "iso_menu_controls": "Les contrôles",
+  "iso_menu_asset_category": "Actifs",
+  "iso_menu_function": "La fonction",
+  "iso_menu_asset_state": "Statut actif",
+  "iso_menu_company_settings": "Le programme d'installation de l'entreprise",
+  "iso_menu_impact": "L'Impact",
+  "iso_menu_iso_app_settings": "Les réglages de l'application de la norme ISO DMS",
+  "iso_menu_default_lists": "Listes prédéfinies",
+  "iso_menu_accomplished": "Fait",
+  "iso_menu_interested_party_category": "Catégorie un certain intérêt",
+  "system_inline_edit_add_fail": "Déjà est une nouvelle ligne dans l'édition, après avoir terminé, il sera possible d'ajouter une nouvelle ligne!"
 }

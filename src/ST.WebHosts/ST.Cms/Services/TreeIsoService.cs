@@ -204,7 +204,7 @@ namespace ST.Cms.Services
 				}
 			});
 			var resCats = new List<TreeCategory>();
-			foreach (var category in categories.Result)
+			foreach (var category in categories.Result.OrderBy(x => x.Name))
 			{
 				var cat = new TreeCategory
 				{
@@ -253,7 +253,7 @@ namespace ST.Cms.Services
 					}
 				});
 			var dueModeCtx = _service.Table(ReqFillEntityName);
-			foreach (var req in requirements.Result)
+			foreach (var req in requirements.Result.OrderBy(x => x.Name))
 			{
 				var requirement = new TreeRequirement
 				{

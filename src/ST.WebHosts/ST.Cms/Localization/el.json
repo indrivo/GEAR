@@ -298,5 +298,17 @@
   "iso_objectives": "Οι Στόχοι",
   "iso_objective_requirement": "Η απαίτηση για το PI ",
   "iso_objective_is_fullfilment": "Έκανε;",
-  "iso_objective_interessted_part": "Ο ενδιαφερόμενος"
+  "iso_objective_interessted_part": "Ο ενδιαφερόμενος",
+  "iso_standard_27001_menu": "Το πρότυπο ISO 27001",
+  "iso_menu_controls": "Οι έλεγχοι",
+  "iso_menu_asset_category": "Περιουσιακά στοιχεία",
+  "iso_menu_function": "Λειτουργία",
+  "iso_menu_asset_state": "Κατάσταση ενεργής",
+  "iso_menu_company_settings": "Εταιρεία εγκατάστασης",
+  "iso_menu_impact": "Ο Αντίκτυπος",
+  "iso_menu_iso_app_settings": "App ρυθμίσεις για το ISO DMS",
+  "iso_menu_default_lists": "Προκαθορισμένες λίστες",
+  "iso_menu_accomplished": "Έκανε",
+  "iso_menu_interested_party_category": "Κατηγορία κάποιο ενδιαφέρον",
+  "system_inline_edit_add_fail": "Ήδη είναι σε επεξεργασία, μετά την ολοκλήρωση θα είναι δυνατό να προσθέσετε μια νέα γραμμή."
 }

@@ -460,10 +460,14 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 	if (dataX.viewmodelData.is_success) {
 		const renderColumns = [];
 		if (dataX.viewmodelData.result.viewModelFields.length > 0) {
-			const columns = $(`#${dataX.listId} thead tr`);
-			columns.html(null);
 			const renderTableSelect = new RenderTableSelect();
-			let rows = `<th class="no-sort">${renderTableSelect.settings.headContent}</th>`;
+			const columns = $(`#${dataX.listId} thead`);
+			columns.html(null);
+			const tr = document.createElement("tr");
+			const th = document.createElement("th");
+			th.setAttribute("class", "no-sort");
+			th.innerHTML = renderTableSelect.settings.headContent;
+			tr.appendChild(th);
 			//CheckBox column
 			renderColumns.push({
 				data: null,
@@ -478,26 +482,43 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 					if (column.translate) {
 						colName = window.translate(column.translate);
 					}
-
-					rows += `<th>${colName}</th>`;
+					const htmlCol = document.createElement("th");
+					htmlCol.innerHTML = colName;
+					tr.appendChild(htmlCol);
 					renderColumns.push({
 						config: {
 							column: column
 						},
 						data: null,
 						"render": function (data, type, row, meta) {
-							return `<div class="data-cell" data-viewmodel="${dataX.viewmodelId}" data-id="${row.id
-								}" data-column-id="${column.id}">${ctx.renderCell(row, column)}</div>`;
+							const elDiv = document.createElement("div");
+							elDiv.setAttribute("class", "data-cell");
+							elDiv.setAttribute("data-prop-name", (column.tableModelFields) ? column.tableModelFields.name : "");
+							elDiv.setAttribute("data-viewmodel", dataX.viewmodelId);
+							elDiv.setAttribute("data-id", row.id);
+							elDiv.setAttribute("data-column-id", column.id);
+							elDiv.innerHTML = ctx.renderCell(row, column);
+							return elDiv.outerHTML;
 						}
 					});
 				});
-			rows += ctx.appendColumnsBeforeActions();
-			rows += `<th>${window.translate("list_actions")}</th>`;
-			columns.html(rows);
+			//const htmlCol = document.createElement("th");
+			//htmlCol.innerHTML = ctx.appendColumnsBeforeActions();
+			//tr.appendChild(htmlCol);
+
+			const actionCol = document.createElement("th");
+			actionCol.innerHTML = window.translate("list_actions");
+			tr.appendChild(actionCol);
+			columns.html(tr.outerHTML);
 			renderColumns.push({
 				data: null,
 				"render": function (data, type, row, meta) {
-					return `<div class="btn-group" role="group" aria-label="Action buttons">${ctx.getRenderRowActions(row, dataX)}</div>`;
+					const elDiv = document.createElement("div");
+					elDiv.setAttribute("class", "btn-group");
+					elDiv.setAttribute("role", "group");
+					elDiv.setAttribute("aria-label", "Action buttons");
+					elDiv.innerHTML = ctx.getRenderRowActions(row, dataX);
+					return elDiv.outerHTML;
 				}
 			});
 		}

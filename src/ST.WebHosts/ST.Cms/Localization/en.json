@@ -298,5 +298,17 @@
   "iso_objectives": "The Objectives",
   "iso_objective_requirement": "The requirement for the PI ",
   "iso_objective_is_fullfilment": "Made?",
-  "iso_objective_interessted_part": "The interested party"
+  "iso_objective_interessted_part": "The interested party",
+  "iso_standard_27001_menu": "Standard ISO 27001",
+  "iso_menu_controls": "The controls",
+  "iso_menu_asset_category": "Asset categories",
+  "iso_menu_function": "Function",
+  "iso_menu_asset_state": "Status of active",
+  "iso_menu_company_settings": "Company settings",
+  "iso_menu_impact": "The Impact",
+  "iso_menu_iso_app_settings": "App settings for ISO DMS",
+  "iso_menu_default_lists": "Predefined lists",
+  "iso_menu_accomplished": "Made",
+  "iso_menu_interested_party_category": "Category of interested parties",
+  "system_inline_edit_add_fail": "Already is a new line in editing, after finishing it will be possible to add a new line!"
 }

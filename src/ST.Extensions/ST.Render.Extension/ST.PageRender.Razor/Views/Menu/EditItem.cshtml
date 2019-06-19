@@ -50,7 +50,9 @@
 						<div class="form-group">
 							<i id="iconView" class=""></i>
 							<label class="control-label" asp-for="Icon"></label>
-							<select class="form-control" asp-for="Icon"></select>
+                            <select class="form-control" asp-for="Icon">
+                                <option>none</option>
+                            </select>
 							<span asp-validation-for="Icon" class="text-danger"></span><br />
 							<small>Icon of the menu</small>
 						</div>
@@ -58,7 +60,7 @@
 
 					<div class="col-md-12">
 						<div class="form-group">
-							<label for="Translate" class="control-label">Select the translate key</label>
+							<label asp-for="Translate" class="control-label">Select the translate key</label>
 							<select asp-for="Translate" class="form-control">
 								<option>none</option>
 							</select>
@@ -97,10 +99,6 @@
 			const selected = $(this).find(":checked");
 			$("#Href").val(selected.val());
 		});
-
-
-
-
 
 		var icons = function () {
 			var get = $.ajax({

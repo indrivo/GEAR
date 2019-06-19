@@ -73,7 +73,7 @@ namespace ST.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema(string entity)
         {
-            var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId);
+            var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
             if (table == null)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 
@@ -88,7 +88,7 @@ namespace ST.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync(string entity)
         {
-            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId);
+            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
             if (table == null)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 

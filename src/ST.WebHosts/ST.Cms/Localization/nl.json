@@ -298,5 +298,17 @@
   "iso_objectives": "De Doelstellingen",
   "iso_objective_requirement": "De eis voor de PI ",
   "iso_objective_is_fullfilment": "Gemaakt?",
-  "iso_objective_interessted_part": "De belanghebbende"
+  "iso_objective_interessted_part": "De belanghebbende",
+  "iso_standard_27001_menu": "Standaard ISO 27001",
+  "iso_menu_controls": "De controles",
+  "iso_menu_asset_category": "Activa",
+  "iso_menu_function": "Functie",
+  "iso_menu_asset_state": "De Status van actieve",
+  "iso_menu_company_settings": "Installatie bedrijf",
+  "iso_menu_impact": "De Impact",
+  "iso_menu_iso_app_settings": "App-instellingen voor ISO DMS",
+  "iso_menu_default_lists": "Vooraf gedefinieerde lijsten",
+  "iso_menu_accomplished": "Gemaakt",
+  "iso_menu_interested_party_category": "Categorie van sommige belang",
+  "system_inline_edit_add_fail": "Al is een nieuwe lijn in het bewerken van, na het beëindigen van het mogelijk zal zijn om een nieuwe regel toevoegen!"
 }

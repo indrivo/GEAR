@@ -298,5 +298,17 @@
   "iso_objectives": "Цели",
   "iso_objective_requirement": "Потребность в ИС ",
   "iso_objective_is_fullfilment": "Операция прошла?",
-  "iso_objective_interessted_part": "Заинтересованная сторона"
+  "iso_objective_interessted_part": "Заинтересованная сторона",
+  "iso_standard_27001_menu": "Стандарт ISO 27001",
+  "iso_menu_controls": "Контроль",
+  "iso_menu_asset_category": "Категории активов",
+  "iso_menu_function": "Функция",
+  "iso_menu_asset_state": "Статус активный",
+  "iso_menu_company_settings": "Настройки компании",
+  "iso_menu_impact": "Влияние",
+  "iso_menu_iso_app_settings": "Настройки приложения для ISO ДМС",
+  "iso_menu_default_lists": "Предопределенные списки",
+  "iso_menu_accomplished": "Выполнен",
+  "iso_menu_interested_party_category": "В категории заинтересованная сторона",
+  "system_inline_edit_add_fail": "Уже есть новая строка в редактировании, после окончания можно будет добавить новую строку!"
 }
