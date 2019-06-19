@@ -14,6 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
   </ItemGroup>
 </Project>
