@@ -42,6 +42,8 @@ using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
+using ST.Identity.LdapAuth;
+using ST.Identity.LdapAuth.Abstractions.Extensions;
 using ST.PageRender.Abstractions.Extensions;
 using ST.PageRender.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
@@ -275,6 +277,10 @@ namespace ST.Cms
 					options.KnownProxies.Add(IPAddress.Parse("185.131.222.95"));
 				});
 			}
+
+			//----------------------------------------Ldap Module-------------------------------------
+			services.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(Configuration);
+
 
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();

@@ -1,4 +1,4 @@
-﻿namespace ST.Identity.Abstractions.Ldap.Models.Interfaces
+﻿namespace ST.Identity.LdapAuth.Abstractions
 {
    public interface ILdapEntry
     {

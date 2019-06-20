@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ST.Core.Helpers;
 using ST.PageRender.Abstractions.Models.Pages;
 
-namespace ST.PageRender.Razor.Services.Abstractions
+namespace ST.PageRender.Abstractions
 {
 	public interface IMenuService
 	{

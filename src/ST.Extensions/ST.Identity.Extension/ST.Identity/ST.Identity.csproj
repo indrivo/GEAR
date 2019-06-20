@@ -25,7 +25,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.2" />
-    <PackageReference Include="Novell.Directory.Ldap.NETStandard2_0" Version="3.1.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
     <PackageReference Include="ST.MPass.Gov" Version="0.1.4-alpha" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />

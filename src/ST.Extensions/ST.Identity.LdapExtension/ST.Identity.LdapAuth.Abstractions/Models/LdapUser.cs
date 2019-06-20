@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
-using ST.Identity.Abstractions.Ldap.Models.Interfaces;
 
-namespace ST.Identity.Abstractions.Ldap.Models
+namespace ST.Identity.LdapAuth.Abstractions.Models
 {
     public class LdapUser : IdentityUser, ILdapEntry
     {

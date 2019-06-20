@@ -2,22 +2,21 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ST.Identity.Abstractions;
-using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
+using ST.Identity.LdapAuth.Abstractions.Models;
 
-namespace ST.Identity.LDAP.Services
+namespace ST.Identity.LdapAuth
 {
-    public class LdapSignInManager<TContext> : SignInManager<ApplicationUser> where TContext : ApplicationDbContext
+    public class LdapSignInManager<TContext, TUser> : SignInManager<TUser> where TContext : DbContext where TUser : LdapUser
     {
         public LdapSignInManager(
-            LdapUserManager<TContext> ldapUserManager,
+            LdapUserManager<TUser> ldapUserManager,
             IHttpContextAccessor contextAccessor,
-            IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
+            IUserClaimsPrincipalFactory<TUser> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor,
-            ILogger<LdapSignInManager<TContext>> logger,
+            ILogger<LdapSignInManager<TContext, TUser>> logger,
             IAuthenticationSchemeProvider schemes)
             : base(
                 ldapUserManager,

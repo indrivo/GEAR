@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Html;
 using ST.Core.Helpers;
 using ST.PageRender.Abstractions.Models.Pages;
 
-namespace ST.PageRender.Razor.Services.Abstractions
+namespace ST.PageRender.Abstractions
 {
     public interface IPageRender
     {

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using ST.Core.Extensions;
 using ST.Identity.Abstractions;
 using ST.PageRender.Abstractions;
-using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.PageRender.Razor.Attributes
 {

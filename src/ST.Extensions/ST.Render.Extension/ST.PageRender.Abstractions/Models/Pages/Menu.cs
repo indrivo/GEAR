@@ -22,6 +22,7 @@ namespace ST.PageRender.Abstractions.Models.Pages
         public Guid MenuId { get; set; }
         public Guid? ParentMenuItemId { get; set; }
         public string AllowedRoles { get; set; }
+        public int Order { get; set; } = 1;
     }
 
     public class MenuViewModel : MenuItem

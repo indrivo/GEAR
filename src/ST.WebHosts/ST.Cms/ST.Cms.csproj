@@ -152,6 +152,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Form.Razor\ST.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.Razor\ST.Identity.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.LdapExtension\ST.Identity.LdapAuth\ST.Identity.LdapAuth.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />

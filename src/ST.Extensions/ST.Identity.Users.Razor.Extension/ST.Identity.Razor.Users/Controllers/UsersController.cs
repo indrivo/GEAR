@@ -15,7 +15,6 @@ using ST.Entities.Data;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Identity.LDAP.Services;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
@@ -28,6 +27,7 @@ using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Data.MultiTenants;
+using ST.Identity.LdapAuth.Abstractions;
 
 namespace ST.Identity.Razor.Users.Controllers
 {
@@ -35,7 +35,7 @@ namespace ST.Identity.Razor.Users.Controllers
     {
         #region Injections
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, LdapUserManager<ApplicationDbContext> ldapUserManager, ILogger<UsersController> logger) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager, ILogger<UsersController> logger) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             _ldapUserManager = ldapUserManager;
             Logger = logger;
@@ -49,7 +49,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <summary>
         /// Inject Ldap User Manager
         /// </summary>
-        private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
+        private readonly BaseLdapUserManager<ApplicationUser> _ldapUserManager;
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserRead)]
-        public IActionResult Index()
+        public virtual IActionResult Index()
         {
             return View();
         }
@@ -70,7 +70,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <returns></returns>
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserCreate)]
-        public IActionResult Create()
+        public virtual IActionResult Create()
         {
             var model = new CreateUserViewModel
             {
@@ -89,7 +89,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserCreate)]
-        public async Task<IActionResult> Create(CreateUserViewModel model)
+        public virtual async Task<IActionResult> Create(CreateUserViewModel model)
         {
             model.Roles = RoleManager.Roles.AsEnumerable();
             model.Groups = await ApplicationDbContext.AuthGroups.ToListAsync();
@@ -220,7 +220,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpGet]
         [AjaxOnly]
-        public JsonResult GetAdUsers()
+        public virtual JsonResult GetAdUsers()
         {
             var result = new ResultModel<IEnumerable<ApplicationUser>>();
             var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).ToList();
@@ -242,7 +242,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public async Task<JsonResult> AddAdUser([Required]string userName)
+        public virtual async Task<JsonResult> AddAdUser([Required]string userName)
         {
             var result = new ResultModel<Guid>();
             if (string.IsNullOrEmpty(userName))
@@ -296,7 +296,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Delete(string id)
+        public virtual async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -321,7 +321,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public virtual async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (id.IsNullOrEmpty())
             {
@@ -370,7 +370,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public async Task<IActionResult> Edit(string id)
+        public virtual async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
@@ -422,7 +422,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public async Task<IActionResult> Edit(string id,
+        public virtual async Task<IActionResult> Edit(string id,
             UpdateUserViewModel model)
         {
             if (Guid.Parse(id) != model.Id)
@@ -567,7 +567,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ChangeUserPassword([Required] Guid? userId)
+        public virtual async Task<IActionResult> ChangeUserPassword([Required] Guid? userId)
         {
             if (userId == null) return NotFound();
             var user = await UserManager.FindByIdAsync(userId.Value.ToString());
@@ -587,7 +587,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> ChangeUserPassword([Required]ChangeUserPasswordViewModel model)
+        public virtual async Task<IActionResult> ChangeUserPassword([Required]ChangeUserPasswordViewModel model)
         {
             if (model.AuthenticationType.Equals(AuthenticationType.Ad))
             {
@@ -638,7 +638,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadUsers([FromServices] INotificationHub hub, DTParameters param)
+        public virtual JsonResult LoadUsers([FromServices] INotificationHub hub, DTParameters param)
         {
             var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
@@ -683,7 +683,8 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="length"></param>
         /// <param name="totalCount"></param>
         /// <returns></returns>
-        private List<ApplicationUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
+        [NonAction]
+        protected virtual List<ApplicationUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
             out int totalCount)
         {
             var result = ApplicationDbContext.Users.AsNoTracking()
@@ -743,7 +744,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [Route("api/[controller]/[action]")]
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult GetUserById([Required] Guid userId)
+        public virtual JsonResult GetUserById([Required] Guid userId)
         {
             var user = ApplicationDbContext.Users.FirstOrDefault(x => x.Id == userId.ToString());
             return Json(new ResultModel
@@ -758,7 +759,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private bool IsCurrentUser(string id)
+        protected virtual bool IsCurrentUser(string id)
         {
             return id.Equals(User.Identity.Name);
         }
@@ -768,7 +769,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Profile()
+        public virtual IActionResult Profile()
         {
             return View();
         }
@@ -779,7 +780,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        public IActionResult GetImage(string id)
+        public virtual IActionResult GetImage(string id)
         {
             if (id.IsNullOrEmpty())
             {
@@ -805,7 +806,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// Get default user image
         /// </summary>
         /// <returns></returns>
-        public byte[] GetDefaultImage()
+        protected virtual byte[] GetDefaultImage()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/user.jpg");
             if (!System.IO.File.Exists(path))
@@ -835,7 +836,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="userNameOld"></param>
         /// <returns></returns>
         [AcceptVerbs("Get", "Post")]
-        public async Task<IActionResult> VerifyName(string userName, string userNameOld)
+        public virtual async Task<IActionResult> VerifyName(string userName, string userNameOld)
         {
             if (userNameOld != null && userName.ToLower().Equals(userNameOld.ToLower()))
             {

@@ -25,7 +25,6 @@ using ST.Forms;
 using ST.Forms.Abstractions;
 using ST.Forms.Data;
 using ST.Identity.Abstractions;
-using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.MultiTenants;
@@ -156,9 +155,7 @@ namespace ST.Configuration.Extensions
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
             services.AddAuthorizationBasedOnCache<ApplicationDbContext>();
-            services.AddLdapAuthorization<ApplicationDbContext>();
             services.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
-            services.Configure<LdapSettings>(configuration.GetSection(nameof(LdapSettings)));
             return services;
         }
 

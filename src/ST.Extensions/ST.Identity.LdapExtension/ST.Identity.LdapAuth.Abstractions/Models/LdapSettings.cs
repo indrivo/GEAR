@@ -1,4 +1,4 @@
-﻿namespace ST.Identity.Abstractions.Ldap.Models
+﻿namespace ST.Identity.LdapAuth.Abstractions.Models
 {
     public class LdapSettings
     {

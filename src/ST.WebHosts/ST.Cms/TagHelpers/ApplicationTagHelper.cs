@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using ST.CORE.Razor.Extensions;
-using ST.PageRender.Razor.Services.Abstractions;
+using ST.PageRender.Abstractions;
 
 namespace ST.Cms.TagHelpers
 {

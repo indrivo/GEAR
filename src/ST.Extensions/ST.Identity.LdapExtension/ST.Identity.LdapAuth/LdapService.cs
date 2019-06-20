@@ -6,33 +6,34 @@ using System.Security.Principal;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Novell.Directory.Ldap;
-using ST.Identity.Abstractions;
-using ST.Identity.Abstractions.Ldap.Models;
-using ST.Identity.Abstractions.Ldap.Models.Interfaces;
-using ST.Identity.Data.UserProfiles;
-using LdapEntry = ST.Identity.Abstractions.Ldap.Models.LdapEntry;
+using ST.Identity.LdapAuth.Abstractions;
+using ST.Identity.LdapAuth.Abstractions.Models;
+using LdapEntry = ST.Identity.LdapAuth.Abstractions.Models.LdapEntry;
 
-namespace ST.Identity.LDAP.Services
+namespace ST.Identity.LdapAuth
 {
-    public class LdapService : ILdapService
+    public class LdapService<TUser> : ILdapService<TUser> where TUser : LdapUser, new()
     {
         /// <summary>
         /// Search base
         /// </summary>
         private readonly string _searchBase;
+
         /// <summary>
         /// Inject LdapSettings
         /// </summary>
         private readonly LdapSettings _ldapSettings;
+
         /// <summary>
         /// Attributes
         /// </summary>
         private readonly string[] _attributes =
         {
-        "objectSid", "objectGUID", "objectCategory", "objectClass", "memberOf", "name", "cn", "distinguishedName",
-        "sAMAccountName", "sAMAccountName", "userPrincipalName", "displayName", "givenName", "sn", "description",
-        "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c"
-    };
+            "objectSid", "objectGUID", "objectCategory", "objectClass", "memberOf", "name", "cn", "distinguishedName",
+            "sAMAccountName", "sAMAccountName", "userPrincipalName", "displayName", "givenName", "sn", "description",
+            "telephoneNumber", "mail", "streetAddress", "postalCode", "l", "st", "co", "c"
+        };
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -42,13 +43,14 @@ namespace ST.Identity.LDAP.Services
             _ldapSettings = ldapSettingsOptions.Value;
             _searchBase = _ldapSettings.SearchBase;
         }
+
         /// <summary>
         /// Get Connection
         /// </summary>
         /// <returns></returns>
-        private ILdapConnection GetConnection()
+        protected virtual ILdapConnection GetConnection()
         {
-            var ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapSettings.UseSSL };
+            var ldapConnection = new LdapConnection() {SecureSocketLayer = _ldapSettings.UseSSL};
             try
             {
                 //Connect function will create a socket connection to the server - Port 389 for insecure and 3269 for secure    
@@ -63,13 +65,14 @@ namespace ST.Identity.LDAP.Services
 
             return ldapConnection;
         }
+
         /// <summary>
         /// Get groups
         /// </summary>
         /// <param name="groupName"></param>
         /// <param name="getChildGroups"></param>
         /// <returns></returns>
-        public ICollection<LdapEntry> GetGroups(string groupName, bool getChildGroups = false)
+        public virtual ICollection<LdapEntry> GetGroups(string groupName, bool getChildGroups = false)
         {
             var groups = new Collection<LdapEntry>();
 
@@ -113,54 +116,58 @@ namespace ST.Identity.LDAP.Services
 
             return groups;
         }
+
         /// <summary>
         /// Get All Users
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ApplicationUser> GetAllUsers()
+        public virtual IEnumerable<TUser> GetAllUsers()
         {
             return GetUsersInGroups(null);
         }
+
         /// <summary>
         /// Get Users In Group
         /// </summary>
         /// <param name="group"></param>
         /// <returns></returns>
-        public ICollection<ApplicationUser> GetUsersInGroup(string group)
+        public virtual ICollection<TUser> GetUsersInGroup(string group)
         {
             return GetUsersInGroups(GetGroups(group));
         }
+
         /// <summary>
         /// Get Users In Groups
         /// </summary>
         /// <param name="groups"></param>
         /// <returns></returns>
-        public List<ApplicationUser> GetUsersInGroups(ICollection<LdapEntry> groups)
+        public virtual List<TUser> GetUsersInGroups(ICollection<LdapEntry> groups)
         {
-            var users = new List<ApplicationUser>();
+            var users = new List<TUser>();
 
             if (groups == null || !groups.Any())
             {
-                users.AddRange(GetChildren<ApplicationUser>(_searchBase));
+                users.AddRange(GetChildren<TUser>(_searchBase));
             }
             else
             {
                 foreach (var group in groups)
                 {
-                    users.AddRange(GetChildren<ApplicationUser>(_searchBase, @group.DistinguishedName));
+                    users.AddRange(GetChildren<TUser>(_searchBase, @group.DistinguishedName));
                 }
             }
 
             return users;
         }
+
         /// <summary>
         /// Get Users By Email Address
         /// </summary>
         /// <param name="emailAddress"></param>
         /// <returns></returns>
-        public ICollection<ApplicationUser> GetUsersByEmailAddress(string emailAddress)
+        public virtual ICollection<TUser> GetUsersByEmailAddress(string emailAddress)
         {
-            var users = new Collection<ApplicationUser>();
+            var users = new Collection<TUser>();
 
             var filter = $"(&(objectClass=user)(mail={emailAddress}))";
 
@@ -189,15 +196,16 @@ namespace ST.Identity.LDAP.Services
 
             return users;
         }
+
         /// <summary>
         /// Get user by user name
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public ApplicationUser GetUserByUserName(string userName)
+        public virtual TUser GetUserByUserName(string userName)
         {
-            ApplicationUser user = null;
-            
+            TUser user = null;
+
             var filter = $"(&(objectClass=user)(samAccountName={userName}))";
 
             using (var ldapConnection = GetConnection())
@@ -233,11 +241,12 @@ namespace ST.Identity.LDAP.Services
 
             return user;
         }
+
         /// <summary>
         /// Get administrator
         /// </summary>
         /// <returns></returns>
-        public ApplicationUser GetAdministrator()
+        public virtual TUser GetAdministrator()
         {
             var name = _ldapSettings.Credentials.DomainUserName.Substring(
                 _ldapSettings.Credentials.DomainUserName.IndexOf("\\", StringComparison.Ordinal) != -1
@@ -246,30 +255,33 @@ namespace ST.Identity.LDAP.Services
 
             return GetUserByUserName(name);
         }
+
         /// <summary>
         /// Add user
         /// </summary>
         /// <param name="user"></param>
         /// <param name="password"></param>
-        public void AddUser(ApplicationUser user, string password)
+        public virtual void AddUser(TUser user, string password)
         {
             var dn = $"CN={user.FirstName} {user.LastName},{_ldapSettings.ContainerName}";
 
             var attributeSet = new LdapAttributeSet
-        {
-            new LdapAttribute("instanceType", "4"),
-            new LdapAttribute("objectCategory", $"CN=Person,CN=Schema,CN=Configuration,{_ldapSettings.DomainDistinguishedName}"),
-            new LdapAttribute("objectClass", new[] {"top", "person", "organizationalPerson", "user"}),
-            new LdapAttribute("name", user.Name),
-            new LdapAttribute("cn", $"{user.FirstName} {user.LastName}"),
-            new LdapAttribute("sAMAccountName", user.Name),
-            new LdapAttribute("userPrincipalName", user.Name),
-            new LdapAttribute("unicodePwd", Convert.ToBase64String(Encoding.Unicode.GetBytes($"\"{user.Password}\""))),
-            new LdapAttribute("userAccountControl", user.MustChangePasswordOnNextLogon ? "544" : "512"),
-            new LdapAttribute("givenName", user.FirstName),
-            new LdapAttribute("sn", user.LastName),
-            new LdapAttribute("mail", user.EmailAddress)
-        };
+            {
+                new LdapAttribute("instanceType", "4"),
+                new LdapAttribute("objectCategory",
+                    $"CN=Person,CN=Schema,CN=Configuration,{_ldapSettings.DomainDistinguishedName}"),
+                new LdapAttribute("objectClass", new[] {"top", "person", "organizationalPerson", "user"}),
+                new LdapAttribute("name", user.Name),
+                new LdapAttribute("cn", $"{user.FirstName} {user.LastName}"),
+                new LdapAttribute("sAMAccountName", user.Name),
+                new LdapAttribute("userPrincipalName", user.Name),
+                new LdapAttribute("unicodePwd",
+                    Convert.ToBase64String(Encoding.Unicode.GetBytes($"\"{user.Password}\""))),
+                new LdapAttribute("userAccountControl", user.MustChangePasswordOnNextLogon ? "544" : "512"),
+                new LdapAttribute("givenName", user.FirstName),
+                new LdapAttribute("sn", user.LastName),
+                new LdapAttribute("mail", user.EmailAddress)
+            };
 
             if (user.DisplayName != null)
             {
@@ -280,30 +292,37 @@ namespace ST.Identity.LDAP.Services
             {
                 attributeSet.Add(new LdapAttribute("description", user.Description));
             }
+
             if (user.Phone != null)
             {
                 attributeSet.Add(new LdapAttribute("telephoneNumber", user.Phone));
             }
+
             if (user.Address?.Street != null)
             {
                 attributeSet.Add(new LdapAttribute("streetAddress", user.Address.Street));
             }
+
             if (user.Address?.City != null)
             {
                 attributeSet.Add(new LdapAttribute("l", user.Address.City));
             }
+
             if (user.Address?.PostalCode != null)
             {
                 attributeSet.Add(new LdapAttribute("postalCode", user.Address.PostalCode));
             }
+
             if (user.Address?.StateName != null)
             {
                 attributeSet.Add(new LdapAttribute("st", user.Address.StateName));
             }
+
             if (user.Address?.CountryName != null)
             {
                 attributeSet.Add(new LdapAttribute("co", user.Address.CountryName));
             }
+
             if (user.Address?.CountryCode != null)
             {
                 attributeSet.Add(new LdapAttribute("c", user.Address.CountryCode));
@@ -316,26 +335,28 @@ namespace ST.Identity.LDAP.Services
                 ldapConnection.Add(newEntry);
             }
         }
+
         /// <summary>
         /// Delete user
         /// </summary>
         /// <param name="distinguishedName"></param>
-        public void DeleteUser(string distinguishedName)
+        public virtual void DeleteUser(string distinguishedName)
         {
             using (var ldapConnection = GetConnection())
             {
                 ldapConnection.Delete(distinguishedName);
             }
         }
+
         /// <summary>
         /// Authentication
         /// </summary>
         /// <param name="distinguishedName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public bool Authenticate(string distinguishedName, string password)
+        public virtual bool Authenticate(string distinguishedName, string password)
         {
-            using (var ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapSettings.UseSSL })
+            using (var ldapConnection = new LdapConnection() {SecureSocketLayer = _ldapSettings.UseSSL})
             {
                 try
                 {
@@ -358,13 +379,14 @@ namespace ST.Identity.LDAP.Services
         /// <param name="searchBase"></param>
         /// <param name="groupDistinguishedName"></param>
         /// <returns></returns>
-        private IList<T> GetChildren<T>(string searchBase, string groupDistinguishedName = null)
+        // ReSharper disable once UnusedParameter.Local
+        protected virtual IList<T> GetChildren<T>(string searchBase, string groupDistinguishedName = null)
             where T : ILdapEntry, new()
         {
             var entries = new List<T>();
 
-            var objectCategory = "*";
-            var objectClass = "*";
+            string objectCategory;
+            string objectClass;
 
             if (typeof(T) == typeof(LdapEntry))
             {
@@ -373,10 +395,9 @@ namespace ST.Identity.LDAP.Services
 
                 entries = GetChildren(_searchBase, groupDistinguishedName, objectCategory, objectClass)
                     .Cast<T>().ToList();
-
             }
 
-            if (typeof(T) != typeof(ApplicationUser)) return entries;
+            if (typeof(T) != typeof(TUser)) return entries;
             objectCategory = "person";
             objectClass = "user";
 
@@ -384,6 +405,7 @@ namespace ST.Identity.LDAP.Services
 
             return entries;
         }
+
         /// <summary>
         /// Get children
         /// </summary>
@@ -392,7 +414,7 @@ namespace ST.Identity.LDAP.Services
         /// <param name="objectCategory"></param>
         /// <param name="objectClass"></param>
         /// <returns></returns>
-        private IEnumerable<ILdapEntry> GetChildren(string searchBase, string groupDistinguishedName = null,
+        protected virtual IEnumerable<ILdapEntry> GetChildren(string searchBase, string groupDistinguishedName = null,
             string objectCategory = "*", string objectClass = "*")
         {
             var allChildren = new Collection<ILdapEntry>();
@@ -426,16 +448,16 @@ namespace ST.Identity.LDAP.Services
                     switch (objectClass)
                     {
                         case "group":
+                        {
+                            allChildren.Add(CreateEntryFromAttributes(entry.DN, entry.getAttributeSet()));
+
+                            foreach (var child in GetChildren(string.Empty, entry.DN, objectCategory, objectClass))
                             {
-                                allChildren.Add(CreateEntryFromAttributes(entry.DN, entry.getAttributeSet()));
-
-                                foreach (var child in GetChildren(string.Empty, entry.DN, objectCategory, objectClass))
-                                {
-                                    allChildren.Add(child);
-                                }
-
-                                break;
+                                allChildren.Add(child);
                             }
+
+                            break;
+                        }
                         case "user":
                             allChildren.Add(CreateUserFromAttributes(entry.DN, entry.getAttributeSet()));
                             break;
@@ -445,21 +467,23 @@ namespace ST.Identity.LDAP.Services
 
             return allChildren;
         }
+
         /// <summary>
         /// Create User From Attributes
         /// </summary>
         /// <param name="distinguishedName"></param>
         /// <param name="attributeSet"></param>
         /// <returns></returns>
-        private ApplicationUser CreateUserFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
+        protected virtual TUser CreateUserFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
         {
-            var ldapUser = new ApplicationUser
+            var ldapUser = new TUser
             {
                 ObjectSid = attributeSet.getAttribute("objectSid")?.StringValue,
                 ObjectGuid = attributeSet.getAttribute("objectGUID")?.StringValue,
                 ObjectCategory = attributeSet.getAttribute("objectCategory")?.StringValue,
                 ObjectClass = attributeSet.getAttribute("objectClass")?.StringValue,
-                IsDomainAdmin = attributeSet.getAttribute("memberOf") != null && attributeSet.getAttribute("memberOf").StringValueArray.Contains("CN=Domain Admins," + _ldapSettings.SearchBase),
+                IsDomainAdmin = attributeSet.getAttribute("memberOf") != null && attributeSet.getAttribute("memberOf")
+                                    .StringValueArray.Contains("CN=Domain Admins," + _ldapSettings.SearchBase),
                 MemberOf = attributeSet.getAttribute("memberOf")?.StringValueArray,
                 CommonName = attributeSet.getAttribute("cn")?.StringValue,
                 UserName = attributeSet.getAttribute("name")?.StringValue,
@@ -488,13 +512,14 @@ namespace ST.Identity.LDAP.Services
 
             return ldapUser;
         }
+
         /// <summary>
         /// Create Entry From Attributes
         /// </summary>
         /// <param name="distinguishedName"></param>
         /// <param name="attributeSet"></param>
         /// <returns></returns>
-        private LdapEntry CreateEntryFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
+        protected virtual LdapEntry CreateEntryFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
         {
             return new LdapEntry
             {
@@ -509,14 +534,15 @@ namespace ST.Identity.LDAP.Services
                 SamAccountType = int.Parse(attributeSet.getAttribute("sAMAccountType")?.StringValue ?? "0"),
             };
         }
+
         /// <summary>
         /// Get Domain Sid
         /// </summary>
         /// <returns></returns>
-        private SecurityIdentifier GetDomainSid()
+        protected virtual SecurityIdentifier GetDomainSid()
         {
             var administratorAcount = new NTAccount(_ldapSettings.DomainName, "administrator");
-            var administratorSId = (SecurityIdentifier)administratorAcount.Translate(typeof(SecurityIdentifier));
+            var administratorSId = (SecurityIdentifier) administratorAcount.Translate(typeof(SecurityIdentifier));
             return administratorSId.AccountDomainSid;
         }
     }

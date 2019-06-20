@@ -21,7 +21,7 @@ using ST.CORE.Extensions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Data;
-using ST.Identity.LDAP.Services;
+using ST.Identity.LdapAuth.Abstractions;
 using ST.Identity.Razor.Extensions;
 using ST.Identity.Razor.ViewModels.AccountViewModels;
 using ST.Identity.Services.Abstractions;
@@ -67,7 +67,7 @@ namespace ST.Identity.Razor.Controllers
         /// <summary>
         /// Inject Ldap User Manager
         /// </summary>
-        private readonly LdapUserManager<ApplicationDbContext> _ldapUserManager;
+        private readonly BaseLdapUserManager<ApplicationUser> _ldapUserManager;
         /// <summary>
         /// Inject configured db context
         /// </summary>
@@ -89,7 +89,7 @@ namespace ST.Identity.Razor.Controllers
             INotify<ApplicationRole> notify,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
-            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, ConfigurationDbContext configurationDbContext, LdapUserManager<ApplicationDbContext> ldapUserManager)
+            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, ConfigurationDbContext configurationDbContext, BaseLdapUserManager<ApplicationUser> ldapUserManager)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
@@ -357,10 +357,17 @@ namespace ST.Identity.Razor.Controllers
                         return View(model);
                     }
 
-                    await _cache.SetStringAsync(user.Id.ToString(),
+                    await _cache.SetStringAsync(user.Id,
                         Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(model.Password)));
 
-                    await _ldapUserManager.ChangeIdentityPassword(user, model.Password);
+                    var hasher = new PasswordHasher<ApplicationUser>();
+                    var hashedPassword = hasher.HashPassword(user, model.Password);
+                    user.PasswordHash = hashedPassword;
+                    var passChange = await _userManager.UpdateAsync(user);
+                    if (!passChange.Succeeded)
+                    {
+                        //TODO: change ldap password
+                    }
                 }
                 var result =
                     await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,

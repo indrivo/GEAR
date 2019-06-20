@@ -1050,7 +1050,7 @@ namespace ST.DynamicEntityStorage
                             }
                             break;
                         default:
-                            type.GetProperty(item.Key).SetValue(obj, item.Value);
+                            type?.GetProperty(item.Key)?.SetValue(obj, item.Value);
                             break;
                     }
                 }
