@@ -314,5 +314,11 @@
   "system_user_change_password": "改变密码",
   "system_user_change_password_for": "改变密码",
   "system_user_change_password_info": "这一网页可以让你改变密码为用户，尤其是",
-  "system_generate_password": "生成密码"
+  "system_generate_password": "生成密码",
+  "iso_menu_standard_requirement": "标准的要求 ",
+  "iso_menu_standard_structure": "该结构的标准",
+  "iso_standard_category_compartment": "舱",
+  "iso_standard_category_parent_compartment": "隔父",
+  "iso_standard": "标准",
+  "iso_menu_check_list": "ISO27001清单"
 }

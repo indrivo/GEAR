@@ -314,5 +314,11 @@
   "system_user_change_password": "Зміна пароля ",
   "system_user_change_password_for": "Змінити пароль",
   "system_user_change_password_info": "Це сторінка дозволяє змінити пароль для користувача,",
-  "system_generate_password": "Генерувати пароль"
+  "system_generate_password": "Генерувати пароль",
+  "iso_menu_standard_requirement": "Вимоги стандарту ",
+  "iso_menu_standard_structure": "Структура стандарту",
+  "iso_standard_category_compartment": "Розділ",
+  "iso_standard_category_parent_compartment": "Відсік для батьків,",
+  "iso_standard": "Стандарт",
+  "iso_menu_check_list": "ISO 27001 Контрольний список"
 }

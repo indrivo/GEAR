@@ -314,5 +314,11 @@
   "system_user_change_password": "Cambia password",
   "system_user_change_password_for": "Modificare la password per",
   "system_user_change_password_info": "Questa pagina ti permette di cambiare la password di un utente in particolare",
-  "system_generate_password": "Generare password"
+  "system_generate_password": "Generare password",
+  "iso_menu_standard_requirement": "I requisiti della norma ",
+  "iso_menu_standard_structure": "La struttura della norma",
+  "iso_standard_category_compartment": "Vano",
+  "iso_standard_category_parent_compartment": "Vano il genitore",
+  "iso_standard": "Standard",
+  "iso_menu_check_list": "ISO 27001 lista di Controllo"
 }

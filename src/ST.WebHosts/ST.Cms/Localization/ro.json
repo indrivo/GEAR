@@ -288,7 +288,7 @@
   "iso_in_scope": "Inclus in scop",
   "iso_outsource_provider": "Furnizor externalizat",
   "iso_interface_and_depends": "Interfețele și dependențe",
-  "iso_gestion_smsi": "Gestiunea ariei de acoperire SMSI",
+  "iso_gestion_smsi": "Aria de acoperire",
   "system_viewmodel_add": "Adaugă un nou view model",
   "system_viewmodel_add_description": "Noul model de vizualizare va fi adăugat.",
   "system_viewmodel_select_entity": "Selectați Entitatea",
@@ -306,7 +306,7 @@
   "iso_menu_asset_state": "Stare activ",
   "iso_menu_company_settings": "Setari companie",
   "iso_menu_impact": "Impact",
-  "iso_menu_iso_app_settings": "Setările aplicației pentru ISO DMS",
+  "iso_menu_iso_app_settings": "Setări aplicația ISO DMS ",
   "iso_menu_default_lists": "Liste predefinite",
   "iso_menu_accomplished": "Indeplinit",
   "iso_menu_interested_party_category": "Categorie parte interesata",
@@ -314,5 +314,11 @@
   "system_user_change_password": "Schimba parola",
   "system_user_change_password_for": "Schimbare parolă pentru",
   "system_user_change_password_info": "Acesta pagina permite schimbarea parolei pentru un utilizator ales",
-  "system_generate_password": "Genereaza parola"
+  "system_generate_password": "Genereaza parola",
+  "iso_menu_standard_requirement": "Cerințe standard ",
+  "iso_menu_standard_structure": "Structura standardului",
+  "iso_standard_category_compartment": "Compartiment",
+  "iso_standard_category_parent_compartment": "Compartiment părinte",
+  "iso_standard": "Standard",
+  "iso_menu_check_list": "ISO 27001 Check list"
 }

@@ -269,10 +269,14 @@ $(document).ready(function () {
 				host: location.origin
 			});
 			renderMenuContainer.html(content);
-			renderMenuContainer.find(`a[href='${location.href}']`)
+			let route = location.href;
+			if (route[route.length - 1] === "#") {
+				route = route.substr(0, route.length - 1);
+			}
+			renderMenuContainer.find(`a[href='${route}']`)
 				.parent()
 				.addClass("active");
-			makeMenuActive(renderMenuContainer.find(`a[href='${location.href}']`));
+			makeMenuActive(renderMenuContainer.find(`a[href='${route}']`));
 			window.forceTranslate("#left-nav-bar");
 		}
 	});

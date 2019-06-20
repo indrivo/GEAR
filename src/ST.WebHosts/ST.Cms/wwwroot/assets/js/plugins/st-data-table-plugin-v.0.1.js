@@ -209,7 +209,7 @@ TableBuilder.prototype.renderCell = function (row, column) {
  */
 TableBuilder.prototype.getRenderRowActions = function (row, dataX) {
 	const container = this.getTableRowInlineActionButton(row, dataX)
-		+ this.getTableRowEditActionButton(row, dataX)
+		//+ this.getTableRowEditActionButton(row, dataX)
 		+ this.getTableRowDeleteRestoreActionButton(row, dataX);
 	return container;
 }

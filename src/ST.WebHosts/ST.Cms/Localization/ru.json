@@ -288,7 +288,7 @@
   "iso_in_scope": "Включительно в соответствии с",
   "iso_outsource_provider": "Поставщик аутсорсинг",
   "iso_interface_and_depends": "Интерфейсы и зависимости",
-  "iso_gestion_smsi": "Управление зоной охвата обработки информации",
+  "iso_gestion_smsi": "Зона покрытия",
   "system_viewmodel_add": "Добавить новый вид модели ",
   "system_viewmodel_add_description": "Новый вид модели будeт добавлен.",
   "system_viewmodel_select_entity": "Выберите Предприятие",
@@ -306,7 +306,7 @@
   "iso_menu_asset_state": "Статус активный",
   "iso_menu_company_settings": "Настройки компании",
   "iso_menu_impact": "Влияние",
-  "iso_menu_iso_app_settings": "Настройки приложения для ISO ДМС",
+  "iso_menu_iso_app_settings": "Настройки приложения ISO ДМС",
   "iso_menu_default_lists": "Предопределенные списки",
   "iso_menu_accomplished": "Выполнен",
   "iso_menu_interested_party_category": "В категории заинтересованная сторона",
@@ -314,5 +314,11 @@
   "system_user_change_password": "Смена пароля ",
   "system_user_change_password_for": "Изменить пароль для",
   "system_user_change_password_info": "Это страница позволяет сменить пароль для пользователя,",
-  "system_generate_password": "Генерировать пароль"
+  "system_generate_password": "Генерировать пароль",
+  "iso_menu_standard_requirement": "Требования стандарта ",
+  "iso_menu_standard_structure": "Структура стандарта",
+  "iso_standard_category_compartment": "Раздел",
+  "iso_standard_category_parent_compartment": "Родительское отделение",
+  "iso_standard": "Стандарт",
+  "iso_menu_check_list": "ISO 27001 Контрольный список"
 }

@@ -314,5 +314,11 @@
   "system_user_change_password": "Wachtwoord wijzigen",
   "system_user_change_password_for": "Wachtwoord wijzigen voor",
   "system_user_change_password_info": "Op deze pagina kunt u het wachtwoord wijzigen voor een gebruiker, in het bijzonder",
-  "system_generate_password": "Wachtwoord genereren"
+  "system_generate_password": "Wachtwoord genereren",
+  "iso_menu_standard_requirement": "De eisen van de standaard ",
+  "iso_menu_standard_structure": "De structuur van de standaard",
+  "iso_standard_category_compartment": "Compartiment",
+  "iso_standard_category_parent_compartment": "Het compartiment van de ouder",
+  "iso_standard": "De Standaard",
+  "iso_menu_check_list": "ISO 27001 Checklist"
 }

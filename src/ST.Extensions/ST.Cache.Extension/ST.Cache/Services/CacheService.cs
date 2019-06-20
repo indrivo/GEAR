@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
@@ -17,6 +19,7 @@ namespace ST.Cache.Services
         /// </summary>
         private readonly IDistributedCache _cache;
 
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         /// <summary>
         /// Redis host
@@ -33,6 +36,11 @@ namespace ST.Cache.Services
             _cache = cache;
             if (options.Value == null) throw new InvalidCacheConfigurationException();
             _redisHost = $"{options.Value.Host}:{options.Value.Port}";
+            _jsonSerializerSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            };
         }
 
         /// <summary>
@@ -46,12 +54,13 @@ namespace ST.Cache.Services
         {
             try
             {
-                var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
+                var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj, _jsonSerializerSettings));
                 await _cache.SetAsync(key, bytes);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 return false;
             }
         }
@@ -70,11 +79,12 @@ namespace ST.Cache.Services
             if (typeof(TObject) == typeof(string)) return str as TObject;
             try
             {
-                var data = JsonConvert.DeserializeObject<TObject>(str);
+                var data = JsonConvert.DeserializeObject<TObject>(str, _jsonSerializerSettings);
                 return data;
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 return default;
             }
         }

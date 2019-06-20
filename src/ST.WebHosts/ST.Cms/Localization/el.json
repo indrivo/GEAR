@@ -314,5 +314,11 @@
   "system_user_change_password": "Αλλαγή κωδικού πρόσβασης",
   "system_user_change_password_for": "Να αλλάξετε τον κωδικό πρόσβασης για",
   "system_user_change_password_info": "Αυτή η σελίδα σας επιτρέπει να αλλάξετε τον κωδικό πρόσβασης για ένα χρήστη, ειδικά",
-  "system_generate_password": "Δημιουργία κωδικού πρόσβασης"
+  "system_generate_password": "Δημιουργία κωδικού πρόσβασης",
+  "iso_menu_standard_requirement": "Οι απαιτήσεις του προτύπου ",
+  "iso_menu_standard_structure": "Η δομή του προτύπου",
+  "iso_standard_category_compartment": "Διαμέρισμα",
+  "iso_standard_category_parent_compartment": "Το διαμέρισμα της μητρικής",
+  "iso_standard": "Το Πρότυπο",
+  "iso_menu_check_list": "ISO 27001 λίστα Ελέγχου"
 }
