@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ST.Localization.Razor.ViewModels.LocalizationViewModels
+namespace ST.Localization.Abstractions.ViewModels.LocalizationViewModels
 {
 	public class LocalizationConfigModel
 	{

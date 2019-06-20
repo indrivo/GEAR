@@ -173,7 +173,7 @@ namespace ST.Cms.Installation
 				var isConfigured = IsConfigured(env);
 
 				if (!isConfigured) return;
-				
+
 				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 				cacheService.FlushAll();
 				await permissionService.RefreshCache();
@@ -200,7 +200,9 @@ namespace ST.Cms.Installation
 			var config = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
 				.AddEnvironmentVariables()
-				.AddJsonFile("appsettings.json", optional: false)
+				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+				.AddJsonFile("translationSettings.json", optional: true, reloadOnChange: true)
+				.AddEnvironmentVariables()
 				.Build();
 
 			return Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)

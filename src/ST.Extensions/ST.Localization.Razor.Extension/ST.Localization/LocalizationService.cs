@@ -8,11 +8,10 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ST.Core.Helpers;
-using ST.Localization.Razor.Services.Abstractions;  
-using ST.Localization.Razor.ViewModels.LocalizationViewModels;
-using YandexTranslateCSharpSdk;
+using ST.Localization.Abstractions;
+using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
-namespace ST.Localization.Razor.Services
+namespace ST.Localization.Services
 {
     public class LocalizationService : ILocalizationService
     {
@@ -20,17 +19,16 @@ namespace ST.Localization.Razor.Services
         private readonly IHostingEnvironment _env;
         private readonly IStringLocalizer _localizer;
         private readonly IDistributedCache _cache;
-        private readonly YandexTranslateSdk _yandexTranslateSdk;
+        private readonly IExternalTranslationProvider _externalTranslationProvider;
 
         public LocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env,
-            IStringLocalizer localizer, IDistributedCache cache)
+            IStringLocalizer localizer, IDistributedCache cache, IExternalTranslationProvider externalTranslationProvider)
         {
             _env = env;
             _locConfig = locConfig;
             _localizer = localizer;
             _cache = cache;
-            _yandexTranslateSdk = new YandexTranslateSdk();
-            _yandexTranslateSdk.ApiKey = "trnsl.1.1.20190428T193614Z.41a78cdc7c5bb298.e25c6bd03beee1462ab0d452f9d2a86c1fc6013f";
+            _externalTranslationProvider = externalTranslationProvider;
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace ST.Localization.Razor.Services
             {
                 _env.ContentRootPath,
                 _locConfig.Value.Path,
-                string.Format("{0}.json", model.Identifier)
+                $"{model.Identifier}.json"
             };
 
             var filePath = Path.Combine(cPaths);
@@ -74,10 +72,7 @@ namespace ST.Localization.Razor.Services
                     var dict = new Dictionary<string, string>();
                     foreach (var item in keys)
                     {
-                        var translated = _yandexTranslateSdk
-                            .TranslateText(item.Value, $"en-{model.Identifier}")
-                            .GetAwaiter()
-                            .GetResult();
+                        var translated = _externalTranslationProvider.TranslateText(item.Value, "en", model.Identifier);
                         dict.Add(item.Name, translated);
                     }
                     var obj = JObject.FromObject(dict);
@@ -111,7 +106,7 @@ namespace ST.Localization.Razor.Services
         }
 
         /// <summary>
-        /// Change statu of language
+        /// Change status of language
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -125,7 +120,7 @@ namespace ST.Localization.Razor.Services
             {
                 _env.ContentRootPath,
                 _locConfig.Value.Path,
-                string.Format("{0}.json", model.Identifier)
+                $"{model.Identifier}.json"
             };
 
             var filePath = Path.Combine(cPaths);
@@ -234,10 +229,10 @@ namespace ST.Localization.Razor.Services
                     using (var sReader = new StreamReader(stream))
                     using (var reader = new JsonTextReader(sReader))
                     {
-                        var jobj = JObject.Load(reader);
-                        jobj[key] = item.Value;
+                        var obj = JObject.Load(reader);
+                        obj[key] = item.Value;
                         reader.Close();
-                        File.WriteAllText(filePath, jobj.ToString());
+                        File.WriteAllText(filePath, obj.ToString());
                     }
                 }
             }

@@ -3,7 +3,7 @@ using ST.Backup;
 using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Identity.Models.EmailViewModels;
-using ST.Localization.Razor.ViewModels.LocalizationViewModels;
+using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace ST.Cms.ViewModels.InstallerModels
 {

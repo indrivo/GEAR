@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using ST.Core.Helpers;
-using ST.Localization.Razor.ViewModels.LocalizationViewModels;
+using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
-namespace ST.Localization.Razor.Services.Abstractions
+namespace ST.Localization.Abstractions
 {
 	public interface ILocalizationService
 	{

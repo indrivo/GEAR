@@ -1,4 +1,4 @@
-namespace ST.Localization.Razor.ViewModels.LocalizationViewModels
+namespace ST.Localization.Abstractions.ViewModels.LocalizationViewModels
 {
 	public class LanguageCreateViewModel : Language
 	{

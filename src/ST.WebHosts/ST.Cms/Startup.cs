@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using ST.Backup.Extensions;
 using ST.Cache.Extensions;
 using ST.Cms.Abstractions;
@@ -25,7 +24,6 @@ using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Versioning;
 using ST.Localization;
-using ST.Localization.Razor.Extensions;
 using ST.MPass.Gov;
 using ST.Notifications.Extensions;
 using ST.PageRender.Razor.Extensions;
@@ -45,6 +43,10 @@ using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
 using ST.Identity.LdapAuth;
 using ST.Identity.LdapAuth.Abstractions.Extensions;
+using ST.Localization.Abstractions;
+using ST.Localization.Abstractions.Extensions;
+using ST.Localization.Abstractions.Models;
+using ST.Localization.Services;
 using ST.PageRender.Abstractions.Extensions;
 using ST.PageRender.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
@@ -225,7 +227,11 @@ namespace ST.Cms
 			services.AddSwaggerModule(Configuration, HostingEnvironment);
 
 			//---------------------------------Localization Module-------------------------------------
-			services.AddLocalizationModule(Configuration);
+			services.AddLocalizationModule<LocalizationService, YandexTranslationProvider>(new TranslationModuleOptions
+			{
+				Configuration = Configuration,
+				LocalizationProvider = LocalizationProvider.Yandex
+			});
 
 			//------------------------------Database backup Module-------------------------------------
 			services.RegisterDatabaseBackupRunnerModule(Configuration);

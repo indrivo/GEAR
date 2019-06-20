@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using ST.Localization.Razor.Services.Abstractions;
-using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 using ST.Core;
 using ST.Core.Helpers;
-using YandexTranslateCSharpSdk;
+using ST.Localization.Abstractions;
+using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace ST.Localization.Razor.Controllers
 {
@@ -22,7 +21,7 @@ namespace ST.Localization.Razor.Controllers
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IStringLocalizer _localize;
         private readonly ILocalizationService _localizationService;
-        private readonly YandexTranslateSdk _yandexTranslateSdk;
+        private readonly IExternalTranslationProvider _externalTranslationProvider;
 
         /// <summary>
         /// Constructor
@@ -30,14 +29,14 @@ namespace ST.Localization.Razor.Controllers
         /// <param name="locConfig"></param>
         /// <param name="localize"></param>
         /// <param name="localizationService"></param>
+        /// <param name="externalTranslationProvider"></param>
         public LocalizationController(IOptionsSnapshot<LocalizationConfigModel> locConfig,
-            IStringLocalizer localize, ILocalizationService localizationService)
+            IStringLocalizer localize, ILocalizationService localizationService, IExternalTranslationProvider externalTranslationProvider)
         {
             _locConfig = locConfig;
             _localize = localize;
             _localizationService = localizationService;
-            _yandexTranslateSdk = new YandexTranslateSdk();
-            _yandexTranslateSdk.ApiKey = "trnsl.1.1.20190428T193614Z.41a78cdc7c5bb298.e25c6bd03beee1462ab0d452f9d2a86c1fc6013f";
+            _externalTranslationProvider = externalTranslationProvider;
         }
 
         /// <summary>
@@ -362,7 +361,7 @@ namespace ST.Localization.Razor.Controllers
             foreach (var (key, _) in languages)
             {
                 if (key == from) continue;
-                var translated = await _yandexTranslateSdk.TranslateText(text, $"{from}-{key}");
+                var translated = await _externalTranslationProvider.TranslateTextAsync(text, from, key);
                 dict.Add(key, translated);
             }
 
