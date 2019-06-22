@@ -169,6 +169,14 @@ if (typeof TableInlineEdit !== 'undefined') {
 	TableInlineEdit.prototype.renderActiveInlineButton = function (ctx) {
 		ctx.find("i").html("check");
 	};
+
+	TableInlineEdit.prototype.getActionsOnAdd = function () {
+		const template = `<div class="btn-group" role="group" aria-label="Action buttons">
+							<a href="javascript:void(0)" class='add-new-item'><i class="material-icons">check</i></a>
+							<a href="javascript:void(0)" class='cancel-new-item'><i class="material-icons">cancel</i></a>
+						</div>`;
+		return template;
+	};
 }
 
 //override notification populate container

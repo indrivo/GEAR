@@ -162,6 +162,7 @@
 															<a asp-action="EditField" asp-route-type="@item.TableFieldTypeId" asp-route-fieldId="@item.Id" class="btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Edit">
 																<i class="ti-pencil" aria-hidden="true"></i>
 															</a>
+															<a asp-action="GetTableFieldConfigurations" asp-route-tableFieldId="@item.Id">Field configurations</a>
 															<a href="#" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
 																<i class="ti-close" aria-hidden="true"></i>
 															</a>

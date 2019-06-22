@@ -13,6 +13,7 @@ namespace ST.Cms.ViewModels.TreeISOViewModels
 	public sealed class TreeCategory
 	{
 		public Guid Id { get; set; }
+		public string Number { get; set; }
 		public string Name { get; set; }
 		public IList<TreeRequirement> Requirements { get; set; }
 		public IList<TreeCategory> SubCategories { get; set; }

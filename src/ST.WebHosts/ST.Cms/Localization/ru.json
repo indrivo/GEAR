@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Раздел",
   "iso_standard_category_parent_compartment": "Родительское отделение",
   "iso_standard": "Стандарт",
-  "iso_menu_check_list": "ISO 27001 Контрольный список"
+  "iso_menu_check_list": "ISO 27001 Контрольный список",
+  "iso_requirement": "Требование",
+  "iso_section": "Раздел",
+  "iso_number": "Число",
+  "iso_menu_control_structure": "Структура проверок, проведенных",
+  "iso_menu_control_content": "Цели и Контент управления",
+  "iso_control": "Контроль",
+  "iso_control_objective": "Цель",
+  "iso_control_content_field": "Контроль содержания"
 }

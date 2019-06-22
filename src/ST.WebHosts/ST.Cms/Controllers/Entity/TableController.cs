@@ -21,6 +21,7 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Services;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Constants;
+using ST.Entities.Abstractions.Extensions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
@@ -584,10 +585,11 @@ namespace ST.Cms.Controllers.Entity
 			}
 			if (field.TableFieldTypeId == fieldType.Id)
 			{
+				//TODO: Ce za huinea?
 				// ?? posibil eroare
-				var configtype = Context.TableFieldConfigs.First(x => x.TableFieldTypeId == fieldType.Id).Id;
+				var configType = Context.TableFieldConfigs.First(x => x.TableFieldTypeId == fieldType.Id).Id;
 				var configValue = Context.TableFieldConfigValues.First(x =>
-					x.TableFieldConfigId == configtype && x.TableModelFieldId == field.Id).Value;
+					x.TableFieldConfigId == configType && x.TableModelFieldId == field.Id).Value;
 				sqlService.DropConstraint(ConnectionString.Item2, table.Name, table.EntityType, configValue, field.Name);
 			}
 
@@ -642,54 +644,16 @@ namespace ST.Cms.Controllers.Entity
 				return Json(new { success = false, message = "Same error on delete!" });
 			}
 		}
-	}
-	public static class FieldExtension
-	{
-		public static CreateTableFieldViewModel CreateSqlField(this CreateTableFieldViewModel field)
+
+		public async Task<IActionResult> GetTableFieldConfigurations([Required] Guid? tableFieldId)
 		{
-			switch (field.Parameter)
-			{
-				case FieldType.EntityReference:
-					field.DataType = TableFieldDataType.Guid;
-					break;
-				case FieldType.Boolean:
-					FieldConfigViewModel defaultBool = null;
-					foreach (var c in field.Configurations)
-					{
-						if (c.Name != FieldConfig.DefaultValue) continue;
-						defaultBool = c;
-						break;
-					}
+			if (tableFieldId == null) return NotFound();
+			var field = await Context.TableFields
+					.Include(x => x.TableFieldConfigValues)
+					.ThenInclude(x => x.TableFieldConfig)
+					.FirstOrDefaultAsync(x => x.Id.Equals(tableFieldId));
 
-					if (defaultBool?.Value != null && defaultBool.Value.Trim() == "on") defaultBool.Value = "1";
-					if (defaultBool?.Value != null && defaultBool.Value.Trim() == "off") defaultBool.Value = "0";
-					break;
-				case FieldType.DateTime:
-				case FieldType.Date:
-				case FieldType.Time:
-					FieldConfigViewModel defaultTime = null;
-					foreach (var c in field.Configurations)
-					{
-						if (c.Name != FieldConfig.DefaultValue) continue;
-						defaultTime = c;
-						break;
-					}
-
-					if (defaultTime?.Value != null && defaultTime.Value.Trim() == "on")
-						defaultTime.Value = "CURRENT_TIMESTAMP";
-					if (defaultTime?.Value != null && defaultTime.Value.Trim() == "off") defaultTime.Value = null;
-					break;
-				case FieldType.File:
-					field.DataType = TableFieldDataType.Guid;
-					var foreignTable = field.Configurations.FirstOrDefault(s => s.Name == "ForeingTable");
-					if (foreignTable != null)
-					{
-						foreignTable.Value = "FileReferences";
-					}
-
-					break;
-			}
-			return field;
+			return View();
 		}
 	}
 }

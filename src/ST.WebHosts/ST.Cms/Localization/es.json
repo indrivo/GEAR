@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Compartimiento",
   "iso_standard_category_parent_compartment": "Compartimiento de los padres",
   "iso_standard": "El Estándar",
-  "iso_menu_check_list": "ISO 27001 lista de Comprobación"
+  "iso_menu_check_list": "ISO 27001 lista de Comprobación",
+  "iso_requirement": "Requisito",
+  "iso_section": "Sección",
+  "iso_number": "El número de",
+  "iso_menu_control_structure": "La estructura de los controles",
+  "iso_menu_control_content": "El control de contenido",
+  "iso_control": "Control",
+  "iso_control_objective": "El objetivo",
+  "iso_control_content_field": "El Control de los contenidos"
 }

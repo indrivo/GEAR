@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Compartiment",
   "iso_standard_category_parent_compartment": "Het compartiment van de ouder",
   "iso_standard": "De Standaard",
-  "iso_menu_check_list": "ISO 27001 Checklist"
+  "iso_menu_check_list": "ISO 27001 Checklist",
+  "iso_requirement": "Vereiste",
+  "iso_section": "Sectie",
+  "iso_number": "Het aantal",
+  "iso_menu_control_structure": "De structuur van de controles",
+  "iso_menu_control_content": "De content control",
+  "iso_control": "Controle",
+  "iso_control_objective": "Het doel",
+  "iso_control_content_field": "Controle inhoud"
 }

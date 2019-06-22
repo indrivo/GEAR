@@ -204,10 +204,11 @@ namespace ST.Cms.Services
 				}
 			});
 			var resCats = new List<TreeCategory>();
-			foreach (var category in categories.Result.OrderBy(x => x.Name))
+			foreach (var category in categories.Result.OrderBy(x => x.Number))
 			{
 				var cat = new TreeCategory
 				{
+					Number = category.Number,
 					Name = category.Name,
 					Id = category.Id,
 					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),

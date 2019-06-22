@@ -98,11 +98,12 @@ namespace ST.PageRender.Razor.Controllers
                 try
                 {
                     _pagesContext.SaveChanges();
-                    return RedirectToAction("Index");
+                    return RedirectToAction("OrderFields", new { dataModel.Id });
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    Debug.WriteLine(ex);
+                    ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
 
@@ -232,14 +233,18 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult OrderFields([Required] Guid id)
+        public async Task<IActionResult> OrderFields([Required] Guid id)
         {
             if (Guid.Empty == id) return NotFound();
-            ViewBag.Data = _pagesContext.ViewModelFields
-                .Where(x => x.ViewModelId.Equals(id))
-                .Include(x => x.TableModelFields)
+            var viewModel = await _pagesContext.ViewModels
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.TableModelFields)
+                .FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (viewModel == null) return NotFound();
+            ViewBag.ViewModel = viewModel;
+            var model = viewModel.ViewModelFields
                 .OrderBy(x => x.Order).ToList();
-            return View();
+            return View(model);
         }
 
 
@@ -292,22 +297,22 @@ namespace ST.PageRender.Razor.Controllers
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(string id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to delete view model!", success = false});
+            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete view model!", success = false });
             var page = _pagesContext.ViewModels.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
-            if (page == null) return Json(new {message = "Fail to delete view model!", success = false});
+            if (page == null) return Json(new { message = "Fail to delete view model!", success = false });
 
             try
             {
                 _pagesContext.ViewModels.Remove(page);
                 _pagesContext.SaveChanges();
-                return Json(new {message = "View model was delete with success!", success = true});
+                return Json(new { message = "View model was delete with success!", success = true });
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
 
-            return Json(new {message = "Fail to delete view model!", success = false});
+            return Json(new { message = "Fail to delete view model!", success = false });
         }
 
         /// <summary>

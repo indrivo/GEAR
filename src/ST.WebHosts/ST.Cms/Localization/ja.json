@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "区画",
   "iso_standard_category_parent_compartment": "区画の親会社",
   "iso_standard": "標準",
-  "iso_menu_check_list": "ISO27001チェックリスト"
+  "iso_menu_check_list": "ISO27001チェックリスト",
+  "iso_requirement": "要件",
+  "iso_section": "第",
+  "iso_number": "の数",
+  "iso_menu_control_structure": "の構造制御",
+  "iso_menu_control_content": "のコンテンツ管理",
+  "iso_control": "制御",
+  "iso_control_objective": "の目標",
+  "iso_control_content_field": "制御コンテンツ"
 }

@@ -1,8 +1,9 @@
 @using ST.PageRender.Abstractions.Models.ViewModels
+@model IList<ViewModelFields>
 
 @{
     ViewData["Title"] = Localizer["order_viewmodel_fields"];
-    var data = (IList<ViewModelFields>)ViewBag.Data;
+    var viewModel = (ViewModel)ViewBag.ViewModel;
 }
 
 <style>
@@ -38,7 +39,7 @@
 
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">@Localizer["viewmodel_fields"]</h4>
+        <h4 class="card-title">@Localizer["viewmodel_fields"]  <code>@viewModel.Name</code></h4>
         <h6 class="card-subtitle">@Localizer["viewmodel_fields_subtitle"]</h6>
         <div class="table-responsive">
             <div class="mt-2">
@@ -55,7 +56,7 @@
             </div>
 
             <ul class="list-group" id="columns">
-                @foreach (var item in data)
+                @foreach (var item in Model)
                 {
                     <li class="list-group-item column" dataId="@item.Id" viewModelId="@item.ViewModelId" order="@item.Order" draggable="true">
                         <div class="input-group mb-3">

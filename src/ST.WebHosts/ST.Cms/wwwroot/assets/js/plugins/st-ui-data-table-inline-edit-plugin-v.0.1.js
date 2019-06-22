@@ -45,9 +45,9 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
 	if (!jdt) {
 		jdt = dto.DataTable();
 	}
-	if (dto.attr("add-mode") === "true") {
-		return this.displayNotification({ heading: window.translate("system_inline_edit_add_fail") });
-	}
+	//if (dto.attr("add-mode") === "true") {
+	//	return this.displayNotification({ heading: window.translate("system_inline_edit_add_fail") });
+	//}
 	const row = document.createElement("tr");
 	row.setAttribute("isNew", "true");
 	const columns = jdt.columns().context[0].aoColumns;
@@ -193,9 +193,14 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 	$(cell).addClass("expandable-cell");
 	const cellContent = document.createElement("div");
 	cellContent.setAttribute("class", "data-cell");
-	const { tableId, entityName } = column.config.column.tableModelFields.table;
-	const { propId, propName, allowNull, dataType } = column.config.column.tableModelFields;
-	const data = { tableId, entityName, propId, propName };
+	const entityName = column.config.column.tableModelFields.table.name;
+	const tableId = column.config.column.tableModelFields.table.id;
+	const { allowNull, dataType } = column.config.column.tableModelFields;
+	const propName = column.config.column.tableModelFields.name;
+	const propId = column.config.column.tableModelFields.id;
+	const value = "";
+	const data = { tableId, entityName, propId, propName, allowNull, dataType, value };
+	console.log(data);
 	//create ui container element by field data type
 	switch (dataType) {
 		case "nvarchar":
@@ -654,13 +659,7 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 			const parsedPropName = propName[0].toLowerCase() + propName.substr(1, propName.length);
 			const value = obj[parsedPropName];
 			let container = value;
-			const data = {
-				cellId: cellId,
-				tableId: tableId,
-				propId: propId,
-				value: value,
-				propName: propName
-			};
+			const data = { cellId, tableId, propId, value, propName };
 			switch (fieldData[0].dataType) {
 				case "nvarchar":
 					{

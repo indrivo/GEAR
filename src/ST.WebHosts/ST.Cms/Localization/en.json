@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Compartment",
   "iso_standard_category_parent_compartment": "Parent compartiment",
   "iso_standard": "The Standard",
-  "iso_menu_check_list": "ISO 27001 Check list"
+  "iso_menu_check_list": "ISO 27001 Check list",
+  "iso_requirement": "Requirement",
+  "iso_section": "Section",
+  "iso_number": "The number",
+  "iso_menu_control_structure": "The structure of the controls",
+  "iso_menu_control_content": "Objective and Content controls",
+  "iso_control": "Control",
+  "iso_control_objective": "The goal",
+  "iso_control_content_field": "Control content"
 }

@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Fach",
   "iso_standard_category_parent_compartment": "Akkufach der Eltern",
   "iso_standard": "Der Standard",
-  "iso_menu_check_list": "ISO 27001-Checkliste"
+  "iso_menu_check_list": "ISO 27001-Checkliste",
+  "iso_requirement": "Voraussetzung",
+  "iso_section": "Abschnitt",
+  "iso_number": "Die Anzahl",
+  "iso_menu_control_structure": "Die Struktur der Bedienelemente",
+  "iso_menu_control_content": "Der content-Kontrolle",
+  "iso_control": "Kontrolle",
+  "iso_control_objective": "Das Ziel",
+  "iso_control_content_field": "Inhalt kontrollieren"
 }

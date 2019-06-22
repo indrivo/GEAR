@@ -1023,6 +1023,22 @@ namespace ST.DynamicEntityStorage
                                 }
                             }
                             break;
+                        case "Double":
+                            {
+                                if (!string.IsNullOrEmpty(item.Value?.ToString()))
+                                {
+                                    type.GetProperty(item.Key).SetValue(obj, Convert.ToDouble(item.Value.ToString()));
+                                }
+                            }
+                            break;
+                        case "Decimal":
+                            {
+                                if (!string.IsNullOrEmpty(item.Value?.ToString()))
+                                {
+                                    type.GetProperty(item.Key).SetValue(obj, Convert.ToDecimal(item.Value.ToString()));
+                                }
+                            }
+                            break;
                         case "Nullable`1":
                             {
                                 if (fieldType.IsGenericType)

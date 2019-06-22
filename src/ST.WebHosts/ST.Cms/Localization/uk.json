@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Розділ",
   "iso_standard_category_parent_compartment": "Відсік для батьків,",
   "iso_standard": "Стандарт",
-  "iso_menu_check_list": "ISO 27001 Контрольний список"
+  "iso_menu_check_list": "ISO 27001 Контрольний список",
+  "iso_requirement": "Вимога",
+  "iso_section": "Розділ",
+  "iso_number": "Число",
+  "iso_menu_control_structure": "Структура перевірок, проведених",
+  "iso_menu_control_content": "Зміст контрольної",
+  "iso_control": "Контроль",
+  "iso_control_objective": "Мета",
+  "iso_control_content_field": "Контроль вмісту"
 }

@@ -446,13 +446,15 @@ namespace ST.PageRender.Razor.Controllers
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(default(DTResult<object>));
+            var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
             var sortColumn = param.SortOrder;
             try
             {
-                var columnIndex = Convert.ToInt32(param.Order[0].Column);
-                if (viewModel.ViewModelFields.Count() - 1 > columnIndex)
+                var colIndex = Convert.ToInt32(param.Order[0].Column);
+                var columnIndex = colIndex == 0 ? colIndex : colIndex - 1;
+                if (fields.Count() - 1 > columnIndex)
                 {
-                    var field = viewModel.ViewModelFields.ElementAt(columnIndex);
+                    var field = fields.ElementAt(columnIndex);
                     if (field != null)
                     {
                         var column =

@@ -200,7 +200,7 @@
   "accordion_collapse_all": "Restrânge toate",
   "open_activities": "Activități deschise",
   "from": "din",
-  "standard_requirement": "Cerința Standartului",
+  "standard_requirement": "Cerința Standardului",
   "mode_full_fillment": "Modul de îndeplinire",
   "attached_docs": "Documentele atașate",
   "hint": "Hint",
@@ -299,7 +299,7 @@
   "iso_objective_requirement": "Cerința PI ",
   "iso_objective_is_fullfilment": "Indeplinit?",
   "iso_objective_interessted_part": "Partea interesata",
-  "iso_standard_27001_menu": "Standartul ISO 27001",
+  "iso_standard_27001_menu": "Standardul ISO 27001",
   "iso_menu_controls": "Controale",
   "iso_menu_asset_category": "Categorii de active",
   "iso_menu_function": "Funcția",
@@ -320,5 +320,13 @@
   "iso_standard_category_compartment": "Compartiment",
   "iso_standard_category_parent_compartment": "Compartiment părinte",
   "iso_standard": "Standard",
-  "iso_menu_check_list": "ISO 27001 Check list"
+  "iso_menu_check_list": "ISO 27001 Check list",
+  "iso_requirement": "Cerință",
+  "iso_section": "Secțiune",
+  "iso_number": "Număr",
+  "iso_menu_control_structure": "Structura controalelor",
+  "iso_menu_control_content": "Obiectiv si Conținut controale",
+  "iso_control": "Control",
+  "iso_control_objective": "Obiectiv",
+  "iso_control_content_field": "Conținut control"
 }
