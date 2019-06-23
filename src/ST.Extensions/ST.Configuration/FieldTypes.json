@@ -153,6 +153,12 @@
               "Type": "string",
               "Description": "Select the foreing schema table.",
               "Code": "9999"
+            },
+            {
+              "Name": "DisplayFormat",
+              "Type": "string",
+              "Description": "Display format",
+              "Code": "3001"
             }
           ]
         },

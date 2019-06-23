@@ -10,6 +10,8 @@ using ST.DynamicEntityStorage.Abstractions;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Helpers;
+using ST.DynamicEntityStorage.Abstractions.Enums;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
 
@@ -177,6 +179,12 @@ namespace ST.PageRender.Razor.Controllers
             if (model != null)
             {
                 model.AllowedRoles = "Administrator#";
+                var data = await _service.GetAllWhitOutInclude<MenuItem, MenuItem>(x =>
+                    x.ParentMenuItemId == model.ParentMenuItemId);
+                if (data.IsSuccess)
+                {
+                    model.Order = data.Result?.Max(x => x.Order) + 1 ?? 1;
+                }
                 var req = await _service.AddWithReflection(model);
                 if (req.IsSuccess)
                 {
@@ -334,6 +342,25 @@ namespace ST.PageRender.Razor.Controllers
         {
             var tree = await _menuService.GetMenus(menuBlockId, new List<string> { Settings.SuperAdmin });
             return Json(tree);
+        }
+
+
+        /// <summary>
+        /// Get page scripts for manage
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> OrderMenuChildItems([Required] Guid? parentId)
+        {
+            var items = await _service.GetAllWhitOutInclude<MenuItem, MenuItem>(filters: new List<Filter>
+            {
+                new Filter{Value = parentId, Criteria = Criteria.Equals, Parameter = nameof(MenuItem.ParentMenuItemId)}
+            });
+            if (!items.IsSuccess) return NotFound();
+            ViewBag.Items = items.Result.ToList();
+            ViewBag.ParentId = parentId;
+            return View();
         }
     }
 }

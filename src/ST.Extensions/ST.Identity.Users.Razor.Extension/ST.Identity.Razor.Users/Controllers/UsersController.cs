@@ -567,7 +567,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> ChangeUserPassword([Required] Guid? userId)
+        public virtual async Task<IActionResult> ChangeUserPassword([Required] Guid? userId, string callBackUrl)
         {
             if (userId == null) return NotFound();
             var user = await UserManager.FindByIdAsync(userId.Value.ToString());
@@ -577,7 +577,8 @@ namespace ST.Identity.Razor.Users.Controllers
                 Email = user.Email,
                 UserName = user.UserName,
                 AuthenticationType = user.AuthenticationType,
-                UserId = user.Id.ToGuid()
+                UserId = user.Id.ToGuid(),
+                CallBackUrl = callBackUrl
             });
         }
 
@@ -620,7 +621,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     Subject = "Password changed",
                     NotificationTypeId = NotificationType.Info
                 });
-                return RedirectToAction(nameof(Index));
+                return Redirect(model.CallBackUrl);
             }
             foreach (var _ in result.Errors)
             {

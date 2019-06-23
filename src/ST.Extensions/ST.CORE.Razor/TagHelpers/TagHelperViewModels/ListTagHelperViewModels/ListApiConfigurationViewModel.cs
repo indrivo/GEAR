@@ -1,4 +1,6 @@
-﻿namespace ST.CORE.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+﻿using System.Collections.Generic;
+
+namespace ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 {
     public class ListApiConfigurationViewModel
     {
@@ -11,6 +13,11 @@
         /// Access type
         /// </summary>
         public ApiType ApiType { get; set; } = ApiType.Post;
+
+        /// <summary>
+        /// Url parameters
+        /// </summary>
+        public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
     }
 
     public enum ApiType

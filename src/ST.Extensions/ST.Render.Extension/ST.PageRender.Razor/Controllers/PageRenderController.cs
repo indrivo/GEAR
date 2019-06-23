@@ -24,6 +24,7 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Core.Razor.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Constants;
@@ -169,7 +170,8 @@ namespace ST.PageRender.Razor.Controllers
             var config = await _context.TableFieldConfigValues
                 .Include(x => x.TableFieldConfig)
                 .ThenInclude(x => x.TableFieldType)
-                .FirstOrDefaultAsync(x => x.TableModelFieldId.Equals(fieldId) && x.TableFieldConfig.Code == "3000");
+                .FirstOrDefaultAsync(x => x.TableModelFieldId.Equals(fieldId)
+                                          && x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable);
             if (config == null) return Json(new ResultModel());
             if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
             var table = config.Value;
@@ -809,6 +811,7 @@ namespace ST.PageRender.Razor.Controllers
                 .ThenInclude(x => x.TableFieldConfig)
                 .FirstOrDefault(x => x.Id == entityId)?
                 .TableFields?.FirstOrDefault(x => x.Id == propertyId);
+
             if (refProp == null)
             {
                 response.Errors = new List<IErrorModel>
@@ -818,7 +821,8 @@ namespace ST.PageRender.Razor.Controllers
                 return Json(response);
             }
 
-            var entityRefName = refProp.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "3000");
+            var entityRefName = refProp.TableFieldConfigValues
+                .FirstOrDefault(x => x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable);
             if (entityRefName == null)
             {
                 response.Errors = new List<IErrorModel>
@@ -828,11 +832,38 @@ namespace ST.PageRender.Razor.Controllers
                 return Json(response);
             }
 
-            var res = await _service.GetAll(entityRefName.Value);
+            var displayFormat = refProp.TableFieldConfigValues
+                .FirstOrDefault(x => x.TableFieldConfig.Code == TableFieldConfigCode.Reference.DisplayFormat);
+
+            var res = await _service.GetAll(entityRefName.Value, filters: new List<Filter>
+            {
+                new Filter
+                {
+                    Parameter = nameof(BaseModel.IsDeleted), Value = false, Criteria = Criteria.Equals
+                }
+            });
+            if (res.IsSuccess)
+            {
+                if (displayFormat != null)
+                {
+                    res.Result = res.Result.Select(x =>
+                    {
+                        var format = displayFormat.Value.Inject(x);
+                        if (x.ContainsKey("Name"))
+                            x["Name"] = format;
+                        else
+                            x.Add("Name", format);
+                        return x;
+                    });
+                }
+
+                res.Result = res.Result.OrderBy(x => x.ContainsKey("Name") ? x["Name"] : x);
+            }
+
             response.IsSuccess = res.IsSuccess;
             response.Result = new
             {
-                Data = res.Result?.Where(x => !(bool)x[nameof(BaseModel.IsDeleted)]).ToList(),
+                Data = res.Result,
                 EntityName = entityRefName.Value
             };
             return Json(response);

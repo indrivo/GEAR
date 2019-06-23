@@ -123,7 +123,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Forms", "src\ST.Extensio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.MultiTenant.Razor", "src\ST.Extensions\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj", "{AC174814-1F8C-4960-9B4A-067EED8B5546}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.CORE.Razor", "src\ST.Extensions\ST.CORE.Razor\ST.CORE.Razor.csproj", "{977C43F3-FE9C-416E-B73E-259A5DF41341}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Core.Razor", "src\ST.Extensions\ST.CORE.Razor\ST.Core.Razor.csproj", "{977C43F3-FE9C-416E-B73E-259A5DF41341}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Entities.EntityBuilder.MsSql", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj", "{9F68CC74-9147-497E-B15F-70A2D5A7F2DA}"
 EndProject

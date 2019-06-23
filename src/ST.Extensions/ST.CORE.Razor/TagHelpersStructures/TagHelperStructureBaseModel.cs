@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ST.CORE.Razor.TagHelpersStructures
+﻿namespace ST.Core.Razor.TagHelpersStructures
 {
     public class TagHelperStructureBaseModel
     {

@@ -72,15 +72,6 @@ namespace ST.Localization.Abstractions.Extensions
                 opts.IdleTimeout = TimeSpan.FromDays(1);
                 opts.Cookie.HttpOnly = true;
             });
-            //TODO: ?
-            switch (options.LocalizationProvider)
-            {
-                case LocalizationProvider.Google:
-
-                    break;
-                case LocalizationProvider.Yandex:
-                    break;
-            }
             return services;
         }
     }

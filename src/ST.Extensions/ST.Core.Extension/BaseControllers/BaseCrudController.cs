@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using ST.Cache.Abstractions;
 using ST.Core.Abstractions;
 using ST.Core.Helpers;
@@ -22,9 +23,15 @@ namespace ST.Core.BaseControllers
         /// </summary>
         protected readonly IDataFilter DataFilter;
 
-        protected BaseCrudController(UserManager<TUser> userManager, RoleManager<TRole> roleManager, ICacheService cacheService, TIdentityContext applicationDbContext, TEntityContext context, TNotify notify, IDataFilter dataFilter) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        /// <summary>
+        /// Inject localizer
+        /// </summary>
+        protected readonly IStringLocalizer Localizer;
+
+        protected BaseCrudController(UserManager<TUser> userManager, RoleManager<TRole> roleManager, ICacheService cacheService, TIdentityContext applicationDbContext, TEntityContext context, TNotify notify, IDataFilter dataFilter, IStringLocalizer localizer) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             DataFilter = dataFilter;
+            Localizer = localizer;
         }
 
         /// <summary>

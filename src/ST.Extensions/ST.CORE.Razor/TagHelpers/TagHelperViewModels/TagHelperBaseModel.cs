@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ST.CORE.Razor.TagHelpers.TagHelperViewModels
+namespace ST.Core.Razor.TagHelpers.TagHelperViewModels
 {
     public class TagHelperBaseModel
     {

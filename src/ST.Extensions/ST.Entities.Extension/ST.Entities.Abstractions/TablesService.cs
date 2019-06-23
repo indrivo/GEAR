@@ -147,12 +147,12 @@ namespace ST.Entities.Abstractions
                                 {
                                     new FieldConfigViewModel
                                     {
-                                        ConfigCode = "9999",
+                                        ConfigCode = TableFieldConfigCode.Reference.ForeingSchemaTable,
                                         Value = result.Schema
                                     },
                                     new FieldConfigViewModel
                                     {
-                                        ConfigCode = "3000",
+                                        ConfigCode = TableFieldConfigCode.Reference.ForeingTable,
                                         Value = ent
                                     }
                                 };

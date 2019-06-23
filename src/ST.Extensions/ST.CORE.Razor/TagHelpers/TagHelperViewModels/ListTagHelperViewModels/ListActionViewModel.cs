@@ -1,4 +1,6 @@
-﻿namespace ST.CORE.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+﻿using System.Collections.Generic;
+
+namespace ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 {
     public sealed class ListActionViewModel : TagHelperBaseModel
     {
@@ -7,8 +9,30 @@
         public string ClassStyle { get; set; }
         public BootstrapButton ButtonType { get; set; }
         public string Url { get; set; } = "#";
+        public ICollection<ActionParameter> ActionParameters = new List<ActionParameter>();
         public bool IsJsEvent { get; set; }
         public JsActionButtonEvent ButtonEvent { get; set; }
+    }
+
+    public sealed class ActionParameter
+    {
+        public ActionParameter() { }
+
+        public ActionParameter(string name, string value)
+        {
+            this.ParameterName = name;
+            this.ObjectValue = value;
+        }
+        public string ParameterName { get; set; }
+        public bool IsCustomValue { get; set; }
+        public string ObjectValue { get; set; }
+
+        public override string ToString()
+        {
+            if (IsCustomValue) return $"{ParameterName}={ObjectValue}";
+
+            return $"{ParameterName}=${{row.{ObjectValue}}}";
+        }
     }
 
     public sealed class JsActionButtonEvent : TagHelperBaseModel

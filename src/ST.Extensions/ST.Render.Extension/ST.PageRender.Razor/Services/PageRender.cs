@@ -18,7 +18,7 @@ using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.Core.Extensions;
-using ST.CORE.Razor.Extensions;
+using ST.Core.Razor.Extensions;
 using ST.Entities.Abstractions.Constants;
 using ST.Identity.Abstractions;
 using ST.PageRender.Abstractions;

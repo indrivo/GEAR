@@ -136,9 +136,9 @@ namespace ST.PageRender.Razor.Controllers
                     _pagesContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    ModelState.AddModelError(string.Empty, ex.Message);
                 }
             }
 
@@ -360,7 +360,7 @@ namespace ST.PageRender.Razor.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
 
             return Json(result);

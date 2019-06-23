@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
@@ -58,11 +59,14 @@ namespace ST.Cms.Controllers.Entity
 		/// </summary>
 		private readonly IFormContext _formContext;
 
-		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+		private readonly IEntityRepository _entityRepository;
+
+		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
 			_logger = logger;
 			Queue = queue;
 			_formContext = formContext;
+			_entityRepository = entityRepository;
 			ConnectionString = DbUtil.GetConnectionString(configuration, env);
 			formContext.ValidateNullAbstractionContext();
 			Context.Validate();
@@ -271,20 +275,16 @@ namespace ST.Cms.Controllers.Entity
 		{
 			var entitiesList = await Context.Table.ToListAsync();
 			var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Name == type.Trim());
-			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id);
-			var configurations = new List<FieldConfigViewModel>();
-			foreach (var item in fieldTypeConfig)
+			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+
+			var configurations = fieldTypeConfig.Select(item => new FieldConfigViewModel
 			{
-				if (item.Code != "9999")
-					configurations.Add(new FieldConfigViewModel
-					{
-						Name = item.Name,
-						Type = item.Type,
-						ConfigId = item.Id,
-						Description = item.Description,
-						ConfigCode = item.Code
-					});
-			}
+				Name = item.Name,
+				Type = item.Type,
+				ConfigId = item.Id,
+				Description = item.Description,
+				ConfigCode = item.Code
+			}).ToList();
 
 			var model = new CreateTableFieldViewModel
 			{
@@ -418,19 +418,33 @@ namespace ST.Cms.Controllers.Entity
 		public async Task<IActionResult> EditField(Guid fieldId, Guid type)
 		{
 			var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
-			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id);
-			// Clean Code
-			var field = await Context.TableFields.FirstOrDefaultAsync(x => x.Id == fieldId);
-			var configFields = Context.TableFieldConfigValues
-				.Where(x => x.TableModelFieldId == fieldId)
-				.Select(y => new FieldConfigViewModel
+			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+			var field = await Context.TableFields
+				.Include(x => x.TableFieldConfigValues)
+				.FirstOrDefaultAsync(x => x.Id == fieldId);
+			var configFields = field.TableFieldConfigValues
+				.Select(y =>
 				{
-					Name = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Name,
-					Type = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Type,
-					ConfigId = y.TableFieldConfigId,
-					Description = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Description,
-					Value = y.Value
+					var fTypeConfig = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId);
+					return new FieldConfigViewModel
+					{
+						Name = fTypeConfig.Name,
+						Type = fTypeConfig.Type,
+						ConfigId = y.TableFieldConfigId,
+						Description = fTypeConfig.Description,
+						ConfigCode = fTypeConfig.Code,
+						Value = y.Value
+					};
 				}).ToList();
+
+			configFields.AddRange(fieldTypeConfig.Select(item => new FieldConfigViewModel
+			{
+				Name = item.Name,
+				Type = item.Type,
+				ConfigId = item.Id,
+				Description = item.Description,
+				ConfigCode = item.Code
+			}).Where(x => configFields.FirstOrDefault(y => y.ConfigCode == x.ConfigCode) == null).ToList());
 
 			var model = new CreateTableFieldViewModel
 			{
@@ -455,9 +469,13 @@ namespace ST.Cms.Controllers.Entity
 		[HttpPost]
 		public async Task<IActionResult> EditField([Required]CreateTableFieldViewModel field)
 		{
-			var table = Context.Table.FirstOrDefault(x => x.Id == field.TableId);
+			var table = await Context.Table
+				.Include(x => x.TableFields)
+				.FirstOrDefaultAsync(x => x.Id == field.TableId && x.TableFields.FirstOrDefault(y => y.Id == field.Id) != null);
+
 			if (table == null) return NotFound();
-			if (field.Id == Guid.Empty) return NotFound();
+			var model = table.TableFields.FirstOrDefault(x => x.Id == field.Id);
+			if (model == null) return NotFound();
 			switch (field.Parameter)
 			{
 				case FieldType.EntityReference:
@@ -491,67 +509,58 @@ namespace ST.Cms.Controllers.Entity
 					if (defaultTime?.Value != null && defaultTime.Value.Trim() == "off") defaultTime.Value = null;
 					break;
 			}
-			var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.DataType == field.DataType);
-			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id);
-			field.Configurations = Context.TableFieldConfigValues
-				.Where(x => x.TableModelFieldId == field.Id)
-				.Select(y => new FieldConfigViewModel
+			var fieldType = await Context.TableFieldTypes
+				.AsNoTracking()
+				.FirstOrDefaultAsync(x => x.DataType == field.DataType);
+			var fieldTypeConfig = Context.TableFieldConfigs.AsNoTracking()
+				.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+
+			var newConfigs = field.Configurations;
+			var dbFieldConfigs = Context.TableFieldConfigValues.AsNoTracking()
+				.Include(x => x.TableFieldConfig)
+				.Include(x => x.TableModelField)
+				.Where(x => x.TableModelFieldId == field.Id).ToList();
+			field.Configurations = dbFieldConfigs
+				.Select(y =>
 				{
-					Name = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Name,
-					Type = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Type,
-					ConfigId = y.TableFieldConfigId,
-					Description = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Description,
-					Value = y.Value
+					var conf = fieldTypeConfig.FirstOrDefault(x => x.Id == y.TableFieldConfigId);
+					return new FieldConfigViewModel
+					{
+						Name = conf?.Name,
+						Type = conf?.Type,
+						ConfigId = y.TableFieldConfigId,
+						Description = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId).Description,
+						Value = y.Value
+					};
 				}).ToList();
+
 			var sqlService = GetSqlService();
 			var updateStructure = sqlService.AddFieldSql(field, table.Name, ConnectionString.Item2, false, table.EntityType);
 			// Save field model structure in the dataBase
-			if (updateStructure.IsSuccess)
+			if (!updateStructure.IsSuccess) return View(field);
+
+			model.Description = field.Description;
+			model.Name = field.Name;
+			model.DisplayName = field.DisplayName;
+			model.AllowNull = field.AllowNull;
+
+			try
 			{
-				var configValues = new List<TableFieldConfigValue>();
-				var model = new TableModelField
-				{
-					Id = field.Id,
-					DataType = field.DataType,
-					TableId = field.TableId,
-					Description = field.Description,
-					Name = field.Name,
-					DisplayName = field.DisplayName,
-					AllowNull = field.AllowNull,
-					Synchronized = true,
-					TableFieldTypeId = field.TableFieldTypeId,
-				};
-				foreach (var item in field.Configurations)
-				{
-					configValues.Add(new TableFieldConfigValue
-					{
-						TableFieldConfigId = item.ConfigId,
-						TableModelFieldId = model.Id,
-						Value = item.Value,
-					});
-				}
-
-				model.TableFieldConfigValues = configValues;
-				try
-				{
-					Context.TableFields.Update(model);
-					Context.SaveChanges();
-					return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
-				}
-				catch
-				{
-					ModelState.AddModelError("Fail", "Fail on update data to database!");
-				}
-
-				//foreach (var item in model.TableFieldConfigValues)
-				//{
-				//	Context.TableFieldConfigValues.Update(item);
-				//	Context.SaveChanges();
-				//}
+				Context.TableFields.Update(model);
+				Context.SaveChanges();
+				_entityRepository.UpdateTableFieldConfigurations(model.Id, newConfigs, dbFieldConfigs);
+				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex);
+				ModelState.AddModelError("Fail", ex.Message);
 			}
 
 			return View(field);
 		}
+
+
 
 		/// <summary>
 		/// Delete field
@@ -571,7 +580,7 @@ namespace ST.Cms.Controllers.Entity
 			{
 				return Json(false);
 			}
-			ITablesService sqlService = GetSqlService();
+			var sqlService = GetSqlService();
 			var checkColumn = sqlService.CheckColumnValues(ConnectionString.Item2, table.Name, table.EntityType, field.Name);
 			if (checkColumn.Result)
 			{
@@ -643,17 +652,6 @@ namespace ST.Cms.Controllers.Entity
 				_logger.LogError(e.Message);
 				return Json(new { success = false, message = "Same error on delete!" });
 			}
-		}
-
-		public async Task<IActionResult> GetTableFieldConfigurations([Required] Guid? tableFieldId)
-		{
-			if (tableFieldId == null) return NotFound();
-			var field = await Context.TableFields
-					.Include(x => x.TableFieldConfigValues)
-					.ThenInclude(x => x.TableFieldConfig)
-					.FirstOrDefaultAsync(x => x.Id.Equals(tableFieldId));
-
-			return View();
 		}
 	}
 }

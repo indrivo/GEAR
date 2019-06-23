@@ -3,6 +3,8 @@
 @using Microsoft.Extensions.Localization;
 @using Microsoft.Extensions.Options
 @using ST.PageRender.Abstractions.Models.Pages;
+@using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using ST.Core.Razor.TagHelpersStructures
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper ST.Cms.TagHelpers.ApplicationTagHelper, ST.Cms
@@ -12,5 +14,6 @@
 @addTagHelper ST.Cms.TagHelpers.LayoutCssScriptsTagHelper, ST.Cms
 @addTagHelper ST.Cms.TagHelpers.ListTagHelper, ST.WebHost
 @addTagHelper ST.Cms.TagHelpers.FormTagHelper, ST.WebHost
+@addTagHelper ST.Core.Razor.TagHelpers.ListTagHelper, ST.Core.Razor
 
 @inject IStringLocalizer Localizer

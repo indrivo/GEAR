@@ -100,6 +100,8 @@
 								row.id}">Childs</a>
 									<a class="btn btn-info btn-sm" href="@Url.Action("EditItem")?itemId=${row.id
 								}">Edit</a>
+                                    <a class="btn btn-warning btn-sm" href="@Url.Action("OrderMenuChildItems")?parentId=${row.id
+                                }">Order</a>
 									<a class="btn btn-primary btn-sm role-access"  data-id="${row.id
 								}" href="#">Role Access</a>
 									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id

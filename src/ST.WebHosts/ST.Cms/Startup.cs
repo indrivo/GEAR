@@ -31,6 +31,7 @@ using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core.Extensions;
+using ST.Entities;
 using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
@@ -212,7 +213,7 @@ namespace ST.Cms
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
 			//---------------------------------------Entity Module-------------------------------------
-			services.AddEntityModule<EntitiesDbContext, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
+			services.AddEntityModule<EntitiesDbContext, EntityRepository, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();

@@ -1,4 +1,7 @@
-﻿namespace ST.CORE.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+﻿using System.Collections.Generic;
+using ST.Core.Razor.TagHelpersStructures;
+
+namespace ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 {
     public class UrlTagHelperViewModel : TagHelperBaseModel
     {
@@ -26,5 +29,10 @@
         /// Url
         /// </summary>
         public string Url => $"/{AspController}/{AspAction}";
+
+        /// <summary>
+        /// Html attributes
+        /// </summary>
+        public ICollection<HtmlAttribute> HtmlAttributes { get; set; } = new List<HtmlAttribute>();
     }
 }

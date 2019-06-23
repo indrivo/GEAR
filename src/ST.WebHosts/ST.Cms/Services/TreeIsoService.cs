@@ -12,6 +12,7 @@ using ST.Entities.Abstractions.Models.Tables;
 using ST.Cms.Services.Abstractions;
 using ST.Cms.ViewModels.TreeISOViewModels;
 using ST.Core;
+using ST.Core.Helpers.Comparers;
 
 namespace ST.Cms.Services
 {
@@ -57,7 +58,7 @@ namespace ST.Cms.Services
 			});
 			var tree = new List<TreeStandard>();
 			if (!standards.IsSuccess) return res;
-			foreach (var standard in standards.Result)
+			standards.Result.ToList().ForEach(async standard =>
 			{
 				tree.Add(new TreeStandard
 				{
@@ -65,7 +66,7 @@ namespace ST.Cms.Services
 					Categories = await LoadCategories(categoryEntity.Name, requirementEntity.Name, standard.Id, null),
 					Id = standard.Id
 				});
-			}
+			});
 
 			res.IsSuccess = true;
 			res.Result = tree;
@@ -181,7 +182,6 @@ namespace ST.Cms.Services
 		/// <returns></returns>
 		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid? parentCategoryId)
 		{
-			//x => x.ParentCategoryId == parentCategoryId && x.StandardId == standardId
 			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(null, new List<Filter>
 			{
 				new Filter
@@ -203,20 +203,16 @@ namespace ST.Cms.Services
 					Parameter = nameof(BaseModel.IsDeleted)
 				}
 			});
-			var resCats = new List<TreeCategory>();
-			foreach (var category in categories.Result.OrderBy(x => x.Number))
-			{
-				var cat = new TreeCategory
+
+			return categories.Result.OrderBy(x => (string)x.Number, new StringNumberComparer())
+				.Select(async category => new TreeCategory
 				{
 					Number = category.Number,
 					Name = category.Name,
 					Id = category.Id,
 					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),
 					Requirements = await LoadRequirements(requirementEntity, category.Id, null)
-				};
-				resCats.Add(cat);
-			}
-			return resCats;
+				}).Select(task => task.Result);
 		}
 
 
@@ -230,7 +226,6 @@ namespace ST.Cms.Services
 		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid? parentRequirementId)
 		{
 			var res = new List<TreeRequirement>();
-			//x => x.CategoryId == categoryId && x.ParentRequirementId == parentRequirementId
 			var requirements = await _service.Table(requirementEntity).GetAllWithInclude<dynamic>(null,
 				new List<Filter>
 				{

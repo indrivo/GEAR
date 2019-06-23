@@ -38,5 +38,7 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         /// Authentication type
         /// </summary>
         public AuthenticationType AuthenticationType { get; set; }
+
+        public  string CallBackUrl { get; set; }
     }
 }
