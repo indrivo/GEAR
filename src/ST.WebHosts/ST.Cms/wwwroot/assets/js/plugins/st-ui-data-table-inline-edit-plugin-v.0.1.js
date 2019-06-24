@@ -170,6 +170,16 @@ function getRowData(context) {
 			case "bool": {
 				obj[f.attr("data-prop-name")] = f.prop("checked");
 			} break;
+			case "uniqueidentifier":
+				{
+					const value = f.val();
+					if (!value) {
+						obj[f.attr("data-prop-name")] = "00000000-0000-0000-0000-000000000000";
+					} else {
+						obj[f.attr("data-prop-name")] = value;
+					}
+				}
+				break;
 		}
 	}
 	return obj;
@@ -200,7 +210,6 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 	const propId = column.config.column.tableModelFields.id;
 	const value = "";
 	const data = { tableId, entityName, propId, propName, allowNull, dataType, value };
-	console.log(data);
 	//create ui container element by field data type
 	switch (dataType) {
 		case "nvarchar":
@@ -418,9 +427,6 @@ TableInlineEdit.prototype.getReferenceEditCell = (conf) => {
 		if (data.is_success) {
 			const entityName = data.result.entityName;
 			let key = "Name";
-			if (entityName === "Users") {
-				key = "UserName";
-			}
 			$.each(data.result.data, function (index, obj) {
 				dropdown.options[dropdown.options.length] = new Option(obj[key], obj.Id);
 			});

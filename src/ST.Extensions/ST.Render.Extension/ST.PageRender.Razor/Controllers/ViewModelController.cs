@@ -86,7 +86,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (model.Id != Guid.Empty)
             {
-                var dataModel = _pagesContext.ViewModelFields.FirstOrDefault(x => x.Id.Equals(model.Id));
+                var dataModel = _pagesContext.ViewModelFields.Include(x => x.ViewModel).FirstOrDefault(x => x.Id.Equals(model.Id));
                 if (dataModel == null)
                 {
                     ModelState.AddModelError(string.Empty, "Invalid data entry!");
@@ -98,7 +98,7 @@ namespace ST.PageRender.Razor.Controllers
                 try
                 {
                     _pagesContext.SaveChanges();
-                    return RedirectToAction("OrderFields", new { dataModel.Id });
+                    return RedirectToAction("OrderFields", new { dataModel.ViewModel.Id });
                 }
                 catch (Exception ex)
                 {

@@ -319,6 +319,10 @@ $(document).ready(function () {
 			if (user && user.is_success) {
 				connection.invoke("OnLoad", user.result.id)
 					.catch(err => console.error(err.toString()));
+				$(window).bind("beforeunload",
+					function () {
+						connection.stop();
+					});
 			}
 		});
 	});

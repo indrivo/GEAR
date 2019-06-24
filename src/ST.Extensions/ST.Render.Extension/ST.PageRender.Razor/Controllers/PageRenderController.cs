@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -834,27 +835,39 @@ namespace ST.PageRender.Razor.Controllers
 
             var displayFormat = refProp.TableFieldConfigValues
                 .FirstOrDefault(x => x.TableFieldConfig.Code == TableFieldConfigCode.Reference.DisplayFormat);
-
-            var res = await _service.GetAll(entityRefName.Value, filters: new List<Filter>
+            var filters = new List<Filter>
             {
                 new Filter
                 {
                     Parameter = nameof(BaseModel.IsDeleted), Value = false, Criteria = Criteria.Equals
                 }
-            });
+            };
+
+            if (entityRefName.Value == "Users")
+            {
+                filters.Add(new Filter
+                {
+                    Value = CurrentUserTenantId, Criteria =  Criteria.Equals, Parameter = nameof(BaseModel.TenantId)
+                });
+            }
+
+            var res = await _service.GetAll(entityRefName.Value, filters: filters);
             if (res.IsSuccess)
             {
                 if (displayFormat != null)
                 {
-                    res.Result = res.Result.Select(x =>
+                    if (!string.IsNullOrEmpty(displayFormat.Value))
                     {
-                        var format = displayFormat.Value.Inject(x);
-                        if (x.ContainsKey("Name"))
-                            x["Name"] = format;
-                        else
-                            x.Add("Name", format);
-                        return x;
-                    });
+                        res.Result = res.Result.Select(x =>
+                        {
+                            var format = displayFormat.Value.Inject(x);
+                            if (x.ContainsKey("Name"))
+                                x["Name"] = format;
+                            else
+                                x.Add("Name", format);
+                            return x;
+                        });
+                    }
                 }
 
                 res.Result = res.Result.OrderBy(x => x.ContainsKey("Name") ? x["Name"] : x);
@@ -867,6 +880,24 @@ namespace ST.PageRender.Razor.Controllers
                 EntityName = entityRefName.Value
             };
             return Json(response);
+        }
+
+        /// <summary>
+        /// Tenant id
+        /// </summary>
+        protected Guid? CurrentUserTenantId
+        {
+            get
+            {
+                var tenantId = User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+                if (tenantId != null) return tenantId;
+                var user = _userManager.GetUserAsync(User).GetAwaiter().GetResult();
+                if (user == null) return null;
+                _userManager.AddClaimAsync(user, new Claim("tenant", user.TenantId.ToString())).GetAwaiter()
+                    .GetResult();
+                return user.TenantId;
+
+            }
         }
 
         /// <summary>

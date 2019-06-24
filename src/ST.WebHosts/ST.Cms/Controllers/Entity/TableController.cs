@@ -626,7 +626,7 @@ namespace ST.Cms.Controllers.Entity
 			}
 
 			var table = Context.Table.First(x => x.Id == id);
-			ITablesService sqlService = GetSqlService();
+			var sqlService = GetSqlService();
 			var checkColumn = sqlService.CheckTableValues(ConnectionString.Item2, table.Name, table.EntityType);
 			if (checkColumn.Result)
 			{

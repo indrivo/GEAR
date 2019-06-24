@@ -12,11 +12,10 @@ using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Abstractions;
 using ST.Core.BaseControllers;
-using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
-using ST.Core.Razor.TagHelpersStructures;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Identity.Data;
+using ST.MultiTenant.Razor.Settings;
 using ST.MultiTenant.Razor.ViewModels;
 using ST.Notifications.Abstractions;
 
@@ -31,76 +30,26 @@ namespace ST.MultiTenant.Razor.Controllers
         /// </summary>
         private readonly IOrganizationService<Tenant> _organizationService;
 
+        private readonly MultiTenantListSettings _listSettings;
+
         public CompanyManageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
+            _listSettings = new MultiTenantListSettings();
         }
 
         public override IActionResult Index()
         {
+            var user = GetCurrentUser();
+            ViewBag.UserRoles = string.Join(", ", UserManager.GetRolesAsync(user).GetAwaiter().GetResult());
+            ViewBag.User = user;
+            ViewBag.UsersListSettings = _listSettings.GetCompanyUserListSettings();
             return base.Index();
         }
 
         public virtual IActionResult Users()
         {
-            var model = new ListTagHelperModel
-            {
-                Title = "Manage my company users",
-                SubTitle = "This is the list of your company users",
-                ListIdentifier = "manageCompanyUsers",
-                Api = new ListApiConfigurationViewModel
-                {
-                    Url = Url.Action("LoadPageItems")
-                },
-                RenderColumns = new List<ListRenderColumn> {
-            new ListRenderColumn(Localizer["name"], "userName"),
-            new ListRenderColumn(Localizer["roles"], "roles")
-            {
-                StyleAttributes = new List<InlineStyleAttribute>
-                {
-                    new InlineStyleAttribute("width", "300px")
-                }
-            },
-            new ListRenderColumn(Localizer["created"], "created"),
-            new ListRenderColumn(Localizer["author"], "author")
-        },
-                HeadButtons = new List<UrlTagHelperViewModel> {
-            new UrlTagHelperViewModel
-            {
-                AspAction = "Create",
-                AspController = "CompanyManage",
-                ButtonName = "Add new user to company",
-                Description = "New user will be added to company"
-            }
-        },
-                HasActions = true,
-                ListActions = new List<ListActionViewModel>{
-             new ListActionViewModel
-             {
-                 HasIcon = false,
-                 Name = Localizer["edit"],
-                 Url = Url.Action("LoadPageItems"),
-                 ButtonType = BootstrapButton.Primary
-             },
-            new ListActionViewModel
-            {
-                HasIcon = false,
-                Name = Localizer["system_user_change_password"],
-                Url = "/Users/ChangeUserPassword",
-                ActionParameters = new List<ActionParameter>
-                {
-                    new ActionParameter("userId", "id"),
-                    new ActionParameter("callBackUrl", "/CompanyManage/Users")
-                    {
-                        IsCustomValue = true
-                    }
-                },
-                ButtonType = BootstrapButton.Danger
-            }
-         },
-                Documentation = "This page allow to manage only your company users"
-            };
-            return View(model);
+            return View(_listSettings.GetCompanyUserListSettings());
         }
 
         /// <inheritdoc />

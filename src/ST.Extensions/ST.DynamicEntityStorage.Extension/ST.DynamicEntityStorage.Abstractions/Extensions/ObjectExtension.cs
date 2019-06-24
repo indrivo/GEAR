@@ -45,20 +45,23 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
                 var method = dynamicObject.Service.GetType().GetMethod(call.ToString())
                     ?.MakeGenericMethod(types?.ToArray() ?? new[] { typeof(object) });
 
-                if (method != null)
+                if (method == null)
                 {
-                    var task = (Task)method.Invoke(dynamicObject.Service, parameters?.ToArray());
-                    task.Wait();
-                    var res = ((dynamic)task).Result;
-                    result.Result = res.Result;
+                    throw new Exception("Method not supported!");
                 }
+                var task = (Task)method.Invoke(dynamicObject.Service, parameters?.ToArray());
+                Task.WaitAll(task);
+                var res = ((dynamic)task).Result;
+                result.IsSuccess = res.IsSuccess;
+                result.Errors = res.Errors;
+                result.Result = res.Result;
 
-                result.IsSuccess = true;
                 return result;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
+                result.Errors.Add(new ErrorModel(nameof(Exception), e.Message));
                 return result;
             }
         }

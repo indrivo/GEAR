@@ -16,6 +16,7 @@ namespace ST.PageRender.Abstractions.Models.ViewModels
     public class ViewModelFields : BaseModel
     {
         public string Name { get; set; }
+        public ViewModel ViewModel { get; set; }
         public Guid ViewModelId { get; set; }
         public TableModelField TableModelFields { get; set; }
         public Guid? TableModelFieldsId { get; set; }

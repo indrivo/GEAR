@@ -59,6 +59,7 @@ namespace ST.Notifications.Hubs
         {
             return _connections.Count(x => x.UserId.Equals(userId));
         }
+
         /// <summary>
         /// Remove connection
         /// </summary>
@@ -70,6 +71,7 @@ namespace ST.Notifications.Hubs
             var toRemove = _connections.FirstOrDefault(x => x.ConnectionId.Equals(connection));
             _connections.Remove(toRemove);
         }
+
         /// <summary>
         /// Count of connections
         /// </summary>
