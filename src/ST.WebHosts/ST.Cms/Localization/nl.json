@@ -328,5 +328,7 @@
   "iso_menu_control_content": "De content control",
   "iso_control": "Controle",
   "iso_control_objective": "Het doel",
-  "iso_control_content_field": "Controle inhoud"
+  "iso_control_content_field": "Controle inhoud",
+  "iso_processes": "Processen",
+  "iso_locations": "Locaties"
 }

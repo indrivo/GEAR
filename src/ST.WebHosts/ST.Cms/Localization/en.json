@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Objective and Content controls",
   "iso_control": "Control",
   "iso_control_objective": "The goal",
-  "iso_control_content_field": "Control content"
+  "iso_control_content_field": "Control content",
+  "iso_processes": "Processes",
+  "iso_locations": "Locations"
 }

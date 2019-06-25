@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Der content-Kontrolle",
   "iso_control": "Kontrolle",
   "iso_control_objective": "Das Ziel",
-  "iso_control_content_field": "Inhalt kontrollieren"
+  "iso_control_content_field": "Inhalt kontrollieren",
+  "iso_processes": "Prozesse",
+  "iso_locations": "Standorte"
 }

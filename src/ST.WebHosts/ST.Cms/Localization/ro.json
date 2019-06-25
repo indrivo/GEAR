@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Obiectiv si Conținut controale",
   "iso_control": "Control",
   "iso_control_objective": "Obiectiv",
-  "iso_control_content_field": "Conținut control"
+  "iso_control_content_field": "Conținut control",
+  "iso_processes": "Procese",
+  "iso_locations": "Locații"
 }

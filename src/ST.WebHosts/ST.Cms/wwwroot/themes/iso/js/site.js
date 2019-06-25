@@ -125,9 +125,9 @@ if (typeof TableBuilder !== 'undefined') {
 	TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dataX) {
 		return `${dataX.hasDeleteRestore
 			? `${row.isDeleted
-				? `<a href="javascript:void(0)" onclick="new TableBuilder().restoreItem('${row.id
+				? `<a title="${window.translate("restore")}" href="javascript:void(0)" onclick="new TableBuilder().restoreItem('${row.id
 				}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">restore</i></a>`
-				: `<a href="javascript:void(0)" onclick="new TableBuilder().deleteItem('${row.id
+				: `<a title="${window.translate("delete")}" href="javascript:void(0)" onclick="new TableBuilder().deleteItem('${row.id
 				}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">delete</i></a>`}`
 			: ``}`;
 	};
@@ -136,7 +136,7 @@ if (typeof TableBuilder !== 'undefined') {
 	TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
 		if (row.isDeleted) return "";
 		return `${dataX.hasInlineEdit
-			? `	<a class="inline-edit" data-viewmodel="${dataX.viewmodelData.result.id
+			? `	<a title="${window.translate("edit")}" class="inline-edit" data-viewmodel="${dataX.viewmodelData.result.id
 			}" href="javascript:void(0)"><i class="material-icons">edit</i></a>`
 			: ``}`;
 	};

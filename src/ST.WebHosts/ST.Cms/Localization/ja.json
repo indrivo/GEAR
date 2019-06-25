@@ -328,5 +328,7 @@
   "iso_menu_control_content": "のコンテンツ管理",
   "iso_control": "制御",
   "iso_control_objective": "の目標",
-  "iso_control_content_field": "制御コンテンツ"
+  "iso_control_content_field": "制御コンテンツ",
+  "iso_processes": "プロセス",
+  "iso_locations": "場所"
 }

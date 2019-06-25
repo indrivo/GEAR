@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Цели и Контент управления",
   "iso_control": "Контроль",
   "iso_control_objective": "Цель",
-  "iso_control_content_field": "Контроль содержания"
+  "iso_control_content_field": "Контроль содержания",
+  "iso_processes": "Процессы",
+  "iso_locations": "Места"
 }

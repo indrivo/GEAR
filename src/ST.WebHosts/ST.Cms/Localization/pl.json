@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Spis treści kontrolnego",
   "iso_control": "Kontrola",
   "iso_control_objective": "Celem",
-  "iso_control_content_field": "Kontrola zawartości"
+  "iso_control_content_field": "Kontrola zawartości",
+  "iso_processes": "Procesy",
+  "iso_locations": "Miejsca"
 }

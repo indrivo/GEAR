@@ -328,5 +328,7 @@
   "iso_menu_control_content": "内容控制",
   "iso_control": "控制",
   "iso_control_objective": "我们的目标",
-  "iso_control_content_field": "控制内容"
+  "iso_control_content_field": "控制内容",
+  "iso_processes": "进程",
+  "iso_locations": "位置"
 }

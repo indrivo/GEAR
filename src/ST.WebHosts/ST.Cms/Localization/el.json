@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Το στοιχείο ελέγχου περιεχομένου",
   "iso_control": "Έλεγχος",
   "iso_control_objective": "Ο στόχος",
-  "iso_control_content_field": "Έλεγχος περιεχομένου"
+  "iso_control_content_field": "Έλεγχος περιεχομένου",
+  "iso_processes": "Διαδικασίες",
+  "iso_locations": "Θέσεις"
 }

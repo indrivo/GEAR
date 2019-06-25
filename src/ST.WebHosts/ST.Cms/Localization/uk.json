@@ -328,5 +328,7 @@
   "iso_menu_control_content": "Зміст контрольної",
   "iso_control": "Контроль",
   "iso_control_objective": "Мета",
-  "iso_control_content_field": "Контроль вмісту"
+  "iso_control_content_field": "Контроль вмісту",
+  "iso_processes": "Процеси",
+  "iso_locations": "Місця"
 }

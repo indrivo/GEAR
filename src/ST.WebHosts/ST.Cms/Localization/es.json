@@ -328,5 +328,7 @@
   "iso_menu_control_content": "El control de contenido",
   "iso_control": "Control",
   "iso_control_objective": "El objetivo",
-  "iso_control_content_field": "El Control de los contenidos"
+  "iso_control_content_field": "El Control de los contenidos",
+  "iso_processes": "Los procesos de",
+  "iso_locations": "Ubicaciones"
 }
