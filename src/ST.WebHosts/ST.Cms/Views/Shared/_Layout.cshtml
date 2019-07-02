@@ -22,6 +22,7 @@
 	<body class="fix-header fix-sidebar card-no-border">
 		<application layout-id="@layoutId">
 			@RenderBody()
+			<script src="~/assets/js/plugins/st-data-data-injector-v.0.1.js" asp-append-version="true"></script>
 			<partial name="_LayoutScriptPartial" model="layoutId" />
 			<partial name="_FormModuleLayoutScripts" />
 			<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>

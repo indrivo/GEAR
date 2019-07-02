@@ -153,8 +153,8 @@ if (typeof TableBuilder !== 'undefined') {
 		const customReplace = new Array();
 		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
 		customReplace.push({ Key: "processing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
-		const searialData = JSON.stringify(customReplace);
-		return searialData;
+		const serialData = JSON.stringify(customReplace);
+		return serialData;
 	};
 }
 
@@ -230,6 +230,7 @@ function makeMenuActive(target) {
 }
 
 $(document).ready(function () {
+	window.forceTranslate();
 	//Log Out
 	$('.sa-logout').click(function () {
 		swal({
@@ -380,8 +381,8 @@ End Pre Loader Removal After Page Load
 "use strict";
 
 /************************************************
-Page Pre Loader Removal After Page Load
-************************************************/
+ Page Pre Loader Removal After Page Load
+ ************************************************/
 
 var PreLoader;
 
@@ -394,42 +395,35 @@ $(window).on("load", function () {
 });
 
 
-
-
-
-
 /* Dom Ready */
 (function ($) {
 
 	"use strict";
 
+	const $body = $('body');
 
 	/* Initialize Tooltip */
 	$('[data-toggle="tooltip"]').tooltip();
-
 
 
 	/* Initialize Popover */
 	$('[data-toggle="popover"]').popover();
 
 
-
 	/* Initialize Lightbox */
-	$('body').delegate('[data-toggle="lightbox"]', 'click', function (event) {
+	$body.delegate('[data-toggle="lightbox"]', 'click', function (event) {
 		event.preventDefault();
 		$(this).ekkoLightbox();
 	});
 
 
-
-
-	/************************************************
-	Append Preloader (use in ajax call)
-	************************************************/
-	$('body').delegate('.append-preloader', 'click', function () {
+    /************************************************
+     Append Preloader (use in ajax call)
+     ************************************************/
+	$body.delegate('.append-preloader', 'click', function () {
 
 		$(PreLoader).show();
-		$('body').append(PreLoader);
+		$body.append(PreLoader);
 		setTimeout(function () {
 
 			$('.loader-wrapper').fadeOut(1000, function () {
@@ -441,10 +435,10 @@ $(window).on("load", function () {
 	});
 
 
-	/************************************************
-	Toggle Preloader in card or box
-	************************************************/
-	$('body').delegate('[data-toggle="loader"]', 'click', function () {
+    /************************************************
+     Toggle Preloader in card or box
+     ************************************************/
+	$body.delegate('[data-toggle="loader"]', 'click', function () {
 
 		var target = $(this).attr('data-target');
 		$('#' + target).show();
@@ -452,11 +446,10 @@ $(window).on("load", function () {
 	});
 
 
-
-	/************************************************
-	Toggle Sidebar Nav
-	************************************************/
-	$('body').delegate('.toggle-sidebar', 'click', function () {
+    /************************************************
+     Toggle Sidebar Nav
+     ************************************************/
+	$body.delegate('.toggle-sidebar', 'click', function () {
 		$('.sidebar').toggleClass('collapsed');
 
 		if (localStorage.getItem("asideMode") === 'collapsed') {
@@ -468,7 +461,7 @@ $(window).on("load", function () {
 	});
 
 	var p;
-	$('body').delegate('.hide-sidebar', 'click', function () {
+	$body.delegate('.hide-sidebar', 'click', function () {
 		if (p) {
 			p.prependTo(".wrapper");
 			p = null;
@@ -480,27 +473,21 @@ $(window).on("load", function () {
 	$.fn.setAsideMode = function () {
 		if (localStorage.getItem("asideMode") === null) {
 
-		}
-		else if (localStorage.getItem("asideMode") === 'collapsed') {
+		} else if (localStorage.getItem("asideMode") === 'collapsed') {
 			$('.sidebar').addClass('collapsed');
-		}
-		else {
+		} else {
 			$('.sidebar').removeClass('collapsed');
 		}
-	}
+	};
 	if ($(window).width() > 768) {
 		$.fn.setAsideMode();
 	}
 
 
-
-
-
-
-	/************************************************
-Sidebar Nav Accordion
-************************************************/
-	$('body').delegate('.navigation li:has(.sub-nav) > a', 'click', function () {
+    /************************************************
+     Sidebar Nav Accordion
+     ************************************************/
+	$body.delegate('.navigation li:has(.sub-nav) > a', 'click', function () {
 		/*$('.navigation li').removeClass('open');*/
 		$(this).siblings('.sub-nav').slideToggle();
 		$(this).parent().toggleClass('open');
@@ -508,20 +495,15 @@ Sidebar Nav Accordion
 	});
 
 
-
-
-	/************************************************
-	Sidebar Colapsed state submenu position
-	************************************************/
-	$('body').delegate('.navigation ul li:has(.sub-nav)', 'mouseover', function () {
-
+    /************************************************
+     Sidebar Colapsed state submenu position
+     ************************************************/
+	$body.find('.navigation ul li:has(.sub-nav)').on('click', function () {
 		if ($(".sidebar").hasClass("collapsed")) {
-
-			var $menuItem = $(this),
+			const $menuItem = $(this),
 				$submenuWrapper = $('> .sub-nav', $menuItem);
-
 			// grab the menu item's position relative to its positioned parent
-			var menuItemPos = $menuItem.position();
+			const menuItemPos = $menuItem.position();
 
 			// place the submenu in the correct position relevant to the menu item
 			$submenuWrapper.css({
@@ -529,28 +511,20 @@ Sidebar Nav Accordion
 				left: menuItemPos.left + $menuItem.outerWidth()
 			});
 		}
-
 	});
 
-
-
-
-	/************************************************
-	Toggle Controls on small devices
-	************************************************/
-	$('body').delegate('.toggle-controls', 'click', function () {
+    /************************************************
+     Toggle Controls on small devices
+     ************************************************/
+	$body.delegate('.toggle-controls', 'click', function () {
 		$('.controls-wrapper').toggle().toggleClass('d-none');
 	});
 
 
-
-
-
-
-	/************************************************
-	Toast Messages
-	************************************************/
-	$('body').delegate('[data-toggle="toast"]', 'click', function () {
+    /************************************************
+     Toast Messages
+     ************************************************/
+	$body.delegate('[data-toggle="toast"]', 'click', function () {
 
 		var dataAlignment = $(this).attr('data-alignment');
 		var dataPlacement = $(this).attr('data-placement');
@@ -559,23 +533,17 @@ Sidebar Nav Accordion
 
 
 		if ($('.toast.' + dataAlignment + '-' + dataPlacement).length) {
-
 			$('.toast.' + dataAlignment + '-' + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
-
-		}
-		else {
-			$('body').append('<div class="toast ' + dataAlignment + '-' + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
+		} else {
+			$body.append('<div class="toast ' + dataAlignment + '-' + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
 		}
 
 	});
 
 
-
-
-
-	/**************************************
-	Chosen Form Control
-	**************************************/
+    /**************************************
+     Chosen Form Control
+     **************************************/
 	$('.form-control-chosen').chosen({
 		allow_single_deselect: true,
 		width: '100%'
@@ -607,13 +575,9 @@ Sidebar Nav Accordion
 	});
 
 
-
-
-
-
-	/*****************************************
-	Themer Changer with local storage
-	*****************************************/
+    /*****************************************
+     Themer Changer with local storage
+     *****************************************/
 
 	$.fn.removeClassStartingWith = function (filter) {
 		$(this).removeClass(function (index, className) {
@@ -623,7 +587,7 @@ Sidebar Nav Accordion
 	};
 
 
-	$('body').delegate('.theme-changer', 'click', function () {
+	$body.delegate('.theme-changer', 'click', function () {
 		var primaryColor = $(this).attr('primary-color');
 		var sidebarBg = $(this).attr('sidebar-bg');
 		var logoBg = $(this).attr('logo-bg');
@@ -638,22 +602,18 @@ Sidebar Nav Accordion
 	});
 
 
-
 	$.fn.setThemeTone = function (primaryColor) {
 
 		if (localStorage.getItem("primaryColor") === null) {
 
-		}
-		else {
+		} else {
 
 			/* SIDEBAR */
 			if (localStorage.getItem("sidebarBg") === "light") {
 				$('.sidebar ').addClass('sidebar-light');
-			}
-			else {
+			} else {
 				$('.sidebar').removeClass('sidebar-light');
 			}
-
 
 
 			/* PRIMARY COLOR */
@@ -673,32 +633,28 @@ Sidebar Nav Accordion
 			}
 
 
-
 			/* HEADER */
 			if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
 				$('.header .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-dark').addClass('navbar-light bg-' + localStorage.getItem("headerBg"));
-			}
-			else {
+			} else {
 				$('.header .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-light').addClass('navbar-dark bg-' + localStorage.getItem("headerBg"));
 			}
 
 		}
 
 
+	};
 
-	}
 
 	$.fn.setThemeTone();
+
 
 })(jQuery);
 
 
-
-
-
 /*****************************************
-Full Screen Toggle
-*****************************************/
+ Full Screen Toggle
+ *****************************************/
 function toggleFullScreen() {
 	if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
 		if (document.documentElement.requestFullScreen) {
@@ -718,6 +674,11 @@ function toggleFullScreen() {
 		}
 	}
 }
+
+
+
+
+
 
 
 

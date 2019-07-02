@@ -53,8 +53,8 @@ namespace ST.PageRender.Razor.Services
             if (cache == null || cache.Count == 0)
             {
                 var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id));
-                await _cacheService.Set("_menus_central", search.Result);
                 menus = search.Result.ToList();
+                await _cacheService.Set("_menus_central", search.Result);
             }
             else
             {
@@ -72,7 +72,7 @@ namespace ST.PageRender.Razor.Services
             return new ResultModel<IEnumerable<MenuViewModel>>
             {
                 IsSuccess = true,
-                Result = GetMenu(menus, roles)
+                Result = GetMenu(menus, roles).OrderBy(x => x.Order).ToList()
             };
         }
 
@@ -91,7 +91,7 @@ namespace ST.PageRender.Razor.Services
 
             foreach (var t in data)
             {
-                t.Children = GetMenu(menus, roles, t.Id).ToArray();
+                t.Children = GetMenu(menus, roles, t.Id).OrderBy(x => x.Order).ToArray();
             }
             return data;
         }

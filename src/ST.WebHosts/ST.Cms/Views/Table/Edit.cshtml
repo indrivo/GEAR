@@ -125,7 +125,18 @@
 			new ListActionViewModel
 			{
 				HasIcon = false,
-				Name = "OrderFields",
+				Name = Localizer["system_field_mapping"],
+				Url = Url.Action("FieldsMapping", "ViewModel"),
+				ButtonType = BootstrapButton.Danger,
+				ActionParameters = new List<ActionParameter>
+				{
+					new ActionParameter("viewModelId", "id")
+				}
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["order_viewmodel_fields"],
 				Url = Url.Action("OrderFields", "ViewModel"),
 				ButtonType = BootstrapButton.Primary,
 				ActionParameters = new List<ActionParameter>

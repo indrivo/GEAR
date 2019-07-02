@@ -21,5 +21,7 @@ namespace ST.PageRender.Abstractions
         DbSet<ViewModel> ViewModels { get; set; }
         DbSet<ViewModelFields> ViewModelFields { get; set; }
         DbSet<RolePagesAcl> RolePagesAcls { get; set; }
+        DbSet<ViewModelFieldCode> ViewModelFieldCodesCodes { get; set; }
+        DbSet<ViewModelFieldConfiguration> ViewModelFieldConfigurations { get; set; }
     }
 }

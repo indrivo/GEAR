@@ -256,7 +256,7 @@ namespace ST.PageRender.Razor.Controllers
             var finalResult = new DTResult<MenuItem>
             {
                 Draw = param.Draw,
-                Data = filtered.Item1,
+                Data = filtered.Item1.OrderBy(x => x.Order).ToList(),
                 RecordsFiltered = filtered.Item2,
                 RecordsTotal = filtered.Item1.Count()
             };

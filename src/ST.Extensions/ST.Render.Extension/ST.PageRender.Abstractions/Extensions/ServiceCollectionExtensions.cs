@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core.Helpers;
+using ST.PageRender.Abstractions.Events;
 
 namespace ST.PageRender.Abstractions.Extensions
 {
@@ -11,6 +12,7 @@ namespace ST.PageRender.Abstractions.Extensions
             where TPageContext : DbContext, IDynamicPagesContext
         {
             Arg.NotNull(services, nameof(services));
+            SystemEvents.RegisterEvents();
             IDynamicPagesContext ContextFactory(IServiceProvider x)
             {
                 var context = x.GetService<TPageContext>();

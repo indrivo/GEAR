@@ -20,5 +20,15 @@ namespace ST.Core.Extensions
             }
             return context;
         }
+
+        public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, int index, T value)
+        {
+            var current = 0;
+            foreach (var item in enumerable)
+            {
+                yield return current == index ? value : item;
+                current++;
+            }
+        }
     }
 }

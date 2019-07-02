@@ -9,10 +9,11 @@ namespace ST.DynamicEntityStorage.Abstractions.Helpers
 
         }
 
-        public Filter(string parameter, string value)
+        public Filter(string parameter, object value, Criteria criteria = Criteria.Equals)
         {
             this.Parameter = parameter;
             this.Value = value;
+            this.Criteria = criteria;
         }
 
         public Criteria Criteria { get; set; } = Criteria.Equals;

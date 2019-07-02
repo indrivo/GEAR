@@ -122,7 +122,7 @@ namespace ST.Entities.EntityBuilder.Postgres.Controls.Query
         public override string CheckColumnValues(string tableName, string tableSchema, string columnName)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat("  SELECT * FROM \"{1}\".\"{0}\" WHERE {2} is not null", tableName, tableSchema, columnName);
+            sql.AppendFormat(" SELECT * FROM \"{1}\".\"{0}\" WHERE \"{2}\" is not null", tableName, tableSchema, columnName);
             return sql.ToString();
         }
 
@@ -184,15 +184,15 @@ namespace ST.Entities.EntityBuilder.Postgres.Controls.Query
         public override string DropColumn(string tableName, string columnName, string tableSchema)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat("ALTER TABLE \"{2}\".\"{0}\" DROP COLUMN {1}", tableName, columnName, tableSchema);
+            sql.AppendFormat("ALTER TABLE \"{2}\".\"{0}\" DROP COLUMN \"{1}\"", tableName, columnName, tableSchema);
             return sql.ToString();
         }
 
         public override string DropConstraint(string tableName, string constraint, string columnName, string tableSchema)
         {
             var sql = new StringBuilder();
-            var contraint = "FK_" + constraint + "_" + columnName;
-            sql.AppendFormat("ALTER TABLE \"{2}\".\"{0}\" DROP constraint  {1}", tableName, contraint, tableSchema);
+            constraint = "FK_" + constraint + "_" + columnName;
+            sql.AppendFormat("ALTER TABLE \"{2}\".\"{0}\" DROP constraint  {1}", tableName, constraint, tableSchema);
             return sql.ToString();
         }
 

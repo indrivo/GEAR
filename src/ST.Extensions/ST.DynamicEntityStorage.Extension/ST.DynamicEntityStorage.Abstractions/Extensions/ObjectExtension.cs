@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Mapster;
 using Newtonsoft.Json;
@@ -18,10 +19,12 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         AddWithReflection,
         UpdateWithReflection,
         Delete,
+        DeletePermanent,
         Restore,
         GetTableConfigurations,
         AddDataRangeWithReflection,
-        Any
+        Any,
+        FirstOrDefault
     }
 
     /// <summary>
@@ -151,7 +154,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             return result;
         });
 
-        /// <summary>0
+        /// <summary>
         /// Get By id
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
@@ -182,6 +185,21 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
        });
 
         /// <summary>
+        /// Get By id
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static Task<ResultModel<TEntity>> FirstOrDefault<TEntity>(this DynamicObject obj, Expression<Func<TEntity, bool>> predicate)
+            => Task.Run(() =>
+            {
+                var req = obj.Invoke<TEntity>(MethodName.FirstOrDefault, new List<Type> { obj.Type },
+                    new List<object> { predicate });
+                return req;
+            });
+
+        /// <summary>
         /// Delete item
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
@@ -200,6 +218,26 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
            result.Result = req.Result.Adapt<Guid>();
            return result;
        });
+
+        /// <summary>
+        /// Delete item
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static Task<ResultModel<Guid>> DeletePermanent<TEntity>(this DynamicObject obj, Guid id)
+            => Task.Run(() =>
+            {
+                var result = new ResultModel<Guid>();
+                if (id == Guid.Empty) return result;
+                var req = obj.Invoke<TEntity>(MethodName.DeletePermanent, new List<Type> { obj.Type },
+                    new List<object> { id });
+                if (!req.IsSuccess) return result;
+                result.IsSuccess = true;
+                result.Result = req.Result.Adapt<Guid>();
+                return result;
+            });
 
         /// <summary>
         /// Delete item

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,6 +32,7 @@ using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core.Extensions;
+using ST.Core.Helpers.DbContexts;
 using ST.Entities;
 using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
@@ -133,11 +135,13 @@ namespace ST.Cms
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
 
-			//-------------------------Register on app start event-------------------------------------
+			//-------------------------Register on app events-------------------------------------
 			lifetime.ApplicationStarted.Register(() =>
 			{
 				Installation.Application.OnApplicationStarted(app);
 			});
+
+			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
 
 			if (env.IsProduction())
 			{
@@ -166,13 +170,10 @@ namespace ST.Cms
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
 
-			services.AddDbContext<EntitiesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration, HostingEnvironment);
-			});
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
 			});
 
 			//------------------------------Identity Module-------------------------------------
@@ -214,6 +215,11 @@ namespace ST.Cms
 			});
 			//---------------------------------------Entity Module-------------------------------------
 			services.AddEntityModule<EntitiesDbContext, EntityRepository, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
+			services.AddDbContext<EntitiesDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
+			}, ServiceLifetime.Transient);
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -251,6 +257,7 @@ namespace ST.Cms
 			services.AddDbContext<FormDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
 			});
 
 			services.AddFormStaticFilesModule();
@@ -261,14 +268,18 @@ namespace ST.Cms
 			services.AddDbContext<DynamicPagesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
+				var factoryOptions = new DbContextOptionsBuilder<EntitiesDbContext>();
+				factoryOptions.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
+				DbContextFactory<DynamicPagesDbContext, EntitiesDbContext>.Options = factoryOptions;
 			});
-
 
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
 			services.AddDbContext<DynamicReportDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration, HostingEnvironment);
+					options.EnableSensitiveDataLogging();
 				});
 
 			//---------------------------------Custom cache Module-------------------------------------

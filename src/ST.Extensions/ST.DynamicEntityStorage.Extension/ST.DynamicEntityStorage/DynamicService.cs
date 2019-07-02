@@ -22,6 +22,7 @@ using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions;
+using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
@@ -366,7 +367,7 @@ namespace ST.DynamicEntityStorage
                 .FirstOrDefault(x => x.Name == entity);
             if (table == null) return listWithoutInclude;
             var fieldReferences = table.TableFields
-                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == "3000")).ToList();
+                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return listWithoutInclude;
             foreach (var item in listWithoutInclude.Result)
             {
@@ -394,7 +395,7 @@ namespace ST.DynamicEntityStorage
             foreach (var reference in fieldReferences)
             {
                 var tableName = reference.TableFieldConfigValues
-                    .FirstOrDefault(x => x.TableFieldConfig.Code == "3000")?.Value;
+                    .FirstOrDefault(x => x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)?.Value;
                 if (!item.ContainsKey(reference.Name)) continue;
                 var refId = item[reference.Name];
                 if (refId == null)
@@ -493,7 +494,7 @@ namespace ST.DynamicEntityStorage
                 .FirstOrDefault(x => x.Name == entity);
             if (table == null) return obj;
             var fieldReferences = table.TableFields
-                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == "3000")).ToList();
+                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return obj;
             var includes = await IncludeSingleForDictionaryObjectAsync(obj.Result, fieldReferences);
             if (includes.Any())

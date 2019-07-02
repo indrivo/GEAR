@@ -146,8 +146,6 @@ function addNewItem() {
 		});
 		new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
 	}
-
-	//TODO: Finish add inline edit
 }
 
 function cancelTableAddMode(ctx) {

@@ -18,11 +18,14 @@ using ST.PageRender.Razor.ViewModels.PageViewModels;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.BaseControllers;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
 using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Events;
+using ST.PageRender.Abstractions.Events.EventArgs;
 using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Abstractions.Models.PagesACL;
 using ST.PageRender.Razor.Helpers;
@@ -299,6 +302,11 @@ namespace ST.PageRender.Razor.Controllers
             {
                 _pagesContext.Pages.Add(page);
                 _pagesContext.SaveChanges();
+                SystemEvents.Pages.PageCreated(new PageCreatedEventArgs
+                {
+                    PageId = page.Id,
+                    PageName = page.Settings.Name
+                });
             }
             catch (Exception e)
             {
@@ -389,21 +397,25 @@ namespace ST.PageRender.Razor.Controllers
                 settings.Changed = DateTime.Now;
                 settings.Title = model.Title;
 
-                try
+                var dbResult = await _pagesContext.SaveDependenceAsync();
+                if (dbResult.IsSuccess)
                 {
                     _pagesContext.PageSettings.Update(settings);
                     _pagesContext.Pages.Update(page);
                     await _pagesContext.SaveChangesAsync();
                     RemovePageFromCache(page.Id);
+                    SystemEvents.Pages.PageUpdated(new PageCreatedEventArgs
+                    {
+                        PageId = page.Id,
+                        PageName = page.Settings?.Name
+                    });
+
                     return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
                 }
-                catch (Exception e)
-                {
-                    model.PageTypes = _pagesContext.PageTypes.ToList();
-                    model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
-                    ModelState.AddModelError(string.Empty, e.Message);
-                    return View(model);
-                }
+                model.PageTypes = _pagesContext.PageTypes.ToList();
+                model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+                ModelState.AppendResultModelErrors(dbResult.Errors);
+                return View(model);
             }
 
             ModelState.AddModelError(string.Empty, "Invalid data input");
@@ -491,7 +503,7 @@ namespace ST.PageRender.Razor.Controllers
         [Route("api/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult Delete(string id)
+        public async Task<JsonResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete page!", success = false });
             var page = _pagesContext.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
@@ -499,17 +511,16 @@ namespace ST.PageRender.Razor.Controllers
             if (page.IsSystem) return Json(new { message = "Fail to delete system page!", success = false });
             _pagesContext.Pages.Remove(page);
 
-            try
+            var dbResult = await _pagesContext.SaveDependenceAsync();
+            if (!dbResult.IsSuccess) return Json(new {message = "Fail to delete form!", success = false});
+            SystemEvents.Pages.PageDeleted(new PageCreatedEventArgs
             {
-                _pagesContext.SaveChanges();
-                RemovePageFromCache(page.Id);
-                return Json(new { message = "Page was delete with success!", success = true });
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-            return Json(new { message = "Fail to delete form!", success = false });
+                PageId = page.Id,
+                PageName = page.Settings?.Name
+            });
+            RemovePageFromCache(page.Id);
+            return Json(new { message = "Page was delete with success!", success = true });
+
         }
 
         /// <summary>

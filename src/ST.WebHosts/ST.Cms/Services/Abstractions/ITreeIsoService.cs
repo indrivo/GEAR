@@ -13,5 +13,9 @@ namespace ST.Cms.Services.Abstractions
 
 		Task<ResultModel<Guid>> AddOrUpdateStandardRequirementCompleteText(Guid requirementId, Guid? fillRequirementId,
 			string value);
+
+		Task<ResultModel<IEnumerable<ControlRootTree>>> GetControlStructureTree();
+
+		Task<IEnumerable<ControlResponsible>> GetControlResponsibilesAsync(Guid controlDetailId);
 	}
 }

@@ -65,6 +65,9 @@ namespace ST.Cms.Controllers.Custom
 			return Json(result);
 		}
 
+		public async Task<JsonResult> GetControlStructure()
+			=> Json(await _isoService.GetControlStructureTree());
+
 		/// <summary>
 		/// Add or update requirement fulfillment
 		/// </summary>
@@ -75,5 +78,21 @@ namespace ST.Cms.Controllers.Custom
 		[HttpPost]
 		public async Task<JsonResult> AddOrUpdateStandardRequirementCompleteText([Required]Guid requirementId,
 			Guid? fillRequirementId, string value) => Json(await _isoService.AddOrUpdateStandardRequirementCompleteText(requirementId, fillRequirementId, value));
+
+		/// <summary>
+		/// Get iso responsibiles from control details 
+		/// </summary>
+		/// <param name="controlDetailsId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		public async Task<JsonResult> GetControlResponsibilesAsync([Required] Guid controlDetailsId)
+		{
+			var data = await _isoService.GetControlResponsibilesAsync(controlDetailsId);
+			return Json(new ResultModel
+			{
+				IsSuccess = true,
+				Result = data
+			});
+		}
 	}
 }

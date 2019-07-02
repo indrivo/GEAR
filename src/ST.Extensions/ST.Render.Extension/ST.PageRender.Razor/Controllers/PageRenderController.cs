@@ -32,6 +32,8 @@ using ST.Entities.Abstractions.Constants;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Configurations;
+using ST.PageRender.Abstractions.Models.ViewModels;
 using ST.PageRender.Razor.Attributes;
 
 namespace ST.PageRender.Razor.Controllers
@@ -446,6 +448,8 @@ namespace ST.PageRender.Razor.Controllers
                 .ThenInclude(x => x.TableFields)
                 .Include(x => x.ViewModelFields)
                 .ThenInclude(x => x.TableModelFields)
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.Configurations)
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(default(DTResult<object>));
@@ -479,15 +483,49 @@ namespace ST.PageRender.Razor.Controllers
                 param.Start,
                 param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin));
 
+            var final = await LoadManyToManyReferences(data, viewModel);
+
             var finalResult = new DTResult<object>
             {
                 Draw = param.Draw,
-                Data = data,
+                Data = final.ToList(),
                 RecordsFiltered = recordsCount,
-                RecordsTotal = data.Count()
+                RecordsTotal = data.Count
             };
+            var serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatString = "dd'.'MM'.'yyyy hh:mm"
+            };
+            return Json(finalResult, serializerSettings);
+        }
 
-            return Json(finalResult);
+        private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<object> data, ViewModel model)
+        {
+            Arg.NotNull(model, nameof(ViewModel));
+            var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
+
+            foreach (var field in model.ViewModelFields)
+            {
+                if (field.VirtualDataType != ViewModelVirtualDataType.ManyToMany) continue;
+                if (!field.Configurations.Any()) continue;
+                var storageEntity = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyStorageEntityName);
+                var referenceEntity = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyStorageEntityName);
+                var referencePropName = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyReferencePropertyName);
+                if (storageEntity != null && referenceEntity != null && referencePropName != null)
+                {
+                    foreach (var item in dicData)
+                    {
+                        var referenceData = await _service.Table(storageEntity.Value).GetAllWithInclude<object>(filters: new List<Filter>
+                        {
+                            new Filter(nameof(BaseModel.IsDeleted), false),
+                            new Filter(referencePropName.Value, item["Id"].ToString().ToGuid())
+                        });
+                        item.Add($"{referencePropName.Value}ManyToManyReference", referenceData.Result);
+                    }
+                }
+            }
+            return dicData;
         }
 
         /// <summary>
@@ -847,7 +885,9 @@ namespace ST.PageRender.Razor.Controllers
             {
                 filters.Add(new Filter
                 {
-                    Value = CurrentUserTenantId, Criteria =  Criteria.Equals, Parameter = nameof(BaseModel.TenantId)
+                    Value = CurrentUserTenantId,
+                    Criteria = Criteria.Equals,
+                    Parameter = nameof(BaseModel.TenantId)
                 });
             }
 

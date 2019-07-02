@@ -60,6 +60,7 @@ namespace ST.Cms.Controllers.Entity
 		private readonly IFormContext _formContext;
 
 		private readonly IEntityRepository _entityRepository;
+		private string ConnectionString { get; set; }
 
 		public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
 		{
@@ -67,12 +68,12 @@ namespace ST.Cms.Controllers.Entity
 			Queue = queue;
 			_formContext = formContext;
 			_entityRepository = entityRepository;
-			ConnectionString = DbUtil.GetConnectionString(configuration, env);
+			var (_, connection) = DbUtil.GetConnectionString(configuration, env);
+			ConnectionString = connection;
 			formContext.ValidateNullAbstractionContext();
 			Context.Validate();
-		}
 
-		private (DbProviderType, string) ConnectionString { get; set; }
+		}
 
 		/// <summary>
 		/// Create table
@@ -122,7 +123,7 @@ namespace ST.Cms.Controllers.Entity
 					await Context.Table.AddAsync(table);
 					await Context.SaveChangesAsync();
 					var sqlService = GetSqlService();
-					var response = sqlService.CreateSqlTable(table, ConnectionString.Item2);
+					var response = sqlService.CreateSqlTable(table, ConnectionString);
 					if (response.Result)
 						return RedirectToAction("Edit", "Table", new { id = table.Id, tab = "one" });
 				}
@@ -197,11 +198,11 @@ namespace ST.Cms.Controllers.Entity
 			var table = await Context.Table.FirstOrDefaultAsync(x => x.Id == id);
 			if (table == null) return NotFound();
 			var model = table.Adapt<UpdateTableViewModel>();
-			model.TableFields = await Context.TableFields.Where(x => x.TableId == table.Id).ToListAsync();
+			model.TableFields = await Context.TableFields.AsNoTracking().Where(x => x.TableId == table.Id).ToListAsync();
 			if (model.ModifiedBy != null)
-				model.ModifiedBy = ApplicationDbContext.Users
+				model.ModifiedBy = ApplicationDbContext.Users.AsNoTracking()
 				.SingleOrDefaultAsync(m => m.Id == model.ModifiedBy).Result.NormalizedUserName.ToLower();
-			model.Groups = await Context.TableFieldGroups.Include(s => s.TableFieldTypes).ToListAsync();
+			model.Groups = await Context.TableFieldGroups.AsNoTracking().Include(s => s.TableFieldTypes).ToListAsync();
 			model.TabName = tab;
 			return View(model);
 		}
@@ -239,7 +240,7 @@ namespace ST.Cms.Controllers.Entity
 		/// <param name="tableId"></param>
 		/// <returns></returns>
 		[HttpDelete]
-		public JsonResult RemoveTableModel(Guid tableId)
+		public async Task<JsonResult> RemoveTableModel(Guid tableId)
 		{
 			var response = new ResultModel
 			{
@@ -251,16 +252,17 @@ namespace ST.Cms.Controllers.Entity
 				response.Errors.Add(new ErrorModel("fail", "Entity not found!"));
 				return Json(response);
 			}
-			try
+			Context.Table.Remove(table);
+			var result = await Context.SaveAsync();
+			if (result.IsSuccess)
 			{
-				Context.Table.Remove(table);
-				Context.SaveChanges();
 				response.IsSuccess = true;
 			}
-			catch
+			else
 			{
 				response.Errors.Add(new ErrorModel("fail", "Fail to save data"));
 			}
+
 			return Json(response);
 		}
 
@@ -273,30 +275,9 @@ namespace ST.Cms.Controllers.Entity
 		[HttpGet]
 		public async Task<IActionResult> AddField(Guid id, string type)
 		{
-			var entitiesList = await Context.Table.ToListAsync();
-			var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Name == type.Trim());
-			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
-
-			var configurations = fieldTypeConfig.Select(item => new FieldConfigViewModel
-			{
-				Name = item.Name,
-				Type = item.Type,
-				ConfigId = item.Id,
-				Description = item.Description,
-				ConfigCode = item.Code
-			}).ToList();
-
-			var model = new CreateTableFieldViewModel
-			{
-				TableId = id,
-				Configurations = configurations,
-				TableFieldTypeId = fieldType.Id,
-				DataType = fieldType.DataType,
-				Parameter = type,
-				EntitiesList = entitiesList.Select(x => x.Name).ToList()
-			};
-
-			return View(model);
+			var data = await _entityRepository.GetAddFieldCreateViewModel(id, type);
+			if (!data.IsSuccess) return NotFound();
+			return View(data.Result);
 		}
 
 		/// <summary>
@@ -306,7 +287,7 @@ namespace ST.Cms.Controllers.Entity
 		[HttpPost]
 		public async Task<IActionResult> AddField(CreateTableFieldViewModel field)
 		{
-			var entitiesList = await Context.Table.ToListAsync();
+			var entitiesList = _entityRepository.Tables;
 			var table = entitiesList.FirstOrDefault(x => x.Id == field.TableId);
 			var tableName = table?.Name;
 			var schema = table?.EntityType;
@@ -324,36 +305,28 @@ namespace ST.Cms.Controllers.Entity
 				return View(field);
 			}
 
-			var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == field.TableFieldTypeId).Select(item => new FieldConfigViewModel
+			var configurationsRq = await _entityRepository.RetrieveConfigurationsOnAddNewTableFieldAsyncTask(field);
+			if (configurationsRq.IsSuccess)
 			{
-				Name = item.Name,
-				Type = item.Type,
-				ConfigId = item.Id,
-				Description = item.Description,
-				ConfigCode = item.Code
-			}).ToList();
-
-			if (field.Parameter == FieldType.EntityReference)
-			{
-				var foreignSchema = fieldTypeConfig.FirstOrDefault(x => x.ConfigCode == "9999");
-				var foreignTable = Context.Table.FirstOrDefault(x => x.Name == field.Configurations.FirstOrDefault(y => y.Name == FieldConfig.ForeingTable).Value);
-				if (foreignSchema != null)
-				{
-					if (foreignTable != null) foreignSchema.Value = foreignTable.EntityType;
-					field.Configurations.Add(foreignSchema);
-				}
+				field.Configurations = configurationsRq.Result.ToList();
 			}
 
 			var sqlService = GetSqlService();
 			field = field.CreateSqlField();
-			var insertField = sqlService.AddFieldSql(field, tableName, ConnectionString.Item2, true, schema);
+			var insertField = sqlService.AddFieldSql(field, tableName, ConnectionString, true, schema);
 			// Save field model in the dataBase
 			if (!insertField.Result)
 			{
 				ModelState.AddModelError(string.Empty, "Fail to apply changes to database!");
 				return View(field);
 			}
-			var configValues = new List<TableFieldConfigValue>();
+
+			var fuckTrack = field.Configurations.Select(item => new TableFieldConfigValue
+			{
+				TableFieldConfigId = item.ConfigId,
+				Value = item.Value,
+			}).ToList();
+
 			var model = new TableModelField
 			{
 				DataType = field.DataType,
@@ -364,31 +337,17 @@ namespace ST.Cms.Controllers.Entity
 				AllowNull = field.AllowNull,
 				Synchronized = true,
 				TableFieldTypeId = field.TableFieldTypeId,
+				TableFieldConfigValues = fuckTrack
 			};
-			foreach (var item in field.Configurations)
-			{
-				configValues.Add(new TableFieldConfigValue
-				{
-					TableFieldConfigId = item.ConfigId,
-					TableModelFieldId = model.Id,
-					Value = item.Value,
-				});
-			}
 
-			model.TableFieldConfigValues = configValues;
-
-			try
+			Context.TableFields.Add(model);
+			var result = await Context.SaveAsync();
+			if (result.IsSuccess)
 			{
-				Context.TableFields.Add(model);
-				Context.SaveChanges();
 				RefreshRuntimeTypes();
 				return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
 			}
-			catch
-			{
-				ModelState.AddModelError(string.Empty, "Fail to apply changes to database!");
-			}
-
+			ModelState.AppendResultModelErrors(result.Errors);
 
 			return View(field);
 		}
@@ -535,7 +494,7 @@ namespace ST.Cms.Controllers.Entity
 				}).ToList();
 
 			var sqlService = GetSqlService();
-			var updateStructure = sqlService.AddFieldSql(field, table.Name, ConnectionString.Item2, false, table.EntityType);
+			var updateStructure = sqlService.AddFieldSql(field, table.Name, ConnectionString, false, table.EntityType);
 			// Save field model structure in the dataBase
 			if (!updateStructure.IsSuccess) return View(field);
 
@@ -581,7 +540,7 @@ namespace ST.Cms.Controllers.Entity
 				return Json(false);
 			}
 			var sqlService = GetSqlService();
-			var checkColumn = sqlService.CheckColumnValues(ConnectionString.Item2, table.Name, table.EntityType, field.Name);
+			var checkColumn = sqlService.CheckColumnValues(ConnectionString, table.Name, table.EntityType, field.Name);
 			if (checkColumn.Result)
 			{
 				return Json(false);
@@ -594,15 +553,19 @@ namespace ST.Cms.Controllers.Entity
 			}
 			if (field.TableFieldTypeId == fieldType.Id)
 			{
-				//TODO: Ce za huinea?
-				// ?? posibil eroare
-				var configType = Context.TableFieldConfigs.First(x => x.TableFieldTypeId == fieldType.Id).Id;
-				var configValue = Context.TableFieldConfigValues.First(x =>
-					x.TableFieldConfigId == configType && x.TableModelFieldId == field.Id).Value;
-				sqlService.DropConstraint(ConnectionString.Item2, table.Name, table.EntityType, configValue, field.Name);
+				var configType = Context.TableFieldConfigs.FirstOrDefault(x => x.TableFieldTypeId == fieldType.Id);
+				if (configType == null)
+				{
+					var configValue = Context.TableFieldConfigValues.First(x =>
+						x.TableFieldConfigId == configType.Id && x.TableModelFieldId == field.Id).Value;
+					if (configValue != null)
+					{
+						sqlService.DropConstraint(ConnectionString, table.Name, table.EntityType, configValue, field.Name);
+					}
+				}
 			}
 
-			var dropColumn = sqlService.DropColumn(ConnectionString.Item2, table.Name, table.EntityType, field.Name);
+			var dropColumn = sqlService.DropColumn(ConnectionString, table.Name, table.EntityType, field.Name);
 			if (!dropColumn.Result) return Json(false);
 			Context.TableFields.Remove(field);
 			Context.SaveChanges();
@@ -627,7 +590,7 @@ namespace ST.Cms.Controllers.Entity
 
 			var table = Context.Table.First(x => x.Id == id);
 			var sqlService = GetSqlService();
-			var checkColumn = sqlService.CheckTableValues(ConnectionString.Item2, table.Name, table.EntityType);
+			var checkColumn = sqlService.CheckTableValues(ConnectionString, table.Name, table.EntityType);
 			if (checkColumn.Result)
 			{
 				return Json(new { success = false, message = "Table has value" });
@@ -642,7 +605,7 @@ namespace ST.Cms.Controllers.Entity
 
 			try
 			{
-				sqlService.DropTable(ConnectionString.Item2, table.Name, table.EntityType);
+				sqlService.DropTable(ConnectionString, table.Name, table.EntityType);
 				Context.Table.Remove(table);
 				Context.SaveChanges();
 				return Json(new { success = true, message = "Delete success" });

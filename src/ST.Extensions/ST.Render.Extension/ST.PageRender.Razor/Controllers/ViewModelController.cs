@@ -11,8 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions.Constants;
 using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Configurations;
 using ST.PageRender.Abstractions.Models.ViewModels;
 
 namespace ST.PageRender.Razor.Controllers
@@ -400,6 +403,149 @@ namespace ST.PageRender.Razor.Controllers
             }
 
             return Json(response);
+        }
+
+
+        /// <summary>
+        /// Set many to many configurations
+        /// </summary>
+        /// <param name="referenceEntity"></param>
+        /// <param name="storageEntity"></param>
+        /// <param name="fieldId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public virtual async Task<JsonResult> SaveManyToManyConfigurations(Guid? referenceEntity, Guid? storageEntity, Guid? fieldId)
+        {
+            var rs = new ResultModel();
+            if (referenceEntity == null || storageEntity == null || fieldId == null)
+            {
+                rs.Errors.Add(new ErrorModel(nameof(Nullable<Guid>), "Invalid parameters, all are required!"));
+                return Json(rs);
+            }
+
+            var field = await _pagesContext.ViewModelFields
+                .Include(x => x.ViewModel)
+                .ThenInclude(x => x.TableModel)
+                .Include(x => x.Configurations)
+                .Include(x => x.TableModelFields)
+                .FirstOrDefaultAsync(x => x.Id.Equals(fieldId));
+
+            if (field == null)
+            {
+                rs.Errors.Add(new ErrorModel(nameof(Nullable<Guid>), "Invalid data"));
+                return Json(rs);
+            }
+
+            var vieModel = field.ViewModel;
+            var viewModelTable = field.ViewModel?.TableModel;
+            if (field.TableModelFields != null)
+            {
+                rs.Errors.Add(new ErrorModel("error", "This viewmodel field can't be used on a many to many relation, because he has a reference, remove reference and try again!"));
+                return Json(rs);
+            }
+
+            var refEntity = await _pagesContext.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .FirstOrDefaultAsync(x => x.Id.Equals(referenceEntity));
+
+            var stEntity = await _pagesContext.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .FirstOrDefaultAsync(x => x.Id.Equals(storageEntity));
+
+            if (refEntity == null || stEntity == null)
+            {
+                rs.Errors.Add(new ErrorModel(nameof(Nullable<Guid>), "Invalid data"));
+                return Json(rs);
+            }
+
+            string propertyName = null;
+            string refPropertyName = null;
+
+            foreach (var tableField in stEntity.TableFields)
+            {
+                if (tableField.DataType != TableFieldDataType.Guid) continue;
+                var configs = tableField.TableFieldConfigValues;
+                var table = configs.FirstOrDefault(x =>
+                    x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable);
+                var schema = configs.FirstOrDefault(x =>
+                    x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingSchemaTable);
+                if (table == null || schema == null) continue;
+                if (table.Value == refEntity.Name)
+                {
+                    refPropertyName = tableField.Name;
+                }
+
+                if (table.Value == viewModelTable?.Name)
+                {
+                    propertyName = tableField.Name;
+                }
+            }
+
+            if (string.IsNullOrEmpty(propertyName) || string.IsNullOrEmpty(refPropertyName))
+            {
+                rs.Errors.Add(new ErrorModel(nameof(Nullable<Guid>), "Incompatible choose entities!"));
+                return Json(rs);
+            }
+
+            field.VirtualDataType = ViewModelVirtualDataType.ManyToMany;
+
+            field.Configurations = new List<ViewModelFieldConfiguration>
+            {
+                new ViewModelFieldConfiguration
+                {
+                    ViewModelFieldCodeId = ViewModelConfigCode.MayToManyReferenceEntityName,
+                    ViewModelField = field,
+                    Value = refEntity.Name
+                },
+                new ViewModelFieldConfiguration
+                {
+                    ViewModelFieldCodeId = ViewModelConfigCode.MayToManyReferenceEntitySchema,
+                    ViewModelField = field,
+                    Value = refEntity.EntityType
+                },
+                new ViewModelFieldConfiguration
+                {
+                    ViewModelFieldCodeId = ViewModelConfigCode.MayToManyStorageEntityName,
+                    ViewModelField = field,
+                    Value = stEntity.Name
+                },
+                new ViewModelFieldConfiguration
+                {
+                    ViewModelFieldCodeId = ViewModelConfigCode.MayToManyStorageEntitySchema,
+                    ViewModelField = field,
+                    Value = stEntity.EntityType
+                },
+
+                new ViewModelFieldConfiguration
+                {
+                    ViewModelFieldCodeId = ViewModelConfigCode.MayToManyReferencePropertyName,
+                    ViewModelField = field,
+                    Value = propertyName
+                },
+                new ViewModelFieldConfiguration
+                {
+                    ViewModelFieldCodeId = ViewModelConfigCode.MayToManyStorageSenderPropertyName,
+                    ViewModelField = field,
+                    Value = refPropertyName
+                },
+            };
+
+            _pagesContext.ViewModelFields.Update(field);
+            var rdb = await _pagesContext.SaveDependenceAsync();
+            if (rdb.IsSuccess)
+            {
+                rs.IsSuccess = true;
+            }
+            else
+            {
+                rs.Errors = rdb.Errors;
+            }
+
+            return Json(rs);
         }
     }
 }

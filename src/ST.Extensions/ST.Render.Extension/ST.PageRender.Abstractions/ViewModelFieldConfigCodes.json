@@ -1,0 +1,30 @@
+{
+  "ViewModelFieldCodes": [
+    {
+      "Code": 1001,
+      "Name": "ManyToMany_Second_Target_EntityName"
+    },
+    {
+      "Code": 1002,
+      "Name": "ManyToMany_Second_Target_EntitySchema"
+    },
+    {
+      "Code": 1003,
+      "Name": "ManyToMany_Second_Target_PropertyName"
+    },
+
+
+    {
+      "Code": 2001,
+      "Name": "ManyToMany_Storage_Target_EntitySchema"
+    },
+    {
+      "Code": 2002,
+      "Name": "ManyToMany_Storage_Target_EntityName"
+    },
+    {
+      "Code": 2003,
+      "Name": "ManyToMany_Storage_Target_Sender_PropertyName"
+    }
+  ]
+}

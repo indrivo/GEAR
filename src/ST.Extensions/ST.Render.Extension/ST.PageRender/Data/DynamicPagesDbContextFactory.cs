@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+﻿using Microsoft.EntityFrameworkCore.Design;
+using ST.Core.Helpers.DbContexts;
 using ST.Entities.Data;
 
 namespace ST.PageRender.Data
@@ -18,9 +18,7 @@ namespace ST.PageRender.Data
         /// <returns></returns>
         public DynamicPagesDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<EntitiesDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new DynamicPagesDbContext(optionsBuilder.Options);
+            return DbContextFactory<DynamicPagesDbContext, EntitiesDbContext>.CreateFactoryDbContext();
         }
     }
 }

@@ -437,7 +437,8 @@ namespace ST.PageRender.Migrations
 
                     b.Property<string>("ModifiedBy");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<Guid>("TableModelId");
 
@@ -450,6 +451,35 @@ namespace ST.PageRender.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("ViewModels");
+                });
+
+            modelBuilder.Entity("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFieldCode", b =>
+                {
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Code");
+
+                    b.ToTable("ViewModelFieldCodesCodes");
+                });
+
+            modelBuilder.Entity("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFieldConfiguration", b =>
+                {
+                    b.Property<int>("ViewModelFieldCodeId");
+
+                    b.Property<Guid>("ViewModelFieldId");
+
+                    b.Property<string>("Value")
+                        .IsRequired();
+
+                    b.HasKey("ViewModelFieldCodeId", "ViewModelFieldId");
+
+                    b.HasIndex("ViewModelFieldId");
+
+                    b.ToTable("ViewModelFieldConfigurations");
                 });
 
             modelBuilder.Entity("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFields", b =>
@@ -467,7 +497,8 @@ namespace ST.PageRender.Migrations
 
                     b.Property<string>("ModifiedBy");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
 
                     b.Property<int>("Order");
 
@@ -482,6 +513,8 @@ namespace ST.PageRender.Migrations
                     b.Property<int>("Version");
 
                     b.Property<Guid>("ViewModelId");
+
+                    b.Property<int>("VirtualDataType");
 
                     b.HasKey("Id");
 
@@ -556,9 +589,22 @@ namespace ST.PageRender.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFieldConfiguration", b =>
+                {
+                    b.HasOne("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFieldCode", "ViewModelFieldCode")
+                        .WithMany()
+                        .HasForeignKey("ViewModelFieldCodeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFields", "ViewModelField")
+                        .WithMany("Configurations")
+                        .HasForeignKey("ViewModelFieldId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ST.PageRender.Abstractions.Models.ViewModels.ViewModelFields", b =>
                 {
-                    b.HasOne("ST.PageRender.Abstractions.Models.ViewModels.ViewModel")
+                    b.HasOne("ST.PageRender.Abstractions.Models.ViewModels.ViewModel", "ViewModel")
                         .WithMany("ViewModelFields")
                         .HasForeignKey("ViewModelId")
                         .OnDelete(DeleteBehavior.Cascade);

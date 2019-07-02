@@ -15,7 +15,7 @@ using ST.Identity.Data;
 
 namespace ST.Configuration.Seed
 {
-    public static class IdentityServerConfigDbSeed
+    public static class IdentityServerConfigDbSeeder
     {
         public static async Task SeedAsync(ConfigurationDbContext context, ApplicationDbContext applicationDbContext,
             IConfiguration configuration, IHostingEnvironment env)

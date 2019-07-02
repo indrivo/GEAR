@@ -5,12 +5,11 @@ using ST.Core.Abstractions;
 
 namespace ST.Core
 {
-    /// <inheritdoc />
     /// <summary>
     /// Base Proprieties for every Entity. Every model that inherits from Base Model can be manipulated with CRUD operations form our generic repository without additional requirements.
     /// @date 2017/05/19
     /// </summary>
-    public abstract class BaseModel : IBaseModel
+    public abstract class BaseModel : IBaseModel, IBase<Guid>
     {
         /// <summary>
         /// Constructor. Initialize object with default values. A unique Id, Creation time and set IsDeleted to false

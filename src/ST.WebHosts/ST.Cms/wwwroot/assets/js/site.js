@@ -21,6 +21,40 @@ window.load = function (uri, data = null, type = "get") {
 	}
 };
 
+function ToastNotifier() {
+
+}
+
+ToastNotifier.prototype.constructor = ToastNotifier;
+
+/**
+ * Display notification
+ * @param {any} conf
+ */
+ToastNotifier.prototype.notify = (conf) => {
+	const settings = {
+		heading: "",
+		text: "",
+		position: "top-right",
+		loaderBg: "#ff6849",
+		icon: "error",
+		hideAfter: 2500,
+		stack: 6
+	};
+	Object.assign(settings, conf);
+	$.toast(settings);
+};
+
+/**
+ * Display errors 
+ * @param {any} arr
+ */
+ToastNotifier.prototype.notifyErrorList = function(arr) {
+	for (let i = 0; i < arr.length; i++) {
+		this.notify({ heading: "Error", text: arr[i].message });
+	}
+};
+
 
 //Delete row from Jquery Table
 function DeleteData(object) {
@@ -194,7 +228,7 @@ window.translate = function (key) {
 
 //Translate page content
 window.forceTranslate = function (selector = null) {
-	new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		var ctx = (!selector)
 			? document.getElementsByTagName('*')
 			: document.querySelector(selector).getElementsByTagName('*');
@@ -285,7 +319,7 @@ $(document).ready(function () {
 	if (typeof signalR === 'undefined') return;
 	const notificator = new Notificator();
 	const user = notificator.getCurrentUser();
-	var connPromise = new Promise((resolve, reject) => {
+	const connPromise = new Promise((resolve, reject) => {
 		var connection = new signalR.HubConnectionBuilder()
 			.withUrl("/rtn", signalR.HttpTransportType.LongPolling)
 			.build();
