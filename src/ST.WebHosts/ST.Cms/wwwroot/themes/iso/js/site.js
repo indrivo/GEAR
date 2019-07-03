@@ -370,7 +370,6 @@ $(window).on("load", function () {
 End Pre Loader Removal After Page Load
 ************************************************/
 
-
 /*!
   * FreakPixels v1.1.0 (http://freakpixels.com/)
   * Copyright 2011-2018 The FreakPixels Authors 
@@ -498,7 +497,7 @@ $(window).on("load", function () {
     /************************************************
      Sidebar Colapsed state submenu position
      ************************************************/
-	$body.find('.navigation ul li:has(.sub-nav)').on('click', function () {
+	$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
 		if ($(".sidebar").hasClass("collapsed")) {
 			const $menuItem = $(this),
 				$submenuWrapper = $('> .sub-nav', $menuItem);
@@ -674,6 +673,10 @@ function toggleFullScreen() {
 		}
 	}
 }
+
+
+
+
 
 
 

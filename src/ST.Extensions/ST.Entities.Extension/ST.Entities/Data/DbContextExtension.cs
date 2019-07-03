@@ -383,9 +383,10 @@ namespace ST.Entities.Data
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="viewModel"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
         public static ResultModel<int> GetCount(this EntitiesDbContext dbContext,
-            EntityViewModel viewModel)
+            EntityViewModel viewModel, Dictionary<string, object> filters = null)
         {
             var returnModel = new ResultModel<int>
             {
@@ -396,8 +397,8 @@ namespace ST.Entities.Data
 
             try
             {
-                var sqlQuery = QueryBuilder.GetCountByParameter(viewModel, new Dictionary<string, object>());
-                var result = EntitiesFromSql(dbContext, sqlQuery, new Dictionary<string, object>()).FirstOrDefault();
+                var sqlQuery = QueryBuilder.GetCountByParameter(viewModel, filters);
+                var result = EntitiesFromSql(dbContext, sqlQuery, filters).FirstOrDefault();
                 var data = result?.FirstOrDefault();
                 if (data.Equals(default(KeyValuePair<string, object>))) return returnModel;
                 returnModel.Result = Convert.ToInt32(data?.Value);

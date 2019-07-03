@@ -357,5 +357,19 @@
   "system_yes_continue": "Так, продовжити",
   "system_many_to_many_right_join_select_message": "Виберіть об'єкт для створення багатьох посилання",
   "system_many_to_many_storage_entity_select": "Виберіть об'єкт, який зберігає посилання на ці сутності 2",
-  "system_many_to_many_success_mapping": "Налаштування успішно збережено"
+  "system_many_to_many_success_mapping": "Налаштування успішно збережено",
+  "iso_objectives_kpi_no_items": "Якщо ви не хочете розміщувати на КПІ-сайтів, релевантних для цієї мети, будь ласка, встановити зв'язок між цієї мети, kpi-сайти, з відповідними ",
+  "iso_risk_scenario": "Сценарій",
+  "iso_risk_threat": "Загроза",
+  "iso_risk_vulnerability": "Вразливість",
+  "iso_risk_consequence": "Наслідок",
+  "iso_risk_probability": "Ймовірність",
+  "iso_risk_inherentrisklevel": "Властивого рівня ризиків ",
+  "iso_risk_treatment_plan": "План управління ",
+  "iso_residual_risk": "Залишковий ризик",
+  "iso_risk_residual_risk_impact": "Залишковий вплив ризику ",
+  "iso_risk_propability_residual_risk": "Ймовірність залишкового ризику",
+  "iso_risk_residual_level": "Залишковий Рівень Ризику ",
+  "iso_risk_identified_date": "Дата виявлення ризиків",
+  "iso_risk_close_date": "Дата закриття "
 }

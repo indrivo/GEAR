@@ -17,6 +17,7 @@ using ST.Entities.Abstractions.Constants;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Configurations;
 using ST.PageRender.Abstractions.Models.ViewModels;
+using ST.PageRender.Razor.ViewModels.TableColumnsViewModels;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -404,7 +405,6 @@ namespace ST.PageRender.Razor.Controllers
 
             return Json(response);
         }
-
 
         /// <summary>
         /// Set many to many configurations

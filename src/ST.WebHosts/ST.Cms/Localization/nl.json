@@ -357,5 +357,19 @@
   "system_yes_continue": "Ja, doorgaan",
   "system_many_to_many_right_join_select_message": "Selecteer de entiteit voor het maken van een multi te veel verwijzing",
   "system_many_to_many_storage_entity_select": "Selecteer de entiteit waarin de verwijzingen naar deze 2 entiteiten",
-  "system_many_to_many_success_mapping": "Deze instellingen zijn succesvol opgeslagen"
+  "system_many_to_many_success_mapping": "Deze instellingen zijn succesvol opgeslagen",
+  "iso_objectives_kpi_no_items": "Als u wilt weergeven KPI 's relevant zijn voor dit doel zal u vragen om de link van het doel van de kpi' s die relevant zijn in de ",
+  "iso_risk_scenario": "Scenario",
+  "iso_risk_threat": "Bedreiging",
+  "iso_risk_vulnerability": "Kwetsbaarheid",
+  "iso_risk_consequence": "Gevolg",
+  "iso_risk_probability": "Waarschijnlijkheid",
+  "iso_risk_inherentrisklevel": "Inherente risico niveau",
+  "iso_risk_treatment_plan": "Management plan",
+  "iso_residual_risk": "Resterende risico ' s",
+  "iso_risk_residual_risk_impact": "Resterende risico ' s",
+  "iso_risk_propability_residual_risk": "Waarschijnlijkheid van restrisico",
+  "iso_risk_residual_level": "Resterende Risico Niveau",
+  "iso_risk_identified_date": "Datum van risico-identificatie",
+  "iso_risk_close_date": "Sluitingsdatum"
 }

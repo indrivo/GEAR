@@ -357,5 +357,19 @@
   "system_yes_continue": "Sì, continua",
   "system_many_to_many_right_join_select_message": "Selezionare l'entità da creare un multi per molti di riferimento",
   "system_many_to_many_storage_entity_select": "Selezionare le entità che contiene i riferimenti per queste 2 entità",
-  "system_many_to_many_success_mapping": "Queste impostazioni sono state salvate con successo"
+  "system_many_to_many_success_mapping": "Queste impostazioni sono state salvate con successo",
+  "iso_objectives_kpi_no_items": "Se si desidera visualizzare KPI rilevanti per questo obiettivo vi chiederà di collegare l'obiettivo dei kpi rilevanti per la ",
+  "iso_risk_scenario": "Scenario",
+  "iso_risk_threat": "Minaccia",
+  "iso_risk_vulnerability": "Vulnerabilità",
+  "iso_risk_consequence": "Conseguenza",
+  "iso_risk_probability": "Probabilità",
+  "iso_risk_inherentrisklevel": "Inerenti il livello di rischio",
+  "iso_risk_treatment_plan": "Piano di gestione",
+  "iso_residual_risk": "Rischio residuo",
+  "iso_risk_residual_risk_impact": "Rischio residuo impatto",
+  "iso_risk_propability_residual_risk": "Probabilità di rischio residuo",
+  "iso_risk_residual_level": "Il Livello Di Rischio Residuo",
+  "iso_risk_identified_date": "Data di identificazione del rischio",
+  "iso_risk_close_date": "Data di chiusura"
 }

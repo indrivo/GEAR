@@ -1,61 +1,9 @@
 // Make sure jQuery has been loaded
 if (typeof jQuery === 'undefined') {
-	throw new Error('Events requires jQuery')
+	throw new Error('Events requires jQuery');
 }
 
-window.load = function (uri, data = null, type = "get") {
-	try {
-		const url = new URL(location.href);
-		uri = `${url.origin}${uri}`;
-
-		const req = $.ajax({
-			url: uri,
-			type: type,
-			data: data,
-			async: false
-		});
-		return JSON.parse(req.responseText);
-	} catch (exp) {
-		console.log(exp);
-		return null;
-	}
-};
-
-function ToastNotifier() {
-
-}
-
-ToastNotifier.prototype.constructor = ToastNotifier;
-
-/**
- * Display notification
- * @param {any} conf
- */
-ToastNotifier.prototype.notify = (conf) => {
-	const settings = {
-		heading: "",
-		text: "",
-		position: "top-right",
-		loaderBg: "#ff6849",
-		icon: "error",
-		hideAfter: 2500,
-		stack: 6
-	};
-	Object.assign(settings, conf);
-	$.toast(settings);
-};
-
-/**
- * Display errors 
- * @param {any} arr
- */
-ToastNotifier.prototype.notifyErrorList = function(arr) {
-	for (let i = 0; i < arr.length; i++) {
-		this.notify({ heading: "Error", text: arr[i].message });
-	}
-};
-
-
+//TODO: need to delete this gavno code and write new code
 //Delete row from Jquery Table
 function DeleteData(object) {
 	swal({
@@ -94,6 +42,107 @@ function DeleteData(object) {
 		}
 	});
 }
+
+//------------------------------------------------------------------------------------//
+//									Ajax requests
+//------------------------------------------------------------------------------------//
+/**
+ * Load data with ajax
+ * @param {any} uri
+ * @param {any} data
+ * @param {any} type
+ */
+window.load = function (uri, data = null, type = "get") {
+	try {
+		const url = new URL(location.href);
+		uri = `${url.origin}${uri}`;
+
+		const req = $.ajax({
+			url: uri,
+			type: type,
+			data: data,
+			async: false
+		});
+		return JSON.parse(req.responseText);
+	} catch (exp) {
+		console.log(exp);
+		return null;
+	}
+};
+
+/**
+ * Load data with ajax async
+ * @param {any} uri
+ * @param {any} data
+ * @param {any} type
+ */
+window.loadAsync = function (uri, data = null, type = "get") {
+	return new Promise((resolve, reject) => {
+		try {
+			const url = new URL(location.href);
+			uri = `${url.origin}${uri}`;
+			$.ajax({
+				url: uri,
+				type: type,
+				data: data,
+				success: function(rData) {
+					resolve(rData);
+				},
+				error: function(err) {
+					reject(err);
+				}
+			});
+		} catch (exp) {
+			reject(exp);
+		}
+	});
+};
+
+//------------------------------------------------------------------------------------//
+//								End ajax requests
+//------------------------------------------------------------------------------------//
+
+//------------------------------------------------------------------------------------//
+//								Toast notifier
+//------------------------------------------------------------------------------------//
+function ToastNotifier() {
+
+}
+
+ToastNotifier.prototype.constructor = ToastNotifier;
+
+/**
+ * Display notification
+ * @param {any} conf
+ */
+ToastNotifier.prototype.notify = (conf) => {
+	const settings = {
+		heading: "",
+		text: "",
+		position: "top-right",
+		loaderBg: "#ff6849",
+		icon: "error",
+		hideAfter: 2500,
+		stack: 6
+	};
+	Object.assign(settings, conf);
+	$.toast(settings);
+};
+
+/**
+ * Display errors 
+ * @param {any} arr
+ */
+ToastNotifier.prototype.notifyErrorList = function(arr) {
+	for (let i = 0; i < arr.length; i++) {
+		this.notify({ heading: "Error", text: arr[i].message });
+	}
+};
+
+//------------------------------------------------------------------------------------//
+//								End toast notifier
+//------------------------------------------------------------------------------------//
+
 
 //------------------------------------------------------------------------------------//
 //								Random color
@@ -1107,3 +1156,13 @@ ST.prototype.newGuid = function () {
 	}
 	return result;
 };
+
+
+
+if (typeof String != 'undefined') {
+	String.prototype.toLowerFirstLetter = function () {
+		const first = this[0].toLowerCase();
+		const res = `${first}${this.slice(1, this.length)}`;
+		return res;
+	}
+}

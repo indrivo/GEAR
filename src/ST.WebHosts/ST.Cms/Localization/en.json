@@ -357,5 +357,19 @@
   "system_yes_continue": "Yes, continue",
   "system_many_to_many_right_join_select_message": "Select the entity to create a multi to many reference",
   "system_many_to_many_storage_entity_select": "Select the entity that stores the references for these 2 entities",
-  "system_many_to_many_success_mapping": "These settings have been saved successfully"
+  "system_many_to_many_success_mapping": "These settings have been saved successfully",
+  "iso_objectives_kpi_no_items": "If you want to display KPI relevant to this goal will ask you to link the goal of the kpi's that are relevant in the ",
+  "iso_risk_scenario": "Scenario",
+  "iso_risk_threat": "Threat",
+  "iso_risk_vulnerability": "Vulnerability",
+  "iso_risk_consequence": "Consequence",
+  "iso_risk_probability": "Probability",
+  "iso_risk_inherentrisklevel": "Inherent risk level",
+  "iso_risk_treatment_plan": "Management plan",
+  "iso_residual_risk": "Residual risk",
+  "iso_risk_residual_risk_impact": "Residual risk impact",
+  "iso_risk_propability_residual_risk": "Probability of residual risk",
+  "iso_risk_residual_level": "Residual Risk Level",
+  "iso_risk_identified_date": "Date of risk identification",
+  "iso_risk_close_date": "Closing date"
 }

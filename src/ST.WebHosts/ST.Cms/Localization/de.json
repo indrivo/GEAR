@@ -357,5 +357,19 @@
   "system_yes_continue": "Ja, weiter",
   "system_many_to_many_right_join_select_message": "Wählen Sie das Element, um einen multi zu viele Referenz",
   "system_many_to_many_storage_entity_select": "Wählen Sie die Person, die speichert die Referenzen für diese 2 Personen",
-  "system_many_to_many_success_mapping": "Diese Einstellungen wurden erfolgreich gespeichert"
+  "system_many_to_many_success_mapping": "Diese Einstellungen wurden erfolgreich gespeichert",
+  "iso_objectives_kpi_no_items": "Wenn Sie anzeigen möchten, KPI, die für dieses Ziel wird Sie bitten, den link das Ziel, die KPIs relevant sind, in die ",
+  "iso_risk_scenario": "Szenario",
+  "iso_risk_threat": "Bedrohlich",
+  "iso_risk_vulnerability": "Sicherheitsanfälligkeit",
+  "iso_risk_consequence": "Folge",
+  "iso_risk_probability": "Wahrscheinlichkeit",
+  "iso_risk_inherentrisklevel": "Inhärente Risiko",
+  "iso_risk_treatment_plan": "Management-plan",
+  "iso_residual_risk": "Restrisiko",
+  "iso_risk_residual_risk_impact": "Rest-Risiko auswirken",
+  "iso_risk_propability_residual_risk": "Wahrscheinlichkeit von Rest-Risiko",
+  "iso_risk_residual_level": "Restrisiko-Niveau",
+  "iso_risk_identified_date": "Datum der Risiko-Identifikation",
+  "iso_risk_close_date": "Einsendeschluss"
 }

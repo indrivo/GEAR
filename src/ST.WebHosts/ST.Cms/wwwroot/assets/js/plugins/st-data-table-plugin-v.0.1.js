@@ -3,7 +3,7 @@
  *
  * v1.0.0
  *
- * License: MIT Soft-Tehnica Srl
+ * License: MIT Soft-Tehnica(Indrivo) Srl
  * Author: Lupei Nicolae
  */
 
@@ -221,7 +221,7 @@ TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dat
 			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')">${window.translate("restore")}</a>`
 			: `<a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick="new TableBuilder().deleteItem('${row.id
 			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')">${window.translate("delete")}</a>`}`
-		: ``}`;
+		: ""}`;
 };
 
 
@@ -418,7 +418,6 @@ TableBuilder.prototype.renderTable = function (data) {
 		$(tableId).dataTable().empty();
 	}
 	const renderTableSelect = new RenderTableSelect();
-	console.log(renderTableSelect);
 	$(tableId).DataTable({
 		"language": {
 			"url": ctx.translationsJson(),
@@ -492,7 +491,7 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 						data: null,
 						"render": function (data, type, row, meta) {
 							const elDiv = document.createElement("div");
-							elDiv.setAttribute("class", "data-cell");
+							elDiv.setAttribute("class", "data-cell hasTooltip");
 							elDiv.setAttribute("data-prop-name", (column.tableModelFields) ? column.tableModelFields.name : "");
 							elDiv.setAttribute("data-viewmodel", dataX.viewmodelId);
 							elDiv.setAttribute("data-id", row.id);

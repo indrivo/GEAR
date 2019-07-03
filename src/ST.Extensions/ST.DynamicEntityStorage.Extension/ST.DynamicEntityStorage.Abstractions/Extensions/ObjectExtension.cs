@@ -24,7 +24,8 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         GetTableConfigurations,
         AddDataRangeWithReflection,
         Any,
-        FirstOrDefault
+        FirstOrDefault,
+        Count
     }
 
     /// <summary>
@@ -155,7 +156,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         });
 
         /// <summary>
-        /// Get By id
+        /// Check any
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="obj"></param>
@@ -172,7 +173,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         });
 
         /// <summary>
-        /// Get By id
+        /// Check if any rows
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -183,6 +184,21 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
                new List<object>());
            return req;
        });
+
+
+        /// <summary>
+        /// Get count by filters
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="filters"></param>
+        /// <returns></returns>
+        public static Task<ResultModel<int>> Count(this DynamicObject obj, Dictionary<string, object> filters)
+            => Task.Run(() =>
+            {
+                var req = obj.Invoke<int>(MethodName.Count, new List<Type> { obj.Type },
+                    new List<object> { filters });
+                return req;
+            });
 
         /// <summary>
         /// Get By id

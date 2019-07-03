@@ -9477,7 +9477,7 @@ Modal Variations
 -------------------------------------------------------------------*/
 .sidebar {
 	position: fixed;
-	width: 271px;
+	width: 305px;
 	background-color: #424956;
 	height: 100%;
 	box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.3);
@@ -9501,7 +9501,7 @@ Modal Variations
 }
 
 .sidebar + .content-area {
-	margin-left: 271px;
+	margin-left: 305px;
 	transition: margin 0.5s;
 }
 
@@ -9586,9 +9586,8 @@ Modal Variations
 	overflow: hidden;
 	transition: all 0.5s;
 	position: relative;
-	/*white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;*/
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 @media screen and (prefers-reduced-motion: reduce) {
@@ -9622,7 +9621,7 @@ Modal Variations
 	height: 18px;
 	font-size: 18px;
 	opacity: 1;
-	transition: all 0.5s;
+	transition: all 0.3s;
 }
 
 @media screen and (prefers-reduced-motion: reduce) {
@@ -9669,19 +9668,30 @@ Modal Variations
 		background-color: transparent;
 	}
 
+	.sidebar .navigation ul li.open > .sub-nav {
+		display: block;
+		padding-left: 15px;
+		background: #676e7b !important;
+	}
+
+		.sidebar .navigation ul li.open > .sub-nav * {
+			background: inherit;
+		}
+
 .sidebar .navigation ul li .sub-nav {
+	display: none;
 	padding: 12px 0px;
 	padding-top: 0px;
 }
 
 	.sidebar .navigation ul li .sub-nav li a {
 		line-height: 32px;
-		padding-left: calc(42px + 1.2rem);
+		padding-left: calc(34px + 1.2rem);
 		font-size: 13px;
 	}
 
 	.sidebar .navigation ul li .sub-nav li.active a {
-		background-color: transparent;
+		background: #676e7b !important;
 		box-shadow: none;
 	}
 
@@ -9763,6 +9773,14 @@ Modal Variations
 				.sidebar.collapsed .navigation ul li .sub-nav a {
 					padding-left: 1.2rem;
 				}
+
+			.sidebar.collapsed .navigation ul li:hover > ul.sub-nav {
+				display: block !important;
+			}
+
+				.sidebar.collapsed .navigation ul li:hover > ul.sub-nav > ul.sub-nav {
+					display: none !important;
+				}
 }
 
 .sidebar.sidebar-light {
@@ -9806,7 +9824,7 @@ Modal Variations
 
 @media only screen and (max-width: 768px) {
 	.sidebar {
-		left: -275px;
+		left: -309px;
 	}
 
 		.sidebar + .content-area {
@@ -9814,7 +9832,7 @@ Modal Variations
 		}
 
 		.sidebar.collapsed {
-			width: 271px;
+			width: 305px;
 			left: 0px;
 		}
 
@@ -9833,8 +9851,8 @@ Modal Variations
 @media only screen and (max-width: 768px) {
 	.sidebar.collapsed + .content-area:before {
 		content: "";
-		position: fixed;
 		display: block;
+		position: fixed;
 		top: 0px;
 		left: 0px;
 		background-color: rgba(255, 255, 255, 0.5);
@@ -11587,9 +11605,9 @@ body {
 		display: none;
 	}
 
-	.sidebar .navigation .sub-nav a {
+	.sidebar .navigation .sub-nav li a {
 		font-size: 1.04em;
-		color: #fff;
+		color: #d3d4d7;
 		font-weight: normal;
 	}
 
@@ -11853,7 +11871,7 @@ thead {
 	.table tr td .bordered-cell {
 		border: 1px solid #424956;
 		border-radius: 5px;
-		padding: 1px 9px;
+		padding: 1px 9px 0;
 		display: inline-block;
 	}
 

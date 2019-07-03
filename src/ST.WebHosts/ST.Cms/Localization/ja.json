@@ -357,5 +357,19 @@
   "system_yes_continue": "あり、",
   "system_many_to_many_right_join_select_message": "を選択し、企業を多くの参照",
   "system_many_to_many_storage_entity_select": "を選択している者の店舗の参照はこれらの2つの事業体",
-  "system_many_to_many_success_mapping": "これらの設定を保存に成功し"
+  "system_many_to_many_success_mapping": "これらの設定を保存に成功し",
+  "iso_objectives_kpi_no_items": "表示したい場合は、KPIに関連した、目標にして頂くようお願いしますリンクの目的にkpiのことを ",
+  "iso_risk_scenario": "シナリオ",
+  "iso_risk_threat": "脅威",
+  "iso_risk_vulnerability": "の脆弱性",
+  "iso_risk_consequence": "結果",
+  "iso_risk_probability": "確率",
+  "iso_risk_inherentrisklevel": "固有のリスクレベル",
+  "iso_risk_treatment_plan": "経営計画",
+  "iso_residual_risk": "残留リスク",
+  "iso_risk_residual_risk_impact": "残留リスクの影響",
+  "iso_risk_propability_residual_risk": "確率の残留リスク",
+  "iso_risk_residual_level": "残留リスクのレベル",
+  "iso_risk_identified_date": "日付のリスクの洗い出し",
+  "iso_risk_close_date": "決算日"
 }

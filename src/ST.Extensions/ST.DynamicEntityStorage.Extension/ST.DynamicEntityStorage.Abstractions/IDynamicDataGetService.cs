@@ -115,7 +115,7 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        Task<ResultModel<int>> Count<TEntity>() where TEntity : BaseModel;
+        Task<ResultModel<int>> Count<TEntity>(Dictionary<string, object> filters = null) where TEntity : BaseModel;
 
         /// <summary>
         /// Get first or default

@@ -3,7 +3,7 @@
  *
  * v1.0.0
  *
- * License: MIT Soft-Tehnica Srl
+ * License: MIT Soft-Tehnica(Indrivo) Srl
  * Author: Lupei Nicolae
  */
 
@@ -16,6 +16,16 @@ if (typeof jQuery === "undefined") {
 function TableInlineEdit() {
 
 };
+
+/**
+ * Db provider
+ */
+TableInlineEdit.prototype.db = new DataInjector();
+
+/*
+ * Toast notifier
+ */
+TableInlineEdit.prototype.toast = new ToastNotifier();
 
 /**
  * Constructor
@@ -112,55 +122,60 @@ function cancelNewItem() {
 }
 
 function addNewItem() {
+	const ctx = new TableInlineEdit();
 	const context = $(this);
 	const dTable = context.closest("table").DataTable();
 	const rowContext = context.closest("tr");
 	const entityName = rowContext.attr("entityName");
-	const data = getRowData(rowContext);
-	const dataContext = new DataInjector();
-	const req = dataContext.Add(entityName, data);
-	if (req.is_success) {
-		$.toast({
-			heading: "New row added",
-			text: `info`,
-			position: "top-right",
-			loaderBg: "#ff6849",
-			icon: "success",
-			hideAfter: 3500,
-			stack: 6
-		});
-		dTable.draw();
-		new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
-		context.off("click", addNewItem);
-		cancelTableAddMode(context);
-	}
-	else {
-		$.toast({
-			heading: req.error_keys[0].message,
-			text: "",
-			position: "top-right",
-			loaderBg: "#ff6849",
-			icon: "error",
-			hideAfter: 3500,
-			stack: 6
-		});
-		new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
-	}
+	const data = ctx.getRowDataOnAddMode(rowContext);
+	const db = new DataInjector();
+	db.addAsync(entityName, data).then(req => {
+		if (req.is_success) {
+			$.toast({
+				heading: "New row added",
+				text: `info`,
+				position: "top-right",
+				loaderBg: "#ff6849",
+				icon: "success",
+				hideAfter: 3500,
+				stack: 6
+			});
+			dTable.draw();
+			ctx.toggleVisibilityColumnsButton(context, false);
+			context.off("click", addNewItem);
+			cancelTableAddMode(context);
+		} else {
+			$.toast({
+				heading: req.error_keys[0].message,
+				text: "",
+				position: "top-right",
+				loaderBg: "#ff6849",
+				icon: "error",
+				hideAfter: 3500,
+				stack: 6
+			});
+			ctx.toggleVisibilityColumnsButton(context, false);
+		}
+	}).catch(err => {
+		console.warn(err);
+	});
 }
 
 function cancelTableAddMode(ctx) {
 	ctx.closest("table").attr("add-mode", "false");
 }
 
-function getRowData(context) {
+/**
+ * Get row data on add mode
+ * @param {any} context
+ */
+TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
 	const data = $(context).find(".data-new");
 	const obj = {};
 	for (let i = 0; i < data.length; i++) {
 		const f = $(data[i]);
 		switch (f.attr("data-type")) {
 			case "nvarchar":
-			case "datetime":
-			case "date":
 			case "int32":
 			case "decimal": {
 				obj[f.attr("data-prop-name")] = f.val();
@@ -168,6 +183,14 @@ function getRowData(context) {
 			case "bool": {
 				obj[f.attr("data-prop-name")] = f.prop("checked");
 			} break;
+			case "datetime":
+			case "date":
+				{
+					const date = f.val();
+					const parsed = moment(date, "DD/MM/YYYY").format("DD.MM.YYYY h:mm");
+					console.log(parsed);
+					obj[f.attr("data-prop-name")] = parsed;
+				} break;
 			case "uniqueidentifier":
 				{
 					const value = f.val();
@@ -181,7 +204,7 @@ function getRowData(context) {
 		}
 	}
 	return obj;
-}
+};
 
 
 /**
@@ -198,9 +221,10 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 			entityName: ""
 		};
 	}
+
 	$(cell).addClass("expandable-cell");
 	const cellContent = document.createElement("div");
-	cellContent.setAttribute("class", "data-cell");
+	cellContent.setAttribute("class", "data-cell hasTooltip");
 	const entityName = column.config.column.tableModelFields.table.name;
 	const tableId = column.config.column.tableModelFields.table.id;
 	const { allowNull, dataType } = column.config.column.tableModelFields;
@@ -260,14 +284,13 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 		case "date":
 			{
 				const el = this.getDateEditCell(data);
+				console.log(el);
 				el.setAttribute("class", "inline-add-event data-new form-control");
-				cellContent.appendChild(el);
-				$(columns[i]).html(container);
-				$(columns[i]).find(".inline-add-event")
-					.on("change", function () { })
+				$(el).on("change", function () { })
 					.datepicker({
 						format: "dd/mm/yyyy"
 					}).addClass("datepicker");
+				cellContent.appendChild(el);
 			} break;
 		case "uniqueidentifier":
 			{
@@ -281,13 +304,13 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 				dropdown.setAttribute("data-type", "uniqueidentifier");
 				dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), "");
 				//Populate dropdown
-				const data = load(`/PageRender/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
-				if (data) {
-					if (data.is_success) {
-						$.each(data.result.data, function (index, obj) {
+				const refs = load(`/InlineEdit/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
+				if (refs) {
+					if (refs.is_success) {
+						$.each(refs.result.data, function (index, obj) {
 							dropdown.options[dropdown.options.length] = new Option(obj.Name, obj.Id);
 						});
-						dropdown.setAttribute("data-ref-entity", data.result.entityName);
+						dropdown.setAttribute("data-ref-entity", refs.result.entityName);
 					}
 				}
 				div.appendChild(dropdown);
@@ -420,11 +443,11 @@ TableInlineEdit.prototype.getReferenceEditCell = (conf) => {
 	dropdown.setAttribute("data-type", "uniqueidentifier");
 	dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), "");
 	//Populate dropdown
-	const data = load(`/PageRender/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`);
+	const data = load(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`);
 	if (data) {
 		if (data.is_success) {
 			const entityName = data.result.entityName;
-			let key = "Name";
+			const key = "Name";
 			$.each(data.result.data, function (index, obj) {
 				dropdown.options[dropdown.options.length] = new Option(obj[key], obj.Id);
 			});
@@ -553,7 +576,7 @@ TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 		} break;
 	}
 
-	const req = load(`/PageRender/SaveTableCellData`, { entityId, propertyId, rowId, value }, "post");
+	const req = load(`/InlineEdit/SaveTableCellData`, { entityId, propertyId, rowId, value }, "post");
 	if (req.is_success) {
 		this.displayNotification({ heading: window.translate("system_inline_saved"), text: displaySuccessText, icon: "success" });
 	} else {
@@ -640,73 +663,179 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 	targetCtx.off("click", inlineEditHandler);
 
 	const viewModelId = targetCtx.attr("data-viewmodel");
-	const viewModel = load(`/PageRender/GetViewModelColumnTypes?viewModelId=${viewModelId}`);
+	loadAsync(`/InlineEdit/GetViewModelColumnTypes?viewModelId=${viewModelId}`).then(viewModel => {
+		const columns = targetCtx.parent().parent().parent().find(".data-cell");
+		const table = targetCtx.closest("table").DataTable();
+		const row = targetCtx.closest("tr");
+		const index = table.row(row).index();
+		let obj = table.row(index).data();
+		for (let i = 0; i < columns.length; i++) {
+			const columnCtx = $(columns[i]);
+			const columnId = columnCtx.attr("data-column-id");
+			const fieldData = viewModel.result.entityFields.find(x => {
+				return x.columnId === columnId;
+			});
 
-	const columns = targetCtx.parent().parent().parent().find(".data-cell");
-	const table = targetCtx.closest("table").DataTable();
-	const row = targetCtx.closest("tr");
-	const index = table.row(row).index();
-	var obj = table.row(index).data();
-	for (let i = 0; i < columns.length; i++) {
-		const columnCtx = $(columns[i]);
-		const columnId = columnCtx.attr("data-column-id");
-		const fieldData = viewModel.result.filter(obj => {
-			return obj.columnId === columnId;
-		});
-		if (fieldData.length > 0) {
-			//const viewModelId = $(columns[i]).attr("data-viewmodel");
+			const viewModelConfigurations = viewModel.result.viewModelFields.find(x => {
+				return x.id === columnId;
+			});
 			const cellId = columnCtx.attr("data-id");
-			columnCtx.parent().addClass("expandable-cell");
-			const tableId = fieldData[0].tableId;
-			const propId = fieldData[0].id;
-			const propName = fieldData[0].name;
-			const parsedPropName = propName[0].toLowerCase() + propName.substr(1, propName.length);
-			const value = obj[parsedPropName];
-			let container = value;
-			const data = { cellId, tableId, propId, value, propName };
-			switch (fieldData[0].dataType) {
-				case "nvarchar":
-					{
-						container = this.getTextEditCell(data);
-						columnCtx.html(container);
-						this.onAfterInitTextEditCell(columns, i);
-					}
-					break;
-				case "int32":
-				case "decimal":
-					{
-						container = this.getNumberEditCell(data);
-						columnCtx.html(container);
-						this.onAfterInitNumberEditCell(columns, i);
-					}
-					break;
-				case "bool":
-					{
-						container = this.getBooleanEditCell(data);
-						columnCtx.html(container);
-						this.onAfterInitBooleanEditCell(columns, i);
-					}
-					break;
-				case "datetime":
-				case "date":
-					{
-						container = this.getDateEditCell(data);
-						columnCtx.html(container);
-						this.onAfterInitDateEditCell(columns, i);
-					}
-					break;
-				case "uniqueidentifier":
-					{
-						container = this.getReferenceEditCell(data);
-						columnCtx.html(container);
-						this.onAfterInitReferenceCell(columns, i);
-					}
-					break;
+			if (fieldData) {
+				//const viewModelId = $(columns[i]).attr("data-viewmodel");
+				const tableId = fieldData.tableId;
+				const propId = fieldData.id;
+				const propName = fieldData.name;
+				const parsedPropName = propName.toLowerFirstLetter();
+				const value = obj[parsedPropName];
+				let container = value;
+				const data = { cellId, tableId, propId, value, propName };
+				switch (fieldData.dataType) {
+					case "nvarchar":
+						{
+							container = this.getTextEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitTextEditCell(columns, i);
+							columnCtx.parent().addClass("expandable-cell");
+						}
+						break;
+					case "int32":
+					case "decimal":
+						{
+							container = this.getNumberEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitNumberEditCell(columns, i);
+						}
+						break;
+					case "bool":
+						{
+							container = this.getBooleanEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitBooleanEditCell(columns, i);
+						}
+						break;
+					case "datetime":
+					case "date":
+						{
+							container = this.getDateEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitDateEditCell(columns, i);
+						}
+						break;
+					case "uniqueidentifier":
+						{
+							container = this.getReferenceEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitReferenceCell(columns, i);
+						}
+						break;
+				}
+			} else if (viewModelConfigurations) {
+				switch (viewModelConfigurations.virtualDataType) {
+					//Many to many
+					case 3:
+						{
+							this.initManyToManyControl({
+								viewModelConfigurations, columnCtx, cellId
+							});
+						}
+						break;
+				}
 			}
 		}
-	}
-	targetCtx.on("click", completeEditInlineHandler);
-	this.bindEventsAfterInitInlineEdit();
+		targetCtx.on("click", completeEditInlineHandler);
+		this.bindEventsAfterInitInlineEdit();
+	}).catch(err => {
+		console.warn(err);
+	});
+};
+
+/**
+ * Get viewmodel field configurations for many to many
+ * @param {any} data
+ */
+TableInlineEdit.prototype.getManyToManyViewModelConfigurations = (data) => {
+	const { configurations } = data;
+	const sourceEntity = configurations.find(x => x.viewModelFieldCodeId === 2001);
+	const sourceSelfParamName = configurations.find(x => x.viewModelFieldCodeId === 1003);
+	const sourceRefParamName = configurations.find(x => x.viewModelFieldCodeId === 2003);
+	const referenceEntityName = configurations.find(x => x.viewModelFieldCodeId === 1001);
+	return { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName };
+};
+
+/**
+ * Many to many control
+ * @param {any} data
+ */
+TableInlineEdit.prototype.initManyToManyControl = function (data) {
+	const { viewModelConfigurations, columnCtx, cellId } = data;
+	const scope = this;
+	const mCtx = columnCtx.closest("td");
+	const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
+		= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
+	mCtx.on("click", function () {
+		const promiseArr = [];
+		promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
+		promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
+			[{ parameter: sourceSelfParamName.value, value: cellId }]));
+		//get data
+		Promise.all(promiseArr).then(pResult => {
+			const rAll = pResult[0];
+			const rSelected = pResult[1];
+			if (!rAll.is_success || !rSelected.is_success) {
+				return scope.displayNotification({ heading: "Fail get data" });
+			}
+			const dItems = rAll.result.map(x => {
+				const e = rSelected.result.find(y =>
+					y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
+				const o = {
+					id: x.id,
+					value: x.name,
+					checked: e ? true : false
+				};
+				return o;
+			});
+			const multiSelectItem = $.Iso.DynamicFilter("multi-select",
+				mCtx, dItems,
+				{
+					sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName,
+					recordId: cellId,
+					searchBarPlaceholder: window.translate("system_search")
+				});
+
+			$(multiSelectItem.dynamicSelect).on("filterValueChange", (event, arg) => {
+				const { id, checked } = arg.changedValue;
+				const { recordId, sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } = arg.options;
+				if (checked) {
+					const addO = {};
+					addO[sourceSelfParamName.value] = recordId;
+					addO[sourceRefParamName.value] = id;
+					scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
+						if (addResult.is_success) {
+							scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+						} else {
+							scope.toast.notifyErrorList(addResult.error_keys);
+						}
+					}).catch(err => {
+						console.warn(err);
+					});
+				} else {
+					const deleteFilters = [
+						{ parameter: sourceSelfParamName.value, value: recordId },
+						{ parameter: sourceRefParamName.value, value: id }
+					];
+					scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(deleteResult => {
+						if (deleteResult.is_success) {
+							scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+						} else {
+							scope.toast.notifyErrorList(deleteResult.error_keys);
+						}
+					}).catch(err => err);
+				}
+			});
+		}).catch(err => {
+			console.warn(err);
+		});
+	});
 };
 
 /**
@@ -714,67 +843,121 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
  * @param {any} target
  */
 TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
-	const service = new DataInjector();
 	const targetCtx = $(target);
 	const table = targetCtx.closest("table").DataTable();
-	var row = targetCtx.closest("tr");
+	const row = targetCtx.closest("tr");
 	const index = table.row(row).index();
 	var obj = table.row(index).data();
-	$(this).off("click", completeEditInlineHandler);
+	targetCtx.off("click", completeEditInlineHandler);
 	const columns = targetCtx.parent().parent().parent().find(".data-cell");
 
 	const viewModelId = $(columns[0]).attr("data-viewmodel");
-	const viewModel = load(`/PageRender/GetViewModelColumnTypes?viewModelId=${viewModelId}`);
-	if (!viewModelId) return;
-	if (!viewModel.is_success) return;
+	loadAsync(`/InlineEdit/GetViewModelColumnTypes?viewModelId=${viewModelId}`).then(viewModel => {
+		if (!viewModelId) return;
+		if (!viewModel.is_success) return;
+		const promises = [];
+		for (let i = 0; i < columns.length; i++) {
+			const forPromise = new Promise((globalResolve, globalReject) => {
+				const columnCtx = $(columns[i]);
+				const inspect = columnCtx.find(".data-input");
+				const type = inspect.attr("data-type");
+				const columnId = inspect.attr("data-prop-id");
+				const colId = columnCtx.attr("data-column-id");
 
-	for (let i = 0; i < columns.length; i++) {
-		const columnCtx = $(columns[i]);
-		const inspect = columnCtx.find(".data-input");
-		if (inspect) {
-			const type = inspect.attr("data-type");
-			const columnId = inspect.attr("data-prop-id");
+				const fieldData = viewModel.result.entityFields.find(obj => {
+					return obj.id === columnId;
+				});
 
-			const fieldData = viewModel.result.filter(obj => {
-				return obj.id === columnId;
+				const viewModelConfigurations = viewModel.result.viewModelFields.find(x => {
+					return x.id === colId;
+				});
+				if (!inspect) globalResolve();
+
+				const pr1 = new Promise((pr1Resolve, pr2Reject) => {
+					if (!fieldData) pr1Resolve();
+					const propName = fieldData.name;
+					const parsedPropName = propName.toLowerFirstLetter();
+
+					const value = inspect.val();
+
+					switch (type) {
+						case "bool":
+							{
+								obj[parsedPropName] = inspect.prop("checked");
+								pr1Resolve();
+							}
+							break;
+						case "uniqueidentifier":
+							{
+								const refEntity = inspect.attr("data-ref-entity");
+								this.db.getByIdWithIncludesAsync(refEntity, value).then(refObject => {
+									if (refObject.is_success) {
+										obj[`${parsedPropName}Reference`] = refObject.result;
+										obj[parsedPropName] = value;
+									} else {
+										this.toast.notifyErrorList(refObject.error_keys);
+									}
+									pr1Resolve();
+								}).catch(err => { console.warn(err) });
+							}
+							break;
+						default:
+							{
+								obj[parsedPropName] = value;
+								pr1Resolve();
+							}
+							break;
+					}
+				}).then(() => {
+					columnCtx.find(".inline-update-event").off("blur", onInputEventHandler);
+					columnCtx.find(".inline-update-event").off("changed", onInputEventHandler);
+				});
+
+				const pr2 = new Promise((localResolve, localReject) => {
+					if (viewModelConfigurations) {
+						switch (viewModelConfigurations.virtualDataType) {
+							//Many to many
+							case 3:
+								{
+									const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } =
+										this.getManyToManyViewModelConfigurations(viewModelConfigurations);
+									const filters = [{ parameter: sourceSelfParamName.value, value: obj.id }];
+									this.db.getAllWhereWithIncludesAsync(sourceEntity.value, filters).then(mResult => {
+										if (mResult.is_success) {
+											obj[`${sourceEntity.value.toLowerFirstLetter()}Reference`] = mResult.result;
+										} else {
+											this.toast.notifyErrorList(mResult.error_keys);
+										}
+										localResolve();
+									}).catch(err => {
+										console.warn(err);
+										localResolve();
+									});
+								}
+								break;
+							default:
+								localResolve();
+								break;
+						}
+					} else localResolve();
+				});
+
+				Promise.all([pr1, pr2]).then(() => {
+					globalResolve();
+				});
 			});
 
-			if (fieldData.length === 0) continue;
-			const propName = fieldData[0].name;
-			const parsedPropName = propName[0].toLowerCase() + propName.substr(1, propName.length);
-
-			const value = inspect.val();
-
-			switch (type) {
-				case "bool": {
-					obj[parsedPropName] = inspect.prop("checked");
-				} break;
-				case "uniqueidentifier": {
-					const refEntity = inspect.attr("data-ref-entity");
-					const refObject = service.GetById(refEntity, value);
-					if (refObject.is_success) {
-						var json = JSON.stringify(refObject.result);
-						var newJson = json.replace(/"([\w]+)":/g, function ($0, $1) {
-							return ('"' + $1.toLowerCase() + '":');
-						});
-						var newObj = JSON.parse(newJson);
-						obj[`${parsedPropName}Reference`] = newObj;
-						obj[parsedPropName] = value;
-					}
-
-				} break;
-				default: {
-					obj[parsedPropName] = value;
-				} break;
-			}
-			columnCtx.find(".inline-update-event").off("blur", onInputEventHandler);
-			columnCtx.find(".inline-update-event").off("changed", onInputEventHandler);
+			promises.push(forPromise);
 		}
-	}
 
-	const redraw = table.row(index).data(obj).invalidate();
+		Promise.all(promises).then(() => {
+			const redraw = table.row(index).data(obj).invalidate();
+			$(redraw.row(index).nodes()).find(".inline-edit").on("click", inlineEditHandler);
+		});
 
-	$(redraw.row(index).nodes()).find(".inline-edit").on("click", inlineEditHandler);
+	}).catch(err => {
+		console.warn(err);
+	});
 };
 
 /**

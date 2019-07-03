@@ -465,11 +465,34 @@ namespace ST.Cms.Services
 					Content = content,
 					ControlActivities = new ControlActivities(),
 					ControlDocuments = new ControlDocuments(),
-					ControlRisks = new ControlRisks(),
+					ControlRisks = new ControlRisks
+					{
+						TotalRisks = await GetControlRisksCount(x.Id)
+					},
 					ControlDetails = await GetControlDetailsAsync(x.Id)
 				};
 			}).Select(x => x.Result).OrderBy(x => x.Number, new StringNumberComparer()).ToList();
 			return data;
+		}
+
+		/// <summary>
+		/// Get total risks assigned to control
+		/// </summary>
+		/// <param name="controlId"></param>
+		/// <returns></returns>
+		private async Task<int> GetControlRisksCount(Guid controlId)
+		{
+			var result = 0;
+			var filters = new Dictionary<string, object>
+			{
+				{ "ControlId", controlId }
+			};
+			var dbResult = await _service.Table("RiskControls").Count(filters);
+			if (dbResult.IsSuccess)
+			{
+				result = dbResult.Result;
+			}
+			return result;
 		}
 
 		/// <summary>

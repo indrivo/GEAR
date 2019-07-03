@@ -357,5 +357,19 @@
   "system_yes_continue": "是的，继续",
   "system_many_to_many_right_join_select_message": "选择实体创建一个多为许多参考",
   "system_many_to_many_storage_entity_select": "选择实体储存的参考这些实体2",
-  "system_many_to_many_success_mapping": "这些设置已经被成功保存"
+  "system_many_to_many_success_mapping": "这些设置已经被成功保存",
+  "iso_objectives_kpi_no_items": "如果你想要显示KPI有关这个目标将要求您的链接目标的业绩指标，是有关的 ",
+  "iso_risk_scenario": "方案",
+  "iso_risk_threat": "威胁",
+  "iso_risk_vulnerability": "脆弱性",
+  "iso_risk_consequence": "后果",
+  "iso_risk_probability": "概率",
+  "iso_risk_inherentrisklevel": "固有的风险水平",
+  "iso_risk_treatment_plan": "管理计划",
+  "iso_residual_risk": "残余风险",
+  "iso_risk_residual_risk_impact": "剩余风险的影响",
+  "iso_risk_propability_residual_risk": "概率的残余风险",
+  "iso_risk_residual_level": "剩余的风险水平",
+  "iso_risk_identified_date": "日期的风险识别",
+  "iso_risk_close_date": "闭幕日期"
 }

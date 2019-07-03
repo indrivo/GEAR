@@ -357,5 +357,19 @@
   "system_yes_continue": "Ναι, συνεχίστε",
   "system_many_to_many_right_join_select_message": "Επιλέξτε την οντότητα για να δημιουργήσετε μια πολυ σε πολλά αναφοράς",
   "system_many_to_many_storage_entity_select": "Επιλέξτε την οντότητα που αποθηκεύει τις αναφορές για αυτές τις 2 οντότητες",
-  "system_many_to_many_success_mapping": "Αυτές οι ρυθμίσεις έχουν αποθηκευτεί με επιτυχία"
+  "system_many_to_many_success_mapping": "Αυτές οι ρυθμίσεις έχουν αποθηκευτεί με επιτυχία",
+  "iso_objectives_kpi_no_items": "Εάν θέλετε να εμφανίσετε KPI σχετικές με αυτό το στόχο θα σας ζητήσει να συνδέσετε το γκολ του kpi που είναι σχετικές με το ",
+  "iso_risk_scenario": "Το σενάριο",
+  "iso_risk_threat": "Απειλή",
+  "iso_risk_vulnerability": "Το θέμα ευπάθειας",
+  "iso_risk_consequence": "Συνέπεια",
+  "iso_risk_probability": "Πιθανότητα",
+  "iso_risk_inherentrisklevel": "Εγγενή κίνδυνο επίπεδο",
+  "iso_risk_treatment_plan": "Σχέδιο διαχείρισης",
+  "iso_residual_risk": "Υπολειμματικός κίνδυνος",
+  "iso_risk_residual_risk_impact": "Υπολειμματικός κίνδυνος πρόσκρουσης",
+  "iso_risk_propability_residual_risk": "Πιθανότητα του κινδύνου",
+  "iso_risk_residual_level": "Υπολειμματικός Κίνδυνος Επίπεδο",
+  "iso_risk_identified_date": "Ημερομηνία αναγνώρισης κινδύνου",
+  "iso_risk_close_date": "Καταληκτική ημερομηνία"
 }

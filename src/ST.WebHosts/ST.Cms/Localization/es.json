@@ -357,5 +357,19 @@
   "system_yes_continue": "Sí, continuar",
   "system_many_to_many_right_join_select_message": "Seleccione la entidad a crear un multi a muchos de referencia",
   "system_many_to_many_storage_entity_select": "Seleccione la entidad que almacena las referencias para estas 2 entidades",
-  "system_many_to_many_success_mapping": "Estos ajustes se han guardado correctamente"
+  "system_many_to_many_success_mapping": "Estos ajustes se han guardado correctamente",
+  "iso_objectives_kpi_no_items": "Si desea mostrar los KPI relevantes para este objetivo, habrá que preguntarle a vincular el objetivo de los indicadores que son relevantes en el ",
+  "iso_risk_scenario": "Escenario",
+  "iso_risk_threat": "Amenaza",
+  "iso_risk_vulnerability": "Vulnerabilidad",
+  "iso_risk_consequence": "Consecuencia",
+  "iso_risk_probability": "Probabilidad",
+  "iso_risk_inherentrisklevel": "Riesgo inherente a nivel de",
+  "iso_risk_treatment_plan": "Plan de gestión de",
+  "iso_residual_risk": "Riesgo Residual",
+  "iso_risk_residual_risk_impact": "Riesgo Residual impacto",
+  "iso_risk_propability_residual_risk": "Probabilidad de riesgo residual",
+  "iso_risk_residual_level": "Riesgo Residual Nivel",
+  "iso_risk_identified_date": "Fecha de la identificación de riesgos",
+  "iso_risk_close_date": "Fecha de cierre"
 }

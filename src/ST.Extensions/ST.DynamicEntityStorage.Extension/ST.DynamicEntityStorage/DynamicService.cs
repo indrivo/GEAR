@@ -611,7 +611,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public virtual async Task<ResultModel<int>> Count<TEntity>() where TEntity : BaseModel
+        public virtual async Task<ResultModel<int>> Count<TEntity>(Dictionary<string, object> filters = null) where TEntity : BaseModel
         {
             var result = new ResultModel<int>()
             {
@@ -626,8 +626,7 @@ namespace ST.DynamicEntityStorage
                 return result;
             }
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
-            model.Values = new List<Dictionary<string, object>>();
-            var count = _context.GetCount(model);
+            var count = _context.GetCount(model, filters);
             if (!count.IsSuccess) return result;
             result.IsSuccess = count.IsSuccess;
             result.Result = count.Result;

@@ -357,5 +357,19 @@
   "system_yes_continue": "Tak, kontynuuj",
   "system_many_to_many_right_join_select_message": "Wybierz obiekt do tworzenia wielu link",
   "system_many_to_many_storage_entity_select": "Wybierz obiekt, który przechowuje linki do tych 2 encji",
-  "system_many_to_many_success_mapping": "Ustawienia zapisane pomyślnie"
+  "system_many_to_many_success_mapping": "Ustawienia zapisane pomyślnie",
+  "iso_objectives_kpi_no_items": "Jeśli nie chcesz umieszczać na PK internetowych, odpowiednich dla tego celu, należy nawiązać połączenie między tym celu, kpi internetowych, z odpowiednimi ",
+  "iso_risk_scenario": "Scenariusz",
+  "iso_risk_threat": "Zagrożenie",
+  "iso_risk_vulnerability": "Luka",
+  "iso_risk_consequence": "Śledztwo",
+  "iso_risk_probability": "Prawdopodobieństwo",
+  "iso_risk_inherentrisklevel": "Właściwego poziomu ryzyka ",
+  "iso_risk_treatment_plan": "Plan zarządzania ",
+  "iso_residual_risk": "Ryzyko rezydualne",
+  "iso_risk_residual_risk_impact": "Resztkowe oddziaływanie ryzyka ",
+  "iso_risk_propability_residual_risk": "Prawdopodobieństwo ryzyka szczątkowego",
+  "iso_risk_residual_level": "Pozostały Poziom Ryzyka ",
+  "iso_risk_identified_date": "Data identyfikacji ryzyka",
+  "iso_risk_close_date": "Data zamknięcia "
 }

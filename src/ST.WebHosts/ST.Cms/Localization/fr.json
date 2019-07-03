@@ -357,5 +357,19 @@
   "system_yes_continue": "Oui, continuer",
   "system_many_to_many_right_join_select_message": "Sélectionnez l'entité à créer un multi de référence de nombreux",
   "system_many_to_many_storage_entity_select": "Sélectionnez l'entité qui stocke les références de ces 2 entités",
-  "system_many_to_many_success_mapping": "Ces paramètres ont été enregistrés avec succès"
+  "system_many_to_many_success_mapping": "Ces paramètres ont été enregistrés avec succès",
+  "iso_objectives_kpi_no_items": "Si vous souhaitez afficher les KPI pertinents à cet objectif va vous demander de liaison de l'objectif, les indicateurs de performance qui sont pertinentes dans le ",
+  "iso_risk_scenario": "Scénario",
+  "iso_risk_threat": "Menace",
+  "iso_risk_vulnerability": "La vulnérabilité",
+  "iso_risk_consequence": "Conséquence",
+  "iso_risk_probability": "Probabilité",
+  "iso_risk_inherentrisklevel": "Le niveau de risque inhérent",
+  "iso_risk_treatment_plan": "Plan de gestion",
+  "iso_residual_risk": "Le risque résiduel",
+  "iso_risk_residual_risk_impact": "Le risque résiduel impact",
+  "iso_risk_propability_residual_risk": "La probabilité du risque résiduel",
+  "iso_risk_residual_level": "Niveau De Risque Résiduel",
+  "iso_risk_identified_date": "Date de l'identification des risques",
+  "iso_risk_close_date": "Date de clôture"
 }

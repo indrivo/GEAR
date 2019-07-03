@@ -357,5 +357,19 @@
   "system_yes_continue": "Da, continua",
   "system_many_to_many_right_join_select_message": "Selectati entitatea pentru a crea un multi pentru mulți referință",
   "system_many_to_many_storage_entity_select": "Selectați entitate care stochează valorile de referință pentru aceste 2 entități",
-  "system_many_to_many_success_mapping": "Configurarile au fost salvate cu success"
+  "system_many_to_many_success_mapping": "Configurarile au fost salvate cu success",
+  "iso_objectives_kpi_no_items": "Daca doriti afisarea KPI-urilor relevante pentru acest obiectiv va rugam sa legati acest obiectiv de kpi-urile relevante din ",
+  "iso_risk_scenario": "Scenariu",
+  "iso_risk_threat": "Amenințare",
+  "iso_risk_vulnerability": "Vulnerabilitate",
+  "iso_risk_consequence": "Consecință",
+  "iso_risk_probability": "Probabilitatea",
+  "iso_risk_inherentrisklevel": "Nivel de risc inerent",
+  "iso_risk_treatment_plan": "Planul de tratare",
+  "iso_residual_risk": "Riscul rezidual",
+  "iso_risk_residual_risk_impact": "Risc rezidual impact",
+  "iso_risk_propability_residual_risk": "Probabilitatea de risc rezidual",
+  "iso_risk_residual_level": "Nivel Risc rezidual",
+  "iso_risk_identified_date": "Data de identificare a riscurilor",
+  "iso_risk_close_date": "Data de închidere"
 }

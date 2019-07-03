@@ -138,6 +138,33 @@ DataInjector.prototype.GetByIdWithInclude = function (table, itemId) {
 //------------------------------------Async-------------------------------------//
 
 /**
+ * Get entity row by id
+ * @param {any} table
+ * @param {any} itemId
+ */
+DataInjector.prototype.getByIdWithIncludesAsync = function (entityName, itemId) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			object: itemId
+		});
+		$.ajax({
+			url: `/api/DataInjector/getByIdWithIncludesAsync`,
+			data: dataParams,
+			method: "post",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+/**
  * Add new row to entity in async mode 
  * @param {any} table
  * @param {any} object
@@ -191,7 +218,11 @@ DataInjector.prototype.updateAsync = function (entityName, object) {
 	});
 }
 
-
+/**
+ * Delete permanent async
+ * @param {any} entityName
+ * @param {any} filters
+ */
 DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters) {
 	return new Promise((resolve, reject) => {
 		const dataParams = JSON.stringify({
@@ -215,7 +246,6 @@ DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters
 }
 
 
-
 /**
  * Get all with filters async
  * @param {any} table
@@ -229,6 +259,33 @@ DataInjector.prototype.getAllWhereNoIncludesAsync = function (entityName, filter
 		});
 		$.ajax({
 			url: "/api/DataInjector/getAllWhereNoIncludesAsync",
+			data: dataParams,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			method: "post",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+/**
+ * Get all with include and filters async
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.getAllWhereWithIncludesAsync = function (entityName, filters = []) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: "/api/DataInjector/getAllWhereWithIncludesAsync",
 			data: dataParams,
 			contentType: "application/json; charset=utf-8",
 			dataType: "json",

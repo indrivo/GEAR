@@ -357,5 +357,19 @@
   "system_yes_continue": "Да, продолжить",
   "system_many_to_many_right_join_select_message": "Выберите объект для создания многих ссылка",
   "system_many_to_many_storage_entity_select": "Выберите объект, который хранит ссылки на эти 2 сущности",
-  "system_many_to_many_success_mapping": "Настройки сохранены успешно"
+  "system_many_to_many_success_mapping": "Настройки сохранены успешно",
+  "iso_objectives_kpi_no_items": "Если вы не хотите размещать на КПИ-сайтов, релевантных для этой цели, пожалуйста, установить связь между этой цели, kpi-сайты, с соответствующими ",
+  "iso_risk_scenario": "Сценарий",
+  "iso_risk_threat": "Угроза",
+  "iso_risk_vulnerability": "Уязвимость",
+  "iso_risk_consequence": "Следствие",
+  "iso_risk_probability": "Вероятность",
+  "iso_risk_inherentrisklevel": "Присущего уровня рисков ",
+  "iso_risk_treatment_plan": "План управления ",
+  "iso_residual_risk": "Остаточный риск",
+  "iso_risk_residual_risk_impact": "Остаточное воздействие риска ",
+  "iso_risk_propability_residual_risk": "Вероятность остаточного риска",
+  "iso_risk_residual_level": "Остаточный Уровень Риска ",
+  "iso_risk_identified_date": "Дата выявления рисков",
+  "iso_risk_close_date": "Дата закрытия "
 }
