@@ -23,7 +23,7 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// Add description for field
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } 
 
         /// <summary>
         /// Name

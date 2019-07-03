@@ -1,27 +1,9 @@
 // Make sure jQuery has been loaded
 if (typeof jQuery === 'undefined') {
-	throw new Error('Events requires jQuery')
+	throw new Error('Events requires jQuery');
 }
 
-window.load = function (uri, data = null, type = "get") {
-	try {
-		const url = new URL(location.href);
-		uri = `${url.origin}${uri}`;
-
-		const req = $.ajax({
-			url: uri,
-			type: type,
-			data: data,
-			async: false
-		});
-		return JSON.parse(req.responseText);
-	} catch (exp) {
-		console.log(exp);
-		return null;
-	}
-};
-
-
+//TODO: need to delete this gavno code and write new code
 //Delete row from Jquery Table
 function DeleteData(object) {
 	swal({
@@ -60,6 +42,107 @@ function DeleteData(object) {
 		}
 	});
 }
+
+//------------------------------------------------------------------------------------//
+//									Ajax requests
+//------------------------------------------------------------------------------------//
+/**
+ * Load data with ajax
+ * @param {any} uri
+ * @param {any} data
+ * @param {any} type
+ */
+window.load = function (uri, data = null, type = "get") {
+	try {
+		const url = new URL(location.href);
+		uri = `${url.origin}${uri}`;
+
+		const req = $.ajax({
+			url: uri,
+			type: type,
+			data: data,
+			async: false
+		});
+		return JSON.parse(req.responseText);
+	} catch (exp) {
+		console.log(exp);
+		return null;
+	}
+};
+
+/**
+ * Load data with ajax async
+ * @param {any} uri
+ * @param {any} data
+ * @param {any} type
+ */
+window.loadAsync = function (uri, data = null, type = "get") {
+	return new Promise((resolve, reject) => {
+		try {
+			const url = new URL(location.href);
+			uri = `${url.origin}${uri}`;
+			$.ajax({
+				url: uri,
+				type: type,
+				data: data,
+				success: function(rData) {
+					resolve(rData);
+				},
+				error: function(err) {
+					reject(err);
+				}
+			});
+		} catch (exp) {
+			reject(exp);
+		}
+	});
+};
+
+//------------------------------------------------------------------------------------//
+//								End ajax requests
+//------------------------------------------------------------------------------------//
+
+//------------------------------------------------------------------------------------//
+//								Toast notifier
+//------------------------------------------------------------------------------------//
+function ToastNotifier() {
+
+}
+
+ToastNotifier.prototype.constructor = ToastNotifier;
+
+/**
+ * Display notification
+ * @param {any} conf
+ */
+ToastNotifier.prototype.notify = (conf) => {
+	const settings = {
+		heading: "",
+		text: "",
+		position: "top-right",
+		loaderBg: "#ff6849",
+		icon: "error",
+		hideAfter: 2500,
+		stack: 6
+	};
+	Object.assign(settings, conf);
+	$.toast(settings);
+};
+
+/**
+ * Display errors 
+ * @param {any} arr
+ */
+ToastNotifier.prototype.notifyErrorList = function(arr) {
+	for (let i = 0; i < arr.length; i++) {
+		this.notify({ heading: "Error", text: arr[i].message });
+	}
+};
+
+//------------------------------------------------------------------------------------//
+//								End toast notifier
+//------------------------------------------------------------------------------------//
+
 
 //------------------------------------------------------------------------------------//
 //								Random color
@@ -136,13 +219,31 @@ TemplateManager.prototype.render = function (identifier, data, helpers) {
 
 //Get translations from storage
 window.translations = function () {
-	const cached = localStorage.getItem("translations");
+	const cached = localStorage.getItem("hasLoadedTranslations");
 	let trans = {};
 	if (!cached) {
 		trans = load("/Localization/GetTranslationsForCurrentLanguage");
-		localStorage.setItem("translations", JSON.stringify(trans));
+		let index = 0;
+		let step = 1;
+		let round = {};
+		for (let key in trans) {
+			round[key] = trans[key];
+			index++;
+			if (index % 200 == 0) {
+				localStorage.setItem(`translations_${step}`, JSON.stringify(round));
+				round = {};
+				step++;
+			}
+		}
+		localStorage.setItem(`translations_${step}`, JSON.stringify(round));
+		localStorage.setItem("transCollectionCount", step);
+		localStorage.setItem("hasLoadedTranslations", "yes")
 	} else {
-		trans = JSON.parse(cached);
+		const count = localStorage.getItem("transCollectionCount");
+		for (let i = 1; i <= count; i++) {
+			const cacheSerialCollection = localStorage.getItem(`translations_${i}`);
+			trans = Object.assign(trans, JSON.parse(cacheSerialCollection));
+		}
 	}
 	window.localTranslations = trans;
 	return trans;
@@ -151,6 +252,18 @@ window.translations = function () {
 
 window.translate = function (key) {
 	if (window.localTranslations) {
+		if (!window.localTranslations.hasOwnProperty(key)) {
+			$.toast({
+				heading: `Key: ${key} is not translated!`,
+				text: "",
+				position: 'top-right',
+				loaderBg: '#ff6849',
+				icon: 'error',
+				hideAfter: 3500,
+				stack: 6
+			});
+			localStorage.removeItem("hasLoadedTranslations");
+		}
 		return window.localTranslations[key];
 	}
 	const trans = window.translations();
@@ -164,7 +277,7 @@ window.translate = function (key) {
 
 //Translate page content
 window.forceTranslate = function (selector = null) {
-	new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		var ctx = (!selector)
 			? document.getElementsByTagName('*')
 			: document.querySelector(selector).getElementsByTagName('*');
@@ -177,12 +290,23 @@ window.forceTranslate = function (selector = null) {
 		$.each(translations,
 			function (index, item) {
 				let key = $(item).attr("translate");
-				const translation = trans[key];
-				if (translation) {
-					$(item).text(translation);
-					$(item).attr("translated", "");
-				} else {
-					localStorage.removeItem("translations");
+				if (key != "none" && key) {
+					const translation = trans[key];
+					if (translation) {
+						$(item).text(translation);
+						$(item).attr("translated", "");
+					} else {
+						$.toast({
+							heading: `Key: ${key} is not translated!`,
+							text: "",
+							position: 'top-right',
+							loaderBg: '#ff6849',
+							icon: 'error',
+							hideAfter: 3500,
+							stack: 6
+						});
+						localStorage.removeItem("hasLoadedTranslations");
+					}
 				}
 			});
 		resolve();
@@ -241,9 +365,10 @@ $(document).ready(function () {
 //------------------------------------------------------------------------------------//
 
 $(document).ready(function () {
+	if (typeof signalR === 'undefined') return;
 	const notificator = new Notificator();
 	const user = notificator.getCurrentUser();
-	var connPromise = new Promise((resolve, reject) => {
+	const connPromise = new Promise((resolve, reject) => {
 		var connection = new signalR.HubConnectionBuilder()
 			.withUrl("/rtn", signalR.HttpTransportType.LongPolling)
 			.build();
@@ -277,6 +402,10 @@ $(document).ready(function () {
 			if (user && user.is_success) {
 				connection.invoke("OnLoad", user.result.id)
 					.catch(err => console.error(err.toString()));
+				$(window).bind("beforeunload",
+					function () {
+						connection.stop();
+					});
 			}
 		});
 	});
@@ -1027,3 +1156,13 @@ ST.prototype.newGuid = function () {
 	}
 	return result;
 };
+
+
+
+if (typeof String != 'undefined') {
+	String.prototype.toLowerFirstLetter = function () {
+		const first = this[0].toLowerCase();
+		const res = `${first}${this.slice(1, this.length)}`;
+		return res;
+	}
+}

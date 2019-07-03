@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.UserProfiles;
+using ST.PageRender.Abstractions;
 
 namespace ST.Cms.TagHelpers
 {
@@ -49,6 +50,12 @@ namespace ST.Cms.TagHelpers
 		/// Inject context
 		/// </summary>
 		private readonly EntitiesDbContext _dbContext;
+
+		/// <summary>
+		/// Inject page context
+		/// </summary>
+		private readonly IDynamicPagesContext _pagesContext;
+
 		/// <summary>
 		/// Inject User Manager
 		/// </summary>
@@ -65,10 +72,11 @@ namespace ST.Cms.TagHelpers
 		/// <param name="dbContext"></param>
 		/// <param name="httpContextAccessor"></param>
 		/// <param name="userManager"></param>
-		public ListTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
+		public ListTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IDynamicPagesContext pagesContext)
 		{
 			_dbContext = dbContext;
 			_userManager = userManager;
+			_pagesContext = pagesContext;
 			_httpContextAccessor = httpContextAccessor;
 		}
 
@@ -133,7 +141,7 @@ namespace ST.Cms.TagHelpers
 			var columns = new StringBuilder();
 			if (ViewModelId != null)
 			{
-				var viewModel = _dbContext.ViewModels.Include(x => x.ViewModelFields).FirstOrDefault(x => x.Id == ViewModelId.Value);
+				var viewModel = _pagesContext.ViewModels.Include(x => x.ViewModelFields).FirstOrDefault(x => x.Id == ViewModelId.Value);
 				if (viewModel != null)
 				{
 					foreach (var field in viewModel.ViewModelFields.OrderBy(x => x.Order))

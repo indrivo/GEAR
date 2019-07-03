@@ -22,6 +22,7 @@ using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions;
+using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
@@ -73,7 +74,7 @@ namespace ST.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema(string entity)
         {
-            var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId);
+            var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
             if (table == null)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 
@@ -88,7 +89,7 @@ namespace ST.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync(string entity)
         {
-            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId);
+            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
             if (table == null)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 
@@ -366,7 +367,7 @@ namespace ST.DynamicEntityStorage
                 .FirstOrDefault(x => x.Name == entity);
             if (table == null) return listWithoutInclude;
             var fieldReferences = table.TableFields
-                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == "3000")).ToList();
+                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return listWithoutInclude;
             foreach (var item in listWithoutInclude.Result)
             {
@@ -394,7 +395,7 @@ namespace ST.DynamicEntityStorage
             foreach (var reference in fieldReferences)
             {
                 var tableName = reference.TableFieldConfigValues
-                    .FirstOrDefault(x => x.TableFieldConfig.Code == "3000")?.Value;
+                    .FirstOrDefault(x => x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)?.Value;
                 if (!item.ContainsKey(reference.Name)) continue;
                 var refId = item[reference.Name];
                 if (refId == null)
@@ -493,7 +494,7 @@ namespace ST.DynamicEntityStorage
                 .FirstOrDefault(x => x.Name == entity);
             if (table == null) return obj;
             var fieldReferences = table.TableFields
-                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == "3000")).ToList();
+                .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return obj;
             var includes = await IncludeSingleForDictionaryObjectAsync(obj.Result, fieldReferences);
             if (includes.Any())
@@ -610,7 +611,7 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public virtual async Task<ResultModel<int>> Count<TEntity>() where TEntity : BaseModel
+        public virtual async Task<ResultModel<int>> Count<TEntity>(Dictionary<string, object> filters = null) where TEntity : BaseModel
         {
             var result = new ResultModel<int>()
             {
@@ -625,8 +626,7 @@ namespace ST.DynamicEntityStorage
                 return result;
             }
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
-            model.Values = new List<Dictionary<string, object>>();
-            var count = _context.GetCount(model);
+            var count = _context.GetCount(model, filters);
             if (!count.IsSuccess) return result;
             result.IsSuccess = count.IsSuccess;
             result.Result = count.Result;
@@ -1023,6 +1023,22 @@ namespace ST.DynamicEntityStorage
                                 }
                             }
                             break;
+                        case "Double":
+                            {
+                                if (!string.IsNullOrEmpty(item.Value?.ToString()))
+                                {
+                                    type.GetProperty(item.Key).SetValue(obj, Convert.ToDouble(item.Value.ToString()));
+                                }
+                            }
+                            break;
+                        case "Decimal":
+                            {
+                                if (!string.IsNullOrEmpty(item.Value?.ToString()))
+                                {
+                                    type.GetProperty(item.Key).SetValue(obj, Convert.ToDecimal(item.Value.ToString()));
+                                }
+                            }
+                            break;
                         case "Nullable`1":
                             {
                                 if (fieldType.IsGenericType)
@@ -1050,7 +1066,7 @@ namespace ST.DynamicEntityStorage
                             }
                             break;
                         default:
-                            type.GetProperty(item.Key).SetValue(obj, item.Value);
+                            type?.GetProperty(item.Key)?.SetValue(obj, item.Value);
                             break;
                     }
                 }

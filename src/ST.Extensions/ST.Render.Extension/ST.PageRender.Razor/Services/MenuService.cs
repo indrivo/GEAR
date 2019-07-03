@@ -8,8 +8,8 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.Entities.Models.Pages;
-using ST.PageRender.Razor.Services.Abstractions;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Services
 {
@@ -43,7 +43,7 @@ namespace ST.PageRender.Razor.Services
         /// <param name="menuId"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<MenuViewModel>>> GetMenus(Guid? menuId, IList<string> roles)
+        public virtual async Task<ResultModel<IEnumerable<MenuViewModel>>> GetMenus(Guid? menuId, IList<string> roles)
         {
             if (!menuId.HasValue) return default;
             var navbar = await _service.GetByIdWithReflection<Menu, Menu>(menuId.Value);
@@ -53,8 +53,8 @@ namespace ST.PageRender.Razor.Services
             if (cache == null || cache.Count == 0)
             {
                 var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id));
-                await _cacheService.Set("_menus_central", search.Result);
                 menus = search.Result.ToList();
+                await _cacheService.Set("_menus_central", search.Result);
             }
             else
             {
@@ -72,7 +72,7 @@ namespace ST.PageRender.Razor.Services
             return new ResultModel<IEnumerable<MenuViewModel>>
             {
                 IsSuccess = true,
-                Result = GetMenu(menus, roles)
+                Result = GetMenu(menus, roles).OrderBy(x => x.Order).ToList()
             };
         }
 
@@ -83,7 +83,7 @@ namespace ST.PageRender.Razor.Services
         /// <param name="roles"></param>
         /// <param name="parentMenuId"></param>
         /// <returns></returns>
-        private IEnumerable<MenuViewModel> GetMenu(IList<MenuItem> menus, IList<string> roles, Guid? parentMenuId = null)
+        protected virtual IEnumerable<MenuViewModel> GetMenu(IList<MenuItem> menus, IList<string> roles, Guid? parentMenuId = null)
         {
             var data = menus
                 .Where(x => x.ParentMenuItemId == parentMenuId && HaveAccess(roles, x.AllowedRoles))
@@ -91,7 +91,7 @@ namespace ST.PageRender.Razor.Services
 
             foreach (var t in data)
             {
-                t.SubItems = GetMenu(menus, roles, t.Id).ToArray();
+                t.Children = GetMenu(menus, roles, t.Id).OrderBy(x => x.Order).ToArray();
             }
             return data;
         }
@@ -102,7 +102,7 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         /// <param name="menuId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> GetMenuRoles(Guid menuId)
+        public virtual async Task<IEnumerable<string>> GetMenuRoles(Guid menuId)
         {
             var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
             {
@@ -128,7 +128,7 @@ namespace ST.PageRender.Razor.Services
         /// <param name="userRoles"></param>
         /// <param name="menuItemAllowedRoles"></param>
         /// <returns></returns>
-        public bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
+        public virtual bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
         {
             if (string.IsNullOrEmpty(menuItemAllowedRoles)) return false;
             if (!userRoles.Any()) return false;
@@ -151,7 +151,7 @@ namespace ST.PageRender.Razor.Services
         /// <param name="menuId"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> UpdateMenuItemRoleAccess(Guid menuId, IList<string> roles)
+        public virtual async Task<ResultModel<Guid>> UpdateMenuItemRoleAccess(Guid menuId, IList<string> roles)
         {
             var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
             {

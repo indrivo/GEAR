@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,7 @@ using ST.MultiTenant.Helpers;
 
 namespace ST.Cms.Controllers
 {
+	[AllowAnonymous]
 	public class InstallerController : Controller
 	{
 		/// <summary>
@@ -346,7 +348,7 @@ namespace ST.Cms.Controllers
 				IsEditable = true
 			};
 
-			Queue.PushQueueBackgroundWorkItem(async token =>
+			Queue.PushBackgroundWorkItemInQueue(async token =>
 			{
 				using (var scope = _serviceScopeFactory.CreateScope())
 				{

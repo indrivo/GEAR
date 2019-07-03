@@ -1,12 +1,23 @@
 ﻿using System.Collections.Generic;
-using ST.CORE.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
+using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 
-namespace ST.CORE.Razor.TagHelpersStructures
+namespace ST.Core.Razor.TagHelpersStructures
 {
     public class ListTagHelperModel : TagHelperStructureBaseModel
     {
         #region General Data
         public virtual string ListIdentifier { get; set; }
+
+        /// <summary>
+        /// Jquery table dom
+        /// </summary>
+        public virtual string Dom { get; set; } = "<\"CustomizeColumns\">lBfrtip";
+
+        /// <summary>
+        /// Style attributes
+        /// </summary>
+        public virtual ICollection<InlineStyleAttribute> StyleAttributes { get; set; } =
+            new List<InlineStyleAttribute>();
 
         /// <summary>
         /// Get list identifier
@@ -19,6 +30,7 @@ namespace ST.CORE.Razor.TagHelpersStructures
         /// Provide the title of list
         /// </summary>
         public string Title { get; set; }
+
         /// <summary>
         /// Provide the sub title of page
         /// </summary>
@@ -35,10 +47,9 @@ namespace ST.CORE.Razor.TagHelpersStructures
 
         #region HeadList
         public ICollection<UrlTagHelperViewModel> HeadButtons { get; set; }
-        public virtual ICollection<string> Columns { get; set; }
         #endregion
 
-        #region Render Columns
+        #region Columns
         /// <summary>
         /// List of rendered columns
         /// </summary>
@@ -67,5 +78,7 @@ namespace ST.CORE.Razor.TagHelpersStructures
         public string ColumnName { get; set; }
         public string ApiIdentifier { get; set; }
         public string Template { get; set; }
+        public ICollection<InlineStyleAttribute> StyleAttributes { get; set; } = new List<InlineStyleAttribute>();
+        public ICollection<HtmlAttribute> HtmlAttributes { get; set; } = new List<HtmlAttribute>();
     }
 }

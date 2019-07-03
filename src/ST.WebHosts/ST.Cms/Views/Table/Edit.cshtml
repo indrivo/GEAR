@@ -2,6 +2,163 @@
 
 @{
 	ViewData["Title"] = Localizer["edit"];
+	var formListConfig = new ListTagHelperModel
+	{
+		Title = Localizer["forms"],
+		SubTitle = "List of forms",
+		ListIdentifier = "formTable",
+		Api = new ListApiConfigurationViewModel
+		{
+			Url = Url.Action("LoadForms", "Form"),
+			Parameters = new Dictionary<string, string>
+			{
+				{ "entityId", Model.Id.ToString() }
+			}
+		},
+		RenderColumns = new List<ListRenderColumn> {
+			new ListRenderColumn(Localizer["name"], "name"),
+			new ListRenderColumn(Localizer["entity_name"], "tableName"),
+			new ListRenderColumn(Localizer["description"], "description"),
+			new ListRenderColumn(Localizer["created"], "created"),
+			new ListRenderColumn(Localizer["changed"], "changed"),
+			new ListRenderColumn(Localizer["author"], "author"),
+			new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+		},
+		HeadButtons = new List<UrlTagHelperViewModel> {
+			new UrlTagHelperViewModel
+			{
+				AspAction = "Create",
+				AspController = "Form",
+				ButtonName = Localizer["add_forms"],
+				Description = "New form will be added."
+			}
+		},
+		HasActions = true,
+		ListActions = new List<ListActionViewModel>{
+			 new ListActionViewModel
+			 {
+				 HasIcon = false,
+				 Name = Localizer["edit"],
+				 Url = Url.Action("Edit", "Form"),
+				 ButtonType = BootstrapButton.Info,
+				 ActionParameters = new List<ActionParameter>
+		 {
+					 new ActionParameter("formId", "id")
+				 }
+			 },
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = "Preview",
+				Url = Url.Action("Preview", "Form"),
+				ButtonType = BootstrapButton.Warning,
+				ActionParameters = new List<ActionParameter>
+		{
+					new ActionParameter("formId", "id")
+				}
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["delete"],
+				IsJsEvent = true,
+				ButtonEvent = new JsActionButtonEvent
+				{
+					JsEvent = JsEvent.OnClick,
+					JsEventHandler = "createAlert('${row.id}');"
+				},
+				ButtonType = BootstrapButton.Danger
+			},
+		 },
+		Documentation = "This tan allow to manage entity forms"
+	};
+	var viewModelListConfig = new ListTagHelperModel
+	{
+		Title = "View Models",
+		SubTitle = "List of view models",
+		ListIdentifier = "viewModelTable",
+		StyleAttributes = new List<InlineStyleAttribute>
+		{
+			new InlineStyleAttribute("margin", "0"),
+			new InlineStyleAttribute("width", "100%"),
+		},
+		Api = new ListApiConfigurationViewModel
+		{
+			Url = Url.Action("LoadViewModels", "ViewModel"),
+			Parameters = new Dictionary<string, string>
+			{
+				{ "entityId", Model.Id.ToString() }
+			}
+		},
+		RenderColumns = new List<ListRenderColumn> {
+			new ListRenderColumn(Localizer["name"], "name"),
+			new ListRenderColumn(Localizer["table"], "table"),
+			new ListRenderColumn(Localizer["created"], "created"),
+			new ListRenderColumn(Localizer["changed"], "changed"),
+			new ListRenderColumn(Localizer["author"], "author"),
+			new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+		},
+		HeadButtons = new List<UrlTagHelperViewModel> {
+			new UrlTagHelperViewModel
+			{
+				ButtonName = "Add view model",
+				Description = "New view model will be added.",
+				HtmlAttributes = new List<HtmlAttribute>
+				{
+					new HtmlAttribute("Id", "addViewModel")
+				}
+			}
+		},
+		HasActions = true,
+		ListActions = new List<ListActionViewModel>{
+			 new ListActionViewModel
+			 {
+				 HasIcon = false,
+				 Name = Localizer["edit"],
+				 Url = Url.Action("Edit", "ViewModel"),
+				 ButtonType = BootstrapButton.Info,
+				 ActionParameters = new List<ActionParameter>
+				 {
+					 new ActionParameter("id", "id")
+				 }
+			 },
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["system_field_mapping"],
+				Url = Url.Action("FieldsMapping", "ViewModel"),
+				ButtonType = BootstrapButton.Danger,
+				ActionParameters = new List<ActionParameter>
+				{
+					new ActionParameter("viewModelId", "id")
+				}
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["order_viewmodel_fields"],
+				Url = Url.Action("OrderFields", "ViewModel"),
+				ButtonType = BootstrapButton.Primary,
+				ActionParameters = new List<ActionParameter>
+				{
+					new ActionParameter("id", "id")
+				}
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["delete"],
+				IsJsEvent = true,
+				ButtonEvent = new JsActionButtonEvent
+				{
+					JsEvent = JsEvent.OnClick,
+					JsEventHandler = "deleteViewModel('${row.id}');"
+				},
+				ButtonType = BootstrapButton.Danger
+			},
+		 },
+		Documentation = "This tab allow to manage entity view models"
+	};
 }
 
 <form asp-action="Edit" role="form" class="ui form">
@@ -14,7 +171,8 @@
 	<input type="hidden" id="tabValue" value="@Model.TabName" />
 	<div class="card">
 		<div class="card-body pb-0">
-			<h4 class="card-title">Table edit</h4>
+			<h4 class="card-title">@Localizer["system_table_edit"] <code>@Model.Name</code></h4>
+			<a style="float: right" asp-action="Index" asp-controller="Table">@Localizer["tables"]</a>
 		</div>
 		<div id="menuTab">
 			<!-- Nav tabs -->
@@ -23,27 +181,27 @@
 					<a class="nav-link active" data-toggle="tab" href="#itemOne" role="tab">
 						<span class="hidden-sm-up">
 							<i class="ti-home"></i>
-						</span> <span class="hidden-xs-down">Entity information</span>
+						</span> <span class="hidden-xs-down">@Localizer["system_entity_info"]</span>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" data-toggle="tab" href="#itemTwo" role="tab">
 						<span class="hidden-sm-up">
 							<i class="ti-user"></i>
-						</span> <span class="hidden-xs-down">Fields</span>
+						</span> <span class="hidden-xs-down">@Localizer["system_table_fields"]</span>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" data-toggle="tab" href="#itemThree" role="tab">
 						<span class="hidden-sm-up">
 							<i class="ti-email"></i>
-						</span> <span class="hidden-xs-down">Forms</span>
+						</span> <span class="hidden-xs-down">@Localizer["forms"]</span>
 					</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" data-toggle="tab" href="#view_model_tab" role="tab">
 						<span class="hidden-sm-up">
-						</span> <span class="hidden-xs-down">View Models</span>
+						</span> <span class="hidden-xs-down">@Localizer["view_models"]</span>
 					</a>
 				</li>
 			</ul>
@@ -53,19 +211,16 @@
 				<div class="tab-pane active" id="itemOne" role="tabpanel">
 					<div class="p-20">
 						<blockquote>
-							<div class="font-weight-bold">General information about entity.</div>
+							<div class="font-weight-bold">@Localizer["system_entity_general_info"]</div>
 							<ul class="list-icons">
 								<li>
-									<strong>Entity Name:</strong> <i class="ti-angle-right mr-2"></i>@Model.Name
+									<strong>@Localizer["entity_name"]: </strong> <i class="ti-angle-right mr-2"></i>@Model.Name
 								</li>
 								<li>
-									<strong>Entity Type:</strong><i class="ti-angle-right mr-2"></i> @Model.EntityType
+									<strong>@Localizer["entity_type"]: </strong><i class="ti-angle-right mr-2"></i> @Model.EntityType
 								</li>
 								<li>
-									<strong>Created Date:</strong><i class="ti-angle-right mr-2"></i>@Model.Created
-								</li>
-								<li>
-									<strong>Rated By:</strong><i class="ti-angle-right mr-2"></i>@Model.ModifiedBy
+									<strong>@Localizer["created"]: </strong><i class="ti-angle-right mr-2"></i>@Model.Created
 								</li>
 							</ul>
 						</blockquote>
@@ -82,17 +237,17 @@
 
 					<div class="row p-3 button-group">
 						<div class="col-lg-2 col-md-3">
-							<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i>Save</button>
+							<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i>@Localizer["save"]</button>
 						</div>
 						@if (!Model.IsSystem)
 						{
 							<div class="col-lg-2 col-md-3">
-								<a href="#" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>Delete</a>
+								<a href="#" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>@Localizer["delete"]</a>
 							</div>
 						}
 
 						<div class="col-lg-2 col-md-3">
-							<a asp-action="Index" class="btn btn-block btn-link">Back To List</a>
+							<a asp-action="Index" class="btn btn-block btn-link">@Localizer["back"]</a>
 						</div>
 					</div>
 				</div>
@@ -100,35 +255,38 @@
 				<!--Tab_2-->
 				<div class="tab-pane p-20" id="itemTwo" role="tabpanel">
 					<div class="row">
-						<div class="col-md-12">
-							<div class="btn-group mb-4">
-								<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									Add Field
-								</button>
-								<div class="dropdown-menu " style="overflow-y: auto;">
-									@foreach (var item in Model.Groups)
-									{
-										<a class="dropdown-item" style="font-weight: bold;" href="#">@item.GroupName</a>
-										foreach (var type in item.TableFieldTypes)
+						@if (!Model.IsPartOfDbContext)
+						{
+							<div class="col-md-12">
+								<div class="btn-group mb-4">
+									<button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										@Localizer["system_add_new_entity_field"]
+									</button>
+									<div class="dropdown-menu " style="overflow-y: auto;">
+										@foreach (var item in Model.Groups)
 										{
-											<a class="dropdown-item" asp-action="AddField" asp-route-id="@Model.Id" asp-route-type="@type.Name">@type.Name</a>
+											<a class="dropdown-item" style="font-weight: bold;" href="#">@item.GroupName</a>
+											foreach (var type in item.TableFieldTypes)
+											{
+												<a class="dropdown-item" asp-action="AddField" asp-route-id="@Model.Id" asp-route-type="@type.Name">@type.Name</a>
+											}
+											<div class="dropdown-divider"></div>
 										}
-										<div class="dropdown-divider"></div>
-									}
+									</div>
 								</div>
 							</div>
-						</div>
+						}
 						<div class="col-md-12">
 							@if (Model.TableFields.Any())
 							{
 								<table class="table table-hover contact-list color-table purple-table">
 									<thead class="full-width">
 										<tr>
-											<th>Field Name</th>
-											<th>Data Type</th>
-											<th>Allow NULL</th>
-											<th>Created Date</th>
-											<th>Actions</th>
+											<th>@Localizer["system_field_name"]</th>
+											<th>@Localizer["system_data_type"]</th>
+											<th>@Localizer["system_allow_null"]</th>
+											<th>@Localizer["created"]</th>
+											<th>@Localizer["list_actions"]</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -168,12 +326,12 @@
 														}
 														else
 														{
-															<a class="" style="width: 155px">System Field</a>
+															<a class="" style="width: 155px">@Localizer["system_system_field"]</a>
 														}
 													}
 													else
 													{
-														<a class="" style="width: 155px">System Field</a>
+														<a class="" style="width: 155px">@Localizer["system_system_field"]</a>
 													}
 												</td>
 											</tr>
@@ -184,7 +342,7 @@
 							else
 							{
 								<div class="ui horizontal divider">
-									There are no fields.
+									@Localizer["system_no_entity_fields"]
 								</div>
 							}
 						</div>
@@ -195,82 +353,13 @@
 				<div class="tab-pane p-20" id="itemThree" role="tabpanel">
 
 					<div class="row">
-						<div class="card col-md-12">
-							<div class="card-body">
-								<h4 class="card-title">@Localizer["forms"]</h4>
-								<h6 class="card-subtitle">List of forms</h6>
-								<div class="table-responsive">
-									<div class="mt-2">
-										<div class="d-flex">
-											<div class="mr-auto">
-												<div class="form-group">
-													<a asp-action="Create" asp-controller="Form" class="btn btn-primary btn-sm">
-														<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_forms"]
-													</a>
-													<small>New form will be added.</small>
-												</div>
-											</div>
-										</div>
-									</div>
-									<table style="margin: 0em; width: 100%;" class="table table-striped table-bordered" id="formTable">
-										<thead>
-											<tr>
-												<th>@Html.DisplayNameFor(model => model.Name)</th>
-												<th>@Localizer["entity_name"]</th>
-												<th>@Localizer["description"]</th>
-												<th>@Localizer["created"]</th>
-												<th>@Localizer["changed"]</th>
-												<th>@Localizer["author"]</th>
-												<th>@Localizer["id_deleted"]</th>
-												<th>@Localizer["list_actions"]</th>
-											</tr>
-										</thead>
-										<tbody></tbody>
-										<tfoot></tfoot>
-									</table>
-								</div>
-							</div>
-						</div>
+						<JList asp-for="@formListConfig"></JList>
 					</div>
 				</div>
 				<!--End_Tab_3-->
 				<!--Tab 4-->
 				<div class="tab-pane p-20" id="view_model_tab" role="tabpanel">
-					<div class="card">
-						<div class="card-body">
-							<h4 class="card-title">View Models</h4>
-							<h6 class="card-subtitle">List of view models</h6>
-							<div class="table-responsive">
-								<div class="mt-2">
-									<div class="d-flex">
-										<div class="mr-auto">
-											<div class="form-group">
-												<a id="addViewModel" href="#" class="btn btn-primary btn-sm">
-													<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add view model
-												</a>
-												<small>New view model will be added.</small>
-											</div>
-										</div>
-									</div>
-								</div>
-								<table style="margin: 0em; width: 100%;" class="table table-striped table-bordered" id="viewModelTable">
-									<thead>
-										<tr>
-											<th>Name</th>
-											<th>@Localizer["table"]</th>
-											<th>@Localizer["created"]</th>
-											<th>@Localizer["changed"]</th>
-											<th>@Localizer["author"]</th>
-											<th>@Localizer["is_deleted"]</th>
-											<th>@Localizer["list_actions"]</th>
-										</tr>
-									</thead>
-									<tbody></tbody>
-									<tfoot></tfoot>
-								</table>
-							</div>
-						</div>
-					</div>
+					<JList asp-for="@viewModelListConfig"></JList>
 				</div>
 			</div>
 		</div>
@@ -309,7 +398,8 @@
 									swal("Fail!", "Api not respond or not have permissions.", "error");
 								}
 							},
-							error: function(error) {
+							error: function (error) {
+								console.log(error);
 								swal("Fail!", "Api not respond or not have permissions.", "error");
 							}
 						});
@@ -343,7 +433,8 @@
 									swal("Fail!", "Api not respond or not have permissions.", "error");
 								}
 							},
-							error: function(error) {
+							error: function (error) {
+								console.log(error);
 								swal("Fail!", "Api not respond or not have permissions.", "error");
 							}
 						});
@@ -359,53 +450,6 @@
 		}
 	</script>
 	<script type="text/javascript" language="javascript">
-		$(document).ready(function ($) {
-			const tableId = '#formTable';
-			if ($.fn.DataTable.isDataTable(tableId)) {
-				alert();
-				$(tableId).dataTable().fnDestroy();
-				$(tableId).dataTable().empty();
-			}
-			$(tableId).DataTable({
-				"language": {
-					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
-				},
-				dom: '<"CustomizeColumns">lBfrtip',
-				"processing": true, // for show progress bar
-				"serverSide": true, // for process server side
-				"filter": true, // this is for disable filter (search box)
-				"orderMulti": false, // for disable multiple column at once
-				"destroy": true,
-				"ajax": {
-					"url": '@Url.Action("LoadForms", "Form")',
-					"type": "POST",
-					"data": {
-						entityId: "@Model.Id"
-					}
-				},
-				"columns": [
-					{ "data": "name" },
-					{ "data": "tableName" },
-					{ "data": "description" },
-					{ "data": "created" },
-					{ "data": "changed" },
-					{ "data": "author" },
-					{ "data": "isDeleted" },
-					{
-						data: null,
-						"render": function(data, type, row, meta) {
-							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit", "Form")?formId=${row.id}">Edit</a>
-									<a class="btn btn-warning btn-sm" href="@Url.Action("Preview", "Form")?formId=${row.id}">Preview</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=createAlert('${row.id
-								}'); >Delete</button>
-									</div>`;
-						}
-					}
-				]
-			});
-		});
-
 		function createAlert(rowId) {
 			const object = {
 				alertTitle: "Delete this form?",
@@ -462,52 +506,6 @@
 						}
 					});
 				});
-			});
-
-			const tableId = '#viewModelTable';
-			if ($.fn.DataTable.isDataTable(tableId)) {
-				alert();
-				$(tableId).dataTable().fnDestroy();
-				$(tableId).dataTable().empty();
-			}
-			$(tableId).DataTable({
-				"language": {
-					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
-				},
-				dom: '<"CustomizeColumns">lBfrtip',
-				"processing": true, // for show progress bar
-				"serverSide": true, // for process server side
-				"filter": true, // this is for disable filter (search box)
-				"orderMulti": false, // for disable multiple column at once
-				"destroy": true,
-				"ajax": {
-					"url": '@Url.Action("LoadViewModels", "ViewModel")',
-					"type": "POST",
-					"data": {
-						entityId: "@Model.Id"
-					}
-				},
-				"columns": [
-					{ "data": "name" },
-					{ "data": "table" },
-					{ "data": "created" },
-					{ "data": "changed" },
-					{ "data": "author" },
-					{ "data": "isDeleted" },
-					{
-						data: null,
-						"render": function(data, type, row, meta) {
-							return `<div class="btn-group" role="group" aria-label="Action buttons">
-									<a class="btn btn-info btn-sm" href="@Url.Action("Edit", "ViewModel")?id=${row.id
-								}">Edit</a>
-									<a class="btn btn-primary btn-sm" href="@Url.Action("OrderFields", "ViewModel")?id=${
-								row.id}">Order Fields</a>
-									<button type="button" class='btn btn-danger btn-sm' onclick=deleteViewModel('${row.id
-								}'); >Delete</button>
-									</div>`;
-						}
-					}
-				]
 			});
 		});
 

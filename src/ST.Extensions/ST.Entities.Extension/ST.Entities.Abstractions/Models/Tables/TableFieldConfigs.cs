@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using ST.Audit.Attributes;
 using ST.Audit.Enums;
+using ST.Core.Abstractions;
 
 namespace ST.Entities.Abstractions.Models.Tables
 {
     [TrackEntity(Option = TrackEntityOption.AllFields)]
-    public class TableFieldConfigs
+    public class TableFieldConfigs : IBase<Guid>
     {
         /// <summary>
         /// TableFieldConfig Id
@@ -17,14 +18,14 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// TableFieldConfig Name
         /// </summary>
         public string Name { get; set; }
-	    /// <summary>
-	    /// TableFieldConfig Name
-	    /// </summary>
-	    public string Description { get; set; }
-		/// <summary>
-		/// TableFieldConfig Type
-		/// </summary>
-		public string Type { get; set; }
+        /// <summary>
+        /// TableFieldConfig Name
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// TableFieldConfig Type
+        /// </summary>
+        public string Type { get; set; }
 
 
         [Column(TypeName = "char(4)")]

@@ -3,7 +3,7 @@
  *
  * v1.0.0
  *
- * License: MIT Soft-Tehnica Srl
+ * License: MIT Soft-Tehnica(Indrivo) Srl
  * Author: Lupei Nicolae
  */
 
@@ -209,7 +209,7 @@ TableBuilder.prototype.renderCell = function (row, column) {
  */
 TableBuilder.prototype.getRenderRowActions = function (row, dataX) {
 	const container = this.getTableRowInlineActionButton(row, dataX)
-		+ this.getTableRowEditActionButton(row, dataX)
+		//+ this.getTableRowEditActionButton(row, dataX)
 		+ this.getTableRowDeleteRestoreActionButton(row, dataX);
 	return container;
 }
@@ -221,7 +221,7 @@ TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dat
 			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')">${window.translate("restore")}</a>`
 			: `<a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick="new TableBuilder().deleteItem('${row.id
 			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')">${window.translate("delete")}</a>`}`
-		: ``}`;
+		: ""}`;
 };
 
 
@@ -374,6 +374,15 @@ TableBuilder.prototype.createdRow = function (row, data, dataIndex) {
 		$(row).find("td.select-checkbox").find("input").css("display", "none");
 		$(row).find("td").addClass("not-selectable");
 	}
+	// Add COLSPAN attribute
+	//	$('td:eq(1)', row).attr('colspan', 5);
+
+	//	// Hide required number of columns
+	//	// next to the cell with COLSPAN attribute
+	//	$('td:eq(2)', row).css('display', 'none');
+	//	$('td:eq(3)', row).css('display', 'none');
+	//	$('td:eq(4)', row).css('display', 'none');
+	//	$('td:eq(5)', row).css('display', 'none');
 };
 
 
@@ -386,32 +395,33 @@ TableBuilder.prototype.replaceTableSystemTranslations = function () {
 	return searialData;
 };
 
+TableBuilder.prototype.translationsJson = function () {
+	return `${location.origin}/api/LocalizationApi/GetJQueryTableTranslations?language=${window.getCookie("language")}&customReplace=${this.replaceTableSystemTranslations()}`;
+};
+
+TableBuilder.prototype.ajax = {
+	"url": "/PageRender/LoadPagedData",
+	"type": "POST",
+	"data": {}
+};
+
 TableBuilder.prototype.renderTable = function (data) {
+	const ctx = this;
+	const ajax = ctx.ajax;
+	ajax.data = {
+		"viewModelId": data.viewmodelId
+	};
+
 	const tableId = `#${data.listId}`;
 	if ($.fn.DataTable.isDataTable(tableId)) {
 		$(tableId).dataTable().fnDestroy();
 		$(tableId).dataTable().empty();
 	}
 	const renderTableSelect = new RenderTableSelect();
-
 	$(tableId).DataTable({
 		"language": {
-			"url": `${location.origin}/api/LocalizationApi/GetJQueryTableTranslations?language=${window.getCookie("language")}&customReplace=${this.replaceTableSystemTranslations()}`,
+			"url": ctx.translationsJson(),
 		},
-		//rowsGroup: [
-		//	0
-		//],
-		//'createdRow': function(row, data, dataIndex){
-		//	// Add COLSPAN attribute
-		//	$('td:eq(1)', row).attr('colspan', 5);
-
-		//	// Hide required number of columns
-		//	// next to the cell with COLSPAN attribute
-		//	$('td:eq(2)', row).css('display', 'none');
-		//	$('td:eq(3)', row).css('display', 'none');
-		//	$('td:eq(4)', row).css('display', 'none');
-		//	$('td:eq(5)', row).css('display', 'none');
-		//},
 		dom: this.dom,
 		buttons: this.buttons,
 		columnDefs: [
@@ -421,29 +431,103 @@ TableBuilder.prototype.renderTable = function (data) {
 				targets: 'no-sort'
 			}
 		],
-colReorder: true,
+		colReorder: true,
 		select: renderTableSelect.settings.select,
-		//"scrollX": true,
-		//"scrollCollapse": true,
-		//"autoWidth": true,
-		"processing": true, // for show progress bar
-		"serverSide": true, // for process server side
-		"filter": true, // this is for disable filter (search box)
-		"orderMulti": false, // for disable multiple column at once
+		"scrollX": true,
+		"scrollCollapse": true,
+		"autoWidth": true,
+		"processing": true,
+		"serverSide": true,
+		"filter": true,
+		"orderMulti": false,
 		"destroy": true,
-		"ajax": {
-			"url": "/PageRender/LoadPagedData",
-			"type": "POST",
-			"data": {
-				"viewModelId": data.viewmodelId
-			}
-		},
+		"ajax": ajax,
 		"columns": data.renderColumns,
-		"createdRow": this.cratedRow,
-		"rowCallback": this.rowCallback,
-		"createdCell": this.createdCell
+		"createdRow": (row, data, dataIndex) => ctx.createdRow(row, data, dataIndex),
+		"rowCallback": (row, data) => ctx.rowCallback(row, data),
+		"createdCell": (td, cellData, rowData, row, col) => ctx.createdCell(td, cellData, rowData, row, col)
 	});
 }
+
+TableBuilder.prototype.appendColumnsBeforeActions = function () {
+	return "";
+};
+
+
+TableBuilder.prototype.configureTableBody = function (dataX) {
+	const ctx = this;
+	if (dataX.viewmodelData.is_success) {
+		const renderColumns = [];
+		if (dataX.viewmodelData.result.viewModelFields.length > 0) {
+			const renderTableSelect = new RenderTableSelect();
+			const columns = $(`#${dataX.listId} thead`);
+			columns.html(null);
+			const tr = document.createElement("tr");
+			const th = document.createElement("th");
+			th.setAttribute("class", "no-sort");
+			th.innerHTML = renderTableSelect.settings.headContent;
+			tr.appendChild(th);
+			//CheckBox column
+			renderColumns.push({
+				data: null,
+				"render": function (data, type, row, meta) {
+					return renderTableSelect.templateSelect(data, type, row, meta);
+				}
+			});
+
+			$.each(dataX.viewmodelData.result.viewModelFields,
+				function (index, column) {
+					let colName = column.name;
+					if (column.translate) {
+						colName = window.translate(column.translate);
+					}
+					const htmlCol = document.createElement("th");
+					htmlCol.innerHTML = colName;
+					tr.appendChild(htmlCol);
+					renderColumns.push({
+						config: {
+							column: column
+						},
+						data: null,
+						"render": function (data, type, row, meta) {
+							const elDiv = document.createElement("div");
+							elDiv.setAttribute("class", "data-cell hasTooltip");
+							elDiv.setAttribute("data-prop-name", (column.tableModelFields) ? column.tableModelFields.name : "");
+							elDiv.setAttribute("data-viewmodel", dataX.viewmodelId);
+							elDiv.setAttribute("data-id", row.id);
+							elDiv.setAttribute("data-column-id", column.id);
+							elDiv.innerHTML = ctx.renderCell(row, column);
+							return elDiv.outerHTML;
+						}
+					});
+				});
+			//const htmlCol = document.createElement("th");
+			//htmlCol.innerHTML = ctx.appendColumnsBeforeActions();
+			//tr.appendChild(htmlCol);
+
+			const actionCol = document.createElement("th");
+			actionCol.innerHTML = window.translate("list_actions");
+			tr.appendChild(actionCol);
+			columns.html(tr.outerHTML);
+			renderColumns.push({
+				data: null,
+				"render": function (data, type, row, meta) {
+					const elDiv = document.createElement("div");
+					elDiv.setAttribute("class", "btn-group");
+					elDiv.setAttribute("role", "group");
+					elDiv.setAttribute("aria-label", "Action buttons");
+					elDiv.innerHTML = ctx.getRenderRowActions(row, dataX);
+					return elDiv.outerHTML;
+				}
+			});
+		}
+		ctx.renderTable({
+			viewmodelId: dataX.viewmodelId,
+			listId: dataX.listId,
+			renderColumns: renderColumns
+		});
+	};
+};
 
 $(document).ready(function () {
 	const tablePromise = new Promise((resolve, reject) => {
@@ -481,58 +565,7 @@ $(document).ready(function () {
 				});
 
 				viewModelPromise.then(dataX => {
-					const ctx = new TableBuilder();
-					if (dataX.viewmodelData.is_success) {
-						const renderColumns = [];
-						if (dataX.viewmodelData.result.viewModelFields.length > 0) {
-							const columns = $(`#${dataX.listId} thead tr`);
-							columns.html(null);
-							const renderTableSelect = new RenderTableSelect();
-							let rows = `<th class="no-sort">${renderTableSelect.settings.headContent}</th>`;
-							//CheckBox column
-							renderColumns.push({
-								data: null,
-								"render": function (data, type, row, meta) {
-									return renderTableSelect.templateSelect(data, type, row, meta);
-								}
-							});
-
-							$.each(dataX.viewmodelData.result.viewModelFields,
-								function (index, column) {
-									let colName = column.name;
-									if (column.translate) {
-										colName = window.translate(column.translate);
-									} 
-
-									rows += `<th>${colName}</th>`;
-									renderColumns.push({
-										config: {
-											column: column
-										},
-										data: null,
-										"render": function (data, type, row, meta) {
-											return `<div class="data-cell" data-viewmodel="${dataX.viewmodelId}" data-id="${row.id
-												}" data-column-id="${column.id}">${ctx.renderCell(row, column)}</div>`;
-										}
-									});
-								});
-							rows += `<th>${window.translate("list_actions")}</th>`;
-							columns.html(rows);
-							renderColumns.push({
-								data: null,
-								"render": function (data, type, row, meta) {
-									return `<div class="btn-group" role="group" aria-label="Action buttons">
-										${ctx.getRenderRowActions(row, dataX)}
-											</div>`;
-								}
-							});
-						}
-						new TableBuilder().renderTable({
-							viewmodelId: dataX.viewmodelId,
-							listId: dataX.listId,
-							renderColumns: renderColumns
-						});
-					}
+					new TableBuilder().configureTableBody(dataX);
 				});
 			});
 	}));

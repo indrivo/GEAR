@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using ST.Localization.Razor.Services.Abstractions;
-using ST.Localization.Razor.ViewModels.LocalizationViewModels;
 using ST.Core;
 using ST.Core.Helpers;
-using YandexTranslateCSharpSdk;
+using ST.Localization.Abstractions;
+using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace ST.Localization.Razor.Controllers
 {
@@ -22,7 +21,7 @@ namespace ST.Localization.Razor.Controllers
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IStringLocalizer _localize;
         private readonly ILocalizationService _localizationService;
-        private readonly YandexTranslateSdk _yandexTranslateSdk;
+        private readonly IExternalTranslationProvider _externalTranslationProvider;
 
         /// <summary>
         /// Constructor
@@ -30,14 +29,14 @@ namespace ST.Localization.Razor.Controllers
         /// <param name="locConfig"></param>
         /// <param name="localize"></param>
         /// <param name="localizationService"></param>
+        /// <param name="externalTranslationProvider"></param>
         public LocalizationController(IOptionsSnapshot<LocalizationConfigModel> locConfig,
-            IStringLocalizer localize, ILocalizationService localizationService)
+            IStringLocalizer localize, ILocalizationService localizationService, IExternalTranslationProvider externalTranslationProvider)
         {
             _locConfig = locConfig;
             _localize = localize;
             _localizationService = localizationService;
-            _yandexTranslateSdk = new YandexTranslateSdk();
-            _yandexTranslateSdk.ApiKey = "trnsl.1.1.20190428T193614Z.41a78cdc7c5bb298.e25c6bd03beee1462ab0d452f9d2a86c1fc6013f";
+            _externalTranslationProvider = externalTranslationProvider;
         }
 
         /// <summary>
@@ -343,15 +342,16 @@ namespace ST.Localization.Razor.Controllers
         /// <summary>
         /// Translate all keys from english
         /// </summary>
-        /// <param name="englishText"></param>
+        /// <param name="text"></param>
+        /// <param name="from"></param>
         /// <returns></returns>
-        public async Task<JsonResult> Translate([Required]string englishText)
+        public async Task<JsonResult> Translate([Required]string text, [Required]string from)
         {
             var result = new ResultModel
             {
                 Errors = new List<IErrorModel>()
             };
-            if (string.IsNullOrEmpty(englishText))
+            if (string.IsNullOrEmpty(text) || string.IsNullOrEmpty(from))
             {
                 result.Errors.Add(new ErrorModel("EmptyKey", "Key is empty!"));
                 return Json(result);
@@ -360,8 +360,8 @@ namespace ST.Localization.Razor.Controllers
             var dict = new Dictionary<string, string>();
             foreach (var (key, _) in languages)
             {
-                if (key == "en") continue;
-                var translated = await _yandexTranslateSdk.TranslateText(englishText, $"en-{key}");
+                if (key == from) continue;
+                var translated = await _externalTranslationProvider.TranslateTextAsync(text, from, key);
                 dict.Add(key, translated);
             }
 

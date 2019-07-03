@@ -8,8 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
-using ST.Identity.LDAP.Services;
 
 namespace ST.Identity.Extensions
 {
@@ -94,19 +92,6 @@ namespace ST.Identity.Extensions
             var roles = user.Claims.Where(x => x.Type.Equals("role") || x.Type.EndsWith("role")).Select(x => x.Value)
                 .ToList();
             return await permissionService.HasPermission(roles, new List<string> { permission });
-        }
-
-        /// <summary>
-        /// Add Ldap Authentication
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddLdapAuthorization<TContext>(this IServiceCollection services) where TContext : ApplicationDbContext
-        {
-            //Add Active directory dependencies
-            services.AddTransient<ILdapService, LdapService>();
-            services.AddTransient<LdapUserManager<TContext>>();
-            return services;
         }
 
         /// <summary>

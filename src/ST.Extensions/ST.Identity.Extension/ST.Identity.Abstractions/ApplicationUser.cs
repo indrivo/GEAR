@@ -4,14 +4,13 @@ using ST.Audit.Attributes;
 using ST.Audit.Enums;
 using ST.Core.Abstractions;
 using ST.Identity.Abstractions.Enums;
-using ST.Identity.Abstractions.Ldap.Models;
+using ST.Identity.LdapAuth.Abstractions.Models;
 
 namespace ST.Identity.Abstractions
 {
     [TrackEntity(Option = TrackEntityOption.SelectedFields)]
     public class ApplicationUser : LdapUser, IBaseModel
     {
-
         /// <inheritdoc />
         /// <summary>
         /// Stores Id of the User that created the object

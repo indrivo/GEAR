@@ -63,7 +63,7 @@ $(document).ready(function () {
 
 	localizationPromise.then(() => {
 		$(".language-event").on("click", function () {
-			localStorage.removeItem("translations");
+			localStorage.removeItem("hasLoadedTranslations");
 		});
 	});
 

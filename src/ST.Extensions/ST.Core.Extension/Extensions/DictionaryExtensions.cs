@@ -22,5 +22,25 @@ namespace ST.Core.Extensions
 
             return context;
         }
+
+        /// <summary>
+        /// Remove keys
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="dict"></param>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public static Dictionary<TKey, TValue> RemoveKeys<TKey, TValue>(this Dictionary<TKey, TValue> dict, IEnumerable<TKey> keys)
+        {
+            foreach (var key in keys)
+            {
+                if (dict.ContainsKey(key))
+                {
+                    dict.Remove(key);
+                }
+            }
+            return dict;
+        }
     }
 }

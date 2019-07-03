@@ -100,15 +100,15 @@
 						'<input id="swal-input1" class="swal2-input">',
 					showCancelButton: true,
 					preConfirm: function () {
-						return new Promise(function (resolve) {
-							resolve([
-								$('#swal-input1').val()
-							])
-						})
-					},
+                        return new Promise(function(resolve) {
+                            resolve([
+                                $('#swal-input1').val()
+                            ]);
+                        });
+                    },
 					onOpen: function () {
-						$('#swal-input1').focus()
-					}
+                        $('#swal-input1').focus();
+                    }
 				}).then(function (result) {
 					if (result.value) {
 						$.ajax({
@@ -223,7 +223,9 @@
 									<a class="dropdown-item" href="@Url.Action("PageScripts")?pageId=${row.id
 								}&type=html">${window.translate("page_scripts")}</a>
 									<a class="dropdown-item" href="@Url.Action("PageStyles")?pageId=${row.id
-								}&type=html">${window.translate("page_styles")}</a>
+                                }&type=html">${window.translate("page_styles")}</a>
+                                    <a class="dropdown-item" href="@Url.Action("PageAcl")?pageId=${row.id
+                                }">${window.translate("system_page_acl")}</a>
 									${(!row.isSystem) ? `<button type="button" class='dropdown-item' onclick=createAlert('${row.id}'); >${window.translate("delete")}</button>`
 								: ``}
           </div>

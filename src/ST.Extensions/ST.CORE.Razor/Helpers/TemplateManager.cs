@@ -1,9 +1,9 @@
 ﻿using ST.Core.Helpers;
 using System;
 using System.IO;
-using ST.CORE.Razor.Enums;
+using ST.Core.Razor.Enums;
 
-namespace ST.CORE.Razor.Helpers
+namespace ST.Core.Razor.Helpers
 {
     internal static class TemplateManager
     {

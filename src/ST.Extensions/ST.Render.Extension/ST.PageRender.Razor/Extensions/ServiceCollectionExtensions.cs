@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.PageRender.Abstractions;
 using ST.PageRender.Razor.Helpers;
 using ST.PageRender.Razor.Services;
-using ST.PageRender.Razor.Services.Abstractions;
 
 namespace ST.PageRender.Razor.Extensions
 {
@@ -15,11 +14,12 @@ namespace ST.PageRender.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPageRenderModule(this IServiceCollection services)
+        public static IServiceCollection AddPageRenderUiModule(this IServiceCollection services)
         {
             services.AddTransient<IPageRender, Services.PageRender>();
             services.AddTransient<IMenuService, MenuService<IDynamicService>>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddTransient<IPageAclService, PageAclService>();
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
             return services;
         }

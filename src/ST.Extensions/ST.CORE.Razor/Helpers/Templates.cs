@@ -1,4 +1,4 @@
-﻿namespace ST.CORE.Razor.Helpers
+﻿namespace ST.Core.Razor.Helpers
 {
     internal static class Templates
     {

@@ -22,15 +22,16 @@
 	<body class="fix-header fix-sidebar card-no-border">
 		<application layout-id="@layoutId">
 			@RenderBody()
+			<script src="~/assets/js/plugins/st-data-data-injector-v.0.1.js" asp-append-version="true"></script>
+			<partial name="_LayoutScriptPartial" model="layoutId" />
+			<partial name="_FormModuleLayoutScripts" />
+			<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
+			<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
+			@RenderSection("Scripts", false)
+			<application-scripts layout-id="@layoutId"></application-scripts>
+			<layout-js-code layout-id="@layoutId"></layout-js-code>
+			<partial name="_AssistanceChat" model="layoutId" />
 		</application>
-		<partial name="_LayoutScriptPartial" model="layoutId" />
-		<partial name="_FormModuleLayoutScripts" />
-		<script src="~/assets/js/plugins/st-ui-cookie-plugin-v.0.1.js" asp-append-version="true"></script>
-		<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
-		@RenderSection("Scripts", false)
-		<application-scripts layout-id="@layoutId"></application-scripts>
-		<layout-js-code layout-id="@layoutId"></layout-js-code>
-		<partial name="_AssistanceChat" model="layoutId" />
 	</body>
 </html>
 }

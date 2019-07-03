@@ -2,7 +2,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using ST.Identity.Services.Abstractions;
 
-namespace ST.CORE.Extensions
+namespace ST.Core.Extensions
 {
 	public static class EmailSenderExtensions
 	{

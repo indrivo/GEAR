@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ST.Core.Abstractions
 {
@@ -12,6 +13,14 @@ namespace ST.Core.Abstractions
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         DbSet<T> SetEntity<T>() where T : class, IBaseModel;
+
+        /// <summary>
+        /// Update db entity
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        EntityEntry<TEntity> Update<TEntity>(TEntity entity) where TEntity : class;
 
         /// <summary>
         /// Save changes on database

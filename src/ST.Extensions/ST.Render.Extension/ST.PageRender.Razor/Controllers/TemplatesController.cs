@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Models.RenderTemplates;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
 using ST.PageRender.Razor.Helpers;
@@ -19,14 +18,19 @@ using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.RenderTemplates;
 
 namespace ST.PageRender.Razor.Controllers
 {
 	[Authorize]
 	public class TemplatesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
-        public TemplatesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        private readonly IDynamicPagesContext _pagesContext;
+
+        public TemplatesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
+            _pagesContext = pagesContext;
         }
 
         /// <summary>
@@ -39,7 +43,7 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = Context.Filter<Template>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = _pagesContext.FilterAbstractContext<Template>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount);
 
@@ -82,7 +86,7 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<IActionResult> Create([Required]Template model)
 		{
-			if (Context.Templates.Any(x => x.Name == model.Name))
+			if (_pagesContext.Templates.Any(x => x.Name == model.Name))
 			{
 				ModelState.AddModelError(string.Empty, "Name is used by another template!");
 				return View(model);
@@ -92,8 +96,8 @@ namespace ST.PageRender.Razor.Controllers
 				model.IdentifierName = $"template_{model.Name}";
 				model.TenantId = CurrentUserTenantId;
 				model.Author = GetCurrentUser()?.Id;
-				Context.Templates.Add(model);
-				Context.SaveChanges();
+                _pagesContext.Templates.Add(model);
+                _pagesContext.SaveChanges();
 				await CacheService.Set(model.IdentifierName, new TemplateCacheModel
 				{
 					Identifier = model.IdentifierName,
@@ -119,7 +123,7 @@ namespace ST.PageRender.Razor.Controllers
         public IActionResult Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
-			var model = Context.Templates.FirstOrDefault(x => x.Id.Equals(id));
+			var model = _pagesContext.Templates.FirstOrDefault(x => x.Id.Equals(id));
 			if (model == null) return NotFound();
 
 			return View(model);
@@ -135,7 +139,7 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<IActionResult> Edit(Template model)
 		{
 			if (model == null) return NotFound();
-			var dataModel = Context.Templates.FirstOrDefault(x => x.Id.Equals(model.Id));
+			var dataModel = _pagesContext.Templates.FirstOrDefault(x => x.Id.Equals(model.Id));
 
 			if (dataModel == null) return NotFound();
 
@@ -147,8 +151,8 @@ namespace ST.PageRender.Razor.Controllers
 			dataModel.ModifiedBy = GetCurrentUser()?.Id;
 			try
 			{
-				Context.Templates.Update(dataModel);
-				Context.SaveChanges();
+                _pagesContext.Templates.Update(dataModel);
+                _pagesContext.SaveChanges();
 				await CacheService.Set(dataModel.IdentifierName, new TemplateCacheModel
 				{
 					Identifier = model.IdentifierName,
@@ -176,13 +180,13 @@ namespace ST.PageRender.Razor.Controllers
 		public async Task<JsonResult> Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete template!", success = false });
-			var template = Context.Templates.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var template = _pagesContext.Templates.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (template == null) return Json(new { message = "Fail to delete template!", success = false });
 
 			try
 			{
-				Context.Templates.Remove(template);
-				Context.SaveChanges();
+                _pagesContext.Templates.Remove(template);
+                _pagesContext.SaveChanges();
 				await CacheService.RemoveAsync(template.IdentifierName);
 				return Json(new { message = "Template was delete with success!", success = true });
 			}
@@ -216,7 +220,7 @@ namespace ST.PageRender.Razor.Controllers
 			var template = await CacheService.Get<TemplateCacheModel>(identifier);
 			if (template == null)
 			{
-				var templateFromStore = Context.Templates.FirstOrDefault(x => x.IdentifierName == identifier);
+				var templateFromStore = _pagesContext.Templates.FirstOrDefault(x => x.IdentifierName == identifier);
 				if (templateFromStore == null)
 				{
 					result.Errors = new List<IErrorModel>

@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.Configuration.Server
 {
@@ -157,6 +157,7 @@ namespace ST.Configuration.Server
                 && !value.StartsWith("/lib")
                 && !value.StartsWith("/assets")
                 && !value.StartsWith("/js")
+                && !value.StartsWith("/themes")
                 && !value.StartsWith("/PageRender")
                 && !value.StartsWith("/Localization")
                 && !value.StartsWith("/favicon.ico")
@@ -170,17 +171,17 @@ namespace ST.Configuration.Server
         /// <returns></returns>
         private static bool ParseClientRequest(this HttpContext ctx)
         {
-            var context = ctx.RequestServices.GetRequiredService<EntitiesDbContext>();
+            var context = ctx.RequestServices.GetRequiredService<IDynamicPagesContext>();
             var parameters = HttpUtility.ParseQueryString(ctx.Request.QueryString.ToString());
             var originalPath = ctx.Request.Path.Value;
             ctx.Items["originalPath"] = originalPath;
 
-            var (match, pageId) = Match(context, originalPath, parameters);
+            var (match, page) = Match(context, originalPath, parameters);
 
             if (!match) return false;
             ctx.Request.Path = "/PageRender";
 
-            var newParams = HttpUtility.ParseQueryString($"pageId={pageId}");
+            var newParams = HttpUtility.ParseQueryString($"pageId={page.Id}");
 
             ctx.Request.QueryString = QueryString.Create(newParams.ToKeyValuePair());
 
@@ -194,13 +195,13 @@ namespace ST.Configuration.Server
         /// <param name="path"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private static (bool, Guid) Match(EntitiesDbContext context, string path, NameValueCollection parameters)
+        private static (bool, Page) Match(IDynamicPagesContext context, string path, NameValueCollection parameters)
         {
             var route = context.Pages.Where(x => !x.IsLayout && !x.IsDeleted).ToList().FirstOrDefault(x => RouteFinder(
                 new ValueTuple<Page, string, List<KeyValuePair<string, string>>>
                     (x, path, parameters.ToKeyValuePair().ToList())));
 
-            return route == null ? default : (true, route.Id);
+            return route == null ? default : (true, route);
         }
 
         /// <summary>

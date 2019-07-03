@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
@@ -25,6 +26,7 @@ namespace ST.Notifications.Extensions
                     options =>
                     {
                         options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransports.All;
+                        //options.LongPolling.PollTimeout = TimeSpan.FromSeconds(10);
                     });
             });
             return app;

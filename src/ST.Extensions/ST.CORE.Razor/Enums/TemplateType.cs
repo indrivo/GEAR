@@ -1,4 +1,4 @@
-﻿namespace ST.CORE.Razor.Enums
+﻿namespace ST.Core.Razor.Enums
 {
     internal enum TemplateType
     {

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Cache.Extension\ST.Cache.Abstractions\ST.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.CORE.Razor\ST.Core.Razor.csproj" />
     <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
   </ItemGroup>
 </Project>

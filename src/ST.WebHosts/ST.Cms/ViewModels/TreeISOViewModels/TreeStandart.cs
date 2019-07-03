@@ -13,6 +13,7 @@ namespace ST.Cms.ViewModels.TreeISOViewModels
 	public sealed class TreeCategory
 	{
 		public Guid Id { get; set; }
+		public string Number { get; set; }
 		public string Name { get; set; }
 		public IList<TreeRequirement> Requirements { get; set; }
 		public IList<TreeCategory> SubCategories { get; set; }
@@ -31,11 +32,18 @@ namespace ST.Cms.ViewModels.TreeISOViewModels
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 		public string Hint { get; set; }
-		public string DueMode { get; set; }
+		public RequirementDueMode RequirementDueMode { get; set; }
 		public IEnumerable<TreeRequirementDocument> Documents { get; set; }
 		public IEnumerable<TreeRequirement> Requirements { get; set; }
 	}
 
+	public sealed class RequirementDueMode
+	{
+		public Guid? DueModeId { get; set; }
+		public string DueModeValue { get; set; }
+	}
+
+	//TODO: Integrate with document library after develop document lib
 	public sealed class TreeRequirementDocument
 	{
 		public Guid Id { get; set; }

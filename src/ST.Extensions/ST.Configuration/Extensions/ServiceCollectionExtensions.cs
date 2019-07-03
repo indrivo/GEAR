@@ -25,7 +25,6 @@ using ST.Forms;
 using ST.Forms.Abstractions;
 using ST.Forms.Data;
 using ST.Identity.Abstractions;
-using ST.Identity.Abstractions.Ldap.Models;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.MultiTenants;
@@ -156,9 +155,7 @@ namespace ST.Configuration.Extensions
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
             services.AddAuthorizationBasedOnCache<ApplicationDbContext>();
-            services.AddLdapAuthorization<ApplicationDbContext>();
             services.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
-            services.Configure<LdapSettings>(configuration.GetSection(nameof(LdapSettings)));
             return services;
         }
 
@@ -285,6 +282,9 @@ namespace ST.Configuration.Extensions
 
             //Notifications
             var notificationConfig = new DbNotificationConfig { DbContext = context };
+            if (IoC.IsServiceRegistered<INotificationProvider>())
+                return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
+
             IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<DbNotificationProvider>()
                 .DependsOn(Dependency.OnValue("config", notificationConfig)));
             IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<EmailNotificationProvider>());
@@ -302,8 +302,8 @@ namespace ST.Configuration.Extensions
 
             //Dynamic data dataService
             IoC.Container.Register(Component.For<IDynamicService>()
-                 .ImplementedBy<DynamicService<EntitiesDbContext>>()
-                 .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
+                .ImplementedBy<DynamicService<EntitiesDbContext>>()
+                .DependsOn(Dependency.OnComponent<IHttpContextAccessor, HttpContextAccessor>()));
 
             //Seed
             var synchronizerParams = new Dictionary<string, object> { { "context", context } };

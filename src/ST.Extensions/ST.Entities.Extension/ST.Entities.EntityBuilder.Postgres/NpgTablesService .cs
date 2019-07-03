@@ -12,6 +12,7 @@ using ST.Entities.Abstractions.ViewModels.Table;
 
 namespace ST.Entities.EntityBuilder.Postgres
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class NpgTablesService : TablesService
     {
         private static readonly IQueryTableBuilder QueryTableBuilder = IoC.Resolve<IQueryTableBuilder>();
@@ -55,7 +56,7 @@ namespace ST.Entities.EntityBuilder.Postgres
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                returnModel.Errors.Add(new ErrorModel("Exception", ex.ToString()));
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), ex.ToString()));
                 return returnModel;
             }
         }
@@ -77,37 +78,36 @@ namespace ST.Entities.EntityBuilder.Postgres
                 Result = false,
                 Errors = new List<IErrorModel>()
             };
-            if (!string.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(connectionString)) return returnModel;
+            try
             {
-                try
+                var sqlQuery = QueryTableBuilder.CheckColumnValues(tableName, tableSchema, columnName);
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var sqlQuery = QueryTableBuilder.CheckColumnValues(tableName, tableSchema, columnName);
-                    using (var connection = new NpgsqlConnection(connectionString))
+                    var command = new NpgsqlCommand(sqlQuery, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
                     {
-                        var command = new NpgsqlCommand(sqlQuery, connection);
-                        connection.Open();
-                        using (var reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            if (reader.HasRows)
                             {
-                                if (reader.HasRows)
-                                {
-                                    returnModel.Result = true;
-                                }
+                                returnModel.Result = true;
                             }
                         }
+                        reader.Close();
                     }
+                    connection.Close();
+                }
 
-                    return returnModel;
-                }
-                catch (Exception ex)
-                {
-                    returnModel.Errors.Add(new ErrorModel("exception", ex.ToString()));
-                    return returnModel;
-                }
+                returnModel.IsSuccess = true;
+                return returnModel;
             }
-
-            return returnModel;
+            catch (Exception ex)
+            {
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), ex.ToString()));
+                return returnModel;
+            }
         }
 
         /// <inheritdoc />
@@ -125,36 +125,34 @@ namespace ST.Entities.EntityBuilder.Postgres
                 IsSuccess = false,
                 Result = false
             };
-            if (!string.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(connectionString)) return returnModel;
+            try
             {
-                try
+                var sqlQuery = QueryTableBuilder.CheckTableValues(tableName, tableSchema);
+                using (var connection = new NpgsqlConnection(connectionString))
                 {
-                    var sqlQuery = QueryTableBuilder.CheckTableValues(tableName, tableSchema);
-                    using (var connection = new NpgsqlConnection(connectionString))
+                    var command = new NpgsqlCommand(sqlQuery, connection);
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
                     {
-                        var command = new NpgsqlCommand(sqlQuery, connection);
-                        connection.Open();
-                        using (var reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            if (reader.HasRows)
                             {
-                                if (reader.HasRows)
-                                {
-                                    returnModel.Result = true;
-                                }
+                                returnModel.Result = true;
                             }
                         }
+                        reader.Close();
                     }
+                    connection.Close();
+                }
 
-                    return returnModel;
-                }
-                catch (Exception)
-                {
-                    return returnModel;
-                }
+                returnModel.IsSuccess = true;
+                return returnModel;
             }
-            else
+            catch (Exception e)
             {
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), e.Message));
                 return returnModel;
             }
         }
@@ -183,7 +181,6 @@ namespace ST.Entities.EntityBuilder.Postgres
 
             try
             {
-
                 var sqlQuery = QueryTableBuilder.CreateQuery(table);
                 if (!string.IsNullOrEmpty(sqlQuery))
                 {
@@ -198,11 +195,9 @@ namespace ST.Entities.EntityBuilder.Postgres
                     returnModel.IsSuccess = true;
                     return returnModel;
                 }
-                else
-                {
-                    // Empty query
-                    return returnModel;
-                }
+
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), "Empty query!"));
+                return returnModel;
             }
             catch (Exception ex)
             {
@@ -240,22 +235,17 @@ namespace ST.Entities.EntityBuilder.Postgres
                         connection.Close();
                     }
 
+                    returnModel.IsSuccess = true;
                     returnModel.Result = true;
                     return returnModel;
                 }
 
-                returnModel.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(Guid.NewGuid().ToString(), "Empty query!")
-                };
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), "Empty query!"));
                 return returnModel;
             }
             catch (Exception ex)
             {
-                returnModel.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(Guid.NewGuid().ToString(),ex.ToString())
-                };
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), ex.ToString()));
                 return returnModel;
             }
         }
@@ -291,18 +281,17 @@ namespace ST.Entities.EntityBuilder.Postgres
                         connection.Close();
                     }
 
+                    returnModel.IsSuccess = true;
                     returnModel.Result = true;
                     return returnModel;
                 }
-                else
-                {
-                    // Empty query
-                    return returnModel;
-                }
+
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), "Empty query!"));
+                return returnModel;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), ex.Message));
                 return returnModel;
             }
         }
@@ -339,7 +328,9 @@ namespace ST.Entities.EntityBuilder.Postgres
                                 check = true;
                             }
                         }
+                        reader.Close();
                     }
+                    connection.Close();
                 }
 
                 if (check) return returnModel;
@@ -355,12 +346,13 @@ namespace ST.Entities.EntityBuilder.Postgres
                     }
 
                     returnModel.Result = true;
+                    returnModel.IsSuccess = true;
                     return returnModel;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), ex.Message));
                 return returnModel;
             }
         }
@@ -406,7 +398,9 @@ namespace ST.Entities.EntityBuilder.Postgres
                             result.Add(reader.GetString(0));
                         }
                     }
+                    reader.Close();
                 }
+                connection.Close();
             }
             return result;
         }

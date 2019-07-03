@@ -18,6 +18,22 @@
       "provider": "unpkg",
       "library": "grapesjs-preset-webpage@0.1.9",
       "destination": "wwwroot/lib/grapesjs-preset-webpage/"
+    },
+    {
+      "library": "jqtree@1.4.10",
+      "destination": "wwwroot/lib/jqtree/",
+      "files": [
+        "tree.jquery.js",
+        "jqtree.css"
+      ]
+    },
+    {
+      "library": "bootstrap-switch@3.3.4",
+      "destination": "wwwroot/lib/bootstrap-switch/",
+      "files": [
+        "js/bootstrap-switch.min.js",
+        "css/bootstrap3/bootstrap-switch.min.css"
+      ]
     }
   ]
 }

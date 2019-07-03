@@ -86,7 +86,7 @@ namespace ST.Entities.Abstractions
         {
             var result = new SynchronizeTableViewModel();
             var fields = new List<CreateTableFieldViewModel>();
-            var baseProps = typeof(BaseModel).GetProperties().Select(x => x.Name);
+            var baseProps = BaseModel.GetPropsName().ToList();
             var entity = prop.PropertyType.GenericTypeArguments[0];
 
             if (entity.Name == "ApplicationUser")
@@ -147,12 +147,12 @@ namespace ST.Entities.Abstractions
                                 {
                                     new FieldConfigViewModel
                                     {
-                                        ConfigCode = "9999",
+                                        ConfigCode = TableFieldConfigCode.Reference.ForeingSchemaTable,
                                         Value = result.Schema
                                     },
                                     new FieldConfigViewModel
                                     {
-                                        ConfigCode = "3000",
+                                        ConfigCode = TableFieldConfigCode.Reference.ForeingTable,
                                         Value = ent
                                     }
                                 };

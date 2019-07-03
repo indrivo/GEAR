@@ -10,12 +10,12 @@ using ST.Entities.Abstractions;
 
 namespace ST.Entities.Data
 {
-    public static class EntitiesDbContextSeed<TContext> where  TContext : DbContext, IEntityContext
+    public static class EntitiesDbContextSeeder<TContext> where  TContext : DbContext, IEntityContext
     {
         /// <summary>
         /// Seed with default data
         /// </summary>
-        public static async Task SeedAsync(TContext context, Guid tenantId, int retry = 0)
+        public static async Task SeedAsync(TContext context, Guid tenantId)
         {
             context.Validate();
             var strategy = context.Database.CreateExecutionStrategy();

@@ -3,14 +3,15 @@ using ST.Core;
 
 namespace ST.Notifications.Abstractions.Models.Notifications
 {
-    public class SystemNotifications : BaseModel
+    public sealed class SystemNotifications : BaseModel
     {
         public string Subject { get; set; }
         public string Content { get; set; }
         public Guid NotificationTypeId { get; set; }
         public Guid UserId { get; set; }
     }
-    public abstract class NotificationType
+
+    public static class NotificationType
     {
         public static Guid Add = Guid.Parse("8C263760-B391-4BCC-961A-C7E049CA468F");
         public static Guid Delete = Guid.Parse("72F151F2-68AB-4473-8069-519D39B31612");
