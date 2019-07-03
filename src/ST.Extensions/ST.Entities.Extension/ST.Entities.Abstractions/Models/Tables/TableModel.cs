@@ -31,11 +31,20 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// </summary>
         public bool IsSystem { get; set; }
 
+        /// <summary>
+        /// Return value for check
+        ///     if other tenants can access data from this entity
+        /// </summary>
+        public bool IsCommon { get; set; }
+
+        /// <summary>
+        /// Is part of system db context
+        /// </summary>
         public bool IsPartOfDbContext { get; set; }
 
         /// <summary>
         /// Lists of fields for TableModel
         /// </summary>
-        public ICollection<TableModelFields> TableFields { get; set; }
+        public ICollection<TableModelField> TableFields { get; set; }
     }
 }

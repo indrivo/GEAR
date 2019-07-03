@@ -11,7 +11,7 @@ using ST.Forms.Abstractions.Models.FormModels;
 
 namespace ST.Forms.Data
 {
-    public static class FormDbContextSeed<TContext> where TContext : DbContext, IFormContext
+    public static class FormDbContextSeeder<TContext> where TContext : DbContext, IFormContext
     {
         /// <summary>
         /// Seed async

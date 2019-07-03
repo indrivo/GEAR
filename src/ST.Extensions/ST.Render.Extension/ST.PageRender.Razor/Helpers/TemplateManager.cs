@@ -3,10 +3,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ST.Cache.Abstractions;
-using ST.Entities.Data;
-using ST.Entities.Models.RenderTemplates;
 using ST.Core;
 using ST.Core.Helpers;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.RenderTemplates;
 
 namespace ST.PageRender.Razor.Helpers
 {
@@ -18,7 +18,7 @@ namespace ST.PageRender.Razor.Helpers
         /// <returns></returns>
         public static async Task SeedAsync()
         {
-            var context = IoC.Resolve<EntitiesDbContext>();
+            var context = IoC.Resolve<IDynamicPagesContext>();
             var cache = IoC.Resolve<ICacheService>();
             if (await context.Templates.AnyAsync()) return;
             var files = Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Static/Templates/"));
@@ -35,7 +35,7 @@ namespace ST.PageRender.Razor.Helpers
                     IdentifierName = $"template_{info.Name}",
                     Value = content
                 };
-                await context.AddAsync(template);
+                await context.Templates.AddAsync(template);
                 await cache.Set(template.IdentifierName, new TemplateCacheModel
                 {
                     Identifier = template.IdentifierName,

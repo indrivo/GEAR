@@ -57,7 +57,7 @@
 					</li>
 				}
 			</ul>
-			<button id="update" class="save btn btn-success">Update</button>
+			<button id="update" class="save btn btn-success">@Localizer["save"]</button>
 		</div>
 	</div>
 </div>
@@ -99,7 +99,7 @@
 			const columns = $("#columns").children();
 			var data = [];
 			$.each(columns, function (index, col) {
-				var script = $($(col).children()[0]).val();
+				const script = $($(col).children()[0]).val();
 				data.push({
 					order: $(col).attr("order"),
 					script: script,

@@ -26,6 +26,6 @@ namespace ST.Entities.Abstractions.Models.Tables
         /// <summary>
         /// Lists of TableFieldConfigs for TableFieldType
         /// </summary>
-        public ICollection<TableFieldTypes> TableFieldTypes { get; set; }
+        public ICollection<TableFieldType> TableFieldTypes { get; set; }
     }
 }

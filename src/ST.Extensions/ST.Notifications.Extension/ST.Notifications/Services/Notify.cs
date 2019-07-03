@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -49,6 +48,7 @@ namespace ST.Notifications.Services
         /// <param name="context"></param>
         /// <param name="hub"></param>
         /// <param name="logger"></param>
+        /// <param name="emailSender"></param>
         public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender)
         {
             _dataService = dataService;
@@ -57,6 +57,7 @@ namespace ST.Notifications.Services
             _logger = logger;
             _emailSender = emailSender;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Send Notification
@@ -64,7 +65,7 @@ namespace ST.Notifications.Services
         /// <param name="roles"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public async Task SendNotificationAsync(IEnumerable<TRole> roles, SystemNotifications notification)
+        public virtual async Task SendNotificationAsync(IEnumerable<TRole> roles, SystemNotifications notification)
         {
             var users = new List<string>();
             foreach (var role in roles)
@@ -85,7 +86,7 @@ namespace ST.Notifications.Services
         /// <param name="subject"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        public async Task SendNotificationAsync(IEnumerable<Guid> users, Guid notificationType, string subject,
+        public virtual async Task SendNotificationAsync(IEnumerable<Guid> users, Guid notificationType, string subject,
             string content)
         {
             await SendNotificationAsync(users, new SystemNotifications
@@ -101,7 +102,7 @@ namespace ST.Notifications.Services
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public async Task SendNotificationAsync(SystemNotifications notification)
+        public virtual async Task SendNotificationAsync(SystemNotifications notification)
         {
             var users = _context.Users.Select(x => Guid.Parse(x.Id)).ToList();
             await SendNotificationAsync(users, notification);
@@ -114,10 +115,10 @@ namespace ST.Notifications.Services
         /// <param name="usersIds"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public async Task SendNotificationAsync(IEnumerable<Guid> usersIds, SystemNotifications notification)
+        public virtual async Task SendNotificationAsync(IEnumerable<Guid> usersIds, SystemNotifications notification)
         {
             var users = usersIds.ToList();
-            _hub.SentNotification(users, notification);
+            _hub.SendNotification(users, notification);
             var emails = new HashSet<string>();
             foreach (var user in users)
             {
@@ -143,7 +144,7 @@ namespace ST.Notifications.Services
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public async Task SendNotificationToSystemAdminsAsync(SystemNotifications notification)
+        public virtual async Task SendNotificationToSystemAdminsAsync(SystemNotifications notification)
         {
             var users = new List<Guid>();
             var roles = await _context.Roles.AsNoTracking().ToListAsync();
@@ -169,7 +170,7 @@ namespace ST.Notifications.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId)
+        public virtual async Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId)
         {
             var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, new List<Filter>
             {
@@ -186,13 +187,24 @@ namespace ST.Notifications.Services
             }
             return notifications;
         }
+
+        /// <summary>
+        /// Get notification by id
+        /// </summary>
+        /// <param name="notificationId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Dictionary<string, object>>> GetNotificationById(Guid notificationId)
+        {
+            return await _dataService.GetById<SystemNotifications>(notificationId);
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Mark notification as read 
         /// </summary>
         /// <param name="notificationId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> MarkAsReadAsync(Guid notificationId)
+        public virtual async Task<ResultModel<Guid>> MarkAsReadAsync(Guid notificationId)
         {
             if (notificationId == Guid.Empty)
             {
@@ -209,7 +221,7 @@ namespace ST.Notifications.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public bool IsUserOnline(Guid userId)
+        public virtual bool IsUserOnline(Guid userId)
         {
             return _hub.IsUserOnline(userId);
         }

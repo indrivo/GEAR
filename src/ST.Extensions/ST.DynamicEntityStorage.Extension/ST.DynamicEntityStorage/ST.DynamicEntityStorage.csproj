@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
   </ItemGroup>

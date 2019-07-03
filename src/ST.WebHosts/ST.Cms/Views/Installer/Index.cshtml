@@ -1,6 +1,6 @@
 @using ST.Localization
 @using Microsoft.AspNetCore.Http
-@using ST.Localization.Razor.ViewModels.LocalizationViewModels
+@using ST.Localization.Abstractions.ViewModels.LocalizationViewModels
 
 @inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
 @inject IHttpContextAccessor Accesor
@@ -19,8 +19,8 @@
 	<meta name="viewport" content="width=device-width" />
 	<title>@Localizer["welcome"]</title>
 	<link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
-	<link rel="stylesheet" type="text/css" href="~/css/style.css" />
-	<link rel="stylesheet" type="text/css" href="~/css/colors/green.css.css" />
+	<link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="~/themes/admin/css/colors/green.css" />
 	<link type="text/css" rel="stylesheet" href="~/lib/limonte-sweetalert2/sweetalert2.min.css" />
 </head>
 <body>
@@ -67,7 +67,8 @@
 	<script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
 	<script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
 	<script type="text/javascript" src="~/lib/limonte-sweetalert2/sweetalert2.min.js"></script>
-	<script src="~/js/site.js"></script>
+	<script src="~/assets/js/site.js"></script>
+	<script type="text/javascript" src="/themes/admin/js/admin-theme-script.js"></script>
 	<script>
 		window.load = function (uri, data = null, type = "get") {
 			try {

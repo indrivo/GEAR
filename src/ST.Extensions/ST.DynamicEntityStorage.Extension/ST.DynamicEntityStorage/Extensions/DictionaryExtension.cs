@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage.Extensions
 {

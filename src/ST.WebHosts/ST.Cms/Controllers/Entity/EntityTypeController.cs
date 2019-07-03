@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Core;
 using ST.Entities.Abstractions.Models.Tables;
+using ST.Entities.Abstractions.ViewModels.TableTypes;
 using ST.Entities.Data;
-using ST.Entities.ViewModels.TableTypes;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 

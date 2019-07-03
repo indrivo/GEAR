@@ -5,6 +5,7 @@ using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
 using ST.Core;
+using ST.Core.Extensions;
 
 namespace ST.Audit.Contexts
 {
@@ -15,7 +16,7 @@ namespace ST.Audit.Contexts
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public TrackerDbContext(DbContextOptions options) : base(options)
+        protected TrackerDbContext(DbContextOptions options) : base(options)
         {
             //Enable tracking
             this.EnableTracking();
@@ -82,7 +83,7 @@ namespace ST.Audit.Contexts
             if (!(entity is BaseModel trackable)) return base.Add(entity);
             trackable.Created = DateTime.Now;
             trackable.Changed = DateTime.Now;
-            //trackable.Version = 1;
+            trackable.Version = 1;
             //var audit = entity.GetTrackAuditFromObject(GetType().FullName, trackable.TenantId, entity.GetType(),
             //    TrackEventType.Added);
             return base.Add(entity);

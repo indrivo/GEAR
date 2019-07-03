@@ -8,9 +8,6 @@
 
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Mapster" Version="4.0.0" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="BPMN.Sharp">
       <HintPath>libs\BPMN.Sharp.dll</HintPath>
     </Reference>

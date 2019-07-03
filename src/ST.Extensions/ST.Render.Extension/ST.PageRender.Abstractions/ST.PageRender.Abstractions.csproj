@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="ViewModelFieldConfigCodes.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ViewModelFieldConfigCodes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

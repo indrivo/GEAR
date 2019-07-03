@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using ST.Configuration.Services.Abstraction;
+using ST.Core.Razor.Extensions;
+using ST.PageRender.Abstractions;
 
 namespace ST.Cms.TagHelpers
 {
@@ -13,6 +17,9 @@ namespace ST.Cms.TagHelpers
 		/// Inject page render
 		/// </summary>
 		private readonly IPageRender _pageRender;
+
+		[ViewContext]
+		public ViewContext ViewContext { get; set; }
 
 		public ApplicationTagHelper(IPageRender pageRender)
 		{
@@ -28,12 +35,22 @@ namespace ST.Cms.TagHelpers
 		public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
 		{
 			output.TagMode = TagMode.StartTagAndEndTag;
+			output.TagName = "div";
 			var initial = (await output.GetChildContentAsync()).GetContent();
 			var (pre, next) = await _pageRender.GetLayoutHtml(LayoutId);
+			var pageTitle = string.Empty;
+			if (ViewContext?.ViewData?.ContainsKey("Title") ?? false)
+			{
+				pageTitle = ViewContext.ViewData["Title"].ToString();
+			}
+			var dictData = new Dictionary<string, string>
+			{
+				{ "PageTitle", pageTitle }
+			};
 			var content = new StringBuilder();
-			content.Append(pre);
+			content.Append(pre.Value.Inject(dictData));
 			content.Append(initial);
-			content.Append(next);
+			content.Append(next.Value.Inject(dictData));
 			output.Content.SetHtmlContent(content.ToString());
 		}
 	}

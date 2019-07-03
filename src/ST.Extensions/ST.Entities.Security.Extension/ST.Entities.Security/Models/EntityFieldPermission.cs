@@ -11,7 +11,7 @@ namespace ST.Entities.Security.Models
         /// <summary>
         /// Reference to entity field
         /// </summary>
-        public TableModelFields TableModelField { get; set; }
+        public TableModelField TableModelField { get; set; }
         [Required]
         public Guid TableModelFieldId { get; set; }
 

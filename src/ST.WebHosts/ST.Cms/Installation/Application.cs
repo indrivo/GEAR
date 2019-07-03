@@ -13,14 +13,18 @@ using ST.Configuration.Seed;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
-using ST.Entities.Services;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.PageRender.Razor.Helpers;
 using ST.Procesess.Data;
 using ST.Cms.Extensions;
 using ST.Cms.ViewModels.InstallerModels;
+using ST.Core.Events;
+using ST.Core.Events.EventArgs;
+using ST.Entities.Abstractions;
 using ST.Forms.Data;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Data;
 using ST.Report.Dynamic.Data;
 
 namespace ST.Cms.Installation
@@ -31,7 +35,8 @@ namespace ST.Cms.Installation
 		/// Get settings
 		/// </summary>
 		public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
-			=> JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(ResourceProvider.AppSettingsFilepath(hostingEnvironment));
+			=> JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(
+				ResourceProvider.AppSettingsFilepath(hostingEnvironment));
 
 
 		/// <summary>
@@ -63,28 +68,33 @@ namespace ST.Cms.Installation
 		private static IWebHost Migrate(this IWebHost webHost)
 		{
 			webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
-				   {
-					   EntitiesDbContextSeed<EntitiesDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
-				   })
+				{
+					EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+				})
 				.MigrateDbContext<FormDbContext>((context, services) =>
-				   {
-					   FormDbContextSeed<FormDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
-				   })
+				{
+					FormDbContextSeeder<FormDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+				})
 				.MigrateDbContext<ProcessesDbContext>()
+				.MigrateDbContext<DynamicPagesDbContext>((context, services) =>
+				{
+					DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.Settings.TenantId)
+						.Wait();
+				})
 				.MigrateDbContext<DynamicReportDbContext>()
 				.MigrateDbContext<PersistedGrantDbContext>()
 				.MigrateDbContext<ApplicationDbContext>((context, services) =>
-			   {
-				   new ApplicationDbContextSeed()
-					   .SeedAsync(context, services)
-					   .Wait();
-			   })
+				{
+					new ApplicationDbContextSeed()
+						.SeedAsync(context, services)
+						.Wait();
+				})
 				.MigrateDbContext<ConfigurationDbContext>((context, services) =>
 				{
 					var config = services.GetService<IConfiguration>();
 					var env = services.GetService<IHostingEnvironment>();
 					var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
-					IdentityServerConfigDbSeed.SeedAsync(context, applicationDbContext, config, env)
+					IdentityServerConfigDbSeeder.SeedAsync(context, applicationDbContext, config, env)
 						.Wait();
 				});
 
@@ -97,6 +107,7 @@ namespace ST.Cms.Installation
 		/// <param name="args"></param>
 		public static void Run(string[] args)
 		{
+			SystemEvents.RegisterEvents();
 			BuildWebHost(args).Run();
 		}
 
@@ -118,11 +129,13 @@ namespace ST.Cms.Installation
 		public static async Task SyncDefaultEntityFrameWorkEntities(Guid tenantId)
 		{
 			//Seed EntityFrameWork entities
-			var entities = TablesService.GetEntitiesFromDbContexts(typeof(ApplicationDbContext), typeof(EntitiesDbContext), typeof(FormDbContext), typeof(DynamicReportDbContext));
+			var entities = IoC.Resolve<ITablesService>().GetEntitiesFromDbContexts(typeof(ApplicationDbContext),
+				typeof(EntitiesDbContext), typeof(FormDbContext), typeof(DynamicReportDbContext));
 
 			foreach (var ent in entities)
 			{
-				if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
+				if (!await IoC.Resolve<EntitiesDbContext>().Table
+					.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
 				{
 					IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
 				}
@@ -135,20 +148,11 @@ namespace ST.Cms.Installation
 		/// <returns></returns>
 		public static async Task SeedDynamicDataAsync()
 		{
-			//Seed notifications types
-			await NotificationManager.SeedNotificationTypesAsync();
-
-			//Sync default menus
-			await MenuManager.SyncMenuItemsAsync();
-
-			//Sync web pages
-			await PageManager.SyncWebPagesAsync();
-
-			//Sync templates
-			await TemplateManager.SeedAsync();
-
-			//Sync nomenclatures
-			await NomenclatureManager.SyncNomenclaturesAsync();
+			await Task.WhenAll(NotificationManager.SeedNotificationTypesAsync(),
+				MenuManager.SyncMenuItemsAsync(),
+				PageManager.SyncWebPagesAsync(),
+				TemplateManager.SeedAsync(),
+				NomenclatureManager.SyncNomenclaturesAsync());
 		}
 
 		/// <summary>
@@ -163,11 +167,11 @@ namespace ST.Cms.Installation
 			{
 				var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
 				var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
+				var context = serviceScope.ServiceProvider.GetService<DynamicPagesDbContext>();
 				var cacheService = serviceScope.ServiceProvider.GetService<ICacheService>();
-
-				var isConfigured = IsConfigured(env);
-
-				if (!isConfigured) return;
+				if (!IsConfigured(env)) return;
+				await DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.Settings.TenantId);
+				//Run only if application is configured
 				var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
 				cacheService.FlushAll();
 				await permissionService.RefreshCache();
@@ -194,7 +198,9 @@ namespace ST.Cms.Installation
 			var config = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
 				.AddEnvironmentVariables()
-				.AddJsonFile("appsettings.json", optional: false)
+				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+				.AddJsonFile("translationSettings.json", optional: true, reloadOnChange: true)
+				.AddEnvironmentVariables()
 				.Build();
 
 			return Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)

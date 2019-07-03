@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ST.DynamicEntityStorage.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
@@ -19,7 +18,6 @@ namespace ST.Cms.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly INotificationHub _hub;
 		private readonly ApplicationDbContext _context;
-		private readonly IDynamicService _service;
 
 		#endregion
 
@@ -30,12 +28,11 @@ namespace ST.Cms.Controllers
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
 		/// <param name="service"></param>
-		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, IDynamicService service)
+		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context)
 		{
 			_userManager = userManager;
 			_hub = hub;
 			_context = context;
-			_service = service;
 		}
 
 		/// <summary>

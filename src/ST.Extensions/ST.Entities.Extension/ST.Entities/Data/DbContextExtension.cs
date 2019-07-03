@@ -6,16 +6,19 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ST.Core.Helpers;
-using ST.Entities.Controls.Querry;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.Query;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.Entities.Data
 {
     public static class DbContextExtension
     {
+        private static IEntityQueryBuilder QueryBuilder => IoC.Resolve<IEntityQueryBuilder>();
+
         public static ResultModel<EntityViewModel> GetEntityByParams(this EntitiesDbContext dbContext,
             EntityViewModel viewModel)
         {
+
             var returnModel = new ResultModel<EntityViewModel>
             {
                 IsSuccess = false,
@@ -40,11 +43,8 @@ namespace ST.Entities.Data
                 {
                     foreach (var listTableValue in viewModel.Values)
                     {
-                        var sqlQuery = dbContext.Database.IsSqlServer()
-                                                ? EntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, listTableValue)
-                                                : (dbContext.Database.IsNpgsql())
-                                                ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, listTableValue)
-                                                : string.Empty;
+                        var sqlQuery = QueryBuilder.GetByColumnParameterQuery(viewModel, listTableValue);
+
                         var result = EntitiesFromSql(dbContext, sqlQuery, listTableValue).ToList();
                         finalResult.AddRange(result);
                     }
@@ -52,12 +52,7 @@ namespace ST.Entities.Data
                 else
                 {
                     var parameters = new Dictionary<string, object>();
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                        ? EntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, parameters)
-                                        : (dbContext.Database.IsNpgsql())
-                                        ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, parameters)
-                                        : string.Empty;
-
+                    var sqlQuery = QueryBuilder.GetByColumnParameterQuery(viewModel, parameters);
                     var result = EntitiesFromSql(dbContext, sqlQuery, parameters).ToList();
                     finalResult.AddRange(result);
                 }
@@ -109,11 +104,7 @@ namespace ST.Entities.Data
                 viewModel = SetDefaultInsertValues(viewModel);
                 foreach (var value in viewModel.Values)
                 {
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                        ? EntityQuerryBuilder.InsertQuerry(viewModel)
-                                        : dbContext.Database.IsNpgsql()
-                                        ? NpgEntityQuerryBuilder.InsertQuerry(viewModel)
-                                        : string.Empty;
+                    var sqlQuery = QueryBuilder.InsertQuery(viewModel);
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
 
@@ -162,6 +153,8 @@ namespace ST.Entities.Data
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                returnModel.IsSuccess = false;
+                returnModel.Errors.Add(new ErrorModel(ex.StackTrace, ex.Message));
                 return returnModel;
             }
 
@@ -170,6 +163,7 @@ namespace ST.Entities.Data
 
         public static ResultModel<bool> Refresh(this EntitiesDbContext dbContext, EntityViewModel viewModel)
         {
+            var queryBuilder = IoC.Resolve<IEntityQueryBuilder>();
             var returnModel = new ResultModel<bool>
             {
                 IsSuccess = false,
@@ -180,11 +174,7 @@ namespace ST.Entities.Data
             {
                 foreach (var value in viewModel.Values)
                 {
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                        ? EntityQuerryBuilder.UpdateQuerry(viewModel)
-                                        : dbContext.Database.IsNpgsql()
-                                        ? NpgEntityQuerryBuilder.UpdateQuerry(viewModel)
-                                        : string.Empty;
+                    var sqlQuery = queryBuilder.UpdateQuery(viewModel);
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
                     using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
@@ -260,11 +250,7 @@ namespace ST.Entities.Data
                 {
                     foreach (var listTableValue in viewModel.Values)
                     {
-                        var sqlQuery = dbContext.Database.IsSqlServer()
-                                            ? EntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, listTableValue)
-                                            : dbContext.Database.IsNpgsql()
-                                            ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, listTableValue)
-                                            : string.Empty;
+                        var sqlQuery = QueryBuilder.GetByColumnParameterQuery(viewModel, listTableValue);
 
                         var result = EntitiesFromSql(dbContext, sqlQuery, listTableValue).ToList();
                         finalResult.AddRange(result);
@@ -273,11 +259,7 @@ namespace ST.Entities.Data
                 else
                 {
                     var parameters = new Dictionary<string, object>();
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                        ? EntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, parameters)
-                                        : dbContext.Database.IsNpgsql()
-                                        ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(viewModel, parameters)
-                                        : string.Empty;
+                    var sqlQuery = QueryBuilder.GetByColumnParameterQuery(viewModel, parameters);
                     var result = EntitiesFromSql(dbContext, sqlQuery, parameters).ToList();
                     finalResult.AddRange(result);
                 }
@@ -319,11 +301,9 @@ namespace ST.Entities.Data
             {
                 foreach (var value in viewModel.Values)
                 {
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                        ? EntityQuerryBuilder.DeleteByIdQuerry(viewModel, completeDelete) ?? throw new ArgumentNullException("EntityQuerryBuilder.DeleteByIdQuerry(viewModel, completeDelete)")
-                                        : dbContext.Database.IsNpgsql()
-                                        ? NpgEntityQuerryBuilder.DeleteByIdQuerry(viewModel, completeDelete) ?? throw new ArgumentNullException("EntityQuerryBuilder.DeleteByIdQuerry(viewModel, completeDelete)")
-                                        : string.Empty;
+                    var sqlQuery = QueryBuilder.DeleteByIdQuery(viewModel, completeDelete) ??
+                                   throw new ArgumentNullException(
+                                       $"{nameof(QueryBuilder.DeleteByIdQuery)}");
 
                     //var sqlQuery = EntityQueryBuilder.DeleteByIdQuery(viewModel.TableName, (Guid)value["Id"]);
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
@@ -381,11 +361,7 @@ namespace ST.Entities.Data
             {
                 foreach (var value in viewModel.Values)
                 {
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                        ? EntityQuerryBuilder.GetCountByParameter(viewModel, value)
-                                        : dbContext.Database.IsNpgsql()
-                                        ? NpgEntityQuerryBuilder.GetCountByParameter(viewModel, value)
-                                        : string.Empty;
+                    var sqlQuery = QueryBuilder.GetCountByParameter(viewModel, value);
                     var result = EntitiesFromSql(dbContext, sqlQuery, value).FirstOrDefault();
                     finalResult.Add(result);
                 }
@@ -407,9 +383,10 @@ namespace ST.Entities.Data
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="viewModel"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
         public static ResultModel<int> GetCount(this EntitiesDbContext dbContext,
-            EntityViewModel viewModel)
+            EntityViewModel viewModel, Dictionary<string, object> filters = null)
         {
             var returnModel = new ResultModel<int>
             {
@@ -420,12 +397,8 @@ namespace ST.Entities.Data
 
             try
             {
-                var sqlQuery = dbContext.Database.IsSqlServer()
-                                    ? EntityQuerryBuilder.GetCountByParameter(viewModel, new Dictionary<string, object>())
-                                    : dbContext.Database.IsNpgsql()
-                                    ? NpgEntityQuerryBuilder.GetCountByParameter(viewModel, new Dictionary<string, object>())
-                                    : string.Empty;
-                var result = EntitiesFromSql(dbContext, sqlQuery, new Dictionary<string, object>()).FirstOrDefault();
+                var sqlQuery = QueryBuilder.GetCountByParameter(viewModel, filters);
+                var result = EntitiesFromSql(dbContext, sqlQuery, filters).FirstOrDefault();
                 var data = result?.FirstOrDefault();
                 if (data.Equals(default(KeyValuePair<string, object>))) return returnModel;
                 returnModel.Result = Convert.ToInt32(data?.Value);
@@ -534,11 +507,7 @@ namespace ST.Entities.Data
                                     parameters.Add(field.Type == "Single" ? "Id" : field.ColumnName, fieldData);
 
                                     //Changed GetBytColumnParameterQuery for only visible field non Single or Multiple
-                                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                                            ? EntityQuerryBuilder.GetByColumnParameterQuerry(includeTable, parameters)
-                                                            : dbContext.Database.IsNpgsql()
-                                                            ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(includeTable, parameters)
-                                                            : string.Empty;
+                                    var sqlQuery = QueryBuilder.GetByColumnParameterQuery(includeTable, parameters);
 
                                     var result = EntitiesFromSql(dbContext, sqlQuery, parameters).ToList();
 
@@ -576,11 +545,7 @@ namespace ST.Entities.Data
                                 };
 
                                 //Changed GetBytColumnParameterQuery for only visible field non Single or Multiple
-                                var sqlQuery = dbContext.Database.IsSqlServer()
-                                                    ? EntityQuerryBuilder.GetByColumnParameterQuerry(includeTable, parameters)
-                                                    : dbContext.Database.IsNpgsql()
-                                                    ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(includeTable, parameters)
-                                                    : string.Empty;
+                                var sqlQuery = QueryBuilder.GetByColumnParameterQuery(includeTable, parameters);
 
                                 var result = EntitiesFromSql(dbContext, sqlQuery, parameters).ToList();
 
@@ -666,11 +631,9 @@ namespace ST.Entities.Data
                 {
                     foreach (var listTableValue in entityModel.Values)
                     {
-                        var sqlQuery = dbContext.Database.IsSqlServer()
-                                            ? EntityQuerryBuilder.GetByColumnParameterQuerry(entityModel, listTableValue) ?? throw new ArgumentNullException("EntityQuerryBuilder.GetByColumnParameterQuerry(entityModel, listTableValue)")
-                                            : dbContext.Database.IsNpgsql()
-                                            ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(entityModel, listTableValue) ?? throw new ArgumentNullException("EntityQuerryBuilder.GetByColumnParameterQuerry(entityModel, listTableValue)")
-                                            : string.Empty;
+                        var sqlQuery = QueryBuilder.GetByColumnParameterQuery(entityModel, listTableValue) ??
+                                       throw new ArgumentNullException(
+                                           $"{nameof(QueryBuilder.GetByColumnParameterQuery)}");
                         var result = EntitiesFromSql(dbContext, sqlQuery, listTableValue).ToList();
                         finalResult.AddRange(result);
                     }
@@ -678,11 +641,7 @@ namespace ST.Entities.Data
                 else
                 {
                     var parameters = new Dictionary<string, object>();
-                    var sqlQuery = dbContext.Database.IsSqlServer()
-                                            ? EntityQuerryBuilder.GetByColumnParameterQuerry(entityModel, parameters)
-                                            : dbContext.Database.IsNpgsql()
-                                            ? NpgEntityQuerryBuilder.GetByColumnParameterQuerry(entityModel, parameters)
-                                            : string.Empty;
+                    var sqlQuery = QueryBuilder.GetByColumnParameterQuery(entityModel, parameters);
                     var result = EntitiesFromSql(dbContext, sqlQuery, parameters).ToList();
                     finalResult.AddRange(result);
                 }

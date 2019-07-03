@@ -57,6 +57,7 @@
     <ProjectReference Include="..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
     <ProjectReference Include="..\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
     <ProjectReference Include="..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />
+    <ProjectReference Include="..\ST.Render.Extension\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

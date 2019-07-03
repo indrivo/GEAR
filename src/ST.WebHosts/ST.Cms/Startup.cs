@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,6 @@ using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Versioning;
 using ST.Localization;
-using ST.Localization.Razor.Extensions;
 using ST.MPass.Gov;
 using ST.Notifications.Extensions;
 using ST.PageRender.Razor.Extensions;
@@ -32,14 +32,26 @@ using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core.Extensions;
+using ST.Core.Helpers.DbContexts;
+using ST.Entities;
 using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
 using ST.Report.Dynamic.Extensions;
 using ST.Entities.Abstractions.Extensions;
+using ST.Entities.EntityBuilder.Postgres;
+using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
+using ST.Identity.LdapAuth;
+using ST.Identity.LdapAuth.Abstractions.Extensions;
+using ST.Localization.Abstractions;
+using ST.Localization.Abstractions.Extensions;
+using ST.Localization.Abstractions.Models;
+using ST.Localization.Services;
+using ST.PageRender.Abstractions.Extensions;
+using ST.PageRender.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -123,16 +135,29 @@ namespace ST.Cms
 			app.UseDefaultFiles();
 			app.UseStaticFiles();
 
-			//-------------------------Register on app start event-------------------------------------
+			//-------------------------Register on app events-------------------------------------
 			lifetime.ApplicationStarted.Register(() =>
 			{
 				Installation.Application.OnApplicationStarted(app);
 			});
+
+			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
+
+			if (env.IsProduction())
+			{
+				//Use compression
+				app.UseResponseCompression();
+			}
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public IServiceProvider ConfigureServices(IServiceCollection services)
 		{
+			if (HostingEnvironment.IsProduction())
+			{
+				//Use compression
+				services.AddResponseCompression();
+			}
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 
@@ -145,13 +170,10 @@ namespace ST.Cms
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
 
-			services.AddDbContext<EntitiesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration, HostingEnvironment);
-			});
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
 			});
 
 			//------------------------------Identity Module-------------------------------------
@@ -192,7 +214,12 @@ namespace ST.Cms
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
 			//---------------------------------------Entity Module-------------------------------------
-			services.AddEntityModule<EntitiesDbContext>();
+			services.AddEntityModule<EntitiesDbContext, EntityRepository, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
+			services.AddDbContext<EntitiesDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
+			}, ServiceLifetime.Transient);
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -207,13 +234,17 @@ namespace ST.Cms
 			services.AddSwaggerModule(Configuration, HostingEnvironment);
 
 			//---------------------------------Localization Module-------------------------------------
-			services.AddLocalizationModule(Configuration);
+			services.AddLocalizationModule<LocalizationService, YandexTranslationProvider>(new TranslationModuleOptions
+			{
+				Configuration = Configuration,
+				LocalizationProvider = LocalizationProvider.Yandex
+			});
 
 			//------------------------------Database backup Module-------------------------------------
 			services.RegisterDatabaseBackupRunnerModule(Configuration);
 
-			//------------------------------------Processes Module-------------------------------------
-			services.AddPageRenderModule();
+			//------------------------------------Page render Module-------------------------------------
+			services.AddPageRenderUiModule();
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
@@ -226,15 +257,29 @@ namespace ST.Cms
 			services.AddDbContext<FormDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
 			});
 
 			services.AddFormStaticFilesModule();
+
+
+			//-----------------------------------------Page Module-------------------------------------
+			services.AddPageModule<DynamicPagesDbContext>();
+			services.AddDbContext<DynamicPagesDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.EnableSensitiveDataLogging();
+				var factoryOptions = new DbContextOptionsBuilder<EntitiesDbContext>();
+				factoryOptions.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
+				DbContextFactory<DynamicPagesDbContext, EntitiesDbContext>.Options = factoryOptions;
+			});
 
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
 			services.AddDbContext<DynamicReportDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration, HostingEnvironment);
+					options.EnableSensitiveDataLogging();
 				});
 
 			//---------------------------------Custom cache Module-------------------------------------
@@ -251,6 +296,10 @@ namespace ST.Cms
 					options.KnownProxies.Add(IPAddress.Parse("185.131.222.95"));
 				});
 			}
+
+			//----------------------------------------Ldap Module-------------------------------------
+			services.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(Configuration);
+
 
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,6 @@ using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Controls.Querry;
 using ST.Entities.Data;
 using ST.Entities.Utils;
 using ST.Identity.Abstractions;
@@ -25,11 +25,14 @@ using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Cms.ViewModels.InstallerModels;
 using ST.Core.Abstractions;
 using ST.Entities.Abstractions;
+using ST.Entities.EntityBuilder.MsSql.Controls.Query;
+using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Identity.Abstractions.Enums;
 using ST.MultiTenant.Helpers;
 
 namespace ST.Cms.Controllers
 {
+	[AllowAnonymous]
 	public class InstallerController : Controller
 	{
 		/// <summary>
@@ -88,7 +91,6 @@ namespace ST.Cms.Controllers
 		/// Constructor
 		/// </summary>
 		/// <param name="hostingEnvironment"></param>
-		/// <param name="localService"></param>
 		/// <param name="permissionService"></param>
 		/// <param name="applicationDbContext"></param>
 		/// <param name="signInManager"></param>
@@ -96,6 +98,8 @@ namespace ST.Cms.Controllers
 		/// <param name="cacheService"></param>
 		/// <param name="entitiesDbContext"></param>
 		/// <param name="dynamicService"></param>
+		/// <param name="queue"></param>
+		/// <param name="serviceScopeFactory"></param>
 		public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
 		{
 			_entitiesDbContext = entitiesDbContext;
@@ -162,7 +166,7 @@ namespace ST.Cms.Controllers
 
 			if (model.DataBaseType == DbProviderType.MsSqlServer)
 			{
-				var (isConnected, error) = TableQuerryBuilder.IsSqlServerConnected(model.DatabaseConnectionString);
+				var (isConnected, error) = new MsSqlTableQueryBuilder().IsSqlServerConnected(model.DatabaseConnectionString);
 				if (!isConnected)
 				{
 					ModelState.AddModelError(string.Empty, error);
@@ -174,7 +178,7 @@ namespace ST.Cms.Controllers
 			}
 			else
 			{
-				var (isConnected, error) = NpgTableQuerryBuilder.IsNpgServerConnected(model.DatabaseConnectionString);
+				var (isConnected, error) = new NpgTableQueryBuilder().IsSqlServerConnected(model.DatabaseConnectionString);
 				if (!isConnected)
 				{
 					ModelState.AddModelError(string.Empty, error);
@@ -344,7 +348,7 @@ namespace ST.Cms.Controllers
 				IsEditable = true
 			};
 
-			Queue.PushQueueBackgroundWorkItem(async token =>
+			Queue.PushBackgroundWorkItemInQueue(async token =>
 			{
 				using (var scope = _serviceScopeFactory.CreateScope())
 				{

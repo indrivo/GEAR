@@ -6,57 +6,97 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using ST.Cache.Abstractions;
-using ST.Configuration.Services.Abstraction;
 using ST.Entities.Data;
-using ST.Entities.Models.Pages;
-using ST.Entities.Models.ViewModels;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.Core.Extensions;
+using ST.Core.Razor.Extensions;
 using ST.Entities.Abstractions.Constants;
 using ST.Identity.Abstractions;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
+using ST.PageRender.Abstractions.Models.ViewModels;
 using ST.PageRender.Razor.Helpers;
 
 namespace ST.PageRender.Razor.Services
 {
     public class PageRender : IPageRender
     {
-        private const string BasePath = "Static/Templates/";
+        private const string BasePath = "Templates/";
         /// <summary>
         /// Context
         /// </summary>
         private readonly EntitiesDbContext _context;
 
-        private readonly INotify<ApplicationRole> _notify;
+        private readonly IDynamicPagesContext _pagesContext;
 
-        private readonly IHostingEnvironment _env;
+        /// <summary>
+        /// Inject notifier
+        /// </summary>
+        private readonly INotify<ApplicationRole> _notify;
 
         /// <summary>
         /// Inject cache service
         /// </summary>
         private readonly ICacheService _cacheService;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, IHostingEnvironment env)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        /// <summary>
+        /// Inject http context
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
+
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext)
         {
             _context = context;
             _cacheService = cacheService;
             _notify = notify;
-            _env = env;
+            _userManager = userManager;
+            _contextAccessor = contextAccessor;
+            _pagesContext = pagesContext;
+        }
+
+        private async Task<ApplicationUser> GetCurrentUserAsync()
+        {
+            return await _userManager.GetUserAsync(_contextAccessor.HttpContext.User);
         }
 
         /// <summary>
         /// Get Layout html
         /// </summary>
         /// <returns></returns>
-        public async Task<(HtmlString, HtmlString)> GetLayoutHtml(Guid? layoutId = null)
+        public virtual async Task<(HtmlString, HtmlString)> GetLayoutHtml(Guid? layoutId = null)
         {
-            var code = await GetLayoutCode(PageContentType.Html, "layout", layoutId);
+            var (code, _) = await GetLayoutCode(PageContentType.Html, "layout", layoutId);
+            if (!code.Contains("@RenderBody()"))
+            {
+                return (new HtmlString("<h1 style=\"color: red\">Layout must have @RenderBody() section</h1>"), new HtmlString(""));
+            }
+            var routeData = _contextAccessor.HttpContext.GetRouteData();
+            var user = await GetCurrentUserAsync();
+            var data = new Dictionary<string, string>
+            {
+                { "AppName", "ISO 27001" },
+                { "UserName", user.UserName },
+                { "UserEmail", user.Email },
+                { "UserImagePath", $"/Users/GetImage?id={user.Id}"},
+                { "SystemYear", DateTime.Now.Year.ToString() },
+                { "RouteController", routeData.Values["controller"].ToString() },
+                { "RouteView", routeData.Values["action"].ToString() }
+            };
+            code = code.Inject(data);
             var arr = code.Split("@RenderBody()");
             return (new HtmlString(arr[0]), new HtmlString(arr[1]));
         }
@@ -65,18 +105,20 @@ namespace ST.PageRender.Razor.Services
         /// Get Layout css
         /// </summary>
         /// <returns></returns>
-        public async Task<string> GetLayoutCss(Guid? layoutId = null)
+        public virtual async Task<string> GetLayoutCss(Guid? layoutId = null)
         {
-            return await GetLayoutCode(PageContentType.Css, "layout", layoutId);
+            var (content, _) = await GetLayoutCode(PageContentType.Css, "layout", layoutId);
+            return content;
         }
 
         /// <summary>
         /// Get layout js
         /// </summary>
         /// <returns></returns>
-        public async Task<string> GetLayoutJavaScript(Guid? layoutId = null)
+        public virtual async Task<string> GetLayoutJavaScript(Guid? layoutId = null)
         {
-            return await GetLayoutCode(PageContentType.Js, "layout", layoutId);
+            var (content, _) = await GetLayoutCode(PageContentType.Js, "layout", layoutId);
+            return content;
         }
 
         /// <summary>
@@ -86,7 +128,8 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<HtmlString> GetPageHtml(string pageName)
         {
-            return new HtmlString(await GetLayoutCode(PageContentType.Html, pageName));
+            var (content, _) = await GetLayoutCode(PageContentType.Html, pageName);
+            return new HtmlString(content);
         }
         /// <summary>
         /// Get css of page
@@ -95,7 +138,8 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<string> GetPageCss(string pageName)
         {
-            return await GetLayoutCode(PageContentType.Css, pageName);
+            var (content, _) = await GetLayoutCode(PageContentType.Css, pageName);
+            return content;
         }
 
         /// <summary>
@@ -105,7 +149,8 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<string> GetPageJavaScript(string pageName)
         {
-            return await GetLayoutCode(PageContentType.Js, pageName);
+            var (content, _) = await GetLayoutCode(PageContentType.Js, pageName);
+            return content;
         }
 
         /// <summary>
@@ -127,9 +172,9 @@ namespace ST.PageRender.Razor.Services
             page.Settings.HtmlCode = html;
             try
             {
-                _context.Pages.Update(page);
-                _context.SaveChanges();
-                await _cacheService.RemoveAsync($"_page_dynamic_{pageId}");
+                _pagesContext.Pages.Update(page);
+                _pagesContext.SaveChanges();
+                await _cacheService.RemoveAsync($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
                 result.IsSuccess = true;
             }
             catch (Exception e)
@@ -182,15 +227,15 @@ namespace ST.PageRender.Razor.Services
         /// <param name="pageName"></param>
         /// <param name="pageId"></param>
         /// <returns></returns>
-        private async Task<string> GetLayoutCode(PageContentType type, string pageName = "layout", Guid? pageId = null)
+        private async Task<(string, Page)> GetLayoutCode(PageContentType type, string pageName = "layout", Guid? pageId = null)
         {
             try
             {
                 var layout = pageId == null
-                    ? _context.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Settings.Name == pageName)
+                    ? _pagesContext.Pages.Include(x => x.Settings).FirstOrDefault(x => x.Settings.Name == pageName)
                     : await GetPageAsync(pageId.Value);
 
-                if (layout == null) return string.Empty;
+                if (layout == null) return (string.Empty, null);
                 var code = string.Empty;
                 switch (type)
                 {
@@ -205,14 +250,14 @@ namespace ST.PageRender.Razor.Services
                         break;
                 }
 
-                return code;
+                return (code, layout);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
 
-            return string.Empty;
+            return (string.Empty, null);
         }
 
         /// <summary>
@@ -228,9 +273,9 @@ namespace ST.PageRender.Razor.Services
             [Required] Guid viewModelId, string addPath = "#", string editPath = "#")
         {
             if (string.IsNullOrEmpty(name) || viewModelId.Equals(Guid.Empty)) return default;
-            var match = _context.Pages.Include(x => x.Settings)
+            var match = _pagesContext.Pages.Include(x => x.Settings)
                 .FirstOrDefault(x => x.Path.ToLower().Equals($"/{path}".ToLower()));
-            var viewModel = _context.ViewModels
+            var viewModel = _pagesContext.ViewModels
                     .Include(x => x.TableModel)
                     .Include(x => x.ViewModelFields)
                     .FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -262,43 +307,46 @@ namespace ST.PageRender.Razor.Services
 
             try
             {
-                _context.Pages.Add(page);
-                _context.SaveChanges();
-
-                var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/listDefaultTemplate.html");
-                var reader = new StreamReader(fileInfo.CreateReadStream());
-                var template = await reader.ReadToEndAsync();
+                _pagesContext.Pages.Add(page);
+                _pagesContext.SaveChanges();
+                var fileStream = new FileStream(Path.Combine(AppContext.BaseDirectory, $"{BasePath}/listDefaultTemplate.html"), FileMode.Open);
+                var reader = new StreamReader(fileStream);
                 var listId = Guid.NewGuid();
-                template = template.Replace("#Title", name);
-                template = template.Replace("#SubTitle", name);
-                template = template.Replace("#EntityName", viewModel.TableModel.Name);
-                template = template.Replace("#ViewModelId", viewModel.Id.ToString());
-                template = template.Replace("#ListId", listId.ToString());
-                template = template.Replace("#AddPagePath", addPath);
-                template = template.Replace("#EditPagePath", editPath);
 
                 var tableHead = new StringBuilder();
 
                 foreach (var line in viewModel.ViewModelFields.ToList().OrderBy(x => x.Order))
                     tableHead.AppendLine($"<th translate='{line.Translate}'>{line.Name}</th>");
                 tableHead.AppendLine("<th>Actions</th>");
+                var dictData = new Dictionary<string, string>
+                {
+                    { "Title", name },
+                    { "SubTitle", name },
+                    { "EntityName", viewModel.TableModel.Name },
+                    { "ViewModelId", viewModel.Id.ToString() },
+                    { "ListId", listId.ToString() },
+                    { "AddPagePath", addPath },
+                    { "EditPagePath", editPath },
+                    { "TableHead", tableHead.ToString() }
+                };
 
-                template = template.Replace("#TableHead", tableHead.ToString());
+                var template = (await reader.ReadToEndAsync()).Inject(dictData);
+                reader.Close();
+                fileStream.Close();
+                await SavePageContent(pageId, template, string.Empty, string.Empty);
 
-                await SavePageContent(pageId, template, "", string.Empty);
+                await _notify.SendNotificationAsync(new SystemNotifications
+                {
+                    Content = $"New page generated with name {page.Settings.Name}  and route {page.Path}",
+                    Subject = "Info",
+                    NotificationTypeId = NotificationType.Info
+                });
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
                 return default;
             }
-
-            await _notify.SendNotificationAsync(new SystemNotifications
-            {
-                Content = $"New page generated with name {page.Settings.Name}  and route {page.Path}",
-                Subject = "Info",
-                NotificationTypeId = NotificationType.Info
-            });
 
             return new ResultModel<Guid>
             {
@@ -316,10 +364,16 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<ResultModel> GenerateFormPage(Guid formId, string path, string pageName)
         {
-            var fileInfo = _env.ContentRootFileProvider.GetFileInfo($"{BasePath}/formDefaultTemplate.html");
-            var reader = new StreamReader(fileInfo.CreateReadStream());
-            var template = await reader.ReadToEndAsync();
-            template = template.Replace("#FormId", formId.ToString());
+            var fileStream = new FileStream(Path.Combine(AppContext.BaseDirectory, $"{BasePath}/formDefaultTemplate.html"), FileMode.Open);
+            var reader = new StreamReader(fileStream);
+
+            var dictData = new Dictionary<string, string>
+            {
+                { "FormId", formId.ToString() }
+            };
+            var template = (await reader.ReadToEndAsync()).Inject(dictData);
+            reader.Close();
+            fileStream.Close();
             var page = new Page
             {
                 Created = DateTime.Now,
@@ -337,8 +391,8 @@ namespace ST.PageRender.Razor.Services
             };
             try
             {
-                _context.Pages.Add(page);
-                _context.SaveChanges();
+                _pagesContext.Pages.Add(page);
+                _pagesContext.SaveChanges();
                 await SavePageContent(page.Id, template, string.Empty, string.Empty);
                 return new ResultModel
                 {
@@ -365,16 +419,17 @@ namespace ST.PageRender.Razor.Services
         public virtual async Task<Page> GetPageAsync(Guid? pageId)
         {
             if (pageId == null) return null;
-            var cachedPage = await _cacheService.Get<Page>($"_page_dynamic_{pageId}");
+            var cachedPage = await _cacheService.Get<Page>($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
             if (cachedPage != null) return cachedPage;
-            var page = await _context.Pages
+            var page = await _pagesContext.Pages
                 .Include(x => x.PageScripts)
                 .Include(x => x.PageStyles)
                 .Include(x => x.PageType)
                 .Include(x => x.Layout)
                 .Include(x => x.Settings)
+                .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id.Equals(pageId));
-            await _cacheService.Set($"_page_dynamic_{pageId}", page);
+            await _cacheService.Set($"{PageRenderConstants.PageCacheIdentifier}{pageId}", page);
             return page;
         }
 
@@ -385,15 +440,16 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<ResultModel<Guid>> GenerateViewModel(Guid entityId)
         {
+            var result = new ResultModel<Guid>();
             var table = _context.Table.Include(x => x.TableFields).FirstOrDefault(x => x.Id.Equals(entityId));
-            if (table == null) return default;
+            if (table == null) return result;
             var id = Guid.NewGuid();
             var fields = new List<ViewModelFields>();
             var model = new ViewModel
             {
                 Id = id,
                 Name = $"{table.Name}_{id}",
-                TableModel = table
+                TableModelId = table.Id
             };
             var c = 0;
 
@@ -401,7 +457,7 @@ namespace ST.PageRender.Razor.Services
             {
                 Order = c++,
                 Name = x.Name,
-                TableModelFields = x,
+                TableModelFieldsId = x.Id,
                 Template = GetTemplate(x.Name, x.DataType)
             }));
 
@@ -415,16 +471,19 @@ namespace ST.PageRender.Razor.Services
             }));
 
             model.ViewModelFields = fields;
-            await _context.ViewModels.AddAsync(model);
+            await _pagesContext.ViewModels.AddAsync(model);
             try
             {
-                await _context.SaveChangesAsync();
-                return new ResultModel<Guid> { IsSuccess = true, Result = id };
+                await _pagesContext.SaveChangesAsync();
+                result.IsSuccess = true;
+                result.Result = id;
+                return result;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
-                return default;
+                result.Errors.Add(new ErrorModel("throw", ex.Message));
+                return result;
             }
         }
 

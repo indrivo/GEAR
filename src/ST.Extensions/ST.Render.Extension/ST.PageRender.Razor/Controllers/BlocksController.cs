@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Models.Pages;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
 using ST.PageRender.Razor.ViewModels.PageViewModels;
@@ -19,14 +18,19 @@ using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Data.MultiTenants;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Controllers
 {
 	[Authorize(Roles = Settings.SuperAdmin)]
 	public class BlocksController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
-        public BlocksController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        private readonly IDynamicPagesContext _pagesContext;
+
+        public BlocksController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
+            _pagesContext = pagesContext;
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace ST.PageRender.Razor.Controllers
 		{
 			var model = new CreateBlockViewModel
 			{
-				BlockCategories = Context.BlockCategories.ToList()
+				BlockCategories = _pagesContext.BlockCategories.ToList()
 			};
 			return View(model);
 		}
@@ -65,15 +69,15 @@ namespace ST.PageRender.Razor.Controllers
 				model.TenantId = CurrentUserTenantId;
 				model.Author = GetCurrentUser().Id;
 				model.Changed = DateTime.Now;
-				Context.Blocks.Add(model);
-				Context.SaveChanges();
+                _pagesContext.Blocks.Add(model);
+                _pagesContext.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
-			model.BlockCategories = Context.BlockCategories.ToList();
+			model.BlockCategories = _pagesContext.BlockCategories.ToList();
 			return View(model);
 		}
 
@@ -86,10 +90,10 @@ namespace ST.PageRender.Razor.Controllers
 		public IActionResult Edit(Guid? id)
 		{
 			if (id == null) return NotFound();
-			var req = Context.Blocks.Include(x => x.BlockCategory).Single(x => x.Id == id);
+			var req = _pagesContext.Blocks.Include(x => x.BlockCategory).Single(x => x.Id == id);
 			if (req == null) return NotFound();
 			var model = req.Adapt<CreateBlockViewModel>();
-			model.BlockCategories = Context.BlockCategories.ToList();
+			model.BlockCategories = _pagesContext.BlockCategories.ToList();
 			return View(model);
 		}
 
@@ -104,8 +108,8 @@ namespace ST.PageRender.Razor.Controllers
 			model.Changed = DateTime.Now;
 			try
 			{
-				Context.Blocks.Update(model);
-				Context.SaveChanges();
+                _pagesContext.Blocks.Update(model);
+                _pagesContext.SaveChanges();
 				return RedirectToAction("Index");
 			}
 			catch (Exception e)
@@ -125,7 +129,7 @@ namespace ST.PageRender.Razor.Controllers
 		[AjaxOnly]
 		public JsonResult LoadPages(DTParameters param)
 		{
-			var filtered = Context.Filter<Block>(param.Search.Value, param.SortOrder, param.Start,
+			var filtered = _pagesContext.FilterAbstractContext<Block>(param.Search.Value, param.SortOrder, param.Start,
 				param.Length,
 				out var totalCount);
 
@@ -151,13 +155,13 @@ namespace ST.PageRender.Razor.Controllers
 		public JsonResult Delete(string id)
 		{
 			if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete block!", success = false });
-			var page = Context.Blocks.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
+			var page = _pagesContext.Blocks.FirstOrDefault(x => x.Id.Equals(Guid.Parse(id)));
 			if (page == null) return Json(new { message = "Fail to delete block!", success = false });
 
 			try
 			{
-				Context.Blocks.Remove(page);
-				Context.SaveChanges();
+                _pagesContext.Blocks.Remove(page);
+                _pagesContext.SaveChanges();
 				return Json(new { message = "Block was delete with success!", success = true });
 			}
 			catch (Exception e)

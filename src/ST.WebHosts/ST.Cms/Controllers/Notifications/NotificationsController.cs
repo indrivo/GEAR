@@ -34,6 +34,19 @@ namespace ST.Cms.Controllers.Notifications
 			var notifications = await _notify.GetNotificationsByUserIdAsync(userId);
 			return Json(notifications);
 		}
+
+		/// <summary>
+		/// Get notification by id
+		/// </summary>
+		/// <param name="notificationId"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[Route("api/[controller]/[action]")]
+		public async Task<IActionResult> GetNotificationById(Guid? notificationId)
+		{
+			return notificationId == null ? Json(new ResultModel()) : Json(await _notify.GetNotificationById(notificationId.Value));
+		}
+
 		/// <summary>
 		/// Mark notification as read
 		/// </summary>

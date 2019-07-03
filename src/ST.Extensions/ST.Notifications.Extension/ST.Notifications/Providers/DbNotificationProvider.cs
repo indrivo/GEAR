@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
-using ST.Entities.ViewModels.DynamicEntities;
-using ST.Entities.ViewModels.Table;
 using ST.Notifications.Abstraction;
 
 namespace ST.Notifications.Providers

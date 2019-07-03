@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Notifications.Abstraction;
 
 namespace ST.Notifications.Providers

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.Entities.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {

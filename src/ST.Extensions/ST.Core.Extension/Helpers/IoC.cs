@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
+using ST.Core.Exceptions;
 
 namespace ST.Core.Helpers
 {
@@ -18,19 +20,7 @@ namespace ST.Core.Helpers
 
         }
 
-        public static IWindsorContainer Container
-        {
-            get => _container;
-
-            set
-            {
-                lock (LockObj)
-                {
-                    _container = value;
-                }
-            }
-        }
-
+        public static IWindsorContainer Container => _container ?? (_container = new WindsorContainer());
 
         public static IoC Instance
         {
@@ -58,9 +48,23 @@ namespace ST.Core.Helpers
         /// <typeparam name="TImplementation"></typeparam>
         public static void RegisterService<TAbstraction, TImplementation>() where TImplementation : class, TAbstraction where TAbstraction : class
         {
-            if (_container == null) _container = new WindsorContainer();
-            _container.Register(Component.For<TAbstraction>()
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>()
                 .ImplementedBy<TImplementation>());
+        }
+
+        /// <summary>
+        /// Register service collection 
+        /// </summary>
+        /// <param name="toMapCollection"></param>
+        public static void RegisterServiceCollection(Dictionary<Type, Type> toMapCollection)
+        {
+            foreach (var serviceInfo in toMapCollection)
+            {
+                if (!IsServiceRegistered(serviceInfo.Key))
+                    Container.Register(Component.For(serviceInfo.Key)
+                    .ImplementedBy(serviceInfo.Value));
+            }
         }
 
         /// <summary>
@@ -70,8 +74,8 @@ namespace ST.Core.Helpers
         /// <typeparam name="TImplementation"></typeparam>
         public static void RegisterScopedService<TAbstraction, TImplementation>(TImplementation instance) where TImplementation : class, TAbstraction where TAbstraction : class
         {
-            if (_container == null) _container = new WindsorContainer();
-            _container.Register(Component.For<TAbstraction>().Instance(instance)
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>().Instance(instance)
                         .LifestyleCustom<MsScopedLifestyleManager>());
         }
 
@@ -82,18 +86,29 @@ namespace ST.Core.Helpers
         /// <returns></returns>
         public static bool IsServiceRegistered<TService>()
         {
-            if (_container == null) _container = new WindsorContainer();
-            return _container.Kernel.HasComponent(typeof(TService));
+            return Container.Kernel.HasComponent(typeof(TService));
+        }
+
+        /// <summary>
+        /// Check if service is registered
+        /// </summary>
+        /// <param name="service"></param>
+        /// <returns></returns>
+        private static bool IsServiceRegistered(Type service)
+        {
+            return Container.Kernel.HasComponent(service);
         }
 
         /// <summary>
         /// Resolve generic type
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TService"></typeparam>
         /// <returns></returns>
-        public static T Resolve<T>()
+        public static TService Resolve<TService>()
         {
-            return _container.Resolve<T>();
+            if (!IsServiceRegistered<TService>())
+                throw new IoCNotRegisterServiceException($"{typeof(TService).Name} is not registered in IoC container");
+            return Container.Resolve<TService>();
         }
 
         /// <summary>
@@ -104,7 +119,7 @@ namespace ST.Core.Helpers
         /// <returns></returns>
         public static T Resolve<T>(string key)
         {
-            return _container.Resolve<T>(key);
+            return Container.Resolve<T>(key);
         }
 
         /// <summary>
@@ -114,7 +129,9 @@ namespace ST.Core.Helpers
         /// <returns></returns>
         public static object Resolve(Type type)
         {
-            return _container.Resolve(type);
+            if (!IsServiceRegistered(type))
+                throw new IoCNotRegisterServiceException($"{type.Name} is not registered in IoC container");
+            return Container.Resolve(type);
         }
     }
 }

@@ -1,34 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using ST.Configuration.Services.Abstraction;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
-using ST.Entities.Data;
 using ST.Identity.Data;
 using ST.PageRender.Razor.Extensions;
 using ST.PageRender.Razor.Helpers;
-using ST.PageRender.Razor.Services.Abstractions;
 using ST.PageRender.Razor.ViewModels.PageViewModels;
-using ST.PageRender.Razor.ViewModels.TableColumnsViewModels;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Core.Razor.Extensions;
+using ST.DynamicEntityStorage.Abstractions.Enums;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Constants;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
+using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Configurations;
+using ST.PageRender.Abstractions.Models.ViewModels;
+using ST.PageRender.Razor.Attributes;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -37,10 +39,7 @@ namespace ST.PageRender.Razor.Controllers
     {
         #region InjectRegion
 
-        /// <summary>
-        /// DB context
-        /// </summary>
-        private readonly EntitiesDbContext _context;
+        private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
         /// App Context
@@ -77,24 +76,24 @@ namespace ST.PageRender.Razor.Controllers
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="appContext"></param>
         /// <param name="service"></param>
         /// <param name="pageRender"></param>
         /// <param name="menuService"></param>
         /// <param name="userManager"></param>
         /// <param name="formContext"></param>
-        public PageRenderController(EntitiesDbContext context, ApplicationDbContext appContext,
+        /// <param name="pagesContext"></param>
+        public PageRenderController(ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext)
+            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext)
         {
-            _context = context;
             _appContext = appContext;
             _service = service;
             _menuService = menuService;
             _userManager = userManager;
             _formContext = formContext;
+            _pagesContext = pagesContext;
             _pageRender = pageRender;
         }
 
@@ -103,6 +102,7 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <param name="pageId"></param>
         /// <returns></returns>
+        [AuthorizePage]
         public async Task<IActionResult> Index([Required] Guid pageId)
         {
             var page = await _pageRender.GetPageAsync(pageId);
@@ -119,7 +119,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetEntities()
         {
-            var entities = _context.Table.Where(x => !x.IsDeleted).ToList();
+            var entities = _pagesContext.Table.Where(x => !x.IsDeleted).ToList();
 
             return new JsonResult(entities);
         }
@@ -143,7 +143,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetViewModels()
         {
-            var viewModels = _context.ViewModels.Where(x => !x.IsDeleted).ToList();
+            var viewModels = _pagesContext.ViewModels.Where(x => !x.IsDeleted).ToList();
 
             return new JsonResult(viewModels);
         }
@@ -157,17 +157,26 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (Guid.Empty == fieldId) return Json(new ResultModel());
 
-            var field = _context.TableFields.FirstOrDefault(x => x.Id.Equals(fieldId));
+            var field = _pagesContext.TableFields.FirstOrDefault(x => x.Id.Equals(fieldId));
             if (field == null) return Json(new ResultModel());
-            var config = await _context.TableFieldConfigValues
+            var config = await _pagesContext.TableFieldConfigValues
                 .Include(x => x.TableFieldConfig)
                 .ThenInclude(x => x.TableFieldType)
-                .FirstOrDefaultAsync(x => x.TableModelFieldId.Equals(fieldId) && x.TableFieldConfig.Code == "3000");
+                .FirstOrDefaultAsync(x => x.TableModelFieldId.Equals(fieldId)
+                                          && x.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable);
             if (config == null) return Json(new ResultModel());
             if (!config.TableFieldConfig.TableFieldType.Name.Equals("EntityReference")) return Json(new ResultModel());
             var table = config.Value;
             var instance = _service.Table(table);
-            return Json(await instance.GetAll<object>());
+            return Json(await instance.GetAllWithInclude<object>(filters: new List<Filter>
+            {
+                new Filter
+                {
+                    Value = false,
+                    Criteria = Criteria.Equals,
+                    Parameter = nameof(BaseModel.IsDeleted)
+                }
+            }));
         }
 
         /// <summary>
@@ -178,7 +187,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetViewModelById([Required] Guid viewModelId)
         {
-            var obj = _context.ViewModels
+            var obj = _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .Include(x => x.ViewModelFields)
                 .ThenInclude(x => x.TableModelFields)
@@ -211,7 +220,7 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
         {
-            var entity = _context.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
+            var entity = _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
             if (entity == null) return Json(default(ResultModel));
             var objType = _service.Table(entity.TableModel.Name).Type;
             var obj = Activator.CreateInstance(objType);
@@ -234,7 +243,7 @@ namespace ST.PageRender.Razor.Controllers
                 }
             }
 
-            return Json(new {row = obj});
+            return Json(new { row = obj });
         }
 
         /// <summary>
@@ -244,7 +253,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetBlocks()
         {
-            var blocks = _context.Blocks.Include(x => x.BlockCategory).Where(x => !x.IsDeleted).ToList();
+            var blocks = _pagesContext.Blocks.Include(x => x.BlockCategory).Where(x => !x.IsDeleted).ToList();
             var result = blocks.Select(x => new
             {
                 x.Id,
@@ -267,13 +276,13 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (pageId == Guid.Empty) return Json(default(IEnumerable<string>));
             var scripts = new HashSet<string>();
-            var page = _context.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(pageId));
+            var page = _pagesContext.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(pageId));
 
             if (page == null) return Json(default(IEnumerable<string>));
 
             if (!page.IsLayout && page.LayoutId != null)
             {
-                var layout = _context.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
+                var layout = _pagesContext.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
 
                 if (layout != null && layout.PageScripts.Any())
                 {
@@ -304,13 +313,13 @@ namespace ST.PageRender.Razor.Controllers
         {
             if (pageId == Guid.Empty) return Json(default(IEnumerable<string>));
             var styles = new HashSet<string>();
-            var page = _context.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(pageId));
+            var page = _pagesContext.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(pageId));
 
             if (page == null) return Json(default(IEnumerable<string>));
 
             if (!page.IsLayout && page.LayoutId != null)
             {
-                var layout = _context.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
+                var layout = _pagesContext.Pages.Include(x => x.PageStyles).FirstOrDefault(x => x.Id.Equals(page.LayoutId));
 
                 if (layout != null && layout.PageStyles.Any())
                 {
@@ -339,7 +348,7 @@ namespace ST.PageRender.Razor.Controllers
         {
             try
             {
-                var sp = script.Split("src=\"")?[1].Split("\"").FirstOrDefault();
+                var sp = script.Split("src=\"")?[1].Split("\"")?.FirstOrDefault();
                 return sp;
             }
             catch
@@ -405,11 +414,11 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> GetListData(Guid entityId)
         {
-            var table = _context.Table.Include(x => x.TableFields)
+            var table = _pagesContext.Table.Include(x => x.TableFields)
                 .FirstOrDefault(x => x.Id.Equals(entityId));
             if (table == null) return Json(null);
             var instance = _service.Table(table.Name);
-            return Json(await instance.GetAll<object>());
+            return Json(await instance.GetAllWithInclude<object>());
         }
 
         /// <summary>
@@ -423,26 +432,33 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId)
         {
             if (viewModelId == Guid.Empty) return Json(default(DTResult<object>));
-            var viewModel = await _context.ViewModels
+            var viewModel = await _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
                 .Include(x => x.ViewModelFields)
                 .ThenInclude(x => x.TableModelFields)
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.Configurations)
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(default(DTResult<object>));
+            var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
             var sortColumn = param.SortOrder;
             try
             {
-                var columnIndex = Convert.ToInt32(param.Order[0].Column);
-                var field = viewModel.ViewModelFields.ElementAt(columnIndex);
-                if (field != null)
+                var colIndex = Convert.ToInt32(param.Order[0].Column);
+                var columnIndex = colIndex == 0 ? colIndex : colIndex - 1;
+                if (fields.Count() - 1 > columnIndex)
                 {
-                    var column =
-                        viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
-                    sortColumn = column != null
-                        ? $"{column.Name ?? field.Name} {param.SortOrder}"
-                        : $"{field.Name} {param.SortOrder}";
+                    var field = fields.ElementAt(columnIndex);
+                    if (field != null)
+                    {
+                        var column =
+                            viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
+                        sortColumn = column != null
+                            ? $"{column.Name ?? field.Name} {param.SortOrder}"
+                            : $"{field.Name} {param.SortOrder}";
+                    }
                 }
             }
             catch (Exception e)
@@ -456,15 +472,56 @@ namespace ST.PageRender.Razor.Controllers
                 param.Start,
                 param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin));
 
+            var final = await LoadManyToManyReferences(data, viewModel);
+
             var finalResult = new DTResult<object>
             {
                 Draw = param.Draw,
-                Data = data,
+                Data = final.ToList(),
                 RecordsFiltered = recordsCount,
-                RecordsTotal = data.Count()
+                RecordsTotal = data.Count
             };
+            var serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatString = "dd'.'MM'.'yyyy hh:mm"
+            };
+            return Json(finalResult, serializerSettings);
+        }
 
-            return Json(finalResult);
+        private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<object> data, ViewModel model)
+        {
+            Arg.NotNull(model, nameof(ViewModel));
+            var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
+
+            try
+            {
+                foreach (var field in model.ViewModelFields)
+                {
+                    if (field.VirtualDataType != ViewModelVirtualDataType.ManyToMany) continue;
+                    if (!field.Configurations.Any()) continue;
+                    var storageEntity = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyStorageEntityName);
+                    var referenceEntity = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyStorageEntityName);
+                    var referencePropName = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyReferencePropertyName);
+                    var propName = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyStorageSenderPropertyName);
+                    if (storageEntity == null || referenceEntity == null || referencePropName == null ||
+                        propName == null) continue;
+                    foreach (var item in dicData)
+                    {
+                        var referenceData = await _service.Table(storageEntity.Value).GetAllWithInclude<object>(filters: new List<Filter>
+                        {
+                            new Filter(nameof(BaseModel.IsDeleted), false),
+                            new Filter(referencePropName.Value, item["Id"].ToString().ToGuid())
+                        });
+                        item.Add($"{storageEntity.Value}Reference", referenceData.Result);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return dicData;
         }
 
         /// <summary>
@@ -486,7 +543,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetPages()
         {
-            var pages = _context.Pages
+            var pages = _pagesContext.Pages
                 .Include(x => x.Settings)
                 .Where(x => !x.IsDeleted && !x.IsLayout)
                 .Select(x => new
@@ -507,7 +564,7 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> LoadDataFromEntity(string entityName)
         {
-            var list = await _service.Table(entityName).GetAll<object>();
+            var list = await _service.Table(entityName).GetAllWithInclude<object>();
             return new JsonResult(list.Result);
         }
 
@@ -551,7 +608,7 @@ namespace ST.PageRender.Razor.Controllers
                 return Json(result);
             }
 
-            var table = _context.Table.Include(x => x.TableFields)
+            var table = _pagesContext.Table.Include(x => x.TableFields)
                 .FirstOrDefault(x => x.Id.Equals(form.TableId));
             if (table == null)
             {
@@ -663,14 +720,14 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
-                return Json(new {message = "Fail to delete!", success = false});
-            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+                return Json(new { message = "Fail to delete!", success = false });
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new {message = "Fail to delete!", success = false});
+            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
             var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new {message = "Fail to delete!", success = false});
+            if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
 
-            return Json(new {message = "Item was deleted!", success = true});
+            return Json(new { message = "Item was deleted!", success = true });
         }
 
 
@@ -685,16 +742,24 @@ namespace ST.PageRender.Razor.Controllers
         [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
         {
-            if (ids == null) return Json(new {message = "Fail to delete!", success = false});
-            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+            if (ids == null) return Json(new { message = "Fail to delete!", success = false });
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new {message = "Fail to delete!", success = false});
-            foreach (var id in ids)
+            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
+            try
             {
-                await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                foreach (var id in ids)
+                {
+                    if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
+                    await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { message = e.Message, success = false });
             }
 
-            return Json(new {message = "Items was deleted!", success = true});
+            return Json(new { message = "Items was deleted!", success = true });
         }
 
         /// <summary>
@@ -709,239 +774,14 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
-                return Json(new {message = "Fail to restore!", success = false});
-            var viewModel = _context.ViewModels.Include(x => x.TableModel)
+                return Json(new { message = "Fail to restore!", success = false });
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
                 .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new {message = "Fail to restore!", success = false});
+            if (viewModel == null) return Json(new { message = "Fail to restore!", success = false });
             var response = await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new {message = "Fail to restore!", success = false});
+            if (!response.IsSuccess) return Json(new { message = "Fail to restore!", success = false });
 
-            return Json(new {message = "Item was restored!", success = true});
-        }
-
-
-        /// <summary>
-        /// Get view model column type for inline table edit
-        /// </summary>
-        /// <param name="viewModelId"></param>
-        /// <returns></returns>
-        public async Task<JsonResult> GetViewModelColumnTypes(Guid? viewModelId)
-        {
-            var result = new ResultModel();
-            if (viewModelId == null)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "Not specified view model id")
-                };
-                Json(result);
-            }
-
-            var viewModel = await _context.ViewModels.Include(x => x.ViewModelFields)
-                .FirstOrDefaultAsync(x => x.Id == viewModelId);
-            if (viewModel == null)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "ViewModel not found")
-                };
-                Json(result);
-            }
-
-            var tableFields = _context.TableFields.Where(x => x.TableId == viewModel.TableModelId).ToList();
-            var res = new List<TableColumnData>();
-            foreach (var field in tableFields)
-            {
-                var obj = field.Adapt<TableColumnData>();
-                obj.ColumnId = viewModel?.ViewModelFields?.FirstOrDefault(x => x.TableModelFieldsId == field.Id)?.Id;
-                res.Add(obj);
-            }
-
-            if (!tableFields.Any()) return Json(result);
-            result.IsSuccess = true;
-            result.Result = res;
-
-            return Json(result);
-        }
-
-        /// <summary>
-        /// Get row select references
-        /// </summary>
-        /// <param name="entityId"></param>
-        /// <param name="propertyId"></param>
-        /// <returns></returns>
-        [AjaxOnly]
-        [HttpGet]
-        public async Task<JsonResult> GetRowReferences([Required] Guid entityId, [Required] Guid propertyId)
-        {
-            var response = new ResultModel();
-            var refProp = _context.Table
-                .Include(x => x.TableFields)
-                .ThenInclude(x => x.TableFieldConfigValues)
-                .ThenInclude(x => x.TableFieldConfig)
-                .FirstOrDefault(x => x.Id == entityId)?
-                .TableFields?.FirstOrDefault(x => x.Id == propertyId);
-            if (refProp == null)
-            {
-                response.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("fail", "Property reference not found")
-                };
-                return Json(response);
-            }
-
-            var entityRefName = refProp.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "3000");
-            if (entityRefName == null)
-            {
-                response.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("fail", "Property reference not found")
-                };
-                return Json(response);
-            }
-
-            var res = await _service.GetAll(entityRefName.Value);
-            response.IsSuccess = res.IsSuccess;
-            response.Result = new
-            {
-                Data = res.Result,
-                EntityName = entityRefName.Value
-            };
-            return Json(response);
-        }
-
-        /// <summary>
-        /// Save table cell
-        /// </summary>
-        /// <param name="entityId"></param>
-        /// <param name="propertyId"></param>
-        /// <param name="rowId"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [AjaxOnly]
-        public async Task<JsonResult> SaveTableCellData(Guid? entityId, Guid? propertyId, Guid? rowId, string value)
-        {
-            var result = new ResultModel();
-            if (entityId == null || propertyId == null || rowId == null)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "Not specified data")
-                };
-                return Json(result);
-            }
-
-            var entity = await _context.Table.Include(x => x.TableFields).FirstOrDefaultAsync(x => x.Id == entityId);
-            if (entity == null)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "Entity not found")
-                };
-                return Json(result);
-            }
-
-            if (entity.IsSystem || entity.IsPartOfDbContext)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "The system entity can not be edited")
-                };
-                return Json(result);
-            }
-
-            var property = entity.TableFields.First(x => x.Id == propertyId);
-            if (property == null)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "Not found entity column")
-                };
-                return Json(result);
-            }
-
-            var row = await _service.GetById(entity.Name, rowId.Value);
-            if (!row.IsSuccess)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "Entry Not found")
-                };
-                return Json(result);
-            }
-
-            if (row.Result.ContainsKey(property.Name))
-            {
-                switch (property.DataType)
-                {
-                    case TableFieldDataType.Guid:
-                    {
-                        Guid.TryParse(value, out var parsed);
-                        row.Result[property.Name] = parsed;
-                    }
-                        break;
-                    case TableFieldDataType.Boolean:
-                    {
-                        bool.TryParse(value, out var val);
-                        row.Result[property.Name] = val;
-                    }
-                        break;
-                    case TableFieldDataType.Int:
-                    {
-                        try
-                        {
-                            row.Result[property.Name] = Convert.ToInt32(value);
-                        }
-                        catch
-                        {
-                            row.Result[property.Name] = value;
-                        }
-                    }
-                        break;
-                    case TableFieldDataType.Decimal:
-                    {
-                        try
-                        {
-                            row.Result[property.Name] = Convert.ToDecimal(value);
-                        }
-                        catch
-                        {
-                            row.Result[property.Name] = value;
-                        }
-                    }
-                        break;
-                    case TableFieldDataType.Date:
-                    case TableFieldDataType.DateTime:
-                    {
-                        DateTime.TryParseExact(value, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                            out var parsed);
-                        row.Result[property.Name] = parsed;
-                    }
-                        break;
-                    default:
-                        row.Result[property.Name] = value;
-                        break;
-                }
-            }
-
-            if (row.Result.ContainsKey(nameof(BaseModel.Changed)))
-            {
-                row.Result[nameof(BaseModel.Changed)] = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-            }
-
-            var req = await _service.Update(entity.Name, row.Result);
-            if (!req.IsSuccess)
-            {
-                result.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel(string.Empty, "Fail to save data")
-                };
-                return Json(result);
-            }
-
-            result.IsSuccess = true;
-            return Json(result);
+            return Json(new { message = "Item was restored!", success = true });
         }
     }
 }

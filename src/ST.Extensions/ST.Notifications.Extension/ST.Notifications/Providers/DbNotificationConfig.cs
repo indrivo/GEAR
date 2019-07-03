@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
-using ST.Entities.ViewModels.Table;
 
 namespace ST.Notifications.Providers
 {

@@ -9,8 +9,8 @@
 
 
 // Make sure jQuery has been loaded
-if (typeof jQuery === 'undefined') {
-	throw new Error('Data injector plugin require JQuery');
+if (typeof jQuery === "undefined") {
+	throw new Error("Data injector plugin require JQuery");
 }
 
 function DataInjector() { }
@@ -77,7 +77,7 @@ DataInjector.prototype.GetAll = function (table) {
 
 
 /**
- * Get all items with include
+ * Get all items with includes
  * @param {any} table
  */
 DataInjector.prototype.GetAllWithInclude = function (table) {
@@ -86,7 +86,6 @@ DataInjector.prototype.GetAllWithInclude = function (table) {
 			tableName: table
 		});
 }
-
 
 /**
  * Get all with filters
@@ -126,4 +125,177 @@ DataInjector.prototype.GetByIdWithInclude = function (table, itemId) {
 			tableName: table,
 			id: itemId
 		});
+}
+
+
+
+
+
+
+
+
+
+//------------------------------------Async-------------------------------------//
+
+/**
+ * Get entity row by id
+ * @param {any} table
+ * @param {any} itemId
+ */
+DataInjector.prototype.getByIdWithIncludesAsync = function (entityName, itemId) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			object: itemId
+		});
+		$.ajax({
+			url: `/api/DataInjector/getByIdWithIncludesAsync`,
+			data: dataParams,
+			method: "post",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+/**
+ * Add new row to entity in async mode 
+ * @param {any} table
+ * @param {any} object
+ */
+DataInjector.prototype.addAsync = function (entityName, object) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			object: JSON.stringify(object)
+		});
+		$.ajax({
+			url: `/api/DataInjector/AddAsync`,
+			data: dataParams,
+			method: "post",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+/**
+ * Update row in async mode 
+ * @param {any} entityName
+ * @param {any} object
+ */
+DataInjector.prototype.updateAsync = function (entityName, object) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			object: JSON.stringify(object)
+		});
+		$.ajax({
+			url: `/api/DataInjector/UpdateAsync`,
+			data: dataParams,
+			method: "post",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+/**
+ * Delete permanent async
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: `/api/DataInjector/DeletePermanentWhereAsync`,
+			data: dataParams,
+			method: "delete",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+
+/**
+ * Get all with filters async
+ * @param {any} table
+ * @param {any} filters
+ */
+DataInjector.prototype.getAllWhereNoIncludesAsync = function (entityName, filters = []) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: "/api/DataInjector/getAllWhereNoIncludesAsync",
+			data: dataParams,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			method: "post",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+/**
+ * Get all with include and filters async
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.getAllWhereWithIncludesAsync = function (entityName, filters = []) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: "/api/DataInjector/getAllWhereWithIncludesAsync",
+			data: dataParams,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			method: "post",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
 }

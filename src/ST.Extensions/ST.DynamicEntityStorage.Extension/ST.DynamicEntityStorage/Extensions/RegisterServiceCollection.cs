@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ST.Core.Abstractions;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.DynamicEntityStorage.Services;
 using ST.Entities.Data;
 
 namespace ST.DynamicEntityStorage.Extensions
@@ -17,6 +19,7 @@ namespace ST.DynamicEntityStorage.Extensions
             services.AddTransient<IDynamicDataGetService, DynamicService<TContext>>();
             services.AddTransient<IDynamicDataCreateService, DynamicService<TContext>>();
             services.AddTransient<IDynamicDataUpdateService, DynamicService<TContext>>();
+            services.AddTransient<IDataFilter, DataFilter>();
             return services;
         }
     }

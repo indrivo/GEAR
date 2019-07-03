@@ -1,11 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ST.Core.Abstractions;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Extensions;
-using ST.Entities.Models.Pages;
-using ST.Entities.Models.RenderTemplates;
-using ST.Entities.Models.ViewModels;
 using ST.Entities.Security.Data;
 
 namespace ST.Entities.Data
@@ -14,8 +12,9 @@ namespace ST.Entities.Data
     {
         /// <summary>
         /// Schema
-        /// Do not remove this
+        /// Do not remove this, is used on audit 
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public const string Schema = "Entities";
 
         /// <inheritdoc />
@@ -23,56 +22,41 @@ namespace ST.Entities.Data
         /// Options
         /// </summary>
         /// <param name="options"></param>
+        // ReSharper disable once SuggestBaseTypeForParameter
         public EntitiesDbContext(DbContextOptions<EntitiesDbContext> options)
                     : base(options)
         {
 
         }
 
-        #region Table
         /// <summary>
         /// Entity types
         /// </summary>
-        public DbSet<EntityType> EntityTypes { get; set; }
+        public virtual DbSet<EntityType> EntityTypes { get; set; }
         /// <summary>
         /// Tables
         /// </summary>
-        public DbSet<TableModel> Table { get; set; }
+        public virtual DbSet<TableModel> Table { get; set; }
         /// <summary>
         /// Table configs
         /// </summary>
-        public DbSet<TableFieldConfigs> TableFieldConfigs { get; set; }
+        public virtual DbSet<TableFieldConfigs> TableFieldConfigs { get; set; }
         /// <summary>
         /// Table config values
         /// </summary>
-        public DbSet<TableFieldConfigValues> TableFieldConfigValues { get; set; }
+        public virtual DbSet<TableFieldConfigValue> TableFieldConfigValues { get; set; }
         /// <summary>
         /// Field groups
         /// </summary>
-        public DbSet<TableFieldGroups> TableFieldGroups { get; set; }
+        public virtual DbSet<TableFieldGroups> TableFieldGroups { get; set; }
         /// <summary>
         /// Table fields
         /// </summary>
-        public DbSet<TableModelFields> TableFields { get; set; }
+        public virtual DbSet<TableModelField> TableFields { get; set; }
         /// <summary>
         /// Field types
         /// </summary>
-        public DbSet<TableFieldTypes> TableFieldTypes { get; set; }
-        #endregion Table
-
-        #region  Pages
-        public DbSet<Page> Pages { get; set; }
-        public DbSet<PageType> PageTypes { get; set; }
-        public DbSet<PageSettings> PageSettings { get; set; }
-        public DbSet<Block> Blocks { get; set; }
-        public DbSet<BlockCategory> BlockCategories { get; set; }
-        public DbSet<BlockAttribute> BlockAttributes { get; set; }
-        public DbSet<PageScript> PageScripts { get; set; }
-        public DbSet<PageStyle> PageStyles { get; set; }
-        public DbSet<Template> Templates { get; set; }
-        public DbSet<ViewModel> ViewModels { get; set; }
-        public DbSet<ViewModelFields> ViewModelFields { get; set; }
-        #endregion
+        public virtual DbSet<TableFieldType> TableFieldTypes { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -83,10 +67,10 @@ namespace ST.Entities.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
-            builder.Entity<TableFieldTypes>().HasKey(ug => new { ug.Id });
+            builder.Entity<TableFieldType>().HasKey(ug => new { ug.Id });
             builder.Entity<TableFieldConfigs>().HasKey(ug => new { ug.Id });
-            builder.Entity<TableFieldConfigValues>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
-            builder.Entity<TableModelFields>().HasOne(typeof(TableFieldTypes), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<TableFieldConfigValue>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
+            builder.Entity<TableModelField>().HasOne(typeof(TableFieldType), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.RegisterIndexes();
         }
 

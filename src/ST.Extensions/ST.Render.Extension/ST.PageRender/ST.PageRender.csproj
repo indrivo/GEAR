@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190609183224_Test.cs" />
+    <Compile Remove="Migrations\20190609183224_Test.Designer.cs" />
+    <Compile Remove="Migrations\20190609183719_Test.cs" />
+    <Compile Remove="Migrations\20190609183719_Test.Designer.cs" />
+    <Compile Remove="Migrations\20190609184313_Test.cs" />
+    <Compile Remove="Migrations\20190609184313_Test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
+    <ProjectReference Include="..\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

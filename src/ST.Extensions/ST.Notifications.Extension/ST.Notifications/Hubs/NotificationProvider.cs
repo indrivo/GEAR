@@ -26,7 +26,7 @@ namespace ST.Notifications.Hubs
         /// Sent email notification
         /// </summary>
         /// <param name="userEmailNotification"></param>
-        public void SentEmailNotification(SignalrEmail userEmailNotification)
+        public void SendEmailNotification(SignalrEmail userEmailNotification)
         {
             var fromUser = _userManager.Users.FirstOrDefault(x => x.Id == userEmailNotification.UserId.ToString());
             if (userEmailNotification?.EmailRecipients == null) return;
@@ -48,7 +48,7 @@ namespace ST.Notifications.Hubs
         /// </summary>
         /// <param name="users"></param>
         /// <param name="notification"></param>
-        public void SentNotification(IEnumerable<Guid> users, SystemNotifications notification)
+        public void SendNotification(IEnumerable<Guid> users, SystemNotifications notification)
         {
             if (notification == null) return;
             foreach (var user in users)

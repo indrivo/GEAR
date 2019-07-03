@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Mapster;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.Entities.Extensions;
-using ST.Entities.Models.Pages;
+using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Helpers
 {
@@ -51,23 +50,23 @@ namespace ST.PageRender.Razor.Helpers
                     item.Changed = DateTime.Now;
                     var res = await dataService.AddWithReflection(item.Adapt<MenuItem>());
                     if (!res.IsSuccess) continue;
-                    foreach (var i in item.SubItems)
+                    foreach (var i in item.Children)
                     {
                         var obj = i.Adapt<MenuItem>();
                         obj.ParentMenuItemId = res.Result;
                         obj.Created = DateTime.Now;
                         obj.Changed = DateTime.Now;
                         var r = await dataService.AddWithReflection(obj);
-                        if (!r.IsSuccess || i.SubItems == null) continue;
-                        foreach (var j in i.SubItems)
+                        if (!r.IsSuccess || i.Children == null) continue;
+                        foreach (var j in i.Children)
                         {
                             var ob = j.Adapt<MenuItem>();
                             ob.ParentMenuItemId = r.Result;
                             ob.Created = DateTime.Now;
                             ob.Changed = DateTime.Now;
                             var r1 = await dataService.AddWithReflection(ob);
-                            if (!r1.IsSuccess || j.SubItems == null) continue;
-                            foreach (var m in j.SubItems)
+                            if (!r1.IsSuccess || j.Children == null) continue;
+                            foreach (var m in j.Children)
                             {
                                 var ob1 = m.Adapt<MenuItem>();
                                 ob1.ParentMenuItemId = r1.Result;

@@ -12,13 +12,13 @@ namespace ST.Notifications.Abstractions
 		/// Send email notification to users
 		/// </summary>
 		/// <param name="userEmailNotification"></param>
-		void SentEmailNotification(SignalrEmail userEmailNotification);
+		void SendEmailNotification(SignalrEmail userEmailNotification);
         /// <summary>
         /// Send notification to client
         /// </summary>
         /// <param name="users"></param>
         /// <param name="notification"></param>
-	    void SentNotification(IEnumerable<Guid> users, SystemNotifications notification);
+	    void SendNotification(IEnumerable<Guid> users, SystemNotifications notification);
         /// <summary>
         /// Check if user is online 
         /// </summary>

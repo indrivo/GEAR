@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
@@ -29,10 +32,25 @@ namespace ST.Cms.Controllers
 		/// </summary>
 		private readonly EntitiesDbContext _context;
 
+		/// <summary>
+		/// json settings
+		/// </summary>
+		private readonly JsonSerializerSettings _jsonSerializeOptions;
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="dynamicService"></param>
+		/// <param name="context"></param>
 		public DataInjectorController(IDynamicService dynamicService, EntitiesDbContext context)
 		{
 			_dynamicService = dynamicService;
 			_context = context;
+			_jsonSerializeOptions = new JsonSerializerSettings
+			{
+				DateFormatString = "dd'.'MM'.'yyyy hh:mm",
+				ContractResolver = new CamelCasePropertyNamesContractResolver()
+			};
 		}
 
 		/// <summary>
@@ -58,6 +76,8 @@ namespace ST.Cms.Controllers
 			return (true, default);
 		}
 
+		#region Old way to manipulate with data, but need to find where is used
+
 		/// <summary>
 		/// Add new object to entity
 		/// </summary>
@@ -71,7 +91,7 @@ namespace ST.Cms.Controllers
 			if (!isValid) return new JsonResult(errors);
 			try
 			{
-				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type);
+				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type, _jsonSerializeOptions);
 				var rq = await _dynamicService.Table(tableName).Add(parsed);
 				return Json(rq);
 			}
@@ -97,7 +117,7 @@ namespace ST.Cms.Controllers
 			if (!isValid) return new JsonResult(errors);
 			try
 			{
-				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type);
+				var parsed = JsonConvert.DeserializeObject(obj, _dynamicService.Table(tableName).Type, _jsonSerializeOptions);
 				var rq = await _dynamicService.Table(tableName).Update(parsed);
 				return Json(rq);
 			}
@@ -180,7 +200,152 @@ namespace ST.Cms.Controllers
 			var (isValid, errors) = await IsValid(tableName);
 			if (!isValid) return new JsonResult(errors);
 			var f = ParseFilters(filters);
-			var rq = await _dynamicService.Table(tableName).GetAll<dynamic>(null, f);
+			var rq = await _dynamicService.Table(tableName).GetAllWithInclude<dynamic>(null, f);
+			return Json(rq);
+		}
+
+		#endregion
+
+		#region Async methods
+
+		/// <summary>
+		/// Get item by id async
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> GetByIdWithIncludesAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			Guid.TryParse(data.Object, out var itemId);
+			var rq = await _dynamicService.GetByIdWithInclude(data.EntityName, itemId);
+			return Json(rq, _jsonSerializeOptions);
+		}
+
+		/// <summary>
+		/// Update item in database
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> UpdateAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			try
+			{
+				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, _jsonSerializeOptions);
+				var rq = await _dynamicService.Table(data.EntityName).Update(parsed);
+				return Json(rq);
+			}
+			catch (Exception e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.ToString()) }
+				});
+			}
+		}
+
+		/// <summary>
+		/// Add new object to entity
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> AddAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			try
+			{
+				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, _jsonSerializeOptions);
+				var rq = await _dynamicService.Table(data.EntityName).Add(parsed);
+				return Json(rq);
+			}
+			catch (JsonReaderException e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
+			}
+			catch (Exception e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
+			}
+		}
+
+
+		/// <summary>
+		/// Delete permanent by filters
+		/// </summary>
+		/// <returns></returns>
+		[HttpDelete]
+		public async Task<JsonResult> DeletePermanentWhereAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var result = new ResultModel();
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var rqGet = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+			if (rqGet.IsSuccess)
+			{
+				var taskResults = rqGet.Result.Select(async item =>
+					await _dynamicService.Table(data.EntityName).DeletePermanent<object>((Guid)item.Id)).Select(x => x.Result);
+				result.IsSuccess = true;
+				result.Result = taskResults;
+				return Json(result);
+			}
+
+			result.IsSuccess = false;
+			result.Errors.Add(new ErrorModel(nameof(EmptyResult), "No item to delete!"));
+			return Json(result);
+		}
+
+
+		/// <summary>
+		/// Get all with no includes
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> GetAllWhereNoIncludesAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var rq = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+			return Json(rq);
+		}
+
+
+		/// <summary>
+		/// Get all with includes
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> GetAllWhereWithIncludesAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var rq = await _dynamicService.Table(data.EntityName).GetAllWithInclude<dynamic>(null, filters);
 			return Json(rq);
 		}
 
@@ -198,11 +363,9 @@ namespace ST.Cms.Controllers
 				foreach (var filter in f)
 				{
 					if (filter.Value == null) continue;
-					if (filter.Value.ToString().IsGuid())
-					{
-						Guid.TryParse(filter.Value?.ToString(), out var val);
-						filter.Value = val;
-					}
+					if (!filter.Value.ToString().IsGuid()) continue;
+					Guid.TryParse(filter.Value?.ToString(), out var val);
+					filter.Value = val;
 				}
 				return f;
 			}
@@ -211,5 +374,21 @@ namespace ST.Cms.Controllers
 				return null;
 			}
 		}
+
+		public class RequestData
+		{
+			public string EntityName { get; set; }
+			public IEnumerable<Filter> Filters { get; set; } = new List<Filter>();
+			public string Object { get; set; }
+			public static JsonResult InvalidRequest => new JsonResult(new ResultModel
+			{
+				Errors = new List<IErrorModel>
+				{
+					new ErrorModel("invalid_data", "Invalid data!")
+				}
+			});
+		}
+
+		#endregion
 	}
 }

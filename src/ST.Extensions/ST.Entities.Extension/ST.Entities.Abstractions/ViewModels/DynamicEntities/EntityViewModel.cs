@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ST.Entities.ViewModels.DynamicEntities
+namespace ST.Entities.Abstractions.ViewModels.DynamicEntities
 {
     public class EntityViewModel
     {

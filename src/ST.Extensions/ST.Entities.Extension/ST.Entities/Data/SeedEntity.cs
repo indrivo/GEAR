@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.ViewModels.Table;
+using ST.Entities.Abstractions.ViewModels.Table;
 
 namespace ST.Entities.Data
 {

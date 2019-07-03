@@ -21,6 +21,7 @@ namespace ST.Entities.Security.Extensions
             where TAclContext : EntitySecurityDbContext
             where TIdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
         {
+            Arg.NotNull<IServiceCollection>(services, nameof(services));
             services.AddTransient<IEntityAclService, EntityAclService<TAclContext, TIdentityContext>>();
             IoC.RegisterService<IEntityAclService, EntityAclService<TAclContext, TIdentityContext>>();
             return services;

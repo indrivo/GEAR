@@ -1,5 +1,5 @@
 <li>
-	{{if subItems.length == 0}}
+	{{if children.length == 0}}
 		{{if href == ''}}
 			<a href="#">
 				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
@@ -21,9 +21,9 @@
 		{{/else}}
 	{{/else}}
 
-	{{if subItems.length > 0 }}
+	{{if children.length > 0 }}
 			<ul aria-expanded="false" class="collapse">
-				{{for subItems tmpl="template_renderMenu.html"/}}
+				{{for children tmpl="template_renderMenu.html"/}}
 			</ul>
 	{{/if}}
 </li>

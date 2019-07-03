@@ -166,19 +166,26 @@ namespace ST.Audit.Extensions
         {
             context.ChangeTracker.Tracked += async (sender, eventArgs) =>
            {
-               if (eventArgs.Entry.State == EntityState.Unchanged) return;
-               var (audit, entry) = Track(eventArgs);
-
-               if (audit == null) return;
-               await context.AddAsync(audit);
-               var propId = entry.GetType().GetProperty("Id");
-               if (propId == null) return;
-               var objId = propId.GetValue(entry).ToString().ToGuid();
-               var check = context.Find(entry.GetType(), objId);
-               if (check == null) return;
                try
                {
-                   // context.Attach(entry);
+                   if (eventArgs.Entry.State == EntityState.Unchanged) return;
+                   var (audit, entry) = Track(eventArgs);
+
+                   if (audit == null) return;
+                   await context.AddAsync(audit);
+                   var propId = entry.GetType().GetProperty("Id");
+                   if (propId == null) return;
+                   var objId = propId.GetValue(entry).ToString().ToGuid();
+                   var check = context.Find(entry.GetType(), objId);
+                   if (check == null) return;
+                   try
+                   {
+                       // context.Attach(entry);
+                   }
+                   catch (Exception e)
+                   {
+                       Console.WriteLine(e);
+                   }
                }
                catch (Exception e)
                {

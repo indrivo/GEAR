@@ -71,7 +71,7 @@ namespace ST.Forms
                 {
                     Errors = new List<IErrorModel>
                     {
-                        new ErrorModel("", e.ToString())
+                        new ErrorModel(string.Empty, e.ToString())
                     }
                 };
             }
@@ -118,7 +118,7 @@ namespace ST.Forms
                 {
                     Errors = new List<IErrorModel>
                     {
-                        new ErrorModel("", "Form not found")
+                        new ErrorModel(string.Empty, "Form not found")
                     }
                 };
 
@@ -564,10 +564,10 @@ namespace ST.Forms
         public virtual JsonResult GetEntityReferenceFields(string entityName, string entitySchema)
         {
             if (string.IsNullOrEmpty(entityName) || string.IsNullOrEmpty(entitySchema))
-                return new JsonResult(default(Collection<TableModelFields>));
+                return new JsonResult(default(Collection<TableModelField>));
             var table = _entityContext.Table.Include(x => x.TableFields)
                 .FirstOrDefault(x => x.Name == entityName && x.EntityType == entitySchema);
-            if (table == null) return new JsonResult(default(Collection<TableModelFields>));
+            if (table == null) return new JsonResult(default(Collection<TableModelField>));
             return new JsonResult(table.TableFields.Select(x => new
             {
                 x.DataType,
@@ -585,21 +585,21 @@ namespace ST.Forms
         /// <returns></returns>
         public virtual JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId)
         {
-            if (entityFieldId == null || entityId == null) return new JsonResult(default(Collection<TableModelFields>));
+            if (entityFieldId == null || entityId == null) return new JsonResult(default(Collection<TableModelField>));
             var field = _entityContext.TableFields
                 .Include(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
                 .FirstOrDefault(x => x.Id == entityFieldId && x.TableId == entityId);
 
-            if (field == null) return new JsonResult(default(Collection<TableModelFields>));
+            if (field == null) return new JsonResult(default(Collection<TableModelField>));
             var refEntity = field.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "3000");
-            if (refEntity == null) return new JsonResult(default(Collection<TableModelFields>));
+            if (refEntity == null) return new JsonResult(default(Collection<TableModelField>));
             var refEntitySchema = field.TableFieldConfigValues.FirstOrDefault(x => x.TableFieldConfig.Code == "9999");
             var table = _entityContext
                 .Table
                 .Include(x => x.TableFields)
                 .FirstOrDefault(x => x.Name == refEntity.Value && x.EntityType == refEntitySchema.Value);
-            if (table == null) return new JsonResult(default(Collection<TableModelFields>));
+            if (table == null) return new JsonResult(default(Collection<TableModelField>));
             return new JsonResult(table.TableFields.Select(x => new
             {
                 x.DataType,
