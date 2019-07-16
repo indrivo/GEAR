@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ST.Core.Helpers;
 
-namespace ST.DynamicEntityStorage.Services
+namespace ST.DynamicEntityStorage.Abstractions.Helpers
 {
     public static class TypeManager
     {

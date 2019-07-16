@@ -249,7 +249,11 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
                 if (id == Guid.Empty) return result;
                 var req = obj.Invoke<TEntity>(MethodName.DeletePermanent, new List<Type> { obj.Type },
                     new List<object> { id });
-                if (!req.IsSuccess) return result;
+                if (!req.IsSuccess)
+                {
+                    result.Errors = req.Errors;
+                    return result;
+                }
                 result.IsSuccess = true;
                 result.Result = req.Result.Adapt<Guid>();
                 return result;

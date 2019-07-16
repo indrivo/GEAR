@@ -385,13 +385,17 @@ namespace ST.Forms.Razor.Controllers
                 .ThenInclude(x => x.Meta)
                 .FirstOrDefaultAsync(x => x.Id == formId);
             if (form == null) return NotFound();
-            var table = await _entityContext.Table.FirstOrDefaultAsync(x => x.Id == form.TableId);
+            var table = await _entityContext.Table
+                .Include(x => x.TableFields)
+                .FirstOrDefaultAsync(x => x.Id == form.TableId);
             var model = form.Adapt<FormFieldsViewModel>();
             model.Table = table;
-            foreach (var field in model.Fields)
+            model.Fields = model.Fields.Select(field =>
             {
                 field.TableField = table.TableFields.FirstOrDefault(x => x.Id == field.TableFieldId);
-            }
+                return field;
+            }).ToList();
+            
             return View(model);
         }
 

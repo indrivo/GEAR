@@ -293,7 +293,8 @@ namespace ST.PageRender.Razor.Controllers
                 {
                     Name = model.Name,
                     Description = model.Description,
-                    Title = model.Title
+                    Title = model.Title,
+                    TitleTranslateKey = model.TitleTranslateKey
                 },
                 IsLayout = model.PageTypeId == PageManager.PageTypes[0].Id
             };
@@ -341,6 +342,7 @@ namespace ST.PageRender.Razor.Controllers
             model.PageTypes = _pagesContext.PageTypes.AsNoTracking().ToList();
             model.Path = page.Path;
             model.Title = page.Settings.Title;
+            model.TitleTranslateKey = page.Settings.TitleTranslateKey;
             model.Layouts = _pagesContext.Pages.AsNoTracking().Include(x => x.Settings).Where(x => x.IsLayout);
             return View(model);
         }
@@ -396,6 +398,7 @@ namespace ST.PageRender.Razor.Controllers
                 settings.Name = model.Name;
                 settings.Changed = DateTime.Now;
                 settings.Title = model.Title;
+                settings.TitleTranslateKey = model.TitleTranslateKey;
 
                 var dbResult = await _pagesContext.SaveDependenceAsync();
                 if (dbResult.IsSuccess)

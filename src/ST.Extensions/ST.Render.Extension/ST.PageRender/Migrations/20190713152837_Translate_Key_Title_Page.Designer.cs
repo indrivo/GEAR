@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.PageRender.Data;
@@ -9,9 +10,10 @@ using ST.PageRender.Data;
 namespace ST.PageRender.Migrations
 {
     [DbContext(typeof(DynamicPagesDbContext))]
-    partial class DynamicPagesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190713152837_Translate_Key_Title_Page")]
+    partial class Translate_Key_Title_Page
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

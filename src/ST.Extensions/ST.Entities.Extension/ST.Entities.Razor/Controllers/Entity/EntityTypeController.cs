@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Core;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.TableTypes;
-using ST.Entities.Data;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 
@@ -22,16 +22,19 @@ namespace ST.Cms.Controllers.Entity
 	[Authorize]
 	public class EntityTypeController : Controller
 	{
-		private EntitiesDbContext Context { get; }
+        /// <summary>
+        /// Inject context
+        /// </summary>
+        private readonly IEntityContext _context;
 
 		/// <summary>
 		/// Inject logger
 		/// </summary>
 		private readonly ILogger<EntityTypeController> _logger;
 
-		public EntityTypeController(EntitiesDbContext context, ILogger<EntityTypeController> logger)
+		public EntityTypeController(IEntityContext context, ILogger<EntityTypeController> logger)
 		{
-			Context = context;
+			_context = context;
 			_logger = logger;
 		}
 
@@ -49,7 +52,7 @@ namespace ST.Cms.Controllers.Entity
 		private List<EntityType> GetOrderFiltered(string search, string sortOrder, int start, int length,
 			out int totalCount)
 		{
-			var result = Context.EntityTypes.Where(p =>
+			var result = _context.EntityTypes.Where(p =>
 				search == null || p.Name != null &&
 				p.Name.ToLower().Contains(search.ToLower()) || p.Description != null &&
 				p.Description.ToLower().Contains(search.ToLower()) || p.Author != null &&
@@ -110,21 +113,6 @@ namespace ST.Cms.Controllers.Entity
 			var filtered = GetOrderFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
 				out var totalCount);
 
-			//var OrderList = filtered.Select(o => new Profile()
-			//{
-			//	Id = o.Customer.CompanyName,
-			//	ContactName = o.Customer.ContactName,
-			//	OrderDate = o.OrderDate.HasValue ? o.OrderDate.Value.ToString() : "",
-			//	RequiredDate = o.RequiredDate.HasValue ? o.RequiredDate.Value.ToString() : "",
-			//	ShippedDate = o.ShippedDate.HasValue ? o.ShippedDate.Value.ToString() : "",
-			//	Freight = o.Freight,
-			//	ShipCity = o.ShipCity,
-			//	ShipAddress = o.ShipAddress,
-			//	ShipName = o.ShipName
-
-			//});
-
-
 			var finalresult = new DTResult<EntityType>
 			{
 				Draw = param.Draw,
@@ -146,7 +134,7 @@ namespace ST.Cms.Controllers.Entity
 		public JsonResult CheckEnitityType(string type)
 		{
 			if (type == null) return Json(null);
-			var result = Context.EntityTypes.FirstOrDefault(x => x.Name == type);
+			var result = _context.EntityTypes.FirstOrDefault(x => x.Name == type);
 			return Json(result != null);
 		}
 
@@ -170,8 +158,8 @@ namespace ST.Cms.Controllers.Entity
 			if (!ModelState.IsValid) return View(model);
 			try
 			{
-				Context.EntityTypes.Add(model.Adapt<EntityType>());
-				Context.SaveChanges();
+                _context.EntityTypes.Add(model.Adapt<EntityType>());
+                _context.SaveChanges();
 				return RedirectToAction(nameof(Index), "EntityType");
 			}
 			catch (Exception e)
@@ -191,7 +179,7 @@ namespace ST.Cms.Controllers.Entity
 		[AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
 		public IActionResult Edit(Guid id)
 		{
-			var response = Context.EntityTypes.FirstOrDefault(x => x.Id == id);
+			var response = _context.EntityTypes.FirstOrDefault(x => x.Id == id);
 			if (response != null)
 			{
 				return View(response.Adapt<EntityTypeUpdateViewModel>());
@@ -213,8 +201,8 @@ namespace ST.Cms.Controllers.Entity
 
 			try
 			{
-				Context.EntityTypes.Update(model.Adapt<EntityType>());
-				Context.SaveChanges();
+                _context.EntityTypes.Update(model.Adapt<EntityType>());
+                _context.SaveChanges();
 				return RedirectToAction(nameof(Index), "EntityType");
 			}
 			catch (Exception e)
@@ -240,13 +228,13 @@ namespace ST.Cms.Controllers.Entity
 				return Json(new { success = false, message = "Id not found" });
 			}
 
-			var typeName = Context.EntityTypes.AsNoTracking().SingleOrDefault(x => x.Id == id);
+			var typeName = _context.EntityTypes.AsNoTracking().SingleOrDefault(x => x.Id == id);
 			if (typeName == null)
 			{
 				return Json(new { success = false, message = "EntityTypes not found" });
 			}
 
-			var isUsed = Context.Table.Any(x => x.EntityType == typeName.Name);
+			var isUsed = _context.Table.Any(x => x.EntityType == typeName.Name);
 			if (isUsed)
 			{
 				return Json(new { success = false, message = "EntityTypes is used" });
@@ -254,8 +242,8 @@ namespace ST.Cms.Controllers.Entity
 
 			try
 			{
-				Context.EntityTypes.Remove(typeName);
-				Context.SaveChanges();
+                _context.EntityTypes.Remove(typeName);
+                _context.SaveChanges();
 				return Json(new { success = true, message = "EntityType deleted !" });
 			}
 			catch (Exception e)

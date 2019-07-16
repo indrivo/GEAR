@@ -14,6 +14,11 @@ namespace ST.Core
         {
             public const string CustomTable = "CustomTableName";
         }
+
+        public static class Date
+        {
+            public static string DateFormat = "dd'.'MM'.'yyyy";
+        }
     }
 
     public sealed class SystemConfig

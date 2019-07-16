@@ -85,10 +85,10 @@ window.loadAsync = function (uri, data = null, type = "get") {
 				url: uri,
 				type: type,
 				data: data,
-				success: function(rData) {
+				success: function (rData) {
 					resolve(rData);
 				},
-				error: function(err) {
+				error: function (err) {
 					reject(err);
 				}
 			});
@@ -133,7 +133,7 @@ ToastNotifier.prototype.notify = (conf) => {
  * Display errors 
  * @param {any} arr
  */
-ToastNotifier.prototype.notifyErrorList = function(arr) {
+ToastNotifier.prototype.notifyErrorList = function (arr) {
 	for (let i = 0; i < arr.length; i++) {
 		this.notify({ heading: "Error", text: arr[i].message });
 	}
@@ -162,12 +162,18 @@ window.getRandomColor = function () {
 //------------------------------------------------------------------------------------//
 
 function TemplateManager() { }
+window.htmlTemplates = [];
 
 /**
  * Get template from server
  * @param {any} identifierName
  */
 TemplateManager.prototype.getTemplate = function (identifierName) {
+	//in memory version
+	const inMemory = window.htmlTemplates.find(x => x.id === identifierName);
+	if (inMemory) return inMemory.value;
+
+	//cache version
 	//const template = localStorage.getItem(identifierName);
 	//if (template) return template;
 	const serverTemplate = load("/Templates/GetTemplateByIdentifier",
@@ -178,6 +184,10 @@ TemplateManager.prototype.getTemplate = function (identifierName) {
 		if (serverTemplate.is_success) {
 			const temp = serverTemplate.result;
 			localStorage.setItem(identifierName, temp);
+			window.htmlTemplates.push({
+				id: identifierName,
+				value: temp
+			});
 			return temp;
 		} else {
 			console.log(serverTemplate);
@@ -312,53 +322,6 @@ window.forceTranslate = function (selector = null) {
 		resolve();
 	});
 };
-
-//------------------------------------------------------------------------------------//
-//								Dynamic tree for ISO Standard
-//------------------------------------------------------------------------------------//
-
-
-function loadTree(uri, data = null, type = "get") {
-	try {
-		const url = new URL(location.href);
-		uri = `${url.origin}${uri}`;
-
-		const req = $.ajax({
-			url: uri,
-			type: type,
-			data: data,
-			async: false
-		});
-		return JSON.parse(req.responseText);
-	} catch (exp) {
-		console.log(exp);
-		return null;
-	}
-}
-
-$(document).ready(function () {
-	//find all trees in page
-	let trees = $(".custom-tree-iso");
-	$.each(trees, function (index, tree) {
-
-		//Check if is not in edit mode
-		if (!(location.href.indexOf("about:blank") !== -1)) {
-			const standardId = $(tree).attr("db-tree-standard");
-			const categoryId = $(tree).attr("db-tree-category");
-			const requirementId = $(tree).attr("db-tree-requirement");
-			const data = loadTree(`/IsoStandard/GetTreeData?standardEntityId=${standardId}&&categoryEntityId=${categoryId}&&requirementEntityId=${requirementId}`);
-			if (data.is_success) {
-				const templateManager = new TemplateManager();
-				$.templates("IsoCategory", templateManager.getTemplate("template_category.html"));
-				$.templates("IsoRequirements", templateManager.getTemplate("template_requirements.html"));
-				$.templates("IsoTree", templateManager.getTemplate("template_standard.html"));
-				const content = $.render["IsoTree"](data);
-				$(tree).html(content);
-			}
-		}
-	});
-});
-
 
 //------------------------------------------------------------------------------------//
 //								External Connections
@@ -1122,6 +1085,15 @@ ST.prototype.getTemplate = function (relPath) {
 			}
 		});
 	});
+};
+
+/**
+ * Check if string is in an uuid format
+ * @param {any} str
+ */
+ST.prototype.isGuid = function (str) {
+	const pattern = new RegExp("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$", "i");
+	return pattern.test(str);
 };
 
 

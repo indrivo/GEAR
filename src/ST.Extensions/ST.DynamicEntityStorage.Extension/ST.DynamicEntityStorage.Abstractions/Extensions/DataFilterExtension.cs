@@ -127,10 +127,11 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         /// <param name="start"></param>
         /// <param name="length"></param>
         /// <param name="predicate"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
-        public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null)
+        public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null)
         {
-            var data = await context.Service.Table(entity).GetAllWithInclude(predicate?.Compile());
+            var data = await context.Service.Table(entity).GetAllWithInclude(predicate?.Compile(), filters: filters);
             if (!data.IsSuccess) return default;
             var result = data.Result.ToList<dynamic>().Where(p => FilterPredicate((p, search))).ToList();
 

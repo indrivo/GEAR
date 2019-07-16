@@ -19,6 +19,7 @@ using ST.Core.Helpers;
 using ST.Core.Razor.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Constants;
 using ST.Identity.Abstractions;
@@ -41,6 +42,8 @@ namespace ST.PageRender.Razor.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
 
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
+
         /// <summary>
         /// Inject Data Service
         /// </summary>
@@ -51,6 +54,12 @@ namespace ST.PageRender.Razor.Controllers
             _pagesContext = pagesContext;
             _service = service;
             _userManager = userManager;
+
+            _jsonSerializerSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
         }
 
         /// <summary>
@@ -93,11 +102,7 @@ namespace ST.PageRender.Razor.Controllers
                 ViewModelFields = viewModel.ViewModelFields
             };
 
-            return new JsonResult(result, new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+            return new JsonResult(result, _jsonSerializerSettings);
         }
 
         /// <summary>
@@ -316,6 +321,55 @@ namespace ST.PageRender.Razor.Controllers
                 Data = res.Result?.ToList(),
                 EntityName = entityRefName.Value
             };
+
+            return Json(response, _jsonSerializerSettings);
+        }
+
+        /// <summary>
+        /// Delete row id
+        /// </summary>
+        /// <param name="viewModelId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        [AjaxOnly]
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
+        {
+            var result = new ResultModel();
+            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
+            {
+                result.Errors.Add(new ErrorModel("", "Fail to delete!"));
+                return Json(result);
+            }
+            var viewModel = await _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
+            if (viewModel == null) return Json(result);
+            var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+            if (!response.IsSuccess) return Json(result);
+            result.IsSuccess = true;
+            return Json(result);
+        }
+
+        /// <summary>
+        /// Delete row id
+        /// </summary>
+        /// <param name="viewModelId"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        [AjaxOnly]
+        [Authorize(Roles = Settings.SuperAdmin)]
+        public async Task<JsonResult> DeleteItemForeverFromDynamicEntity(Guid viewModelId, string id)
+        {
+            var result = new ResultModel();
+            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
+            {
+                result.Errors.Add(new ErrorModel("", "Fail to delete!"));
+                return Json(result);
+            }
+            var viewModel = await _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
+            if (viewModel == null) return Json(result);
+            var response = await _service.Table(viewModel.TableModel.Name).DeletePermanent<object>(Guid.Parse(id));
             return Json(response);
         }
     }

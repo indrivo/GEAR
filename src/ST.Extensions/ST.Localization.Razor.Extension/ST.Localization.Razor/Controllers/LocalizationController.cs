@@ -320,6 +320,13 @@ namespace ST.Localization.Razor.Controllers
         {
             if (ModelState.IsValid)
             {
+                var isValid = model.LocalizedStrings.All(x => !string.IsNullOrEmpty(x.Value));
+
+                if (!isValid)
+                {
+                    ModelState.AddModelError(string.Empty, "Empty translations");
+                }
+                else
                 if (!_localize[model.NewKey].ResourceNotFound)
                 {
                     ModelState.AddModelError(string.Empty, "Key already exists");

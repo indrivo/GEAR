@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +20,6 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
-using ST.Core.Razor.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Constants;
@@ -426,10 +424,11 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <param name="param"></param>
         /// <param name="viewModelId"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId)
+        public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, ICollection<ListFilter> filters)
         {
             if (viewModelId == Guid.Empty) return Json(default(DTResult<object>));
             var viewModel = await _pagesContext.ViewModels
@@ -442,13 +441,19 @@ namespace ST.PageRender.Razor.Controllers
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(default(DTResult<object>));
+            filters?.ToList().ForEach(x =>
+            {
+                x.SetValue();
+                x.AdaptTypes();
+            });
+
             var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
             var sortColumn = param.SortOrder;
             try
             {
                 var colIndex = Convert.ToInt32(param.Order[0].Column);
                 var columnIndex = colIndex == 0 ? colIndex : colIndex - 1;
-                if (fields.Count() - 1 > columnIndex)
+                if (fields.Count - 1 > columnIndex)
                 {
                     var field = fields.ElementAt(columnIndex);
                     if (field != null)
@@ -470,7 +475,7 @@ namespace ST.PageRender.Razor.Controllers
 
             var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
                 param.Start,
-                param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin));
+                param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin), filters);
 
             var final = await LoadManyToManyReferences(data, viewModel);
 
@@ -484,14 +489,21 @@ namespace ST.PageRender.Razor.Controllers
             var serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                DateFormatString = "dd'.'MM'.'yyyy hh:mm"
+                DateFormatString = Settings.Date.DateFormat
             };
             return Json(finalResult, serializerSettings);
         }
 
+        /// <summary>
+        /// Set many to many entity references
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
         private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<object> data, ViewModel model)
         {
             Arg.NotNull(model, nameof(ViewModel));
+            if (data == null) return data;
             var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
 
             try
@@ -707,40 +719,17 @@ namespace ST.PageRender.Razor.Controllers
             return Json(result);
         }
 
-
-        /// <summary>
-        /// Delete page by id
-        /// </summary>
-        /// <param name="viewModelId"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
-        public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
-        {
-            if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)
-                return Json(new { message = "Fail to delete!", success = false });
-            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
-                .FirstOrDefault(x => x.Id.Equals(viewModelId));
-            if (viewModel == null) return Json(new { message = "Fail to delete!", success = false });
-            var response = await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
-            if (!response.IsSuccess) return Json(new { message = "Fail to delete!", success = false });
-
-            return Json(new { message = "Item was deleted!", success = true });
-        }
-
-
         /// <summary>
         /// Delete page by id
         /// </summary>
         /// <param name="viewModelId"></param>
         /// <param name="ids"></param>
+        /// <param name="mode"></param>
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
         [Authorize(Roles = Settings.SuperAdmin)]
-        public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
+        public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids, bool mode = true)
         {
             if (ids == null) return Json(new { message = "Fail to delete!", success = false });
             var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
@@ -751,7 +740,14 @@ namespace ST.PageRender.Razor.Controllers
                 foreach (var id in ids)
                 {
                     if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
-                    await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                    if (mode)
+                    {
+                        await _service.Table(viewModel.TableModel.Name).Delete<object>(Guid.Parse(id));
+                    }
+                    else
+                    {
+                        await _service.Table(viewModel.TableModel.Name).Restore<object>(Guid.Parse(id));
+                    }
                 }
             }
             catch (Exception e)

@@ -19,7 +19,7 @@ using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
-using ST.DynamicEntityStorage.Services;
+using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Extensions;

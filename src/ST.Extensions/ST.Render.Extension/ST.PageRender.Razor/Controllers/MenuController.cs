@@ -163,7 +163,8 @@ namespace ST.PageRender.Razor.Controllers
         {
             ViewBag.MenuId = menuId;
             ViewBag.ParentId = parentId;
-            ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
+            ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path)
+                .OrderBy(x => x);
             return View();
         }
 
@@ -210,7 +211,8 @@ namespace ST.PageRender.Razor.Controllers
         [HttpGet]
         public async Task<IActionResult> EditItem(Guid itemId)
         {
-            ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path);
+            ViewBag.Routes = _pagesContext.Pages.Where(x => !x.IsDeleted && !x.IsLayout).Select(x => x.Path)
+                .OrderBy(x => x);
             var item = await _service.GetByIdWithReflection<MenuItem, MenuItem>(itemId);
             if (!item.IsSuccess) return NotFound();
             return View(item.Result);

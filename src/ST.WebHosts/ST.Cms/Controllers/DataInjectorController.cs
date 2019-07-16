@@ -48,8 +48,9 @@ namespace ST.Cms.Controllers
 			_context = context;
 			_jsonSerializeOptions = new JsonSerializerSettings
 			{
-				DateFormatString = "dd'.'MM'.'yyyy hh:mm",
-				ContractResolver = new CamelCasePropertyNamesContractResolver()
+				DateFormatString = Settings.Date.DateFormat,
+				ContractResolver = new CamelCasePropertyNamesContractResolver(),
+				NullValueHandling = NullValueHandling.Ignore
 			};
 		}
 
@@ -237,9 +238,17 @@ namespace ST.Cms.Controllers
 			if (!isValid) return new JsonResult(errors);
 			try
 			{
-				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, _jsonSerializeOptions);
+				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type,
+					_jsonSerializeOptions);
 				var rq = await _dynamicService.Table(data.EntityName).Update(parsed);
 				return Json(rq);
+			}
+			catch (JsonSerializationException e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
 			}
 			catch (Exception e)
 			{
@@ -328,6 +337,25 @@ namespace ST.Cms.Controllers
 			var filters = ParseFilters(serial).ToList();
 			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
 			var rq = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+			return Json(rq);
+		}
+
+		/// <summary>
+		/// Count
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> CountAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var f = filters.ToDictionary(x => x.Parameter, y => y.Value);
+			var rq = await _dynamicService.Table(data.EntityName).Count(f);
 			return Json(rq);
 		}
 

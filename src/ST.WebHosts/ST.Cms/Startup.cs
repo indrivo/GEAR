@@ -31,6 +31,7 @@ using ST.PageRender.Razor.Extensions;
 using ST.Procesess.Data;
 using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
+using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers.DbContexts;
 using ST.Entities;
@@ -183,7 +184,7 @@ namespace ST.Cms
 				.AddMvc()
 				.AddJsonOptions(x =>
 				{
-					x.SerializerSettings.DateFormatString = "dd'.'MM'.'yyyy hh:mm";
+					x.SerializerSettings.DateFormatString = Settings.Date.DateFormat;
 				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)

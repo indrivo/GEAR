@@ -121,6 +121,7 @@ namespace ST.Forms.Data
             builder.Entity<Row>().HasMany(model => model.Attrs).WithOne(x => x.Row).OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Field>().HasMany(model => model.Attrs).WithOne(x => x.Field).OnDelete(DeleteBehavior.Cascade);
             builder.RegisterIndexes();
+            builder.Entity<Field>().Ignore(x => x.TableField);
         }
 
         /// <inheritdoc />

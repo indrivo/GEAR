@@ -391,7 +391,7 @@ namespace ST.DynamicEntityStorage
             IEnumerable<TableModelField> fieldReferences)
         {
             var additionalProps = new Dictionary<string, object>();
-
+            if (item == null) return additionalProps;
             foreach (var reference in fieldReferences)
             {
                 var tableName = reference.TableFieldConfigValues
@@ -853,7 +853,11 @@ namespace ST.DynamicEntityStorage
                 }
             };
             var res = _context.DeleteById(table, true);
-            if (!res.Result) return result;
+            if (!res.Result)
+            {
+                result.Errors = res.Errors;
+                return result;
+            }
             result.IsSuccess = true;
             result.Result = id;
             return result;
@@ -1166,9 +1170,10 @@ namespace ST.DynamicEntityStorage
         /// <param name="start"></param>
         /// <param name="length"></param>
         /// <param name="predicate"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
-        public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null)
-            => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate);
+        public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null)
+            => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate, filters);
 
         /// <inheritdoc />
         /// <summary>

@@ -1,7 +1,13 @@
 @{
     var page = (Page)ViewBag.Page;
-
-    ViewData["Title"] = page.Settings.Title;
+    if (!string.IsNullOrEmpty(page.Settings.TitleTranslateKey))
+    {
+        ViewData["Title"] = Localizer[page.Settings.TitleTranslateKey];
+    }
+    else
+    {
+        ViewData["Title"] = page.Settings.Title;
+    }
 
     Layout = page.LayoutId == null ? null : "~/Views/Shared/_Layout.cshtml";
 

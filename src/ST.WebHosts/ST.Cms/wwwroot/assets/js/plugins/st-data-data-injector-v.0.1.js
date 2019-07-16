@@ -189,7 +189,7 @@ DataInjector.prototype.addAsync = function (entityName, object) {
 			}
 		});
 	});
-}
+};
 
 /**
  * Update row in async mode 
@@ -271,7 +271,35 @@ DataInjector.prototype.getAllWhereNoIncludesAsync = function (entityName, filter
 			}
 		});
 	});
-}
+};
+
+
+/**
+ * Get count by filters
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.countAsync = function (entityName, filters = []) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: "/api/DataInjector/countAsync",
+			data: dataParams,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			method: "post",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+};
 
 /**
  * Get all with include and filters async

@@ -9,14 +9,13 @@
 
 
 // Make sure jQuery has been loaded
-if (typeof jQuery === 'undefined') {
-	throw new Error('Data Table plugin require JQuery');
+if (typeof jQuery === "undefined") {
+	throw new Error("Data Table plugin require JQuery");
 }
 
 //------------------------------------------------------------------------------------//
 //								Table select multiple
 //------------------------------------------------------------------------------------//
-window.TBuilder = new TableBuilder();
 
 function RenderTableSelect() {
 
@@ -25,11 +24,11 @@ function RenderTableSelect() {
 RenderTableSelect.prototype.constructor = RenderTableSelect;
 
 RenderTableSelect.prototype.settings = {
-	headContent: "#",
-	classNameText: 'select-checkbox',
+	headContent: () => "#",
+	classNameText: "select-checkbox",
 	select: {
-		style: 'multi',
-		selector: 'td:not(.not-selectable):first-child',
+		style: "multi",
+		selector: "td:not(.not-selectable):first-child",
 		blurable: true
 	}
 };
@@ -49,17 +48,17 @@ RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
 function TableExport() { };
 TableExport.constructor = TableExport;
 TableExport.prototype.oldExportAction = function (self, e, dt, button, config) {
-	if (button[0].className.indexOf('buttons-excel') >= 0) {
+	if (button[0].className.indexOf("buttons-excel") >= 0) {
 		if ($.fn.dataTable.ext.buttons.excelHtml5.available(dt, config)) {
 			$.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config);
 		} else {
 			$.fn.dataTable.ext.buttons.excelFlash.action.call(self, e, dt, button, config);
 		}
-	} else if (button[0].className.indexOf('buttons-print') >= 0) {
+	} else if (button[0].className.indexOf("buttons-print") >= 0) {
 		$.fn.dataTable.ext.buttons.print.action(e, dt, button, config);
-	} else if (button[0].className.indexOf('buttons-csv') >= 0) {
+	} else if (button[0].className.indexOf("buttons-csv") >= 0) {
 		$.fn.dataTable.ext.buttons.csvHtml5.action.call(self, e, dt, button, config);
-	} else if (button[0].className.indexOf('buttons-pdf') >= 0) {
+	} else if (button[0].className.indexOf("buttons-pdf") >= 0) {
 		$.fn.dataTable.ext.buttons.pdfHtml5.action.call(self, e, dt, button, config);
 	}
 };
@@ -75,18 +74,18 @@ TableExport.prototype.newExportAction = function (e, dt, button, config) {
 	var self = this;
 	var oldStart = dt.settings()[0]._iDisplayStart;
 
-	dt.one('preXhr',
+	dt.one("preXhr",
 		function (e, s, data) {
 			// Just this once, load all data from the server...
 			data.start = 0;
 			data.length = 2147483647;
 
-			dt.one('preDraw',
+			dt.one("preDraw",
 				function (e, settings) {
 					// Call the original action function
 					new TableExport().oldExportAction(self, e, dt, button, config);
 
-					dt.one('preXhr',
+					dt.one("preXhr",
 						function (e, s, data) {
 							// DataTables thinks the first item displayed is index 0, but we're not drawing that.
 							// Set the property to what it was before exporting.
@@ -110,9 +109,33 @@ TableExport.prototype.newExportAction = function (e, dt, button, config) {
 //								Table Builder
 //------------------------------------------------------------------------------------//
 
-function TableBuilder() { };
+function TableBuilder(confs) {
+	this.showActionsColumn = true;
+	this.ajax = {
+		"url": "/PageRender/LoadPagedData",
+		"type": "POST",
+		"data": {}
+	};
+	this.configurations = {
+		tableId: undefined,
+		tableJqInstance: undefined,
+		tableJsInstance: undefined
+	};
+	Object.assign(this, confs);
+	console.log(this);
+};
 
 TableBuilder.constructor = TableBuilder;
+
+/*
+ * Toast notifier
+ */
+TableBuilder.prototype.toast = new ToastNotifier();
+
+/**
+ * Database provider
+*/
+TableBuilder.prototype.db = new DataInjector();
 
 TableBuilder.prototype.restoreItem = function (rowId, tableId, viewModelId) {
 	swal({
@@ -150,6 +173,12 @@ TableBuilder.prototype.restoreItem = function (rowId, tableId, viewModelId) {
 	});
 }
 
+/**
+ * Delete item
+ * @param {any} rowId
+ * @param {any} tableId
+ * @param {any} viewModelId
+ */
 TableBuilder.prototype.deleteItem = function (rowId, tableId, viewModelId) {
 	swal({
 		title: window.translate("delete_query_item"),
@@ -162,25 +191,56 @@ TableBuilder.prototype.deleteItem = function (rowId, tableId, viewModelId) {
 		cancelButtonText: window.translate("cancel")
 	}).then((result) => {
 		if (result.value) {
-			$.ajax({
-				url: "/PageRender/DeleteItemFromDynamicEntity",
-				type: "post",
-				data: {
-					id: rowId,
-					viewModelId: viewModelId
-				},
-				success: function (data) {
-					if (data.success) {
-						const oTable = $(`${tableId}`).DataTable();
-						oTable.draw();
-						swal(window.translate("row_deleted"), "", "success");
-					} else {
-						swal(window.translate("delete_fail"), data.message, "error");
-					}
-				},
-				error: function () {
-					swal(window.translate("delete_fail"), window.translate("api_not_respond"), "error");
+			loadAsync("/InlineEdit/DeleteItemFromDynamicEntity", {
+				id: rowId,
+				viewModelId: viewModelId
+			}, "post").then(data => {
+				if (data.is_success) {
+					const oTable = $(`${tableId}`).DataTable();
+					oTable.draw();
+					this.toast.notify({ heading: window.translate("row_deleted"), icon: "success" });
+				} else {
+					this.toast.notifyErrorList(data.error_keys);
 				}
+			}).catch(err => {
+				console.log(err);
+				this.toast.notify({ heading: window.translate("delete_fail"), text: window.translate("api_not_respond") });
+			});
+		}
+	});
+};
+
+/**
+ * Delete item forever
+ * @param {any} rowId
+ * @param {any} tableId
+ * @param {any} viewModelId
+ */
+TableBuilder.prototype.deleteItemForever = function (rowId, tableId, viewModelId) {
+	swal({
+		title: window.translate("delete_query_item"),
+		text: "",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonColor: "#3085d6",
+		cancelButtonColor: "#d33",
+		confirmButtonText: window.translate("delete_confirm_query"),
+		cancelButtonText: window.translate("cancel")
+	}).then((result) => {
+		if (result.value) {
+			loadAsync("/InlineEdit/DeleteItemForeverFromDynamicEntity", {
+				id: rowId,
+				viewModelId: viewModelId
+			}, "post").then(data => {
+				if (data.is_success) {
+					const oTable = $(`${tableId}`).DataTable();
+					oTable.draw();
+					this.toast.notify({ heading: window.translate("row_deleted"), icon: "success" });
+				} else {
+					this.toast.notifyErrorList(data.error_keys);
+				}
+			}).catch(err => {
+				this.toast.notify({ heading: window.translate("delete_fail"), text: window.translate("api_not_respond") });
 			});
 		}
 	});
@@ -210,7 +270,8 @@ TableBuilder.prototype.renderCell = function (row, column) {
 TableBuilder.prototype.getRenderRowActions = function (row, dataX) {
 	const container = this.getTableRowInlineActionButton(row, dataX)
 		//+ this.getTableRowEditActionButton(row, dataX)
-		+ this.getTableRowDeleteRestoreActionButton(row, dataX);
+		+ this.getTableRowDeleteRestoreActionButton(row, dataX)
+		+ this.getTableDeleteForeverActionButton(row, dataX);
 	return container;
 }
 
@@ -233,6 +294,12 @@ TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
 		: ``}`;
 };
 
+TableBuilder.prototype.getTableDeleteForeverActionButton = function (row, dataX) {
+	return `${dataX.hasDeleteForever
+		? `	<a data-viewmodel="${dataX.viewmodelData.result.id
+		}" class="delete-forever btn btn-warning btn-sm" href="javascript:void(0)">Delete forever</a>`
+		: ``}`;
+};
 
 TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
 	if (row.isDeleted) return "";
@@ -243,22 +310,13 @@ TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
 
 
 TableBuilder.prototype.deleteSelectedRows = function () {
-	window.TBuilder.deleteSelectedRowsHandler(this);
+	this.deleteSelectedRowsHandler(this);
 }
 
 TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 	const tableId = ctx.table().node().id;
 	if (!tableId) {
-		$.toast({
-			heading: "Something did not work",
-			text: "",
-			position: 'top-right',
-			loaderBg: '#ff6849',
-			icon: 'error',
-			hideAfter: 3500,
-			stack: 6
-		});
-		return;
+		return this.toast.notify({ heading: "Something did not work" });
 	}
 	const selected = ctx.rows({ selected: true }).data();
 	const viewModelId = $(`#${tableId}`).attr("db-viewmodel");
@@ -270,92 +328,69 @@ TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 		for (let i = 0; i < ids.length; i++) {
 			data.push(ids[i]);
 		}
-		const req = load("/PageRender/DeleteItemsFromDynamicEntity",
+		loadAsync("/PageRender/DeleteItemsFromDynamicEntity",
 			{
 				ids: data,
 				viewModelId: viewModelId
 			},
-			"post");
-		if (req && req.success) {
-			ctx.ajax.reload();
-			$.toast({
-				heading: window.translate("items_deleted"),
-				text: ``,
-				position: 'top-right',
-				loaderBg: '#ff6849',
-				icon: 'success',
-				hideAfter: 3500,
-				stack: 6
-			});
-		} else {
-			$.toast({
-				heading: window.translate("fail_delete_items"),
-				text: "",
-				position: 'top-right',
-				loaderBg: '#ff6849',
-				icon: 'error',
-				hideAfter: 3500,
-				stack: 6
-			});
-		}
+			"post").then(req => {
+				if (req && req.success) {
+					ctx.ajax.reload();
+					this.toast.notify({ heading: window.translate("items_deleted"), icon: "success" });
+				} else {
+					this.toast.notify({ heading: window.translate("fail_delete_items") });
+				}
+			}).catch(err => { console.warn(err) });
 	} else {
-		$.toast({
-			heading: window.translate("delete_no_selected_items"),
-			text: "",
-			position: 'top-right',
-			loaderBg: '#ff6849',
-			icon: 'warning',
-			hideAfter: 3500,
-			stack: 6
-		});
+		this.toast.notify({ heading: window.translate("delete_no_selected_items"), icon: "warning" });
 	}
 };
 
 TableBuilder.prototype.buttons = [
 	{
-		extend: 'copyHtml5',
+		extend: "copyHtml5",
 		text: '<i class="fa fa-files-o"></i>',
 		exportOptions: {
-			columns: ':visible'
+			columns: ":visible"
 		},
 		className: ""
 	},
 	{
-		extend: 'csvHtml5',
+		extend: "csvHtml5",
 		text: '<i class="fa fa-file-text-o"></i>',
 		exportOptions: {
-			columns: ':visible'
+			columns: ":visible"
 		},
 		action: new TableExport().newExportAction
 	},
 	{
-		extend: 'excelHtml5',
+		extend: "excelHtml5",
 		text: '<i class="fa fa-file-excel-o"></i>',
 		autoFilter: true,
 		exportOptions: {
-			columns: ':visible',
-			search: 'applied',
-			order: 'applied'
+			columns: ":visible",
+			search: "applied",
+			order: "applied"
 		},
 		action: new TableExport().newExportAction
 	},
 	{
-		extend: 'pdfHtml5',
+		extend: "pdfHtml5",
 		text: '<i class="fa fa-file-pdf-o"></i>',
 		exportOptions: {
-			columns: ':visible'
+			columns: ":visible"
 		},
 		action: new TableExport().newExportAction
 	},
 	{
-		extend: 'print',
+		extend: "print",
 		exportOptions: {
-			columns: ':visible'
+			columns: ":visible"
 		},
 		action: new TableExport().newExportAction
 	},
 	{
-		text: 'Delete selected items',
+		text: "Delete selected items",
 		action: new TableBuilder().deleteSelectedRows
 	}
 ];
@@ -368,7 +403,13 @@ TableBuilder.prototype.rowCallback = function (row, data) {
 	//on callback
 };
 
-TableBuilder.prototype.createdRow = function (row, data, dataIndex) {
+/**
+ * On row create
+ * @param {any} row
+ * @param {any} data
+ * @param {any} dataIndex
+ */
+TableBuilder.prototype.onRowCreate = function (row, data, dataIndex) {
 	if (data.isDeleted) {
 		$(row).addClass("row-deleted");
 		$(row).find("td.select-checkbox").find("input").css("display", "none");
@@ -385,9 +426,14 @@ TableBuilder.prototype.createdRow = function (row, data, dataIndex) {
 	//	$('td:eq(5)', row).css('display', 'none');
 };
 
-
+/*
+ * JQuery dt dom position
+ */
 TableBuilder.prototype.dom = '<"CustomizeColumns">lBfrtip';
 
+/**
+ * Set your own props to be translated
+ */
 TableBuilder.prototype.replaceTableSystemTranslations = function () {
 	const customReplace = new Array();
 	//customReplace.push({ Key: "propName", Value: "value" });
@@ -395,22 +441,26 @@ TableBuilder.prototype.replaceTableSystemTranslations = function () {
 	return searialData;
 };
 
+/*
+ * Get translations for jquery dt
+ */
 TableBuilder.prototype.translationsJson = function () {
 	return `${location.origin}/api/LocalizationApi/GetJQueryTableTranslations?language=${window.getCookie("language")}&customReplace=${this.replaceTableSystemTranslations()}`;
 };
 
-TableBuilder.prototype.ajax = {
-	"url": "/PageRender/LoadPagedData",
-	"type": "POST",
-	"data": {}
-};
+/*
+ * Addtional configs for dt
+ */
+TableBuilder.prototype.dtConfs = {};
 
+/**
+ * Init new instance of jquery datatable
+ * @param {any} data
+ */
 TableBuilder.prototype.renderTable = function (data) {
-	const ctx = this;
-	const ajax = ctx.ajax;
-	ajax.data = {
+	Object.assign(this.ajax.data, {
 		"viewModelId": data.viewmodelId
-	};
+	});
 
 	const tableId = `#${data.listId}`;
 	if ($.fn.DataTable.isDataTable(tableId)) {
@@ -418,9 +468,9 @@ TableBuilder.prototype.renderTable = function (data) {
 		$(tableId).dataTable().empty();
 	}
 	const renderTableSelect = new RenderTableSelect();
-	$(tableId).DataTable({
+	let dtConfig = Object.assign({
 		"language": {
-			"url": ctx.translationsJson(),
+			"url": this.translationsJson(),
 		},
 		dom: this.dom,
 		buttons: this.buttons,
@@ -428,9 +478,10 @@ TableBuilder.prototype.renderTable = function (data) {
 			{
 				orderable: false,
 				className: renderTableSelect.className(),
-				targets: 'no-sort'
+				targets: "no-sort"
 			}
 		],
+		"order": [[1, "desc"]],
 		colReorder: true,
 		select: renderTableSelect.settings.select,
 		"scrollX": true,
@@ -441,19 +492,36 @@ TableBuilder.prototype.renderTable = function (data) {
 		"filter": true,
 		"orderMulti": false,
 		"destroy": true,
-		"ajax": ajax,
+		"ajax": this.ajax,
 		"columns": data.renderColumns,
-		"createdRow": (row, data, dataIndex) => ctx.createdRow(row, data, dataIndex),
-		"rowCallback": (row, data) => ctx.rowCallback(row, data),
-		"createdCell": (td, cellData, rowData, row, col) => ctx.createdCell(td, cellData, rowData, row, col)
-	});
+		"createdRow": (row, data, dataIndex) => this.onRowCreate(row, data, dataIndex),
+		"rowCallback": (row, data) => this.rowCallback(row, data),
+		"createdCell": (td, cellData, rowData, row, col) => this.createdCell(td, cellData, rowData, row, col),
+		"initComplete": (settings, json) => this.onInitComplete(settings, json)
+	}, this.dtConfs);
+	//Start new instance of Jquery dt
+	$(tableId).DataTable(dtConfig);
 }
+
+/**
+ * Handler after init complete
+ * @param {any} settings
+ * @param {any} json
+ */
+TableBuilder.prototype.onInitComplete = function (settings, json) {
+	//do something after table complete
+}
+
 
 TableBuilder.prototype.appendColumnsBeforeActions = function () {
 	return "";
 };
 
 
+/**
+ * Get table configuration
+ * @param {any} dataX
+ */
 TableBuilder.prototype.configureTableBody = function (dataX) {
 	const ctx = this;
 	if (dataX.viewmodelData.is_success) {
@@ -465,7 +533,7 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 			const tr = document.createElement("tr");
 			const th = document.createElement("th");
 			th.setAttribute("class", "no-sort");
-			th.innerHTML = renderTableSelect.settings.headContent;
+			th.innerHTML = renderTableSelect.settings.headContent();
 			tr.appendChild(th);
 			//CheckBox column
 			renderColumns.push({
@@ -505,21 +573,26 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 			//htmlCol.innerHTML = ctx.appendColumnsBeforeActions();
 			//tr.appendChild(htmlCol);
 
-			const actionCol = document.createElement("th");
-			actionCol.innerHTML = window.translate("list_actions");
-			tr.appendChild(actionCol);
+			//Show action columns 
+			if (this.showActionsColumn) {
+				const actionCol = document.createElement("th");
+				actionCol.innerHTML = window.translate("list_actions");
+				tr.appendChild(actionCol);
+
+				renderColumns.push({
+					data: null,
+					"render": function (data, type, row, meta) {
+						const elDiv = document.createElement("div");
+						elDiv.setAttribute("class", "btn-group");
+						elDiv.setAttribute("role", "group");
+						elDiv.setAttribute("aria-label", "Action buttons");
+						elDiv.innerHTML = ctx.getRenderRowActions(row, dataX);
+						return elDiv.outerHTML;
+					}
+				});
+			}
+
 			columns.html(tr.outerHTML);
-			renderColumns.push({
-				data: null,
-				"render": function (data, type, row, meta) {
-					const elDiv = document.createElement("div");
-					elDiv.setAttribute("class", "btn-group");
-					elDiv.setAttribute("role", "group");
-					elDiv.setAttribute("aria-label", "Action buttons");
-					elDiv.innerHTML = ctx.getRenderRowActions(row, dataX);
-					return elDiv.outerHTML;
-				}
-			});
 		}
 		ctx.renderTable({
 			viewmodelId: dataX.viewmodelId,
@@ -529,10 +602,47 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 	};
 };
 
+/**
+ * Init new table build
+ * @param {any} table
+ */
+TableBuilder.prototype.init = function (table) {
+	const listRef = $(table);
+	const viewmodelId = listRef.attr("db-viewmodel");
+	const listId = listRef.attr("id");
+	const hasEditPage = table.hasAttribute("data-is-editable");
+	const hasInlineEdit = table.hasAttribute("data-is-editable-inline");
+	const hasDeleteRestore = table.hasAttribute("data-allow-edit-restore");
+	const hasDeleteForever = table.hasAttribute("data-allow-delete-forever");
+	const editPageLink = listRef.attr("data-edit-href");
+	this.configurations.tableJsInstance = table;
+	this.configurations.tableJqInstance = listRef;
+	this.configurations.tableId = listId;
+	this.configurations.viewmodelId = viewmodelId;
+	return new Promise((resolve, reject) => {
+		loadAsync(`/PageRender/GetViewModelById?viewModelId=${viewmodelId}`).then(viewmodelData => {
+			resolve({
+				viewmodelData: viewmodelData,
+				hasEditPage: hasEditPage,
+				hasInlineEdit: hasInlineEdit,
+				hasDeleteRestore: hasDeleteRestore,
+				editPageLink: editPageLink,
+				listId: listId,
+				viewmodelId: viewmodelId,
+				hasDeleteForever: hasDeleteForever
+			});
+		}).catch(err => console.warn(err));
+	}).then(dataX => {
+		this.configureTableBody(dataX);
+	});
+};
+
+
+
 $(document).ready(function () {
 	const tablePromise = new Promise((resolve, reject) => {
 		const tables = Array.prototype.filter.call(
-			document.getElementsByTagName('table'),
+			document.getElementsByTagName("table"),
 			function (el) {
 				return el.getAttribute("db-viewmodel") != null;
 			}
@@ -543,30 +653,10 @@ $(document).ready(function () {
 	tablePromise.then((tables => {
 		$.each(tables,
 			function (index, table) {
-				const listRef = $(table);
-				const viewmodelId = listRef.attr("db-viewmodel");
-				const listId = listRef.attr("id");
-				const hasEditPage = table.hasAttribute("data-is-editable");
-				const hasInlineEdit = table.hasAttribute("data-is-editable-inline");
-				const hasDeleteRestore = table.hasAttribute("data-allow-edit-restore");
-				const editPageLink = listRef.attr("data-edit-href");
-
-				var viewModelPromise = new Promise((resolve, reject) => {
-					const viewmodelData = load(`/PageRender/GetViewModelById?viewModelId=${viewmodelId}`);
-					resolve({
-						viewmodelData: viewmodelData,
-						hasEditPage: hasEditPage,
-						hasInlineEdit: hasInlineEdit,
-						hasDeleteRestore: hasDeleteRestore,
-						editPageLink: editPageLink,
-						listId: listId,
-						viewmodelId: viewmodelId
-					});
-				});
-
-				viewModelPromise.then(dataX => {
-					new TableBuilder().configureTableBody(dataX);
-				});
+				const conf = {
+					showActionsColumn: false
+				};
+				new TableBuilder(conf).init(table);
 			});
 	}));
 });

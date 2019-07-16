@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions.Events;
 using ST.Entities.Abstractions.Query;
 
 namespace ST.Entities.Abstractions.Extensions
@@ -10,7 +11,7 @@ namespace ST.Entities.Abstractions.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Add entity model
+        /// Add entity module
         /// </summary>
         /// <typeparam name="TEntityContext"></typeparam>
         /// <typeparam name="TQueryTableBuilder"></typeparam>
@@ -28,6 +29,9 @@ namespace ST.Entities.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(services));
             services.AddTransient<IEntityContext, TEntityContext>();
+
+            //Register entity events
+            EntityEvents.RegisterEvents();
 
             IoC.RegisterServiceCollection(new Dictionary<Type, Type>
             {
