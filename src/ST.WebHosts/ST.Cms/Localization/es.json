@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Siguiente índice de fila",
   "system_date_curr_year": "Año actual",
   "system_date_curr_month": "Mes actual",
-  "system_date_curr_day": "Día actual"
+  "system_date_curr_day": "Día actual",
+  "system_search_add": "Buscar/Agregar",
+  "system_record": "La entrada",
+  "system_record_added_into": "ha sido agregado con éxito en",
+  "system_data_no_item_found": "No hay ningún elemento encontrado!",
+  "system_entry_updaded": "La grabación se ha actualizado",
+  "system_data_record_deleted": "El registro se ha eliminado"
 }

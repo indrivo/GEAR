@@ -202,8 +202,51 @@ if (typeof TableInlineEdit !== 'undefined') {
 	 * @param {any} json
 	 */
 	TableBuilder.prototype.onInitComplete = function (settings, json) {
-		//console.log(settings, json);
+		new TableInlineEdit().addNewHandler($("table").parent());
 	}
+
+
+	/**
+ * On after init text cell
+ * @param {any} columns
+ * @param {any} index
+ */
+	TableInlineEdit.prototype.onAfterInitTextEditCell = function (columns, index) {
+		this.onAfterInitEditCellDefaultHandler(columns, index);
+		const columnCtx = $(columns[index]);
+		const scope = this;
+		const expandCell = columnCtx.parent();
+		expandCell.addClass("expandable-cell");
+		columnCtx.on("click", function () {
+			const pos = scope.elementOffset(this);
+			const docHeight = $(document).height();
+			const docWidth = $(document).width();
+			const hPercent = pos.top * 100 / docHeight;
+			const diffH = docHeight - pos.top;
+
+			const expandedCell = columnCtx.parent();
+			if (!expandedCell.get(0).hasAttribute("data-left")) {
+				expandCell.attr("data-left", pos.left);
+			} else {
+				pos.left = expandCell.attr("data-left");
+			}
+
+			const navBarWidth = $(".navigation").width();
+			pos.left -= navBarWidth;
+			const wPercent = pos.left * 100 / docWidth;
+			const diffW = docWidth - pos.left;
+
+			if (hPercent > 70 && hPercent < 80) {
+				expandedCell.css("top", `${pos.top - diffH}px`);
+			} else if (hPercent > 80) {
+				expandedCell.css("top", `${pos.top - diffH - 240}px`);
+			}
+
+			if (wPercent > 70) {
+				expandedCell.css("left", `${pos.left - diffW + 180}px`);
+			}
+		});
+	};
 
 	/**
  * On row create
@@ -219,9 +262,9 @@ if (typeof TableInlineEdit !== 'undefined') {
 			$(row).find("td").addClass("not-selectable");
 		}
 		const rowScope = $(row);
-		
+		rowScope.attr("data-viewmodel", scope.configurations.viewmodelId);
+		rowScope.unbind();
 		rowScope.on("dblclick", function () {
-			rowScope.attr("data-viewmodel", scope.configurations.viewmodelId);
 			new TableInlineEdit().initInlineEditForRow(this);
 		});
 	};
@@ -258,7 +301,185 @@ if (typeof TableInlineEdit !== 'undefined') {
 		return container;
 	};
 
+	/**
+ * Get reference edit cell
+ * @param {any} conf
+ */
+	TableInlineEdit.prototype.getReferenceEditCell = function (conf) {
+		const gScope = this;
+		const div = document.createElement("div");
+		//div.setAttribute("class", "");
+		const dropdown = document.createElement("select");
+		dropdown.setAttribute("class", "inline-update-event data-input form-control");
+		dropdown.setAttribute("data-prop-id", conf.propId);
+		dropdown.setAttribute("data-prop-name", conf.propName);
+		dropdown.setAttribute("data-id", conf.cellId);
+		dropdown.setAttribute("data-entity", conf.tableId);
+		dropdown.setAttribute("data-type", "uniqueidentifier");
+		dropdown.style.display = "none";
+		dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), "");
 
+		const vEl = document.createElement("span");
+		vEl.setAttribute("class", "virtual-el-ref");
+		//Populate dropdown
+		loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
+			if (data) {
+				if (data.is_success) {
+					const entityName = data.result.entityName;
+					$.each(data.result.data, function (index, obj) {
+						if (obj.id === conf.value) {
+							vEl.innerText = obj.name;
+						}
+						dropdown.options[dropdown.options.length] = new Option(obj.name, obj.id);
+					});
+					dropdown.setAttribute("data-ref-entity", entityName);
+					const items = data.result.data.map(x => {
+						return {
+							id: x.id,
+							value: x.name
+						}
+					});
+					$($(div).closest("td")).on('click', function (event) {
+						const cellCtx = this;
+						const item = $.Iso.dynamicFilter('list',
+							event.target, items,
+							{
+								create: function (value) {
+									return new Promise((resolve, reject) => {
+										gScope.db.addAsync(entityName, { name: value }).then(response => {
+											if (response.is_success) {
+												dropdown.options[dropdown.options.length] = new Option(value, response.result);
+												const successMessage = `${window.translate("system_record")} ${value} ${window.translate("system_record_added_into")} ${entityName}`;
+												gScope.toast.notify({ heading: successMessage, icon: "success" });
+												resolve(response.result);
+											} else {
+												reject();
+												gScope.toast.notifyErrorList(response.error_keys);
+											}
+										});
+									});
+								},
+								update: function (obj) {
+									return new Promise((resolve, reject) => {
+										gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
+											if (x.is_success) {
+												const newObj = x.result;
+												newObj.name = obj.value;
+												gScope.db.updateAsync(entityName, newObj).then(y => {
+													if (y.is_success) {
+														gScope.toast.notify({ heading: window.translate("system_entry_updaded"), icon: "success" });
+														resolve();
+													} else {
+														gScope.toast.notifyErrorList(y.error_keys);
+														reject();
+													}
+												}).catch(err => {
+													reject(err);
+												});
+											} else {
+												gScope.toast.notify({ heading: window.translate("system_data_no_item_found") });
+											}
+										}).catch(err => {
+											reject(err);
+										});
+									});
+								},
+								delete: function (obj) {
+									return new Promise((resolve, reject) => {
+										const params = [{ parameter: "Id", value: obj.id }];
+										gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
+											if (x.is_success) {
+												gScope.toast.notify({ heading: window.translate("system_data_record_deleted"), icon: "success" });
+												resolve();
+											} else {
+												gScope.toast.notifyErrorList(x.error_keys);
+												reject();
+											}
+										}).catch(err => {
+											reject(err);
+										});
+									});
+								}
+							},
+							{
+								entity: entityName,
+								ctx: cellCtx,
+								items: items,
+								searchBarPlaceholder: window.translate("system_search_add"),
+								addButtonLabel: window.translate("add")
+							},
+							{ placement: 'bottom-auto' });
+
+						$(item.container).on('selectValueChange', (event, arg) => {
+							const { ctx, entity, items } = arg.options;
+							//const exist = items.find(x => x.id === arg.value);
+							$(dropdown).val(arg.value);
+							gScope.onEditCellValueChanged(dropdown);
+
+							gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
+								if (x.is_success) {
+									$(ctx).find(".virtual-el-ref").html(x.result.name);
+								} else {
+									gScope.toast.notifyErrorList(x.error_keys);
+								}
+							});
+
+						});
+					});
+				}
+				dropdown.value = conf.value;
+			}
+		});
+
+		div.appendChild(dropdown);
+		div.appendChild(vEl);
+		return div;
+	};
+
+	/**
+	 * Rewrite add new line
+	 * @param {any} ctx
+	 * @param {any} jdt
+	 */
+	TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
+		const scope = this;
+		const card = $(ctx).closest(".card");
+		const dto = card.find(".dynamic-table");
+		if (!jdt) {
+			jdt = dto.DataTable();
+		}
+
+		const row = document.createElement("tr");
+		row.setAttribute("isNew", "true");
+		const columns = jdt.columns().context[0].aoColumns;
+		for (let i in columns) {
+			//Ignore hidden column
+			if (!columns[i].bVisible) continue;
+			let cell = document.createElement("td");
+			if (columns[i].targets === "no-sort") {
+				cell.innerHTML = this.defaultNotEditFieldContainer;
+			}
+			else {
+				const newCell = this.getAddRowCell(columns[i], cell);
+				cell = newCell.cell;
+				if (newCell.entityName)
+					row.setAttribute("entityName", newCell.entityName);
+				$(cell).find("textarea.inline-add-event, input.inline-add-event").on("blur", function () {
+					scope.addNewItem($(this));
+				});
+
+				$(cell).find("select.inline-add-event").on("change", function () {
+					scope.addNewItem($(this));
+				});
+			}
+
+			row.appendChild(cell);
+		}
+		dto.attr("add-mode", "true");
+		$("tbody", dto).prepend(row);
+		this.bindEventsAfterInitInlineEdit(row);
+		return this.toggleVisibilityColumnsButton(ctx, true);
+	};
 
 	/**
  * Transform row in inline edit mode
@@ -272,7 +493,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 
 		const viewModelId = targetCtx.attr("data-viewmodel");
 		loadAsync(`/InlineEdit/GetViewModelColumnTypes?viewModelId=${viewModelId}`).then(viewModel => {
-			const dt = targetCtx.closest("table");		
+			const dt = targetCtx.closest("table");
 			const table = dt.DataTable();
 			const row = targetCtx;
 			const columns = row.find(".data-cell");
@@ -367,14 +588,14 @@ if (typeof TableInlineEdit !== 'undefined') {
  */
 	TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 		const targetCtx = $(target);
-		const table = targetCtx.closest("table").DataTable();
-		const row = targetCtx.closest("tr");
+		const htTable = targetCtx.closest("table");
+		const table = htTable.DataTable();
+		let row = targetCtx.closest("tr");
 		const index = table.row(row).index();
 		let obj = table.row(index).data();
 		targetCtx.off("click", completeEditInlineHandler);
 		const columns = targetCtx.parent().parent().parent().find(".data-cell");
-
-		const viewModelId = $(columns[0]).attr("data-viewmodel");
+		let viewModelId = htTable.attr("db-viewmodel");
 		loadAsync(`/InlineEdit/GetViewModelColumnTypes?viewModelId=${viewModelId}`).then(viewModel => {
 			if (!viewModelId) return;
 			if (!viewModel.is_success) return;
@@ -478,6 +699,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 				const additionalDependencies = results[results.length - 1];
 				obj = Object.assign(obj, additionalDependencies);
 				const redraw = table.row(index).data(obj).invalidate();
+				$(redraw.row(index).nodes()).unbind();
 				$(redraw.row(index).nodes()).on("dblclick", function () {
 					new TableInlineEdit().initInlineEditForRow(this);
 				});
@@ -494,12 +716,14 @@ if (typeof TableInlineEdit !== 'undefined') {
 			// ReSharper disable once ConstructorCallNotUsed
 			new $.Iso.InlineEditingCells();
 		} catch (e) { };
-
-		$(row).unbind();
-		row.on("dblclick", function () {
-			$(this).unbind();
-			new TableInlineEdit().completeInlineEditForRow(this);
-		});
+		const ctx = $(row);
+		ctx.unbind();
+		if (!ctx.get(0).hasAttribute("isnew")) {
+			row.on("dblclick", function () {
+				//$(this).unbind();
+				new TableInlineEdit().completeInlineEditForRow(this);
+			});
+		}
 	};
 }
 
@@ -591,10 +815,7 @@ $(document).ready(function () {
 	});
 
 	//Menu render promise
-	const loadMenusPromise = new Promise((resolve, reject) => {
-		const menus = load("/PageRender/GetMenus");
-		resolve(menus);
-	});
+	const loadMenusPromise = loadAsync("/PageRender/GetMenus");
 
 	loadMenusPromise.then(menus => {
 		const renderMenuContainer = $("#left-nav-bar");

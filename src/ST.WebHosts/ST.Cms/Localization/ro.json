@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Index-ul randului urmator ",
   "system_date_curr_year": "Anul curent",
   "system_date_curr_month": "Luna curentă",
-  "system_date_curr_day": "Ziua curentă"
+  "system_date_curr_day": "Ziua curentă",
+  "system_search_add": "Cauta/Adauga",
+  "system_record": "Înregistrarea",
+  "system_record_added_into": "a fost adăugat cu succes în",
+  "system_data_no_item_found": "Nici un element găsit!",
+  "system_entry_updaded": "Înregistrarea a fost actualizata",
+  "system_data_record_deleted": "Înregistrarea a fost eliminat"
 }

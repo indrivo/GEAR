@@ -11120,7 +11120,7 @@ thead {
 	height: 300px !important;
 	width: 100%;
 	align-items: center;
-	background-color: inherit !important;
+	background-color: inherit !important
 }
 
 	.expanded-cell .data-cell {
@@ -11130,7 +11130,7 @@ thead {
 	}
 
 		.expanded-cell .data-cell textarea {
-			height: 280px;
+			height: 280px
 		}
 
 .invalid-outline {

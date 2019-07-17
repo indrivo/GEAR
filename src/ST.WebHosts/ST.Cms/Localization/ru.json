@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Следующий показатель строки ",
   "system_date_curr_year": "Текущий год",
   "system_date_curr_month": "Текущий месяц",
-  "system_date_curr_day": "Текущий день"
+  "system_date_curr_day": "Текущий день",
+  "system_search_add": "Найти/Добавить",
+  "system_record": "Запись",
+  "system_record_added_into": "был успешно добавлен в",
+  "system_data_no_item_found": "Элемент не найден!",
+  "system_entry_updaded": "Запись была обновлена",
+  "system_data_record_deleted": "Запись была удалена"
 }

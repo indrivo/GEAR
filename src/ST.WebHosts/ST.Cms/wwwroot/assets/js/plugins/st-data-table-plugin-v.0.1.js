@@ -122,7 +122,6 @@ function TableBuilder(confs) {
 		tableJsInstance: undefined
 	};
 	Object.assign(this, confs);
-	console.log(this);
 };
 
 TableBuilder.constructor = TableBuilder;

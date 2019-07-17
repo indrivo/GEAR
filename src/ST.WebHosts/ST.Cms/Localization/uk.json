@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Наступний показник рядка ",
   "system_date_curr_year": "Поточний рік",
   "system_date_curr_month": "Поточний місяць",
-  "system_date_curr_day": "Поточний день"
+  "system_date_curr_day": "Поточний день",
+  "system_search_add": "Знайти Та Додати",
+  "system_record": "Запис",
+  "system_record_added_into": "успішно додано в",
+  "system_data_no_item_found": "Елемент не знайдений!",
+  "system_entry_updaded": "Запис була оновлена",
+  "system_data_record_deleted": "Запис була видалена"
 }

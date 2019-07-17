@@ -247,6 +247,34 @@ DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters
 
 
 /**
+ * Delete where async
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: `/api/DataInjector/DeleteWhereAsync`,
+			data: dataParams,
+			method: "delete",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+
+/**
  * Get all with filters async
  * @param {any} table
  * @param {any} filters
@@ -272,6 +300,7 @@ DataInjector.prototype.getAllWhereNoIncludesAsync = function (entityName, filter
 		});
 	});
 };
+
 
 
 /**
@@ -300,6 +329,8 @@ DataInjector.prototype.countAsync = function (entityName, filters = []) {
 		});
 	});
 };
+
+
 
 /**
  * Get all with include and filters async

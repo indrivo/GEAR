@@ -324,6 +324,36 @@ namespace ST.Cms.Controllers
 
 
 		/// <summary>
+		/// Delete where by filters
+		/// </summary>
+		/// <returns></returns>
+		[HttpDelete]
+		public async Task<JsonResult> DeleteWhereAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var result = new ResultModel();
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var rqGet = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+			if (rqGet.IsSuccess)
+			{
+				var taskResults = rqGet.Result.Select(async item =>
+					await _dynamicService.Table(data.EntityName).Delete<object>((Guid)item.Id)).Select(x => x.Result);
+				result.IsSuccess = true;
+				result.Result = taskResults;
+				return Json(result);
+			}
+
+			result.IsSuccess = false;
+			result.Errors.Add(new ErrorModel(nameof(EmptyResult), "No item to delete!"));
+			return Json(result);
+		}
+
+
+		/// <summary>
 		/// Get all with no includes
 		/// </summary>
 		/// <returns></returns>

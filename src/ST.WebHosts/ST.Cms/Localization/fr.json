@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "La ligne suivante de l'indice de",
   "system_date_curr_year": "Année en cours",
   "system_date_curr_month": "Mois en cours",
-  "system_date_curr_day": "Journée en cours"
+  "system_date_curr_day": "Journée en cours",
+  "system_search_add": "Trouver/Ajouter",
+  "system_record": "Enregistrement",
+  "system_record_added_into": "a été ajouté avec succès dans",
+  "system_data_no_item_found": "Aucun élément trouvé!!!",
+  "system_entry_updaded": "L'enregistrement a été mis à jour",
+  "system_data_record_deleted": "L'enregistrement a été supprimé"
 }

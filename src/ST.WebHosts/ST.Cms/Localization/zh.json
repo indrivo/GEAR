@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "下一行指数",
   "system_date_curr_year": "当年",
   "system_date_curr_month": "目前的一个月",
-  "system_date_curr_day": "当前的一天"
+  "system_date_curr_day": "当前的一天",
+  "system_search_add": "找到/Add它",
+  "system_record": "项",
+  "system_record_added_into": "已经成功地加入",
+  "system_data_no_item_found": "没有项目的发现！",
+  "system_entry_updaded": "本记录的更新",
+  "system_data_record_deleted": "记录被删除了"
 }

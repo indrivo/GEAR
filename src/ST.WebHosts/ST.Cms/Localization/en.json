@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Next row index",
   "system_date_curr_year": "Current year",
   "system_date_curr_month": "Current month",
-  "system_date_curr_day": "Current day"
+  "system_date_curr_day": "Current day",
+  "system_search_add": "Find/Add It",
+  "system_record": "Entry",
+  "system_record_added_into": "has been successfully added in",
+  "system_data_no_item_found": "No item found!",
+  "system_entry_updaded": "The record was updated",
+  "system_data_record_deleted": "The record was deleted"
 }

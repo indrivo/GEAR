@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Επόμενη σειρά δείκτη",
   "system_date_curr_year": "Το τρέχον έτος",
   "system_date_curr_month": "Τρέχοντα μήνα",
-  "system_date_curr_day": "Τρέχουσα ημέρα"
+  "system_date_curr_day": "Τρέχουσα ημέρα",
+  "system_search_add": "Βρείτε/Να Το Προσθέσετε",
+  "system_record": "Εγγραφή",
+  "system_record_added_into": "έχει προστεθεί με επιτυχία στο",
+  "system_data_no_item_found": "Κανένα στοιχείο που βρέθηκαν!",
+  "system_entry_updaded": "Η εγγραφή έχει ενημερωθεί",
+  "system_data_record_deleted": "Η εγγραφή έχει διαγραφεί"
 }

@@ -168,10 +168,10 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 	const dTable = context.closest("table").DataTable();
 	const rowContext = context.closest("tr");
 	const entityName = rowContext.attr("entityName");
+	console.log(rowContext);
 	const isValid = this.isValidNewRow(rowContext);
 	if (!isValid) {
-		this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
-		return;
+		return this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
 	}
 	const data = this.getRowDataOnAddMode(rowContext);
 	this.db.addAsync(entityName, data).then(req => {
@@ -204,7 +204,7 @@ TableInlineEdit.prototype.cancelTableAddMode = function (ctx) {
  * @param {any} context
  */
 TableInlineEdit.prototype.isValidNewRow = function (context) {
-	const els = context.get(0).querySelectorAll("input.data-new");
+	const els = context.get(0).querySelectorAll("textarea.data-new");
 	let isValid = true;
 	$.each(els, (index, el) => {
 		if (el.hasAttribute("data-required")) {
@@ -598,40 +598,6 @@ TableInlineEdit.prototype.onAfterInitEditCellDefaultHandler = function (columns,
  */
 TableInlineEdit.prototype.onAfterInitTextEditCell = function (columns, index) {
 	this.onAfterInitEditCellDefaultHandler(columns, index);
-	const columnCtx = $(columns[index]);
-	const scope = this;
-	const expandCell = columnCtx.parent();
-	expandCell.addClass("expandable-cell");
-	columnCtx.on("click", function () {
-		const pos = scope.elementOffset(this);
-		const docHeight = $(document).height();
-		const docWidth = $(document).width();
-		const hPercent = pos.top * 100 / docHeight;
-		const diffH = docHeight - pos.top;
-
-		const expandedCell = columnCtx.parent();
-		if (!expandedCell.get(0).hasAttribute("data-left")) {
-			expandCell.attr("data-left", pos.left);
-		} else {
-			pos.left = expandCell.attr("data-left");
-		}
-
-		const navBarWidth = $(".navigation").width();
-		pos.left -= navBarWidth;
-		const wPercent = pos.left * 100 / docWidth;
-		const diffW = docWidth - pos.left;
-
-		if (hPercent > 70 && hPercent < 80) {
-			expandedCell.css("top", `${pos.top - diffH}px`);
-		} else if (hPercent > 80) {
-			expandedCell.css("top", `${pos.top - diffH - 240}px`);
-		}
-
-		console.log(wPercent);
-		if (wPercent > 70) {
-			expandedCell.css("left", `${pos.left - diffW + 180}px`);
-		}
-	});
 };
 
 /**

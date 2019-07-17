@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Volgende rij index",
   "system_date_curr_year": "Huidig jaar",
   "system_date_curr_month": "Huidige maand",
-  "system_date_curr_day": "De huidige dag"
+  "system_date_curr_day": "De huidige dag",
+  "system_search_add": "Zoeken/Toevoegen",
+  "system_record": "Invoer",
+  "system_record_added_into": "is met succes toegevoegd in",
+  "system_data_no_item_found": "Geen item gevonden!",
+  "system_entry_updaded": "Het record is bijgewerkt",
+  "system_data_record_deleted": "De record is verwijderd"
 }

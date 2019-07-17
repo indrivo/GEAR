@@ -418,5 +418,11 @@
   "iso_company_settings_next_index": "Accanto indice di riga",
   "system_date_curr_year": "Corrente anno",
   "system_date_curr_month": "Mese corrente",
-  "system_date_curr_day": "Giorno corrente"
+  "system_date_curr_day": "Giorno corrente",
+  "system_search_add": "Trovare/Aggiungere",
+  "system_record": "Registrazione",
+  "system_record_added_into": "è stato aggiunto con successo nel",
+  "system_data_no_item_found": "Nessun elemento trovato!!!",
+  "system_entry_updaded": "La voce è stata aggiornata",
+  "system_data_record_deleted": "Il record è stato eliminato"
 }
