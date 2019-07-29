@@ -424,5 +424,17 @@
   "system_record_added_into": "wurde erfolgreich Hinzugefügt",
   "system_data_no_item_found": "Kein Artikel gefunden!!!",
   "system_entry_updaded": "Der Eintrag wurde aktualisiert",
-  "system_data_record_deleted": "Der Eintrag wurde gelöscht"
+  "system_data_record_deleted": "Der Eintrag wurde gelöscht",
+  "system_something_went_wrong": "Etwas nicht gegangen ist, versuchen Sie die Seite neu laden",
+  "iso_process_in_scope_subprocess": "Inklusive im Ziel (Unterprozess)",
+  "iso_locations_in_scope": "Enthalten, für den vorgesehenen Zweck",
+  "iso_scale_units_impact": "Einheiten der-Skala (Einfluss)",
+  "iso_scale_units_risk": "Skala-Einheiten (RISIKO)",
+  "iso_menu_matrix_template_common": "Matrix-Vorlagen",
+  "system_is_published": "Veröffentlicht wird",
+  "iso_risk_matrices": "Matrix Risiken",
+  "iso_risk_click_to_preview": "Klicken Sie auf die Schaltfläche, um eine Vorschau-matrix",
+  "iso_risk_template_edit": "Bearbeiten der Vorlage",
+  "system_back": "Zurück",
+  "iso_company_matrix": "Matrix Risiken"
 }

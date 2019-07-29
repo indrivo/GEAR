@@ -147,7 +147,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Localization.Abstraction
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Localization.Services", "src\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization\ST.Localization.Services.csproj", "{375D0A44-3FFB-4A0B-A837-DA2D8C58B15B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Entities.Razor", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj", "{5EE32D18-3642-4FC8-9439-DA12B76D3AC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Entities.Razor", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj", "{5EE32D18-3642-4FC8-9439-DA12B76D3AC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.TaskManager", "ST.TaskManager", "{8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.TaskManager.Abstractions", "src\ST.Extensions\ST.TaskManager\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj", "{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -456,6 +460,12 @@ Global
 		{5EE32D18-3642-4FC8-9439-DA12B76D3AC5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5EE32D18-3642-4FC8-9439-DA12B76D3AC5}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{5EE32D18-3642-4FC8-9439-DA12B76D3AC5}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -532,6 +542,8 @@ Global
 		{2BB627EF-3D0E-4FCC-B018-88EF53382A8E} = {EC563E5C-D43C-436D-A40D-2D182B1594B6}
 		{375D0A44-3FFB-4A0B-A837-DA2D8C58B15B} = {EC563E5C-D43C-436D-A40D-2D182B1594B6}
 		{5EE32D18-3642-4FC8-9439-DA12B76D3AC5} = {4B6C8C28-B2EC-4EDD-B6D8-F90B125CB109}
+		{8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
+		{1F315BF2-BD4A-4D65-AF65-8105A1474B0B} = {8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

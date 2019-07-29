@@ -424,5 +424,17 @@
   "system_record_added_into": "ha sido agregado con éxito en",
   "system_data_no_item_found": "No hay ningún elemento encontrado!",
   "system_entry_updaded": "La grabación se ha actualizado",
-  "system_data_record_deleted": "El registro se ha eliminado"
+  "system_data_record_deleted": "El registro se ha eliminado",
+  "system_something_went_wrong": "Algo que no ha pasado, intenta recargar la página",
+  "iso_process_in_scope_subprocess": "Se incluye en el objetivo (Subproceso)",
+  "iso_locations_in_scope": "Incluido para el propósito",
+  "iso_scale_units_impact": "Unidades de la escala (el Impacto)",
+  "iso_scale_units_risk": "La escala de unidades (RIESGO)",
+  "iso_menu_matrix_template_common": "Matriz de plantillas",
+  "system_is_published": "Se publica",
+  "iso_risk_matrices": "Matriz de riesgos",
+  "iso_risk_click_to_preview": "Haga clic en el botón vista previa de la matriz",
+  "iso_risk_template_edit": "Edición de la plantilla",
+  "system_back": "De vuelta",
+  "iso_company_matrix": "Matriz de riesgos"
 }

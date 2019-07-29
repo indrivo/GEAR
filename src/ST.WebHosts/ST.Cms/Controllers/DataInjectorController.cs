@@ -294,6 +294,43 @@ namespace ST.Cms.Controllers
 
 
 		/// <summary>
+		/// Add new object list to entity
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> AddRangeAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			try
+			{
+				var tableManger = _dynamicService.Table(data.EntityName);
+				var list = typeof(List<>);
+				var listOfType = list.MakeGenericType(tableManger.Type);
+				var parsed = JsonConvert.DeserializeObject(data.Object, listOfType, _jsonSerializeOptions);
+				var rq = await _dynamicService.Table(data.EntityName).AddRange(parsed as IEnumerable<object>);
+				return Json(rq);
+			}
+			catch (JsonReaderException e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
+			}
+			catch (Exception e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
+			}
+		}
+
+
+		/// <summary>
 		/// Delete permanent by filters
 		/// </summary>
 		/// <returns></returns>

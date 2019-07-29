@@ -95,7 +95,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         /// <param name="obj"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static Task<ResultModel> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
+        public static Task<ResultModel<dynamic>> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
         => Task.Run(() =>
         {
             var result = new ResultModel();
@@ -103,7 +103,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             //var data = obj.ParseListObject(model);
             var req = obj.Invoke<dynamic>(MethodName.AddDataRangeWithReflection, new List<Type> { obj.Type },
                 new List<object> { model });
-            return req.Adapt<ResultModel>();
+            return req;
         });
 
         /// <summary>

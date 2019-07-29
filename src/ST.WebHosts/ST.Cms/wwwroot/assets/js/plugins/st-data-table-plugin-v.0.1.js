@@ -45,6 +45,9 @@ RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
 //								Table Export
 //------------------------------------------------------------------------------------//
 
+/*
+ * Define new prototype for TableExport
+ */
 function TableExport() { };
 TableExport.constructor = TableExport;
 TableExport.prototype.oldExportAction = function (self, e, dt, button, config) {
@@ -109,6 +112,10 @@ TableExport.prototype.newExportAction = function (e, dt, button, config) {
 //								Table Builder
 //------------------------------------------------------------------------------------//
 
+/**
+ * Define new prototype for table render
+ * @param {any} confs
+ */
 function TableBuilder(confs) {
 	this.showActionsColumn = true;
 	this.ajax = {
@@ -119,11 +126,15 @@ function TableBuilder(confs) {
 	this.configurations = {
 		tableId: undefined,
 		tableJqInstance: undefined,
-		tableJsInstance: undefined
+		tableJsInstance: undefined,
+		table: undefined
 	};
 	Object.assign(this, confs);
 };
 
+/*
+ * Constructor
+ */
 TableBuilder.constructor = TableBuilder;
 
 /*
@@ -136,6 +147,12 @@ TableBuilder.prototype.toast = new ToastNotifier();
 */
 TableBuilder.prototype.db = new DataInjector();
 
+/**
+ * Restore item
+ * @param {any} rowId
+ * @param {any} tableId
+ * @param {any} viewModelId
+ */
 TableBuilder.prototype.restoreItem = function (rowId, tableId, viewModelId) {
 	swal({
 		title: window.translate("restore_alert"),
@@ -254,6 +271,7 @@ TableBuilder.prototype.renderCell = function (row, column) {
 		return eval(column.template);
 	}
 	catch (e) {
+		console.warn(e);
 		return "";
 	}
 }
@@ -268,12 +286,17 @@ TableBuilder.prototype.renderCell = function (row, column) {
  */
 TableBuilder.prototype.getRenderRowActions = function (row, dataX) {
 	const container = this.getTableRowInlineActionButton(row, dataX)
-		//+ this.getTableRowEditActionButton(row, dataX)
+		+ this.getTableRowEditActionButton(row, dataX)
 		+ this.getTableRowDeleteRestoreActionButton(row, dataX)
 		+ this.getTableDeleteForeverActionButton(row, dataX);
 	return container;
 }
 
+/**
+ * Delete logic action table
+ * @param {any} row
+ * @param {any} dataX
+ */
 TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dataX) {
 	return `${dataX.hasDeleteRestore
 		? `${row.isDeleted
@@ -284,7 +307,11 @@ TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dat
 		: ""}`;
 };
 
-
+/**
+ * Inline edit action table
+ * @param {any} row
+ * @param {any} dataX
+ */
 TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
 	if (row.isDeleted) return "";
 	return `${dataX.hasInlineEdit
@@ -293,6 +320,11 @@ TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
 		: ``}`;
 };
 
+/**
+ * Delete forever action table
+ * @param {any} row
+ * @param {any} dataX
+ */
 TableBuilder.prototype.getTableDeleteForeverActionButton = function (row, dataX) {
 	return `${dataX.hasDeleteForever
 		? `	<a data-viewmodel="${dataX.viewmodelData.result.id
@@ -300,6 +332,11 @@ TableBuilder.prototype.getTableDeleteForeverActionButton = function (row, dataX)
 		: ``}`;
 };
 
+/**
+ * Edit with forms action table
+ * @param {any} row
+ * @param {any} dataX
+ */
 TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
 	if (row.isDeleted) return "";
 	return `${dataX.hasEditPage ? `<a class="btn btn-info btn-sm" href="${dataX.editPageLink}?itemId=${row.id
@@ -307,11 +344,17 @@ TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
 		: ``}`;
 };
 
-
+/*
+ * Delete/Restore selected rows
+*/
 TableBuilder.prototype.deleteSelectedRows = function () {
 	this.deleteSelectedRowsHandler(this);
 }
 
+/**
+ * Handler for delete/restore items
+ * @param {any} ctx
+ */
 TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 	const tableId = ctx.table().node().id;
 	if (!tableId) {
@@ -320,31 +363,63 @@ TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 	const selected = ctx.rows({ selected: true }).data();
 	const viewModelId = $(`#${tableId}`).attr("db-viewmodel");
 	if (selected.length > 0) {
-		const ids = selected.map(x => {
+		const toDeleteItems = Array.from(selected.filter(x => !x.isDeleted).map(x => {
 			return x.id;
-		});
-		const data = [];
-		for (let i = 0; i < ids.length; i++) {
-			data.push(ids[i]);
+		}));
+
+		const toRestoreItems = Array.from(selected.filter(x => x.isDeleted).map(x => {
+			return x.id;
+		}));
+
+		const promises = [];
+		if (toDeleteItems.length > 0) {
+			promises.push(this.deleteRestoreApiAsync(ctx, toDeleteItems, viewModelId, true));
 		}
-		loadAsync("/PageRender/DeleteItemsFromDynamicEntity",
-			{
-				ids: data,
-				viewModelId: viewModelId
-			},
-			"post").then(req => {
-				if (req && req.success) {
-					ctx.ajax.reload();
-					this.toast.notify({ heading: window.translate("items_deleted"), icon: "success" });
-				} else {
-					this.toast.notify({ heading: window.translate("fail_delete_items") });
-				}
-			}).catch(err => { console.warn(err) });
+
+		if (toRestoreItems.length > 0) {
+			promises.push(this.deleteRestoreApiAsync(ctx, toRestoreItems, viewModelId, false));
+		}
+
+		Promise.all(promises).then(x => {
+			ctx.ajax.reload();
+			this.toast.notify({ heading: window.translate("items_deleted"), icon: "success" });
+		}).catch(e => {
+			this.toast.notify({ heading: window.translate("fail_delete_items") });
+		});
 	} else {
 		this.toast.notify({ heading: window.translate("delete_no_selected_items"), icon: "warning" });
 	}
 };
 
+/**
+ * Delete items from api
+ * @param {any} ctx
+ * @param {any} data
+ * @param {any} viewModelId
+ * @param {any} mode
+ */
+TableBuilder.prototype.deleteRestoreApiAsync = function (ctx, data, viewModelId, mode) {
+	return new Promise((resolve, reject) => {
+		window.loadAsync("/PageRender/DeleteItemsFromDynamicEntity",
+			{
+				ids: data,
+				viewModelId: viewModelId,
+				mode: mode
+			},
+			"post").then(req => {
+				if (req && req.success) {
+					resolve();
+				} else {
+					reject();
+				}
+			}).catch(err => {
+				reject();
+				console.warn(err);
+			});
+	});
+};
+
+//Table buttons
 TableBuilder.prototype.buttons = [
 	{
 		extend: "copyHtml5",
@@ -620,16 +695,21 @@ TableBuilder.prototype.init = function (table) {
 	this.configurations.viewmodelId = viewmodelId;
 	return new Promise((resolve, reject) => {
 		loadAsync(`/PageRender/GetViewModelById?viewModelId=${viewmodelId}`).then(viewmodelData => {
-			resolve({
-				viewmodelData: viewmodelData,
-				hasEditPage: hasEditPage,
-				hasInlineEdit: hasInlineEdit,
-				hasDeleteRestore: hasDeleteRestore,
-				editPageLink: editPageLink,
-				listId: listId,
-				viewmodelId: viewmodelId,
-				hasDeleteForever: hasDeleteForever
-			});
+			this.configurations.table = viewmodelData.result.tableModel;
+			if (viewmodelData.is_success)
+				resolve({
+					viewmodelData: viewmodelData,
+					hasEditPage: hasEditPage,
+					hasInlineEdit: hasInlineEdit,
+					hasDeleteRestore: hasDeleteRestore,
+					editPageLink: editPageLink,
+					listId: listId,
+					viewmodelId: viewmodelId,
+					hasDeleteForever: hasDeleteForever
+				});
+			else {
+				reject(viewmodelData.error_keys);
+			}
 		}).catch(err => console.warn(err));
 	}).then(dataX => {
 		this.configureTableBody(dataX);

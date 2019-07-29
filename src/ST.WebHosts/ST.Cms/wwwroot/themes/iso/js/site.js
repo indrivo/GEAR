@@ -1,82 +1,272 @@
 "use strict";
 
 /************************************************
-					Customize system theme js
+			Customize system theme js
 ************************************************/
 
 const settings = JSON.parse(localStorage.getItem("settings"));
 
 const tManager = new TemplateManager();
 
-//Override hide column
+function IsoTableHeadActions() {
+	this.settings = {
+		show: true,
+		enabledOptions: {
+			add: true,
+			deleteRestore: true,
+			hiddenColumns: true,
+			rows: true
+		},
+		actions: {
+			add: {
+				class: "add_new_inline btn btn-outline-primary mr-2",
+				translate: "add"
+			}
+		},
+		customPreActions: [],
+		customPostActions: []
+	};
+}
+
+/*
+ * Constructor
+ */
+IsoTableHeadActions.prototype.constructor = IsoTableHeadActions;
+
+/*
+ * Get configurations
+ */
+IsoTableHeadActions.prototype.getConfiguration = function () {
+	return this;
+};
+
+
 $(".table")
 	.on("preInit.dt", function () {
-		const content = tManager.render("template_headListActions", "");
+		const conf = new IsoTableHeadActions().getConfiguration();
+		//Risk company matrix
+		if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
+			conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
+		}
+		const content = tManager.render("template_headListActions", conf);
 		const selector = $("div.CustomTableHeadBar");
 		selector.html(content);
+		selector.find(".add-matrix").on("click", riskMatrixCreate);
 		window.forceTranslate("div.CustomTableHeadBar");
 	});
 
-TableColumnsVisibility.prototype.modalContainer = "#hiddenColumnsModal * .modal-body";
+
+function riskMatrixCreate() {
+	const scope = this;
+	const db = new DataInjector();
+	const helper = new ST();
+	db.getAllWhereWithIncludesAsync("CompanySettings").then(x => {
+		if (x.is_success) {
+			const settings = x.result.find(p => p.parameterReference.code === 0);
+			if (!settings) {
+				return;
+			}
+			if (settings.value == 1) {
+				//template
+				const template = x.result.find(p => p.parameterReference.code === 2);
+				if (!template) {
+					return;
+				}
+				db.getByIdWithIncludesAsync("CommonRiskMatrixTemplate", template.value).then(common => {
+					if (common.is_success) {
+						const matrix = common.result;
+						matrix.id = helper.newGuid();
+						db.addAsync("CompanyRiskMatrix", matrix).then(h => {
+							if (h.is_success) {
+								const promises = [];
+								promises.push(new Promise((resolve, reject) => {
+									const filters = [{ parameter: "TemplateId", value: template.value }];
+									db.getAllWhereNoIncludesAsync("MatrixImpactDefinition", filters).then(y => {
+										if (y.is_success) {
+											if (y.result.length < parseInt(common.result.impactUnitScale))
+												reject("All the details in the template can not be added because the template has not been completely set up");
+											else
+												resolve(y);
+										} else {
+											reject("Configuration error, try contact administrator");
+										}
+									});
+								}));
+								promises.push(new Promise((resolve, reject) => {
+									const filters = [{ parameter: "MatrixId", value: template.value }];
+									db.getAllWhereNoIncludesAsync("MatrixCellValues", filters).then(y => {
+										if (y.is_success) {
+											if (y.result.length < parseInt(common.result.impactUnitScale))
+												reject("All the details in the template can not be added because the template has not been completely set up");
+											else
+												resolve(y);
+										} else {
+											reject("Configuration error, try contact administrator");
+										}
+									});
+								}));
+
+								Promise.all(promises).then(res => {
+									const addPromises = [];
+									addPromises.push(new Promise((resolve, reject) => {
+										const data = res[0].result;
+										for (let i = 0; i < data.length; i++) {
+											data[i].templateId = matrix.id;
+										}
+										db.addRangeAsync("CompanyMatrixImpactDefinition", data).then(r => {
+											if (r.result.length > 0) {
+												resolve();
+											}
+										});
+									}));
+
+									addPromises.push(new Promise((resolve, reject) => {
+										const data = res[1].result;
+										for (let i = 0; i < data.length; i++) {
+											data[i].matrixId = matrix.id;
+										}
+										db.addRangeAsync("CompanyMatrixCellValues", data).then(r => {
+											if (r.result.length > 0) {
+												resolve();
+											}
+										});
+									}));
+
+									Promise.all(addPromises).then(y => {
+										location.href = `/edit-company-matrix?templateId=${matrix.id}`;
+									}).catch(e => {
+										alert(e);
+										location.reload();
+									});
+								}).catch(e => {
+									alert(e);
+									location.reload();
+								});
+							}
+						});
+					} else {
+						console.warn(common.error_keys);
+					}
+				});
+			} else if (settings.value == 2) {
+				new TableInlineEdit().addNewHandler(scope);
+			}
+		} else {
+			console.warn(x.error_keys);
+		}
+	});
+}
 
 
-TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
-	const title = (data.targets === "no-sort") ? "#" : data.sTitle;
-	return `<div class="custom-control custom-checkbox">
+/***********************************************
+			Override table column visibility
+************************************************/
+if (typeof TableColumnsVisibility !== 'undefined') {
+
+	//Container what store column visibility control
+	TableColumnsVisibility.prototype.modalContainer = "#hiddenColumnsModal * .modal-body";
+
+	/**
+	 * Trigger handler then columns visibility are changed
+	 * @param {any} source
+	 */
+	TableColumnsVisibility.prototype.onColumnsVisibilityStateChanged = function (source) {
+		const jqSource = $(source);
+		const nodeName = source.nodeName;
+		switch (nodeName) {
+			case "INPUT": {
+				const tableIdentifier = jqSource.data("table");
+				$(tableIdentifier).DataTable().draw();
+			} break;
+			case "A": {
+				const tableIdentifier = jqSource.closest(".modal-body")
+					.find("ul")
+					.find("li:first-child")
+					.find("input")
+					.data("table");
+				$(tableIdentifier).DataTable().draw();
+			} break;
+		}
+	};
+
+	/**
+	 * Render checkbox for column visibility
+	 * @param {any} data
+	 * @param {any} id
+	 * @param {any} vis
+	 */
+	TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
+		const title = (data.targets === "no-sort") ? "#" : data.sTitle;
+		return `<div class="custom-control custom-checkbox">
             	<input type="checkbox" ${vis} data-table="${id}" id="_check_${data.idx}" class="custom-control-input vis-check" data-id="${data.idx}" required />
               <label class="custom-control-label" for="_check_${data.idx}">${title}</label>
           </div>`;
-};
+	};
 
-TableColumnsVisibility.prototype.init = function (ctx) {
-	const cols = this.getVisibility(`#${$(ctx).attr("id")}`);
-	$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
-	$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
-	$(".hidden-columns-event").attr("data-id", `#${$(ctx)[0].id}`);
-	this.registerInitEvents();
-};
+	/**
+	 * Init column visibility control
+	 * @param {any} ctx
+	 */
+	TableColumnsVisibility.prototype.init = function (ctx) {
+		const cols = this.getVisibility(`#${$(ctx).attr("id")}`);
+		$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
+		$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
+		$(".hidden-columns-event").attr("data-id", `#${$(ctx)[0].id}`);
+		this.registerInitEvents();
+	};
 
-TableColumnsVisibility.prototype.registerInitEvents = function () {
-	$('.table-search').keyup(function () {
-		const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
-		oTable.search($(this).val()).draw();
-	});
+	/*
+	 * Register events for control initialization
+	*/
+	TableColumnsVisibility.prototype.registerInitEvents = function () {
+		$('.table-search').keyup(function () {
+			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
+			oTable.search($(this).val()).draw();
+		});
 
-	//Delete multiple rows
-	$(".deleteMultipleRows").on("click", function () {
-		const cTable = $(this).closest(".card").find(".dynamic-table");
-		if (cTable) {
-			if (typeof TableBuilder !== 'undefined') {
-				new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+		//Delete multiple rows
+		$(".deleteMultipleRows").on("click", function () {
+			const cTable = $(this).closest(".card").find(".dynamic-table");
+			if (cTable) {
+				if (typeof TableBuilder !== 'undefined') {
+					new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+				}
 			}
-		}
-	});
+		});
 
-	$(".add_new_inline").on("click", function () {
-		new TableInlineEdit().addNewHandler(this);
-	});
+		$(".add_new_inline").on("click", function () {
+			new TableInlineEdit().addNewHandler(this);
+		});
 
-	//Items on page
-	$(".tablePaginationView a").on("click", function () {
-		const ctx = $(this);
-		const onPageValue = ctx.data("page");
-		const onPageText = ctx.text();
-		ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
-		const table = ctx.closest(".card").find(".dynamic-table").DataTable();
-		table.page.len(onPageValue).draw();
-	});
+		//Items on page
+		$(".tablePaginationView a").on("click", function () {
+			const ctx = $(this);
+			const onPageValue = ctx.data("page");
+			const onPageText = ctx.text();
+			ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
+			const table = ctx.closest(".card").find(".dynamic-table").DataTable();
+			table.page.len(onPageValue).draw();
+		});
 
-	//hide columns
-	$(".hidden-columns-event").click(function () {
-		new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
-		$("#hiddenColumnsModal").modal();
-	});
-};
+		//hide columns
+		$(".hidden-columns-event").click(function () {
+			new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
+			$("#hiddenColumnsModal").modal();
+		});
+	};
+}
+
+/***********************************************
+			Override TableBuilder
+************************************************/
 if (typeof TableBuilder !== 'undefined') {
 	//Override table select
 	TableBuilder.prototype.dom = '<"CustomTableHeadBar">rtip';
 	RenderTableSelect.prototype.settings.classNameText = 'no-sort';
 	RenderTableSelect.prototype.settings.select.selector = "td:not(.not-selectable):first-child .checkbox-container";
+	//Table buttons
+	TableBuilder.prototype.buttons = [];
+
 	RenderTableSelect.prototype.selectHandler = function (context) {
 		const row = $(context).closest('tr');
 		const table = row.closest("table").DataTable();
@@ -134,7 +324,6 @@ if (typeof TableBuilder !== 'undefined') {
 			: ``}`;
 	};
 
-
 	TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
 		if (row.isDeleted) return "";
 		return `${dataX.hasInlineEdit
@@ -151,7 +340,7 @@ if (typeof TableBuilder !== 'undefined') {
 			: ``}`;
 	};
 
-
+	//Rewrite actions for table
 	TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
 		if (row.isDeleted) return "";
 		return `${dataX.hasEditPage ? `<a href="${dataX.editPageLink}?itemId=${row.id
@@ -159,25 +348,39 @@ if (typeof TableBuilder !== 'undefined') {
 			: ``}`;
 	};
 
+	//Rewrite jq dt translations
 	TableBuilder.prototype.replaceTableSystemTranslations = function () {
 		const customReplace = new Array();
-		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
-		customReplace.push({ Key: "processing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
+		//customReplace.push({ Key: "sProcessing", Value: `<div class="col-md lds-dual-ring"></div>` });
+		//customReplace.push({ Key: "processing", Value: `<div class="col-md lds-dual-ring"></div>` });
 		const serialData = JSON.stringify(customReplace);
 		return serialData;
+	};
+
+	/**
+ * On table init complete
+ * @param {any} settings
+ * @param {any} json
+ */
+	TableBuilder.prototype.onInitComplete = function (settings, json) {
+		if (this.configurations.table.name === "CommonRiskMatrixTemplate" || this.configurations.table.name === "CompanyRiskMatrix") return;
+		new TableInlineEdit().addNewHandler($(settings.nTable).parent());
+		// The second argument is not required
+		this.configurations.overflowIndicator = $.Iso.OverflowIndicator($($(settings.nTable)), { trigger: 'focus' });
 	};
 }
 
 
-
-//override inline edit templates
+/***********************************************
+			Override inline edit templates
+************************************************/
 if (typeof TableInlineEdit !== 'undefined') {
 	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
 		return;
 	};
 
 	TableInlineEdit.prototype.renderActiveInlineButton = function (ctx) {
-		ctx.find("i").html("check");
+		//ctx.find("i").html("check");
 	};
 
 	//Set actions for table
@@ -197,14 +400,18 @@ if (typeof TableInlineEdit !== 'undefined') {
 	};
 
 	/**
-	 * On table init complete
-	 * @param {any} settings
-	 * @param {any} json
-	 */
-	TableBuilder.prototype.onInitComplete = function (settings, json) {
-		new TableInlineEdit().addNewHandler($("table").parent());
-	}
-
+ * On after init reference cell
+ * @param {any} el
+ * @param {any} data
+ */
+	TableInlineEdit.prototype.onAfterInitAddReferenceCell = function (el, data) {
+		const scope = this;
+		const select = $(el).find("select");
+		select.attr("class", "inline-add-event data-new form-control");
+		$(el).find("select.inline-add-event").on("change", function () {
+			scope.addNewItem($(this));
+		});
+	};
 
 	/**
  * On after init text cell
@@ -214,39 +421,55 @@ if (typeof TableInlineEdit !== 'undefined') {
 	TableInlineEdit.prototype.onAfterInitTextEditCell = function (columns, index) {
 		this.onAfterInitEditCellDefaultHandler(columns, index);
 		const columnCtx = $(columns[index]);
-		const scope = this;
 		const expandCell = columnCtx.parent();
 		expandCell.addClass("expandable-cell");
-		columnCtx.on("click", function () {
-			const pos = scope.elementOffset(this);
-			const docHeight = $(document).height();
-			const docWidth = $(document).width();
-			const hPercent = pos.top * 100 / docHeight;
-			const diffH = docHeight - pos.top;
-
-			const expandedCell = columnCtx.parent();
-			if (!expandedCell.get(0).hasAttribute("data-left")) {
-				expandCell.attr("data-left", pos.left);
-			} else {
-				pos.left = expandCell.attr("data-left");
-			}
-
-			const navBarWidth = $(".navigation").width();
-			pos.left -= navBarWidth;
-			const wPercent = pos.left * 100 / docWidth;
-			const diffW = docWidth - pos.left;
-
-			if (hPercent > 70 && hPercent < 80) {
-				expandedCell.css("top", `${pos.top - diffH}px`);
-			} else if (hPercent > 80) {
-				expandedCell.css("top", `${pos.top - diffH - 240}px`);
-			}
-
-			if (wPercent > 70) {
-				expandedCell.css("left", `${pos.left - diffW + 180}px`);
-			}
-		});
+		columnCtx.on("click", changeTextCellPosition);
 	};
+
+	/**
+ * On after init add text cell
+ * @param {any} el
+ * @param {any} data
+ */
+	TableInlineEdit.prototype.onAfterInitAddTextCell = function (el, data) {
+		el.setAttribute("class", "inline-add-event data-new form-control");
+		if (!data.allowNull) {
+			el.setAttribute("required", "required");
+		}
+		$(el).parent().on("click", changeTextCellPosition);
+		this.onAddedCellBindValidations(el);
+	};
+
+	/*
+	 * text cell position
+	 */
+	function changeTextCellPosition() {
+		const expandCell = $(this).parent();
+		const pos = new TableInlineEdit().elementOffset(this);
+		const docHeight = $(document).height();
+		const docWidth = $(document).width();
+		const hPercent = pos.top * 100 / docHeight;
+		const diffH = docHeight - pos.top;
+		const textareaWidth = $(expandCell).innerWidth();
+
+		const expandedCell = $(this).parent();
+		const navBarWidth = $(".navigation").width();
+		pos.left -= navBarWidth;
+		const wPercent = pos.left * 100 / docWidth;
+		const diffW = docWidth - pos.left;
+
+		if (hPercent > 70 && hPercent < 80) {
+			expandedCell.css("top", `${pos.top - diffH}px`);
+		} else if (hPercent > 80) {
+			expandedCell.css("top", `${pos.top - diffH - 240}px`);
+		}
+
+		if (wPercent > 70) {
+			expandedCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+		}
+	}
+
+	TableInlineEdit.prototype.defaultNotEditFieldContainer = "<div class='text-center'>-</div>";
 
 	/**
  * On row create
@@ -265,6 +488,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 		rowScope.attr("data-viewmodel", scope.configurations.viewmodelId);
 		rowScope.unbind();
 		rowScope.on("dblclick", function () {
+			new ST().clearSelectedText();
 			new TableInlineEdit().initInlineEditForRow(this);
 		});
 	};
@@ -298,13 +522,14 @@ if (typeof TableInlineEdit !== 'undefined') {
 		div.appendChild(el);
 		div.appendChild(label);
 		container.appendChild(div);
+		$(container).closest(".data-cell").addClass("text-center");
 		return container;
 	};
 
 	/**
- * Get reference edit cell
- * @param {any} conf
- */
+	 * Get reference edit cell
+	 * @param {any} conf
+	 */
 	TableInlineEdit.prototype.getReferenceEditCell = function (conf) {
 		const gScope = this;
 		const div = document.createElement("div");
@@ -318,9 +543,26 @@ if (typeof TableInlineEdit !== 'undefined') {
 		dropdown.setAttribute("data-type", "uniqueidentifier");
 		dropdown.style.display = "none";
 		dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), "");
-
-		const vEl = document.createElement("span");
-		vEl.setAttribute("class", "virtual-el-ref");
+		if (!conf.allowNull) {
+			dropdown.setAttribute("data-required", "");
+		}
+		const container = document.createElement("div");
+		container.setAttribute("class", "fire-reference-component input-group outline-control br-none inline-editing-input");
+		const el = document.createElement("input");
+		el.setAttribute("class", "form-control virtual-el-reference");
+		el.setAttribute("type", "text");
+		el.setAttribute("readonly", "");
+		container.appendChild(el);
+		const decorator = document.createElement("div");
+		decorator.classList = ["input-group-append"];
+		const grSpan = document.createElement("span");
+		grSpan.classList = ["input-group-text"];
+		const icon = document.createElement("span");
+		icon.classList = ["material-icons"];
+		icon.innerHTML = "keyboard_arrow_down";
+		grSpan.appendChild(icon);
+		decorator.appendChild(grSpan);
+		container.appendChild(decorator);
 		//Populate dropdown
 		loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
 			if (data) {
@@ -328,7 +570,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 					const entityName = data.result.entityName;
 					$.each(data.result.data, function (index, obj) {
 						if (obj.id === conf.value) {
-							vEl.innerText = obj.name;
+							el.value = obj.name;
 						}
 						dropdown.options[dropdown.options.length] = new Option(obj.name, obj.id);
 					});
@@ -339,7 +581,8 @@ if (typeof TableInlineEdit !== 'undefined') {
 							value: x.name
 						}
 					});
-					$($(div).closest("td")).on('click', function (event) {
+					$($(div).find(".fire-reference-component")).on('click', function (event) {
+						if (event.originalEvent.detail > 1) return;
 						const cellCtx = this;
 						const item = $.Iso.dynamicFilter('list',
 							event.target, items,
@@ -414,16 +657,29 @@ if (typeof TableInlineEdit !== 'undefined') {
 							const { ctx, entity, items } = arg.options;
 							//const exist = items.find(x => x.id === arg.value);
 							$(dropdown).val(arg.value);
-							gScope.onEditCellValueChanged(dropdown);
-
+							$(dropdown).trigger("change");
 							gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
 								if (x.is_success) {
-									$(ctx).find(".virtual-el-ref").html(x.result.name);
+									const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
+									//if (conf.addMode) {
+									//	const template = conf.viewModel
+									//		.tableModelFields.tableFieldConfigValues
+									//		.find(z => z.tableFieldConfigId === tId).value;
+
+									//	console.log(template);
+									//} else {
+
+									//}
+									let param = "name";
+									if (entity == "Users") {
+										param = "userName";
+									}
+
+									$(ctx).find(".virtual-el-reference").val(x.result[param]);
 								} else {
 									gScope.toast.notifyErrorList(x.error_keys);
 								}
 							});
-
 						});
 					});
 				}
@@ -432,8 +688,112 @@ if (typeof TableInlineEdit !== 'undefined') {
 		});
 
 		div.appendChild(dropdown);
-		div.appendChild(vEl);
+		div.appendChild(container);
 		return div;
+	};
+
+	/**
+	 * Get date edit cell
+	 * @param {any} data
+	 */
+	TableInlineEdit.prototype.getDateEditCell = (data) => {
+		const container = document.createElement("div");
+		container.setAttribute("class", "input-group outline-control br-none inline-editing-input");
+		const el = document.createElement("input");
+		el.setAttribute("class", "inline-update-event datepicker-control data-input form-control");
+		el.setAttribute("data-prop-id", data.propId);
+		el.setAttribute("data-id", data.cellId);
+		el.setAttribute("data-prop-name", data.propName);
+		el.setAttribute("type", "text");
+		el.setAttribute("data-entity", data.tableId);
+		el.setAttribute("data-type", "datetime");
+		el.setAttribute("value", data.value);
+		if (!data.allowNull) {
+			el.setAttribute("data-required", "");
+		}
+		container.appendChild(el);
+		const decorator = document.createElement("div");
+		decorator.classList = ["input-group-append"];
+		const grSpan = document.createElement("span");
+		grSpan.classList = ["input-group-text"];
+		const icon = document.createElement("span");
+		icon.classList = ["material-icons"];
+		icon.innerHTML = "calendar_today";
+		grSpan.appendChild(icon);
+		decorator.appendChild(grSpan);
+		container.appendChild(decorator);
+		return container;
+	};
+
+	/**
+ * On after init date cell
+ * @param {any} el
+ * @param {any} data
+ */
+	TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
+		const input = $(el).find(".inline-update-event");
+		input.get(0).setAttribute("class", "inline-add-event data-new form-control datepicker-control");
+		input.on("change", function () { })
+			.datepicker({
+				format: "dd/mm/yyyy"
+			});//.addClass("datepicker");
+		input.on("change", function () {
+			if (!this.hasAttribute("data-required")) return;
+			if ($(this).val()) {
+				$(this).parent().removeClass("cell-red");
+			} else {
+				$(this).parent().removeClass("cell-red").addClass("cell-red");
+			}
+		});
+	};
+
+	/**
+ * Validate row
+ * @param {any} context
+ */
+	TableInlineEdit.prototype.isValidNewRow = function (context) {
+		const els = context.get(0).querySelectorAll("textarea.data-new");
+		let isValid = true;
+		$.each(els, (index, el) => {
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!el.classList.contains('cell-red')) {
+						el.classList.add('cell-red')
+					}
+					isValid = false;
+				}
+			}
+		});
+
+		const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
+
+		$.each(elsDates, (index, el) => {
+			const ctx = $(el).parent();
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!ctx.hasClass('cell-red')) {
+						ctx.addClass('cell-red')
+					}
+					isValid = false;
+				}
+			}
+		});
+
+		const referenceCells = context.get(0).querySelectorAll("select.data-new");
+		$.each(referenceCells, (index, el) => {
+			if (el.hasAttribute("data-required")) {
+				const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
+				if (!el.value) {
+					if (!input.classList.contains('cell-red')) {
+						input.classList.add('cell-red');
+					}
+					isValid = false;
+				} else {
+					$(input).removeClass("cell-red");
+				}
+			}
+		});
+		return isValid;
 	};
 
 	/**
@@ -467,16 +827,17 @@ if (typeof TableInlineEdit !== 'undefined') {
 				$(cell).find("textarea.inline-add-event, input.inline-add-event").on("blur", function () {
 					scope.addNewItem($(this));
 				});
-
-				$(cell).find("select.inline-add-event").on("change", function () {
-					scope.addNewItem($(this));
-				});
 			}
 
 			row.appendChild(cell);
 		}
 		dto.attr("add-mode", "true");
-		$("tbody", dto).prepend(row);
+		const tBody = $("tbody", dto);
+		const haveEmptyRow = tBody.find(".dataTables_empty");
+		if (haveEmptyRow) {
+			$(haveEmptyRow).closest("tr").remove();
+		}
+		tBody.prepend(row);
 		this.bindEventsAfterInitInlineEdit(row);
 		return this.toggleVisibilityColumnsButton(ctx, true);
 	};
@@ -520,7 +881,12 @@ if (typeof TableInlineEdit !== 'undefined') {
 					const value = obj[parsedPropName];
 					const allowNull = fieldData.allowNull;
 					let container = value;
-					const data = { cellId, tableId, propId, value, propName, allowNull };
+					const data = {
+						cellId, tableId, propId, value,
+						propName, allowNull,
+						addMode: false,
+						viewModel: viewModel.result
+					};
 					switch (fieldData.dataType) {
 						case "nvarchar":
 							{
@@ -703,12 +1069,14 @@ if (typeof TableInlineEdit !== 'undefined') {
 				$(redraw.row(index).nodes()).on("dblclick", function () {
 					new TableInlineEdit().initInlineEditForRow(this);
 				});
+				$.Iso.OverflowIndicator(htTable, { trigger: 'focus' });
 			});
 
 		}).catch(err => {
 			console.warn(err);
 		});
 	};
+
 
 	//bind events after inline edit was started for row
 	TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function (row) {
@@ -719,33 +1087,193 @@ if (typeof TableInlineEdit !== 'undefined') {
 		const ctx = $(row);
 		ctx.unbind();
 		if (!ctx.get(0).hasAttribute("isnew")) {
-			row.on("dblclick", function () {
-				//$(this).unbind();
+			row.on("dblclick", function (e) {
+				e.preventDefault();
+				new ST().clearSelectedText();
+				$(this).unbind();
 				new TableInlineEdit().completeInlineEditForRow(this);
 			});
 		}
 	};
+
+	/**
+	 * Many to many control
+	 * @param {any} data
+	 */
+	TableInlineEdit.prototype.initManyToManyControl = function (data) {
+		const { viewModelConfigurations, columnCtx, cellId } = data;
+		const scope = this;
+		const mCtx = columnCtx.closest("td");
+		const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
+			= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
+		mCtx.on("click", function () {
+			if (event.originalEvent.detail > 1) return;
+			const promiseArr = [];
+			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
+			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
+				[{ parameter: sourceSelfParamName.value, value: cellId }]));
+			//get data
+			Promise.all(promiseArr).then(pResult => {
+				const rAll = pResult[0];
+				const rSelected = pResult[1];
+				if (!rAll.is_success || !rSelected.is_success) {
+					return scope.displayNotification({ heading: window.translate("system_something_went_wrong") });
+				}
+
+				const dItems = rAll.result.map(x => {
+					const e = rSelected.result.find(y =>
+						y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
+					const o = {
+						id: x.id,
+						value: x.name,
+						checked: e ? true : false
+					};
+					return o;
+				});
+
+				const multiSelectItem = $.Iso.dynamicFilter("multi-select",
+					mCtx, dItems, null,
+					{
+						sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName,
+						recordId: cellId,
+						searchBarPlaceholder: window.translate("system_search")
+					});
+
+				$(multiSelectItem.container).on("selectValueChange", (event, arg) => {
+					const { id, checked } = arg.value.changedValue;
+					const { recordId, sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } = arg.options;
+					if (checked) {
+						const addO = {};
+						addO[sourceSelfParamName.value] = recordId;
+						addO[sourceRefParamName.value] = id;
+						scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
+							if (addResult.is_success) {
+								scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+							} else {
+								scope.toast.notifyErrorList(addResult.error_keys);
+							}
+						}).catch(err => {
+							console.warn(err);
+						});
+					} else {
+						const deleteFilters = [
+							{ parameter: sourceSelfParamName.value, value: recordId },
+							{ parameter: sourceRefParamName.value, value: id }
+						];
+						scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(deleteResult => {
+							if (deleteResult.is_success) {
+								scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+							} else {
+								scope.toast.notifyErrorList(deleteResult.error_keys);
+							}
+						}).catch(err => err);
+					}
+				});
+			}).catch(err => {
+				console.warn(err);
+			});
+		});
+	};
 }
 
+/***********************************************
+			Override notificator
+************************************************/
+if (typeof Notificator !== 'undefined') {
+	//override notification populate container
+	Notificator.prototype.addNewNotificationToContainer = function (notification) {
+		const _ = $("#notificationAlarm");
+		if (!_.hasClass("notification"))
+			_.addClass("notification");
+		const template = this.createNotificationBodyContainer(notification);
+		$("#notificationList").prepend(template);
+		this.registerOpenNotificationEvent();
+	}
 
-//override notification populate container
-Notificator.prototype.addNewNotificationToContainer = function (notification) {
-	const _ = $("#notificationAlarm");
-	if (!_.hasClass("notification"))
-		_.addClass("notification");
-	const template = this.createNotificationBodyContainer(notification);
-	$("#notificationList").prepend(template);
-	this.registerOpenNotificationEvent();
-}
-
-Notificator.prototype.createNotificationBodyContainer = function (n) {
-	const block = `
+	Notificator.prototype.createNotificationBodyContainer = function (n) {
+		const block = `
 		<a data-notification-id="${n.id}" href="#" class="notification-item dropdown-item py-3 border-bottom">
             <p><small>${n.subject}</small></p>
             <p class="text-muted mb-1"><small>${n.content}</small></p>
             <p class="text-muted mb-1"><small>${n.created}</small></p>
 		</a>`;
-	return block;
+		return block;
+	}
+}
+
+/***********************************************
+			Override DataInjector
+************************************************/
+if (typeof DataInjector !== 'undefined') {
+	/**
+	 * Add async
+	 * @param {any} entityName
+	 * @param {any} object
+	 */
+	DataInjector.prototype.addAsync = function (entityName, object) {
+		const promises = [];
+		const entityCodeFormats = [
+			{ name: "Objective", code: 1000, propName: "Code" },
+			{ name: "Asset", code: 1001, propName: "Code" },
+			{ name: "Risk", code: 1002, propName: "Code" },
+			{ name: "KPI", code: 1003, propName: "Code" },
+			{ name: "InternalAudit", code: 1004, propName: "Code" },
+			{ name: "Meeting", code: 1005, propName: "Code" },
+			{ name: "NomInterestedParty", code: 1006, propName: "Code" },
+			{ name: "NomLocation", code: 1007, propName: "Code" }
+		];
+		const search = entityCodeFormats.find(x => x.name.toLowerCase() === entityName.toLowerCase());
+		if (search) {
+			const pr = new Promise((resolve, reject) => {
+				this.getAllWhereWithIncludesAsync("CompanySettings").then(x => {
+					if (x.is_success) {
+						const config = x.result.find(y => y.parameterReference.code === search.code);
+						if (config) {
+							let format = config.value;
+							const d = new Date();
+							format = format.replace(/{Year}/g, d.getFullYear());
+							format = format.replace(/{Month}/g, d.getMonth() < 10 ? `0${d.getMonth()}` : d.getMonth());
+							format = format.replace(/{Day}/g, d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
+							this.countAsync(entityName).then(g => {
+								if (g.is_success) {
+									format = format.replace(/{NextIndex}/g, g.result + 1);
+									object[search.propName] = format;
+									resolve();
+								}
+							});
+						} else {
+							reject(window.translate("iso_code_format_not_configured"));
+						}
+					}
+				});
+			});
+			promises.push(pr);
+		}
+
+		return new Promise((resolve, reject) => {
+			Promise.all(promises).then(x => {
+				const dataParams = JSON.stringify({
+					entityName: entityName,
+					object: JSON.stringify(object)
+				});
+				$.ajax({
+					url: `/api/DataInjector/AddAsync`,
+					data: dataParams,
+					method: "post",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					success: function (data) {
+						resolve(data);
+					},
+					error: function (error) {
+						reject(error);
+					}
+				});
+			}).catch(e => {
+				new ToastNotifier().notify({ heading: e });
+			});
+		});
+	};
 }
 
 function getIdentifier(idt) {
@@ -772,6 +1300,10 @@ function getIdentifier(idt) {
 function makeMenuActive(target) {
 	if (target) {
 		const last = target.closest("ul").closest("li");
+		const a = last.find("a:first-child span.nav-item-text").first();
+		if (a.text()) {
+			$(".breadcrumb").prepend(`<li class="breadcrumb-item">${a.text()}</li>`);
+		}
 		last.addClass("open");
 		if (target.closest("nav").length !== 0)
 			makeMenuActive(last);
@@ -824,36 +1356,19 @@ $(document).ready(function () {
 				host: location.origin
 			});
 			renderMenuContainer.html(content);
+			window.forceTranslate("#left-nav-bar");
 			let route = location.href;
 			if (route[route.length - 1] === "#") {
 				route = route.substr(0, route.length - 1);
 			}
-			renderMenuContainer.find(`a[href='${route}']`)
-				.parent()
+			const activeMenu = renderMenuContainer.find(`a[href='${route}']`);
+			activeMenu.parent()
 				.addClass("active");
-			makeMenuActive(renderMenuContainer.find(`a[href='${route}']`));
-			window.forceTranslate("#left-nav-bar");
-			const $body = $("body");
-			$body.delegate('.navigation li:has(.sub-nav) > a', 'click', function () {
-				/*$('.navigation li').removeClass('open');*/
-				$(this).siblings('.sub-nav').slideToggle();
-				$(this).parent().toggleClass('open');
-				return false;
-			});
-			$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
-				if ($(".sidebar").hasClass("collapsed")) {
-					const $menuItem = $(this),
-						$submenuWrapper = $('> .sub-nav', $menuItem);
-					// grab the menu item's position relative to its positioned parent
-					const menuItemPos = $menuItem.position();
-
-					// place the submenu in the correct position relevant to the menu item
-					$submenuWrapper.css({
-						top: menuItemPos.top,
-						left: menuItemPos.left + $menuItem.outerWidth()
-					});
-				}
-			});
+			$(".breadcrumb").html(null).prepend(`<li class="breadcrumb-item active" aria-current="page">${activeMenu.find("span.nav-item-text").text()}</li>`);
+			makeMenuActive(activeMenu);
+			if (history.length > 2) {
+				$("#history_back").css("display", "block");
+			}
 		}
 	});
 
@@ -915,81 +1430,6 @@ $(document).ready(function () {
 });
 
 
-
-
-
-
-
-
-/***********************************************
- 	Rewrite add addAsync for code formats
-************************************************/
-
-DataInjector.prototype.addAsync = function (entityName, object) {
-	const promises = [];
-	const entityCodeFormats = [
-		{ name: "Objective", code: 1000, propName: "Code" },
-		{ name: "Asset", code: 1001, propName: "Code" },
-		{ name: "Risk", code: 1002, propName: "Code" },
-		{ name: "KPI", code: 1003, propName: "Code" },
-		{ name: "InternalAudit", code: 1004, propName: "Code" },
-		{ name: "Meeting", code: 1005, propName: "Code" },
-		{ name: "NomInterestedParty", code: 1006, propName: "Code" },
-		{ name: "NomLocation", code: 1007, propName: "Code" }
-	];
-	const search = entityCodeFormats.find(x => x.name.toLowerCase() === entityName.toLowerCase());
-	if (search) {
-		const pr = new Promise((resolve, reject) => {
-			this.getAllWhereWithIncludesAsync("CompanySettings").then(x => {
-				if (x.is_success) {
-					const config = x.result.find(y => y.parameterReference.code === search.code);
-					if (config) {
-						let format = config.value;
-						const d = new Date();
-						format = format.replace(/{Year}/g, d.getFullYear());
-						format = format.replace(/{Month}/g, d.getMonth() < 10 ? `0${d.getMonth()}` : d.getMonth());
-						format = format.replace(/{Day}/g, d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
-						this.countAsync(entityName).then(g => {
-							if (g.is_success) {
-								format = format.replace(/{NextIndex}/g, g.result + 1);
-								object[search.propName] = format;
-								resolve();
-							}
-						});
-					} else {
-						reject(window.translate("iso_code_format_not_configured"));
-					}
-				}
-			});
-		});
-		promises.push(pr);
-	}
-
-	return new Promise((resolve, reject) => {
-		Promise.all(promises).then(x => {
-			const dataParams = JSON.stringify({
-				entityName: entityName,
-				object: JSON.stringify(object)
-			});
-			$.ajax({
-				url: `/api/DataInjector/AddAsync`,
-				data: dataParams,
-				method: "post",
-				contentType: "application/json; charset=utf-8",
-				dataType: "json",
-				success: function (data) {
-					resolve(data);
-				},
-				error: function (error) {
-					reject(error);
-				}
-			});
-		}).catch(e => {
-			new ToastNotifier().notify({ heading: e });
-		});
-	});
-};
-
 /************************************************
 					End Custom js
 ************************************************/
@@ -997,7 +1437,7 @@ DataInjector.prototype.addAsync = function (entityName, object) {
 var PreLoader;
 
 $(window).on("load", function () {
-	$('.loader-wrapper').not('.incomponent').fadeOut(600, function () {
+	$('.loader-wrapper').not('.incomponent').fadeOut(1000, function () {
 		PreLoader = $(this).detach();
 	});
 });
@@ -1091,9 +1531,23 @@ $(window).on("load", function () {
 		$.fn.setAsideMode();
 	}
 
+
+    /************************************************
+     Sidebar Nav Accordion
+     ************************************************/
+	$body.on('click', '.navigation li:has(.sub-nav) > a', function () {
+		/*$('.navigation li').removeClass('open');*/
+		$(this).siblings('.sub-nav').slideToggle();
+		$(this).parent().toggleClass('open');
+		return false;
+	});
+
+
+    /************************************************
+     Sidebar Colapsed state submenu position
+     ************************************************/
 	$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
 		if ($(".sidebar").hasClass("collapsed")) {
-			alert();
 			const $menuItem = $(this),
 				$submenuWrapper = $('> .sub-nav', $menuItem);
 			// grab the menu item's position relative to its positioned parent
@@ -1125,11 +1579,13 @@ $(window).on("load", function () {
 		var dataContent = $(this).attr('data-content');
 		var dataStyle = $(this).attr('data-style');
 
+
 		if ($('.toast.' + dataAlignment + '-' + dataPlacement).length) {
 			$('.toast.' + dataAlignment + '-' + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
 		} else {
 			$body.append('<div class="toast ' + dataAlignment + '-' + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
 		}
+
 	});
 
 
@@ -1266,17 +1722,3 @@ function toggleFullScreen() {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

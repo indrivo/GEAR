@@ -424,5 +424,17 @@
   "system_record_added_into": "is met succes toegevoegd in",
   "system_data_no_item_found": "Geen item gevonden!",
   "system_entry_updaded": "Het record is bijgewerkt",
-  "system_data_record_deleted": "De record is verwijderd"
+  "system_data_record_deleted": "De record is verwijderd",
+  "system_something_went_wrong": "Er is iets niet goed gegaan, probeer het opnieuw laden van de pagina",
+  "iso_process_in_scope_subprocess": "Inbegrepen in het doel (Subproces)",
+  "iso_locations_in_scope": "Opgenomen voor het doel",
+  "iso_scale_units_impact": "Eenheden van de schaal (de Impact)",
+  "iso_scale_units_risk": "Schaal eenheden (RISICO -)",
+  "iso_menu_matrix_template_common": "Matrix-sjablonen",
+  "system_is_published": "Gepubliceerd",
+  "iso_risk_matrices": "Risico matrix",
+  "iso_risk_click_to_preview": "Klik op de knop om een voorbeeld van de matrix",
+  "iso_risk_template_edit": "Het bewerken van de sjabloon",
+  "system_back": "Terug",
+  "iso_company_matrix": "Risico matrix"
 }

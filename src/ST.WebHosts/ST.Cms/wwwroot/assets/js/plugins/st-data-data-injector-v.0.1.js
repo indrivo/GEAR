@@ -129,12 +129,6 @@ DataInjector.prototype.GetByIdWithInclude = function (table, itemId) {
 
 
 
-
-
-
-
-
-
 //------------------------------------Async-------------------------------------//
 
 /**
@@ -177,6 +171,34 @@ DataInjector.prototype.addAsync = function (entityName, object) {
 		});
 		$.ajax({
 			url: `/api/DataInjector/AddAsync`,
+			data: dataParams,
+			method: "post",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+};
+
+
+/**
+ * Add new row to entity in async mode 
+ * @param {any} table
+ * @param {any} object
+ */
+DataInjector.prototype.addRangeAsync = function (entityName, objectList) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			object: JSON.stringify(objectList)
+		});
+		$.ajax({
+			url: `/api/DataInjector/AddRangeAsync`,
 			data: dataParams,
 			method: "post",
 			contentType: "application/json; charset=utf-8",
@@ -251,7 +273,7 @@ DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters
  * @param {any} entityName
  * @param {any} filters
  */
-DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters) {
+DataInjector.prototype.deleteWhereAsync = function (entityName, filters) {
 	return new Promise((resolve, reject) => {
 		const dataParams = JSON.stringify({
 			entityName: entityName,

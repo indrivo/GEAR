@@ -134,6 +134,7 @@ ToastNotifier.prototype.notify = (conf) => {
  * @param {any} arr
  */
 ToastNotifier.prototype.notifyErrorList = function (arr) {
+	if (!arr || arr.length == 0) return;
 	for (let i = 0; i < arr.length; i++) {
 		this.notify({ heading: "Error", text: arr[i].message });
 	}
@@ -239,7 +240,7 @@ window.translations = function () {
 		for (let key in trans) {
 			round[key] = trans[key];
 			index++;
-			if (index % 200 == 0) {
+			if (index % 100 == 0) {
 				localStorage.setItem(`translations_${step}`, JSON.stringify(round));
 				round = {};
 				step++;
@@ -1140,6 +1141,29 @@ ST.prototype.newGuid = function () {
 	}
 	return result;
 };
+
+/*
+ * Remove selected text
+*/
+ST.prototype.clearSelectedText = function () {
+	if (window.getSelection)
+		window.getSelection().removeAllRanges();
+	else if (document.selection)
+		document.selection.empty();
+};
+
+/**
+ * Rgb to hex
+ * @param {any} color
+ */
+ST.prototype.rgbToHex = function (color) {
+	if (!color) return "";
+	var bg = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	function hex(x) {
+		return ("0" + parseInt(x).toString(16)).slice(-2);
+	}
+	return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
+}
 
 
 

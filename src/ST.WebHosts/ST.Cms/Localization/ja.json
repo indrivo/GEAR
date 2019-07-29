@@ -424,5 +424,17 @@
   "system_record_added_into": "して追加され",
   "system_data_no_item_found": "No項目のかって？",
   "system_entry_updaded": "の記録を更新しました",
-  "system_data_record_deleted": "記録を削除いたしました"
+  "system_data_record_deleted": "記録を削除いたしました",
+  "system_something_went_wrong": "何かいない、ブラウザで表示し",
+  "iso_process_in_scope_subprocess": "対象になるの(サブプロセス)",
+  "iso_locations_in_scope": "付属のための目的",
+  "iso_scale_units_impact": "単位の規模の影響)",
+  "iso_scale_units_risk": "規模ユニット(リスク)",
+  "iso_menu_matrix_template_common": "マトリクステンプレート",
+  "system_is_published": "公開",
+  "iso_risk_matrices": "リスクマトリクス",
+  "iso_risk_click_to_preview": "ボタンをクリックしビットマトリクス",
+  "iso_risk_template_edit": "テンプレートの編集",
+  "system_back": "裏",
+  "iso_company_matrix": "リスクマトリクス"
 }

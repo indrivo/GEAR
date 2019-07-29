@@ -424,5 +424,17 @@
   "system_record_added_into": "έχει προστεθεί με επιτυχία στο",
   "system_data_no_item_found": "Κανένα στοιχείο που βρέθηκαν!",
   "system_entry_updaded": "Η εγγραφή έχει ενημερωθεί",
-  "system_data_record_deleted": "Η εγγραφή έχει διαγραφεί"
+  "system_data_record_deleted": "Η εγγραφή έχει διαγραφεί",
+  "system_something_went_wrong": "Κάτι δεν έχει πάει, δοκιμάστε να φορτώσετε ξανά τη σελίδα",
+  "iso_process_in_scope_subprocess": "Περιλαμβάνεται στο στόχο (Подпроцесс)",
+  "iso_locations_in_scope": "Περιλαμβάνονται για το σκοπό",
+  "iso_scale_units_impact": "Μονάδες της κλίμακας (ο Αντίκτυπος)",
+  "iso_scale_units_risk": "Πίνακας μονάδων (ο ΚΊΝΔΥΝΟΣ)",
+  "iso_menu_matrix_template_common": "Matrix πρότυπα",
+  "system_is_published": "Δημοσιεύεται",
+  "iso_risk_matrices": "Η μήτρα των κινδύνων",
+  "iso_risk_click_to_preview": "Κάντε κλικ στο κουμπί για να δείτε matrix",
+  "iso_risk_template_edit": "Επεξεργασία προτύπου",
+  "system_back": "Πίσω",
+  "iso_company_matrix": "Η μήτρα των κινδύνων"
 }

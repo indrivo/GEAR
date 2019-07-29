@@ -168,7 +168,6 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 	const dTable = context.closest("table").DataTable();
 	const rowContext = context.closest("tr");
 	const entityName = rowContext.attr("entityName");
-	console.log(rowContext);
 	const isValid = this.isValidNewRow(rowContext);
 	if (!isValid) {
 		return this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
@@ -275,6 +274,13 @@ TableInlineEdit.prototype.onGetNewAddCell = function (cell) {
  * @param {*} cell 
  */
 TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
+	if (!column.config) {
+		cell.innerHTML = this.defaultNotEditFieldContainer;
+		return {
+			cell: cell,
+			entityName: ""
+		};
+	}
 	if (!column.config.column.tableModelFields) {
 		cell.innerHTML = this.defaultNotEditFieldContainer;
 		return {
@@ -291,14 +297,20 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 	const propName = column.config.column.tableModelFields.name;
 	const propId = column.config.column.tableModelFields.id;
 	const value = "";
-	const data = { tableId, entityName, propId, propName, allowNull, dataType, value };
+	const data = {
+		tableId, entityName,
+		propId,
+		propName, allowNull,
+		dataType, value,
+		addMode: true, viewModel: column.config.column
+	};
 	//create ui container element by field data type
 	switch (dataType) {
 		case "nvarchar":
 			{
 				const el = this.getTextEditCell(data);
-				this.onAfterInitAddTextCell(el, data);
 				cellContent.appendChild(el);
+				this.onAfterInitAddTextCell(el, data);
 			}
 			break;
 		case "int32":
@@ -662,6 +674,7 @@ TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function (row) {
  */
 TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 	const targetCtx = $(target);
+	if (!targetCtx.hasClass("inline-update-event")) return;
 	const rowId = targetCtx.attr("data-id");
 	const entityId = targetCtx.attr("data-entity");
 	const propertyId = targetCtx.attr("data-prop-id");
@@ -792,7 +805,7 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 				const value = obj[parsedPropName];
 				const allowNull = fieldData.allowNull;
 				let container = value;
-				const data = { cellId, tableId, propId, value, propName, allowNull };
+				const data = { cellId, tableId, propId, value, propName, allowNull, addMode: false, viewModel: viewModel.result };
 				switch (fieldData.dataType) {
 					case "nvarchar":
 						{
@@ -877,70 +890,7 @@ TableInlineEdit.prototype.initManyToManyControl = function (data) {
 	const mCtx = columnCtx.closest("td");
 	const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
 		= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
-	mCtx.on("click", function () {
-		const promiseArr = [];
-		promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
-		promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
-			[{ parameter: sourceSelfParamName.value, value: cellId }]));
-		//get data
-		Promise.all(promiseArr).then(pResult => {
-			const rAll = pResult[0];
-			const rSelected = pResult[1];
-			if (!rAll.is_success || !rSelected.is_success) {
-				return scope.displayNotification({ heading: "Fail get data" });
-			}
-			const dItems = rAll.result.map(x => {
-				const e = rSelected.result.find(y =>
-					y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
-				const o = {
-					id: x.id,
-					value: x.name,
-					checked: e ? true : false
-				};
-				return o;
-			});
-			const multiSelectItem = $.Iso.DynamicFilter("multi-select",
-				mCtx, dItems,
-				{
-					sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName,
-					recordId: cellId,
-					searchBarPlaceholder: window.translate("system_search")
-				});
-
-			$(multiSelectItem.dynamicSelect).on("filterValueChange", (event, arg) => {
-				const { id, checked } = arg.changedValue;
-				const { recordId, sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } = arg.options;
-				if (checked) {
-					const addO = {};
-					addO[sourceSelfParamName.value] = recordId;
-					addO[sourceRefParamName.value] = id;
-					scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
-						if (addResult.is_success) {
-							scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
-						} else {
-							scope.toast.notifyErrorList(addResult.error_keys);
-						}
-					}).catch(err => {
-						console.warn(err);
-					});
-				} else {
-					const deleteFilters = [
-						{ parameter: sourceSelfParamName.value, value: recordId },
-						{ parameter: sourceRefParamName.value, value: id }
-					];
-					scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(deleteResult => {
-						if (deleteResult.is_success) {
-							scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
-						} else {
-							scope.toast.notifyErrorList(deleteResult.error_keys);
-						}
-					}).catch(err => err);
-				}
-			});
-		}).catch(err => {
-			console.warn(err);
-		});
-	});
+	//TODO: create default component for set many to many
 };
 
 /**
@@ -1159,5 +1109,6 @@ TableInlineEdit.prototype.elementOffset = function (el) {
 	var rect = el.getBoundingClientRect(),
 		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
 		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-	return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+	console.log({ top: rect.top + scrollTop, left: rect.left + scrollLeft });
+	return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
 };

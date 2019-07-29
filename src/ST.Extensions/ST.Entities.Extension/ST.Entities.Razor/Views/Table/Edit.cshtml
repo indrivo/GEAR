@@ -102,11 +102,13 @@
 			new UrlTagHelperViewModel
 			{
 				ButtonName = "Add view model",
+                AspAction = null,
 				Description = "New view model will be added.",
 				HtmlAttributes = new List<HtmlAttribute>
 				{
 					new HtmlAttribute("Id", "addViewModel")
-				}
+				},
+                AspController = null
 			}
 		},
 		HasActions = true,

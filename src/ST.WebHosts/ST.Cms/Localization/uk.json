@@ -424,5 +424,17 @@
   "system_record_added_into": "успішно додано в",
   "system_data_no_item_found": "Елемент не знайдений!",
   "system_entry_updaded": "Запис була оновлена",
-  "system_data_record_deleted": "Запис була видалена"
+  "system_data_record_deleted": "Запис була видалена",
+  "system_something_went_wrong": "Щось не пішов, спробуйте перезавантажити сторінку",
+  "iso_process_in_scope_subprocess": "Включено в ціль (Підпроцес)",
+  "iso_locations_in_scope": "В комплекті до мети",
+  "iso_scale_units_impact": "Одиниці масштабу (Віддачею)",
+  "iso_scale_units_risk": "Шкала одиниць (РИЗИК)",
+  "iso_menu_matrix_template_common": "Шаблони матриці ",
+  "system_is_published": "Опубліковано",
+  "iso_risk_matrices": "Матриця ризиків",
+  "iso_risk_click_to_preview": "Натисніть на кнопку для попереднього перегляду Матриці",
+  "iso_risk_template_edit": "Редагування шаблону",
+  "system_back": "Тому",
+  "iso_company_matrix": "Матриця ризиків"
 }

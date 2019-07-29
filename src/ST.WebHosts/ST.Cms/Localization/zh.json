@@ -424,5 +424,17 @@
   "system_record_added_into": "已经成功地加入",
   "system_data_no_item_found": "没有项目的发现！",
   "system_entry_updaded": "本记录的更新",
-  "system_data_record_deleted": "记录被删除了"
+  "system_data_record_deleted": "记录被删除了",
+  "system_something_went_wrong": "东西已经不见了，尝试重新载入页面",
+  "iso_process_in_scope_subprocess": "包括在目标(子流程)",
+  "iso_locations_in_scope": "包括目",
+  "iso_scale_units_impact": "单元的规模(的影响)",
+  "iso_scale_units_risk": "规模的单位(风险)",
+  "iso_menu_matrix_template_common": "矩阵模板",
+  "system_is_published": "发布",
+  "iso_risk_matrices": "风险矩阵",
+  "iso_risk_click_to_preview": "点击按钮预览矩阵",
+  "iso_risk_template_edit": "编辑模板",
+  "system_back": "回",
+  "iso_company_matrix": "风险矩阵"
 }

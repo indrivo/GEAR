@@ -28,7 +28,14 @@ namespace ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
         /// <summary>
         /// Url
         /// </summary>
-        public string Url => $"/{AspController}/{AspAction}";
+        public string Url
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(AspAction) || string.IsNullOrEmpty(AspController)) return "#";
+                return $"/{AspController}/{AspAction}";
+            }
+        }
 
         /// <summary>
         /// Html attributes
