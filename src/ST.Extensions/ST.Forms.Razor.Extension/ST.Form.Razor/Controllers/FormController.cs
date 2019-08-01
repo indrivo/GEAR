@@ -30,7 +30,7 @@ using ST.Forms.Abstractions;
 using ST.Forms.Abstractions.Models.FormModels;
 using ST.Forms.Abstractions.ViewModels.FormViewModels;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using Settings = ST.Core.Settings;
 
 namespace ST.Forms.Razor.Controllers

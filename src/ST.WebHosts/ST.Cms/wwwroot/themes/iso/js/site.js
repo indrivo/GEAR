@@ -1397,34 +1397,7 @@ $(document).ready(function () {
 		});
 	});
 
-	//Emails promise
-	var emailPromise = new Promise((resolve, reject) => {
-		const notificator = new Notificator();
-		const response = notificator.getFolders();
-		if (response) resolve(response);
-	});
-
-	emailPromise.then(response => {
-		if (response.is_success) {
-			var folders = response.result.values;
-			const f = folders.find((e) => e.Name === "Inbox");
-			const uri = `/Email?folderId=${f.Id}`;
-			$("#SeeAllEmails").attr("href", uri);
-
-			const content = tManager.render("template_folders_layout.html", folders);
-			var m = $(".notification-items");
-			m.html(content);
-			$("#right_menu").html(content);
-			m.find("a").on("click", function () {
-				const folderId = $(this).attr("folderid");
-				if (folderId != undefined) {
-					window.location.href = `/Email?folderId=${folderId}`;
-				}
-			});
-		}
-	});
-
-	Promise.all([loadMenusPromise, localizationPromise, emailPromise]).then(function (values) {
+	Promise.all([loadMenusPromise, localizationPromise]).then(function (values) {
 		window.forceTranslate();
 	});
 });

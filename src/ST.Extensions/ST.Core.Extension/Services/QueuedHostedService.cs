@@ -20,7 +20,7 @@ namespace ST.Core.Services
 
         public IBackgroundTaskQueue TaskQueue { get; }
 
-        protected async override Task ExecuteAsync(
+        protected override async Task ExecuteAsync(
             CancellationToken cancellationToken)
         {
             _logger.LogInformation("Queued Hosted Service is starting.");

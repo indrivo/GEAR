@@ -331,7 +331,6 @@ window.forceTranslate = function (selector = null) {
 $(document).ready(function () {
 	if (location.href.indexOf("Account/Login") !== -1) return;
 	if (typeof signalR === 'undefined') return;
-	const notificator = new Notificator();
 	notificator.getCurrentUser().then(user => {
 		initExternalConnections(user);
 	}).catch(err => {
@@ -389,11 +388,7 @@ function initExternalConnections(user) {
 			loadNotifications();
 		});
 
-		var loadUserEmails = new Promise((resolve, reject) => {
-			loadEmails();
-		});
-
-		Promise.all([loadUserNotifications, loadUserEmails]).then(function (values) {
+		Promise.all([loadUserNotifications]).then(function (values) {
 			$("#clearNotificationsEvent").on("click",
 				function () {
 					$("#notificationList").html(null);
@@ -406,98 +401,13 @@ function initExternalConnections(user) {
 };
 
 /**
- * Template creator for email
- * @param {any} arr
- * @param {any} userId
- * @param {any} emailnotId
- * @param {any} d
- */
-function CreateEmailNotification(arr, userId, emailNotId, d = null) {
-	const date = d != null ? d : new Date();
-	let hours = `${date.getHours()}:${date.getMinutes()}`;
-
-	const header = `
-		<div class="user-img">
-			<img src="/users/getimage?id=${userId}" alt="${arr[2]}" class="img-circle">
-			<span class="profile-status online pull-right"></span>
-		</div>`;
-	const content = `
-		<div class="mail-contnet">
-			<h5>${arr[3]}</h5>
-			<span class="mail-desc">${arr[0]}</span>
-			<span class="time">${hours}</span>
-		</div>`;
-	const newEmailNotification = `<a href='/email/getmessagebyid?id=${emailNotId}'>${header}${content}</a>`;
-	return newEmailNotification;
-}
-
-/**
  * Show notifications on page load
  */
 function loadNotifications() {
-	const notificator = new Notificator();
 	notificator.getAllNotifications().then(notificationList => {
 		if (notificationList.is_success) {
 			for (let notification in notificationList.result) {
 				notificator.addNewNotificationToContainer(notificationList.result[notification]);
-			}
-		}
-	});
-}
-
-
-function loadEmails() {
-	const notificator = new Notificator();
-	const st = new ST();
-	var m = $(".notification-items");
-	const response = notificator.getFolders();
-	if (response != null) {
-		if (response.is_success) {
-			var folders = response.result.values;
-			const f = folders.find((e) => e.Name === "Inbox");
-			emailNotifications(f.Id);
-			const uri = `/Email?folderId=${f.Id}`;
-			$("#SeeAllEmails").attr("href", uri);
-			Promise.all([st.getTemplate("folders_layout.html")])
-				.then(function (values) {
-					$.templates("items", values[0]);
-					const content = $.render["items"](folders);
-					m.html(content);
-					$("#right_menu").html(content);
-					m.find("a").on("click", function () {
-						const folderId = $(this).attr("folderid");
-						if (folderId != undefined) {
-							window.location.href = `/Email?folderId=${folderId}`;
-						}
-					});
-				})
-				.catch(function (err) {
-					console.log(err);
-				});
-		}
-	}
-}
-
-/**
- * Show email notifications
- * @param {any} folderId
- */
-function emailNotifications(folderId) {
-	const notificator = new Notificator();
-	notificator.getUnreadMessages(folderId).then(data => {
-		if (data) {
-			if (data.is_success) {
-				const all = data.result.notifications.values;
-				for (const e in all) {
-					const arr = [all[e].Subject, all[e].Message, all[e].Author.Email, all[e].Author.UserName];
-
-					const userId = all[e].Author.Id;
-					const create = CreateEmailNotification(arr, userId, all[e].Id, all[e].Created);
-					$("#emailNotificationsContent").prepend(create);
-					const count = $("#emailNotificationsContent").find("a").length;
-					$("#emailNotificationsCounter").html(count);
-				}
-				if (all.length > 0) $("#notificationEmailAlarm").show();
 			}
 		}
 	});
@@ -518,7 +428,9 @@ $(document).ready(function () {
 });
 
 
-function Notificator() { }
+function Notificator() {
+	this.user = null;
+}
 
 /**
  * Constructor
@@ -568,7 +480,7 @@ Notificator.prototype.openNotificationHandler = function () {
 	if (!notId) {
 		return;
 	}
-	var notContext = new Notificator();
+	const notContext = new Notificator();
 	const res = notContext.getNotificationById(notId);
 	if (res.is_success) {
 		Swal.fire(
@@ -602,51 +514,6 @@ Notificator.prototype.sendNotification = function (data) {
 		}
 	});
 };
-/**
- * Get folders
- *@returns {any} Folders data
- */
-Notificator.prototype.getFolders = function () {
-	const settings = localStorage.getItem("email_settings");
-	if (settings) {
-		const d = JSON.parse(settings);
-		if (d.hasOwnProperty("email")) {
-			return d.email.folders;
-		} else {
-			d.email = {
-				folders: loadEmailFolders()
-			};
-			localStorage.setItem("email_settings", JSON.stringify(d));
-		}
-	} else {
-		const f = loadEmailFolders();
-		const s = {
-			email: {
-				folders: f
-			}
-		};
-		localStorage.setItem("email_settings", JSON.stringify(s));
-		return f;
-	}
-};
-
-
-function loadEmailFolders() {
-	var data = null;
-	$.ajax({
-		url: `/api/Email/GetFolders`,
-		method: "get",
-		async: false,
-		success: function (response) {
-			data = response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return data;
-}
-
 
 /**
  * Get all notifications
@@ -712,27 +579,7 @@ Notificator.prototype.clearNotificationsOnCurrentUser = function () {
 
 
 /**
- * Mark as read notification
- * @param {any} notificationId The notification id on read
- */
-Notificator.prototype.markAsRead = function (notificationId) {
-	$.ajax({
-		url: `${this.origin()}/api/Notifications/MarkAsRead`,
-		method: "post",
-		data: {
-			notificationId: notificationId
-		},
-		success: function (data) {
-
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-};
-
-/**
- * Get notifcation by id
+ * Get notification by id
  * @param {any} notificationId
  */
 Notificator.prototype.getNotificationById = function (notificationId) {
@@ -753,102 +600,6 @@ Notificator.prototype.getNotificationById = function (notificationId) {
 		}
 	});
 	return response;
-};
-
-/**
- * Get list By folder id
- * @param {any} folderId The folder id
- * @param {any} page The number of page
- * @returns {any} List with notifications
- */
-Notificator.prototype.getListByFolderId = function (folderId, page) {
-	var response = null;
-	$.ajax({
-		url: "/api/Email/GetListByFolderId",
-		async: false,
-		data: {
-			folderId: folderId,
-			page: page
-		},
-		method: "get",
-		success: function (data) {
-			response = data;
-			return response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return response;
-};
-
-
-/**
- * Get unread messages
- * @param {any} folderId
- */
-Notificator.prototype.getUnreadMessages = function (folderId) {
-	return new Promise((resolve, reject) => {
-		$.ajax({
-			url: "/api/Email/GetUnreadListByFolderId",
-			data: {
-				folderId: folderId
-			},
-			method: "get",
-			success: function (data) {
-				resolve(data);
-			},
-			error: function (error) {
-				reject(error);
-			}
-		});
-	});
-};
-
-/**
- * Mark as read notification
- * @param {any} notificationId The notification id on read
- */
-Notificator.prototype.markAsRead = function (notificationId) {
-	$.ajax({
-		url: "/api/Email/MarkAsRead",
-		method: "post",
-		data: {
-			notificationId: notificationId
-		},
-		success: function (data) {
-
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-};
-
-/**
- * Move Notification to another folder
- * @param {any} notificationId The id of notification
- * @param {any} folderId The folder where the notification are moved
- */
-Notificator.prototype.moveTofolder = function (notificationId, folderId) {
-	$.ajax({
-		url: "/api/Email/MoveToFolder",
-		method: "post",
-		data: {
-			notificationId: notificationId,
-			folderId: folderId
-		},
-		success: function (data) {
-			if (data != null) {
-				if (data.is_success) {
-					window.location.reload();
-				}
-			}
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
 };
 
 /**
@@ -910,13 +661,12 @@ Notificator.prototype.getCurrentUser = function () {
 		$.ajax({
 			url: `${this.origin()}/Account/GetCurrentUser`,
 			method: "get",
-			async: false,
+
 			success: function (data) {
 				data.created = new Date();
-				response = data;
-				if (response.is_success)
+				if (data.is_success)
 					localStorage.setItem("current_user", JSON.stringify(data));
-				resolve(response);
+				resolve(data);
 			},
 			error: function (error) {
 				reject(error);
@@ -925,59 +675,7 @@ Notificator.prototype.getCurrentUser = function () {
 	});
 };
 
-
-/**
-* Get count of notifications by folder id
-* @param {any} folderId The folder id
-* @returns {any} Notifications count
-*/
-Notificator.prototype.countNotificationsByFolderId = function (folderId) {
-	var response = 0;
-	$.ajax({
-		url: "/api/Email/GetCountbyFolderId",
-		async: false,
-		data: {
-			folderId: folderId
-		},
-		method: "get",
-		success: function (data) {
-			if (data != null) {
-				if (data.is_success) {
-					response = data.result;
-				}
-			}
-			return response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return response;
-};
-
-Notificator.prototype.restore = function (notificationId) {
-	$.ajax({
-		url: "/api/Email/RestoreFromTrash",
-		method: "post",
-		data: {
-			notificationId: notificationId
-		},
-		success: function (data) {
-			if (data != null) {
-				if (data.is_success) {
-					window.location.reload();
-				}
-			}
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-};
-
-
-
-//Actions
+//Helpers
 function ST() { }
 /**
  * Constructor

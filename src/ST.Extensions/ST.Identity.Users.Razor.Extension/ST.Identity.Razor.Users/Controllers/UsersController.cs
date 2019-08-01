@@ -26,7 +26,7 @@ using ST.Core.Helpers;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
 
 namespace ST.Identity.Razor.Users.Controllers

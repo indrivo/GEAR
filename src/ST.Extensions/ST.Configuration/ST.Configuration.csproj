@@ -15,36 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="EntitiesConfiguration.json" />
-    <None Remove="FieldTypes.json" />
-    <None Remove="IdentityConfiguration.json" />
-    <None Remove="NotificationTypes.json" />
-    <None Remove="ProfileEntities.json" />
-    <None Remove="SysEntities.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="EntitiesConfiguration.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FieldTypes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="IdentityConfiguration.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NotificationTypes.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProfileEntities.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SysEntities.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="ST.Localization" Version="2.0.1" />

@@ -5,6 +5,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="EntitiesConfiguration.json" />
+    <None Remove="FieldTypes.json" />
+    <None Remove="ProfileEntities.json" />
+    <None Remove="SysEntities.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="EntitiesConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FieldTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SysEntities.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
   </ItemGroup>
 

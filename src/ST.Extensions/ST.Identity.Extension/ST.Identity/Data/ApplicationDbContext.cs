@@ -6,7 +6,7 @@ using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Audit.Contexts;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Extensions;
 
 namespace ST.Identity.Data

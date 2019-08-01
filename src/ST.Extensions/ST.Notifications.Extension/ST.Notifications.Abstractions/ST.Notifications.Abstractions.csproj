@@ -5,7 +5,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="NotificationTypes.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="NotificationTypes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
+    <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

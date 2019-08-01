@@ -8,6 +8,6 @@ namespace ST.TaskManager.Abstractions
 {
     public interface ITaskManager<TUser> where TUser : IdentityUser
     {
-        Task<ResultModel> CreateTaskAsync(TUser user, );
+        Task<ResultModel> CreateTaskAsync(TUser user);
     }
 }

@@ -12,10 +12,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ST.Backup.Extensions;
+using ST.Application;
+using ST.Backup.Abstractions.BackgroundServices;
+using ST.Backup.Abstractions.Extensions;
+using ST.Backup.PostGresSql;
 using ST.Cache.Extensions;
-using ST.Cms.Abstractions;
-using ST.Cms.Services;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
 using ST.DynamicEntityStorage.Extensions;
@@ -47,6 +48,8 @@ using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
 using ST.Identity.LdapAuth;
 using ST.Identity.LdapAuth.Abstractions.Extensions;
+using ST.Install;
+using ST.Install.Abstractions.Extensions;
 using ST.Localization.Abstractions;
 using ST.Localization.Abstractions.Extensions;
 using ST.Localization.Abstractions.Models;
@@ -97,7 +100,7 @@ namespace ST.Cms
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (Installation.Application.IsHostedOnLinux())
+			if (CoreApp.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -139,7 +142,7 @@ namespace ST.Cms
 			//-------------------------Register on app events-------------------------------------
 			lifetime.ApplicationStarted.Register(() =>
 			{
-				Installation.Application.OnApplicationStarted(app);
+				CoreApp.OnApplicationStarted(app);
 			});
 
 			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
@@ -242,7 +245,7 @@ namespace ST.Cms
 			});
 
 			//------------------------------Database backup Module-------------------------------------
-			services.RegisterDatabaseBackupRunnerModule(Configuration);
+			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>, PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 			//------------------------------------Page render Module-------------------------------------
 			services.AddPageRenderUiModule();
@@ -286,11 +289,13 @@ namespace ST.Cms
 			//---------------------------------Custom cache Module-------------------------------------
 			services.UseCustomCacheModule(HostingEnvironment, Configuration);
 
+			services.AddInstallerModule<SyncInstaller>();
+
 			//----------------------------------------Email Module-------------------------------------
 			services.Configure<EmailSettingsViewModel>(Configuration.GetSection("EmailSettings"));
 
 
-			if (Installation.Application.IsHostedOnLinux())
+			if (CoreApp.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{
@@ -304,7 +309,6 @@ namespace ST.Cms
 
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
-			services.AddTransient<ISyncInstaller, SyncInstaller>();
 
 			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();

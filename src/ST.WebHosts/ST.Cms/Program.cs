@@ -1,3 +1,5 @@
+using ST.Application;
+
 namespace ST.Cms
 {
 	public static class Program
@@ -8,7 +10,7 @@ namespace ST.Cms
 		/// <param name="args"></param>
 		public static void Main(string[] args)
 		{
-			Installation.Application.Run(args);
+			CoreApp.Run<Startup>(args);
 		}
 	}
 }

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ST.Backup\ST.Backup.csproj" />
+    <ProjectReference Include="..\ST.Backup\ST.Backup.PostGresSql.csproj" />
   </ItemGroup>
 
   <ItemGroup>

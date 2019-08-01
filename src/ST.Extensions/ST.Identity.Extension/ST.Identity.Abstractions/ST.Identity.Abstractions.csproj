@@ -5,6 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="IdentityConfiguration.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="IdentityConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
     <ProjectReference Include="..\..\ST.Identity.LdapExtension\ST.Identity.LdapAuth.Abstractions\ST.Identity.LdapAuth.Abstractions.csproj" />
   </ItemGroup>

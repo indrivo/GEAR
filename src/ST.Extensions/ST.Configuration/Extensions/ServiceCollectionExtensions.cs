@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Castle.MicroKernel.Registration;
-using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,9 +24,9 @@ using ST.Forms;
 using ST.Forms.Abstractions;
 using ST.Forms.Data;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
-using ST.Identity.Data.MultiTenants;
 using ST.Identity.Extensions;
 using ST.Identity.Filters;
 using ST.Identity.Services;
@@ -36,9 +35,7 @@ using ST.Identity.Versioning;
 using ST.MPass.Gov;
 using ST.MultiTenant.Abstractions;
 using ST.MultiTenant.Services;
-using ST.Notifications.Abstraction;
 using ST.Notifications.Abstractions;
-using ST.Notifications.Providers;
 using ST.Notifications.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using constants = ST.Identity.DbSchemaNameConstants;
@@ -280,19 +277,6 @@ namespace ST.Configuration.Extensions
             var context = services.BuildServiceProvider().GetService<EntitiesDbContext>();
             //var env = services.BuildServiceProvider().GetService<IHostingEnvironment>();
 
-            //Notifications
-            var notificationConfig = new DbNotificationConfig { DbContext = context };
-            if (IoC.IsServiceRegistered<INotificationProvider>())
-                return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
-
-            IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<DbNotificationProvider>()
-                .DependsOn(Dependency.OnValue("config", notificationConfig)));
-            IoC.Container.Register(Component.For<INotificationProvider>().ImplementedBy<EmailNotificationProvider>());
-            IoC.Container.Register(Component.For<INotificationBuilder>().ImplementedBy<NotificationBuilder>());
-            IoC.Container.Register(Component.For<Notificator>().Named("Db")
-                .DependsOn(Dependency.OnComponent<INotificationProvider, DbNotificationProvider>()));
-            IoC.Container.Register(Component.For<Notificator>().Named("Email")
-                .DependsOn(Dependency.OnComponent<INotificationProvider, EmailNotificationProvider>()));
             //Register notifier 
             IoC.Container.Register(Component.For<INotify<ApplicationRole>>()
                 .ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
