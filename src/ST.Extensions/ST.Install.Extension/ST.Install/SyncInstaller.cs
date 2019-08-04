@@ -42,7 +42,7 @@ namespace ST.Install
 			await applicationDbContext.SaveChangesAsync();
 
 			//Create dynamic tables for configured tenant
-			await dynamicService.CreateDynamicTables(tenant.Id, tenant.MachineName);
+			await dynamicService.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenant.MachineName);
 
 			//Register new tenant to cache
 			await cacheService.Set($"_tenant_{tenant.MachineName}", new TenantSettings

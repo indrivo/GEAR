@@ -7,18 +7,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ST.Core;
+using ST.Core.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
-using ST.Organization.ViewModels;
-using ST.Core;
-using ST.Entities.Abstractions.Models.Tables;
-using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Helpers;
+using ST.Organization.ViewModels;
 
-namespace ST.Identity.Razor.Controllers
+namespace ST.MultiTenant.Razor.Controllers
 {
     /// <inheritdoc />
     /// <summary>
@@ -197,9 +198,10 @@ namespace ST.Identity.Razor.Controllers
             }
 
             Context.Tenants.Add(model);
-            try
+
+            var dbResult = await Context.SaveAsync();
+            if (dbResult.IsSuccess)
             {
-                await Context.SaveChangesAsync();
                 if (!_entitiesDbContext.EntityTypes.Any(x => x.MachineName == tenantMachineName))
                 {
                     _entitiesDbContext.EntityTypes.Add(new EntityType
@@ -213,14 +215,12 @@ namespace ST.Identity.Razor.Controllers
                     });
                     _entitiesDbContext.SaveChanges();
                 }
-                await _service.CreateDynamicTables(model.Id, model.MachineName);
+                await _service.CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
 
                 return RedirectToAction(nameof(Index), "Tenant");
             }
-            catch (Exception e)
-            {
-                ModelState.AddModelError("Fail", e.Message);
-            }
+
+            ModelState.AddModelError("", "Fail to save");
 
             return View(data);
 

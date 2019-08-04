@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.Table;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {
@@ -118,6 +120,21 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// </summary>
         /// <param name="tenantId"></param>
         /// <param name="schemaName"></param>
-        Task CreateDynamicTables(Guid tenantId, string schemaName = null);
+        Task CreateDynamicTablesFromInitialConfigurationsFile(Guid tenantId, string schemaName = null);
+
+        /// <summary>
+        /// Table field configurations
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        Task<IEnumerable<FieldConfigViewModel>> GetTableFieldConfigurations(TableModelField field);
+
+        /// <summary>
+        /// Create tables by replicate system schema
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="schemaName"></param>
+        /// <returns></returns>
+        Task CreateDynamicTablesByReplicateSchema(Guid tenantId, string schemaName = null);
     }
 }

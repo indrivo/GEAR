@@ -25,6 +25,7 @@ using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Identity.Abstractions;
 
 namespace ST.DynamicEntityStorage
@@ -1181,8 +1182,10 @@ namespace ST.DynamicEntityStorage
         /// </summary>
         /// <param name="tenantId"></param>
         /// <param name="schemaName"></param>
-        public async Task CreateDynamicTables(Guid tenantId, string schemaName = null)
+        public async Task CreateDynamicTablesFromInitialConfigurationsFile(Guid tenantId, string schemaName = null)
         {
+            var syncronizer = IoC.Resolve<EntitySynchronizer>();
+            Arg.NotNull(syncronizer, nameof(EntitySynchronizer));
             var entitiesList = new List<SeedEntity>
             {
                 JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
@@ -1197,10 +1200,181 @@ namespace ST.DynamicEntityStorage
                 {
                     if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
                     {
-                        IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, schemaName);
+                        await syncronizer.SynchronizeEntities(ent, tenantId, schemaName);
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Create dynamic tables by replicate from system schema 
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="schemaName"></param>
+        /// <returns></returns>
+        public async Task CreateDynamicTablesByReplicateSchema(Guid tenantId, string schemaName = null)
+        {
+            var syncronizer = IoC.Resolve<EntitySynchronizer>();
+            Arg.NotNull(syncronizer, nameof(EntitySynchronizer));
+            var entities = await _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldType)
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .Where(x => !x.IsCommon && !x.IsPartOfDbContext)
+                .ToListAsync();
+
+            foreach (var item in entities)
+            {
+                var tableConfig = await GetTableConfiguration(item.Id, item);
+                if (!tableConfig.IsSuccess) return;
+                var entity = tableConfig.Result;
+                if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == entity.Name && s.TenantId == tenantId))
+                {
+                    await syncronizer.SynchronizeEntities(entity, tenantId, schemaName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get table configuration
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <param name="tableModel"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<SynchronizeTableViewModel>> GetTableConfiguration(Guid tableId, TableModel tableModel = null)
+        {
+            var result = new ResultModel<SynchronizeTableViewModel>();
+            var table = tableModel ?? await _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldType)
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldType)
+                .FirstOrDefaultAsync(x => x.Id.Equals(tableId));
+            if (table == null)
+            {
+                result.Errors.Add(new ErrorModel("", "Table not found"));
+                return result;
+            }
+
+            var fields = await GetTableFieldsForBuildMode(table);
+            var model = new SynchronizeTableViewModel
+            {
+                Name = table.Name,
+                Description = table.Description,
+                IsStaticFromEntityFramework = table.IsPartOfDbContext,
+                IsSystem = table.IsSystem,
+                Schema = table.EntityType,
+                Fields = fields.ToList()
+            };
+            result.IsSuccess = true;
+            result.Result = model;
+            return result;
+        }
+
+        /// <summary>
+        /// Get table field configurations
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<FieldConfigViewModel>> GetTableFieldConfigurations(TableModelField field)
+        {
+            Arg.NotNull(field, nameof(TableModelField));
+            var fieldType = await _context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == field.TableFieldTypeId);
+            var fieldTypeConfig = _context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+            var configFields = field.TableFieldConfigValues
+                .Where(z => fieldTypeConfig.FirstOrDefault(x => x.Id == z.TableFieldConfigId) != null)
+                .Select(y =>
+                {
+                    var fTypeConfig = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId);
+                    
+                    return new FieldConfigViewModel
+                    {
+                        Name = fTypeConfig.Name,
+                        Type = fTypeConfig.Type,
+                        ConfigId = y.TableFieldConfigId,
+                        Description = fTypeConfig.Description,
+                        ConfigCode = fTypeConfig.Code,
+                        Value = y.Value
+                    };
+                }).ToList();
+            return configFields;
+        }
+
+        /// <summary>
+        /// Get table fields for builder mode
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<CreateTableFieldViewModel>> GetTableFieldsForBuildMode(TableModel table)
+        {
+            Arg.NotNull(table, nameof(TableModel));
+            var fieldTypes = await _context.TableFieldTypes
+                .Include(x => x.TableFieldGroups)
+                .ToListAsync();
+            var result = new List<CreateTableFieldViewModel>();
+
+            foreach (var field in table.TableFields)
+            {
+                var groupName = fieldTypes.FirstOrDefault(u => u.DataType.Equals(field.DataType))
+                    ?.TableFieldGroups
+                    ?.GroupName;
+                var configurations = await GetTableFieldConfigurations(field);
+                var model = new CreateTableFieldViewModel
+                {
+                    Id = field.Id,
+                    Name = field.Name,
+                    Description = field.Description,
+                    AllowNull = field.AllowNull,
+                    Parameter = groupName,
+                    DataType = field.DataType,
+                    DisplayName = field.DisplayName,
+                    Configurations = configurations.ToList()
+                };
+                result.Add(model);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Duplicate tables for schema in database 
+        /// </summary>
+        /// <param name="schema"></param>
+        /// <returns></returns>
+        public virtual async Task DuplicateEntitiesForSchema(string schema)
+        {
+            var tableBuilder = IoC.Resolve<ITablesService>();
+            var connection = _context.Database.GetDbConnection().ConnectionString;
+            if (!_context.EntityTypes.Any(x => x.MachineName.ToLowerInvariant().Equals(schema.ToLowerInvariant()))) return;
+            var entities = await _context.Table
+                .Include(x => x.TableFields)
+                    .ThenInclude(x => x.TableFieldType)
+                .Include(x => x.TableFields)
+                    .ThenInclude(x => x.TableFieldConfigValues)
+                        .ThenInclude(x => x.TableFieldConfigId)
+                .Where(x => !x.IsCommon && !x.IsPartOfDbContext)
+                .ToListAsync();
+
+            Parallel.ForEach(entities, async table =>
+            {
+                table.EntityType = schema;
+                var dbTableResponse = tableBuilder.CreateSqlTable(table, connection);
+                if (!dbTableResponse.IsSuccess) return;
+                var fields = await GetTableFieldsForBuildMode(table);
+                Parallel.ForEach(fields, y =>
+                {
+                    var newFieldResult = tableBuilder.AddFieldSql(y, table.Name, connection, true, schema);
+                    if (!newFieldResult.IsSuccess)
+                    {
+                        Debug.WriteLine(newFieldResult.Errors);
+                    }
+                });
+            });
         }
     }
 }

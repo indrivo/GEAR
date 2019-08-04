@@ -263,7 +263,7 @@ namespace ST.Install.Razor.Controllers
 			await Application.CoreApp.SyncDefaultEntityFrameWorkEntities(tenant.Id);
 
 			//Create dynamic tables for configured tenant
-			await _dynamicService.CreateDynamicTables(tenant.Id, tenantMachineName);
+			await _dynamicService.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
 
 			await Application.CoreApp.SeedDynamicDataAsync();
 

@@ -13,4 +13,10 @@
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\ST.MultiTenant\ST.MultiTenant.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Tenant\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
 </Project>
