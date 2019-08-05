@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Forms.Abstractions\ST.Forms.Abstractions.csproj" />
   </ItemGroup>

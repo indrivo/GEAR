@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+﻿using Microsoft.EntityFrameworkCore.Design;
+using ST.Core.Helpers.DbContexts;
 
 namespace ST.Entities.Data
 {
@@ -17,9 +17,7 @@ namespace ST.Entities.Data
         /// <returns></returns>
         public EntitiesDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<EntitiesDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new EntitiesDbContext(optionsBuilder.Options);
+            return DbContextFactory<EntitiesDbContext, EntitiesDbContext>.CreateFactoryDbContext();
         }
     }
 }

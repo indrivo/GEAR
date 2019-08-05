@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -7,13 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Core;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.TableTypes;
 using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 
-namespace ST.Cms.Controllers.Entity
+namespace ST.Entities.Razor.Controllers.Entity
 {
 	/// <inheritdoc />
 	/// <summary>
@@ -49,71 +49,14 @@ namespace ST.Cms.Controllers.Entity
 			return View();
 		}
 
-		private List<EntityType> GetOrderFiltered(string search, string sortOrder, int start, int length,
-			out int totalCount)
-		{
-			var result = _context.EntityTypes.Where(p =>
-				search == null || p.Name != null &&
-				p.Name.ToLower().Contains(search.ToLower()) || p.Description != null &&
-				p.Description.ToLower().Contains(search.ToLower()) || p.Author != null &&
-				p.Author.ToString().ToLower().Contains(search.ToLower()) || p.ModifiedBy != null &&
-				p.ModifiedBy.ToString().ToLower().Contains(search.ToLower())).ToList();
-			totalCount = result.Count;
-
-			result = result.Skip(start).Take(length).ToList();
-			switch (sortOrder)
-			{
-				case "id":
-					result = result.OrderBy(a => a.Id).ToList();
-					break;
-				case "name":
-					result = result.OrderBy(a => a.Name).ToList();
-					break;
-				case "description":
-					result = result.OrderBy(a => a.Description).ToList();
-					break;
-				case "created":
-					result = result.OrderBy(a => a.Created).ToList();
-					break;
-				case "modifiedBy":
-					result = result.OrderBy(a => a.ModifiedBy).ToList();
-					break;
-				case "isDeleted":
-					result = result.OrderBy(a => a.IsDeleted).ToList();
-					break;
-				case "id DESC":
-					result = result.OrderByDescending(a => a.Id).ToList();
-					break;
-				case "name DESC":
-					result = result.OrderByDescending(a => a.Name).ToList();
-					break;
-				case "description DESC":
-					result = result.OrderByDescending(a => a.Description).ToList();
-					break;
-				case "created DESC":
-					result = result.OrderByDescending(a => a.Created).ToList();
-					break;
-				case "modifiedBy DESC":
-					result = result.OrderByDescending(a => a.ModifiedBy).ToList();
-					break;
-				case "isDeleted DESC":
-					result = result.OrderByDescending(a => a.IsDeleted).ToList();
-					break;
-				default:
-					result = result.AsQueryable().ToList();
-					break;
-			}
-
-			return result.ToList();
-		}
-
 		[HttpPost]
 		public JsonResult OrderList(DTParameters param)
 		{
-			var filtered = GetOrderFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
-				out var totalCount);
+            var filtered = _context.FilterAbstractContext<EntityType>(param.Search.Value, param.SortOrder, param.Start,
+                param.Length,
+                out var totalCount);
 
-			var finalresult = new DTResult<EntityType>
+            var finalResult = new DTResult<EntityType>
 			{
 				Draw = param.Draw,
 				Data = filtered.ToList(),
@@ -121,7 +64,7 @@ namespace ST.Cms.Controllers.Entity
 				RecordsTotal = filtered.Count
 			};
 
-			return Json(finalresult);
+			return Json(finalResult);
 		}
 
 

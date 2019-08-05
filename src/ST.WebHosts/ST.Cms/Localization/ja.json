@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "ボタンをクリックしビットマトリクス",
   "iso_risk_template_edit": "テンプレートの編集",
   "system_back": "裏",
-  "iso_company_matrix": "リスクマトリクス"
+  "iso_company_matrix": "リスクマトリクス",
+  "system_schemes": "スキーム",
+  "system_add_schema": "追加のスキーマ",
+  "system_schema_add_new_message": "の新たなスキームが追加されます。",
+  "iso_active_parent_category": "親カテゴリ"
 }

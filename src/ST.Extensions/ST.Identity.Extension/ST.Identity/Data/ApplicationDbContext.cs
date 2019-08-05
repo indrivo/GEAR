@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Data.UserProfiles;
 using ST.Audit.Contexts;
+using ST.Core.Helpers.DbContexts;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Extensions;
@@ -87,6 +88,7 @@ namespace ST.Identity.Data
     }
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
+        /// <inheritdoc />
         /// <summary>
         /// For creating migrations
         /// </summary>
@@ -94,9 +96,7 @@ namespace ST.Identity.Data
         /// <returns></returns>
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new ApplicationDbContext(optionsBuilder.Options);
+            return DbContextFactory<ApplicationDbContext, ApplicationDbContext>.CreateFactoryDbContext();
         }
     }
 }

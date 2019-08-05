@@ -75,7 +75,10 @@ namespace ST.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema(string entity)
         {
-            var table = _context.Table.FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
+            var table = _context.Table
+                .FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId
+                                     || x.Name.Equals(entity) && x.IsCommon
+                                     || x.IsPartOfDbContext && x.Name.Equals(entity));
             if (table == null)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 
@@ -1206,6 +1209,7 @@ namespace ST.DynamicEntityStorage
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create dynamic tables by replicate from system schema 
         /// </summary>
@@ -1214,29 +1218,34 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public async Task CreateDynamicTablesByReplicateSchema(Guid tenantId, string schemaName = null)
         {
-            var syncronizer = IoC.Resolve<EntitySynchronizer>();
-            Arg.NotNull(syncronizer, nameof(EntitySynchronizer));
+            var synchronizer = IoC.Resolve<EntitySynchronizer>();
+            Arg.NotNull(synchronizer, nameof(EntitySynchronizer));
             var entities = await _context.Table
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldType)
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
-                .Where(x => !x.IsCommon && !x.IsPartOfDbContext)
+                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(Settings.DefaultEntitySchema))
                 .ToListAsync();
-
+            var syncModels = new List<SynchronizeTableViewModel>();
             foreach (var item in entities)
             {
+                item.EntityType = schemaName;
                 var tableConfig = await GetTableConfiguration(item.Id, item);
                 if (!tableConfig.IsSuccess) return;
                 var entity = tableConfig.Result;
+                entity.Schema = schemaName;
                 if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == entity.Name && s.TenantId == tenantId))
                 {
-                    await syncronizer.SynchronizeEntities(entity, tenantId, schemaName);
+                    syncModels.Add(entity);
                 }
             }
+
+            await synchronizer.SynchronizeEntitiesByBeforeCreateTables(syncModels, tenantId, schemaName);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get table configuration
         /// </summary>
@@ -1276,35 +1285,56 @@ namespace ST.DynamicEntityStorage
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get table field configurations
         /// </summary>
         /// <param name="field"></param>
+        /// <param name="schema"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<FieldConfigViewModel>> GetTableFieldConfigurations(TableModelField field)
+        public virtual async Task<IEnumerable<FieldConfigViewModel>> GetTableFieldConfigurations(TableModelField field, string schema)
         {
             Arg.NotNull(field, nameof(TableModelField));
             var fieldType = await _context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == field.TableFieldTypeId);
             var fieldTypeConfig = _context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
-            var configFields = field.TableFieldConfigValues
-                .Where(z => fieldTypeConfig.FirstOrDefault(x => x.Id == z.TableFieldConfigId) != null)
-                .Select(y =>
+            var configFields = new List<FieldConfigViewModel>();
+            foreach (var y in field.TableFieldConfigValues)
+            {
+                var fTypeConfig = fieldTypeConfig.FirstOrDefault(x => x.Id == y.TableFieldConfigId);
+                if (fTypeConfig == null) continue;
+
+                var config = new FieldConfigViewModel
                 {
-                    var fTypeConfig = fieldTypeConfig.Single(x => x.Id == y.TableFieldConfigId);
-                    
-                    return new FieldConfigViewModel
+                    Name = fTypeConfig.Name,
+                    Type = fTypeConfig.Type,
+                    ConfigId = y.TableFieldConfigId,
+                    Description = fTypeConfig.Description,
+                    ConfigCode = fTypeConfig.Code,
+                    Value = y.Value
+                };
+
+                if (fTypeConfig.Code.Equals(TableFieldConfigCode.Reference.ForeingSchemaTable))
+                {
+                    var tableName = field.TableFieldConfigValues
+                        .FirstOrDefault(x => x.TableFieldConfig.Code
+                            .Equals(TableFieldConfigCode.Reference.ForeingTable));
+                    if (tableName != null)
                     {
-                        Name = fTypeConfig.Name,
-                        Type = fTypeConfig.Type,
-                        ConfigId = y.TableFieldConfigId,
-                        Description = fTypeConfig.Description,
-                        ConfigCode = fTypeConfig.Code,
-                        Value = y.Value
-                    };
-                }).ToList();
+                        var table = _context.Table.FirstOrDefault(x =>
+                            x.Name.Equals(tableName.Value) && x.EntityType == Settings.DefaultEntitySchema);
+                        if (table != null && !table.IsPartOfDbContext && !table.IsSystem && !table.IsCommon)
+                        {
+                            config.Value = schema;
+                        }
+                    }
+                }
+                configFields.Add(config);
+            }
+
             return configFields;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get table fields for builder mode
         /// </summary>
@@ -1320,17 +1350,15 @@ namespace ST.DynamicEntityStorage
 
             foreach (var field in table.TableFields)
             {
-                var groupName = fieldTypes.FirstOrDefault(u => u.DataType.Equals(field.DataType))
-                    ?.TableFieldGroups
-                    ?.GroupName;
-                var configurations = await GetTableFieldConfigurations(field);
+                var fieldTypeName = fieldTypes.FirstOrDefault(u => u.DataType.Equals(field.DataType))?.Name;
+                var configurations = await GetTableFieldConfigurations(field, table.EntityType);
                 var model = new CreateTableFieldViewModel
                 {
                     Id = field.Id,
                     Name = field.Name,
                     Description = field.Description,
                     AllowNull = field.AllowNull,
-                    Parameter = groupName,
+                    Parameter = fieldTypeName,
                     DataType = field.DataType,
                     DisplayName = field.DisplayName,
                     Configurations = configurations.ToList()
@@ -1341,6 +1369,7 @@ namespace ST.DynamicEntityStorage
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Duplicate tables for schema in database 
         /// </summary>

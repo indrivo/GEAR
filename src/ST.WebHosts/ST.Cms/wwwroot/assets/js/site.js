@@ -289,37 +289,41 @@ window.translate = function (key) {
 //Translate page content
 window.forceTranslate = function (selector = null) {
 	return new Promise((resolve, reject) => {
-		var ctx = (!selector)
-			? document.getElementsByTagName('*')
-			: document.querySelector(selector).getElementsByTagName('*');
-		const translations = Array.prototype.filter.call(ctx,
-			function (el) {
-				return el.getAttribute('translate') != null && !el.hasAttribute("translated");
-			}
-		);
-		const trans = window.translations();
-		$.each(translations,
-			function (index, item) {
-				let key = $(item).attr("translate");
-				if (key != "none" && key) {
-					const translation = trans[key];
-					if (translation) {
-						$(item).text(translation);
-						$(item).attr("translated", "");
-					} else {
-						$.toast({
-							heading: `Key: ${key} is not translated!`,
-							text: "",
-							position: 'top-right',
-							loaderBg: '#ff6849',
-							icon: 'error',
-							hideAfter: 3500,
-							stack: 6
-						});
-						localStorage.removeItem("hasLoadedTranslations");
-					}
+		try {
+			var ctx = (!selector)
+				? document.getElementsByTagName('*')
+				: document.querySelector(selector).getElementsByTagName('*');
+			const translations = Array.prototype.filter.call(ctx,
+				function (el) {
+					return el.getAttribute('translate') != null && !el.hasAttribute("translated");
 				}
-			});
+			);
+			const trans = window.translations();
+			$.each(translations,
+				function (index, item) {
+					let key = $(item).attr("translate");
+					if (key != "none" && key) {
+						const translation = trans[key];
+						if (translation) {
+							$(item).text(translation);
+							$(item).attr("translated", "");
+						} else {
+							$.toast({
+								heading: `Key: ${key} is not translated!`,
+								text: "",
+								position: 'top-right',
+								loaderBg: '#ff6849',
+								icon: 'error',
+								hideAfter: 3500,
+								stack: 6
+							});
+							localStorage.removeItem("hasLoadedTranslations");
+						}
+					}
+				});
+		} catch (e) {
+			//ignore
+		}
 		resolve();
 	});
 };

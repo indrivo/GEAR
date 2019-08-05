@@ -111,7 +111,8 @@ namespace ST.Identity.Razor.Users.Controllers
                 Author = User.Identity.Name,
                 AuthenticationType = model.AuthenticationType,
                 IsEditable = true,
-                TenantId = model.TenantId
+                TenantId = model.TenantId,
+                LastPasswordChanged = DateTime.Now
             };
 
             if (model.UserPhoto != null)
@@ -612,6 +613,7 @@ namespace ST.Identity.Razor.Users.Controllers
             var hasher = new PasswordHasher<ApplicationUser>();
             var hashedPassword = hasher.HashPassword(user, model.Password);
             user.PasswordHash = hashedPassword;
+            user.LastPasswordChanged = DateTime.Now;
             var result = await UserManager.UpdateAsync(user);
             if (result.Succeeded)
             {

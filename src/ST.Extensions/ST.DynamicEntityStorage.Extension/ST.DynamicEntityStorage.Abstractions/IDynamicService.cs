@@ -126,8 +126,9 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// Table field configurations
         /// </summary>
         /// <param name="field"></param>
+        /// <param name="schema"></param>
         /// <returns></returns>
-        Task<IEnumerable<FieldConfigViewModel>> GetTableFieldConfigurations(TableModelField field);
+        Task<IEnumerable<FieldConfigViewModel>> GetTableFieldConfigurations(TableModelField field, string schema);
 
         /// <summary>
         /// Create tables by replicate system schema
@@ -136,5 +137,27 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <param name="schemaName"></param>
         /// <returns></returns>
         Task CreateDynamicTablesByReplicateSchema(Guid tenantId, string schemaName = null);
+
+        /// <summary>
+        /// Duplicate tables per schema
+        /// </summary>
+        /// <param name="schema"></param>
+        /// <returns></returns>
+        Task DuplicateEntitiesForSchema(string schema);
+
+        /// <summary>
+        /// Get table fields for builder mode
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
+        Task<IEnumerable<CreateTableFieldViewModel>> GetTableFieldsForBuildMode(TableModel table);
+
+        /// <summary>
+        /// Get table configuration
+        /// </summary>
+        /// <param name="tableId"></param>
+        /// <param name="tableModel"></param>
+        /// <returns></returns>
+        Task<ResultModel<SynchronizeTableViewModel>> GetTableConfiguration(Guid tableId, TableModel tableModel = null);
     }
 }

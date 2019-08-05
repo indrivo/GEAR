@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -68,10 +69,11 @@ namespace ST.Identity.Razor.Controllers
         /// Inject Ldap User Manager
         /// </summary>
         private readonly BaseLdapUserManager<ApplicationUser> _ldapUserManager;
+
         /// <summary>
-        /// Inject configured db context
+        /// Inject app context
         /// </summary>
-        private ConfigurationDbContext ConfigurationDbContext { get; }
+        private readonly ApplicationDbContext _applicationDbContext;
 
         #endregion Private Dependency Injection Fields
         private const string MpassRequestSessionKey = "mpass_request_id";
@@ -89,12 +91,12 @@ namespace ST.Identity.Razor.Controllers
             INotify<ApplicationRole> notify,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
-            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, ConfigurationDbContext configurationDbContext, BaseLdapUserManager<ApplicationUser> ldapUserManager)
+            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
-            ConfigurationDbContext = configurationDbContext;
             _ldapUserManager = ldapUserManager;
+            _applicationDbContext = applicationDbContext;
             _mpassOptions = mpassOptions;
             _mpassSigningCredentialStore = mpassSigningCredentialStore;
             _mpassService = mPassService;
@@ -341,6 +343,11 @@ namespace ST.Identity.Razor.Controllers
                     return View(model);
                 }
 
+                if (user.IsPasswordExpired())
+                {
+                    ModelState.AddModelError(string.Empty, "Password has been expired, you need to change the password");
+                    return View(model);
+                }
 
                 if (user.AuthenticationType == AuthenticationType.Ad)
                 {
@@ -369,12 +376,16 @@ namespace ST.Identity.Razor.Controllers
                         //TODO: change ldap password
                     }
                 }
+
+                await ClearUserClaims(user);
                 var result =
                     await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe,
                         false);
 
                 if (result.Succeeded)
                 {
+                    user.LastLogin = DateTime.Now;
+                    await _userManager.UpdateAsync(user);
                     //Sync permissions to claims
                     //await user.RefreshClaims(_applicationDbContext, _signInManager);
                     _logger.LogInformation("User logged in.");
@@ -384,7 +395,9 @@ namespace ST.Identity.Razor.Controllers
                         Subject = "Info",
                         NotificationTypeId = NotificationType.Info
                     });
-                    await _userManager.AddClaimAsync(user, new Claim("tenant", user.TenantId.ToString()));
+                    var claim = new Claim("tenant", user.TenantId.ToString());
+
+                    await _userManager.AddClaimAsync(user, claim);
                     return RedirectToLocal(returnUrl);
                 }
 
@@ -395,6 +408,23 @@ namespace ST.Identity.Razor.Controllers
             ModelState.AddModelError(string.Empty, "Invalid credentials!");
             return View(model);
         }
+
+        /// <summary>
+        /// Clear user claims
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [NonAction]
+        private async Task ClearUserClaims(ApplicationUser user)
+        {
+            var userClaims = await _applicationDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
+            if (userClaims.Any())
+            {
+                _applicationDbContext.UserClaims.RemoveRange(userClaims);
+                await _applicationDbContext.SaveAsync();
+            }
+        }
+
         /// <summary>
         /// Use Ldap auth
         /// </summary>

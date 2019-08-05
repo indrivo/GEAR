@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Haga clic en el botón vista previa de la matriz",
   "iso_risk_template_edit": "Edición de la plantilla",
   "system_back": "De vuelta",
-  "iso_company_matrix": "Matriz de riesgos"
+  "iso_company_matrix": "Matriz de riesgos",
+  "system_schemes": "Los esquemas de",
+  "system_add_schema": "Agregar el esquema de",
+  "system_schema_add_new_message": "El nuevo esquema será añadido.",
+  "iso_active_parent_category": "Categoría principal"
 }

@@ -351,7 +351,7 @@ if (typeof TableBuilder !== 'undefined') {
 	//Rewrite jq dt translations
 	TableBuilder.prototype.replaceTableSystemTranslations = function () {
 		const customReplace = new Array();
-		//customReplace.push({ Key: "sProcessing", Value: `<div class="col-md lds-dual-ring"></div>` });
+		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md lds-dual-ring"></div>` });
 		//customReplace.push({ Key: "processing", Value: `<div class="col-md lds-dual-ring"></div>` });
 		const serialData = JSON.stringify(customReplace);
 		return serialData;

@@ -13,7 +13,6 @@ using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
-using ST.Entities.Utils;
 using ST.Forms.Abstractions;
 using ST.Identity.Data;
 using ST.PageRender.Abstractions;
@@ -64,7 +63,7 @@ namespace ST.Configuration.Services
             //    }
             //}
 
-            var zipStream = ExportDataIO.CreateZipArchive(new Dictionary<string, MemoryStream>
+            var zipStream = ExportDataIo.CreateZipArchive(new Dictionary<string, MemoryStream>
             {
                 {
                     "forms.json", new MemoryStream(Encoding.ASCII.GetBytes(Serialize(formContext.Forms
@@ -128,7 +127,7 @@ namespace ST.Configuration.Services
         {
             var result = new ResultModel();
 
-            ExportDataIO.Decompress(memStream, async zip =>
+            ExportDataIo.Decompress(memStream, async zip =>
            {
                var context = IoC.Resolve<EntitiesDbContext>();
                var tableService = IoC.Resolve<ITablesService>();

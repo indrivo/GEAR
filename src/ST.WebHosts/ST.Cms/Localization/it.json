@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Fare clic sul pulsante per visualizzare l'anteprima di matrice",
   "iso_risk_template_edit": "Modifica di un modello di",
   "system_back": "Indietro",
-  "iso_company_matrix": "La matrice dei rischi"
+  "iso_company_matrix": "La matrice dei rischi",
+  "system_schemes": "Schemi",
+  "system_add_schema": "Aggiungere lo schema",
+  "system_schema_add_new_message": "Il nuovo schema sarà aggiunto.",
+  "iso_active_parent_category": "Categoria principale"
 }

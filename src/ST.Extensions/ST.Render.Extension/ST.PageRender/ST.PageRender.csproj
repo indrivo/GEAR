@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />
   </ItemGroup>

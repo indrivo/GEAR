@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Cliquez sur le bouton pour afficher un aperçu de la matrice",
   "iso_risk_template_edit": "Modification d'un modèle",
   "system_back": "De retour",
-  "iso_company_matrix": "La matrice des risques"
+  "iso_company_matrix": "La matrice des risques",
+  "system_schemes": "Les régimes de",
+  "system_add_schema": "Ajouter le schéma",
+  "system_schema_add_new_message": "Le nouveau régime sera ajouté.",
+  "iso_active_parent_category": "Catégorie parente"
 }

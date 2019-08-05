@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace ST.Configuration.Services
 {
-    public static class ExportDataIO
+    public static class ExportDataIo
     {
         /// <summary>
         /// 

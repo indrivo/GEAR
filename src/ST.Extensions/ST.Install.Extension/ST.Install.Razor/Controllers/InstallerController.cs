@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using ST.Application.InstallerModels;
 using ST.Cache.Abstractions;
 using ST.Cms.ViewModels.InstallerModels;
 using ST.Core;
@@ -19,7 +20,6 @@ using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
 using ST.Entities.EntityBuilder.MsSql.Controls.Query;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
-using ST.Entities.Utils;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Models.MultiTenants;
@@ -271,7 +271,7 @@ namespace ST.Install.Razor.Controllers
 			await _dynamicService.RegisterInMemoryDynamicTypesAsync();
 
 			//Send welcome message to user
-			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id) }, new SystemNotifications
+			await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id ?? string.Empty) }, new SystemNotifications
 			{
 				Content = $"Welcome to Gear Bpm {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
 				Subject = "Info",

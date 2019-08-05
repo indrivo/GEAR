@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Klik op de knop om een voorbeeld van de matrix",
   "iso_risk_template_edit": "Het bewerken van de sjabloon",
   "system_back": "Terug",
-  "iso_company_matrix": "Risico matrix"
+  "iso_company_matrix": "Risico matrix",
+  "system_schemes": "Regelingen",
+  "system_add_schema": "Voeg schema",
+  "system_schema_add_new_message": "De nieuwe regeling zal worden toegevoegd.",
+  "iso_active_parent_category": "Bovenliggende categorie"
 }

@@ -139,7 +139,7 @@ namespace ST.Application
                 if (!await IoC.Resolve<EntitiesDbContext>().Table
                     .AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
                 {
-                    IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
+                    await IoC.Resolve<EntitySynchronizer>().SynchronizeEntities(ent, tenantId, ent.Schema);
                 }
             }
         }

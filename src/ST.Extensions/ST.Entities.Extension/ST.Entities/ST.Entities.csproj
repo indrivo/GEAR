@@ -35,12 +35,6 @@
     <Compile Remove="Migrations\20190429130008_AddAclForEntities.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>

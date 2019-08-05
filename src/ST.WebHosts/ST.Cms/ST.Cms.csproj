@@ -33,7 +33,7 @@
 	<None Remove="Static\Templates\standard.html" />
   </ItemGroup>
   <ItemGroup>
-	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.0.1" />
+	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.1.0" />
 	<PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
 	<PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
 	<PackageReference Include="Microsoft.AspNetCore.All" />
@@ -44,7 +44,6 @@
 	<PackageReference Include="ST.ServiceDiscovery" Version="1.1.1" />
 	<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
 	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="4.0.1" />
-	<PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
 	<PackageReference Include="System.Drawing.Common" Version="4.5.1" />
 	<!--<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />-->
   </ItemGroup>

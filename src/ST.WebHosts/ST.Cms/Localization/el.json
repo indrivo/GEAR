@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Κάντε κλικ στο κουμπί για να δείτε matrix",
   "iso_risk_template_edit": "Επεξεργασία προτύπου",
   "system_back": "Πίσω",
-  "iso_company_matrix": "Η μήτρα των κινδύνων"
+  "iso_company_matrix": "Η μήτρα των κινδύνων",
+  "system_schemes": "Συστήματα",
+  "system_add_schema": "Προσθήκη χρωμάτων",
+  "system_schema_add_new_message": "Το νέο σχήμα θα προστεθεί.",
+  "iso_active_parent_category": "Γονική κατηγορία"
 }

@@ -19,7 +19,6 @@ using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
 using ST.Entities.Security.Extensions;
-using ST.Entities.Utils;
 using ST.Forms;
 using ST.Forms.Abstractions;
 using ST.Forms.Data;
@@ -65,7 +64,7 @@ namespace ST.Configuration.Extensions
                     options.DefaultSchema = constants.DEFAULT_SCHEMA;
                     options.ConfigureDbContext = builder =>
                     {
-                        var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
+                        var connectionString = DbUtil.GetConnectionString(configuration);
                         if (connectionString.Item1 == DbProviderType.PostgreSql)
                         {
                             builder.UseNpgsql(connectionString.Item2, opts =>
@@ -91,7 +90,7 @@ namespace ST.Configuration.Extensions
                     options.DefaultSchema = constants.DEFAULT_SCHEMA;
                     options.ConfigureDbContext = builder =>
                     {
-                        var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
+                        var connectionString = DbUtil.GetConnectionString(configuration);
                         if (connectionString.Item1 == DbProviderType.PostgreSql)
                         {
                             builder.UseNpgsql(connectionString.Item2, opts =>
@@ -130,7 +129,7 @@ namespace ST.Configuration.Extensions
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                     {
-                        var connectionString = DbUtil.GetConnectionString(configuration, hostingEnvironment);
+                        var connectionString = DbUtil.GetConnectionString(configuration);
                         if (connectionString.Item1 == DbProviderType.PostgreSql)
                         {
                             options.UseNpgsql(connectionString.Item2, opts =>

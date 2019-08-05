@@ -320,10 +320,10 @@
 														if (!Model.IsPartOfDbContext)
 														{
 															<a asp-action="EditField" asp-route-type="@item.TableFieldTypeId" asp-route-fieldId="@item.Id" class="btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Edit">
-																<i class="ti-pencil" aria-hidden="true"></i>
+																<i class="ti-pencil" aria-hidden="true"></i> @Localizer["edit"]
 															</a>
 															<a href="#" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
-																<i class="ti-close" aria-hidden="true"></i>
+																<i class="ti-close" aria-hidden="true"></i> @Localizer["delete"]
 															</a>
 														}
 														else
@@ -343,9 +343,7 @@
 							}
 							else
 							{
-								<div class="ui horizontal divider">
-									@Localizer["system_no_entity_fields"]
-								</div>
+							    @Localizer["system_no_entity_fields"]
 							}
 						</div>
 					</div>

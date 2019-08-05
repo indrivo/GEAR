@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "点击按钮预览矩阵",
   "iso_risk_template_edit": "编辑模板",
   "system_back": "回",
-  "iso_company_matrix": "风险矩阵"
+  "iso_company_matrix": "风险矩阵",
+  "system_schemes": "方案",
+  "system_add_schema": "添加架构",
+  "system_schema_add_new_message": "新方案将增加。",
+  "iso_active_parent_category": "父类别"
 }

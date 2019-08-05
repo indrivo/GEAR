@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Kliknij na przycisk, aby wyświetlić podgląd Matrycy",
   "iso_risk_template_edit": "Edycja szablonu",
   "system_back": "Temu",
-  "iso_company_matrix": "Matryca ryzyka"
+  "iso_company_matrix": "Matryca ryzyka",
+  "system_schemes": "Schematu",
+  "system_add_schema": "Dodaj schemat",
+  "system_schema_add_new_message": "Nowy system zostanie dodana.",
+  "iso_active_parent_category": "Nadrzędna kategoria"
 }

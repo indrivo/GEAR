@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using ST.Entities.Utils;
+using ST.Cms.ViewModels.InstallerModels;
+using ST.Core.Helpers;
 
-namespace ST.Cms.ViewModels.InstallerModels
+namespace ST.Application.InstallerModels
 {
 	public class SetupModel
 	{

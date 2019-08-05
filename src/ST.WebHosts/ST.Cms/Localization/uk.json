@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Натисніть на кнопку для попереднього перегляду Матриці",
   "iso_risk_template_edit": "Редагування шаблону",
   "system_back": "Тому",
-  "iso_company_matrix": "Матриця ризиків"
+  "iso_company_matrix": "Матриця ризиків",
+  "system_schemes": "Схеми",
+  "system_add_schema": "Додати схему",
+  "system_schema_add_new_message": "Нова схема буде додано.",
+  "iso_active_parent_category": "Батьківська категорія"
 }

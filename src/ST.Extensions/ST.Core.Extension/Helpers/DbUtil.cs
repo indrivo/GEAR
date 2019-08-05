@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace ST.Entities.Utils
+namespace ST.Core.Helpers
 {
     public static class DbUtil
     {
@@ -10,15 +9,14 @@ namespace ST.Entities.Utils
         /// GetConnectionString connection string
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="env"></param>
         /// <returns></returns>
-        public static (DbProviderType, string) GetConnectionString(IConfiguration configuration, IHostingEnvironment env)
+        public static (DbProviderType, string) GetConnectionString(IConfiguration configuration)
         {
             DbProviderType dbType;
             var postgreSettings = configuration.GetSection("ConnectionStrings")
                 .GetSection("PostgreSQL");
             var isPostgreSql = postgreSettings.GetValue<bool>("UsePostgreSQL");
-            string connectionString = "";
+            string connectionString;
             if (isPostgreSql)
             {
                 connectionString = postgreSettings
@@ -34,6 +32,12 @@ namespace ST.Entities.Utils
             return (dbType, connectionString);
         }
 
+        /// <summary>
+        /// Get connection string
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static string GetConnectionString<TContext>(this TContext context) where TContext : DbContext
         {
             return context.Database.GetDbConnection().ConnectionString;

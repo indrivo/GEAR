@@ -23,7 +23,7 @@
   "profiles": "профили",
   "entity": "сущность",
   "table": "Таблица",
-  "entity_type": "Entity Type",
+  "entity_type": "Cхема",
   "process": "Процесс",
   "settings": "настройки",
   "created": "Cоздан",
@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Нажмите на кнопку для предварительного просмотра Матрицы",
   "iso_risk_template_edit": "Редактирование шаблона",
   "system_back": "Назад",
-  "iso_company_matrix": "Матрица рисков"
+  "iso_company_matrix": "Матрица рисков",
+  "system_schemes": "Схемы",
+  "system_add_schema": "Добавить схему",
+  "system_schema_add_new_message": "Новая схема будет добавлена.",
+  "iso_active_parent_category": "Родительская категория"
 }

@@ -23,7 +23,7 @@
   "profiles": "Profiles",
   "entity": "Entity",
   "table": "Table",
-  "entity_type": "Entity Type",
+  "entity_type": "Schema",
   "process": "Process",
   "settings": "Settings",
   "created": "Created",
@@ -149,11 +149,11 @@
   "description": "Description",
   "author": "Author",
   "id_deleted": "Is deleted",
-  "modified_by": "Modified by user",
+  "modified_by": "Modified by ",
   "organization": "Organization",
   "sessions": "Sessions",
   "authentification_type": "Authentication Type",
-  "is_deleted": "Is deleted",
+  "is_deleted": "Deleted",
   "users_add_info": "New user will be added.",
   "user_list": "User list",
   "name": "Name",
@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Click on button to preview matrix",
   "iso_risk_template_edit": "Edit the template",
   "system_back": "Back",
-  "iso_company_matrix": "Risk matrix"
+  "iso_company_matrix": "Risk matrix",
+  "system_schemes": "Schemes",
+  "system_add_schema": "Add schema",
+  "system_schema_add_new_message": "The new scheme will be added.",
+  "iso_active_parent_category": "Parent category"
 }

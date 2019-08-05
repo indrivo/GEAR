@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Klicken Sie auf die Schaltfläche, um eine Vorschau-matrix",
   "iso_risk_template_edit": "Bearbeiten der Vorlage",
   "system_back": "Zurück",
-  "iso_company_matrix": "Matrix Risiken"
+  "iso_company_matrix": "Matrix Risiken",
+  "system_schemes": "Systeme",
+  "system_add_schema": "Schema hinzufügen",
+  "system_schema_add_new_message": "Die neue Regelung wird Hinzugefügt.",
+  "iso_active_parent_category": "Übergeordnete Kategorie"
 }

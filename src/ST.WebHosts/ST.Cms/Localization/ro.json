@@ -23,7 +23,7 @@
   "profiles": "Profiluri",
   "entity": "Entitate",
   "table": "Tabel",
-  "entity_type": "Tip Entitate",
+  "entity_type": "Schema",
   "process": "Procese",
   "settings": "Setari",
   "created": "Creat",
@@ -149,11 +149,11 @@
   "description": "Descriere",
   "author": "Autor",
   "id_deleted": "Este sters",
-  "modified_by": "Modificat de utilizator",
+  "modified_by": "Modificat de ",
   "organization": "Organizatie",
   "sessions": "Sesiuni",
   "authentification_type": "Tip autentificare",
-  "is_deleted": "Este sters",
+  "is_deleted": "Sters",
   "users_add_info": "Utilizator nou va fi adăugat.",
   "user_list": "Lista de utilizatori",
   "name": "Nume",
@@ -436,5 +436,9 @@
   "iso_risk_click_to_preview": "Click pe buton pentru a previzualiza matrix",
   "iso_risk_template_edit": "Editare șablon",
   "system_back": "Înapoi",
-  "iso_company_matrix": "Matricea riscurilor"
+  "iso_company_matrix": "Matricea riscurilor",
+  "system_schemes": "Scheme",
+  "system_add_schema": "Adăuga  schemă ",
+  "system_schema_add_new_message": "Noua schemă va fi adăugata.",
+  "iso_active_parent_category": "Categoria părinte"
 }

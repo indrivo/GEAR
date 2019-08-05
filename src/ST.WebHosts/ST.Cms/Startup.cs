@@ -21,7 +21,6 @@ using ST.Configuration.Extensions;
 using ST.Configuration.Server;
 using ST.DynamicEntityStorage.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Identity.Versioning;
@@ -34,7 +33,6 @@ using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core;
 using ST.Core.Extensions;
-using ST.Core.Helpers.DbContexts;
 using ST.Entities;
 using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
@@ -176,7 +174,7 @@ namespace ST.Cms
 
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
-				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
 			});
 
@@ -221,7 +219,7 @@ namespace ST.Cms
 			services.AddEntityModule<EntitiesDbContext, EntityRepository, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
 			services.AddDbContext<EntitiesDbContext>(options =>
 			{
-				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
 			}, ServiceLifetime.Transient);
 
@@ -260,7 +258,7 @@ namespace ST.Cms
 			services.AddFormModule<FormDbContext>();
 			services.AddDbContext<FormDbContext>(options =>
 			{
-				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
 			});
 
@@ -271,18 +269,17 @@ namespace ST.Cms
 			services.AddPageModule<DynamicPagesDbContext>();
 			services.AddDbContext<DynamicPagesDbContext>(options =>
 			{
-				options.GetDefaultOptions(Configuration, HostingEnvironment);
+				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
 				var factoryOptions = new DbContextOptionsBuilder<EntitiesDbContext>();
 				factoryOptions.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-				DbContextFactory<DynamicPagesDbContext, EntitiesDbContext>.Options = factoryOptions;
 			});
 
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportDbContext>();
 			services.AddDbContext<DynamicReportDbContext>(options =>
 				{
-					options.GetDefaultOptions(Configuration, HostingEnvironment);
+					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
 
