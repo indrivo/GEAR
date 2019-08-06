@@ -76,10 +76,15 @@ namespace ST.Install.Razor.Controllers
 		/// </summary>
 		private readonly IDynamicService _dynamicService;
 
-		/// <summary>
-		/// Is system configured
-		/// </summary>
-		private readonly bool _isConfigured;
+        /// <summary>
+        /// Inject entity repository
+        /// </summary>
+        private readonly IEntityRepository _entityRepository;
+
+        /// <summary>
+        /// Is system configured
+        /// </summary>
+        private readonly bool _isConfigured;
 
 		/// <summary>
 		/// Queue for run background tasks
@@ -88,26 +93,28 @@ namespace ST.Install.Razor.Controllers
 
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="hostingEnvironment"></param>
-		/// <param name="permissionService"></param>
-		/// <param name="applicationDbContext"></param>
-		/// <param name="signInManager"></param>
-		/// <param name="notify"></param>
-		/// <param name="cacheService"></param>
-		/// <param name="entitiesDbContext"></param>
-		/// <param name="dynamicService"></param>
-		/// <param name="queue"></param>
-		/// <param name="serviceScopeFactory"></param>
-		public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="hostingEnvironment"></param>
+        /// <param name="permissionService"></param>
+        /// <param name="applicationDbContext"></param>
+        /// <param name="signInManager"></param>
+        /// <param name="notify"></param>
+        /// <param name="cacheService"></param>
+        /// <param name="entitiesDbContext"></param>
+        /// <param name="dynamicService"></param>
+        /// <param name="queue"></param>
+        /// <param name="serviceScopeFactory"></param>
+        /// <param name="entityRepository"></param>
+        public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IBackgroundTaskQueue queue, IServiceScopeFactory serviceScopeFactory, IEntityRepository entityRepository)
 		{
 			_entitiesDbContext = entitiesDbContext;
 			_dynamicService = dynamicService;
 			Queue = queue;
 			_serviceScopeFactory = serviceScopeFactory;
-			_hostingEnvironment = hostingEnvironment;
+            _entityRepository = entityRepository;
+            _hostingEnvironment = hostingEnvironment;
 			_applicationDbContext = applicationDbContext;
 			_signInManager = signInManager;
 			_permissionService = permissionService;
@@ -263,7 +270,7 @@ namespace ST.Install.Razor.Controllers
 			await Application.CoreApp.SyncDefaultEntityFrameWorkEntities(tenant.Id);
 
 			//Create dynamic tables for configured tenant
-			await _dynamicService.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
+			await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
 
 			await Application.CoreApp.SeedDynamicDataAsync();
 

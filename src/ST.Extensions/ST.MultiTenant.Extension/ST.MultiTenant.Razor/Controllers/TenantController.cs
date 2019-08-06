@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Core;
 using ST.Core.Extensions;
-using ST.DynamicEntityStorage.Abstractions;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
@@ -46,7 +46,7 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <summary>
         /// Inject dynamic service
         /// </summary>
-        private readonly IDynamicService _service;
+        private readonly IEntityRepository _service;
 
         /// <summary>
         /// Constructor
@@ -56,7 +56,7 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <param name="entitiesDbContext"></param>
         /// <param name="service"></param>
         public TenantController(
-            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IDynamicService service)
+            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IEntityRepository service)
         {
             Context = context;
             _logger = logger;

@@ -21,6 +21,8 @@ using ST.Core.Extensions;
 using ST.Core.Razor.Extensions;
 using ST.Entities.Abstractions.Constants;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Models.MultiTenants;
+using ST.MultiTenant.Abstractions;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Abstractions.Models.ViewModels;
@@ -37,6 +39,11 @@ namespace ST.PageRender.Razor.Services
         private readonly EntitiesDbContext _context;
 
         private readonly IDynamicPagesContext _pagesContext;
+
+        /// <summary>
+        /// Inject organization service
+        /// </summary>
+        private readonly IOrganizationService<Tenant> _organizationService;
 
         /// <summary>
         /// Inject notifier
@@ -58,7 +65,7 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService)
         {
             _context = context;
             _cacheService = cacheService;
@@ -66,6 +73,7 @@ namespace ST.PageRender.Razor.Services
             _userManager = userManager;
             _contextAccessor = contextAccessor;
             _pagesContext = pagesContext;
+            _organizationService = organizationService;
         }
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
@@ -86,10 +94,12 @@ namespace ST.PageRender.Razor.Services
             }
             var routeData = _contextAccessor.HttpContext.GetRouteData();
             var user = await GetCurrentUserAsync();
+            var organization = _organizationService.GetUserOrganization(user);
             var data = new Dictionary<string, string>
             {
                 { "AppName", "ISO 27001" },
                 { "UserName", user.UserName },
+                { "Organization", organization.Name },
                 { "UserEmail", user.Email },
                 { "UserImagePath", $"/Users/GetImage?id={user.Id}"},
                 { "SystemYear", DateTime.Now.Year.ToString() },

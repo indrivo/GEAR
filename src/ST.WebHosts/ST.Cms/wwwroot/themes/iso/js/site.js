@@ -40,6 +40,38 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
 	return this;
 };
 
+/*
+ * text cell position
+ */
+function changeTextCellPosition() {
+	$(this).parent().focusout(function () {
+		$(this).css("left", "");
+	});
+	const expandCell = $(this).parent();
+	const pos = new TableInlineEdit().elementOffset(this);
+	const docHeight = $(document).height();
+	const docWidth = $(document).width();
+	const hPercent = pos.top * 100 / docHeight;
+	const diffH = docHeight - pos.top;
+	const textareaWidth = $(expandCell).innerWidth();
+
+	const expandedCell = $(this).parent();
+	const navBarWidth = $(".navigation").width();
+	pos.left -= navBarWidth;
+	const wPercent = pos.left * 100 / docWidth;
+	const diffW = docWidth - pos.left;
+
+	if (hPercent > 70 && hPercent < 80) {
+		expandedCell.css("top", `${pos.top - diffH}px`);
+	} else if (hPercent > 80) {
+		expandedCell.css("top", `${pos.top - diffH - 240}px`);
+	}
+
+	if (wPercent > 70) {
+		expandedCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+	}
+}
+
 
 $(".table")
 	.on("preInit.dt", function () {
@@ -161,7 +193,7 @@ function riskMatrixCreate() {
 /***********************************************
 			Override table column visibility
 ************************************************/
-if (typeof TableColumnsVisibility !== 'undefined') {
+if (typeof TableColumnsVisibility !== "undefined") {
 
 	//Container what store column visibility control
 	TableColumnsVisibility.prototype.modalContainer = "#hiddenColumnsModal * .modal-body";
@@ -219,7 +251,7 @@ if (typeof TableColumnsVisibility !== 'undefined') {
 	 * Register events for control initialization
 	*/
 	TableColumnsVisibility.prototype.registerInitEvents = function () {
-		$('.table-search').keyup(function () {
+		$(".table-search").keyup(function () {
 			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
 			oTable.search($(this).val()).draw();
 		});
@@ -228,7 +260,7 @@ if (typeof TableColumnsVisibility !== 'undefined') {
 		$(".deleteMultipleRows").on("click", function () {
 			const cTable = $(this).closest(".card").find(".dynamic-table");
 			if (cTable) {
-				if (typeof TableBuilder !== 'undefined') {
+				if (typeof TableBuilder !== "undefined") {
 					new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
 				}
 			}
@@ -259,16 +291,16 @@ if (typeof TableColumnsVisibility !== 'undefined') {
 /***********************************************
 			Override TableBuilder
 ************************************************/
-if (typeof TableBuilder !== 'undefined') {
+if (typeof TableBuilder !== "undefined") {
 	//Override table select
 	TableBuilder.prototype.dom = '<"CustomTableHeadBar">rtip';
-	RenderTableSelect.prototype.settings.classNameText = 'no-sort';
+	RenderTableSelect.prototype.settings.classNameText = "no-sort";
 	RenderTableSelect.prototype.settings.select.selector = "td:not(.not-selectable):first-child .checkbox-container";
 	//Table buttons
 	TableBuilder.prototype.buttons = [];
 
 	RenderTableSelect.prototype.selectHandler = function (context) {
-		const row = $(context).closest('tr');
+		const row = $(context).closest("tr");
 		const table = row.closest("table").DataTable();
 		if (row.hasClass("selected")) {
 			table.row(row).deselect();
@@ -366,7 +398,7 @@ if (typeof TableBuilder !== 'undefined') {
 		if (this.configurations.table.name === "CommonRiskMatrixTemplate" || this.configurations.table.name === "CompanyRiskMatrix") return;
 		new TableInlineEdit().addNewHandler($(settings.nTable).parent());
 		// The second argument is not required
-		this.configurations.overflowIndicator = $.Iso.OverflowIndicator($($(settings.nTable)), { trigger: 'focus' });
+		this.configurations.overflowIndicator = $.Iso.OverflowIndicator($($(settings.nTable)), { trigger: "focus" });
 	};
 }
 
@@ -374,7 +406,7 @@ if (typeof TableBuilder !== 'undefined') {
 /***********************************************
 			Override inline edit templates
 ************************************************/
-if (typeof TableInlineEdit !== 'undefined') {
+if (typeof TableInlineEdit !== "undefined") {
 	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
 		return;
 	};
@@ -439,35 +471,6 @@ if (typeof TableInlineEdit !== 'undefined') {
 		$(el).parent().on("click", changeTextCellPosition);
 		this.onAddedCellBindValidations(el);
 	};
-
-	/*
-	 * text cell position
-	 */
-	function changeTextCellPosition() {
-		const expandCell = $(this).parent();
-		const pos = new TableInlineEdit().elementOffset(this);
-		const docHeight = $(document).height();
-		const docWidth = $(document).width();
-		const hPercent = pos.top * 100 / docHeight;
-		const diffH = docHeight - pos.top;
-		const textareaWidth = $(expandCell).innerWidth();
-
-		const expandedCell = $(this).parent();
-		const navBarWidth = $(".navigation").width();
-		pos.left -= navBarWidth;
-		const wPercent = pos.left * 100 / docWidth;
-		const diffW = docWidth - pos.left;
-
-		if (hPercent > 70 && hPercent < 80) {
-			expandedCell.css("top", `${pos.top - diffH}px`);
-		} else if (hPercent > 80) {
-			expandedCell.css("top", `${pos.top - diffH - 240}px`);
-		}
-
-		if (wPercent > 70) {
-			expandedCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
-		}
-	}
 
 	TableInlineEdit.prototype.defaultNotEditFieldContainer = "<div class='text-center'>-</div>";
 
@@ -579,12 +582,12 @@ if (typeof TableInlineEdit !== 'undefined') {
 						return {
 							id: x.id,
 							value: x.name
-						}
+						};
 					});
-					$($(div).find(".fire-reference-component")).on('click', function (event) {
+					$($(div).find(".fire-reference-component")).on("click", function (event) {
 						if (event.originalEvent.detail > 1) return;
 						const cellCtx = this;
-						const item = $.Iso.dynamicFilter('list',
+						const item = $.Iso.dynamicFilter("list",
 							event.target, items,
 							{
 								create: function (value) {
@@ -651,9 +654,9 @@ if (typeof TableInlineEdit !== 'undefined') {
 								searchBarPlaceholder: window.translate("system_search_add"),
 								addButtonLabel: window.translate("add")
 							},
-							{ placement: 'bottom-auto' });
+							{ placement: "bottom-auto" });
 
-						$(item.container).on('selectValueChange', (event, arg) => {
+						$(item.container).on("selectValueChange", (event, arg) => {
 							const { ctx, entity, items } = arg.options;
 							//const exist = items.find(x => x.id === arg.value);
 							$(dropdown).val(arg.value);
@@ -757,8 +760,8 @@ if (typeof TableInlineEdit !== 'undefined') {
 		$.each(els, (index, el) => {
 			if (el.hasAttribute("data-required")) {
 				if (!el.value) {
-					if (!el.classList.contains('cell-red')) {
-						el.classList.add('cell-red')
+					if (!el.classList.contains("cell-red")) {
+						el.classList.add("cell-red");
 					}
 					isValid = false;
 				}
@@ -771,8 +774,8 @@ if (typeof TableInlineEdit !== 'undefined') {
 			const ctx = $(el).parent();
 			if (el.hasAttribute("data-required")) {
 				if (!el.value) {
-					if (!ctx.hasClass('cell-red')) {
-						ctx.addClass('cell-red')
+					if (!ctx.hasClass("cell-red")) {
+						ctx.addClass("cell-red");
 					}
 					isValid = false;
 				}
@@ -784,8 +787,8 @@ if (typeof TableInlineEdit !== 'undefined') {
 			if (el.hasAttribute("data-required")) {
 				const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
 				if (!el.value) {
-					if (!input.classList.contains('cell-red')) {
-						input.classList.add('cell-red');
+					if (!input.classList.contains("cell-red")) {
+						input.classList.add("cell-red");
 					}
 					isValid = false;
 				} else {
@@ -1069,7 +1072,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 				$(redraw.row(index).nodes()).on("dblclick", function () {
 					new TableInlineEdit().initInlineEditForRow(this);
 				});
-				$.Iso.OverflowIndicator(htTable, { trigger: 'focus' });
+				$.Iso.OverflowIndicator(htTable, { trigger: "focus" });
 			});
 
 		}).catch(err => {
@@ -1107,7 +1110,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 		const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
 			= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
 		mCtx.on("click", function () {
-			if (event.originalEvent.detail > 1) return;
+			if (event.detail > 1) return;
 			const promiseArr = [];
 			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
 			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
@@ -1179,7 +1182,7 @@ if (typeof TableInlineEdit !== 'undefined') {
 /***********************************************
 			Override notificator
 ************************************************/
-if (typeof Notificator !== 'undefined') {
+if (typeof Notificator !== "undefined") {
 	//override notification populate container
 	Notificator.prototype.addNewNotificationToContainer = function (notification) {
 		const _ = $("#notificationAlarm");
@@ -1204,7 +1207,7 @@ if (typeof Notificator !== 'undefined') {
 /***********************************************
 			Override DataInjector
 ************************************************/
-if (typeof DataInjector !== 'undefined') {
+if (typeof DataInjector !== "undefined") {
 	/**
 	 * Add async
 	 * @param {any} entityName
@@ -1313,7 +1316,7 @@ function makeMenuActive(target) {
 $(document).ready(function () {
 	window.forceTranslate();
 	//Log Out
-	$('.sa-logout').click(function () {
+	$(".sa-logout").click(function () {
 		swal({
 			title: window.translate("confirm_log_out_question"),
 			text: window.translate("log_out_message"),
@@ -1325,7 +1328,7 @@ $(document).ready(function () {
 		}).then((result) => {
 			if (result.value) {
 				$.ajax({
-					url: '/Account/LocalLogout',
+					url: "/Account/LocalLogout",
 					type: "post",
 					dataType: "json",
 					contentType: "application/x-www-form-urlencoded; charset=utf-8",
@@ -1333,7 +1336,7 @@ $(document).ready(function () {
 						if (data.success) {
 
 							swal("Success!", data.message, "success");
-							window.location.href = '/Account/Login';
+							window.location.href = "/Account/Login";
 						} else {
 							swal("Fail!", data.message, "error");
 						}
@@ -1374,7 +1377,7 @@ $(document).ready(function () {
 
 
 	//Localization promise
-	var localizationPromise = new Promise((resolve, reject) => {
+	const localizationPromise = new Promise((resolve, reject) => {
 		//Set localization config
 		let translateIcon = getIdentifier(settings.localization.current.identifier);
 		$("#currentlanguage").addClass(`flag-icon flag-icon-${translateIcon}`);
@@ -1410,7 +1413,7 @@ $(document).ready(function () {
 var PreLoader;
 
 $(window).on("load", function () {
-	$('.loader-wrapper').not('.incomponent').fadeOut(1000, function () {
+	$(".loader-wrapper").not(".incomponent").fadeOut(1000, function () {
 		PreLoader = $(this).detach();
 	});
 });
@@ -1421,7 +1424,7 @@ $(window).on("load", function () {
 
 	"use strict";
 
-	const $body = $('body');
+	const $body = $("body");
 
 	/* Initialize Tooltip */
 	$('[data-toggle="tooltip"]').tooltip();
@@ -1432,7 +1435,7 @@ $(window).on("load", function () {
 
 
 	/* Initialize Lightbox */
-	$body.delegate('[data-toggle="lightbox"]', 'click', function (event) {
+	$body.delegate('[data-toggle="lightbox"]', "click", function (event) {
 		event.preventDefault();
 		$(this).ekkoLightbox();
 	});
@@ -1441,13 +1444,13 @@ $(window).on("load", function () {
     /************************************************
      Append Preloader (use in ajax call)
      ************************************************/
-	$body.delegate('.append-preloader', 'click', function () {
+	$body.delegate(".append-preloader", "click", function () {
 
 		$(PreLoader).show();
 		$body.append(PreLoader);
 		setTimeout(function () {
 
-			$('.loader-wrapper').fadeOut(1000, function () {
+			$(".loader-wrapper").fadeOut(1000, function () {
 				PreLoader = $(this).detach();
 			});
 
@@ -1459,10 +1462,10 @@ $(window).on("load", function () {
     /************************************************
      Toggle Preloader in card or box
      ************************************************/
-	$body.delegate('[data-toggle="loader"]', 'click', function () {
+	$body.delegate('[data-toggle="loader"]', "click", function () {
 
-		var target = $(this).attr('data-target');
-		$('#' + target).show();
+		var target = $(this).attr("data-target");
+		$("#" + target).show();
 
 	});
 
@@ -1470,19 +1473,19 @@ $(window).on("load", function () {
     /************************************************
      Toggle Sidebar Nav
      ************************************************/
-	$body.delegate('.toggle-sidebar', 'click', function () {
-		$('.sidebar').toggleClass('collapsed');
+	$body.delegate(".toggle-sidebar", "click", function () {
+		$(".sidebar").toggleClass("collapsed");
 
-		if (localStorage.getItem("asideMode") === 'collapsed') {
-			localStorage.setItem("asideMode", 'expanded')
+		if (localStorage.getItem("asideMode") === "collapsed") {
+			localStorage.setItem("asideMode", "expanded")
 		} else {
-			localStorage.setItem("asideMode", 'collapsed')
+			localStorage.setItem("asideMode", "collapsed")
 		}
 		return false;
 	});
 
 	var p;
-	$body.delegate('.hide-sidebar', 'click', function () {
+	$body.delegate(".hide-sidebar", "click", function () {
 		if (p) {
 			p.prependTo(".wrapper");
 			p = null;
@@ -1494,10 +1497,10 @@ $(window).on("load", function () {
 	$.fn.setAsideMode = function () {
 		if (localStorage.getItem("asideMode") === null) {
 
-		} else if (localStorage.getItem("asideMode") === 'collapsed') {
-			$('.sidebar').addClass('collapsed');
+		} else if (localStorage.getItem("asideMode") === "collapsed") {
+			$(".sidebar").addClass("collapsed");
 		} else {
-			$('.sidebar').removeClass('collapsed');
+			$(".sidebar").removeClass("collapsed");
 		}
 	};
 	if ($(window).width() > 768) {
@@ -1508,10 +1511,10 @@ $(window).on("load", function () {
     /************************************************
      Sidebar Nav Accordion
      ************************************************/
-	$body.on('click', '.navigation li:has(.sub-nav) > a', function () {
+	$body.on("click", ".navigation li:has(.sub-nav) > a", function () {
 		/*$('.navigation li').removeClass('open');*/
-		$(this).siblings('.sub-nav').slideToggle();
-		$(this).parent().toggleClass('open');
+		$(this).siblings(".sub-nav").slideToggle();
+		$(this).parent().toggleClass("open");
 		return false;
 	});
 
@@ -1519,10 +1522,10 @@ $(window).on("load", function () {
     /************************************************
      Sidebar Colapsed state submenu position
      ************************************************/
-	$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
+	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover", function () {
 		if ($(".sidebar").hasClass("collapsed")) {
 			const $menuItem = $(this),
-				$submenuWrapper = $('> .sub-nav', $menuItem);
+				$submenuWrapper = $("> .sub-nav", $menuItem);
 			// grab the menu item's position relative to its positioned parent
 			const menuItemPos = $menuItem.position();
 
@@ -1537,26 +1540,26 @@ $(window).on("load", function () {
     /************************************************
      Toggle Controls on small devices
      ************************************************/
-	$body.delegate('.toggle-controls', 'click', function () {
-		$('.controls-wrapper').toggle().toggleClass('d-none');
+	$body.delegate(".toggle-controls", "click", function () {
+		$(".controls-wrapper").toggle().toggleClass("d-none");
 	});
 
 
     /************************************************
      Toast Messages
      ************************************************/
-	$body.delegate('[data-toggle="toast"]', 'click', function () {
+	$body.delegate('[data-toggle="toast"]', "click", function () {
 
-		var dataAlignment = $(this).attr('data-alignment');
-		var dataPlacement = $(this).attr('data-placement');
-		var dataContent = $(this).attr('data-content');
-		var dataStyle = $(this).attr('data-style');
+		var dataAlignment = $(this).attr("data-alignment");
+		var dataPlacement = $(this).attr("data-placement");
+		var dataContent = $(this).attr("data-content");
+		var dataStyle = $(this).attr("data-style");
 
 
-		if ($('.toast.' + dataAlignment + '-' + dataPlacement).length) {
-			$('.toast.' + dataAlignment + '-' + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
+		if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
+			$(".toast." + dataAlignment + "-" + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
 		} else {
-			$body.append('<div class="toast ' + dataAlignment + '-' + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
+			$body.append('<div class="toast ' + dataAlignment + "-" + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
 		}
 
 	});
@@ -1565,32 +1568,32 @@ $(window).on("load", function () {
     /**************************************
      Chosen Form Control
      **************************************/
-	$('.form-control-chosen').chosen({
+	$(".form-control-chosen").chosen({
 		allow_single_deselect: true,
-		width: '100%'
+		width: "100%"
 	});
-	$('.form-control-chosen-required').chosen({
+	$(".form-control-chosen-required").chosen({
 		allow_single_deselect: false,
-		width: '100%'
+		width: "100%"
 	});
-	$('.form-control-chosen-search-threshold-100').chosen({
+	$(".form-control-chosen-search-threshold-100").chosen({
 		allow_single_deselect: true,
 		disable_search_threshold: 100,
-		width: '100%'
+		width: "100%"
 	});
-	$('.form-control-chosen-optgroup').chosen({
-		width: '100%'
+	$(".form-control-chosen-optgroup").chosen({
+		width: "100%"
 	});
 	$(function () {
-		$('[title="clickable_optgroup"]').addClass('chosen-container-optgroup-clickable');
+		$('[title="clickable_optgroup"]').addClass("chosen-container-optgroup-clickable");
 	});
-	$(document).delegate('[title="clickable_optgroup"] .group-result', 'click', function () {
-		var unselected = $(this).nextUntil('.group-result').not('.result-selected');
+	$(document).delegate('[title="clickable_optgroup"] .group-result', "click", function () {
+		var unselected = $(this).nextUntil(".group-result").not(".result-selected");
 		if (unselected.length) {
-			unselected.trigger('mouseup');
+			unselected.trigger("mouseup");
 		} else {
-			$(this).nextUntil('.group-result').each(function () {
-				$('a.search-choice-close[data-option-array-index="' + $(this).data('option-array-index') + '"]').trigger('click');
+			$(this).nextUntil(".group-result").each(function () {
+				$('a.search-choice-close[data-option-array-index="' + $(this).data("option-array-index") + '"]').trigger("click");
 			});
 		}
 	});
@@ -1602,17 +1605,17 @@ $(window).on("load", function () {
 
 	$.fn.removeClassStartingWith = function (filter) {
 		$(this).removeClass(function (index, className) {
-			return (className.match(new RegExp("\\S*" + filter + "\\S*", 'g')) || []).join(' ')
+			return (className.match(new RegExp("\\S*" + filter + "\\S*", "g")) || []).join(" ")
 		});
 		return this;
 	};
 
 
-	$body.delegate('.theme-changer', 'click', function () {
-		var primaryColor = $(this).attr('primary-color');
-		var sidebarBg = $(this).attr('sidebar-bg');
-		var logoBg = $(this).attr('logo-bg');
-		var headerBg = $(this).attr('header-bg');
+	$body.delegate(".theme-changer", "click", function () {
+		var primaryColor = $(this).attr("primary-color");
+		var sidebarBg = $(this).attr("sidebar-bg");
+		var logoBg = $(this).attr("logo-bg");
+		var headerBg = $(this).attr("header-bg");
 
 		localStorage.setItem("primaryColor", primaryColor);
 		localStorage.setItem("sidebarBg", sidebarBg);
@@ -1631,34 +1634,34 @@ $(window).on("load", function () {
 
 			/* SIDEBAR */
 			if (localStorage.getItem("sidebarBg") === "light") {
-				$('.sidebar ').addClass('sidebar-light');
+				$(".sidebar ").addClass("sidebar-light");
 			} else {
-				$('.sidebar').removeClass('sidebar-light');
+				$(".sidebar").removeClass("sidebar-light");
 			}
 
 
 			/* PRIMARY COLOR */
-			if (localStorage.getItem("primaryColor") === 'primary') {
-				document.documentElement.style.setProperty('--theme-colors-primary', '#4B89FC');
+			if (localStorage.getItem("primaryColor") === "primary") {
+				document.documentElement.style.setProperty("--theme-colors-primary", "#4B89FC");
 			} else {
-				var colorCode = getComputedStyle(document.body).getPropertyValue('--theme-colors-' + localStorage.getItem("primaryColor"));
-				document.documentElement.style.setProperty('--theme-colors-primary', colorCode);
+				var colorCode = getComputedStyle(document.body).getPropertyValue("--theme-colors-" + localStorage.getItem("primaryColor"));
+				document.documentElement.style.setProperty("--theme-colors-primary", colorCode);
 			}
 
 
 			/* LOGO */
-			if (localStorage.getItem("logoBg") === 'white' || localStorage.getItem("logoBg") === 'light') {
-				$('.sidebar .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-dark').addClass('navbar-light bg-' + localStorage.getItem("logoBg"));
+			if (localStorage.getItem("logoBg") === "white" || localStorage.getItem("logoBg") === "light") {
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark").addClass("navbar-light bg-" + localStorage.getItem("logoBg"));
 			} else {
-				$('.sidebar .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-light').addClass('navbar-dark bg-' + localStorage.getItem("logoBg"));
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light").addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
 			}
 
 
 			/* HEADER */
 			if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
-				$('.header .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-dark').addClass('navbar-light bg-' + localStorage.getItem("headerBg"));
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark").addClass("navbar-light bg-" + localStorage.getItem("headerBg"));
 			} else {
-				$('.header .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-light').addClass('navbar-dark bg-' + localStorage.getItem("headerBg"));
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light").addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
 			}
 
 		}

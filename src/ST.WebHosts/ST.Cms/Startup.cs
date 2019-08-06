@@ -37,7 +37,6 @@ using ST.Entities;
 using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
-using ST.Report.Dynamic.Extensions;
 using ST.Entities.Abstractions.Extensions;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
@@ -54,6 +53,8 @@ using ST.Localization.Abstractions.Models;
 using ST.Localization.Services;
 using ST.PageRender.Abstractions.Extensions;
 using ST.PageRender.Data;
+using ST.Report.Abstractions.Extensions;
+using ST.Report.Dynamic;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 
 namespace ST.Cms
@@ -216,12 +217,15 @@ namespace ST.Cms
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
 			//---------------------------------------Entity Module-------------------------------------
-			services.AddEntityModule<EntitiesDbContext, EntityRepository, NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>();
-			services.AddDbContext<EntitiesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			}, ServiceLifetime.Transient);
+			services.AddEntityModule<EntitiesDbContext, EntityRepository>()
+				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
+				.AddEntityModuleStorage<EntitiesDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddEntityModuleEvents();
+
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -255,33 +259,31 @@ namespace ST.Cms
 			services.AddInternalCalendarModule();
 
 			//-----------------------------------------Form Module-------------------------------------
-			services.AddFormModule<FormDbContext>();
-			services.AddDbContext<FormDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			});
-
-			services.AddFormStaticFilesModule();
-
+			services.AddFormModule<FormDbContext>()
+				.AddFormModuleStorage<FormDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------
-			services.AddPageModule<DynamicPagesDbContext>();
-			services.AddDbContext<DynamicPagesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-				var factoryOptions = new DbContextOptionsBuilder<EntitiesDbContext>();
-				factoryOptions.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-			});
-
-			//---------------------------------------Report Module-------------------------------------
-			services.AddDynamicReportModule<DynamicReportDbContext>();
-			services.AddDbContext<DynamicReportDbContext>(options =>
+			services.AddPageModule<DynamicPagesDbContext>()
+				.AddPageModuleStorage<DynamicPagesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
+
+
+			//---------------------------------------Report Module-------------------------------------
+			services.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()
+				.AddDynamicReportModuleStorage<DynamicReportDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+			
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.UseCustomCacheModule(HostingEnvironment, Configuration);

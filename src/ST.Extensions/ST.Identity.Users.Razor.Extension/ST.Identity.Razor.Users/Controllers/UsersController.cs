@@ -662,6 +662,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     Roles = roles,
                     Sessions = sessions,
                     AuthenticationType = o.AuthenticationType.ToString(),
+                    LastLogin = o.LastLogin,
                     Organization = org?.Name
                 };
             }).Select(x => x.Result);

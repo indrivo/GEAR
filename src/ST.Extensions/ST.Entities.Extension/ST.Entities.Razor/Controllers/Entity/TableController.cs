@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -58,20 +57,32 @@ namespace ST.Entities.Razor.Controllers.Entity
         /// </summary>
         private readonly IFormContext _formContext;
 
+        /// <summary>
+        /// Inject entity repository
+        /// </summary>
         private readonly IEntityRepository _entityRepository;
+
+        /// <summary>
+        /// Inject table service builder
+        /// </summary>
+        private readonly ITablesService _tablesService;
+
+        /// <summary>
+        /// Database connection string
+        /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             _logger = logger;
             Queue = queue;
             _formContext = formContext;
             _entityRepository = entityRepository;
+            _tablesService = tablesService;
             var (_, connection) = DbUtil.GetConnectionString(configuration);
             ConnectionString = connection;
             formContext.ValidateNullAbstractionContext();
             Context.Validate();
-
         }
 
         /// <summary>
@@ -90,13 +101,6 @@ namespace ST.Entities.Razor.Controllers.Entity
         }
 
         /// <summary>
-        /// Get table dataService
-        /// </summary>
-        /// <returns></returns>
-        [NonAction]
-        private static ITablesService GetSqlService() => IoC.Resolve<ITablesService>();
-
-        /// <summary>
         /// Create a table
         /// </summary>
         /// <returns></returns>
@@ -108,33 +112,31 @@ namespace ST.Entities.Razor.Controllers.Entity
             var entityType =
                 await Context.EntityTypes.FirstOrDefaultAsync(x => x.Id == Guid.Parse(model.SelectedTypeId));
             if (entityType == null) return View(model);
-            {
-                var m = new CreateTableViewModel
-                {
-                    Name = model.Name,
-                    EntityType = entityType.Name,
-                    Description = model.Description,
-                    TenantId = CurrentUserTenantId,
-                    IsCommon = model.IsCommon
-                };
-                try
-                {
-                    var table = m.Adapt<TableModel>();
-                    await Context.Table.AddAsync(table);
-                    await Context.SaveChangesAsync();
-                    var sqlService = GetSqlService();
-                    var response = sqlService.CreateSqlTable(table, ConnectionString);
-                    if (response.Result)
-                        return RedirectToAction("Edit", "Table", new { id = table.Id, tab = "one" });
-                }
-                catch (Exception e)
-                {
-                    ModelState.AddModelError("fail", e.Message);
-                    return View(model);
-                }
 
+            var newTable = new CreateTableViewModel
+            {
+                Name = model.Name,
+                EntityType = entityType.Name,
+                Description = model.Description,
+                TenantId = CurrentUserTenantId,
+                IsCommon = model.IsCommon
+            };
+            var table = newTable.Adapt<TableModel>();
+            await Context.Table.AddAsync(table);
+            var dbResult = await Context.SaveAsync();
+            if (dbResult.IsSuccess)
+            {
+                var response = _tablesService.CreateSqlTable(table, ConnectionString);
+                if (response.Result)
+                    return RedirectToAction("Edit", "Table", new { id = table.Id, tab = "one" });
+            }
+            else
+            {
+                ModelState.AppendResultModelErrors(dbResult.Errors);
                 return View(model);
             }
+
+            return View(model);
         }
 
         /// <summary>
@@ -159,7 +161,6 @@ namespace ST.Entities.Razor.Controllers.Entity
             var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount);
-
 
             var orderList = filtered.Select(o => new TableModel
             {
@@ -216,54 +217,16 @@ namespace ST.Entities.Razor.Controllers.Entity
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmTableUpdate)]
         public IActionResult Edit(UpdateTableViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+            Context.Table.Update(model.Adapt<TableModel>());
+            var dbResult = Context.Save();
+            if (dbResult.IsSuccess)
             {
-                return View(model);
-            }
-
-            try
-            {
-                Context.Table.Update(model.Adapt<TableModel>());
-                Context.SaveChanges();
                 return RedirectToAction(nameof(Index), "Table");
             }
-            catch
-            {
-                ModelState.AddModelError(string.Empty, "Something went wrong on server");
-                return View(model);
-            }
-        }
 
-        /// <summary>
-        /// Change status is deleted in true
-        /// </summary>
-        /// <param name="tableId"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public async Task<JsonResult> RemoveTableModel(Guid tableId)
-        {
-            var response = new ResultModel
-            {
-                Errors = new List<IErrorModel>()
-            };
-            var table = Context.Table.FirstOrDefault(x => x.Id == tableId);
-            if (table == null)
-            {
-                response.Errors.Add(new ErrorModel("fail", "Entity not found!"));
-                return Json(response);
-            }
-            Context.Table.Remove(table);
-            var result = await Context.SaveAsync();
-            if (result.IsSuccess)
-            {
-                response.IsSuccess = true;
-            }
-            else
-            {
-                response.Errors.Add(new ErrorModel("fail", "Fail to save data"));
-            }
-
-            return Json(response);
+            ModelState.AddModelError(string.Empty, "Something went wrong on server");
+            return View(model);
         }
 
         /// <summary>
@@ -311,9 +274,8 @@ namespace ST.Entities.Razor.Controllers.Entity
                 field.Configurations = configurationsRq.Result.ToList();
             }
 
-            var sqlService = GetSqlService();
             field = field.CreateSqlField();
-            var insertField = sqlService.AddFieldSql(field, tableName, ConnectionString, true, schema);
+            var insertField = _tablesService.AddFieldSql(field, tableName, ConnectionString, true, schema);
             // Save field model in the dataBase
             if (!insertField.Result)
             {
@@ -493,8 +455,7 @@ namespace ST.Entities.Razor.Controllers.Entity
                     };
                 }).ToList();
 
-            var sqlService = GetSqlService();
-            var updateStructure = sqlService.AddFieldSql(field, table.Name, ConnectionString, false, table.EntityType);
+            var updateStructure = _tablesService.AddFieldSql(field, table.Name, ConnectionString, false, table.EntityType);
             // Save field model structure in the dataBase
             if (!updateStructure.IsSuccess) return View(field);
 
@@ -539,8 +500,8 @@ namespace ST.Entities.Razor.Controllers.Entity
             {
                 return Json(false);
             }
-            var sqlService = GetSqlService();
-            var checkColumn = sqlService.CheckColumnValues(ConnectionString, table.Name, table.EntityType, field.Name);
+
+            var checkColumn = _tablesService.CheckColumnValues(ConnectionString, table.Name, table.EntityType, field.Name);
             if (checkColumn.Result)
             {
                 return Json(false);
@@ -560,12 +521,12 @@ namespace ST.Entities.Razor.Controllers.Entity
                         x.TableFieldConfigId == configType.Id && x.TableModelFieldId == field.Id).Value;
                     if (configValue != null)
                     {
-                        sqlService.DropConstraint(ConnectionString, table.Name, table.EntityType, configValue, field.Name);
+                        _tablesService.DropConstraint(ConnectionString, table.Name, table.EntityType, configValue, field.Name);
                     }
                 }
             }
 
-            var dropColumn = sqlService.DropColumn(ConnectionString, table.Name, table.EntityType, field.Name);
+            var dropColumn = _tablesService.DropColumn(ConnectionString, table.Name, table.EntityType, field.Name);
             if (!dropColumn.Result) return Json(false);
             Context.TableFields.Remove(field);
             Context.SaveChanges();
@@ -589,8 +550,7 @@ namespace ST.Entities.Razor.Controllers.Entity
             }
 
             var table = Context.Table.First(x => x.Id == id);
-            var sqlService = GetSqlService();
-            var checkColumn = sqlService.CheckTableValues(ConnectionString, table.Name, table.EntityType);
+            var checkColumn = _tablesService.CheckTableValues(ConnectionString, table.Name, table.EntityType);
             if (checkColumn.Result)
             {
                 return Json(new { success = false, message = "Table has value" });
@@ -605,7 +565,7 @@ namespace ST.Entities.Razor.Controllers.Entity
 
             try
             {
-                sqlService.DropTable(ConnectionString, table.Name, table.EntityType);
+                _tablesService.DropTable(ConnectionString, table.Name, table.EntityType);
                 Context.Table.Remove(table);
                 Context.SaveChanges();
                 return Json(new { success = true, message = "Delete success" });

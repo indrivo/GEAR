@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using ST.Cache.Abstractions;
 using ST.Core.Helpers;
-using ST.DynamicEntityStorage.Abstractions;
+using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
@@ -22,7 +22,7 @@ namespace ST.Install
 	{
 		public async Task RegisterCommerceUser(ApplicationUser user, Tenant tenant, SyncEcomerceAccountModel data)
 		{
-			var dynamicService = IoC.Resolve<IDynamicService>();
+			var dynamicService = IoC.Resolve<IEntityRepository>();
 			var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
 			var entitiesDbContext = IoC.Resolve<EntitiesDbContext>();
 			var cacheService = IoC.Resolve<ICacheService>();

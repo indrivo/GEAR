@@ -67,7 +67,7 @@ namespace ST.Entities.Data
                 evArgs.Completed = false;
                 watch.Stop();
                 evArgs.Elapsed = watch.ElapsedMilliseconds;
-                EntityEvents.QueryExecuted(evArgs);
+                EntityEvents.SqlQuery.QueryExecuted(evArgs);
                 Debug.WriteLine(ex);
                 return returnModel;
             }
@@ -76,7 +76,7 @@ namespace ST.Entities.Data
             returnModel.Result.Values = values;
             watch.Stop();
             evArgs.Elapsed = watch.ElapsedMilliseconds;
-            EntityEvents.QueryExecuted(evArgs);
+            EntityEvents.SqlQuery.QueryExecuted(evArgs);
             return returnModel;
         }
 
@@ -284,7 +284,7 @@ namespace ST.Entities.Data
                 evArgs.Elapsed = watch.ElapsedMilliseconds;
                 evArgs.Completed = false;
                 evArgs.Exception = ex;
-                EntityEvents.QueryExecuted(evArgs);
+                EntityEvents.SqlQuery.QueryExecuted(evArgs);
                 returnModel.Errors.Add(new ErrorModel("_ex", ex.ToString()));
                 return returnModel;
             }
@@ -293,7 +293,7 @@ namespace ST.Entities.Data
             returnModel.Result.Values = values;
             watch.Stop();
             evArgs.Elapsed = watch.ElapsedMilliseconds;
-            EntityEvents.QueryExecuted(evArgs);
+            EntityEvents.SqlQuery.QueryExecuted(evArgs);
             return returnModel;
         }
 

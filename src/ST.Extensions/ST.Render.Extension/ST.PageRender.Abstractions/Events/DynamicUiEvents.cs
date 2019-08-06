@@ -1,9 +1,10 @@
 ﻿using System;
+using ST.Core.Events;
 using ST.PageRender.Abstractions.Events.EventArgs;
 
 namespace ST.PageRender.Abstractions.Events
 {
-    public static class SystemEvents
+    public static class DynamicUiEvents
     {
         public struct Pages
         {
@@ -24,17 +25,17 @@ namespace ST.PageRender.Abstractions.Events
             /// Page created
             /// </summary>
             /// <param name="e"></param>
-            public static void PageCreated(PageCreatedEventArgs e) => Core.Events.SystemEvents.InvokeEvent(null, OnPageCreated, e, nameof(OnPageCreated));
+            public static void PageCreated(PageCreatedEventArgs e) => SystemEvents.InvokeEvent(null, OnPageCreated, e, nameof(OnPageCreated));
             /// <summary>
             /// On page deleted
             /// </summary>
             /// <param name="e"></param>
-            public static void PageDeleted(PageCreatedEventArgs e) => Core.Events.SystemEvents.InvokeEvent(null, OnPageDeleted, e, nameof(OnPageDeleted));
+            public static void PageDeleted(PageCreatedEventArgs e) => SystemEvents.InvokeEvent(null, OnPageDeleted, e, nameof(OnPageDeleted));
             /// <summary>
             /// On page updated
             /// </summary>
             /// <param name="e"></param>
-            public static void PageUpdated(PageCreatedEventArgs e) => Core.Events.SystemEvents.InvokeEvent(null, OnPageUpdated, e, nameof(OnPageUpdated));
+            public static void PageUpdated(PageCreatedEventArgs e) => SystemEvents.InvokeEvent(null, OnPageUpdated, e, nameof(OnPageUpdated));
         }
         /// <summary>
         /// Register app events
@@ -45,6 +46,9 @@ namespace ST.PageRender.Abstractions.Events
             Pages.OnPageCreated += EventHandlers.OnPageCreatedHandler;
             Pages.OnPageDeleted += EventHandlers.OnPageDeletedHandler;
             Pages.OnPageUpdated += EventHandlers.OnPageUpdatedHandler;
+
+            //register events on global storage
+            SystemEvents.Common.RegisterEventGroup(nameof(Pages), SystemEvents.GetEvents(typeof(Pages)));
         }
     }
 }

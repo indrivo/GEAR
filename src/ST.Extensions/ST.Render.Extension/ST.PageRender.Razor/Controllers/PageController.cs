@@ -303,7 +303,7 @@ namespace ST.PageRender.Razor.Controllers
             {
                 _pagesContext.Pages.Add(page);
                 _pagesContext.SaveChanges();
-                SystemEvents.Pages.PageCreated(new PageCreatedEventArgs
+                DynamicUiEvents.Pages.PageCreated(new PageCreatedEventArgs
                 {
                     PageId = page.Id,
                     PageName = page.Settings.Name
@@ -407,7 +407,7 @@ namespace ST.PageRender.Razor.Controllers
                     _pagesContext.Pages.Update(page);
                     await _pagesContext.SaveChangesAsync();
                     RemovePageFromCache(page.Id);
-                    SystemEvents.Pages.PageUpdated(new PageCreatedEventArgs
+                    DynamicUiEvents.Pages.PageUpdated(new PageCreatedEventArgs
                     {
                         PageId = page.Id,
                         PageName = page.Settings?.Name
@@ -516,7 +516,7 @@ namespace ST.PageRender.Razor.Controllers
 
             var dbResult = await _pagesContext.SaveDependenceAsync();
             if (!dbResult.IsSuccess) return Json(new {message = "Fail to delete form!", success = false});
-            SystemEvents.Pages.PageDeleted(new PageCreatedEventArgs
+            DynamicUiEvents.Pages.PageDeleted(new PageCreatedEventArgs
             {
                 PageId = page.Id,
                 PageName = page.Settings?.Name
