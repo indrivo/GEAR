@@ -440,5 +440,9 @@
   "system_schemes": "Συστήματα",
   "system_add_schema": "Προσθήκη χρωμάτων",
   "system_schema_add_new_message": "Το νέο σχήμα θα προστεθεί.",
-  "iso_active_parent_category": "Γονική κατηγορία"
+  "iso_active_parent_category": "Γονική κατηγορία",
+  "system_log_in": "Συνδεθείτε",
+  "system_auth_remenber_me": "Να θυμάσαι εμένα;",
+  "system_auth_password": "Κωδικό πρόσβασης",
+  "system_auth_username": "Όνομα χρήστη"
 }

@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Models.Permmisions;
+using ST.Identity.Abstractions.Models.UserProfiles;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Extensions
 {

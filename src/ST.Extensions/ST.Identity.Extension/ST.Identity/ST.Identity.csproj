@@ -23,7 +23,6 @@
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="3.1.4" />
     <PackageReference Include="ST.MPass.Gov" Version="0.1.4-alpha" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
@@ -34,6 +33,11 @@
     <ProjectReference Include="..\..\ST.Cache.Extension\ST.Cache.Abstractions\ST.Cache.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Identity.Permissions.Abstractions\ST.Identity.Permissions.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
   </ItemGroup>
 
 </Project>

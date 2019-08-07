@@ -440,5 +440,9 @@
   "system_schemes": "Los esquemas de",
   "system_add_schema": "Agregar el esquema de",
   "system_schema_add_new_message": "El nuevo esquema será añadido.",
-  "iso_active_parent_category": "Categoría principal"
+  "iso_active_parent_category": "Categoría principal",
+  "system_log_in": "Iniciar sesión",
+  "system_auth_remenber_me": "Recuerda de mí?",
+  "system_auth_password": "Contraseña",
+  "system_auth_username": "Nombre de usuario"
 }

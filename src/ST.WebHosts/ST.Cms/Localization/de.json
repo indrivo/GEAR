@@ -440,5 +440,9 @@
   "system_schemes": "Systeme",
   "system_add_schema": "Schema hinzufügen",
   "system_schema_add_new_message": "Die neue Regelung wird Hinzugefügt.",
-  "iso_active_parent_category": "Übergeordnete Kategorie"
+  "iso_active_parent_category": "Übergeordnete Kategorie",
+  "system_log_in": "Anmelden",
+  "system_auth_remenber_me": "Behalte mich in Erinnerung?",
+  "system_auth_password": "Passwort",
+  "system_auth_username": "Benutzername"
 }

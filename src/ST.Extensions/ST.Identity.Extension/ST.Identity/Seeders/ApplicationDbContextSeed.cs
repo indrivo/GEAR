@@ -11,8 +11,8 @@ using ST.Core;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Models.UserProfiles;
 using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.Models.RolesViewModels;
 using ST.Identity.Models.UserViewModels;
 

@@ -440,5 +440,9 @@
   "system_schemes": "Scheme",
   "system_add_schema": "Adăuga  schemă ",
   "system_schema_add_new_message": "Noua schemă va fi adăugata.",
-  "iso_active_parent_category": "Categoria părinte"
+  "iso_active_parent_category": "Categoria părinte",
+  "system_log_in": "Logare",
+  "system_auth_remenber_me": "Amintiți-vă de mine?",
+  "system_auth_password": "Parola",
+  "system_auth_username": "Nume utilizator"
 }

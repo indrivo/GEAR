@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Groups.Razor.Extension\ST.Identity.Groups.Razor\ST.Identity.Groups.Razor.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Roles.Razor.Extension\ST.Identity.Roles.Razor\ST.Identity.Roles.Razor.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Users.Razor.Extension\ST.Identity.Razor.Users\ST.Identity.Razor.Users.csproj" />

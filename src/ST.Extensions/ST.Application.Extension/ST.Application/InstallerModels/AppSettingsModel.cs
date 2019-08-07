@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using ST.Backup.Abstractions.Models;
 using ST.Cache.Abstractions;
 using ST.Core;
-using ST.Identity.Models.EmailViewModels;
+using ST.Email.Abstractions.Models.EmailViewModels;
 using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace ST.Application.InstallerModels

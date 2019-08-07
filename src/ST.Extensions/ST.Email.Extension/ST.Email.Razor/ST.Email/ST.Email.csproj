@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

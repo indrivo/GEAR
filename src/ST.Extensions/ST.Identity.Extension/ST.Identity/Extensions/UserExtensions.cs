@@ -5,9 +5,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
+using ST.Identity.Permissions.Abstractions;
 
 namespace ST.Identity.Extensions
 {

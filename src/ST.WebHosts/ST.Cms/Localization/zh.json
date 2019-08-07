@@ -440,5 +440,9 @@
   "system_schemes": "方案",
   "system_add_schema": "添加架构",
   "system_schema_add_new_message": "新方案将增加。",
-  "iso_active_parent_category": "父类别"
+  "iso_active_parent_category": "父类别",
+  "system_log_in": "登录在",
+  "system_auth_remenber_me": "还记得我吗？",
+  "system_auth_password": "密码",
+  "system_auth_username": "用户名"
 }

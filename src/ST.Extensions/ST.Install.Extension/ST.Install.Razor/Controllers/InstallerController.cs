@@ -25,6 +25,7 @@ using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.CacheModels;
 using ST.Identity.Data;
+using ST.Identity.Permissions.Abstractions;
 using ST.Install.Abstractions;
 using ST.Install.Abstractions.Models;
 using ST.MultiTenant.Helpers;

@@ -440,5 +440,9 @@
   "system_schemes": "Les régimes de",
   "system_add_schema": "Ajouter le schéma",
   "system_schema_add_new_message": "Le nouveau régime sera ajouté.",
-  "iso_active_parent_category": "Catégorie parente"
+  "iso_active_parent_category": "Catégorie parente",
+  "system_log_in": "Connecter",
+  "system_auth_remenber_me": "Souviens-toi de moi?",
+  "system_auth_password": "Mot de passe",
+  "system_auth_username": "Nom d'utilisateur"
 }

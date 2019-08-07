@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
+using ST.Identity.Abstractions.Models.Permmisions;
+using ST.Identity.Abstractions.Models.UserProfiles;
 using Client = IdentityServer4.EntityFramework.Entities.Client;
 
 namespace ST.Identity.Roles.Razor.ViewModels.RoleViewModels

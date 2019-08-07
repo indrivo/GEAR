@@ -1,5 +1,4 @@
 using ST.Identity.Abstractions;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Models.UserViewModels
 {

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using ST.Entities.Data;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.UserProfiles;
 using ST.PageRender.Abstractions;
 
 namespace ST.Cms.TagHelpers

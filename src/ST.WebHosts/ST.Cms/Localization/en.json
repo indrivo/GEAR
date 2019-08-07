@@ -440,5 +440,9 @@
   "system_schemes": "Schemes",
   "system_add_schema": "Add schema",
   "system_schema_add_new_message": "The new scheme will be added.",
-  "iso_active_parent_category": "Parent category"
+  "iso_active_parent_category": "Parent category",
+  "system_log_in": "Log in",
+  "system_auth_remenber_me": "Remember me?",
+  "system_auth_password": "Password",
+  "system_auth_username": "User name"
 }

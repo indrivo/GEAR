@@ -9,7 +9,6 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Services
 {

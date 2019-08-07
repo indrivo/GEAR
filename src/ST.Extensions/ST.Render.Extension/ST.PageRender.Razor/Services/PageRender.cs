@@ -65,7 +65,12 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService)
+        /// <summary>
+        /// Inject app provider
+        /// </summary>
+        private readonly IAppProvider _appProvider;
+
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider)
         {
             _context = context;
             _cacheService = cacheService;
@@ -74,6 +79,7 @@ namespace ST.PageRender.Razor.Services
             _contextAccessor = contextAccessor;
             _pagesContext = pagesContext;
             _organizationService = organizationService;
+            _appProvider = appProvider;
         }
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
@@ -97,7 +103,7 @@ namespace ST.PageRender.Razor.Services
             var organization = _organizationService.GetUserOrganization(user);
             var data = new Dictionary<string, string>
             {
-                { "AppName", "ISO 27001" },
+                { "AppName", await _appProvider.GetAppName("core")},
                 { "UserName", user.UserName },
                 { "Organization", organization.Name },
                 { "UserEmail", user.Email },

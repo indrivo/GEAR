@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ST.Core.Helpers;
+using ST.Identity.Abstractions.Models;
+using ST.Identity.Abstractions.Models.Permmisions;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.IdentityServer4.Extensions;

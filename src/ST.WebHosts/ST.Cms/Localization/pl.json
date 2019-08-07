@@ -440,5 +440,9 @@
   "system_schemes": "Schematu",
   "system_add_schema": "Dodaj schemat",
   "system_schema_add_new_message": "Nowy system zostanie dodana.",
-  "iso_active_parent_category": "Nadrzędna kategoria"
+  "iso_active_parent_category": "Nadrzędna kategoria",
+  "system_log_in": "Zalogować się",
+  "system_auth_remenber_me": "Pamiętaj mnie?",
+  "system_auth_password": "Hasło",
+  "system_auth_username": "Nazwa użytkownika "
 }

@@ -440,5 +440,9 @@
   "system_schemes": "Схемы",
   "system_add_schema": "Добавить схему",
   "system_schema_add_new_message": "Новая схема будет добавлена.",
-  "iso_active_parent_category": "Родительская категория"
+  "iso_active_parent_category": "Родительская категория",
+  "system_log_in": "Авторизоваться",
+  "system_auth_remenber_me": "Запомни меня?",
+  "system_auth_password": "Пароль",
+  "system_auth_username": "Имя пользователя "
 }

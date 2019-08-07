@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -18,7 +17,6 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Data;
-using ST.Entities.Security.Extensions;
 using ST.Forms;
 using ST.Forms.Abstractions;
 using ST.Forms.Data;
@@ -26,10 +24,7 @@ using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
-using ST.Identity.Extensions;
 using ST.Identity.Filters;
-using ST.Identity.Services;
-using ST.Identity.Services.Abstractions;
 using ST.Identity.Versioning;
 using ST.MPass.Gov;
 using ST.MultiTenant.Abstractions;
@@ -37,124 +32,11 @@ using ST.MultiTenant.Services;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Services;
 using Swashbuckle.AspNetCore.Swagger;
-using constants = ST.Identity.DbSchemaNameConstants;
-using Identity_IProfileService = IdentityServer4.Services.IProfileService;
-using Identity_ProfileService = ST.Identity.Services.ProfileService;
 
 namespace ST.Configuration.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        /// <summary>
-        /// Add identity server
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="hostingEnvironment"></param>
-        /// <param name="migrationsAssembly"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddIdentityServer(this IServiceCollection services, IConfiguration configuration, IHostingEnvironment hostingEnvironment,
-            string migrationsAssembly)
-        {
-            services.AddIdentityServer(x => x.IssuerUri = "null")
-                .AddDeveloperSigningCredential()
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddConfigurationStore(options =>
-                {
-                    options.DefaultSchema = constants.DEFAULT_SCHEMA;
-                    options.ConfigureDbContext = builder =>
-                    {
-                        var connectionString = DbUtil.GetConnectionString(configuration);
-                        if (connectionString.Item1 == DbProviderType.PostgreSql)
-                        {
-                            builder.UseNpgsql(connectionString.Item2, opts =>
-                            {
-                                opts.MigrationsAssembly(migrationsAssembly);
-                                opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
-                                    constants.DEFAULT_SCHEMA);
-                            });
-                        }
-                        else
-                        {
-                            builder.UseSqlServer(connectionString.Item2, opts =>
-                            {
-                                opts.MigrationsAssembly(migrationsAssembly);
-                                opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
-                                    constants.DEFAULT_SCHEMA);
-                            });
-                        }
-                    };
-                })
-                .AddOperationalStore(options =>
-                {
-                    options.DefaultSchema = constants.DEFAULT_SCHEMA;
-                    options.ConfigureDbContext = builder =>
-                    {
-                        var connectionString = DbUtil.GetConnectionString(configuration);
-                        if (connectionString.Item1 == DbProviderType.PostgreSql)
-                        {
-                            builder.UseNpgsql(connectionString.Item2, opts =>
-                            {
-                                opts.MigrationsAssembly(migrationsAssembly);
-                                opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
-                                    constants.DEFAULT_SCHEMA);
-                            });
-                        }
-                        else
-                        {
-                            builder.UseSqlServer(connectionString.Item2, opts =>
-                            {
-                                opts.MigrationsAssembly(migrationsAssembly);
-                                opts.MigrationsHistoryTable("IdentityServerConfigurationMigrationHistory",
-                                    constants.DEFAULT_SCHEMA);
-                            });
-                        }
-                    };
-                })
-                .Services.AddTransient<Identity_IProfileService, Identity_ProfileService>();
-            return services;
-        }
-
-        /// <summary>
-        /// Add context and identity
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="hostingEnvironment"></param>
-        /// <param name="migrationsAssembly"></param>
-        /// <param name="environment"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddIdentityModule(this IServiceCollection services,
-            IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly, IHostingEnvironment environment)
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                    {
-                        var connectionString = DbUtil.GetConnectionString(configuration);
-                        if (connectionString.Item1 == DbProviderType.PostgreSql)
-                        {
-                            options.UseNpgsql(connectionString.Item2, opts =>
-                            {
-                                opts.MigrationsAssembly(migrationsAssembly);
-                                opts.MigrationsHistoryTable("IdentityMigrationHistory", constants.DEFAULT_SCHEMA);
-                            });
-                        }
-                        else
-                        {
-                            options.UseSqlServer(connectionString.Item2, opts =>
-                            {
-                                opts.MigrationsAssembly(migrationsAssembly);
-                                opts.MigrationsHistoryTable("IdentityMigrationHistory", constants.DEFAULT_SCHEMA);
-                            });
-                        }
-                    })
-                .AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-            services.AddAuthorizationBasedOnCache<ApplicationDbContext>();
-            services.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
-            return services;
-        }
-
         /// <summary>
         /// Add services relative to this application
         /// </summary>
@@ -165,7 +47,6 @@ namespace ST.Configuration.Extensions
         public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, IConfiguration configuration)
         {
             services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
-            services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IMPassService, MPassService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
@@ -326,30 +207,12 @@ namespace ST.Configuration.Extensions
             if (int.TryParse(configuration["HealthCheck:Timeout"], out var minutesParsed))
                 minutes = minutesParsed;
             //Enable CORS before calling app.UseMvc() and app.UseStaticFiles()
-            var isConfigured = configuration.GetValue<bool>("IsConfigured");
-            var multiTenantTemplate = isConfigured
-                ? "{tenant}/{controller=Home}/{action=Index}"
-                : "{controller=Installer}/{action=Index}";
-
-            var singleTenantTemplate = isConfigured
-                ? "{controller=Home}/{action=Index}"
-                : "{controller=Installer}/{action=Index}";
 
             app.UseCors("CorsPolicy")
                 .UseStaticFiles()
                 .UseSession()
                 .UseAuthentication()
                 .UseIdentityServer();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "multi-tenant",
-                    template: singleTenantTemplate,
-                    defaults: singleTenantTemplate
-                    //constraints: new { tenant = new TenantRouteConstraint() }
-                    );
-            });
 
             //.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
             return app;

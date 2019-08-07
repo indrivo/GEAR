@@ -440,5 +440,9 @@
   "system_schemes": "Regelingen",
   "system_add_schema": "Voeg schema",
   "system_schema_add_new_message": "De nieuwe regeling zal worden toegevoegd.",
-  "iso_active_parent_category": "Bovenliggende categorie"
+  "iso_active_parent_category": "Bovenliggende categorie",
+  "system_log_in": "Log in",
+  "system_auth_remenber_me": "Mij onthouden?",
+  "system_auth_password": "Wachtwoord",
+  "system_auth_username": "Gebruiker naam"
 }

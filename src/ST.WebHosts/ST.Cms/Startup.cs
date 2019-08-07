@@ -1,13 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,18 +34,28 @@ using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core;
 using ST.Core.Extensions;
+using ST.Core.Razor.Extensions;
+using ST.ECommerce.Abstractions.Extensions;
+using ST.ECommerce.Abstractions.Models;
+using ST.ECommerce.BaseImplementations.Data;
+using ST.ECommerce.BaseImplementations.Repositories;
+using ST.Email;
+using ST.Email.Abstractions.Extensions;
 using ST.Entities;
-using ST.Identity.Models.EmailViewModels;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Report.Dynamic.Data;
 using ST.Entities.Abstractions.Extensions;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
+using ST.Entities.Security.Extensions;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
+using ST.Identity.Abstractions.Extensions;
+using ST.Identity.IdentityServer4.Extensions;
 using ST.Identity.LdapAuth;
 using ST.Identity.LdapAuth.Abstractions.Extensions;
+using ST.Identity.Services;
 using ST.Install;
 using ST.Install.Abstractions.Extensions;
 using ST.Localization.Abstractions;
@@ -56,6 +67,8 @@ using ST.PageRender.Data;
 using ST.Report.Abstractions.Extensions;
 using ST.Report.Dynamic;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
+using ST.Identity.Permissions.Abstractions.Extensions;
+using ST.Identity.Permissions;
 
 namespace ST.Cms
 {
@@ -124,6 +137,19 @@ namespace ST.Cms
 			//----------------------------------Origin Cors Usage-------------------------------------
 			app.UseConfiguredCors(Configuration);
 
+			//----------------------------------Use cors-------------------------------------
+			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
+			{
+				//{
+				//	"/", context =>
+				//	{
+				//		var originalPath = context.Request.Path.Value;
+				//		context.Items["originalPath"] = originalPath;
+				//		context.Request.Path = "/public";
+				//	}
+				//}
+			});
+
 			//--------------------------------------Swagger Usage-------------------------------------
 			app.UseSwagger()
 				.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "ST.BPMN API v1.0"); });
@@ -180,9 +206,11 @@ namespace ST.Cms
 			});
 
 			//------------------------------Identity Module-------------------------------------
-			services.AddIdentityModule(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
+				.AddAppProvider<AppProvider>()
 				.AddMvc()
 				.AddJsonOptions(x =>
 				{
@@ -190,6 +218,8 @@ namespace ST.Cms
 				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
+				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
+				.AddIdentityModuleProfileServices()
 			.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
 			.AddHealthChecks(checks =>
 			{
@@ -224,8 +254,8 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddEntityModuleEvents();
-
+				.AddEntityModuleEvents()
+				.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -283,7 +313,7 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
-			
+
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.UseCustomCacheModule(HostingEnvironment, Configuration);
@@ -291,8 +321,8 @@ namespace ST.Cms
 			services.AddInstallerModule<SyncInstaller>();
 
 			//----------------------------------------Email Module-------------------------------------
-			services.Configure<EmailSettingsViewModel>(Configuration.GetSection("EmailSettings"));
-
+			services.AddEmailModule<EmailSender>()
+				.BindEmailSettings(Configuration);
 
 			if (CoreApp.IsHostedOnLinux())
 			{
@@ -304,6 +334,16 @@ namespace ST.Cms
 
 			//----------------------------------------Ldap Module-------------------------------------
 			services.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(Configuration);
+
+			//-------------------------------------Commerce module-------------------------------------
+			services.RegisterCommerceModule<CommerceDbContext>()
+				.RegisterCommerceProductRepository<ProductRepository, Product>()
+				.RegisterCommerceStorage<CommerceDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.RegisterCommerceEvents();
 
 
 			//------------------------------------------Custom ISO-------------------------------------

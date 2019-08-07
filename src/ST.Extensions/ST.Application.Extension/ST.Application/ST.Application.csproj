@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Backup.Extension\ST.Backup.Abstractions\ST.Backup.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.IdentityServer4\ST.Identity.IdentityServer4.csproj" />

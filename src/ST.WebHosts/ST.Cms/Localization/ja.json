@@ -440,5 +440,9 @@
   "system_schemes": "スキーム",
   "system_add_schema": "追加のスキーマ",
   "system_schema_add_new_message": "の新たなスキームが追加されます。",
-  "iso_active_parent_category": "親カテゴリ"
+  "iso_active_parent_category": "親カテゴリ",
+  "system_log_in": "ログイン",
+  "system_auth_remenber_me": "覚えているかい？",
+  "system_auth_password": "パスワード",
+  "system_auth_username": "ユーザー名"
 }
