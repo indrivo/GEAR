@@ -2,8 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ST.Core.Helpers;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Abstractions;
 
 namespace ST.MultiTenant.Services
@@ -98,6 +99,17 @@ namespace ST.MultiTenant.Services
         public IEnumerable<ApplicationUser> GetUsersByOrganizationId(Guid organizationId)
         {
             return _context.Users.Where(x => x.TenantId == organizationId);
+        }
+
+        /// <summary>
+        /// Get user organization
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public Tenant GetUserOrganization(ApplicationUser user)
+        {
+            Arg.NotNull(user, nameof(GetUserOrganization));
+            return _context.Tenants.FirstOrDefault(x => x.Id.Equals(user.TenantId));
         }
     }
 }

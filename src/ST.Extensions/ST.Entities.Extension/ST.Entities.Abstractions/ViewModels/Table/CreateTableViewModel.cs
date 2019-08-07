@@ -25,7 +25,19 @@ namespace ST.Entities.Abstractions.ViewModels.Table
 
         public IEnumerable<TableModelField> TableFields { get; set; }
 
+        /// <summary>
+        /// Table description
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Tenant id
+        /// </summary>
         public  Guid? TenantId { get; set; }
+
+        /// <summary>
+        /// Is common 
+        /// </summary>
+        public bool IsCommon { get; set; }
     }
 }

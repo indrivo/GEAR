@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using ST.Identity.Abstractions.Models.Permmisions;
+using ST.Identity.Abstractions.Models.UserProfiles;
 using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 
 namespace ST.Identity.Roles.Razor.ViewModels.RoleViewModels
 {

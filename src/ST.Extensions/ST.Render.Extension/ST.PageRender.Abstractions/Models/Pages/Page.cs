@@ -89,6 +89,7 @@ namespace ST.PageRender.Abstractions.Models.Pages
         public string Identifier { get; set; }
         public string Name { get; set; }
         public string Title { get; set; }
+        public string TitleTranslateKey { get; set; }
         public string Description { get; set; }
         public string Icon { get; set; }
         public string HtmlCode { get; set; }

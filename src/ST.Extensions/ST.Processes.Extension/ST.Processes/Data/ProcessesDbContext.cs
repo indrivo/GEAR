@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using ST.Audit.Contexts;
+using ST.Core.Helpers.DbContexts;
 using ST.Procesess.Models;
 
 namespace ST.Procesess.Data
@@ -86,6 +87,7 @@ namespace ST.Procesess.Data
 
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ProcessesDbContext>
     {
+        /// <inheritdoc />
         /// <summary>
         /// For creating migrations
         /// </summary>
@@ -93,9 +95,7 @@ namespace ST.Procesess.Data
         /// <returns></returns>
         public ProcessesDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<ProcessesDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new ProcessesDbContext(optionsBuilder.Options);
+            return DbContextFactory<ProcessesDbContext, ProcessesDbContext>.CreateFactoryDbContext();
         }
     }
 }

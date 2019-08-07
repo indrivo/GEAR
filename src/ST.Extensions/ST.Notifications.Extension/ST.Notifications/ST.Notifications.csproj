@@ -9,11 +9,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Redis" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Redis" Version="1.1.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
+    <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
     <ProjectReference Include="..\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
   </ItemGroup>

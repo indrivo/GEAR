@@ -22,7 +22,7 @@ using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Events;
 using ST.PageRender.Abstractions.Events.EventArgs;
@@ -293,7 +293,8 @@ namespace ST.PageRender.Razor.Controllers
                 {
                     Name = model.Name,
                     Description = model.Description,
-                    Title = model.Title
+                    Title = model.Title,
+                    TitleTranslateKey = model.TitleTranslateKey
                 },
                 IsLayout = model.PageTypeId == PageManager.PageTypes[0].Id
             };
@@ -302,7 +303,7 @@ namespace ST.PageRender.Razor.Controllers
             {
                 _pagesContext.Pages.Add(page);
                 _pagesContext.SaveChanges();
-                SystemEvents.Pages.PageCreated(new PageCreatedEventArgs
+                DynamicUiEvents.Pages.PageCreated(new PageCreatedEventArgs
                 {
                     PageId = page.Id,
                     PageName = page.Settings.Name
@@ -341,6 +342,7 @@ namespace ST.PageRender.Razor.Controllers
             model.PageTypes = _pagesContext.PageTypes.AsNoTracking().ToList();
             model.Path = page.Path;
             model.Title = page.Settings.Title;
+            model.TitleTranslateKey = page.Settings.TitleTranslateKey;
             model.Layouts = _pagesContext.Pages.AsNoTracking().Include(x => x.Settings).Where(x => x.IsLayout);
             return View(model);
         }
@@ -396,6 +398,7 @@ namespace ST.PageRender.Razor.Controllers
                 settings.Name = model.Name;
                 settings.Changed = DateTime.Now;
                 settings.Title = model.Title;
+                settings.TitleTranslateKey = model.TitleTranslateKey;
 
                 var dbResult = await _pagesContext.SaveDependenceAsync();
                 if (dbResult.IsSuccess)
@@ -404,7 +407,7 @@ namespace ST.PageRender.Razor.Controllers
                     _pagesContext.Pages.Update(page);
                     await _pagesContext.SaveChangesAsync();
                     RemovePageFromCache(page.Id);
-                    SystemEvents.Pages.PageUpdated(new PageCreatedEventArgs
+                    DynamicUiEvents.Pages.PageUpdated(new PageCreatedEventArgs
                     {
                         PageId = page.Id,
                         PageName = page.Settings?.Name
@@ -513,7 +516,7 @@ namespace ST.PageRender.Razor.Controllers
 
             var dbResult = await _pagesContext.SaveDependenceAsync();
             if (!dbResult.IsSuccess) return Json(new {message = "Fail to delete form!", success = false});
-            SystemEvents.Pages.PageDeleted(new PageCreatedEventArgs
+            DynamicUiEvents.Pages.PageDeleted(new PageCreatedEventArgs
             {
                 PageId = page.Id,
                 PageName = page.Settings?.Name

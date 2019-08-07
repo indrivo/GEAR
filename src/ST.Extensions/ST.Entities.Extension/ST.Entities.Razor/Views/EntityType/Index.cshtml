@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = Localizer["system_schemes"];
+}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Localizer["system_schemes"]</h4>
+        <div class="table-responsive">
+            <div class="mt-2">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <div class="form-group">
+                            <a asp-action="Create" class="btn btn-primary btn-sm">
+                                <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["system_add_schema"]
+                            </a>
+                            <small>@Localizer["system_schema_add_new_message"]</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-bordered" id="entitySchemeTable">
+                <thead>
+                    <tr>
+                        <th>@Localizer["name"]</th>
+                        <th>@Localizer["description"]</th>
+                        <th>@Localizer["created"]</th>
+                        <th>@Localizer["author"]</th>
+                        <th>@Localizer["modified_by"]</th>
+                        <th>@Localizer["is_deleted"]</th>
+                        <th>@Localizer["list_actions"]</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript" language="javascript">
+		$(".prof_page").dropdown();
+		function getTokenAntiForgery() {
+			const token = '@Html.AntiForgeryToken()';
+			return $(token).val();
+		}
+    </script>
+    <script language="javascript" type="text/javascript">
+		$(document).ready(function($) {
+			const tableId = '#entitySchemeTable';
+			if ($.fn.DataTable.isDataTable(tableId)) {
+				$(tableId).dataTable().fnDestroy();
+				$(tableId).dataTable().empty();
+			}
+			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"CustomizeColumns">lBfrtip',
+				"processing": true, // for show progress bar
+				"serverSide": true, // for process server side
+				"filter": true, // this is for disable filter (search box)
+				"orderMulti": false, // for disable multiple column at once
+				"destroy": true,
+				"ajax": {
+					"url": '@Url.Action("OrderList")',
+					"type": "POST"
+				},
+				"columns": [
+					{ "data": "name" },
+					{ "data": "description" },
+					{ "data": "created" },
+					{ "data": "author" },
+					{ "data": "modifiedBy" },
+					{"data": "isDeleted",
+						"render": function(data) {
+							return `<div class="checkbox checkbox-success form-group">
+									<input ${data ? 'checked':''} id="isSystem" type="checkbox" class="check"  disabled/>
+									<label asp-for="isSystem"></label>
+								</div>`;
+						} },
+					{
+						data: null,
+						render: function(row) {
+							return `<div class="btn-group" role="group" aria-label="Action buttons">
+									    <a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">Edit</a>
+                                    </div>`;
+						}
+					}
+				]
+			});
+		});
+    </script>
+}

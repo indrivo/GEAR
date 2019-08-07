@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
+using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
+using ST.Entities.Abstractions.ViewModels.Table;
 
 namespace ST.DynamicEntityStorage.Abstractions
 {
@@ -108,15 +110,8 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// <param name="start"></param>
         /// <param name="length"></param>
         /// <param name="predicate"></param>
+        /// <param name="filters"></param>
         /// <returns></returns>
-        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null);
-
-
-        /// <summary>
-        /// Create dynamic tables
-        /// </summary>
-        /// <param name="tenantId"></param>
-        /// <param name="schemaName"></param>
-        Task CreateDynamicTables(Guid tenantId, string schemaName = null);
+        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null);
     }
 }

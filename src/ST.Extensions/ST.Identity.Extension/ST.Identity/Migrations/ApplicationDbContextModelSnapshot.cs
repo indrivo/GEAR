@@ -17,7 +17,7 @@ namespace ST.Identity.Migrations
             modelBuilder
                 .HasDefaultSchema("Identity")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -173,39 +173,7 @@ namespace ST.Identity.Migrations
                     b.ToTable("TrackAuditDetails");
                 });
 
-            modelBuilder.Entity("ST.Identity.Data.MultiTenants.Tenant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Address");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("MachineName")
-                        .IsRequired();
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<string>("SiteWeb");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tenants");
-                });
-
-            modelBuilder.Entity("ST.Identity.Data.Permissions.ApplicationRole", b =>
+            modelBuilder.Entity("ST.Identity.Abstractions.ApplicationRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -251,7 +219,84 @@ namespace ST.Identity.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("ST.Identity.Data.Permissions.AuthGroup", b =>
+            modelBuilder.Entity("ST.Identity.Abstractions.ApplicationUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+
+                    b.Property<int>("AccessFailedCount");
+
+                    b.Property<int>("AuthenticationType");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("EmailConfirmed");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsEditable");
+
+                    b.Property<DateTime>("LastLogin");
+
+                    b.Property<DateTime>("LastPasswordChanged");
+
+                    b.Property<bool>("LockoutEnabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("PasswordHash");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<string>("SecurityStamp");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<bool>("TwoFactorEnabled");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256);
+
+                    b.Property<byte[]>("UserPhoto");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ST.Identity.Abstractions.AuthGroup", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -277,6 +322,68 @@ namespace ST.Identity.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("AuthGroups");
+                });
+
+            modelBuilder.Entity("ST.Identity.Abstractions.Models.MultiTenants.Tenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Address");
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("MachineName")
+                        .IsRequired();
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("SiteWeb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants");
+                });
+
+            modelBuilder.Entity("ST.Identity.Abstractions.UserGroup", b =>
+                {
+                    b.Property<Guid>("AuthGroupId");
+
+                    b.Property<Guid>("UserId")
+                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<Guid>("Id");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("AuthGroupId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserGroups");
                 });
 
             modelBuilder.Entity("ST.Identity.Data.Permissions.GroupPermission", b =>
@@ -385,109 +492,6 @@ namespace ST.Identity.Migrations
                     b.ToTable("RolePermissions");
                 });
 
-            modelBuilder.Entity("ST.Identity.Data.Permissions.UserGroup", b =>
-                {
-                    b.Property<Guid>("AuthGroupId");
-
-                    b.Property<Guid>("UserId")
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("Id");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("AuthGroupId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserGroups");
-                });
-
-            modelBuilder.Entity("ST.Identity.Data.UserProfiles.ApplicationUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasConversion(new ValueConverter<Guid, Guid>(v => default(Guid), v => default(Guid), new ConverterMappingHints(size: 36)));
-
-                    b.Property<int>("AccessFailedCount");
-
-                    b.Property<int>("AuthenticationType");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256);
-
-                    b.Property<bool>("EmailConfirmed");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsEditable");
-
-                    b.Property<bool>("LockoutEnabled");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("PasswordHash");
-
-                    b.Property<string>("PhoneNumber");
-
-                    b.Property<bool>("PhoneNumberConfirmed");
-
-                    b.Property<string>("SecurityStamp");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<bool>("TwoFactorEnabled");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256);
-
-                    b.Property<byte[]>("UserPhoto");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasName("UserNameIndex");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("ST.Identity.Data.UserProfiles.Profile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -537,7 +541,7 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("ST.Identity.Data.Permissions.ApplicationRole")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -545,7 +549,7 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ST.Identity.Data.UserProfiles.ApplicationUser")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -553,7 +557,7 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ST.Identity.Data.UserProfiles.ApplicationUser")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -561,12 +565,12 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("ST.Identity.Data.Permissions.ApplicationRole")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Identity.Data.UserProfiles.ApplicationUser")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -574,7 +578,7 @@ namespace ST.Identity.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ST.Identity.Data.UserProfiles.ApplicationUser")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -588,9 +592,22 @@ namespace ST.Identity.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("ST.Identity.Abstractions.UserGroup", b =>
+                {
+                    b.HasOne("ST.Identity.Abstractions.AuthGroup", "AuthGroup")
+                        .WithMany("UserGroups")
+                        .HasForeignKey("AuthGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ST.Identity.Abstractions.ApplicationUser", "User")
+                        .WithMany("UserGroups")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ST.Identity.Data.Permissions.GroupPermission", b =>
                 {
-                    b.HasOne("ST.Identity.Data.Permissions.AuthGroup", "AuthGroup")
+                    b.HasOne("ST.Identity.Abstractions.AuthGroup", "AuthGroup")
                         .WithMany()
                         .HasForeignKey("AuthGroupId");
                 });
@@ -602,27 +619,14 @@ namespace ST.Identity.Migrations
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("ST.Identity.Data.Permissions.ApplicationRole", "Role")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationRole", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId");
                 });
 
-            modelBuilder.Entity("ST.Identity.Data.Permissions.UserGroup", b =>
-                {
-                    b.HasOne("ST.Identity.Data.Permissions.AuthGroup", "AuthGroup")
-                        .WithMany("UserGroups")
-                        .HasForeignKey("AuthGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Identity.Data.UserProfiles.ApplicationUser", "User")
-                        .WithMany("UserGroups")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("ST.Identity.Data.UserProfiles.RoleProfile", b =>
                 {
-                    b.HasOne("ST.Identity.Data.Permissions.ApplicationRole", "ApplicationRole")
+                    b.HasOne("ST.Identity.Abstractions.ApplicationRole", "ApplicationRole")
                         .WithMany()
                         .HasForeignKey("ApplicationRoleId")
                         .OnDelete(DeleteBehavior.Cascade);

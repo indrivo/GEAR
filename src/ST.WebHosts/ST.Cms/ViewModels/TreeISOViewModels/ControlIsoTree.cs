@@ -59,13 +59,13 @@ namespace ST.Cms.ViewModels.TreeISOViewModels
 
 	public sealed class ControlRisks
 	{
-		public int TotalRisks { get; set; }
+		public int TotalRisks { get; set; } = 0;
 	}
 
 	public sealed class ControlActivities
 	{
-		public int OpenActivities { get; set; }
-		public int ClosedActivities { get; set; }
+		public int OpenActivities { get; set; } = 0;
+		public int ClosedActivities { get; set; } = 0;
 	}
 
 	public sealed class ControlDocuments

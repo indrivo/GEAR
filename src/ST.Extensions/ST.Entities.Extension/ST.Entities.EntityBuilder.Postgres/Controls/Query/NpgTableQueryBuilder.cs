@@ -102,7 +102,7 @@ namespace ST.Entities.EntityBuilder.Postgres.Controls.Query
                     break;
             }
 
-            if (!field.AllowNull) sql.Append(" NOT NULL"); else sql.Append(" NULL");
+            sql.Append(!field.AllowNull ? " NOT NULL" : " NULL");
 
             if (field.Parameter == FieldType.EntityReference || field.Parameter == FieldType.File)
             {

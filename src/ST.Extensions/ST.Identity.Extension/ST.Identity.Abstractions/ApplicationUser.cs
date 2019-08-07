@@ -72,6 +72,27 @@ namespace ST.Identity.Abstractions
         /// </summary>
         public Guid? TenantId { get; set; }
 
+        /// <summary>
+        /// Last date password changed
+        /// </summary>
+        public DateTime LastPasswordChanged { get; set; }
+
+        /// <summary>
+        /// Is password expired
+        /// </summary>
+        /// <returns></returns>
+        public bool IsPasswordExpired()
+        {
+            if (LastPasswordChanged == DateTime.MinValue) return false;
+            var isExpired = (DateTime.Now - LastPasswordChanged).TotalDays >= 30;
+            return isExpired;
+        }
+
+        /// <summary>
+        /// Last login
+        /// </summary>
+        public DateTime LastLogin { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Version

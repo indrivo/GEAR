@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using ST.Core.Helpers.Comparers;
 
 namespace ST.Cms.Services
 {
-	public class TreeIsoService : ITreeIsoService
+	public sealed class TreeIsoService : ITreeIsoService
 	{
 		/// <summary>
 		/// Tenant entity name what store tenant standard requirement filfullment method 
@@ -49,16 +50,12 @@ namespace ST.Cms.Services
 		public async Task<ResultModel<IEnumerable<TreeStandard>>> LoadTreeStandard(TableModel standardEntity, TableModel categoryEntity, TableModel requirementEntity)
 		{
 			var res = new ResultModel<IEnumerable<TreeStandard>>();
-			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>(filters: new List<Filter>
+			var standards = await _service.Table(standardEntity.Name).GetAllWithInclude<dynamic>(filters: new Collection<Filter>
 			{
-				new Filter
-				{
-					Value = false,
-					Criteria = Criteria.Equals,
-					Parameter = nameof(BaseModel.IsDeleted)
-				}
+				new Filter(nameof(BaseModel.IsDeleted), false)
 			});
-			var tree = new List<TreeStandard>();
+
+			var tree = new Collection<TreeStandard>();
 			if (!standards.IsSuccess) return res;
 			foreach (var standard in standards.Result.ToList())
 			{
@@ -75,6 +72,122 @@ namespace ST.Cms.Services
 			res.IsSuccess = true;
 			res.Result = tree;
 			return res;
+		}
+
+		/// <summary>
+		/// Load categories
+		/// </summary>
+		/// <param name="categoryEntity"></param>
+		/// <param name="requirementEntity"></param>
+		/// <param name="standardId"></param>
+		/// <param name="parentCategoryId"></param>
+		/// <returns></returns>
+		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid? parentCategoryId)
+		{
+			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(null, new List<Filter>
+			{
+				new Filter("ParentCategoryId", parentCategoryId),
+				new Filter("StandardId", standardId),
+				new Filter(nameof(BaseModel.IsDeleted), false)
+			});
+
+			var result = categories.Result?.OrderBy(x => (string)x.Number, new StringNumberComparer())
+				.Select(async category => new TreeCategory
+				{
+					Number = category.Number,
+					Name = category.Name,
+					Id = category.Id,
+					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),
+					Requirements = await LoadRequirements(requirementEntity, category.Id, null),
+					CategoryActions = await GetCategoryActions(category.Id)
+				}).Select(task => task.Result).ToList();
+
+			return result;
+		}
+
+
+		/// <summary>
+		/// Load requirements
+		/// </summary>
+		/// <param name="requirementEntity"></param>
+		/// <param name="categoryId"></param>
+		/// <param name="parentRequirementId"></param>
+		/// <returns></returns>
+		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid? parentRequirementId)
+		{
+			var res = new List<TreeRequirement>();
+			var requirements = await _service.Table(requirementEntity).GetAllWithInclude<dynamic>(null,
+				new List<Filter>
+				{
+					new Filter("CategoryId", categoryId),
+					new Filter("ParentRequirementId", parentRequirementId),
+					new Filter(nameof(BaseModel.IsDeleted), false)
+				});
+			var dueModeCtx = _service.Table(ReqFillEntityName);
+			foreach (var req in requirements.Result.OrderBy(x => x.Name))
+			{
+				var requirement = new TreeRequirement
+				{
+					Name = req.Name,
+					Id = req.Id,
+					Hint = req.Hint ?? string.Empty,
+					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id),
+					Documents = new List<TreeRequirementDocument>(),
+
+				};
+
+				var rq = await dueModeCtx.GetAll<dynamic>(filters: new List<Filter>
+				{
+					new Filter("RequirementId", req.Id)
+				});
+				if (rq.IsSuccess)
+				{
+					var dueMode = rq.Result?.FirstOrDefault();
+					requirement.RequirementDueMode = dueMode == null
+						? new RequirementDueMode()
+						: new RequirementDueMode
+						{
+							DueModeId = dueMode.Id,
+							DueModeValue = dueMode.Value
+						};
+				}
+
+				res.Add(requirement);
+			}
+
+			return res;
+		}
+
+		private async Task<TreeCategoryAction> GetCategoryActions(Guid categoryId)
+		{
+			var result = new TreeCategoryAction();
+			//TODO: Attend response from business analyst
+			//var filters = new List<Filter>
+			//{
+			//	new Filter("ControlRecordId", categoryId)
+			//};
+
+			//try
+			//{
+			//	var dbResult = await _service.Table("ActionPlan").GetAllWithInclude<dynamic>(filters: filters);
+			//	if (!dbResult.IsSuccess) return result;
+			//	foreach (var item in dbResult.Result)
+			//	{
+			//		if (item.ActionStateReference.Code == (int)ActionState.Closed)
+			//		{
+			//			++result.ClosedActions;
+			//		}
+			//		else
+			//		{
+			//			++result.OpenActions;
+			//		}
+			//	}
+			//}
+			//catch (Exception e)
+			//{
+			//	Debug.WriteLine(e);
+			//}
+			return result;
 		}
 
 		/// <summary>
@@ -130,12 +243,7 @@ namespace ST.Cms.Services
 
 			var data = await ctx.GetAllWithInclude<dynamic>(filters: new List<Filter>
 			{
-				new Filter
-				{
-					Value = fillRequirementId,
-					Criteria = Criteria.Equals,
-					Parameter = nameof(BaseModel.Id)
-				}
+				new Filter( nameof(BaseModel.Id), fillRequirementId)
 			});
 
 			if (data.IsSuccess && data.Result.Any())
@@ -168,110 +276,6 @@ namespace ST.Cms.Services
 			result.Errors = data.Errors;
 
 			return result;
-		}
-
-
-		/// <summary>
-		/// Load categories
-		/// </summary>
-		/// <param name="categoryEntity"></param>
-		/// <param name="requirementEntity"></param>
-		/// <param name="standardId"></param>
-		/// <param name="parentCategoryId"></param>
-		/// <returns></returns>
-		private async Task<IEnumerable<TreeCategory>> LoadCategories(string categoryEntity, string requirementEntity, Guid standardId, Guid? parentCategoryId)
-		{
-			var categories = await _service.Table(categoryEntity).GetAll<dynamic>(null, new List<Filter>
-			{
-				new Filter("ParentCategoryId", parentCategoryId),
-				new Filter("StandardId", standardId),
-				new Filter(nameof(BaseModel.IsDeleted), false)
-			});
-
-			var result = categories.Result?.OrderBy(x => (string)x.Number, new StringNumberComparer())
-				.Select(async category => new TreeCategory
-				{
-					Number = category.Number,
-					Name = category.Name,
-					Id = category.Id,
-					SubCategories = await LoadCategories(categoryEntity, requirementEntity, standardId, category.Id),
-					Requirements = await LoadRequirements(requirementEntity, category.Id, null)
-				}).Select(task => task.Result).ToList();
-
-			return result;
-		}
-
-
-		/// <summary>
-		/// Load requirements
-		/// </summary>
-		/// <param name="requirementEntity"></param>
-		/// <param name="categoryId"></param>
-		/// <param name="parentRequirementId"></param>
-		/// <returns></returns>
-		private async Task<IEnumerable<TreeRequirement>> LoadRequirements(string requirementEntity, Guid categoryId, Guid? parentRequirementId)
-		{
-			var res = new List<TreeRequirement>();
-			var requirements = await _service.Table(requirementEntity).GetAllWithInclude<dynamic>(null,
-				new List<Filter>
-				{
-					new Filter
-					{
-						Parameter = "CategoryId",
-						Criteria = Criteria.Equals,
-						Value = categoryId
-					},
-					new Filter
-					{
-						Parameter = "ParentRequirementId",
-						Criteria = Criteria.Equals,
-						Value = parentRequirementId
-					},
-					new Filter
-					{
-						Value = false,
-						Criteria = Criteria.Equals,
-						Parameter = nameof(BaseModel.IsDeleted)
-					}
-				});
-			var dueModeCtx = _service.Table(ReqFillEntityName);
-			foreach (var req in requirements.Result.OrderBy(x => x.Name))
-			{
-				var requirement = new TreeRequirement
-				{
-					Name = req.Name,
-					Id = req.Id,
-					Hint = req.Hint ?? string.Empty,
-					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id),
-					Documents = new List<TreeRequirementDocument>(),
-
-				};
-
-				var rq = await dueModeCtx.GetAll<dynamic>(filters: new List<Filter>
-				{
-					new Filter
-					{
-						Parameter = "RequirementId",
-						Value = req.Id,
-						Criteria = Criteria.Equals
-					}
-				});
-				if (rq.IsSuccess)
-				{
-					var dueMode = rq.Result?.FirstOrDefault();
-					requirement.RequirementDueMode = dueMode == null
-						? new RequirementDueMode()
-						: new RequirementDueMode
-						{
-							DueModeId = dueMode.Id,
-							DueModeValue = dueMode.Value
-						};
-				}
-
-				res.Add(requirement);
-			}
-
-			return res;
 		}
 		#endregion
 
@@ -355,7 +359,11 @@ namespace ST.Cms.Services
 			return def;
 		}
 
-
+		/// <summary>
+		/// Get control responsibilities
+		/// </summary>
+		/// <param name="controlDetailId"></param>
+		/// <returns></returns>
 		public async Task<IEnumerable<ControlResponsible>> GetControlResponsibilesAsync(Guid controlDetailId)
 		{
 			var rs = new List<ControlResponsible>();
@@ -463,7 +471,7 @@ namespace ST.Cms.Services
 					Name = x.Name,
 					Id = x.Id,
 					Content = content,
-					ControlActivities = new ControlActivities(),
+					ControlActivities = await GetControlActivitiesAsync(x.Id),
 					ControlDocuments = new ControlDocuments(),
 					ControlRisks = new ControlRisks
 					{
@@ -473,6 +481,43 @@ namespace ST.Cms.Services
 				};
 			}).Select(x => x.Result).OrderBy(x => x.Number, new StringNumberComparer()).ToList();
 			return data;
+		}
+
+		/// <summary>
+		/// Get control activities counts
+		/// </summary>
+		/// <param name="controlId"></param>
+		/// <returns></returns>
+		private async Task<ControlActivities> GetControlActivitiesAsync(Guid controlId)
+		{
+			var result = new ControlActivities();
+			var filters = new List<Filter>
+			{
+				new Filter("ControlRecordId", controlId),
+				new Filter("Source", Guid.Parse("ae735839-020f-4b66-9128-80cd486ec719"))
+			};
+
+			try
+			{
+				var dbResult = await _service.Table("ActionPlan").GetAllWithInclude<dynamic>(filters: filters);
+				if (!dbResult.IsSuccess) return result;
+				foreach (var item in dbResult.Result)
+				{
+					if (item.ActionStateReference.Code == (int)ActionState.Closed)
+					{
+						++result.ClosedActivities;
+					}
+					else
+					{
+						++result.OpenActivities;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(e);
+			}
+			return result;
 		}
 
 		/// <summary>
@@ -513,6 +558,13 @@ namespace ST.Cms.Services
 			return item != null ? ((string, string))(item.Goal, item.Content) : (string.Empty, string.Empty);
 		}
 
+		#endregion
+
+		#region Helpers
+		private enum ActionState
+		{
+			Closed, InProgress, Open
+		}
 		#endregion
 	}
 }

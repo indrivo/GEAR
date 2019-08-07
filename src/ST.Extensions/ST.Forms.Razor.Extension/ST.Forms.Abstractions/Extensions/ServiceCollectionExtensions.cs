@@ -25,5 +25,20 @@ namespace ST.Forms.Abstractions.Extensions
             services.AddScoped(ContextFactory);
             return services;
         }
+
+        /// <summary>
+        /// Register form module context
+        /// </summary>
+        /// <typeparam name="TFormContext"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddFormModuleStorage<TFormContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
+            where TFormContext : DbContext, IFormContext
+        {
+            Arg.NotNull(options, nameof(AddFormModuleStorage));
+            services.AddDbContext<TFormContext>(options);
+            return services;
+        }
     }
 }

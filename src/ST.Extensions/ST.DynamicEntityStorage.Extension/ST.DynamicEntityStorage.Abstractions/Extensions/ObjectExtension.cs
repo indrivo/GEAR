@@ -95,7 +95,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
         /// <param name="obj"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static Task<ResultModel> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
+        public static Task<ResultModel<dynamic>> AddRange<TEntity>(this DynamicObject obj, IEnumerable<TEntity> model)
         => Task.Run(() =>
         {
             var result = new ResultModel();
@@ -103,7 +103,7 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
             //var data = obj.ParseListObject(model);
             var req = obj.Invoke<dynamic>(MethodName.AddDataRangeWithReflection, new List<Type> { obj.Type },
                 new List<object> { model });
-            return req.Adapt<ResultModel>();
+            return req;
         });
 
         /// <summary>
@@ -249,7 +249,11 @@ namespace ST.DynamicEntityStorage.Abstractions.Extensions
                 if (id == Guid.Empty) return result;
                 var req = obj.Invoke<TEntity>(MethodName.DeletePermanent, new List<Type> { obj.Type },
                     new List<object> { id });
-                if (!req.IsSuccess) return result;
+                if (!req.IsSuccess)
+                {
+                    result.Errors = req.Errors;
+                    return result;
+                }
                 result.IsSuccess = true;
                 result.Result = req.Result.Adapt<Guid>();
                 return result;

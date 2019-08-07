@@ -1,8 +1,8 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using ST.Identity.Services.Abstractions;
+using ST.Email.Abstractions;
 
-namespace ST.Core.Extensions
+namespace ST.Identity.Razor.Extensions
 {
 	public static class EmailSenderExtensions
 	{

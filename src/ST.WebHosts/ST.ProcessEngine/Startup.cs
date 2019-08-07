@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Cache.Extensions;
+using ST.Core.Extensions;
 using ST.Entities.Data;
-using ST.Entities.Extensions;
 using ST.Identity.Data;
 using ST.Procesess.Data;
 using ST.ProcessEngine.Services.HostedServices;
@@ -32,17 +32,17 @@ namespace ST.ProcessEngine
         {
             services.AddDbContext<EntitiesDbContext>(options =>
             {
-                options.GetDefaultOptions(Configuration, HostingEnvironment);
+                options.GetDefaultOptions(Configuration);
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.GetDefaultOptions(Configuration, HostingEnvironment);
+                options.GetDefaultOptions(Configuration);
             });
 
             services.AddDbContext<ProcessesDbContext>(options =>
             {
-                options.GetDefaultOptions(Configuration, HostingEnvironment);
+                options.GetDefaultOptions(Configuration);
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             //Run background service

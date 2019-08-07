@@ -2,16 +2,19 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
 using ST.Audit.Contexts;
+using ST.Core.Abstractions;
+using ST.Core.Helpers.DbContexts;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models;
+using ST.Identity.Abstractions.Models.MultiTenants;
+using ST.Identity.Abstractions.Models.Permmisions;
+using ST.Identity.Abstractions.Models.UserProfiles;
 using ST.Identity.Extensions;
 
 namespace ST.Identity.Data
 {
-    public class ApplicationDbContext : TrackerIdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class ApplicationDbContext : TrackerIdentityDbContext<ApplicationUser, ApplicationRole, string>, IIdentityContext
     {
         /// <summary>
         /// Schema
@@ -35,14 +38,14 @@ namespace ST.Identity.Data
         }
 
         #region Permissions Store
-        public DbSet<Tenant> Tenants { get; set; }
-        public DbSet<AuthGroup> AuthGroups { get; set; }
-        public DbSet<UserGroup> UserGroups { get; set; }
-        public DbSet<RolePermission> RolePermissions { get; set; }
-        public DbSet<GroupPermission> GroupPermissions { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Profile> Profiles { get; set; }
-        public DbSet<RoleProfile> RoleProfiles { get; set; }
+        public virtual DbSet<Tenant> Tenants { get; set; }
+        public virtual DbSet<AuthGroup> AuthGroups { get; set; }
+        public virtual DbSet<UserGroup> UserGroups { get; set; }
+        public virtual DbSet<RolePermission> RolePermissions { get; set; }
+        public virtual DbSet<GroupPermission> GroupPermissions { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
+        public virtual DbSet<Profile> Profiles { get; set; }
+        public virtual DbSet<RoleProfile> RoleProfiles { get; set; }
 
         #endregion Permissions Store
 
@@ -84,9 +87,15 @@ namespace ST.Identity.Data
 
             builder.RegisterIndexes();
         }
+
+        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel
+        {
+            return this.Set<T>();
+        }
     }
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
+        /// <inheritdoc />
         /// <summary>
         /// For creating migrations
         /// </summary>
@@ -94,9 +103,7 @@ namespace ST.Identity.Data
         /// <returns></returns>
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new ApplicationDbContext(optionsBuilder.Options);
+            return DbContextFactory<ApplicationDbContext, ApplicationDbContext>.CreateFactoryDbContext();
         }
     }
 }

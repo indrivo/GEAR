@@ -26,7 +26,7 @@ using ST.Core.Helpers;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
 
 namespace ST.Identity.Razor.Users.Controllers
@@ -111,7 +111,8 @@ namespace ST.Identity.Razor.Users.Controllers
                 Author = User.Identity.Name,
                 AuthenticationType = model.AuthenticationType,
                 IsEditable = true,
-                TenantId = model.TenantId
+                TenantId = model.TenantId,
+                LastPasswordChanged = DateTime.Now
             };
 
             if (model.UserPhoto != null)
@@ -612,6 +613,7 @@ namespace ST.Identity.Razor.Users.Controllers
             var hasher = new PasswordHasher<ApplicationUser>();
             var hashedPassword = hasher.HashPassword(user, model.Password);
             user.PasswordHash = hashedPassword;
+            user.LastPasswordChanged = DateTime.Now;
             var result = await UserManager.UpdateAsync(user);
             if (result.Succeeded)
             {
@@ -660,6 +662,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     Roles = roles,
                     Sessions = sessions,
                     AuthenticationType = o.AuthenticationType.ToString(),
+                    LastLogin = o.LastLogin,
                     Organization = org?.Name
                 };
             }).Select(x => x.Result);

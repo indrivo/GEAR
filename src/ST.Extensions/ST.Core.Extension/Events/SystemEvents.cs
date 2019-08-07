@@ -1,11 +1,60 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using ST.Core.Events.EventArgs;
 using ST.Core.Extensions;
+using ST.Core.Helpers;
 
 namespace ST.Core.Events
 {
     public static class SystemEvents
     {
+        public static class Common
+        {
+            /// <summary>
+            /// Store all system events
+            /// </summary>
+            private static readonly ConcurrentDictionary<string, IEnumerable<string>> Events = new ConcurrentDictionary<string, IEnumerable<string>>();
+
+            /// <summary>
+            /// Get registered events
+            /// </summary>
+            public static Dictionary<string, IEnumerable<string>> RegisteredEvents => Events.ToDictionary(k => k.Key, v => v.Value);
+
+            /// <summary>
+            /// Register event group
+            /// </summary>
+            /// <param name="groupName"></param>
+            /// <param name="events"></param>
+            /// <returns></returns>
+            public static bool RegisterEventGroup(string groupName, IEnumerable<string> events)
+            {
+                return Events.TryAdd(groupName, events);
+            }
+
+            /// <summary>
+            /// Get events from group
+            /// </summary>
+            /// <param name="groupName"></param>
+            /// <returns></returns>
+            public static IEnumerable<string> GetGroupEvents(string groupName)
+            {
+                Events.TryGetValue(groupName, out var events);
+                return events;
+            }
+
+            /// <summary>
+            /// Check if system has some event
+            /// </summary>
+            /// <param name="eventName"></param>
+            /// <returns></returns>
+            public static bool HasEvent(string eventName)
+            {
+                return Events.Any(x => x.Value.Contains(eventName));
+            }
+        }
+
         public struct Application
         {
             /// <summary>
@@ -50,6 +99,9 @@ namespace ST.Core.Events
             Application.OnApplicationStarted += EventHandlers.OnApplicationStartedHandler;
             Application.OnApplicationStopped += EventHandlers.OnApplicationStoppedHandler;
             Application.OnEvent += EventHandlers.OnEventHandler;
+
+            //register event group
+            Common.RegisterEventGroup(nameof(Application), GetEvents(typeof(Application)));
         }
 
         /// <summary>
@@ -79,6 +131,20 @@ namespace ST.Core.Events
                 });
             }
             evt.Invoke(sender, e);
+        }
+
+        /// <summary>
+        /// Get events
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetEvents(Type type)
+        {
+            Arg.NotNull(type, nameof(GetEvents));
+            var props = type.GetEvents()
+                .Select(x => x.Name).ToList();
+
+            return props;
         }
     }
 }

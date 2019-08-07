@@ -1,0 +1,51 @@
+.risk-matrix {
+	border-collapse: collapse;
+	display: table;
+}
+
+	.risk-matrix tr td {
+		padding: 2em;
+		border: 1px solid black;
+		vertical-align: middle;
+		text-align: center;
+		display: table-cell;
+		align-items: center;
+		padding: 1em;
+	}
+
+	.risk-matrix tr .empty-cell {
+		border: none;
+	}
+
+	.risk-matrix tr td.x-cell-size {
+		width: 8em;
+		max-width: 8em;
+	}
+
+	.risk-matrix tr td.value-cell {
+		width: 8em;
+		max-width: 8em;
+		max-height: 30em;
+	}
+
+	.risk-matrix tr td.y-cell-size {
+		height: 8em;
+		max-height: 8em;
+		max-width: 30em;
+	}
+
+.round {
+	border-radius: 2em;
+	width: 4em;
+	height: 4em;
+	max-width: 4em;
+	max-height: 4em;
+	background-color: white;
+	color: black;
+	display: flex;
+	align-items: center;
+}
+
+	.round * {
+		text-align: center;
+	}

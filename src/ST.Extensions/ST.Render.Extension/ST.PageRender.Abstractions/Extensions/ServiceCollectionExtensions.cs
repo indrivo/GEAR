@@ -12,7 +12,7 @@ namespace ST.PageRender.Abstractions.Extensions
             where TPageContext : DbContext, IDynamicPagesContext
         {
             Arg.NotNull(services, nameof(services));
-            SystemEvents.RegisterEvents();
+            DynamicUiEvents.RegisterEvents();
             IDynamicPagesContext ContextFactory(IServiceProvider x)
             {
                 var context = x.GetService<TPageContext>();
@@ -21,6 +21,21 @@ namespace ST.PageRender.Abstractions.Extensions
             }
 
             services.AddScoped(ContextFactory);
+            return services;
+        }
+
+        /// <summary>
+        /// Add module storage
+        /// </summary>
+        /// <typeparam name="TPageContext"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddPageModuleStorage<TPageContext>(this IServiceCollection services,
+            Action<DbContextOptionsBuilder> options)
+            where TPageContext : DbContext, IDynamicPagesContext
+        {
+            services.AddDbContext<TPageContext>(options);
             return services;
         }
     }

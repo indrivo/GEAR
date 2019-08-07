@@ -17,6 +17,15 @@ function TableInlineEdit() {
 
 };
 
+$(document).ready(function () {
+	new TableInlineEdit().init(".dynamic-table");
+});
+
+/**
+ * Constructor
+ */
+TableInlineEdit.prototype.constructor = TableInlineEdit;
+
 /**
  * Db provider
  */
@@ -28,14 +37,38 @@ TableInlineEdit.prototype.db = new DataInjector();
 TableInlineEdit.prototype.toast = new ToastNotifier();
 
 /**
- * Constructor
- */
-TableInlineEdit.prototype.constructor = TableInlineEdit;
-
-/**
  * Default container on unknown column type 
  */
 TableInlineEdit.prototype.defaultNotEditFieldContainer = "-";
+
+/**
+ * Register inline edit events to JQ dt
+ * @param {any} selector
+ */
+TableInlineEdit.prototype.init = function (selector) {
+	$(selector)
+		.on("draw.dt", function (e, settings, json) {
+			$(".inline-edit").off("click", inlineEditHandler);
+			$(".inline-edit").on("click", inlineEditHandler);
+			const table = $(this).DataTable();
+			const buttons = table.buttons();
+			let match = false;
+			for (let i = 0; i < buttons.length; i++) {
+				if (buttons[i].node.innerHTML.indexOf("fa-plus") != -1) {
+					match = true;
+				}
+			}
+
+			if (!match) {
+				table.button().add(0, {
+					action: function (e, dt, button, config) {
+						new TableInlineEdit().addNewHandler(button, dt);
+					},
+					text: '<i class="fa fa-plus"></i>'
+				});
+			}
+		});
+};
 
 /**
  * Get actions on add
@@ -50,6 +83,7 @@ TableInlineEdit.prototype.getActionsOnAdd = function () {
 
 
 TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
+	const scope = this;
 	const card = $(ctx).closest(".card");
 	const dto = card.find(".dynamic-table");
 	if (!jdt) {
@@ -70,8 +104,12 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
 		} else
 			if (columns[i].sTitle === window.translate("list_actions")) {
 				cell.innerHTML = this.getActionsOnAdd();
-				$(cell).find(".cancel-new-item").on("click", cancelNewItem);
-				$(cell).find(".add-new-item").on("click", addNewItem);
+				$(cell).find(".cancel-new-item").on("click", function () {
+					scope.cancelNewItem($(this));
+				});
+				$(cell).find(".add-new-item").on("click", function () {
+					scope.addNewItem($(this));
+				});
 			}
 			else {
 				const newCell = this.getAddRowCell(columns[i], cell);
@@ -84,7 +122,7 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
 	}
 	dto.attr("add-mode", "true");
 	$("tbody", dto).prepend(row);
-	new TableInlineEdit().bindEventsAfterInitInlineEdit();
+	this.bindEventsAfterInitInlineEdit(row);
 	return this.toggleVisibilityColumnsButton(ctx, true);
 };
 
@@ -110,60 +148,75 @@ TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) 
 
 
 /**
- * Cancel add new item
+ * Cancel new item
+ * @param {any} context
  */
-function cancelNewItem() {
-	const context = $(this);
-	context.off("click", cancelNewItem);
-	context.parent().find(".add-new-item").off("click", addNewItem);
-	new TableInlineEdit().toggleVisibilityColumnsButton(context, false);
-	cancelTableAddMode(context);
+TableInlineEdit.prototype.cancelNewItem = function (context) {
+	context.off("click");
+	context.parent().find(".add-new-item").off("click");
+	this.toggleVisibilityColumnsButton(context, false);
+	this.cancelTableAddMode(context);
 	context.closest("tr").remove();
-}
+};
 
-function addNewItem() {
-	const ctx = new TableInlineEdit();
-	const context = $(this);
+
+/**
+ * Add new item
+ * @param {any} context
+ */
+TableInlineEdit.prototype.addNewItem = function (context) {
 	const dTable = context.closest("table").DataTable();
 	const rowContext = context.closest("tr");
 	const entityName = rowContext.attr("entityName");
-	const data = ctx.getRowDataOnAddMode(rowContext);
-	const db = new DataInjector();
-	db.addAsync(entityName, data).then(req => {
+	const isValid = this.isValidNewRow(rowContext);
+	if (!isValid) {
+		return this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
+	}
+	const data = this.getRowDataOnAddMode(rowContext);
+	this.db.addAsync(entityName, data).then(req => {
 		if (req.is_success) {
-			$.toast({
-				heading: "New row added",
-				text: `info`,
-				position: "top-right",
-				loaderBg: "#ff6849",
-				icon: "success",
-				hideAfter: 3500,
-				stack: 6
-			});
+			this.toast.notify({ heading: window.translate("system_inline_edit_row_added"), icon: "success" });
 			dTable.draw();
-			ctx.toggleVisibilityColumnsButton(context, false);
-			context.off("click", addNewItem);
-			cancelTableAddMode(context);
+			this.toggleVisibilityColumnsButton(context, false);
+			context.off("click");
+			this.cancelTableAddMode(context);
 		} else {
-			$.toast({
-				heading: req.error_keys[0].message,
-				text: "",
-				position: "top-right",
-				loaderBg: "#ff6849",
-				icon: "error",
-				hideAfter: 3500,
-				stack: 6
-			});
-			ctx.toggleVisibilityColumnsButton(context, false);
+			this.toast.notify({ heading: req.error_keys[0].message });
+			this.toggleVisibilityColumnsButton(context, false);
 		}
 	}).catch(err => {
 		console.warn(err);
 	});
-}
+};
 
-function cancelTableAddMode(ctx) {
+/**
+ * Cancel add mode
+ * @param {any} ctx
+ */
+TableInlineEdit.prototype.cancelTableAddMode = function (ctx) {
 	ctx.closest("table").attr("add-mode", "false");
-}
+};
+
+
+/**
+ * Validate row
+ * @param {any} context
+ */
+TableInlineEdit.prototype.isValidNewRow = function (context) {
+	const els = context.get(0).querySelectorAll("textarea.data-new");
+	let isValid = true;
+	$.each(els, (index, el) => {
+		if (el.hasAttribute("data-required")) {
+			if (!el.value) {
+				if (!el.classList.contains('cell-red')) {
+					el.classList.add('cell-red')
+				}
+				isValid = false;
+			}
+		}
+	});
+	return isValid;
+};
 
 /**
  * Get row data on add mode
@@ -187,8 +240,7 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
 			case "date":
 				{
 					const date = f.val();
-					const parsed = moment(date, "DD/MM/YYYY").format("DD.MM.YYYY h:mm");
-					console.log(parsed);
+					const parsed = moment(date, "DD/MM/YYYY").format("DD.MM.YYYY");
 					obj[f.attr("data-prop-name")] = parsed;
 				} break;
 			case "uniqueidentifier":
@@ -206,6 +258,14 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
 	return obj;
 };
 
+/**
+ * Do something after cell added
+ * @param {any} cell
+ */
+TableInlineEdit.prototype.onGetNewAddCell = function (cell) {
+	//do something
+};
+
 
 /**
  * Return new cell container for field definition 
@@ -214,6 +274,13 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
  * @param {*} cell 
  */
 TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
+	if (!column.config) {
+		cell.innerHTML = this.defaultNotEditFieldContainer;
+		return {
+			cell: cell,
+			entityName: ""
+		};
+	}
 	if (!column.config.column.tableModelFields) {
 		cell.innerHTML = this.defaultNotEditFieldContainer;
 		return {
@@ -222,115 +289,62 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
 		};
 	}
 
-	$(cell).addClass("expandable-cell");
 	const cellContent = document.createElement("div");
-	cellContent.setAttribute("class", "data-cell hasTooltip");
+	cellContent.setAttribute("class", "data-cell");
 	const entityName = column.config.column.tableModelFields.table.name;
 	const tableId = column.config.column.tableModelFields.table.id;
 	const { allowNull, dataType } = column.config.column.tableModelFields;
 	const propName = column.config.column.tableModelFields.name;
 	const propId = column.config.column.tableModelFields.id;
 	const value = "";
-	const data = { tableId, entityName, propId, propName, allowNull, dataType, value };
+	const data = {
+		tableId, entityName,
+		propId,
+		propName, allowNull,
+		dataType, value,
+		addMode: true, viewModel: column.config.column
+	};
 	//create ui container element by field data type
 	switch (dataType) {
 		case "nvarchar":
 			{
 				const el = this.getTextEditCell(data);
-				el.setAttribute("class", "inline-add-event data-new form-control");
-				if (!allowNull) {
-					el.setAttribute("required", "required");
-				}
-
 				cellContent.appendChild(el);
+				this.onAfterInitAddTextCell(el, data);
 			}
 			break;
 		case "int32":
 		case "decimal":
 			{
 				const el = this.getNumberEditCell(data);
-				el.setAttribute("class", "inline-add-event data-new form-control");
-				if (!allowNull) {
-					el.setAttribute("required", "required");
-				}
-
+				this.onAfterInitAddNumberCell(el, data);
 				cellContent.appendChild(el);
 			} break;
 		case "bool":
 			{
-				const div = document.createElement("div");
-				div.setAttribute("class", "checkbox checkbox-success");
-				div.style.marginTop = "-1em";
-				div.style.marginLeft = "2em";
-				const label = document.createElement("label");
-				label.setAttribute("for", "test");
-				const el = document.createElement("input");
-				el.setAttribute("class", "inline-add-event");
-				el.setAttribute("data-prop-id", propId);
-				el.setAttribute("data-prop-name", propName);
-				el.setAttribute("type", "checkbox");
-				el.setAttribute("data-entity", tableId);
-				el.setAttribute("data-type", "bool");
-				el.setAttribute("id", "test");
-				el.setAttribute("name", "test");
-				el.style.maxWidth = "1em";
-
-				div.appendChild(el);
-				div.appendChild(label);
-				cellContent.appendChild(div);
+				const el = this.getBooleanEditCell(data);
+				this.onAfterInitAddBooleanCell(el, data);
+				cellContent.appendChild(el);
 			}
 			break;
 		case "datetime":
 		case "date":
 			{
 				const el = this.getDateEditCell(data);
-				console.log(el);
-				el.setAttribute("class", "inline-add-event data-new form-control");
-				$(el).on("change", function () { })
-					.datepicker({
-						format: "dd/mm/yyyy"
-					}).addClass("datepicker");
+				this.onAfterInitAddDateCell(el, data);
 				cellContent.appendChild(el);
 			} break;
 		case "uniqueidentifier":
 			{
-				const div = document.createElement("div");
-				div.setAttribute("class", "input-group mb-3");
-				const dropdown = document.createElement("select");
-				dropdown.setAttribute("class", "inline-add-event data-new form-control");
-				dropdown.setAttribute("data-prop-id", propId);
-				dropdown.setAttribute("data-prop-name", propName);
-				dropdown.setAttribute("data-entity", tableId);
-				dropdown.setAttribute("data-type", "uniqueidentifier");
-				dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), "");
-				//Populate dropdown
-				const refs = load(`/InlineEdit/GetRowReferences?entityId=${tableId}&propertyId=${propId}`);
-				if (refs) {
-					if (refs.is_success) {
-						$.each(refs.result.data, function (index, obj) {
-							dropdown.options[dropdown.options.length] = new Option(obj.Name, obj.Id);
-						});
-						dropdown.setAttribute("data-ref-entity", refs.result.entityName);
-					}
-				}
-				div.appendChild(dropdown);
-				const addOptionDiv = document.createElement("div");
-				addOptionDiv.setAttribute("class", "input-group-append");
-				const addOption = document.createElement("a");
-				addOption.setAttribute("class", "btn btn-success");
-				const plus = document.createElement("span");
-				plus.setAttribute("class", "fa fa-plus");
-				plus.style.color = "white";
-				addOption.appendChild(plus);
-				addOption.addEventListener("click", addNewToReferenceHandler);
-				addOptionDiv.appendChild(addOption);
-				div.appendChild(addOptionDiv);
-				cellContent.appendChild(div);
+				data.value = false;
+				const el = this.getReferenceEditCell(data);
+				this.onAfterInitAddReferenceCell(el, data);
+				cellContent.appendChild(el);
 			}
 			break;
 	}
 	cell.appendChild(cellContent);
-
+	this.onGetNewAddCell(cell);
 	return {
 		cell: cell,
 		entityName: entityName
@@ -358,7 +372,11 @@ TableInlineEdit.prototype.getTextEditCell = (data) => {
 	el.setAttribute("data-entity", data.tableId);
 	el.setAttribute("data-prop-name", data.propName);
 	el.setAttribute("data-type", "nvarchar");
+	if (!data.allowNull) {
+		el.setAttribute("data-required", "");
+	}
 	el.innerHTML = data.value;
+	el.value = data.value;
 	return el;
 };
 
@@ -376,6 +394,9 @@ TableInlineEdit.prototype.getNumberEditCell = (data) => {
 	el.setAttribute("data-prop-name", data.propName);
 	el.setAttribute("data-type", "int32");
 	el.setAttribute("value", data.value);
+	if (!data.allowNull) {
+		el.setAttribute("data-required", "");
+	}
 	return el;
 };
 
@@ -384,12 +405,13 @@ TableInlineEdit.prototype.getNumberEditCell = (data) => {
  * @param {any} data
  */
 TableInlineEdit.prototype.getBooleanEditCell = (data) => {
+	const labelIdentifier = `label_${new ST().newGuid()}`;
 	const div = document.createElement("div");
 	div.setAttribute("class", "checkbox checkbox-success");
 	div.style.marginTop = "-1em";
 	div.style.marginLeft = "2em";
 	const label = document.createElement("label");
-	label.setAttribute("for", "test");
+	label.setAttribute("for", labelIdentifier);
 	const el = document.createElement("input");
 	el.setAttribute("class", "inline-update-event data-input");
 	el.setAttribute("data-prop-id", data.propId);
@@ -398,8 +420,8 @@ TableInlineEdit.prototype.getBooleanEditCell = (data) => {
 	el.setAttribute("data-prop-name", data.propName);
 	el.setAttribute("data-entity", data.tableId);
 	el.setAttribute("data-type", "bool");
-	el.setAttribute("id", "test");
-	el.setAttribute("name", "test");
+	el.setAttribute("id", labelIdentifier);
+	el.setAttribute("name", labelIdentifier);
 	el.style.maxWidth = "1em";
 	if (data.value) {
 		el.setAttribute("checked", "checked");
@@ -424,6 +446,9 @@ TableInlineEdit.prototype.getDateEditCell = (data) => {
 	el.setAttribute("data-entity", data.tableId);
 	el.setAttribute("data-type", "datetime");
 	el.setAttribute("value", data.value);
+	if (!data.allowNull) {
+		el.setAttribute("data-required", "");
+	}
 	return el;
 };
 
@@ -447,9 +472,8 @@ TableInlineEdit.prototype.getReferenceEditCell = (conf) => {
 	if (data) {
 		if (data.is_success) {
 			const entityName = data.result.entityName;
-			const key = "Name";
 			$.each(data.result.data, function (index, obj) {
-				dropdown.options[dropdown.options.length] = new Option(obj[key], obj.Id);
+				dropdown.options[dropdown.options.length] = new Option(obj.name, obj.id);
 			});
 			dropdown.setAttribute("data-ref-entity", entityName);
 		}
@@ -480,12 +504,103 @@ TableInlineEdit.prototype.getReferenceEditCell = (conf) => {
 -------------------------------------------------*/
 
 /**
+ * After add cell for in add mode bind ui validations
+ * @param {any} el
+ */
+TableInlineEdit.prototype.onAddedCellBindValidations = function (el) {
+	$(el).on("keydown", function () {
+		$(this).removeClass("cell-red");
+	});
+
+	$(el).on("blur", function () {
+		if (this.hasAttribute("data-required")) {
+			const ctx = $(this);
+			if (!ctx.val()) {
+				ctx.addClass("cell-red");
+			}
+		}
+	});
+};
+
+
+/**
+ * On after init add text cell
+ * @param {any} el
+ * @param {any} data
+ */
+TableInlineEdit.prototype.onAfterInitAddTextCell = function (el, data) {
+	el.setAttribute("class", "inline-add-event data-new form-control");
+	if (!data.allowNull) {
+		el.setAttribute("required", "required");
+	}
+	this.onAddedCellBindValidations(el);
+};
+
+/**
+ * On after init number cell
+ * @param {any} el
+ * @param {any} data
+ */
+TableInlineEdit.prototype.onAfterInitAddNumberCell = function (el, data) {
+	el.setAttribute("class", "inline-add-event data-new form-control");
+	if (!data.allowNull) {
+		el.setAttribute("required", "required");
+	}
+	this.onAddedCellBindValidations(el);
+};
+
+/**
+ * On after init bool cell
+ * @param {any} el
+ * @param {any} data
+ */
+TableInlineEdit.prototype.onAfterInitAddBooleanCell = function (el, data) {
+	$(el).find("input").attr("class", "inline-update-event data-input custom-control-input");
+};
+
+/**
+ * On after init date cell
+ * @param {any} el
+ * @param {any} data
+ */
+TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
+	el.setAttribute("class", "inline-add-event data-new form-control");
+	$(el).on("change", function () { })
+		.datepicker({
+			format: "dd/mm/yyyy"
+		});//.addClass("datepicker");
+	$(el).on("change", function () {
+		if (!this.hasAttribute("data-required")) return;
+		if ($(this).val()) {
+			$(this).removeClass("cell-red");
+		} else {
+			$(this).removeClass("cell-red");
+			$(this).addClass("cell-red");
+		}
+	});
+};
+
+/**
+ * On after init reference cell
+ * @param {any} el
+ * @param {any} data
+ */
+TableInlineEdit.prototype.onAfterInitAddReferenceCell = function (el, data) {
+	$(el).find("select").attr("class", "inline-add-event data-new form-control");
+};
+
+
+/**
  * On after init edit cell
  * @param {any} columns
  * @param {any} index
  */
 TableInlineEdit.prototype.onAfterInitEditCellDefaultHandler = function (columns, index) {
-	$(columns[index]).find(".inline-update-event").on("blur", onInputEventHandler);
+	const el = $(columns[index]).find(".inline-update-event");
+	el.on("blur", onInputEventHandler);
+	el.on("keydown change", function () {
+		$(this).removeClass("cell-red");
+	});
 };
 
 /**
@@ -525,7 +640,16 @@ TableInlineEdit.prototype.onAfterInitDateEditCell = function (columns, index) {
 		.on("change", onInputEventHandler)
 		.datepicker({
 			format: "dd/mm/yyyy"
-		}).addClass("datepicker");
+		});//.addClass("datepicker");
+	$(columns[index]).find(".inline-update-event").on("change", function () {
+		if (!this.hasAttribute("data-required")) return;
+		if ($(this).val()) {
+			$(this).removeClass("cell-red");
+		} else {
+			$(this).removeClass("cell-red");
+			$(this).addClass("cell-red");
+		}
+	});
 };
 
 /**
@@ -540,11 +664,8 @@ TableInlineEdit.prototype.onAfterInitReferenceCell = function (columns, index) {
 /**
  * Bind events after row is ready to edit inline
  */
-TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function () {
-	try {
-		// ReSharper disable once ConstructorCallNotUsed
-		new $.Iso.InlineEditingCells();
-	} catch (e) { };
+TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function (row) {
+	//do something
 };
 
 /**
@@ -553,12 +674,15 @@ TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function () {
  */
 TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 	const targetCtx = $(target);
+	if (!targetCtx.hasClass("inline-update-event")) return;
 	const rowId = targetCtx.attr("data-id");
 	const entityId = targetCtx.attr("data-entity");
 	const propertyId = targetCtx.attr("data-prop-id");
 	const type = targetCtx.attr("data-type");
+	const isRequired = target.hasAttribute("data-required");
 	let value = "";
 	let displaySuccessText = "";
+	let isValid = true;
 	switch (type) {
 		case "bool":
 			{
@@ -572,16 +696,25 @@ TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 			} break;
 		default: {
 			value = targetCtx.val();
+			if (isRequired) {
+				if (!value) {
+					targetCtx.addClass("cell-red");
+					isValid = false;
+				}
+			}
+
 			displaySuccessText = `You change ${value} value`;
 		} break;
 	}
 
-	const req = load(`/InlineEdit/SaveTableCellData`, { entityId, propertyId, rowId, value }, "post");
-	if (req.is_success) {
-		this.displayNotification({ heading: window.translate("system_inline_saved"), text: displaySuccessText, icon: "success" });
-	} else {
-		this.displayNotification({ heading: req.error_keys[0].message });
-	}
+	if (!isValid) return;
+	loadAsync(`/InlineEdit/SaveTableCellData`, { entityId, propertyId, rowId, value }, "post").then(req => {
+		if (req.is_success) {
+			this.displayNotification({ heading: window.translate("system_inline_saved"), text: displaySuccessText, icon: "success" });
+		} else {
+			this.displayNotification({ heading: req.error_keys[0].message });
+		}
+	}).catch(err => { console.warn(err) });
 };
 /*-------------------------------------------------
 				End Bind events to inline cells
@@ -618,29 +751,6 @@ function addNewToReferenceHandler() {
 	new TableInlineEdit().addNewDataToReference(this);
 }
 
-$(".dynamic-table")
-	.on("draw.dt", function (e, settings, json) {
-		$(".inline-edit").off("click", inlineEditHandler);
-		$(".inline-edit").on("click", inlineEditHandler);
-		const table = $(this).DataTable();
-		const buttons = table.buttons();
-		let match = false;
-		for (let i = 0; i < buttons.length; i++) {
-			if (buttons[i].node.innerHTML.indexOf("fa-plus") != -1) {
-				match = true;
-			}
-		}
-
-		if (!match) {
-			table.button().add(0, {
-				action: function (e, dt, button, config) {
-					new TableInlineEdit().addNewHandler(button, dt);
-				},
-				text: '<i class="fa fa-plus"></i>'
-			});
-		}
-	});
-
 /*-------------------------------------------------
 				End Events
 -------------------------------------------------*/
@@ -651,6 +761,10 @@ $(".dynamic-table")
 /*-------------------------------------------------
 				Event Handlers
 -------------------------------------------------*/
+TableInlineEdit.prototype.getOnNonRecognizedField = function (columnCtx, confs) {
+
+};
+
 /**
  * Transform row in inline edit mode
  * @param {any} target
@@ -679,7 +793,9 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 			const viewModelConfigurations = viewModel.result.viewModelFields.find(x => {
 				return x.id === columnId;
 			});
+
 			const cellId = columnCtx.attr("data-id");
+
 			if (fieldData) {
 				//const viewModelId = $(columns[i]).attr("data-viewmodel");
 				const tableId = fieldData.tableId;
@@ -687,15 +803,15 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 				const propName = fieldData.name;
 				const parsedPropName = propName.toLowerFirstLetter();
 				const value = obj[parsedPropName];
+				const allowNull = fieldData.allowNull;
 				let container = value;
-				const data = { cellId, tableId, propId, value, propName };
+				const data = { cellId, tableId, propId, value, propName, allowNull, addMode: false, viewModel: viewModel.result };
 				switch (fieldData.dataType) {
 					case "nvarchar":
 						{
 							container = this.getTextEditCell(data);
 							columnCtx.html(container);
 							this.onAfterInitTextEditCell(columns, i);
-							columnCtx.parent().addClass("expandable-cell");
 						}
 						break;
 					case "int32":
@@ -729,7 +845,7 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 						}
 						break;
 				}
-			} else if (viewModelConfigurations) {
+			} else if (viewModelConfigurations.configurations.length > 0) {
 				switch (viewModelConfigurations.virtualDataType) {
 					//Many to many
 					case 3:
@@ -740,10 +856,12 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
 						}
 						break;
 				}
+			} else {
+				this.getOnNonRecognizedField(columnCtx, viewModelConfigurations);
 			}
 		}
 		targetCtx.on("click", completeEditInlineHandler);
-		this.bindEventsAfterInitInlineEdit();
+		this.bindEventsAfterInitInlineEdit(row);
 	}).catch(err => {
 		console.warn(err);
 	});
@@ -772,70 +890,7 @@ TableInlineEdit.prototype.initManyToManyControl = function (data) {
 	const mCtx = columnCtx.closest("td");
 	const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
 		= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
-	mCtx.on("click", function () {
-		const promiseArr = [];
-		promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
-		promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
-			[{ parameter: sourceSelfParamName.value, value: cellId }]));
-		//get data
-		Promise.all(promiseArr).then(pResult => {
-			const rAll = pResult[0];
-			const rSelected = pResult[1];
-			if (!rAll.is_success || !rSelected.is_success) {
-				return scope.displayNotification({ heading: "Fail get data" });
-			}
-			const dItems = rAll.result.map(x => {
-				const e = rSelected.result.find(y =>
-					y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
-				const o = {
-					id: x.id,
-					value: x.name,
-					checked: e ? true : false
-				};
-				return o;
-			});
-			const multiSelectItem = $.Iso.DynamicFilter("multi-select",
-				mCtx, dItems,
-				{
-					sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName,
-					recordId: cellId,
-					searchBarPlaceholder: window.translate("system_search")
-				});
-
-			$(multiSelectItem.dynamicSelect).on("filterValueChange", (event, arg) => {
-				const { id, checked } = arg.changedValue;
-				const { recordId, sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } = arg.options;
-				if (checked) {
-					const addO = {};
-					addO[sourceSelfParamName.value] = recordId;
-					addO[sourceRefParamName.value] = id;
-					scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
-						if (addResult.is_success) {
-							scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
-						} else {
-							scope.toast.notifyErrorList(addResult.error_keys);
-						}
-					}).catch(err => {
-						console.warn(err);
-					});
-				} else {
-					const deleteFilters = [
-						{ parameter: sourceSelfParamName.value, value: recordId },
-						{ parameter: sourceRefParamName.value, value: id }
-					];
-					scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(deleteResult => {
-						if (deleteResult.is_success) {
-							scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
-						} else {
-							scope.toast.notifyErrorList(deleteResult.error_keys);
-						}
-					}).catch(err => err);
-				}
-			});
-		}).catch(err => {
-			console.warn(err);
-		});
-	});
+	//TODO: create default component for set many to many
 };
 
 /**
@@ -847,7 +902,7 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 	const table = targetCtx.closest("table").DataTable();
 	const row = targetCtx.closest("tr");
 	const index = table.row(row).index();
-	var obj = table.row(index).data();
+	let obj = table.row(index).data();
 	targetCtx.off("click", completeEditInlineHandler);
 	const columns = targetCtx.parent().parent().parent().find(".data-cell");
 
@@ -863,7 +918,7 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 				const type = inspect.attr("data-type");
 				const columnId = inspect.attr("data-prop-id");
 				const colId = columnCtx.attr("data-column-id");
-
+				const threads = [];
 				const fieldData = viewModel.result.entityFields.find(obj => {
 					return obj.id === columnId;
 				});
@@ -871,8 +926,8 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 				const viewModelConfigurations = viewModel.result.viewModelFields.find(x => {
 					return x.id === colId;
 				});
-				if (!inspect) globalResolve();
 
+				if (!inspect) globalResolve();
 				const pr1 = new Promise((pr1Resolve, pr2Reject) => {
 					if (!fieldData) pr1Resolve();
 					const propName = fieldData.name;
@@ -912,7 +967,7 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 					columnCtx.find(".inline-update-event").off("blur", onInputEventHandler);
 					columnCtx.find(".inline-update-event").off("changed", onInputEventHandler);
 				});
-
+				threads.push(pr1);
 				const pr2 = new Promise((localResolve, localReject) => {
 					if (viewModelConfigurations) {
 						switch (viewModelConfigurations.virtualDataType) {
@@ -941,22 +996,36 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 						}
 					} else localResolve();
 				});
-
-				Promise.all([pr1, pr2]).then(() => {
+				threads.push(pr2);
+				Promise.all(threads).then(() => {
 					globalResolve();
 				});
 			});
 
 			promises.push(forPromise);
 		}
-
-		Promise.all(promises).then(() => {
+		promises.push(this.forceLoadDependenciesOnEditComplete(obj));
+		Promise.all(promises).then(results => {
+			row.find("td").unbind();
+			const additionalDependencies = results[results.length - 1];
+			obj = Object.assign(obj, additionalDependencies);
 			const redraw = table.row(index).data(obj).invalidate();
 			$(redraw.row(index).nodes()).find(".inline-edit").on("click", inlineEditHandler);
 		});
 
 	}).catch(err => {
 		console.warn(err);
+	});
+};
+
+/**
+ * Helper for do something on edit complete
+ * @param {any} obj
+ */
+TableInlineEdit.prototype.forceLoadDependenciesOnEditComplete = function (obj) {
+	return new Promise((resolve, reject) => {
+		//do something
+		resolve(obj);
 	});
 };
 
@@ -1034,3 +1103,12 @@ TableInlineEdit.prototype.displayNotification = (conf) => {
 /*-------------------------------------------------
 				End Event Handlers
 -------------------------------------------------*/
+
+
+TableInlineEdit.prototype.elementOffset = function (el) {
+	var rect = el.getBoundingClientRect(),
+		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+	console.log({ top: rect.top + scrollTop, left: rect.left + scrollLeft });
+	return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+};

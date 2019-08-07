@@ -1,0 +1,22 @@
+﻿@model ST.ECommerce.Razor.ViewModels.ProductViewModel
+
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#generalInformation" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">General Information</span></a> </li>
+    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#productVariations" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Product Variations</span></a> </li>
+
+</ul>
+<div class="tab-content">
+    <div class="tab-pane active" id="generalInformation">
+        @await Html.PartialAsync("Tabs/_GeneralInformation", Model)
+    </div>
+    <div class="tab-pane" id="productVariations">
+        @await Html.PartialAsync("Tabs/_ProductAttributes", Model)
+    </div>
+</div>
+
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

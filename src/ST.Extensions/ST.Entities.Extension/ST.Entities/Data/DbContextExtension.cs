@@ -6,6 +6,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ST.Core.Helpers;
+using ST.Entities.Abstractions.Events;
+using ST.Entities.Abstractions.Events.EventArgs;
 using ST.Entities.Abstractions.Query;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
@@ -24,10 +26,9 @@ namespace ST.Entities.Data
                 IsSuccess = false,
                 Result = new EntityViewModel { Includes = new List<EntityViewModel>() }
             };
-
-            //Create Default Field
-            //viewModel = ViewModelBuilder.Create(dbContext, viewModel);
-
+            var watch = new Stopwatch();
+            var evArgs = new ExecutedQueryEventArgs();
+            watch.Start();
             //For Add Single Field To Parent if no Exist
             viewModel = AddFieldForSingle(viewModel);
 
@@ -44,7 +45,7 @@ namespace ST.Entities.Data
                     foreach (var listTableValue in viewModel.Values)
                     {
                         var sqlQuery = QueryBuilder.GetByColumnParameterQuery(viewModel, listTableValue);
-
+                        evArgs.Query = sqlQuery;
                         var result = EntitiesFromSql(dbContext, sqlQuery, listTableValue).ToList();
                         finalResult.AddRange(result);
                     }
@@ -60,14 +61,22 @@ namespace ST.Entities.Data
                 returnModel.Result.Values = finalResult;
                 returnModel.IsSuccess = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error
+                evArgs.Exception = ex;
+                evArgs.Completed = false;
+                watch.Stop();
+                evArgs.Elapsed = watch.ElapsedMilliseconds;
+                EntityEvents.SqlQuery.QueryExecuted(evArgs);
+                Debug.WriteLine(ex);
                 return returnModel;
             }
 
             var values = GetRecursiveSingle(dbContext, viewModel, returnModel.Result.Values);
             returnModel.Result.Values = values;
+            watch.Stop();
+            evArgs.Elapsed = watch.ElapsedMilliseconds;
+            EntityEvents.SqlQuery.QueryExecuted(evArgs);
             return returnModel;
         }
 
@@ -234,7 +243,9 @@ namespace ST.Entities.Data
                 IsSuccess = false,
                 Result = new EntityViewModel { Includes = new List<EntityViewModel>() }
             };
-
+            var watch = new Stopwatch();
+            watch.Start();
+            var evArgs = new ExecutedQueryEventArgs();
             //For Add Single Field To Parent if no Exist
             viewModel = AddFieldForSingle(viewModel);
 
@@ -251,7 +262,7 @@ namespace ST.Entities.Data
                     foreach (var listTableValue in viewModel.Values)
                     {
                         var sqlQuery = QueryBuilder.GetByColumnParameterQuery(viewModel, listTableValue);
-
+                        evArgs.Query = sqlQuery;
                         var result = EntitiesFromSql(dbContext, sqlQuery, listTableValue).ToList();
                         finalResult.AddRange(result);
                     }
@@ -269,15 +280,20 @@ namespace ST.Entities.Data
             }
             catch (Exception ex)
             {
-                returnModel.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("_ex", ex.ToString())
-                };
+                watch.Stop();
+                evArgs.Elapsed = watch.ElapsedMilliseconds;
+                evArgs.Completed = false;
+                evArgs.Exception = ex;
+                EntityEvents.SqlQuery.QueryExecuted(evArgs);
+                returnModel.Errors.Add(new ErrorModel("_ex", ex.ToString()));
                 return returnModel;
             }
 
             var values = GetRecursiveSingle(dbContext, viewModel, returnModel.Result.Values);
             returnModel.Result.Values = values;
+            watch.Stop();
+            evArgs.Elapsed = watch.ElapsedMilliseconds;
+            EntityEvents.SqlQuery.QueryExecuted(evArgs);
             return returnModel;
         }
 
@@ -331,9 +347,9 @@ namespace ST.Entities.Data
                     return returnModel;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Error
+                returnModel.Errors.Add(new ErrorModel(nameof(Exception), ex.Message));
                 return returnModel;
             }
 
@@ -437,7 +453,7 @@ namespace ST.Entities.Data
                 {
                     if (param.Value == null) continue;
                     var dbParameter = cmd.CreateParameter();
-                    dbParameter.ParameterName = string.Format("@{0}", param.Key);
+                    dbParameter.ParameterName = $"@{param.Key}";
                     dbParameter.Value = param.Value;
 
                     cmd.Parameters.Add(dbParameter);
@@ -567,9 +583,9 @@ namespace ST.Entities.Data
                                             : field.ColumnName.Replace("Id", "s"), tempData ?? null);
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
-                                //Error
+                                Debug.WriteLine(ex);
                             }
                         }
                     }
@@ -601,63 +617,6 @@ namespace ST.Entities.Data
             }
 
             return entityViewModel;
-        }
-
-        public static ResultModel<EntityViewModel> ListEntitiesByParamsRecursive(this EntitiesDbContext dbContext,
-            EntityViewModel entityModel)
-        {
-            var returnModel = new ResultModel<EntityViewModel>
-            {
-                IsSuccess = false,
-                Result = new EntityViewModel { Includes = new List<EntityViewModel>() }
-            };
-
-
-            //Create Default Field
-            //entityModel = ViewModelBuilder.Create(dbContext, entityModel);
-
-            //For Add Single Field To Parent if no Exist
-            entityModel = AddFieldForSingle(entityModel);
-
-            returnModel.Result = entityModel;
-
-            if (entityModel == null) return returnModel;
-
-            try
-            {
-                var finalResult = new List<Dictionary<string, object>>();
-
-                if (entityModel.Values != null && entityModel.Values.Count > 0)
-                {
-                    foreach (var listTableValue in entityModel.Values)
-                    {
-                        var sqlQuery = QueryBuilder.GetByColumnParameterQuery(entityModel, listTableValue) ??
-                                       throw new ArgumentNullException(
-                                           $"{nameof(QueryBuilder.GetByColumnParameterQuery)}");
-                        var result = EntitiesFromSql(dbContext, sqlQuery, listTableValue).ToList();
-                        finalResult.AddRange(result);
-                    }
-                }
-                else
-                {
-                    var parameters = new Dictionary<string, object>();
-                    var sqlQuery = QueryBuilder.GetByColumnParameterQuery(entityModel, parameters);
-                    var result = EntitiesFromSql(dbContext, sqlQuery, parameters).ToList();
-                    finalResult.AddRange(result);
-                }
-
-                returnModel.Result.Values = finalResult;
-                returnModel.IsSuccess = true;
-            }
-            catch (Exception)
-            {
-                // Error
-                return returnModel;
-            }
-
-            var values = GetRecursiveSingle(dbContext, entityModel, returnModel.Result.Values);
-            returnModel.Result.Values = values;
-            return returnModel;
         }
 
         /// <summary>

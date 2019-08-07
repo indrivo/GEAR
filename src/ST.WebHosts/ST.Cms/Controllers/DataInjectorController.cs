@@ -48,8 +48,9 @@ namespace ST.Cms.Controllers
 			_context = context;
 			_jsonSerializeOptions = new JsonSerializerSettings
 			{
-				DateFormatString = "dd'.'MM'.'yyyy hh:mm",
-				ContractResolver = new CamelCasePropertyNamesContractResolver()
+				DateFormatString = Settings.Date.DateFormat,
+				ContractResolver = new CamelCasePropertyNamesContractResolver(),
+				NullValueHandling = NullValueHandling.Ignore
 			};
 		}
 
@@ -237,9 +238,17 @@ namespace ST.Cms.Controllers
 			if (!isValid) return new JsonResult(errors);
 			try
 			{
-				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, _jsonSerializeOptions);
+				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type,
+					_jsonSerializeOptions);
 				var rq = await _dynamicService.Table(data.EntityName).Update(parsed);
 				return Json(rq);
+			}
+			catch (JsonSerializationException e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
 			}
 			catch (Exception e)
 			{
@@ -265,6 +274,43 @@ namespace ST.Cms.Controllers
 			{
 				var parsed = JsonConvert.DeserializeObject(data.Object, _dynamicService.Table(data.EntityName).Type, _jsonSerializeOptions);
 				var rq = await _dynamicService.Table(data.EntityName).Add(parsed);
+				return Json(rq);
+			}
+			catch (JsonReaderException e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
+			}
+			catch (Exception e)
+			{
+				return new JsonResult(new ResultModel
+				{
+					Errors = new List<IErrorModel> { new ErrorModel(string.Empty, e.Message) }
+				});
+			}
+		}
+
+
+		/// <summary>
+		/// Add new object list to entity
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> AddRangeAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			try
+			{
+				var tableManger = _dynamicService.Table(data.EntityName);
+				var list = typeof(List<>);
+				var listOfType = list.MakeGenericType(tableManger.Type);
+				var parsed = JsonConvert.DeserializeObject(data.Object, listOfType, _jsonSerializeOptions);
+				var rq = await _dynamicService.Table(data.EntityName).AddRange(parsed as IEnumerable<object>);
 				return Json(rq);
 			}
 			catch (JsonReaderException e)
@@ -315,6 +361,36 @@ namespace ST.Cms.Controllers
 
 
 		/// <summary>
+		/// Delete where by filters
+		/// </summary>
+		/// <returns></returns>
+		[HttpDelete]
+		public async Task<JsonResult> DeleteWhereAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var result = new ResultModel();
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var rqGet = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+			if (rqGet.IsSuccess)
+			{
+				var taskResults = rqGet.Result.Select(async item =>
+					await _dynamicService.Table(data.EntityName).Delete<object>((Guid)item.Id)).Select(x => x.Result);
+				result.IsSuccess = true;
+				result.Result = taskResults;
+				return Json(result);
+			}
+
+			result.IsSuccess = false;
+			result.Errors.Add(new ErrorModel(nameof(EmptyResult), "No item to delete!"));
+			return Json(result);
+		}
+
+
+		/// <summary>
 		/// Get all with no includes
 		/// </summary>
 		/// <returns></returns>
@@ -328,6 +404,25 @@ namespace ST.Cms.Controllers
 			var filters = ParseFilters(serial).ToList();
 			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
 			var rq = await _dynamicService.Table(data.EntityName).GetAll<dynamic>(null, filters);
+			return Json(rq);
+		}
+
+		/// <summary>
+		/// Count
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public async Task<JsonResult> CountAsync([Required][FromBody] RequestData data)
+		{
+			if (data == null) return RequestData.InvalidRequest;
+			var (isValid, errors) = await IsValid(data.EntityName);
+			if (!isValid) return new JsonResult(errors);
+			var serial = JsonConvert.SerializeObject(data.Filters);
+			var filters = ParseFilters(serial).ToList();
+			filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
+			var f = filters.ToDictionary(x => x.Parameter, y => y.Value);
+			var rq = await _dynamicService.Table(data.EntityName).Count(f);
 			return Json(rq);
 		}
 

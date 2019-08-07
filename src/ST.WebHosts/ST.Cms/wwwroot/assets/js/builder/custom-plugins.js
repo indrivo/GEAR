@@ -257,12 +257,22 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 					{
 						type: "checkbox",
 						name: "data-is-editable",
-						label: "Has edit option?"
+						label: "Allow edit with forms"
 					},
 					{
 						type: "checkbox",
 						name: "data-is-editable-inline",
 						label: "Allow edit inline?"
+					},
+					{
+						type: "checkbox",
+						name: "data-allow-edit-restore",
+						label: "Allow delete/restore?"
+					},
+					{
+						type: "checkbox",
+						name: "data-allow-delete-forever",
+						label: "Allow delete forever?"
 					},
 					{
 						type: "select",
@@ -274,12 +284,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 							obj.value = data.id;
 							return obj;
 						})
-					},
-					{
-						type: "checkbox",
-						name: "data-allow-edit-restore",
-						label: "Allow delete/restore?"
-					},]
+					}]
 			})
 		}, {
 				isComponent: function (el) {

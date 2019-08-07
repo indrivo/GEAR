@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Entities.Data;
 using ST.Identity.Data;
-using ST.Identity.Data.UserProfiles;
 using ST.Identity.Razor.ViewModels.UserProfileViewModels;
 using ST.Core;
+using ST.Identity.Abstractions.Models.UserProfiles;
 
 namespace ST.Identity.Razor.Controllers
 {

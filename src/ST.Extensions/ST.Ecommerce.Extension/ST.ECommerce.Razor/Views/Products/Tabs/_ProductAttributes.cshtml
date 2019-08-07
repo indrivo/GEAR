@@ -1,0 +1,47 @@
+﻿@model ST.ECommerce.Razor.ViewModels.ProductViewModel
+@inject IStringLocalizer Localizer
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            @*<div class="card-header">
+                    <h4 class="m-b-0 text-white">Product Variations</h4>
+                </div>*@
+            <div class="tab-content">
+                <div class="card-body" id="1" data-toggle="tab">
+                    <form id="createAttributeForm" asp-action="CreateAttribute" asp-controller="Products">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row p-t-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ProductAttributeId"></label>
+                                    <select asp-for="ProductAttributeId" class="form-control">
+                                        <option value=""></option>
+                                        @foreach (var item in @Model.ProductAttributesList)
+                                        {
+                                            <optgroup label="@item.Key">
+                                                @foreach (var attribute in item.Value)
+                                                {
+                                                    <option label="@attribute.Text" value="@attribute.Value"></option>
+                                                }
+                                            </optgroup>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProductAttributesList" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row button-group">
+                            <div class="col-lg-2 col-md-3">
+                                <a href="#" class="btn btn-block btn-success" onclick="javascript: $('#createAttributeForm').submit();"> @Localizer["save"]</a>
+                            </div>
+                            <div class="col-lg-2 col-md-3">
+                                <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

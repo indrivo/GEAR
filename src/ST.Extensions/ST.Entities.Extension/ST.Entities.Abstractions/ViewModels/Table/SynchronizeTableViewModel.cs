@@ -9,6 +9,7 @@ namespace ST.Entities.Abstractions.ViewModels.Table
         public string Description { get; set; }
         public bool IsSystem { get; set; }
         public bool IsStaticFromEntityFramework { get; set; }
+        public bool IsCommon { get; set; }
 
         public IEnumerable<CreateTableFieldViewModel> Fields { get; set; }
     }

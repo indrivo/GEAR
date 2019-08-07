@@ -1,82 +1,306 @@
 "use strict";
 
 /************************************************
-					Customize system theme js
+			Customize system theme js
 ************************************************/
 
 const settings = JSON.parse(localStorage.getItem("settings"));
 
 const tManager = new TemplateManager();
 
-//Override hide column
+function IsoTableHeadActions() {
+	this.settings = {
+		show: true,
+		enabledOptions: {
+			add: true,
+			deleteRestore: true,
+			hiddenColumns: true,
+			rows: true
+		},
+		actions: {
+			add: {
+				class: "add_new_inline btn btn-outline-primary mr-2",
+				translate: "add"
+			}
+		},
+		customPreActions: [],
+		customPostActions: []
+	};
+}
+
+/*
+ * Constructor
+ */
+IsoTableHeadActions.prototype.constructor = IsoTableHeadActions;
+
+/*
+ * Get configurations
+ */
+IsoTableHeadActions.prototype.getConfiguration = function () {
+	return this;
+};
+
+/*
+ * text cell position
+ */
+function changeTextCellPosition() {
+	$(this).parent().focusout(function () {
+		$(this).css("left", "");
+	});
+	const expandCell = $(this).parent();
+	const pos = new TableInlineEdit().elementOffset(this);
+	const docHeight = $(document).height();
+	const docWidth = $(document).width();
+	const hPercent = pos.top * 100 / docHeight;
+	const diffH = docHeight - pos.top;
+	const textareaWidth = $(expandCell).innerWidth();
+
+	const expandedCell = $(this).parent();
+	const navBarWidth = $(".navigation").width();
+	pos.left -= navBarWidth;
+	const wPercent = pos.left * 100 / docWidth;
+	const diffW = docWidth - pos.left;
+
+	if (hPercent > 70 && hPercent < 80) {
+		expandedCell.css("top", `${pos.top - diffH}px`);
+	} else if (hPercent > 80) {
+		expandedCell.css("top", `${pos.top - diffH - 240}px`);
+	}
+
+	if (wPercent > 70) {
+		expandedCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+	}
+}
+
+
 $(".table")
 	.on("preInit.dt", function () {
-		const content = tManager.render("template_headListActions", "");
+		const conf = new IsoTableHeadActions().getConfiguration();
+		//Risk company matrix
+		if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
+			conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
+		}
+		const content = tManager.render("template_headListActions", conf);
 		const selector = $("div.CustomTableHeadBar");
 		selector.html(content);
+		selector.find(".add-matrix").on("click", riskMatrixCreate);
 		window.forceTranslate("div.CustomTableHeadBar");
 	});
-TableColumnsVisibility.prototype.modalContainer = "#hiddenColumnsModal * .modal-body";
 
-TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
-	const title = (data.targets === "no-sort") ? "#" : data.sTitle;
-	return `<div class="custom-control custom-checkbox">
+
+function riskMatrixCreate() {
+	const scope = this;
+	const db = new DataInjector();
+	const helper = new ST();
+	db.getAllWhereWithIncludesAsync("CompanySettings").then(x => {
+		if (x.is_success) {
+			const settings = x.result.find(p => p.parameterReference.code === 0);
+			if (!settings) {
+				return;
+			}
+			if (settings.value == 1) {
+				//template
+				const template = x.result.find(p => p.parameterReference.code === 2);
+				if (!template) {
+					return;
+				}
+				db.getByIdWithIncludesAsync("CommonRiskMatrixTemplate", template.value).then(common => {
+					if (common.is_success) {
+						const matrix = common.result;
+						matrix.id = helper.newGuid();
+						db.addAsync("CompanyRiskMatrix", matrix).then(h => {
+							if (h.is_success) {
+								const promises = [];
+								promises.push(new Promise((resolve, reject) => {
+									const filters = [{ parameter: "TemplateId", value: template.value }];
+									db.getAllWhereNoIncludesAsync("MatrixImpactDefinition", filters).then(y => {
+										if (y.is_success) {
+											if (y.result.length < parseInt(common.result.impactUnitScale))
+												reject("All the details in the template can not be added because the template has not been completely set up");
+											else
+												resolve(y);
+										} else {
+											reject("Configuration error, try contact administrator");
+										}
+									});
+								}));
+								promises.push(new Promise((resolve, reject) => {
+									const filters = [{ parameter: "MatrixId", value: template.value }];
+									db.getAllWhereNoIncludesAsync("MatrixCellValues", filters).then(y => {
+										if (y.is_success) {
+											if (y.result.length < parseInt(common.result.impactUnitScale))
+												reject("All the details in the template can not be added because the template has not been completely set up");
+											else
+												resolve(y);
+										} else {
+											reject("Configuration error, try contact administrator");
+										}
+									});
+								}));
+
+								Promise.all(promises).then(res => {
+									const addPromises = [];
+									addPromises.push(new Promise((resolve, reject) => {
+										const data = res[0].result;
+										for (let i = 0; i < data.length; i++) {
+											data[i].templateId = matrix.id;
+										}
+										db.addRangeAsync("CompanyMatrixImpactDefinition", data).then(r => {
+											if (r.result.length > 0) {
+												resolve();
+											}
+										});
+									}));
+
+									addPromises.push(new Promise((resolve, reject) => {
+										const data = res[1].result;
+										for (let i = 0; i < data.length; i++) {
+											data[i].matrixId = matrix.id;
+										}
+										db.addRangeAsync("CompanyMatrixCellValues", data).then(r => {
+											if (r.result.length > 0) {
+												resolve();
+											}
+										});
+									}));
+
+									Promise.all(addPromises).then(y => {
+										location.href = `/edit-company-matrix?templateId=${matrix.id}`;
+									}).catch(e => {
+										alert(e);
+										location.reload();
+									});
+								}).catch(e => {
+									alert(e);
+									location.reload();
+								});
+							}
+						});
+					} else {
+						console.warn(common.error_keys);
+					}
+				});
+			} else if (settings.value == 2) {
+				new TableInlineEdit().addNewHandler(scope);
+			}
+		} else {
+			console.warn(x.error_keys);
+		}
+	});
+}
+
+
+/***********************************************
+			Override table column visibility
+************************************************/
+if (typeof TableColumnsVisibility !== "undefined") {
+
+	//Container what store column visibility control
+	TableColumnsVisibility.prototype.modalContainer = "#hiddenColumnsModal * .modal-body";
+
+	/**
+	 * Trigger handler then columns visibility are changed
+	 * @param {any} source
+	 */
+	TableColumnsVisibility.prototype.onColumnsVisibilityStateChanged = function (source) {
+		const jqSource = $(source);
+		const nodeName = source.nodeName;
+		switch (nodeName) {
+			case "INPUT": {
+				const tableIdentifier = jqSource.data("table");
+				$(tableIdentifier).DataTable().draw();
+			} break;
+			case "A": {
+				const tableIdentifier = jqSource.closest(".modal-body")
+					.find("ul")
+					.find("li:first-child")
+					.find("input")
+					.data("table");
+				$(tableIdentifier).DataTable().draw();
+			} break;
+		}
+	};
+
+	/**
+	 * Render checkbox for column visibility
+	 * @param {any} data
+	 * @param {any} id
+	 * @param {any} vis
+	 */
+	TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
+		const title = (data.targets === "no-sort") ? "#" : data.sTitle;
+		return `<div class="custom-control custom-checkbox">
             	<input type="checkbox" ${vis} data-table="${id}" id="_check_${data.idx}" class="custom-control-input vis-check" data-id="${data.idx}" required />
               <label class="custom-control-label" for="_check_${data.idx}">${title}</label>
           </div>`;
-};
+	};
 
-TableColumnsVisibility.prototype.init = function (ctx) {
-	const cols = this.getVisibility(`#${$(ctx).attr("id")}`);
-	$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
-	$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
-	$(".hidden-columns-event").attr("data-id", `#${$(ctx)[0].id}`);
-	$('.table-search').keyup(function () {
-		const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
-		oTable.search($(this).val()).draw();
-	})
-	this.registerInitEvents();
-};
+	/**
+	 * Init column visibility control
+	 * @param {any} ctx
+	 */
+	TableColumnsVisibility.prototype.init = function (ctx) {
+		const cols = this.getVisibility(`#${$(ctx).attr("id")}`);
+		$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
+		$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
+		$(".hidden-columns-event").attr("data-id", `#${$(ctx)[0].id}`);
+		this.registerInitEvents();
+	};
 
-TableColumnsVisibility.prototype.registerInitEvents = function () {
+	/*
+	 * Register events for control initialization
+	*/
+	TableColumnsVisibility.prototype.registerInitEvents = function () {
+		$(".table-search").keyup(function () {
+			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
+			oTable.search($(this).val()).draw();
+		});
 
-	//Delete multiple rows
-	$(".deleteMultipleRows").on("click", function () {
-		const cTable = $(this).closest(".card").find(".dynamic-table");
-		if (cTable) {
-			if (typeof TableBuilder !== 'undefined') {
-				new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+		//Delete multiple rows
+		$(".deleteMultipleRows").on("click", function () {
+			const cTable = $(this).closest(".card").find(".dynamic-table");
+			if (cTable) {
+				if (typeof TableBuilder !== "undefined") {
+					new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+				}
 			}
-		}
-	});
+		});
 
-	$(".add_new_inline").on("click", function () {
-		new TableInlineEdit().addNewHandler(this);
-	});
+		$(".add_new_inline").on("click", function () {
+			new TableInlineEdit().addNewHandler(this);
+		});
 
-	//Items on page
-	$(".tablePaginationView a").on("click", function () {
-		const ctx = $(this);
-		const onPageValue = ctx.data("page");
-		const onPageText = ctx.text();
-		ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
-		const table = ctx.closest(".card").find(".dynamic-table").DataTable();
-		table.page.len(onPageValue).draw();
-	});
+		//Items on page
+		$(".tablePaginationView a").on("click", function () {
+			const ctx = $(this);
+			const onPageValue = ctx.data("page");
+			const onPageText = ctx.text();
+			ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
+			const table = ctx.closest(".card").find(".dynamic-table").DataTable();
+			table.page.len(onPageValue).draw();
+		});
 
-	//hide columns
-	$(".hidden-columns-event").click(function () {
-		new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
-		$("#hiddenColumnsModal").modal();
-	});
-};
-if (typeof TableBuilder !== 'undefined') {
+		//hide columns
+		$(".hidden-columns-event").click(function () {
+			new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
+			$("#hiddenColumnsModal").modal();
+		});
+	};
+}
+
+/***********************************************
+			Override TableBuilder
+************************************************/
+if (typeof TableBuilder !== "undefined") {
 	//Override table select
 	TableBuilder.prototype.dom = '<"CustomTableHeadBar">rtip';
-	RenderTableSelect.prototype.settings.classNameText = 'no-sort';
+	RenderTableSelect.prototype.settings.classNameText = "no-sort";
 	RenderTableSelect.prototype.settings.select.selector = "td:not(.not-selectable):first-child .checkbox-container";
+	//Table buttons
+	TableBuilder.prototype.buttons = [];
+
 	RenderTableSelect.prototype.selectHandler = function (context) {
-		const row = $(context).closest('tr');
+		const row = $(context).closest("tr");
 		const table = row.closest("table").DataTable();
 		if (row.hasClass("selected")) {
 			table.row(row).deselect();
@@ -104,17 +328,17 @@ if (typeof TableBuilder !== 'undefined') {
 	RenderTableSelect.prototype.selectTemplateCommom = function (id, handler) {
 		return `<div class="checkbox-container">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" onchange="${handler}" class="custom-control-input" id="_select${id}"
+                                    <input type="checkbox" onchange="${handler}" class="custom-control-input" id="_select_${id}"
                                            required>
-                                    <label class="custom-control-label" for="_select${id}"></label>
+                                    <label class="custom-control-label" for="_select_${id}"></label>
                                 </div>
                             </div>`;
 	};
 
-	RenderTableSelect.prototype.settings.headContent = function () {
+	RenderTableSelect.prototype.settings.headContent = () => {
 		const id = st.newGuid();
 		return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHeadHandler(this)");
-	}.call();
+	};
 
 	RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
 		const id = st.newGuid();
@@ -132,7 +356,6 @@ if (typeof TableBuilder !== 'undefined') {
 			: ``}`;
 	};
 
-
 	TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
 		if (row.isDeleted) return "";
 		return `${dataX.hasInlineEdit
@@ -141,7 +364,15 @@ if (typeof TableBuilder !== 'undefined') {
 			: ``}`;
 	};
 
+	TableBuilder.prototype.getTableDeleteForeverActionButton = function (row, dataX) {
+		return `${dataX.hasDeleteForever
+			? `	<a onclick="new TableBuilder().deleteItemForever('${row.id
+			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')" data-viewmodel="${dataX.viewmodelData.result.id
+			}" class="delete-forever" href="javascript:void(0)" title="Delete forever"><i class="material-icons">delete_forever</i></a>`
+			: ``}`;
+	};
 
+	//Rewrite actions for table
 	TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
 		if (row.isDeleted) return "";
 		return `${dataX.hasEditPage ? `<a href="${dataX.editPageLink}?itemId=${row.id
@@ -149,27 +380,42 @@ if (typeof TableBuilder !== 'undefined') {
 			: ``}`;
 	};
 
+	//Rewrite jq dt translations
 	TableBuilder.prototype.replaceTableSystemTranslations = function () {
 		const customReplace = new Array();
-		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
-		customReplace.push({ Key: "processing", Value: `<div class="col-md"><div class="lds-dual-ring"></div></div>` });
+		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md lds-dual-ring"></div>` });
+		//customReplace.push({ Key: "processing", Value: `<div class="col-md lds-dual-ring"></div>` });
 		const serialData = JSON.stringify(customReplace);
 		return serialData;
+	};
+
+	/**
+ * On table init complete
+ * @param {any} settings
+ * @param {any} json
+ */
+	TableBuilder.prototype.onInitComplete = function (settings, json) {
+		if (this.configurations.table.name === "CommonRiskMatrixTemplate" || this.configurations.table.name === "CompanyRiskMatrix") return;
+		new TableInlineEdit().addNewHandler($(settings.nTable).parent());
+		// The second argument is not required
+		this.configurations.overflowIndicator = $.Iso.OverflowIndicator($($(settings.nTable)), { trigger: "focus" });
 	};
 }
 
 
-
-//override inline edit templates
-if (typeof TableInlineEdit !== 'undefined') {
+/***********************************************
+			Override inline edit templates
+************************************************/
+if (typeof TableInlineEdit !== "undefined") {
 	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
 		return;
 	};
 
 	TableInlineEdit.prototype.renderActiveInlineButton = function (ctx) {
-		ctx.find("i").html("check");
+		//ctx.find("i").html("check");
 	};
 
+	//Set actions for table
 	TableInlineEdit.prototype.getActionsOnAdd = function () {
 		const template = `<div class="btn-group" role="group" aria-label="Action buttons">
 							<a href="javascript:void(0)" class='add-new-item'><i class="material-icons">check</i></a>
@@ -177,26 +423,860 @@ if (typeof TableInlineEdit !== 'undefined') {
 						</div>`;
 		return template;
 	};
+
+	//On add new cell for inline edit
+	TableInlineEdit.prototype.onGetNewAddCell = function (cell) {
+		const ctx = $(cell);
+		ctx.addClass("expandable-cell");
+		ctx.find("div:first-child").addClass("hasTooltip");
+	};
+
+	/**
+ * On after init reference cell
+ * @param {any} el
+ * @param {any} data
+ */
+	TableInlineEdit.prototype.onAfterInitAddReferenceCell = function (el, data) {
+		const scope = this;
+		const select = $(el).find("select");
+		select.attr("class", "inline-add-event data-new form-control");
+		$(el).find("select.inline-add-event").on("change", function () {
+			scope.addNewItem($(this));
+		});
+	};
+
+	/**
+ * On after init text cell
+ * @param {any} columns
+ * @param {any} index
+ */
+	TableInlineEdit.prototype.onAfterInitTextEditCell = function (columns, index) {
+		this.onAfterInitEditCellDefaultHandler(columns, index);
+		const columnCtx = $(columns[index]);
+		const expandCell = columnCtx.parent();
+		expandCell.addClass("expandable-cell");
+		columnCtx.on("click", changeTextCellPosition);
+	};
+
+	/**
+ * On after init add text cell
+ * @param {any} el
+ * @param {any} data
+ */
+	TableInlineEdit.prototype.onAfterInitAddTextCell = function (el, data) {
+		el.setAttribute("class", "inline-add-event data-new form-control");
+		if (!data.allowNull) {
+			el.setAttribute("required", "required");
+		}
+		$(el).parent().on("click", changeTextCellPosition);
+		this.onAddedCellBindValidations(el);
+	};
+
+	TableInlineEdit.prototype.defaultNotEditFieldContainer = "<div class='text-center'>-</div>";
+
+	/**
+ * On row create
+ * @param {any} row
+ * @param {any} data
+ * @param {any} dataIndex
+ */
+	TableBuilder.prototype.onRowCreate = function (row, data, dataIndex) {
+		const scope = this;
+		if (data.isDeleted) {
+			$(row).addClass("row-deleted");
+			$(row).find("td.select-checkbox").find("input").css("display", "none");
+			$(row).find("td").addClass("not-selectable");
+		}
+		const rowScope = $(row);
+		rowScope.attr("data-viewmodel", scope.configurations.viewmodelId);
+		rowScope.unbind();
+		rowScope.on("dblclick", function () {
+			new ST().clearSelectedText();
+			new TableInlineEdit().initInlineEditForRow(this);
+		});
+	};
+
+	//Restyle inline edit controls
+	TableInlineEdit.prototype.getBooleanEditCell = (data) => {
+		const labelIdentifier = `label_${new ST().newGuid()}`;
+		const container = document.createElement("div");
+		container.setAttribute("class", "checkbox-container pt-2 pb-2");
+		const div = document.createElement("div");
+		div.setAttribute("class", "custom-control custom-checkbox");
+		const label = document.createElement("label");
+		label.setAttribute("class", "custom-control-label");
+		label.setAttribute("for", labelIdentifier);
+
+		const el = document.createElement("input");
+		el.setAttribute("class", "inline-update-event data-input custom-control-input");
+		el.setAttribute("data-prop-id", data.propId);
+		el.setAttribute("data-id", data.cellId);
+		el.setAttribute("type", "checkbox");
+		el.setAttribute("data-prop-name", data.propName);
+		el.setAttribute("data-entity", data.tableId);
+		el.setAttribute("data-type", "bool");
+		el.setAttribute("id", labelIdentifier);
+		el.setAttribute("name", labelIdentifier);
+
+		if (data.value) {
+			el.setAttribute("checked", "checked");
+		}
+
+		div.appendChild(el);
+		div.appendChild(label);
+		container.appendChild(div);
+		$(container).closest(".data-cell").addClass("text-center");
+		return container;
+	};
+
+	/**
+	 * Get reference edit cell
+	 * @param {any} conf
+	 */
+	TableInlineEdit.prototype.getReferenceEditCell = function (conf) {
+		const gScope = this;
+		const div = document.createElement("div");
+		//div.setAttribute("class", "");
+		const dropdown = document.createElement("select");
+		dropdown.setAttribute("class", "inline-update-event data-input form-control");
+		dropdown.setAttribute("data-prop-id", conf.propId);
+		dropdown.setAttribute("data-prop-name", conf.propName);
+		dropdown.setAttribute("data-id", conf.cellId);
+		dropdown.setAttribute("data-entity", conf.tableId);
+		dropdown.setAttribute("data-type", "uniqueidentifier");
+		dropdown.style.display = "none";
+		dropdown.options[dropdown.options.length] = new Option(window.translate("no_value_selected"), "");
+		if (!conf.allowNull) {
+			dropdown.setAttribute("data-required", "");
+		}
+		const container = document.createElement("div");
+		container.setAttribute("class", "fire-reference-component input-group outline-control br-none inline-editing-input");
+		const el = document.createElement("input");
+		el.setAttribute("class", "form-control virtual-el-reference");
+		el.setAttribute("type", "text");
+		el.setAttribute("readonly", "");
+		container.appendChild(el);
+		const decorator = document.createElement("div");
+		decorator.classList = ["input-group-append"];
+		const grSpan = document.createElement("span");
+		grSpan.classList = ["input-group-text"];
+		const icon = document.createElement("span");
+		icon.classList = ["material-icons"];
+		icon.innerHTML = "keyboard_arrow_down";
+		grSpan.appendChild(icon);
+		decorator.appendChild(grSpan);
+		container.appendChild(decorator);
+		//Populate dropdown
+		loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
+			if (data) {
+				if (data.is_success) {
+					const entityName = data.result.entityName;
+					$.each(data.result.data, function (index, obj) {
+						if (obj.id === conf.value) {
+							el.value = obj.name;
+						}
+						dropdown.options[dropdown.options.length] = new Option(obj.name, obj.id);
+					});
+					dropdown.setAttribute("data-ref-entity", entityName);
+					const items = data.result.data.map(x => {
+						return {
+							id: x.id,
+							value: x.name
+						};
+					});
+					$($(div).find(".fire-reference-component")).on("click", function (event) {
+						if (event.originalEvent.detail > 1) return;
+						const cellCtx = this;
+						const item = $.Iso.dynamicFilter("list",
+							event.target, items,
+							{
+								create: function (value) {
+									return new Promise((resolve, reject) => {
+										gScope.db.addAsync(entityName, { name: value }).then(response => {
+											if (response.is_success) {
+												dropdown.options[dropdown.options.length] = new Option(value, response.result);
+												const successMessage = `${window.translate("system_record")} ${value} ${window.translate("system_record_added_into")} ${entityName}`;
+												gScope.toast.notify({ heading: successMessage, icon: "success" });
+												resolve(response.result);
+											} else {
+												reject();
+												gScope.toast.notifyErrorList(response.error_keys);
+											}
+										});
+									});
+								},
+								update: function (obj) {
+									return new Promise((resolve, reject) => {
+										gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
+											if (x.is_success) {
+												const newObj = x.result;
+												newObj.name = obj.value;
+												gScope.db.updateAsync(entityName, newObj).then(y => {
+													if (y.is_success) {
+														gScope.toast.notify({ heading: window.translate("system_entry_updaded"), icon: "success" });
+														resolve();
+													} else {
+														gScope.toast.notifyErrorList(y.error_keys);
+														reject();
+													}
+												}).catch(err => {
+													reject(err);
+												});
+											} else {
+												gScope.toast.notify({ heading: window.translate("system_data_no_item_found") });
+											}
+										}).catch(err => {
+											reject(err);
+										});
+									});
+								},
+								delete: function (obj) {
+									return new Promise((resolve, reject) => {
+										const params = [{ parameter: "Id", value: obj.id }];
+										gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
+											if (x.is_success) {
+												gScope.toast.notify({ heading: window.translate("system_data_record_deleted"), icon: "success" });
+												resolve();
+											} else {
+												gScope.toast.notifyErrorList(x.error_keys);
+												reject();
+											}
+										}).catch(err => {
+											reject(err);
+										});
+									});
+								}
+							},
+							{
+								entity: entityName,
+								ctx: cellCtx,
+								items: items,
+								searchBarPlaceholder: window.translate("system_search_add"),
+								addButtonLabel: window.translate("add")
+							},
+							{ placement: "bottom-auto" });
+
+						$(item.container).on("selectValueChange", (event, arg) => {
+							const { ctx, entity, items } = arg.options;
+							//const exist = items.find(x => x.id === arg.value);
+							$(dropdown).val(arg.value);
+							$(dropdown).trigger("change");
+							gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
+								if (x.is_success) {
+									const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
+									//if (conf.addMode) {
+									//	const template = conf.viewModel
+									//		.tableModelFields.tableFieldConfigValues
+									//		.find(z => z.tableFieldConfigId === tId).value;
+
+									//	console.log(template);
+									//} else {
+
+									//}
+									let param = "name";
+									if (entity == "Users") {
+										param = "userName";
+									}
+
+									$(ctx).find(".virtual-el-reference").val(x.result[param]);
+								} else {
+									gScope.toast.notifyErrorList(x.error_keys);
+								}
+							});
+						});
+					});
+				}
+				dropdown.value = conf.value;
+			}
+		});
+
+		div.appendChild(dropdown);
+		div.appendChild(container);
+		return div;
+	};
+
+	/**
+	 * Get date edit cell
+	 * @param {any} data
+	 */
+	TableInlineEdit.prototype.getDateEditCell = (data) => {
+		const container = document.createElement("div");
+		container.setAttribute("class", "input-group outline-control br-none inline-editing-input");
+		const el = document.createElement("input");
+		el.setAttribute("class", "inline-update-event datepicker-control data-input form-control");
+		el.setAttribute("data-prop-id", data.propId);
+		el.setAttribute("data-id", data.cellId);
+		el.setAttribute("data-prop-name", data.propName);
+		el.setAttribute("type", "text");
+		el.setAttribute("data-entity", data.tableId);
+		el.setAttribute("data-type", "datetime");
+		el.setAttribute("value", data.value);
+		if (!data.allowNull) {
+			el.setAttribute("data-required", "");
+		}
+		container.appendChild(el);
+		const decorator = document.createElement("div");
+		decorator.classList = ["input-group-append"];
+		const grSpan = document.createElement("span");
+		grSpan.classList = ["input-group-text"];
+		const icon = document.createElement("span");
+		icon.classList = ["material-icons"];
+		icon.innerHTML = "calendar_today";
+		grSpan.appendChild(icon);
+		decorator.appendChild(grSpan);
+		container.appendChild(decorator);
+		return container;
+	};
+
+	/**
+ * On after init date cell
+ * @param {any} el
+ * @param {any} data
+ */
+	TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
+		const input = $(el).find(".inline-update-event");
+		input.get(0).setAttribute("class", "inline-add-event data-new form-control datepicker-control");
+		input.on("change", function () { })
+			.datepicker({
+				format: "dd/mm/yyyy"
+			});//.addClass("datepicker");
+		input.on("change", function () {
+			if (!this.hasAttribute("data-required")) return;
+			if ($(this).val()) {
+				$(this).parent().removeClass("cell-red");
+			} else {
+				$(this).parent().removeClass("cell-red").addClass("cell-red");
+			}
+		});
+	};
+
+	/**
+ * Validate row
+ * @param {any} context
+ */
+	TableInlineEdit.prototype.isValidNewRow = function (context) {
+		const els = context.get(0).querySelectorAll("textarea.data-new");
+		let isValid = true;
+		$.each(els, (index, el) => {
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!el.classList.contains("cell-red")) {
+						el.classList.add("cell-red");
+					}
+					isValid = false;
+				}
+			}
+		});
+
+		const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
+
+		$.each(elsDates, (index, el) => {
+			const ctx = $(el).parent();
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!ctx.hasClass("cell-red")) {
+						ctx.addClass("cell-red");
+					}
+					isValid = false;
+				}
+			}
+		});
+
+		const referenceCells = context.get(0).querySelectorAll("select.data-new");
+		$.each(referenceCells, (index, el) => {
+			if (el.hasAttribute("data-required")) {
+				const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
+				if (!el.value) {
+					if (!input.classList.contains("cell-red")) {
+						input.classList.add("cell-red");
+					}
+					isValid = false;
+				} else {
+					$(input).removeClass("cell-red");
+				}
+			}
+		});
+		return isValid;
+	};
+
+	/**
+	 * Rewrite add new line
+	 * @param {any} ctx
+	 * @param {any} jdt
+	 */
+	TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
+		const scope = this;
+		const card = $(ctx).closest(".card");
+		const dto = card.find(".dynamic-table");
+		if (!jdt) {
+			jdt = dto.DataTable();
+		}
+
+		const row = document.createElement("tr");
+		row.setAttribute("isNew", "true");
+		const columns = jdt.columns().context[0].aoColumns;
+		for (let i in columns) {
+			//Ignore hidden column
+			if (!columns[i].bVisible) continue;
+			let cell = document.createElement("td");
+			if (columns[i].targets === "no-sort") {
+				cell.innerHTML = this.defaultNotEditFieldContainer;
+			}
+			else {
+				const newCell = this.getAddRowCell(columns[i], cell);
+				cell = newCell.cell;
+				if (newCell.entityName)
+					row.setAttribute("entityName", newCell.entityName);
+				$(cell).find("textarea.inline-add-event, input.inline-add-event").on("blur", function () {
+					scope.addNewItem($(this));
+				});
+			}
+
+			row.appendChild(cell);
+		}
+		dto.attr("add-mode", "true");
+		const tBody = $("tbody", dto);
+		const haveEmptyRow = tBody.find(".dataTables_empty");
+		if (haveEmptyRow) {
+			$(haveEmptyRow).closest("tr").remove();
+		}
+		tBody.prepend(row);
+		this.bindEventsAfterInitInlineEdit(row);
+		return this.toggleVisibilityColumnsButton(ctx, true);
+	};
+
+	/**
+ * Transform row in inline edit mode
+ * @param {any} target
+ */
+	TableInlineEdit.prototype.initInlineEditForRow = function (target) {
+		const targetCtx = $(target);
+		this.renderActiveInlineButton(targetCtx);
+		targetCtx.removeClass("inline-edit");
+		targetCtx.addClass("inline-complete");
+
+		const viewModelId = targetCtx.attr("data-viewmodel");
+		loadAsync(`/InlineEdit/GetViewModelColumnTypes?viewModelId=${viewModelId}`).then(viewModel => {
+			const dt = targetCtx.closest("table");
+			const table = dt.DataTable();
+			const row = targetCtx;
+			const columns = row.find(".data-cell");
+			const index = table.row(row).index();
+			let obj = table.row(index).data();
+			for (let i = 0; i < columns.length; i++) {
+				const columnCtx = $(columns[i]);
+				const columnId = columnCtx.attr("data-column-id");
+				const fieldData = viewModel.result.entityFields.find(x => {
+					return x.columnId === columnId;
+				});
+
+				const viewModelConfigurations = viewModel.result.viewModelFields.find(x => {
+					return x.id === columnId;
+				});
+
+				const cellId = columnCtx.attr("data-id");
+
+				if (fieldData) {
+					const tableId = fieldData.tableId;
+					const propId = fieldData.id;
+					const propName = fieldData.name;
+					const parsedPropName = propName.toLowerFirstLetter();
+					const value = obj[parsedPropName];
+					const allowNull = fieldData.allowNull;
+					let container = value;
+					const data = {
+						cellId, tableId, propId, value,
+						propName, allowNull,
+						addMode: false,
+						viewModel: viewModel.result
+					};
+					switch (fieldData.dataType) {
+						case "nvarchar":
+							{
+								container = this.getTextEditCell(data);
+								columnCtx.html(container);
+								this.onAfterInitTextEditCell(columns, i);
+							}
+							break;
+						case "int32":
+						case "decimal":
+							{
+								container = this.getNumberEditCell(data);
+								columnCtx.html(container);
+								this.onAfterInitNumberEditCell(columns, i);
+							}
+							break;
+						case "bool":
+							{
+								container = this.getBooleanEditCell(data);
+								columnCtx.html(container);
+								this.onAfterInitBooleanEditCell(columns, i);
+							}
+							break;
+						case "datetime":
+						case "date":
+							{
+								container = this.getDateEditCell(data);
+								columnCtx.html(container);
+								this.onAfterInitDateEditCell(columns, i);
+							}
+							break;
+						case "uniqueidentifier":
+							{
+								container = this.getReferenceEditCell(data);
+								columnCtx.html(container);
+								this.onAfterInitReferenceCell(columns, i);
+							}
+							break;
+					}
+				} else if (viewModelConfigurations.configurations.length > 0) {
+					switch (viewModelConfigurations.virtualDataType) {
+						//Many to many
+						case 3:
+							{
+								this.initManyToManyControl({
+									viewModelConfigurations, columnCtx, cellId
+								});
+							}
+							break;
+					}
+				} else {
+					this.getOnNonRecognizedField(columnCtx, viewModelConfigurations);
+				}
+			}
+			this.bindEventsAfterInitInlineEdit(row);
+		}).catch(err => {
+			console.warn(err);
+		});
+	};
+
+
+	/**
+ * Transform row from edit mode to read mode
+ * @param {any} target
+ */
+	TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
+		const targetCtx = $(target);
+		const htTable = targetCtx.closest("table");
+		const table = htTable.DataTable();
+		let row = targetCtx.closest("tr");
+		const index = table.row(row).index();
+		let obj = table.row(index).data();
+		targetCtx.off("click", completeEditInlineHandler);
+		const columns = targetCtx.parent().parent().parent().find(".data-cell");
+		let viewModelId = htTable.attr("db-viewmodel");
+		loadAsync(`/InlineEdit/GetViewModelColumnTypes?viewModelId=${viewModelId}`).then(viewModel => {
+			if (!viewModelId) return;
+			if (!viewModel.is_success) return;
+			const promises = [];
+			for (let i = 0; i < columns.length; i++) {
+				const forPromise = new Promise((globalResolve, globalReject) => {
+					const columnCtx = $(columns[i]);
+					const inspect = columnCtx.find(".data-input");
+					const type = inspect.attr("data-type");
+					const columnId = inspect.attr("data-prop-id");
+					const colId = columnCtx.attr("data-column-id");
+					const threads = [];
+					const fieldData = viewModel.result.entityFields.find(obj => {
+						return obj.id === columnId;
+					});
+
+					const viewModelConfigurations = viewModel.result.viewModelFields.find(x => {
+						return x.id === colId;
+					});
+
+					if (!inspect) globalResolve();
+					const pr1 = new Promise((pr1Resolve, pr2Reject) => {
+						if (!fieldData) pr1Resolve();
+						const propName = fieldData.name;
+						const parsedPropName = propName.toLowerFirstLetter();
+
+						const value = inspect.val();
+
+						switch (type) {
+							case "bool":
+								{
+									obj[parsedPropName] = inspect.prop("checked");
+									pr1Resolve();
+								}
+								break;
+							case "uniqueidentifier":
+								{
+									const refEntity = inspect.attr("data-ref-entity");
+									this.db.getByIdWithIncludesAsync(refEntity, value).then(refObject => {
+										if (refObject.is_success) {
+											obj[`${parsedPropName}Reference`] = refObject.result;
+											obj[parsedPropName] = value;
+										} else {
+											this.toast.notifyErrorList(refObject.error_keys);
+										}
+										pr1Resolve();
+									}).catch(err => { console.warn(err) });
+								}
+								break;
+							default:
+								{
+									obj[parsedPropName] = value;
+									pr1Resolve();
+								}
+								break;
+						}
+					}).then(() => {
+						columnCtx.find(".inline-update-event").off("blur", onInputEventHandler);
+						columnCtx.find(".inline-update-event").off("changed", onInputEventHandler);
+					});
+					threads.push(pr1);
+					const pr2 = new Promise((localResolve, localReject) => {
+						if (viewModelConfigurations) {
+							switch (viewModelConfigurations.virtualDataType) {
+								//Many to many
+								case 3:
+									{
+										const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } =
+											this.getManyToManyViewModelConfigurations(viewModelConfigurations);
+										const filters = [{ parameter: sourceSelfParamName.value, value: obj.id }];
+										this.db.getAllWhereWithIncludesAsync(sourceEntity.value, filters).then(mResult => {
+											if (mResult.is_success) {
+												obj[`${sourceEntity.value.toLowerFirstLetter()}Reference`] = mResult.result;
+											} else {
+												this.toast.notifyErrorList(mResult.error_keys);
+											}
+											localResolve();
+										}).catch(err => {
+											console.warn(err);
+											localResolve();
+										});
+									}
+									break;
+								default:
+									localResolve();
+									break;
+							}
+						} else localResolve();
+					});
+					threads.push(pr2);
+					Promise.all(threads).then(() => {
+						globalResolve();
+					});
+				});
+
+				promises.push(forPromise);
+			}
+			promises.push(this.forceLoadDependenciesOnEditComplete(obj));
+			Promise.all(promises).then(results => {
+				row.find("td").unbind();
+				const additionalDependencies = results[results.length - 1];
+				obj = Object.assign(obj, additionalDependencies);
+				const redraw = table.row(index).data(obj).invalidate();
+				$(redraw.row(index).nodes()).unbind();
+				$(redraw.row(index).nodes()).on("dblclick", function () {
+					new TableInlineEdit().initInlineEditForRow(this);
+				});
+				$.Iso.OverflowIndicator(htTable, { trigger: "focus" });
+			});
+
+		}).catch(err => {
+			console.warn(err);
+		});
+	};
+
+
+	//bind events after inline edit was started for row
+	TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function (row) {
+		try {
+			// ReSharper disable once ConstructorCallNotUsed
+			new $.Iso.InlineEditingCells();
+		} catch (e) { };
+		const ctx = $(row);
+		ctx.unbind();
+		if (!ctx.get(0).hasAttribute("isnew")) {
+			row.on("dblclick", function (e) {
+				e.preventDefault();
+				new ST().clearSelectedText();
+				$(this).unbind();
+				new TableInlineEdit().completeInlineEditForRow(this);
+			});
+		}
+	};
+
+	/**
+	 * Many to many control
+	 * @param {any} data
+	 */
+	TableInlineEdit.prototype.initManyToManyControl = function (data) {
+		const { viewModelConfigurations, columnCtx, cellId } = data;
+		const scope = this;
+		const mCtx = columnCtx.closest("td");
+		const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
+			= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
+		mCtx.on("click", function () {
+			if (event.detail > 1) return;
+			const promiseArr = [];
+			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
+			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
+				[{ parameter: sourceSelfParamName.value, value: cellId }]));
+			//get data
+			Promise.all(promiseArr).then(pResult => {
+				const rAll = pResult[0];
+				const rSelected = pResult[1];
+				if (!rAll.is_success || !rSelected.is_success) {
+					return scope.displayNotification({ heading: window.translate("system_something_went_wrong") });
+				}
+
+				const dItems = rAll.result.map(x => {
+					const e = rSelected.result.find(y =>
+						y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
+					const o = {
+						id: x.id,
+						value: x.name,
+						checked: e ? true : false
+					};
+					return o;
+				});
+
+				const multiSelectItem = $.Iso.dynamicFilter("multi-select",
+					mCtx, dItems, null,
+					{
+						sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName,
+						recordId: cellId,
+						searchBarPlaceholder: window.translate("system_search")
+					});
+
+				$(multiSelectItem.container).on("selectValueChange", (event, arg) => {
+					const { id, checked } = arg.value.changedValue;
+					const { recordId, sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } = arg.options;
+					if (checked) {
+						const addO = {};
+						addO[sourceSelfParamName.value] = recordId;
+						addO[sourceRefParamName.value] = id;
+						scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
+							if (addResult.is_success) {
+								scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+							} else {
+								scope.toast.notifyErrorList(addResult.error_keys);
+							}
+						}).catch(err => {
+							console.warn(err);
+						});
+					} else {
+						const deleteFilters = [
+							{ parameter: sourceSelfParamName.value, value: recordId },
+							{ parameter: sourceRefParamName.value, value: id }
+						];
+						scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(deleteResult => {
+							if (deleteResult.is_success) {
+								scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+							} else {
+								scope.toast.notifyErrorList(deleteResult.error_keys);
+							}
+						}).catch(err => err);
+					}
+				});
+			}).catch(err => {
+				console.warn(err);
+			});
+		});
+	};
 }
 
-//override notification populate container
-Notificator.prototype.addNewNotificationToContainer = function (notification) {
-	const _ = $("#notificationAlarm");
-	if (!_.hasClass("notification"))
-		_.addClass("notification");
-	const template = this.createNotificationBodyContainer(notification);
-	$("#notificationList").prepend(template);
-	this.registerOpenNotificationEvent();
-}
+/***********************************************
+			Override notificator
+************************************************/
+if (typeof Notificator !== "undefined") {
+	//override notification populate container
+	Notificator.prototype.addNewNotificationToContainer = function (notification) {
+		const _ = $("#notificationAlarm");
+		if (!_.hasClass("notification"))
+			_.addClass("notification");
+		const template = this.createNotificationBodyContainer(notification);
+		$("#notificationList").prepend(template);
+		this.registerOpenNotificationEvent();
+	}
 
-Notificator.prototype.createNotificationBodyContainer = function (n) {
-	const block = `
+	Notificator.prototype.createNotificationBodyContainer = function (n) {
+		const block = `
 		<a data-notification-id="${n.id}" href="#" class="notification-item dropdown-item py-3 border-bottom">
             <p><small>${n.subject}</small></p>
             <p class="text-muted mb-1"><small>${n.content}</small></p>
             <p class="text-muted mb-1"><small>${n.created}</small></p>
 		</a>`;
-	return block;
+		return block;
+	}
+}
+
+/***********************************************
+			Override DataInjector
+************************************************/
+if (typeof DataInjector !== "undefined") {
+	/**
+	 * Add async
+	 * @param {any} entityName
+	 * @param {any} object
+	 */
+	DataInjector.prototype.addAsync = function (entityName, object) {
+		const promises = [];
+		const entityCodeFormats = [
+			{ name: "Objective", code: 1000, propName: "Code" },
+			{ name: "Asset", code: 1001, propName: "Code" },
+			{ name: "Risk", code: 1002, propName: "Code" },
+			{ name: "KPI", code: 1003, propName: "Code" },
+			{ name: "InternalAudit", code: 1004, propName: "Code" },
+			{ name: "Meeting", code: 1005, propName: "Code" },
+			{ name: "NomInterestedParty", code: 1006, propName: "Code" },
+			{ name: "NomLocation", code: 1007, propName: "Code" }
+		];
+		const search = entityCodeFormats.find(x => x.name.toLowerCase() === entityName.toLowerCase());
+		if (search) {
+			const pr = new Promise((resolve, reject) => {
+				this.getAllWhereWithIncludesAsync("CompanySettings").then(x => {
+					if (x.is_success) {
+						const config = x.result.find(y => y.parameterReference.code === search.code);
+						if (config) {
+							let format = config.value;
+							const d = new Date();
+							format = format.replace(/{Year}/g, d.getFullYear());
+							format = format.replace(/{Month}/g, d.getMonth() < 10 ? `0${d.getMonth()}` : d.getMonth());
+							format = format.replace(/{Day}/g, d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
+							this.countAsync(entityName).then(g => {
+								if (g.is_success) {
+									format = format.replace(/{NextIndex}/g, g.result + 1);
+									object[search.propName] = format;
+									resolve();
+								}
+							});
+						} else {
+							reject(window.translate("iso_code_format_not_configured"));
+						}
+					}
+				});
+			});
+			promises.push(pr);
+		}
+
+		return new Promise((resolve, reject) => {
+			Promise.all(promises).then(x => {
+				const dataParams = JSON.stringify({
+					entityName: entityName,
+					object: JSON.stringify(object)
+				});
+				$.ajax({
+					url: `/api/DataInjector/AddAsync`,
+					data: dataParams,
+					method: "post",
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					success: function (data) {
+						resolve(data);
+					},
+					error: function (error) {
+						reject(error);
+					}
+				});
+			}).catch(e => {
+				new ToastNotifier().notify({ heading: e });
+			});
+		});
+	};
 }
 
 function getIdentifier(idt) {
@@ -223,6 +1303,10 @@ function getIdentifier(idt) {
 function makeMenuActive(target) {
 	if (target) {
 		const last = target.closest("ul").closest("li");
+		const a = last.find("a:first-child span.nav-item-text").first();
+		if (a.text()) {
+			$(".breadcrumb").prepend(`<li class="breadcrumb-item">${a.text()}</li>`);
+		}
 		last.addClass("open");
 		if (target.closest("nav").length !== 0)
 			makeMenuActive(last);
@@ -232,7 +1316,7 @@ function makeMenuActive(target) {
 $(document).ready(function () {
 	window.forceTranslate();
 	//Log Out
-	$('.sa-logout').click(function () {
+	$(".sa-logout").click(function () {
 		swal({
 			title: window.translate("confirm_log_out_question"),
 			text: window.translate("log_out_message"),
@@ -244,7 +1328,7 @@ $(document).ready(function () {
 		}).then((result) => {
 			if (result.value) {
 				$.ajax({
-					url: '/Account/LocalLogout',
+					url: "/Account/LocalLogout",
 					type: "post",
 					dataType: "json",
 					contentType: "application/x-www-form-urlencoded; charset=utf-8",
@@ -252,7 +1336,7 @@ $(document).ready(function () {
 						if (data.success) {
 
 							swal("Success!", data.message, "success");
-							window.location.href = '/Account/Login';
+							window.location.href = "/Account/Login";
 						} else {
 							swal("Fail!", data.message, "error");
 						}
@@ -266,10 +1350,7 @@ $(document).ready(function () {
 	});
 
 	//Menu render promise
-	const loadMenusPromise = new Promise((resolve, reject) => {
-		const menus = load("/PageRender/GetMenus");
-		resolve(menus);
-	});
+	const loadMenusPromise = loadAsync("/PageRender/GetMenus");
 
 	loadMenusPromise.then(menus => {
 		const renderMenuContainer = $("#left-nav-bar");
@@ -278,21 +1359,25 @@ $(document).ready(function () {
 				host: location.origin
 			});
 			renderMenuContainer.html(content);
+			window.forceTranslate("#left-nav-bar");
 			let route = location.href;
 			if (route[route.length - 1] === "#") {
 				route = route.substr(0, route.length - 1);
 			}
-			renderMenuContainer.find(`a[href='${route}']`)
-				.parent()
+			const activeMenu = renderMenuContainer.find(`a[href='${route}']`);
+			activeMenu.parent()
 				.addClass("active");
-			makeMenuActive(renderMenuContainer.find(`a[href='${route}']`));
-			window.forceTranslate("#left-nav-bar");
+			$(".breadcrumb").html(null).prepend(`<li class="breadcrumb-item active" aria-current="page">${activeMenu.find("span.nav-item-text").text()}</li>`);
+			makeMenuActive(activeMenu);
+			if (history.length > 2) {
+				$("#history_back").css("display", "block");
+			}
 		}
 	});
 
 
 	//Localization promise
-	var localizationPromise = new Promise((resolve, reject) => {
+	const localizationPromise = new Promise((resolve, reject) => {
 		//Set localization config
 		let translateIcon = getIdentifier(settings.localization.current.identifier);
 		$("#currentlanguage").addClass(`flag-icon flag-icon-${translateIcon}`);
@@ -315,82 +1400,22 @@ $(document).ready(function () {
 		});
 	});
 
-	//Emails promise
-	var emailPromise = new Promise((resolve, reject) => {
-		const notificator = new Notificator();
-		const response = notificator.getFolders();
-		if (response) resolve(response);
-	});
-
-	emailPromise.then(response => {
-		if (response.is_success) {
-			var folders = response.result.values;
-			const f = folders.find((e) => e.Name === "Inbox");
-			const uri = `/Email?folderId=${f.Id}`;
-			$("#SeeAllEmails").attr("href", uri);
-
-			const content = tManager.render("template_folders_layout.html", folders);
-			var m = $(".notification-items");
-			m.html(content);
-			$("#right_menu").html(content);
-			m.find("a").on("click", function () {
-				const folderId = $(this).attr("folderid");
-				if (folderId != undefined) {
-					window.location.href = `/Email?folderId=${folderId}`;
-				}
-			});
-		}
-	});
-
-	Promise.all([loadMenusPromise, localizationPromise, emailPromise]).then(function (values) {
+	Promise.all([loadMenusPromise, localizationPromise]).then(function (values) {
 		window.forceTranslate();
 	});
 });
+
 
 /************************************************
 					End Custom js
 ************************************************/
 
-
-/************************************************
-Page Pre Loader Removal After Page Load
-************************************************/
-
 var PreLoader;
 
 $(window).on("load", function () {
-
-	$('.loader-wrapper').not('.incomponent').fadeOut(1000, function () {
+	$(".loader-wrapper").not(".incomponent").fadeOut(1000, function () {
 		PreLoader = $(this).detach();
 	});
-
-});
-
-/************************************************
-End Pre Loader Removal After Page Load
-************************************************/
-
-/*!
-  * FreakPixels v1.1.0 (http://freakpixels.com/)
-  * Copyright 2011-2018 The FreakPixels Authors 
-  * Licensed under MIT    
-  */
-
-
-"use strict";
-
-/************************************************
- Page Pre Loader Removal After Page Load
- ************************************************/
-
-var PreLoader;
-
-$(window).on("load", function () {
-
-	$('.loader-wrapper').not('.incomponent').fadeOut(1000, function () {
-		PreLoader = $(this).detach();
-	});
-
 });
 
 
@@ -399,7 +1424,7 @@ $(window).on("load", function () {
 
 	"use strict";
 
-	const $body = $('body');
+	const $body = $("body");
 
 	/* Initialize Tooltip */
 	$('[data-toggle="tooltip"]').tooltip();
@@ -410,7 +1435,7 @@ $(window).on("load", function () {
 
 
 	/* Initialize Lightbox */
-	$body.delegate('[data-toggle="lightbox"]', 'click', function (event) {
+	$body.delegate('[data-toggle="lightbox"]', "click", function (event) {
 		event.preventDefault();
 		$(this).ekkoLightbox();
 	});
@@ -419,13 +1444,13 @@ $(window).on("load", function () {
     /************************************************
      Append Preloader (use in ajax call)
      ************************************************/
-	$body.delegate('.append-preloader', 'click', function () {
+	$body.delegate(".append-preloader", "click", function () {
 
 		$(PreLoader).show();
 		$body.append(PreLoader);
 		setTimeout(function () {
 
-			$('.loader-wrapper').fadeOut(1000, function () {
+			$(".loader-wrapper").fadeOut(1000, function () {
 				PreLoader = $(this).detach();
 			});
 
@@ -437,10 +1462,10 @@ $(window).on("load", function () {
     /************************************************
      Toggle Preloader in card or box
      ************************************************/
-	$body.delegate('[data-toggle="loader"]', 'click', function () {
+	$body.delegate('[data-toggle="loader"]', "click", function () {
 
-		var target = $(this).attr('data-target');
-		$('#' + target).show();
+		var target = $(this).attr("data-target");
+		$("#" + target).show();
 
 	});
 
@@ -448,19 +1473,19 @@ $(window).on("load", function () {
     /************************************************
      Toggle Sidebar Nav
      ************************************************/
-	$body.delegate('.toggle-sidebar', 'click', function () {
-		$('.sidebar').toggleClass('collapsed');
+	$body.delegate(".toggle-sidebar", "click", function () {
+		$(".sidebar").toggleClass("collapsed");
 
-		if (localStorage.getItem("asideMode") === 'collapsed') {
-			localStorage.setItem("asideMode", 'expanded')
+		if (localStorage.getItem("asideMode") === "collapsed") {
+			localStorage.setItem("asideMode", "expanded")
 		} else {
-			localStorage.setItem("asideMode", 'collapsed')
+			localStorage.setItem("asideMode", "collapsed")
 		}
 		return false;
 	});
 
 	var p;
-	$body.delegate('.hide-sidebar', 'click', function () {
+	$body.delegate(".hide-sidebar", "click", function () {
 		if (p) {
 			p.prependTo(".wrapper");
 			p = null;
@@ -472,10 +1497,10 @@ $(window).on("load", function () {
 	$.fn.setAsideMode = function () {
 		if (localStorage.getItem("asideMode") === null) {
 
-		} else if (localStorage.getItem("asideMode") === 'collapsed') {
-			$('.sidebar').addClass('collapsed');
+		} else if (localStorage.getItem("asideMode") === "collapsed") {
+			$(".sidebar").addClass("collapsed");
 		} else {
-			$('.sidebar').removeClass('collapsed');
+			$(".sidebar").removeClass("collapsed");
 		}
 	};
 	if ($(window).width() > 768) {
@@ -486,10 +1511,10 @@ $(window).on("load", function () {
     /************************************************
      Sidebar Nav Accordion
      ************************************************/
-	$body.delegate('.navigation li:has(.sub-nav) > a', 'click', function () {
+	$body.on("click", ".navigation li:has(.sub-nav) > a", function () {
 		/*$('.navigation li').removeClass('open');*/
-		$(this).siblings('.sub-nav').slideToggle();
-		$(this).parent().toggleClass('open');
+		$(this).siblings(".sub-nav").slideToggle();
+		$(this).parent().toggleClass("open");
 		return false;
 	});
 
@@ -497,10 +1522,10 @@ $(window).on("load", function () {
     /************************************************
      Sidebar Colapsed state submenu position
      ************************************************/
-	$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
+	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover", function () {
 		if ($(".sidebar").hasClass("collapsed")) {
 			const $menuItem = $(this),
-				$submenuWrapper = $('> .sub-nav', $menuItem);
+				$submenuWrapper = $("> .sub-nav", $menuItem);
 			// grab the menu item's position relative to its positioned parent
 			const menuItemPos = $menuItem.position();
 
@@ -515,26 +1540,26 @@ $(window).on("load", function () {
     /************************************************
      Toggle Controls on small devices
      ************************************************/
-	$body.delegate('.toggle-controls', 'click', function () {
-		$('.controls-wrapper').toggle().toggleClass('d-none');
+	$body.delegate(".toggle-controls", "click", function () {
+		$(".controls-wrapper").toggle().toggleClass("d-none");
 	});
 
 
     /************************************************
      Toast Messages
      ************************************************/
-	$body.delegate('[data-toggle="toast"]', 'click', function () {
+	$body.delegate('[data-toggle="toast"]', "click", function () {
 
-		var dataAlignment = $(this).attr('data-alignment');
-		var dataPlacement = $(this).attr('data-placement');
-		var dataContent = $(this).attr('data-content');
-		var dataStyle = $(this).attr('data-style');
+		var dataAlignment = $(this).attr("data-alignment");
+		var dataPlacement = $(this).attr("data-placement");
+		var dataContent = $(this).attr("data-content");
+		var dataStyle = $(this).attr("data-style");
 
 
-		if ($('.toast.' + dataAlignment + '-' + dataPlacement).length) {
-			$('.toast.' + dataAlignment + '-' + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
+		if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
+			$(".toast." + dataAlignment + "-" + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
 		} else {
-			$body.append('<div class="toast ' + dataAlignment + '-' + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
+			$body.append('<div class="toast ' + dataAlignment + "-" + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
 		}
 
 	});
@@ -543,32 +1568,32 @@ $(window).on("load", function () {
     /**************************************
      Chosen Form Control
      **************************************/
-	$('.form-control-chosen').chosen({
+	$(".form-control-chosen").chosen({
 		allow_single_deselect: true,
-		width: '100%'
+		width: "100%"
 	});
-	$('.form-control-chosen-required').chosen({
+	$(".form-control-chosen-required").chosen({
 		allow_single_deselect: false,
-		width: '100%'
+		width: "100%"
 	});
-	$('.form-control-chosen-search-threshold-100').chosen({
+	$(".form-control-chosen-search-threshold-100").chosen({
 		allow_single_deselect: true,
 		disable_search_threshold: 100,
-		width: '100%'
+		width: "100%"
 	});
-	$('.form-control-chosen-optgroup').chosen({
-		width: '100%'
+	$(".form-control-chosen-optgroup").chosen({
+		width: "100%"
 	});
 	$(function () {
-		$('[title="clickable_optgroup"]').addClass('chosen-container-optgroup-clickable');
+		$('[title="clickable_optgroup"]').addClass("chosen-container-optgroup-clickable");
 	});
-	$(document).delegate('[title="clickable_optgroup"] .group-result', 'click', function () {
-		var unselected = $(this).nextUntil('.group-result').not('.result-selected');
+	$(document).delegate('[title="clickable_optgroup"] .group-result', "click", function () {
+		var unselected = $(this).nextUntil(".group-result").not(".result-selected");
 		if (unselected.length) {
-			unselected.trigger('mouseup');
+			unselected.trigger("mouseup");
 		} else {
-			$(this).nextUntil('.group-result').each(function () {
-				$('a.search-choice-close[data-option-array-index="' + $(this).data('option-array-index') + '"]').trigger('click');
+			$(this).nextUntil(".group-result").each(function () {
+				$('a.search-choice-close[data-option-array-index="' + $(this).data("option-array-index") + '"]').trigger("click");
 			});
 		}
 	});
@@ -580,17 +1605,17 @@ $(window).on("load", function () {
 
 	$.fn.removeClassStartingWith = function (filter) {
 		$(this).removeClass(function (index, className) {
-			return (className.match(new RegExp("\\S*" + filter + "\\S*", 'g')) || []).join(' ')
+			return (className.match(new RegExp("\\S*" + filter + "\\S*", "g")) || []).join(" ")
 		});
 		return this;
 	};
 
 
-	$body.delegate('.theme-changer', 'click', function () {
-		var primaryColor = $(this).attr('primary-color');
-		var sidebarBg = $(this).attr('sidebar-bg');
-		var logoBg = $(this).attr('logo-bg');
-		var headerBg = $(this).attr('header-bg');
+	$body.delegate(".theme-changer", "click", function () {
+		var primaryColor = $(this).attr("primary-color");
+		var sidebarBg = $(this).attr("sidebar-bg");
+		var logoBg = $(this).attr("logo-bg");
+		var headerBg = $(this).attr("header-bg");
 
 		localStorage.setItem("primaryColor", primaryColor);
 		localStorage.setItem("sidebarBg", sidebarBg);
@@ -609,34 +1634,34 @@ $(window).on("load", function () {
 
 			/* SIDEBAR */
 			if (localStorage.getItem("sidebarBg") === "light") {
-				$('.sidebar ').addClass('sidebar-light');
+				$(".sidebar ").addClass("sidebar-light");
 			} else {
-				$('.sidebar').removeClass('sidebar-light');
+				$(".sidebar").removeClass("sidebar-light");
 			}
 
 
 			/* PRIMARY COLOR */
-			if (localStorage.getItem("primaryColor") === 'primary') {
-				document.documentElement.style.setProperty('--theme-colors-primary', '#4B89FC');
+			if (localStorage.getItem("primaryColor") === "primary") {
+				document.documentElement.style.setProperty("--theme-colors-primary", "#4B89FC");
 			} else {
-				var colorCode = getComputedStyle(document.body).getPropertyValue('--theme-colors-' + localStorage.getItem("primaryColor"));
-				document.documentElement.style.setProperty('--theme-colors-primary', colorCode);
+				var colorCode = getComputedStyle(document.body).getPropertyValue("--theme-colors-" + localStorage.getItem("primaryColor"));
+				document.documentElement.style.setProperty("--theme-colors-primary", colorCode);
 			}
 
 
 			/* LOGO */
-			if (localStorage.getItem("logoBg") === 'white' || localStorage.getItem("logoBg") === 'light') {
-				$('.sidebar .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-dark').addClass('navbar-light bg-' + localStorage.getItem("logoBg"));
+			if (localStorage.getItem("logoBg") === "white" || localStorage.getItem("logoBg") === "light") {
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark").addClass("navbar-light bg-" + localStorage.getItem("logoBg"));
 			} else {
-				$('.sidebar .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-light').addClass('navbar-dark bg-' + localStorage.getItem("logoBg"));
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light").addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
 			}
 
 
 			/* HEADER */
 			if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
-				$('.header .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-dark').addClass('navbar-light bg-' + localStorage.getItem("headerBg"));
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark").addClass("navbar-light bg-" + localStorage.getItem("headerBg"));
 			} else {
-				$('.header .navbar').removeClassStartingWith('bg').removeClassStartingWith('navbar-light').addClass('navbar-dark bg-' + localStorage.getItem("headerBg"));
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light").addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
 			}
 
 		}
@@ -673,17 +1698,3 @@ function toggleFullScreen() {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ST.Core.Extensions
 {
@@ -21,6 +22,14 @@ namespace ST.Core.Extensions
             return context;
         }
 
+        /// <summary>
+        /// Replace item in source
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <param name="index"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, int index, T value)
         {
             var current = 0;
@@ -28,6 +37,27 @@ namespace ST.Core.Extensions
             {
                 yield return current == index ? value : item;
                 current++;
+            }
+        }
+
+        /// <summary>
+        /// Distinct by propriety
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="keySelector"></param>
+        /// <returns></returns>
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+            (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            var seenKeys = new HashSet<TKey>();
+            foreach (var element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                {
+                    yield return element;
+                }
             }
         }
     }

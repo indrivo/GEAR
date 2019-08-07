@@ -129,12 +129,6 @@ DataInjector.prototype.GetByIdWithInclude = function (table, itemId) {
 
 
 
-
-
-
-
-
-
 //------------------------------------Async-------------------------------------//
 
 /**
@@ -189,7 +183,35 @@ DataInjector.prototype.addAsync = function (entityName, object) {
 			}
 		});
 	});
-}
+};
+
+
+/**
+ * Add new row to entity in async mode 
+ * @param {any} table
+ * @param {any} object
+ */
+DataInjector.prototype.addRangeAsync = function (entityName, objectList) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			object: JSON.stringify(objectList)
+		});
+		$.ajax({
+			url: `/api/DataInjector/AddRangeAsync`,
+			data: dataParams,
+			method: "post",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+};
 
 /**
  * Update row in async mode 
@@ -247,6 +269,34 @@ DataInjector.prototype.deletePermanentWhereAsync = function (entityName, filters
 
 
 /**
+ * Delete where async
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.deleteWhereAsync = function (entityName, filters) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: `/api/DataInjector/DeleteWhereAsync`,
+			data: dataParams,
+			method: "delete",
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+}
+
+
+/**
  * Get all with filters async
  * @param {any} table
  * @param {any} filters
@@ -271,7 +321,38 @@ DataInjector.prototype.getAllWhereNoIncludesAsync = function (entityName, filter
 			}
 		});
 	});
-}
+};
+
+
+
+/**
+ * Get count by filters
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.countAsync = function (entityName, filters = []) {
+	return new Promise((resolve, reject) => {
+		const dataParams = JSON.stringify({
+			entityName: entityName,
+			filters: filters
+		});
+		$.ajax({
+			url: "/api/DataInjector/countAsync",
+			data: dataParams,
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			method: "post",
+			success: function (data) {
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
+			}
+		});
+	});
+};
+
+
 
 /**
  * Get all with include and filters async

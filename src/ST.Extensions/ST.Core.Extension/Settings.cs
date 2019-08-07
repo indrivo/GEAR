@@ -10,9 +10,16 @@ namespace ST.Core
 
         public const string SuperAdmin = "Administrator";
 
+        public static string DefaultEntitySchema = "system";
+
         public struct Tables
         {
             public const string CustomTable = "CustomTableName";
+        }
+
+        public static class Date
+        {
+            public static string DateFormat = "dd'.'MM'.'yyyy";
         }
     }
 

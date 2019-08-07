@@ -85,6 +85,7 @@ TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
 };
 
 TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
+	const scope = this;
 	try {
 		const cols = $(id).DataTable().settings()[0].aoColumns;
 		var items = "";
@@ -117,14 +118,17 @@ TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
 
 		$("#selAllCols").on("click", function () {
 			new TableColumnsVisibility().dataStateChange(this, true, id);
+			scope.onColumnsVisibilityStateChanged(this);
 		});
 
 		$("#deselAllCols").on("click", function () {
 			new TableColumnsVisibility().dataStateChange(this, false, id);
+			scope.onColumnsVisibilityStateChanged(this);
 		});
 
 		$(".vis-check").change(function () {
 			new TableColumnsVisibility().dataChanged(this, id);
+			scope.onColumnsVisibilityStateChanged(this);
 		});
 	} catch (error) {
 		console.log(error);
@@ -133,6 +137,14 @@ TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
 	$(".list-sidebar-central").slideDown(50);
 	$(".list-sidebar-central").toggleClass("shw-rside");
 }
+
+/**
+ * Trigger handler then columns visibility are changed
+ * @param {any} source
+ */
+TableColumnsVisibility.prototype.onColumnsVisibilityStateChanged = function (source) {
+	//Do something on columns visibility changed
+};
 
 
 TableColumnsVisibility.prototype.dataStateChange = function (ref, state, id) {

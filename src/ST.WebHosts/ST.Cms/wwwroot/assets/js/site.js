@@ -85,10 +85,10 @@ window.loadAsync = function (uri, data = null, type = "get") {
 				url: uri,
 				type: type,
 				data: data,
-				success: function(rData) {
+				success: function (rData) {
 					resolve(rData);
 				},
-				error: function(err) {
+				error: function (err) {
 					reject(err);
 				}
 			});
@@ -133,7 +133,8 @@ ToastNotifier.prototype.notify = (conf) => {
  * Display errors 
  * @param {any} arr
  */
-ToastNotifier.prototype.notifyErrorList = function(arr) {
+ToastNotifier.prototype.notifyErrorList = function (arr) {
+	if (!arr || arr.length == 0) return;
 	for (let i = 0; i < arr.length; i++) {
 		this.notify({ heading: "Error", text: arr[i].message });
 	}
@@ -162,12 +163,18 @@ window.getRandomColor = function () {
 //------------------------------------------------------------------------------------//
 
 function TemplateManager() { }
+window.htmlTemplates = [];
 
 /**
  * Get template from server
  * @param {any} identifierName
  */
 TemplateManager.prototype.getTemplate = function (identifierName) {
+	//in memory version
+	const inMemory = window.htmlTemplates.find(x => x.id === identifierName);
+	if (inMemory) return inMemory.value;
+
+	//cache version
 	//const template = localStorage.getItem(identifierName);
 	//if (template) return template;
 	const serverTemplate = load("/Templates/GetTemplateByIdentifier",
@@ -178,6 +185,10 @@ TemplateManager.prototype.getTemplate = function (identifierName) {
 		if (serverTemplate.is_success) {
 			const temp = serverTemplate.result;
 			localStorage.setItem(identifierName, temp);
+			window.htmlTemplates.push({
+				id: identifierName,
+				value: temp
+			});
 			return temp;
 		} else {
 			console.log(serverTemplate);
@@ -229,7 +240,7 @@ window.translations = function () {
 		for (let key in trans) {
 			round[key] = trans[key];
 			index++;
-			if (index % 200 == 0) {
+			if (index % 100 == 0) {
 				localStorage.setItem(`translations_${step}`, JSON.stringify(round));
 				round = {};
 				step++;
@@ -278,102 +289,66 @@ window.translate = function (key) {
 //Translate page content
 window.forceTranslate = function (selector = null) {
 	return new Promise((resolve, reject) => {
-		var ctx = (!selector)
-			? document.getElementsByTagName('*')
-			: document.querySelector(selector).getElementsByTagName('*');
-		const translations = Array.prototype.filter.call(ctx,
-			function (el) {
-				return el.getAttribute('translate') != null && !el.hasAttribute("translated");
-			}
-		);
-		const trans = window.translations();
-		$.each(translations,
-			function (index, item) {
-				let key = $(item).attr("translate");
-				if (key != "none" && key) {
-					const translation = trans[key];
-					if (translation) {
-						$(item).text(translation);
-						$(item).attr("translated", "");
-					} else {
-						$.toast({
-							heading: `Key: ${key} is not translated!`,
-							text: "",
-							position: 'top-right',
-							loaderBg: '#ff6849',
-							icon: 'error',
-							hideAfter: 3500,
-							stack: 6
-						});
-						localStorage.removeItem("hasLoadedTranslations");
-					}
+		try {
+			var ctx = (!selector)
+				? document.getElementsByTagName('*')
+				: document.querySelector(selector).getElementsByTagName('*');
+			const translations = Array.prototype.filter.call(ctx,
+				function (el) {
+					return el.getAttribute('translate') != null && !el.hasAttribute("translated");
 				}
-			});
+			);
+			const trans = window.translations();
+			$.each(translations,
+				function (index, item) {
+					let key = $(item).attr("translate");
+					if (key != "none" && key) {
+						const translation = trans[key];
+						if (translation) {
+							$(item).text(translation);
+							$(item).attr("translated", "");
+						} else {
+							$.toast({
+								heading: `Key: ${key} is not translated!`,
+								text: "",
+								position: 'top-right',
+								loaderBg: '#ff6849',
+								icon: 'error',
+								hideAfter: 3500,
+								stack: 6
+							});
+							localStorage.removeItem("hasLoadedTranslations");
+						}
+					}
+				});
+		} catch (e) {
+			//ignore
+		}
 		resolve();
 	});
 };
-
-//------------------------------------------------------------------------------------//
-//								Dynamic tree for ISO Standard
-//------------------------------------------------------------------------------------//
-
-
-function loadTree(uri, data = null, type = "get") {
-	try {
-		const url = new URL(location.href);
-		uri = `${url.origin}${uri}`;
-
-		const req = $.ajax({
-			url: uri,
-			type: type,
-			data: data,
-			async: false
-		});
-		return JSON.parse(req.responseText);
-	} catch (exp) {
-		console.log(exp);
-		return null;
-	}
-}
-
-$(document).ready(function () {
-	//find all trees in page
-	let trees = $(".custom-tree-iso");
-	$.each(trees, function (index, tree) {
-
-		//Check if is not in edit mode
-		if (!(location.href.indexOf("about:blank") !== -1)) {
-			const standardId = $(tree).attr("db-tree-standard");
-			const categoryId = $(tree).attr("db-tree-category");
-			const requirementId = $(tree).attr("db-tree-requirement");
-			const data = loadTree(`/IsoStandard/GetTreeData?standardEntityId=${standardId}&&categoryEntityId=${categoryId}&&requirementEntityId=${requirementId}`);
-			if (data.is_success) {
-				const templateManager = new TemplateManager();
-				$.templates("IsoCategory", templateManager.getTemplate("template_category.html"));
-				$.templates("IsoRequirements", templateManager.getTemplate("template_requirements.html"));
-				$.templates("IsoTree", templateManager.getTemplate("template_standard.html"));
-				const content = $.render["IsoTree"](data);
-				$(tree).html(content);
-			}
-		}
-	});
-});
-
 
 //------------------------------------------------------------------------------------//
 //								External Connections
 //------------------------------------------------------------------------------------//
 
 $(document).ready(function () {
+	if (location.href.indexOf("Account/Login") !== -1) return;
 	if (typeof signalR === 'undefined') return;
-	const notificator = new Notificator();
-	const user = notificator.getCurrentUser();
+	notificator.getCurrentUser().then(user => {
+		initExternalConnections(user);
+	}).catch(err => {
+		console.warn(err);
+	});
+});
+
+function initExternalConnections(user) {
 	const connPromise = new Promise((resolve, reject) => {
 		var connection = new signalR.HubConnectionBuilder()
 			.withUrl("/rtn", signalR.HttpTransportType.LongPolling)
 			.build();
 		//Time for one connection
-		connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
+		//connection.serverTimeoutInMilliseconds = 1000 * 60 * 10;
 		resolve(connection);
 	});
 
@@ -408,9 +383,7 @@ $(document).ready(function () {
 					});
 			}
 		});
-	});
-
-	connPromise.catch(function () {
+	}).catch(function (err) {
 		//On error
 	});
 
@@ -419,11 +392,7 @@ $(document).ready(function () {
 			loadNotifications();
 		});
 
-		var loadUserEmails = new Promise((resolve, reject) => {
-			loadEmails();
-		});
-
-		Promise.all([loadUserNotifications, loadUserEmails]).then(function (values) {
+		Promise.all([loadUserNotifications]).then(function (values) {
 			$("#clearNotificationsEvent").on("click",
 				function () {
 					$("#notificationList").html(null);
@@ -433,102 +402,19 @@ $(document).ready(function () {
 				});
 		});
 	});
-});
-
-/**
- * Template creator for email
- * @param {any} arr
- * @param {any} userId
- * @param {any} emailnotId
- * @param {any} d
- */
-function CreateEmailNotification(arr, userId, emailNotId, d = null) {
-	const date = d != null ? d : new Date();
-	let hours = `${date.getHours()}:${date.getMinutes()}`;
-
-	const header = `
-		<div class="user-img">
-			<img src="/users/getimage?id=${userId}" alt="${arr[2]}" class="img-circle">
-			<span class="profile-status online pull-right"></span>
-		</div>`;
-	const content = `
-		<div class="mail-contnet">
-			<h5>${arr[3]}</h5>
-			<span class="mail-desc">${arr[0]}</span>
-			<span class="time">${hours}</span>
-		</div>`;
-	const newEmailNotification = `<a href='/email/getmessagebyid?id=${emailNotId}'>${header}${content}</a>`;
-	return newEmailNotification;
-}
+};
 
 /**
  * Show notifications on page load
  */
 function loadNotifications() {
-	const notificator = new Notificator();
-	const notificationList = notificator.getAllNotifications();
-	if (notificationList.is_success) {
-		for (let notification in notificationList.result) {
-			notificator.addNewNotificationToContainer(notificationList.result[notification]);
-		}
-	}
-}
-
-
-function loadEmails() {
-	const notificator = new Notificator();
-	const st = new ST();
-	var m = $(".notification-items");
-	const response = notificator.getFolders();
-	if (response != null) {
-		if (response.is_success) {
-			var folders = response.result.values;
-			const f = folders.find((e) => e.Name === "Inbox");
-			emailNotifications(f.Id);
-			const uri = `/Email?folderId=${f.Id}`;
-			$("#SeeAllEmails").attr("href", uri);
-			Promise.all([st.getTemplate("folders_layout.html")])
-				.then(function (values) {
-					$.templates("items", values[0]);
-					const content = $.render["items"](folders);
-					m.html(content);
-					$("#right_menu").html(content);
-					m.find("a").on("click", function () {
-						const folderId = $(this).attr("folderid");
-						if (folderId != undefined) {
-							window.location.href = `/Email?folderId=${folderId}`;
-						}
-					});
-				})
-				.catch(function (err) {
-					console.log(err);
-				});
-		}
-	}
-}
-
-/**
- * Show email notifications
- * @param {any} folderId
- */
-function emailNotifications(folderId) {
-	const notificator = new Notificator();
-	const data = notificator.getUnreadMessages(folderId);
-	if (data) {
-		if (data.is_success) {
-			const all = data.result.notifications.values;
-			for (const e in all) {
-				const arr = [all[e].Subject, all[e].Message, all[e].Author.Email, all[e].Author.UserName];
-
-				const userId = all[e].Author.Id;
-				const create = CreateEmailNotification(arr, userId, all[e].Id, all[e].Created);
-				$("#emailNotificationsContent").prepend(create);
-				const count = $("#emailNotificationsContent").find("a").length;
-				$("#emailNotificationsCounter").html(count);
+	notificator.getAllNotifications().then(notificationList => {
+		if (notificationList.is_success) {
+			for (let notification in notificationList.result) {
+				notificator.addNewNotificationToContainer(notificationList.result[notification]);
 			}
-			if (all.length > 0) $("#notificationEmailAlarm").show();
 		}
-	}
+	});
 }
 
 //------------------------------------------------------------------------------------//
@@ -546,7 +432,9 @@ $(document).ready(function () {
 });
 
 
-function Notificator() { }
+function Notificator() {
+	this.user = null;
+}
 
 /**
  * Constructor
@@ -596,7 +484,7 @@ Notificator.prototype.openNotificationHandler = function () {
 	if (!notId) {
 		return;
 	}
-	var notContext = new Notificator();
+	const notContext = new Notificator();
 	const res = notContext.getNotificationById(notId);
 	if (res.is_success) {
 		Swal.fire(
@@ -630,79 +518,37 @@ Notificator.prototype.sendNotification = function (data) {
 		}
 	});
 };
-/**
- * Get folders
- *@returns {any} Folders data
- */
-Notificator.prototype.getFolders = function () {
-	const settings = localStorage.getItem("email_settings");
-	if (settings) {
-		const d = JSON.parse(settings);
-		if (d.hasOwnProperty("email")) {
-			return d.email.folders;
-		} else {
-			d.email = {
-				folders: loadEmailFolders()
-			};
-			localStorage.setItem("email_settings", JSON.stringify(d));
-		}
-	} else {
-		const f = loadEmailFolders();
-		const s = {
-			email: {
-				folders: f
-			}
-		};
-		localStorage.setItem("email_settings", JSON.stringify(s));
-		return f;
-	}
-};
-
-
-function loadEmailFolders() {
-	var data = null;
-	$.ajax({
-		url: `/api/Email/GetFolders`,
-		method: "get",
-		async: false,
-		success: function (response) {
-			data = response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return data;
-}
-
 
 /**
  * Get all notifications
  *@returns {any} Folders data
  */
 Notificator.prototype.getAllNotifications = function () {
-	var data = null;
-	var userId = null;
-	const req = this.getCurrentUser();
-
-	if (req.is_success) {
-		userId = req.result.id;
-	}
-	$.ajax({
-		url: `${this.origin()}/api/Notifications/GetNotificationsByUserId`,
-		method: "get",
-		data: {
-			userId: userId
-		},
-		async: false,
-		success: function (response) {
-			data = response;
-		},
-		error: function (error) {
-			console.log(error);
+	return this.getCurrentUser().then(req => {
+		var userId = null;
+		if (req.is_success) {
+			userId = req.result.id;
+		} else {
+			reject(req.error_keys);
 		}
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				url: `${this.origin()}/api/Notifications/GetNotificationsByUserId`,
+				method: "get",
+				data: {
+					userId: userId
+				},
+				success: function (data) {
+					resolve(data);
+				},
+				error: function (error) {
+					reject(error);
+				}
+			});
+		});
+	}).catch(err => {
+		console.warn(err);
 	});
-	return data;
 };
 
 
@@ -737,27 +583,7 @@ Notificator.prototype.clearNotificationsOnCurrentUser = function () {
 
 
 /**
- * Mark as read notification
- * @param {any} notificationId The notification id on read
- */
-Notificator.prototype.markAsRead = function (notificationId) {
-	$.ajax({
-		url: `${this.origin()}/api/Notifications/MarkAsRead`,
-		method: "post",
-		data: {
-			notificationId: notificationId
-		},
-		success: function (data) {
-
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-};
-
-/**
- * Get notifcation by id
+ * Get notification by id
  * @param {any} notificationId
  */
 Notificator.prototype.getNotificationById = function (notificationId) {
@@ -778,100 +604,6 @@ Notificator.prototype.getNotificationById = function (notificationId) {
 		}
 	});
 	return response;
-};
-
-/**
- * Get list By folder id
- * @param {any} folderId The folder id
- * @param {any} page The number of page
- * @returns {any} List with notifications
- */
-Notificator.prototype.getListByFolderId = function (folderId, page) {
-	var response = null;
-	$.ajax({
-		url: "/api/Email/GetListByFolderId",
-		async: false,
-		data: {
-			folderId: folderId,
-			page: page
-		},
-		method: "get",
-		success: function (data) {
-			response = data;
-			return response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return response;
-};
-
-
-Notificator.prototype.getUnreadMessages = function (folderId) {
-	var response = null;
-	$.ajax({
-		url: "/api/Email/GetUnreadListByFolderId",
-		async: false,
-		data: {
-			folderId: folderId
-		},
-		method: "get",
-		success: function (data) {
-			response = data;
-			return response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return response;
-};
-
-/**
- * Mark as read notification
- * @param {any} notificationId The notification id on read
- */
-Notificator.prototype.markAsRead = function (notificationId) {
-	$.ajax({
-		url: "/api/Email/MarkAsRead",
-		method: "post",
-		data: {
-			notificationId: notificationId
-		},
-		success: function (data) {
-
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-};
-
-/**
- * Move Notification to another folder
- * @param {any} notificationId The id of notification
- * @param {any} folderId The folder where the notification are moved
- */
-Notificator.prototype.moveTofolder = function (notificationId, folderId) {
-	$.ajax({
-		url: "/api/Email/MoveToFolder",
-		method: "post",
-		data: {
-			notificationId: notificationId,
-			folderId: folderId
-		},
-		success: function (data) {
-			if (data != null) {
-				if (data.is_success) {
-					window.location.reload();
-				}
-			}
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
 };
 
 /**
@@ -919,89 +651,35 @@ Notificator.prototype.getUser = function (userId) {
 * @returns {any} User data
 */
 Notificator.prototype.getCurrentUser = function () {
-	const userData = localStorage.getItem("current_user");
-	if (userData) {
-		const parsedUserData = JSON.parse(userData);
-		const created = new Date(parsedUserData.created).getTime();
-		const now = new Date().getTime();
-		const diff = now - created;
-		if (diff > 0 && diff < 50000) {
-			return parsedUserData;
-		}
-	}
-
-	var response = null;
-	$.ajax({
-		url: `${this.origin()}/Account/GetCurrentUser`,
-		method: "get",
-		async: false,
-		success: function (data) {
-			data.created = new Date();
-			response = data;
-			if (response.is_success)
-				localStorage.setItem("current_user", JSON.stringify(data));
-			return response;
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	return response;
-};
-
-
-/**
-* Get count of notifications by folder id
-* @param {any} folderId The folder id
-* @returns {any} Notifications count
-*/
-Notificator.prototype.countNotificationsByFolderId = function (folderId) {
-	var response = 0;
-	$.ajax({
-		url: "/api/Email/GetCountbyFolderId",
-		async: false,
-		data: {
-			folderId: folderId
-		},
-		method: "get",
-		success: function (data) {
-			if (data != null) {
-				if (data.is_success) {
-					response = data.result;
-				}
+	return new Promise((resolve, reject) => {
+		const userData = localStorage.getItem("current_user");
+		if (userData) {
+			const parsedUserData = JSON.parse(userData);
+			const created = new Date(parsedUserData.created).getTime();
+			const now = new Date().getTime();
+			const diff = now - created;
+			if (diff > 0 && diff < 50000) {
+				resolve(parsedUserData);
 			}
-			return response;
-		},
-		error: function (error) {
-			console.log(error);
 		}
-	});
-	return response;
-};
+		$.ajax({
+			url: `${this.origin()}/Account/GetCurrentUser`,
+			method: "get",
 
-Notificator.prototype.restore = function (notificationId) {
-	$.ajax({
-		url: "/api/Email/RestoreFromTrash",
-		method: "post",
-		data: {
-			notificationId: notificationId
-		},
-		success: function (data) {
-			if (data != null) {
-				if (data.is_success) {
-					window.location.reload();
-				}
+			success: function (data) {
+				data.created = new Date();
+				if (data.is_success)
+					localStorage.setItem("current_user", JSON.stringify(data));
+				resolve(data);
+			},
+			error: function (error) {
+				reject(error);
 			}
-		},
-		error: function (error) {
-			console.log(error);
-		}
+		});
 	});
 };
 
-
-
-//Actions
+//Helpers
 function ST() { }
 /**
  * Constructor
@@ -1124,6 +802,15 @@ ST.prototype.getTemplate = function (relPath) {
 	});
 };
 
+/**
+ * Check if string is in an uuid format
+ * @param {any} str
+ */
+ST.prototype.isGuid = function (str) {
+	const pattern = new RegExp("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$", "i");
+	return pattern.test(str);
+};
+
 
 /**
  * Generate new Guid
@@ -1156,6 +843,29 @@ ST.prototype.newGuid = function () {
 	}
 	return result;
 };
+
+/*
+ * Remove selected text
+*/
+ST.prototype.clearSelectedText = function () {
+	if (window.getSelection)
+		window.getSelection().removeAllRanges();
+	else if (document.selection)
+		document.selection.empty();
+};
+
+/**
+ * Rgb to hex
+ * @param {any} color
+ */
+ST.prototype.rgbToHex = function (color) {
+	if (!color) return "";
+	var bg = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	function hex(x) {
+		return ("0" + parseInt(x).toString(16)).slice(-2);
+	}
+	return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
+}
 
 
 

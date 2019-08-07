@@ -13,7 +13,7 @@ using ST.Core.Attributes;
 using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
 

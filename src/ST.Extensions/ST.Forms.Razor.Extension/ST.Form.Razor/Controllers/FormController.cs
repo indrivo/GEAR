@@ -30,7 +30,7 @@ using ST.Forms.Abstractions;
 using ST.Forms.Abstractions.Models.FormModels;
 using ST.Forms.Abstractions.ViewModels.FormViewModels;
 using ST.Identity.Abstractions;
-using ST.Identity.Data.MultiTenants;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using Settings = ST.Core.Settings;
 
 namespace ST.Forms.Razor.Controllers
@@ -385,13 +385,17 @@ namespace ST.Forms.Razor.Controllers
                 .ThenInclude(x => x.Meta)
                 .FirstOrDefaultAsync(x => x.Id == formId);
             if (form == null) return NotFound();
-            var table = await _entityContext.Table.FirstOrDefaultAsync(x => x.Id == form.TableId);
+            var table = await _entityContext.Table
+                .Include(x => x.TableFields)
+                .FirstOrDefaultAsync(x => x.Id == form.TableId);
             var model = form.Adapt<FormFieldsViewModel>();
             model.Table = table;
-            foreach (var field in model.Fields)
+            model.Fields = model.Fields.Select(field =>
             {
                 field.TableField = table.TableFields.FirstOrDefault(x => x.Id == field.TableFieldId);
-            }
+                return field;
+            }).ToList();
+            
             return View(model);
         }
 

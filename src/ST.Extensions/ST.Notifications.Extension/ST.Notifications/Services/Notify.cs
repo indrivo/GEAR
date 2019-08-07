@@ -11,7 +11,7 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.Identity.Services.Abstractions;
+using ST.Email.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 

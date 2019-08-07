@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
-using ST.Identity.Data.MultiTenants;
-using ST.Identity.Data.Permissions;
-using ST.Identity.Data.UserProfiles;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
 {

@@ -2,89 +2,94 @@
 
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = Localizer["user_list"];
+    ViewData["Title"] = Localizer["user_list"];
 }
+
+@section Styles
+    {
+    <style>
+        .table th, .table td {
+            white-space: initial !important;
+        }
+    </style>
+}
+
 <input type="hidden" id="hiddenID" />
 <div class="card">
-	<div class="card-body">
-		<h4 class="card-title">@Localizer["user_list"]</h4>
-		<h6 class="card-subtitle"></h6>
-		<div class="mt-4">
-			<div class="d-flex">
-				<div class="mr-auto">
-					<div class="form-group">
-						<a asp-action="Create" class="btn btn-primary btn-sm">
-							<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
-							@Localizer["add_user"]
-						</a>
-						<small>@Localizer["users_add_info"]</small>
-						@*<a id="adTrigger" alt="default" data-toggle="modal" data-target="#myModal" style="margin-left: 3em;" href="#" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
-								Import Ad User
-							</a>
-							<small>New ad user will be added.</small>*@
-					</div>
+    <div class="card-body">
+        <h4 class="card-title">@Localizer["user_list"]</h4>
+        <h6 class="card-subtitle"></h6>
+        <div class="mt-4">
+            <div class="d-flex">
+                <div class="mr-auto">
+                    <div class="form-group">
+                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
+                            @Localizer["add_user"]
+                        </a>
+                        <small>@Localizer["users_add_info"]</small>
+                        @*<a id="adTrigger" alt="default" data-toggle="modal" data-target="#myModal" style="margin-left: 3em;" href="#" class="btn btn-primary btn-sm">
+                                <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
+                                Import Ad User
+                            </a>
+                            <small>New ad user will be added.</small>*@
+                    </div>
 
-				</div>
+                </div>
 
-			</div>
-		</div>
-		<table class="table table-striped table-bordered" style="width: 100%" id="usersTable">
-			<thead>
-				<tr>
-					<th>@Localizer["name"]</th>
-					<th>@Localizer["organization"]</th>
+            </div>
+        </div>
+        <table class="table table-striped table-bordered" style="width: 100%" id="usersTable">
+            <thead>
+                <tr>
+                    <th>@Localizer["name"]</th>
+                    <th>@Localizer["organization"]</th>
                     <th>@Localizer["roles"]</th>
                     <th>@Localizer["created"]</th>
                     <th>@Localizer["author"]</th>
                     <th>@Localizer["modified_by"]</th>
                     <th>@Localizer["changed"]</th>
-					<th>@Localizer["sessions"]</th>
-					<th>@Localizer["authentification_type"]</th>
+                    <th>@Localizer["sessions"]</th>
+                    <th>@Localizer["authentification_type"]</th>
+                    <th>Last login</th>
                     <th>@Localizer["list_actions"]</th>
-				</tr>
-			</thead>
-			<tbody></tbody>
-			<tfoot></tfoot>
-		</table>
-	</div>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+        </table>
+    </div>
 </div>
 
 
-<div class="col-md-4">
-	<div class="card">
-		<div class="card-block">
-			<!-- sample modal content -->
-			<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h4 class="modal-title" id="myModalLabel">@Localizer["import_ad_user"]</h4>
-							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-						</div>
-						<div class="modal-body">
-							<div class="row">
-								<div class="col-md-12">
-									<div class="form-group">
-										<label class="control-label">Select Ad User</label>
-										<select id="adUsers" class="form-control"></select>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" id="postAdUser" class="btn btn-success waves-effect">Add</button>
-							<button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-					<!-- /.modal-content -->
-				</div>
-				<!-- /.modal-dialog -->
-			</div>
-			<!-- /.modal -->
-		</div>
-	</div>
+<!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">@Localizer["import_ad_user"]</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Select Ad User</label>
+                            <select id="adUsers" class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="postAdUser" class="btn btn-success waves-effect">Add</button>
+                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
+<!-- /.modal -->
 
 
 @section Scripts{
@@ -93,7 +98,7 @@
 			const token = '@Html.AntiForgeryToken()';
 			return $(token).val();
 		}
-	</script>
+    </script>
     <script language="javascript" type="text/javascript">
 		$(document).ready(function($) {
 			const tableId = '#usersTable';
@@ -126,6 +131,7 @@
 					{ "data": "changed" },
 					{ "data": "sessions" },
 					{ "data": "authenticationType" },
+					{ "data": "lastLogin" },
 					{
 						data: null,
 						"render": function(data, type, row, meta) {
@@ -203,5 +209,5 @@
 					});
 				}
 			});
-	</script>
+    </script>
 }

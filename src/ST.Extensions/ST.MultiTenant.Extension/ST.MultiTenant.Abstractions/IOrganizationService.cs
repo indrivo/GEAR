@@ -56,5 +56,12 @@ namespace ST.MultiTenant.Abstractions
         /// <param name="tenantId"></param>
         /// <returns></returns>
         TTenant GetTenantById(Guid tenantId);
+
+        /// <summary>
+        /// Get user organization
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        TTenant GetUserOrganization(ApplicationUser user);
     }
 }

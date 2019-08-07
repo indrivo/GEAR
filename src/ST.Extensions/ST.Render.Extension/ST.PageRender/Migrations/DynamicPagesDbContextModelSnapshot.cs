@@ -303,6 +303,8 @@ namespace ST.PageRender.Migrations
 
                     b.Property<string>("Title");
 
+                    b.Property<string>("TitleTranslateKey");
+
                     b.Property<int>("Version");
 
                     b.HasKey("Id");

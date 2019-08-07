@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ST.Identity.Abstractions;
+using ST.Identity.Permissions.Abstractions;
 
 namespace ST.Identity.Attributes
 {
