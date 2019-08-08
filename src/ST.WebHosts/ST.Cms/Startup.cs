@@ -140,6 +140,7 @@ namespace ST.Cms
 			//----------------------------------Use cors-------------------------------------
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
 			{
+				//rewrite root path to redirect on dynamic page, only for commerce landing page
 				//{
 				//	"/", context =>
 				//	{

@@ -10,10 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Abstractions\**" />
     <Compile Remove="Authorization\**" />
     <Compile Remove="Models\ProfileModels\**" />
+    <EmbeddedResource Remove="Abstractions\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <EmbeddedResource Remove="Models\ProfileModels\**" />
+    <None Remove="Abstractions\**" />
     <None Remove="Authorization\**" />
     <None Remove="Models\ProfileModels\**" />
   </ItemGroup>
@@ -34,10 +37,6 @@
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Identity.Permissions.Abstractions\ST.Identity.Permissions.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Abstractions\" />
   </ItemGroup>
 
 </Project>
