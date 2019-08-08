@@ -141,14 +141,14 @@ namespace ST.Cms
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
 			{
 				//rewrite root path to redirect on dynamic page, only for commerce landing page
-				//{
-				//	"/", context =>
-				//	{
-				//		var originalPath = context.Request.Path.Value;
-				//		context.Items["originalPath"] = originalPath;
-				//		context.Request.Path = "/public";
-				//	}
-				//}
+				{
+					"/", context =>
+					{
+						var originalPath = context.Request.Path.Value;
+						context.Items["originalPath"] = originalPath;
+						context.Request.Path = "/public";
+					}
+				}
 			});
 
 			//--------------------------------------Swagger Usage-------------------------------------

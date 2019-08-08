@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using ST.Core.Extensions;
+
 #pragma warning disable 1998
 
 namespace ST.Core.Razor.Extensions
@@ -27,13 +31,23 @@ namespace ST.Core.Razor.Extensions
 
             app.UseMvc(routes =>
             {
-                if (routeMapping != null)
+                routes.ApplicationBuilder.Use(async (context, next) =>
                 {
-                    foreach (var map in routeMapping)
+                    if (routeMapping != null)
                     {
-                        routes.MapGet(map.Key, async context => map.Value.Invoke(context));
+                        var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
+                        if (!match.Equals(new KeyValuePair<string, Action<HttpContext>>()))
+                        {
+                            match.Value.Invoke(context);
+                            await next();
+                        }
+                        else
+                        {
+                            await next();
+                        }
                     }
-                }
+                });
+
                 routes.MapRoute(
                     name: "default",
                     template: singleTenantTemplate,
