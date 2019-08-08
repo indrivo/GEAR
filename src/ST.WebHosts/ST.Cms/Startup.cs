@@ -197,6 +197,9 @@ namespace ST.Cms
 				options.ValidationInterval = TimeSpan.Zero;
 			});
 
+			//---------------------------------Custom cache Module-------------------------------------
+			services.UseCustomCacheModule(HostingEnvironment, Configuration);
+
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
 
@@ -315,9 +318,6 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				});
 
-
-			//---------------------------------Custom cache Module-------------------------------------
-			services.UseCustomCacheModule(HostingEnvironment, Configuration);
 
 			services.AddInstallerModule<SyncInstaller>();
 
