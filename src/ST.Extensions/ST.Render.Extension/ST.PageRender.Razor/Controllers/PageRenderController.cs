@@ -101,12 +101,13 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="pageId"></param>
         /// <returns></returns>
         [AuthorizePage]
+        [AllowAnonymous]
         public async Task<IActionResult> Index([Required] Guid pageId)
         {
             var page = await _pageRender.GetPageAsync(pageId);
             if (page == null) return NotFound();
             ViewBag.Page = page;
-
+            ViewData["IsDynamicPage"] = true;
             return View();
         }
 

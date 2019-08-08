@@ -8,59 +8,61 @@
 @inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
 @inject IHttpContextAccessor Accessor
 @inject IOrganizationService<Tenant> TenantService
-@{
-	var user = await UserManager.GetUserAsync(User);
-	var id = Accessor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
-	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
-	var organization = TenantService.GetTenantById(user.TenantId.GetValueOrDefault(Guid.Empty));
-	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
-}
 
 @model Guid
 
-<script>
-			const notificator = new Notificator();
-			var st = new ST();
+@if (User.Identity.IsAuthenticated)
+{
+	var user = await UserManager.GetUserAsync(User);
+	var id = Accessor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
+	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
+	var organization = TenantService.GetTenantById(user?.TenantId.GetValueOrDefault(Guid.Empty) ?? Guid.Empty);
+	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
-			const storageSettings = localStorage.getItem("settings");
-			if (storageSettings) {
-				var s = JSON.parse(storageSettings);
-				s.user = {
-					userName: "@user.UserName",
-					email: "@user.Email",
-					id: "@user.Id",
-					organization: "@organization.Name"
-				};
-				s.layout = {
-					id: "@Model"
-				};
-				s.localization.current = {
+	<script>
+		const notificator = new Notificator();
+		var st = new ST();
+
+		const storageSettings = localStorage.getItem("settings");
+		if (storageSettings) {
+			var s = JSON.parse(storageSettings);
+			s.user = {
+				userName: "@user?.UserName",
+				email: "@user?.Email",
+				id: "@user.Id",
+				organization: "@organization.Name"
+			};
+			s.layout = {
+				id: "@Model"
+			};
+			s.localization.current = {
+				identifier: "@language?.Identifier",
+				name: "@language?.Name"
+			};
+
+			localStorage.setItem("settings", JSON.stringify(s));
+		} else {
+			const s = {
+				layout: {
+					id : "@Model"
+				}
+			};
+
+			s.user = {
+				userName: "@user.UserName",
+				email: "@user.Email",
+				id: "@user.Id",
+				organization: "@organization?.Name"
+			};
+
+			s.localization = {
+				languages: window.load("/Localization/GetLanguagesAsJson"),
+				current: {
 					identifier: "@language?.Identifier",
 					name: "@language?.Name"
-				};
-
-				localStorage.setItem("settings", JSON.stringify(s));
-			} else {
-				const s = {
-					layout: {
-						id : "@Model"
-					}
-				};
-
-				s.user = {
-					userName: "@user.UserName",
-					email: "@user.Email",
-					id: "@user.Id",
-					organization: "@organization.Name"
-				};
-
-				s.localization = {
-					languages: window.load("/Localization/GetLanguagesAsJson"),
-					current: {
-						identifier: "@language?.Identifier",
-						name: "@language?.Name"
-					}
-				};
-				localStorage.setItem("settings", JSON.stringify(s));
-			}
-</script>
+				}
+			};
+			localStorage.setItem("settings", JSON.stringify(s));
+		}
+	</script>
+}

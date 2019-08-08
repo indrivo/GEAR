@@ -103,19 +103,27 @@ namespace ST.PageRender.Razor.Services
                 return (new HtmlString("<h1 style=\"color: red\">Layout must have @RenderBody() section</h1>"), new HtmlString(""));
             }
             var routeData = _contextAccessor.HttpContext.GetRouteData();
-            var user = await GetCurrentUserAsync();
-            var organization = _organizationService.GetUserOrganization(user);
             var data = new Dictionary<string, string>
             {
                 { "AppName", await _appProvider.GetAppName("core")},
-                { "UserName", user.UserName },
-                { "Organization", organization.Name },
-                { "UserEmail", user.Email },
-                { "UserImagePath", $"/Users/GetImage?id={user.Id}"},
                 { "SystemYear", DateTime.Now.Year.ToString() },
                 { "RouteController", routeData.Values["controller"].ToString() },
                 { "RouteView", routeData.Values["action"].ToString() }
             };
+            var user = await GetCurrentUserAsync();
+            if (user != null)
+            {
+                var organization = _organizationService.GetUserOrganization(user);
+                if (organization != null)
+                {
+                    data.Add("Organization", organization.Name);
+                }
+                data.Add("UserName", user.UserName);
+                data.Add("UserEmail", user.Email);
+                data.Add("UserImagePath", $"/Users/GetImage?id={user.Id}");
+            }
+
+
             code = code.Inject(data);
             var arr = code.Split("@RenderBody()");
             return (new HtmlString(arr[0]), new HtmlString(arr[1]));
