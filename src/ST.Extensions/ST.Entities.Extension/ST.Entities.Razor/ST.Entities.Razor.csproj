@@ -13,6 +13,7 @@
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms.Abstractions\ST.Forms.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
+    <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant.Abstractions\ST.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Notifications.Extension\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
   </ItemGroup>

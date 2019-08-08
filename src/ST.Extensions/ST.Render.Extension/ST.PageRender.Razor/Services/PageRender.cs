@@ -94,6 +94,10 @@ namespace ST.PageRender.Razor.Services
         public virtual async Task<(HtmlString, HtmlString)> GetLayoutHtml(Guid? layoutId = null)
         {
             var (code, _) = await GetLayoutCode(PageContentType.Html, "layout", layoutId);
+            if (string.IsNullOrEmpty(code))
+            {
+                return (new HtmlString("<h1 style=\"color: red\">Layout not configured!</h1>"), new HtmlString(""));
+            }
             if (!code.Contains("@RenderBody()"))
             {
                 return (new HtmlString("<h1 style=\"color: red\">Layout must have @RenderBody() section</h1>"), new HtmlString(""));

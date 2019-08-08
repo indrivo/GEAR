@@ -31,6 +31,7 @@ using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
+using ST.MultiTenant.Abstractions;
 using ST.Notifications.Abstractions;
 
 namespace ST.Entities.Razor.Controllers.Entity
@@ -68,17 +69,23 @@ namespace ST.Entities.Razor.Controllers.Entity
         private readonly ITablesService _tablesService;
 
         /// <summary>
+        /// Inject organization service
+        /// </summary>
+        private readonly IOrganizationService<Tenant> _organizationService;
+
+        /// <summary>
         /// Database connection string
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             _logger = logger;
             Queue = queue;
             _formContext = formContext;
             _entityRepository = entityRepository;
             _tablesService = tablesService;
+            _organizationService = organizationService;
             var (_, connection) = DbUtil.GetConnectionString(configuration);
             ConnectionString = connection;
             formContext.ValidateNullAbstractionContext();
@@ -283,7 +290,16 @@ namespace ST.Entities.Razor.Controllers.Entity
                 return View(field);
             }
 
-            var fuckTrack = field.Configurations.Select(item => new TableFieldConfigValue
+            if (!table.IsCommon)
+            {
+                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                foreach (var tenant in tenants)
+                {
+                    _tablesService.AddFieldSql(field, tableName, ConnectionString, true, tenant.MachineName);
+                }
+            }
+
+            var configs = field.Configurations.Select(item => new TableFieldConfigValue
             {
                 TableFieldConfigId = item.ConfigId,
                 Value = item.Value,
@@ -299,7 +315,7 @@ namespace ST.Entities.Razor.Controllers.Entity
                 AllowNull = field.AllowNull,
                 Synchronized = true,
                 TableFieldTypeId = field.TableFieldTypeId,
-                TableFieldConfigValues = fuckTrack
+                TableFieldConfigValues = configs
             };
 
             Context.TableFields.Add(model);
@@ -488,7 +504,7 @@ namespace ST.Entities.Razor.Controllers.Entity
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public JsonResult DeleteField([Required]string id)
+        public async Task<JsonResult> DeleteField([Required]string id)
         {
             var field = Context.TableFields.FirstOrDefault(x => x.Id == Guid.Parse(id));
             if (field == null)
@@ -512,6 +528,10 @@ namespace ST.Entities.Razor.Controllers.Entity
             {
                 return Json(false);
             }
+
+            var tenants = _organizationService.GetAllTenants()
+                .Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+
             if (field.TableFieldTypeId == fieldType.Id)
             {
                 var configType = Context.TableFieldConfigs.FirstOrDefault(x => x.TableFieldTypeId == fieldType.Id);
@@ -522,14 +542,26 @@ namespace ST.Entities.Razor.Controllers.Entity
                     if (configValue != null)
                     {
                         _tablesService.DropConstraint(ConnectionString, table.Name, table.EntityType, configValue, field.Name);
+                        if (!table.IsCommon)
+                        {
+                            foreach (var tenant in tenants)
+                            {
+                                _tablesService.DropConstraint(ConnectionString, table.Name, tenant.MachineName, configValue, field.Name);
+                            }
+                        }
                     }
                 }
             }
 
             var dropColumn = _tablesService.DropColumn(ConnectionString, table.Name, table.EntityType, field.Name);
             if (!dropColumn.Result) return Json(false);
+            foreach (var tenant in tenants)
+            {
+                _tablesService.DropColumn(ConnectionString, table.Name, tenant.MachineName, field.Name);
+            }
             Context.TableFields.Remove(field);
-            Context.SaveChanges();
+            var updateResult = await Context.SaveAsync();
+            if (!updateResult.IsSuccess) return Json(false);
             //Call to refresh runtime dynamic types
             RefreshRuntimeTypes();
             return Json(true);
