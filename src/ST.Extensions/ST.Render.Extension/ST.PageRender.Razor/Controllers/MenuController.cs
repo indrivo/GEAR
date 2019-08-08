@@ -9,11 +9,13 @@ using ST.Cache.Abstractions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
+using ST.PageRender.Razor.Services;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -84,7 +86,6 @@ namespace ST.PageRender.Razor.Controllers
                 var req = await _service.AddWithReflection(model);
                 if (req.IsSuccess)
                 {
-                    await _cacheService.RemoveAsync("_menus_central");
                     return RedirectToAction("Index");
                 }
 
@@ -128,7 +129,6 @@ namespace ST.PageRender.Razor.Controllers
             dataModel.Author = model.Author;
             dataModel.Changed = DateTime.Now;
             var req = await _service.UpdateWithReflection(dataModel);
-            await _cacheService.RemoveAsync("_menus_central");
             if (req.IsSuccess) return RedirectToAction("Index");
             ModelState.AddModelError(string.Empty, "Fail to save");
             return View(model);
@@ -189,7 +189,7 @@ namespace ST.PageRender.Razor.Controllers
                 var req = await _service.AddWithReflection(model);
                 if (req.IsSuccess)
                 {
-                    await _cacheService.RemoveAsync("_menus_central");
+                    await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(model.MenuId.ToString()));
                     return RedirectToAction("GetMenu", new
                     {
                         model.MenuId,
@@ -229,7 +229,7 @@ namespace ST.PageRender.Razor.Controllers
             var rq = await _service.UpdateWithReflection(model);
             if (rq.IsSuccess)
             {
-                await _cacheService.RemoveAsync("_menus_central");
+                await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(model.MenuId.ToString()));
                 return RedirectToAction("GetMenu", new
                 {
                     model.MenuId,
@@ -300,7 +300,7 @@ namespace ST.PageRender.Razor.Controllers
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu!", success = false });
             var menu = await _service.DeletePermanent<Menu>(Guid.Parse(id));
             if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu!", success = false });
-            await _cacheService.RemoveAsync("_menus_central");
+            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(id));
             return Json(new { message = "Menu was delete with success!", success = true });
         }
 
@@ -315,9 +315,11 @@ namespace ST.PageRender.Razor.Controllers
         public async Task<JsonResult> DeleteMenuItem(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete menu item!", success = false });
-            var menu = await _service.DeletePermanent<MenuItem>(Guid.Parse(id));
+            var menu = await _service.GetByIdWithReflection<MenuItem, MenuItem>(id.ToGuid());
             if (!menu.IsSuccess) return Json(new { message = "Fail to delete menu item!", success = false });
-            await _cacheService.RemoveAsync("_menus_central");
+            var dbOperation = await _service.DeletePermanent<MenuItem>(id.ToGuid());
+            if (!dbOperation.IsSuccess) return Json(new { message = "Fail to delete menu item!", success = false });
+            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menu.Result.MenuId.ToString()));
             return Json(new { message = "Model was delete with success!", success = true });
         }
 

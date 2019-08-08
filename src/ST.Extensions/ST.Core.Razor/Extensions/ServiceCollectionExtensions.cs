@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using ST.Core.Extensions;
 
@@ -36,7 +34,7 @@ namespace ST.Core.Razor.Extensions
                     if (routeMapping != null)
                     {
                         var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
-                        if (!match.Equals(new KeyValuePair<string, Action<HttpContext>>()))
+                        if (!match.IsNull())
                         {
                             match.Value.Invoke(context);
                             await next();
