@@ -4,6 +4,7 @@
 			Customize system theme js
 ************************************************/
 
+
 const settings = JSON.parse(localStorage.getItem("settings"));
 
 const tManager = new TemplateManager();
