@@ -659,7 +659,7 @@ Notificator.prototype.getCurrentUser = function () {
 			const now = new Date().getTime();
 			const diff = now - created;
 			if (diff > 0 && diff < 50000) {
-				resolve(parsedUserData);
+				return resolve(parsedUserData);
 			}
 		}
 		$.ajax({

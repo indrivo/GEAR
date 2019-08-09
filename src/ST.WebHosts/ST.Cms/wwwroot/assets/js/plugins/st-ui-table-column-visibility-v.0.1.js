@@ -27,7 +27,7 @@ $(document).ready(function () {
 TableColumnsVisibility.prototype.constructor = TableColumnsVisibility;
 
 
-TableColumnsVisibility.prototype.getVisibility = function (id) {
+TableColumnsVisibility.prototype.getVisibility = function(id) {
 	const cacheValue = localStorage.getItem(`_list_${id}`);
 	const visibleItems = [];
 	const hiddenItems = [];
@@ -44,7 +44,7 @@ TableColumnsVisibility.prototype.getVisibility = function (id) {
 		visibledItems: hiddenItems,
 		hiddenItems: hiddenItems
 	};
-}
+};
 
 TableColumnsVisibility.prototype.renderTemplate = function (ctx) {
 	return `<a data-id="#${$(ctx)[0].id
@@ -147,19 +147,19 @@ TableColumnsVisibility.prototype.onColumnsVisibilityStateChanged = function (sou
 };
 
 
-TableColumnsVisibility.prototype.dataStateChange = function (ref, state, id) {
+TableColumnsVisibility.prototype.dataStateChange = function(ref, state, id) {
 	const inputs = $($(ref)
-		.parent()
-		.parent()
-		.parent()
-		.children()[1])
+			.parent()
+			.parent()
+			.parent()
+			.children()[1])
 		.find("input[type=checkbox]");
 
 	for (let input = 0; input < inputs.length; input++) {
 		inputs[input].checked = state;
 		new TableColumnsVisibility().dataChanged(inputs[input], id);
 	}
-}
+};
 
 
 TableColumnsVisibility.prototype.dataChanged = function (ref, id) {
