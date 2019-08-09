@@ -141,14 +141,14 @@ namespace ST.Cms
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
 			{
 				//rewrite root path to redirect on dynamic page, only for commerce landing page
-				//{
-				//	"/", context =>
-				//	{
-				//		var originalPath = context.Request.Path.Value;
-				//		context.Items["originalPath"] = originalPath;
-				//		context.Request.Path = "/public";
-				//	}
-				//}
+				{
+					"/", context =>
+					{
+						var originalPath = context.Request.Path.Value;
+						context.Items["originalPath"] = originalPath;
+						context.Request.Path = "/public";
+					}
+				}
 			});
 
 			//--------------------------------------Swagger Usage-------------------------------------
@@ -196,6 +196,9 @@ namespace ST.Cms
 				// enables immediate logout, after updating the user's stat.
 				options.ValidationInterval = TimeSpan.Zero;
 			});
+
+			//---------------------------------Custom cache Module-------------------------------------
+			services.UseCustomCacheModule(HostingEnvironment, Configuration);
 
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
@@ -315,9 +318,6 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				});
 
-
-			//---------------------------------Custom cache Module-------------------------------------
-			services.UseCustomCacheModule(HostingEnvironment, Configuration);
 
 			services.AddInstallerModule<SyncInstaller>();
 

@@ -147,7 +147,7 @@
   "scaffold_modal_text": "The pages will be generated: list, add, edit, viewmodel, add and edit form",
   "scaffold_modal_confirm": "Yes, scaffold",
   "description": "Description",
-  "author": "Author",
+  "author": "Created by",
   "id_deleted": "Is deleted",
   "modified_by": "Modified by ",
   "organization": "Organization",
@@ -444,5 +444,9 @@
   "system_log_in": "Log in",
   "system_auth_remenber_me": "Remember me?",
   "system_auth_password": "Password",
-  "system_auth_username": "User name"
+  "system_auth_username": "User name",
+  "commerce_how_it_works": "How it works",
+  "commerce_features": "Features",
+  "commerce_price_plans": "Price plans",
+  "commerce_demo": "Demo"
 }

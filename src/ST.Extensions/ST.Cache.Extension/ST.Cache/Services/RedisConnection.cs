@@ -2,23 +2,31 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
+using ST.Cache.Abstractions;
+using ST.Core;
 using StackExchange.Redis;
 using InternalExceptions = ST.Cache.Exceptions;
 
 namespace ST.Cache.Services
 {
-    public class RedisConnection
+    public class RedisConnection : IRedisConnection
     {
         /// <summary>
         /// Redis connection
         /// </summary>
         private readonly ConnectionMultiplexer _redisConnection;
 
-        protected const string PreKey = ".ST.ISO.Data";
+        private readonly string _preKey;
 
-        public RedisConnection(string connection = "127.0.0.1:6379")
+        public RedisConnection(IOptions<SystemConfig> systemOptions, IHostingEnvironment environment, IOptions<RedisConnectionConfig> redisConnectionOptions)
         {
-            var options = ConfigurationOptions.Parse(connection);
+            if (redisConnectionOptions.Value == null) throw new InternalExceptions.InvalidCacheConfigurationException();
+            _preKey = $"{systemOptions.Value.MachineIdentifier}.{environment.EnvironmentName}@";
+            //_host = "127.0.0.1:6379";
+            var host = $"{redisConnectionOptions.Value.Host}:{redisConnectionOptions.Value.Port}";
+            var options = ConfigurationOptions.Parse(host);
             _redisConnection = ConnectionMultiplexer.Connect(options);
             if (!_redisConnection.IsConnected)
                 throw new InternalExceptions.RedisConnectionException("Fail to connect with redis server");
@@ -51,7 +59,7 @@ namespace ST.Cache.Services
         {
             var endPoint = GetEndPoint();
             if (endPoint == null) return new Collection<RedisKey>();
-            return _redisConnection.GetServer(endPoint).Keys(pattern: $"{PreKey}*").ToList();
+            return _redisConnection.GetServer(endPoint).Keys(pattern: $"{_preKey}*").ToList();
         }
 
         /// <summary>
@@ -63,7 +71,7 @@ namespace ST.Cache.Services
         {
             var endPoint = GetEndPoint();
             if (endPoint == null) return new Collection<RedisKey>();
-            return _redisConnection.GetServer(endPoint).Keys(pattern: $"{PreKey}{filterPattern}").ToList();
+            return _redisConnection.GetServer(endPoint).Keys(pattern: $"{_preKey}{filterPattern}").ToList();
         }
 
         /// <summary>

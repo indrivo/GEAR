@@ -444,5 +444,9 @@
   "system_log_in": "ログイン",
   "system_auth_remenber_me": "覚えているかい？",
   "system_auth_password": "パスワード",
-  "system_auth_username": "ユーザー名"
+  "system_auth_username": "ユーザー名",
+  "commerce_how_it_works": "その作品",
+  "commerce_features": "特徴",
+  "commerce_price_plans": "料金プラン",
+  "commerce_demo": "デモ"
 }

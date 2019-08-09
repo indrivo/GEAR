@@ -28,6 +28,6 @@ namespace ST.Core
         /// <summary>
         /// This property value is used for cookie name and redis reserved key
         /// </summary>
-        public static string MachineIdentifier { get; set; }
+        public string MachineIdentifier { get; set; }
     }
 }

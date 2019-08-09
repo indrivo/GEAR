@@ -240,11 +240,23 @@ if (typeof TableColumnsVisibility !== "undefined") {
 	 * @param {any} ctx
 	 */
 	TableColumnsVisibility.prototype.init = function (ctx) {
-		const cols = this.getVisibility(`#${$(ctx).attr("id")}`);
-		$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.visibledItems).visible(true);
-		$(`#${$(ctx).attr("id")}`).DataTable().columns(cols.hiddenItems).visible(false);
-		$(".hidden-columns-event").attr("data-id", `#${$(ctx)[0].id}`);
-		this.registerInitEvents();
+		const tableId = `#${$(ctx).attr("id")}`;
+		const table = $(tableId);
+		const dto = table.DataTable();
+		if (table.hasClass("dynamic-table")) {
+			const cols = this.getVisibility(tableId);
+			dto.columns(cols.visibledItems).visible(true);
+			dto.columns(cols.hiddenItems).visible(false);
+			$(".hidden-columns-event").attr("data-id", `#${$(ctx)[0].id}`);
+			this.registerInitEvents();
+		} else {
+			const template = this.renderTemplate(ctx);
+			$("div.CustomizeColumns").html(template);
+			$(".list-side-toggle").click(function () {
+				new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
+				$("#hiddenColumnsModal").modal();
+			});
+		}
 	};
 
 	/*
@@ -811,7 +823,10 @@ if (typeof TableInlineEdit !== "undefined") {
 		if (!jdt) {
 			jdt = dto.DataTable();
 		}
-
+		const activeNewRows = dto.find("tbody tr[isNew='true']");
+		if (activeNewRows.length > 0) {
+			return this.displayNotification({ heading: window.translate("system_inline_edit_add_fail"), icon: "warning" });
+		}
 		const row = document.createElement("tr");
 		row.setAttribute("isNew", "true");
 		const columns = jdt.columns().context[0].aoColumns;
@@ -834,7 +849,7 @@ if (typeof TableInlineEdit !== "undefined") {
 
 			row.appendChild(cell);
 		}
-		dto.attr("add-mode", "true");
+		dto.attr("data-add-mode", "true");
 		const tBody = $("tbody", dto);
 		const haveEmptyRow = tBody.find(".dataTables_empty");
 		if (haveEmptyRow) {

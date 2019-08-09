@@ -444,5 +444,9 @@
   "system_log_in": "Zalogować się",
   "system_auth_remenber_me": "Pamiętaj mnie?",
   "system_auth_password": "Hasło",
-  "system_auth_username": "Nazwa użytkownika "
+  "system_auth_username": "Nazwa użytkownika ",
+  "commerce_how_it_works": "Jak to działa",
+  "commerce_features": "Cechy",
+  "commerce_price_plans": "Plany cenowe ",
+  "commerce_demo": "Demo"
 }

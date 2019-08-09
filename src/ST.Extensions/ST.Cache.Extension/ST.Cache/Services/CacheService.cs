@@ -4,11 +4,9 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using ST.Cache.Abstractions;
-using ST.Cache.Exceptions;
 
 namespace ST.Cache.Services
 {
@@ -22,20 +20,19 @@ namespace ST.Cache.Services
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         /// <summary>
-        /// Redis host
+        /// Inject redis manager
         /// </summary>
-        private readonly string _redisHost;
+        private readonly IRedisConnection _redisConnection;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="cache"></param>
-        /// <param name="options"></param>
-        public CacheService(IDistributedCache cache, IOptions<RedisConnectionConfig> options)
+        /// <param name="redisConnection"></param>
+        public CacheService(IDistributedCache cache, IRedisConnection redisConnection)
         {
             _cache = cache;
-            if (options.Value == null) throw new InvalidCacheConfigurationException();
-            _redisHost = $"{options.Value.Host}:{options.Value.Port}";
+            _redisConnection = redisConnection;
             _jsonSerializerSettings = new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
@@ -95,8 +92,7 @@ namespace ST.Cache.Services
         /// <returns></returns>
         public virtual IEnumerable<RedisKey> GetAllKeys()
         {
-            var conn = new RedisConnection(_redisHost);
-            return conn.GetAll();
+            return _redisConnection.GetAll();
         }
 
         /// <summary>
@@ -106,8 +102,7 @@ namespace ST.Cache.Services
         /// <returns></returns>
         public virtual IEnumerable<RedisKey> GetAllByPatternFilter(string pattern)
         {
-            var conn = new RedisConnection(_redisHost);
-            return conn.GetByPatternFilter(pattern);
+            return _redisConnection.GetByPatternFilter(pattern);
         }
 
         /// <summary>
@@ -121,11 +116,11 @@ namespace ST.Cache.Services
         /// Is redis connected
         /// </summary>
         /// <returns></returns>
-        public virtual bool IsConnected() => new RedisConnection(_redisHost).IsConnected();
+        public virtual bool IsConnected() => _redisConnection.IsConnected();
 
         /// <summary>
         /// Flush all keys
         /// </summary>
-        public virtual void FlushAll() => new RedisConnection(_redisHost).FlushAll();
+        public virtual void FlushAll() => _redisConnection.FlushAll();
     }
 }
