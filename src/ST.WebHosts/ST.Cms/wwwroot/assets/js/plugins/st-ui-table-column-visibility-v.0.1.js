@@ -48,7 +48,7 @@ TableColumnsVisibility.prototype.getVisibility = function(id) {
 
 TableColumnsVisibility.prototype.renderTemplate = function (ctx) {
 	return `<a data-id="#${$(ctx)[0].id
-		}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="#">${window.translate("columns-visibility")}</a>`;
+		}" style="margin-bottom: 0.5em;" class="list-side-toggle toggle-columns btn btn-primary btn-sm" href="javascript:void(0)">${window.translate("columns-visibility")}</a>`;
 };
 
 TableColumnsVisibility.prototype.init = function (ctx) {
@@ -107,10 +107,10 @@ TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
 		const container =
 			`<div class="row">
 				<div class="col-md-6">
-					<a id="selAllCols" href="#">${window.translate("select_all")}</a>
+					<a id="selAllCols" href="javascript:void(0)">${window.translate("select_all")}</a>
 				</div>
 			<div class="col-md-6">
-				<a id="deselAllCols" href="#">${window.translate("deselect_all")}</a>
+				<a id="deselAllCols" href="javascript:void(0)">${window.translate("deselect_all")}</a>
 				</div>
 			</div><div class="to-do-widget"><ul class="todo-list list-group m-b-0">${
 			items}</ul</div>`;
