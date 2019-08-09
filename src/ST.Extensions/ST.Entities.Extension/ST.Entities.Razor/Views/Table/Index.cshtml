@@ -77,8 +77,8 @@
 									<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window
 								.translate("edit")}</a>
 									<a class="btn btn-warning btn-sm" onclick="scaffoldClickEvent('${row.id
-								}')" href="#">Scaffold</a>
-									${!row.isSystem ? `<a href="#" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</a>` : ``}
+								}')" href="javascript:void(0)">Scaffold</a>
+									${!row.isSystem ? `<a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">${window.translate("delete")}</a>` : ``}
 									</div>`;
 						}
 					}

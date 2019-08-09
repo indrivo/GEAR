@@ -244,7 +244,7 @@
 						@if (!Model.IsSystem)
 						{
 							<div class="col-lg-2 col-md-3">
-								<a href="#" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>@Localizer["delete"]</a>
+								<a href="javascript:void(0)" class="btn btn-block btn-danger sa-delete-table"> <i class="fa fa-close"></i>@Localizer["delete"]</a>
 							</div>
 						}
 
@@ -267,7 +267,7 @@
 									<div class="dropdown-menu " style="overflow-y: auto;">
 										@foreach (var item in Model.Groups)
 										{
-											<a class="dropdown-item" style="font-weight: bold;" href="#">@item.GroupName</a>
+											<a class="dropdown-item" style="font-weight: bold;" href="javascript:void(0)">@item.GroupName</a>
 											foreach (var type in item.TableFieldTypes)
 											{
 												<a class="dropdown-item" asp-action="AddField" asp-route-id="@Model.Id" asp-route-type="@type.Name">@type.Name</a>
@@ -322,7 +322,7 @@
 															<a asp-action="EditField" asp-route-type="@item.TableFieldTypeId" asp-route-fieldId="@item.Id" class="btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Edit">
 																<i class="ti-pencil" aria-hidden="true"></i> @Localizer["edit"]
 															</a>
-															<a href="#" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
+															<a href="javascript:void(0)" data-id="@item.Id" class="sa-delete btn btn-sm btn-icon btn-pure btn-outline" data-toggle="tooltip" data-original-title="Delete">
 																<i class="ti-close" aria-hidden="true"></i> @Localizer["delete"]
 															</a>
 														}

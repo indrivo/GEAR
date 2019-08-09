@@ -1,7 +1,7 @@
 <li>
 	{{if children.length == 0}}
 		{{if href == ''}}
-			<a href="#">
+			<a href="javascript:void(0)">
 				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
 			</a>
 		{{else}}
@@ -11,7 +11,7 @@
 		{{/else}}
 	{{else}}
 		{{if href == ''}}
-			<a class="has-arrow" href="#" aria-expanded="false">
+			<a class="has-arrow" href="javascript:void(0)" aria-expanded="false">
 				<i class="{{:icon}}"></i><span class="{{if !parentMenuItemId}}hide-menu{{/if}}" translate="{{:translate}}">{{:name}}</span>
 			</a>
 		{{else}}

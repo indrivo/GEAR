@@ -466,7 +466,7 @@ grapesjs.plugins.add("gjs-dynamic-entities", (editor, options) => {
 				<div class="d-flex">
 					<div class="mr-auto">
 						<div class="form-group">
-							<a href="#" class="btn btn-primary btn-sm">
+							<a href="javascript:void(0)" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add
 							</a>
 							<small>New  will be added.</small>
