@@ -444,5 +444,9 @@
   "system_log_in": "Авторизуватися",
   "system_auth_remenber_me": "Запам'ятай мене?",
   "system_auth_password": "Пароль",
-  "system_auth_username": "Ім'я користувача "
+  "system_auth_username": "Ім'я користувача ",
+  "commerce_how_it_works": "Як це працює",
+  "commerce_features": "Особливості",
+  "commerce_price_plans": "Цінові плани ",
+  "commerce_demo": "Демо"
 }

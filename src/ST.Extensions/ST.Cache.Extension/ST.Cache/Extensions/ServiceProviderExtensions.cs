@@ -34,14 +34,16 @@ namespace ST.Cache.Extensions
             var redisSection = configuration.GetSection("RedisConnection");
             var redisConfig = redisSection.Get<RedisConnectionConfig>();
             if (redisConfig == null) throw new InvalidCacheConfigurationException();
-            services.Configure<RedisConnectionConfig>(redisSection);
+            services.Configure<RedisConnectionConfig>(configuration.GetSection("RedisConnection"));
             services.AddDistributedRedisCache(opts =>
             {
                 opts.Configuration = redisConfig.Host;
                 opts.InstanceName = $"{customSystemIdentifier}.{environment.EnvironmentName}@";
             });
             services.AddTransient<ICacheService, CacheService>();
+            services.AddTransient<IRedisConnection, RedisConnection>();
             IoC.RegisterService<ICacheService, CacheService>();
+            IoC.RegisterService<IRedisConnection, RedisConnection>();
             return services;
         }
     }

@@ -13,6 +13,19 @@ using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Services
 {
+    public static class MenuHelper
+    {
+        /// <summary>
+        /// Get menu cache key
+        /// </summary>
+        /// <param name="menuId"></param>
+        /// <returns></returns>
+        public static string GetCacheKey(string menuId)
+        {
+            return $"_menu_{menuId}";
+        }
+    }
+
     public class MenuService<TService> : IMenuService where TService : IDynamicService
     {
         /// <summary>
@@ -49,12 +62,12 @@ namespace ST.PageRender.Razor.Services
             var navbar = await _service.GetByIdWithReflection<Menu, Menu>(menuId.Value);
             if (!navbar.IsSuccess) return default;
             List<MenuItem> menus;
-            var cache = await _cacheService.Get<List<MenuItem>>("_menus_central");
+            var cache = await _cacheService.Get<List<MenuItem>>(MenuHelper.GetCacheKey(menuId.ToString()));
             if (cache == null || cache.Count == 0)
             {
                 var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id));
                 menus = search.Result.ToList();
-                await _cacheService.Set("_menus_central", search.Result);
+                await _cacheService.Set(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
             }
             else
             {
@@ -166,7 +179,7 @@ namespace ST.PageRender.Razor.Services
             if (!match.IsSuccess || menu == null) return new ResultModel<Guid>();
             if (!roles.Contains("Administrator")) roles.Add("Administrator");
             menu.AllowedRoles = string.Join("#", roles);
-            await _cacheService.RemoveAsync("_menus_central");
+            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menuId.ToString()));
             return await _service.UpdateWithReflection(menu);
         }
     }

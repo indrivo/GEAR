@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+using ST.Core.Abstractions;
 using ST.Report.Abstractions;
 using ST.Report.Abstractions.Models;
 
@@ -12,6 +12,7 @@ namespace ST.Report.Dynamic.Data
         /// Do not remove this
         /// </summary>
         public const string Schema = "Report";
+
         public DynamicReportDbContext(DbContextOptions options) : base(options)
         {
 
@@ -37,21 +38,10 @@ namespace ST.Report.Dynamic.Data
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
         }
-    }
 
-    public class DynamicReportDbContextContextFactory : IDesignTimeDbContextFactory<DynamicReportDbContext>
-    {
-        /// <inheritdoc />
-        /// <summary>
-        /// For creating migrations
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public DynamicReportDbContext CreateDbContext(string[] args)
+        public DbSet<T> SetEntity<T>() where T : class, IBaseModel
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DynamicReportDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=postgres;Password=1111;Database=ISODMS.DEV;");
-            return new DynamicReportDbContext(optionsBuilder.Options);
+            return Set<T>();
         }
     }
 }

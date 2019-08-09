@@ -444,5 +444,9 @@
   "system_log_in": "登录在",
   "system_auth_remenber_me": "还记得我吗？",
   "system_auth_password": "密码",
-  "system_auth_username": "用户名"
+  "system_auth_username": "用户名",
+  "commerce_how_it_works": "它是如何工作的",
+  "commerce_features": "功能",
+  "commerce_price_plans": "价格的计划",
+  "commerce_demo": "演示"
 }
