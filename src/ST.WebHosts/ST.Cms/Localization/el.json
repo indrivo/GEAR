@@ -444,5 +444,9 @@
   "system_log_in": "Συνδεθείτε",
   "system_auth_remenber_me": "Να θυμάσαι εμένα;",
   "system_auth_password": "Κωδικό πρόσβασης",
-  "system_auth_username": "Όνομα χρήστη"
+  "system_auth_username": "Όνομα χρήστη",
+  "commerce_how_it_works": "Πώς λειτουργεί",
+  "commerce_features": "Χαρακτηριστικά",
+  "commerce_price_plans": "Τιμή σχέδια",
+  "commerce_demo": "Demo"
 }

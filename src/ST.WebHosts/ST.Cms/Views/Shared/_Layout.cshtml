@@ -1,3 +1,6 @@
+@using ST.Identity.Abstractions
+@inject IAppProvider AppProvider
+
 <!DOCTYPE html>
 @{
 	var isDynamicPage = ((bool?)ViewData["IsDynamicPage"]).GetValueOrDefault(false);
@@ -13,7 +16,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<partial name="_BootstrapThemeStyles" />
 		<partial name="_FormModuleLayoutStyles" />
-		<title>@ViewData["Title"] - ISO</title>
+		<title>@ViewData["Title"] - @(await AppProvider.GetAppName("core"))</title>
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
 		@RenderSection("PreScripts", required: false)
