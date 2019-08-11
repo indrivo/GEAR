@@ -4,6 +4,7 @@ if (typeof jQuery === 'undefined') {
 }
 
 //TODO: need to delete this gavno code and write new code
+const notificator = new Notificator();
 //Delete row from Jquery Table
 function DeleteData(object) {
 	swal({
