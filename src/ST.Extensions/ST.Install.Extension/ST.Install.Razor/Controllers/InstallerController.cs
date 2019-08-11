@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -171,7 +172,8 @@ namespace ST.Install.Razor.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Setup(SetupModel model)
 		{
-			var settings = Application.CoreApp.Settings(_hostingEnvironment);
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var settings = Application.CoreApp.Settings(_hostingEnvironment);
 
 			if (model.DataBaseType == DbProviderType.MsSqlServer)
 			{
@@ -204,9 +206,10 @@ namespace ST.Install.Razor.Controllers
 				return View(model);
 			}
 			settings.IsConfigured = true;
+            settings.SystemConfig.MachineIdentifier = $"_{tenantMachineName}_";
 			var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
 			await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
-			//Application.CoreApp.InitMigrations(new string[] { });
+			Application.CoreApp.InitMigrations();
 
 			await _permissionService.RefreshCache();
 

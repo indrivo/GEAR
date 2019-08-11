@@ -6,10 +6,14 @@
 
   <ItemGroup>
     <None Remove="IdentityConfiguration.json" />
+    <None Remove="Static\Embedded Resources\user.jpg" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="IdentityConfiguration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Static\Embedded Resources\user.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

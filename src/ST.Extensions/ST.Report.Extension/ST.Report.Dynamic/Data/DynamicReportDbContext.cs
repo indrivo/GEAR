@@ -13,7 +13,7 @@ namespace ST.Report.Dynamic.Data
         /// </summary>
         public const string Schema = "Report";
 
-        public DynamicReportDbContext(DbContextOptions options) : base(options)
+        public DynamicReportDbContext(DbContextOptions<DynamicReportDbContext> options) : base(options)
         {
 
         }

@@ -34,6 +34,11 @@ namespace ST.Application
     public static class CoreApp
     {
         /// <summary>
+        /// Build web host
+        /// </summary>
+        private static IWebHost _webHost;
+
+        /// <summary>
         /// Get settings
         /// </summary>
         public static AppSettingsModel.RootObject Settings(IHostingEnvironment hostingEnvironment)
@@ -43,23 +48,14 @@ namespace ST.Application
         /// <summary>
         /// Run
         /// </summary>
-        /// <param name="args"></param>
-        public static void MigrateAndRun<TStartUp>(string[] args) where TStartUp : class
-        {
-            BuildWebHost<TStartUp>(args)
-                .Migrate()
-                .Run();
-        }
+        public static void MigrateAndRun() => _webHost
+            .Migrate()
+            .Run();
 
         /// <summary>
         /// Init migrations
         /// </summary>
-        /// <param name="args"></param>
-        public static void InitMigrations<TStartUp>(string[] args) where TStartUp : class
-        {
-            BuildWebHost<TStartUp>(args)
-                .Migrate();
-        }
+        public static void InitMigrations() => _webHost.Migrate();
 
         /// <summary>
         /// Migrate Web host extension
@@ -205,13 +201,15 @@ namespace ST.Application
                 .AddEnvironmentVariables()
                 .Build();
 
-            return Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
+            _webHost = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .UseConfiguration(config)
                 .StartLogging()
                 .CaptureStartupErrors(true)
                 .UseStartup<TStartUp>()
                 .Build();
+
+            return _webHost;
         }
     }
 }

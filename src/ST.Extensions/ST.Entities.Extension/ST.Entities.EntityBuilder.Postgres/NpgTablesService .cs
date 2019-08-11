@@ -178,10 +178,9 @@ namespace ST.Entities.EntityBuilder.Postgres
             {
                 CreateSchemaAsync(table.EntityType, connectionString).GetAwaiter().GetResult();
             }
-
+            var sqlQuery = QueryTableBuilder.CreateQuery(table);
             try
             {
-                var sqlQuery = QueryTableBuilder.CreateQuery(table);
                 if (!string.IsNullOrEmpty(sqlQuery))
                 {
                     using (var connection = new NpgsqlConnection(connectionString))

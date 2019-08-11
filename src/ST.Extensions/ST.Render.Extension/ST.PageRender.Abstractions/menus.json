@@ -9,32 +9,21 @@
  */
 [
   {
-    "SubItems": [
-      {
-        "SubItems": null,
-        "Name": "Core",
-        "Href": "/Handler/RedirectToApp?app=core",
-        "Translate": "system_app",
-        "Icon": null,
-        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
-        "Author": "system",
-        "AllowedRoles": "Administrator#"
-      }
-    ],
-    "Name": "Apps",
-    "Href": null,
-    "Translate": "apps",
-    "Icon": "mdi mdi-bullseye",
+    "Children": null,
+    "Name": "Dashboard",
+    "Href": "/home",
+    "Translate": "dashboard",
+    "Icon": null,
     "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
     "Author": "system",
     "AllowedRoles": "Administrator#"
   },
   {
-    "SubItems": [
+    "Children": [
       {
-        "SubItems": [
+        "Children": [
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "App Management",
             "Href": "/ApplicationsManagement",
             "Translate": "apps_management",
@@ -44,7 +33,7 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Api Resources",
             "Href": "/ApiResource",
             "Translate": "api_resources",
@@ -63,9 +52,9 @@
         "AllowedRoles": "Administrator#"
       },
       {
-        "SubItems": [
+        "Children": [
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Users",
             "Href": "/Users",
             "Translate": "users",
@@ -75,7 +64,7 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Roles",
             "Href": "/Roles",
             "Translate": "roles",
@@ -85,7 +74,7 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Tenants",
             "Href": "/Tenant",
             "Translate": "tenants",
@@ -95,7 +84,7 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Groups",
             "Href": "/Groups",
             "Translate": "groups",
@@ -105,7 +94,7 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Profile",
             "Href": "/Profile",
             "Translate": "profiles",
@@ -124,11 +113,11 @@
         "AllowedRoles": "Administrator#"
       },
       {
-        "SubItems": [
+        "Children": [
           {
-            "SubItems": [
+            "Children": [
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Tables",
                 "Href": "/Table?page=1&perPage=10",
                 "Translate": "tables",
@@ -138,7 +127,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Entity Type",
                 "Href": "/EntityType",
                 "Translate": "entity_type",
@@ -148,7 +137,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "View Models",
                 "Href": "/ViewModel",
                 "Translate": "view_models",
@@ -167,9 +156,9 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": [
+            "Children": [
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Forms",
                 "Href": "/Form",
                 "Translate": "forms",
@@ -179,7 +168,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Layouts",
                 "Href": "/Page/Layouts",
                 "Translate": "layouts",
@@ -189,7 +178,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Pages",
                 "Href": "/Page",
                 "Translate": "pages",
@@ -199,7 +188,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Page Types",
                 "Href": "/PageType",
                 "Translate": "page_types",
@@ -209,7 +198,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Menus",
                 "Href": "/Menu",
                 "Translate": "menus",
@@ -219,7 +208,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Render Blocks",
                 "Href": "/Blocks",
                 "Translate": "render_blocks",
@@ -229,7 +218,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Render Block categories",
                 "Href": "/BlockCategory",
                 "Translate": "render_blocks_categories",
@@ -239,7 +228,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Templates",
                 "Href": "/templates",
                 "Translate": "templates",
@@ -267,11 +256,11 @@
         "AllowedRoles": "Administrator#"
       },
       {
-        "SubItems": [
+        "Children": [
           {
-            "SubItems": [
+            "Children": [
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Export",
                 "Href": "/Data/Export",
                 "Translate": "",
@@ -281,7 +270,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Import",
                 "Href": "/Data/Import",
                 "Translate": "",
@@ -300,9 +289,9 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": [
+            "Children": [
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Languages",
                 "Href": "/Localization/GetLanguages?page=1&perPage=10",
                 "Translate": "languages",
@@ -312,7 +301,7 @@
                 "AllowedRoles": "Administrator#"
               },
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Keys",
                 "Href": "/Localization?page=1&perPage=10",
                 "Translate": "keys",
@@ -331,9 +320,9 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": [
+            "Children": [
               {
-                "SubItems": null,
+                "Children": null,
                 "Name": "Logs",
                 "Href": "/handler/logs",
                 "Translate": "logs",
@@ -352,7 +341,7 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Process",
             "Href": "/Process",
             "Translate": "process",
@@ -362,10 +351,10 @@
             "AllowedRoles": "Administrator#"
           },
           {
-            "SubItems": null,
-            "Name": "Server Performance",
-            "Href": "/LoadServerPerformance",
-            "Translate": "server_performance",
+            "Children": null,
+            "Name": "Cache",
+            "Href": "/cache",
+            "Translate": "",
             "Icon": "mdi mdi-dice-2",
             "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
             "Author": "system",
@@ -381,9 +370,9 @@
         "AllowedRoles": "Administrator#"
       },
       {
-        "SubItems": [
+        "Children": [
           {
-            "SubItems": null,
+            "Children": null,
             "Name": "Audit",
             "Href": "/Audit",
             "Translate": "audit",
