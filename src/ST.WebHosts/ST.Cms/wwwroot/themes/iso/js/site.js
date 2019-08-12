@@ -1210,7 +1210,7 @@ if (typeof Notificator !== "undefined") {
 
 	Notificator.prototype.createNotificationBodyContainer = function (n) {
 		const block = `
-		<a data-notification-id="${n.id}" href="#" class="notification-item dropdown-item py-3 border-bottom">
+		<a data-notification-id="${n.id}" href="javascript:void(0)" class="notification-item dropdown-item py-3 border-bottom">
             <p><small>${n.subject}</small></p>
             <p class="text-muted mb-1"><small>${n.content}</small></p>
             <p class="text-muted mb-1"><small>${n.created}</small></p>

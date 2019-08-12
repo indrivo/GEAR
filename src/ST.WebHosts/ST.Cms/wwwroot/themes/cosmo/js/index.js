@@ -33,7 +33,7 @@ $(document).ready(function () {
 	window.loadAsync("/Localization/GetLanguagesAsJson").then(langs => {
 		if (!langs) return;
 		const b = $(`<li class="navbar-nav nav-link px-3 dropdown">
-			 <a href="#" class=" nav-link px-3 dropdown-toggle" data-toggle="dropdown" style="color:white;">
+			 <a href="javascript:void(0)" class=" nav-link px-3 dropdown-toggle" data-toggle="dropdown" style="color:white;">
             ${window.getCookie("language")}
             <span class="caret"></span>
         </a>
