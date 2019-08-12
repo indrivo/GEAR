@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ST.Identity.Permissions.Abstractions\ST.Identity.Permissions.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
+    <ProjectReference Include="..\ST.Core.Extension\ST.Core.csproj" />
   </ItemGroup>
 
 </Project>
