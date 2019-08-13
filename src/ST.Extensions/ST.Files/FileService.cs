@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http.Internal;
 using File = ST.Files.Abstraction.Models.File;
 
 namespace ST.Files
@@ -24,18 +25,17 @@ namespace ST.Files
             _context = context;
         }
 
-        public virtual ResultModel<Guid> AddFile(FileViewModel dto)
+        public virtual ResultModel<Guid> AddFile(UploadFileViewModel dto)
         {
             try
             {
-                if (dto.Id == Guid.Empty) return UpdateFile(dto);
+                if (dto.Id != Guid.Empty) return UpdateFile(dto);
                 var encryptedFile = EncryptFile(dto.File);
                 var file = new File
                 {
-                    Description = dto.Description,
                     FileExtension = encryptedFile.FileExtension,
                     Hash = encryptedFile.EncryptedFile,
-                    Name = dto.Name,
+                    Name = encryptedFile.FileName,
                     Size = encryptedFile.Size
                 };
                 _context.Files.Add(file);
@@ -101,23 +101,19 @@ namespace ST.Files
             }
         }
 
-        public virtual ResultModel<FileViewModel> GetFileById(Guid id)
+        public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
             try
             {
                 var dbFileResult = _context.Files.FirstOrDefault(x => x.Id == id & x.IsDeleted == false);
-                var decryptedFile = DecryptFile(dbFileResult?.Hash);
-                var dto = new FileViewModel();
+                var dto = new DownloadFileViewModel();
                 if (dbFileResult != null)
                 {
-                    dto.Description = dbFileResult.Description;
+                    dto.EncryptedFile = dbFileResult.Hash;
                     dto.FileExtension = dbFileResult.FileExtension;
-                    dto.File = decryptedFile;
-                    dto.Id = dbFileResult.Id;
-                    dto.Name = dbFileResult.Name;
-                    dto.Size = dbFileResult.Size;
+                    dto.FileName = dbFileResult.Name;
                 }
-                return new ResultModel<FileViewModel>
+                return new ResultModel<DownloadFileViewModel>
                 {
                     IsSuccess = true,
                     Result = dto
@@ -125,51 +121,8 @@ namespace ST.Files
             }
             catch (Exception exceptionMessage)
             {
-                return ReturnErrorModel<FileViewModel>(exceptionMessage.ToString());
+                return ReturnErrorModel<DownloadFileViewModel>(exceptionMessage.ToString());
             }
-        }
-        public virtual ResultModel<List<FileViewModel>> GetFilesByIds(List<Guid> idsList)
-        {
-            try
-            {
-                var dbFileResult = _context.Files
-                    .Where(l => idsList.Contains(l.Id))
-                    .ToList();
-                var dto = new List<FileViewModel>();
-                if (dbFileResult.Count > 0)
-                {
-                    foreach (var item in dbFileResult)
-                    {
-                        var decryptedFile = DecryptFile(item.Hash);
-                        var dtoItem = new FileViewModel
-                        {
-                            Description = item.Description,
-                            FileExtension = item.FileExtension,
-                            File = decryptedFile,
-                            Id = item.Id,
-                            Name = item.Name,
-                            Size = item.Size
-                        };
-                        dto.Add(dtoItem);
-                    }
-                }
-                return new ResultModel<List<FileViewModel>>
-                {
-                    IsSuccess = true,
-                    Result = dto
-                };
-            }
-            catch (Exception exceptionMessage)
-            {
-                return ReturnErrorModel<List<FileViewModel>>(exceptionMessage.ToString());
-            }
-        }
-
-
-
-        private static IFormFile DecryptFile(byte[] file)
-        {
-            return null;
         }
 
         private static FileDto EncryptFile(IFormFile file)
@@ -187,8 +140,10 @@ namespace ST.Files
                    return new FileDto
                    {
                        FileExtension = file.ContentType,
-                       EncryptedFile = data
-                    };
+                       EncryptedFile = data,
+                       FileName = file.FileName,
+                       Size = file.Length
+                   };
                 }
             }
             else
@@ -219,17 +174,16 @@ namespace ST.Files
             };
         }
 
-        private ResultModel<Guid> UpdateFile(FileViewModel dto)
+        private ResultModel<Guid> UpdateFile(UploadFileViewModel dto)
         {
             try
             {
                 var encryptedFile = EncryptFile(dto.File);
                 var file = new File
                 {
-                    Description = dto.Description,
                     FileExtension = encryptedFile.FileExtension,
                     Hash = encryptedFile.EncryptedFile,
-                    Name = dto.Name,
+                    Name = encryptedFile.FileName,
                     Size = encryptedFile.Size
                 };
                 _context.Files.Add(file);

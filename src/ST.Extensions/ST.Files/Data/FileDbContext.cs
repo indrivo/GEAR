@@ -12,7 +12,7 @@ namespace ST.Files.Data
         /// Schema
         /// Do not remove this
         /// </summary>
-        public const string Schema = "DMS";
+        public const string Schema = "File";
 
         /// <inheritdoc />
         /// <summary>

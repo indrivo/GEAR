@@ -1,0 +1,77 @@
+@{
+    ViewData["Title"] = "Files";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-body">
+                <div class="btn">
+                    <div>
+                        <div class="label">Upload</div>
+                        <input id="files" name="files" type="file" size="1" onchange="uploadFiles('files');" />
+                    </div>
+                </div>
+                <div>
+                    <a href="http://localhost:9099/api/file/GetFile?id=df6c2261-95ea-423d-ad2a-40d9cde62896" class="btn btn-block btn-link" >Download File</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="btn">
+                    <div>
+                        <div class="label">Upload Multiple</div>
+                        <input id="filesMultiple" name="filesMultiple" type="file" size="1" multiple onchange="uploadFilesMultiple('filesMultiple');" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" language="javascript">
+        function uploadFiles(inputId) {
+            var input = document.getElementById(inputId);
+            var files = input.files;
+            var formData = new FormData();
+            formData.append("files", files[0]);
+            $.ajax(
+                {
+                    url: 'http://localhost:9099/api/File/Upload',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("Files Uploaded!");
+                    }
+                }
+            );
+        }
+        function uploadFilesMultiple(inputId) {
+            var input = document.getElementById(inputId);
+            var files = input.files;
+            var formData = new FormData();
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]);
+            }
+            $.ajax(
+                {
+                    url: 'http://localhost:9099/api/File/UploadMultiple',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("Files Uploaded!");
+                    }
+                }
+            );
+        }
+    </script>
+}

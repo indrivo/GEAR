@@ -10,19 +10,25 @@ namespace ST.Files.Abstraction.Extension
     public static class ServiceCollectionExtensions
     {
 
-        public static IServiceCollection AddFileModuleStorage<TFileContext>(this IServiceCollection services) where TFileContext : DbContext, IFileContext
+        public static IServiceCollection AddFileService<TFileService>(this IServiceCollection services)
+            where TFileService : class , IFileService
         {
-            IFileContext ContextFactory(IServiceProvider x)
-            {
-                var context = x.GetService<TFileContext>();
-                IoC.RegisterScopedService<IFileContext, TFileContext>(context);
-                return context;
-            }
+            services.AddTransient<IFileService,TFileService>();
+            IoC.RegisterService<IFileService,TFileService>();
+            return services;
+        }
 
-            services.AddScoped(ContextFactory);
+
+        public static IServiceCollection AddFileModuleStorage<TFileContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
+            where TFileContext : DbContext, IFileContext
+        {
+            services.AddDbContext<TFileContext>(options);
             return services;
         }
 
 
     }
+
+
 }
+

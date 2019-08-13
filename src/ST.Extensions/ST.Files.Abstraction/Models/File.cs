@@ -13,11 +13,6 @@ namespace ST.Files.Abstraction.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Description
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
         /// Hash
         /// </summary>
         public byte[] Hash { get; set; }
@@ -30,7 +25,7 @@ namespace ST.Files.Abstraction.Models
         /// <summary>
         /// Size
         /// </summary>
-        public int Size { get; set; }
+        public long Size { get; set; }
 
 
     }

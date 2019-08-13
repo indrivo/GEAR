@@ -191,7 +191,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Files", "src\ST.Extensio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Files.Abstraction", "src\ST.Extensions\ST.Files.Abstraction\ST.Files.Abstraction.csproj", "{ADAEE436-BBF3-4E50-809F-A23046D9DDDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Files.Razor", "src\ST.Extensions\ST.Files.Razor\ST.Files.Razor.csproj", "{E6E47E03-41C8-4904-A708-2EE972FCFB69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Files.Razor", "src\ST.Extensions\ST.Files.Razor\ST.Files.Razor.csproj", "{D815C400-4859-49A3-AF42-761D6B2EEC85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

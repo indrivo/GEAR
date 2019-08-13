@@ -7,10 +7,10 @@ namespace ST.Files.Abstraction
 {
     public interface IFileService
     {
-        ResultModel<FileViewModel> GetFileById(Guid id);
-        ResultModel<Guid> AddFile(FileViewModel dto);
+        ResultModel<DownloadFileViewModel> GetFileById(Guid id);
+        ResultModel<Guid> AddFile(UploadFileViewModel dto);
         ResultModel<Guid> DeleteFile(Guid id);
         ResultModel<Guid> DeleteFilePermanent(Guid id);
-        ResultModel<List<FileViewModel>> GetFilesByIds(List<Guid> idsList);
+
     }
 }
