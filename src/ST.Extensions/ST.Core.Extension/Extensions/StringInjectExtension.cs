@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace ST.Core.Razor.Extensions
+namespace ST.Core.Extensions
 {
     public static class StringInjectExtension
     {

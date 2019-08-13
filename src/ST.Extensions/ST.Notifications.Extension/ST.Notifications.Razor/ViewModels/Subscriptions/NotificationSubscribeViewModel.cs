@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace ST.Notifications.Razor.ViewModels.Subscriptions
+{
+    public class NotificationSubscribeViewModel
+    {
+        /// <summary>
+        /// Event name
+        /// </summary>
+        public string Event { get; set; }
+
+        /// <summary>
+        /// Template value
+        /// </summary>
+        public string Template { get; set; }
+
+        /// <summary>
+        /// Roles
+        /// </summary>
+        public IEnumerable<Guid> Roles { get; set; }
+    }
+}

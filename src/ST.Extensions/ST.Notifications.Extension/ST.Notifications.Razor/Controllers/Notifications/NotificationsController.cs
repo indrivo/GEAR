@@ -6,7 +6,7 @@ using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
 
-namespace ST.Cms.Controllers.Notifications
+namespace ST.Notifications.Razor.Controllers.Notifications
 {
 	public class NotificationsController : Controller
 	{

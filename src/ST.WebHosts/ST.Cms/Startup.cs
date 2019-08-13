@@ -69,6 +69,10 @@ using ST.Report.Dynamic;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.Identity.Permissions.Abstractions.Extensions;
 using ST.Identity.Permissions;
+using ST.Notifications;
+using ST.Notifications.Abstractions.Extensions;
+using ST.Notifications.Data;
+using ST.Notifications.Razor.Extensions;
 
 namespace ST.Cms
 {
@@ -266,6 +270,16 @@ namespace ST.Cms
 
 			//--------------------------------------SignalR Module-------------------------------------
 			services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();
+
+			//--------------------------Notification subscriptions-------------------------------------
+			services.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
+				.AddNotificationModuleEvents()
+				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddNotificationUiModule();
 
 			//---------------------------Background services ------------------------------------------
 			//services.AddHostedService<HostedTimeService>();

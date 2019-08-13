@@ -120,6 +120,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization\ST.Localization.Services.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications.Razor\ST.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Processes.Extension\ST.Process.Razor\ST.Process.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />

@@ -39,9 +39,17 @@ namespace ST.Notifications.Hubs
         /// <returns></returns>
         public IEnumerable<Guid> GetUsersOnline()
         {
-            var users = _connections.Select(x => x.UserId).Distinct().ToList();
-            return users;
+            try
+            {
+                var users = _connections.Select(x => x.UserId).Distinct().ToList();
+                return users;
+            }
+            catch (Exception e)
+            {
+                return new List<Guid>();
+            }
         }
+
         /// <summary>
         /// Get sessions count
         /// </summary>
