@@ -46,9 +46,9 @@ namespace ST.Notifications
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<NotificationTemplate>> GetEventTemplate(string eventName)
+        public async Task<ResultModel<NotificationTemplate>> GetEventTemplateAsync(string eventName)
         {
-            Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEvent));
+            Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEventAsync));
             var result = new ResultModel<NotificationTemplate>();
             var template =
                 await _notificationDbContext.NotificationTemplates.FirstOrDefaultAsync(x =>
@@ -69,9 +69,9 @@ namespace ST.Notifications
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<ApplicationRole>>> GetRolesSubscribedToEvent(string eventName)
+        public async Task<ResultModel<IEnumerable<ApplicationRole>>> GetRolesSubscribedToEventAsync(string eventName)
         {
-            Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEvent));
+            Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEventAsync));
             var result = new ResultModel<IEnumerable<ApplicationRole>>();
             var subscribed = await _notificationDbContext.NotificationSubscriptions
                 .Where(x => x.NotificationEventId.Equals(eventName)).ToListAsync();
@@ -87,7 +87,7 @@ namespace ST.Notifications
         /// Seed events
         /// </summary>
         /// <returns></returns>
-        public async Task SeedEvents()
+        public async Task SeedEventsAsync()
         {
             var events = GetSystemEvents();
             var dbEvents = await _notificationDbContext.NotificationEvents.ToListAsync();
@@ -122,8 +122,9 @@ namespace ST.Notifications
         /// <param name="roles"></param>
         /// <param name="eventName"></param>
         /// <param name="template"></param>
+        /// <param name="subject"></param>
         /// <returns></returns>
-        public async Task<ResultModel> SubscribeRolesToEvent(IEnumerable<Guid> roles, string eventName, string template)
+        public async Task<ResultModel> SubscribeRolesToEventAsync(IEnumerable<Guid> roles, string eventName, string template, string subject)
         {
             var result = new ResultModel();
             if (string.IsNullOrEmpty(eventName)) return result;
@@ -135,12 +136,14 @@ namespace ST.Notifications
                 await _notificationDbContext.NotificationTemplates.AddAsync(new NotificationTemplate
                 {
                     NotificationEventId = eventName,
+                    Subject = subject,
                     Value = template
                 });
             }
             else
             {
                 notificationTemplate.Value = template;
+                notificationTemplate.Subject = subject;
                 _notificationDbContext.Update(notificationTemplate);
             }
 

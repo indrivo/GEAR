@@ -6,6 +6,10 @@ namespace ST.Notifications.Razor.ViewModels.Subscriptions
     public class NotificationSubscribeViewModel
     {
         /// <summary>
+        /// Notification subject
+        /// </summary>
+        public string Subject { get; set; }
+        /// <summary>
         /// Event name
         /// </summary>
         public string Event { get; set; }

@@ -12,9 +12,10 @@ namespace ST.Notifications.Abstractions
         IEnumerable<ApplicationRole> Roles { get; }
         IEnumerable<NotificationEvent> Events { get; }
         IEnumerable<NotificationEvent> GetSystemEvents();
-        Task SeedEvents();
-        Task<ResultModel<IEnumerable<ApplicationRole>>> GetRolesSubscribedToEvent(string eventName);
-        Task<ResultModel<NotificationTemplate>> GetEventTemplate(string eventName);
-        Task<ResultModel> SubscribeRolesToEvent(IEnumerable<Guid> roles, string eventName, string template);
+        Task SeedEventsAsync();
+        Task<ResultModel<IEnumerable<ApplicationRole>>> GetRolesSubscribedToEventAsync(string eventName);
+        Task<ResultModel<NotificationTemplate>> GetEventTemplateAsync(string eventName);
+        Task<ResultModel> SubscribeRolesToEventAsync(IEnumerable<Guid> roles, string eventName, string template,
+            string subject);
     }
 }

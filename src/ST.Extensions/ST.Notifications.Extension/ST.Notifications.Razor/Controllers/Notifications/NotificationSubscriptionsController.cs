@@ -3,13 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ST.Core;
 using ST.Core.Helpers;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Razor.ViewModels.Subscriptions;
 
 namespace ST.Notifications.Razor.Controllers.Notifications
 {
-    [Authorize]
+    [Authorize(Roles = Settings.SuperAdmin)]
     public class NotificationSubscriptionsController : Controller
     {
         /// <summary>
@@ -30,13 +31,20 @@ namespace ST.Notifications.Razor.Controllers.Notifications
         public IActionResult Index()
         {
             var events = _subscriptionRepository.Events
-                .Select(async x => new NotificationSubscribeGetViewModel
+                .Select(async x =>
                 {
-                    EventId = x.EventId,
-                    Template = (await _subscriptionRepository.GetEventTemplate(x.EventId))?.Result?.Value,
-                    EventGroupName = x.EventGroupName,
-                    SubscribedRoles = (await _subscriptionRepository.GetRolesSubscribedToEvent(x.EventId)).Result
+                    var template = await _subscriptionRepository.GetEventTemplateAsync(x.EventId);
+                    return new NotificationSubscribeGetViewModel
+                    {
+                        Subject = template?.Result?.Subject,
+                        EventId = x.EventId,
+                        Template = template?.Result?.Value,
+                        EventGroupName = x.EventGroupName,
+                        SubscribedRoles = (await _subscriptionRepository.GetRolesSubscribedToEventAsync(x.EventId))
+                            .Result
+                    };
                 }).Select(x => x.Result).OrderBy(x => x.EventGroupName).GroupBy(x => x.EventGroupName);
+
             var roles = _subscriptionRepository.Roles.OrderBy(x => x.Name);
             ViewBag.Events = events;
             ViewBag.Roles = roles;
@@ -54,7 +62,7 @@ namespace ST.Notifications.Razor.Controllers.Notifications
             if (model == null) return Json(new ResultModel());
             if (!ModelState.IsValid) return Json(new ResultModel());
             var response = await _subscriptionRepository
-                .SubscribeRolesToEvent(model.Roles, model.Event, model.Template);
+                .SubscribeRolesToEventAsync(model.Roles, model.Event, model.Template, model.Subject);
             return Json(response);
         }
     }

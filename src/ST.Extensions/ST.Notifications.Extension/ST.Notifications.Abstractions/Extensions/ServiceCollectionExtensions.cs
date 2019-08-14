@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using RazorLight;
 using ST.Core.Events;
 using ST.Core.Events.EventArgs;
 using ST.Core.Extensions;
@@ -55,24 +56,32 @@ namespace ST.Notifications.Abstractions.Extensions
                 if (string.IsNullOrEmpty(ev.EventName)) return;
                 var service = IoC.Resolve<INotificationSubscriptionRepository>();
                 var notifier = IoC.Resolve<INotify<ApplicationRole>>();
-                var subscribedRoles = await service.GetRolesSubscribedToEvent(ev.EventName);
+                var subscribedRoles = await service.GetRolesSubscribedToEventAsync(ev.EventName);
                 if (!subscribedRoles.IsSuccess) return;
-                var template = await service.GetEventTemplate(ev.EventName);
+                var template = await service.GetEventTemplateAsync(ev.EventName);
                 if (!template.IsSuccess) return;
                 var templateWithParams = template.Result.Value?.Inject(ev.EventArgs);
+                //var engine = new RazorLightEngineBuilder()
+                //    .UseMemoryCachingProvider()
+                //    .Build();
+
+                //var templateWithParams = await engine.CompileRenderAsync($"template_{ev.EventName}", template.Result.Value, ev.EventArgs);
+
                 var notification = new SystemNotifications
                 {
+                    Subject = template.Result.Subject,
                     Content = templateWithParams,
                     NotificationTypeId = NotificationType.Info
                 };
+
                 await notifier.SendNotificationAsync(subscribedRoles.Result, notification);
             };
 
             //seed events
-            SystemEvents.Application.OnApplicationStarted += async delegate (object sender, ApplicationStartedEventArgs args)
+            SystemEvents.Application.OnApplicationStarted += async delegate
             {
                 var service = IoC.Resolve<INotificationSubscriptionRepository>();
-                await service.SeedEvents();
+                await service.SeedEventsAsync();
             };
 
             return services;

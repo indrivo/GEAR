@@ -17,6 +17,12 @@ namespace ST.Notifications.Abstractions.Models.Data
         public NotificationEvent NotificationEvent { get; set; }
 
         /// <summary>
+        /// Subject
+        /// </summary>
+        [Required]
+        public string Subject { get; set; }
+
+        /// <summary>
         /// Html template
         /// </summary>
         [Required]

@@ -57,6 +57,10 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label>Subject</label>
+                                                            <textarea class="notificationSubject form-control">@ev.Subject</textarea>
+                                                        </div>
                                                         <h4>Template</h4>
                                                         <span>Available props: <code> @string.Join(", ", SystemEvents.Common.GetEventPropNames(ev.EventId)) </code> </span>
                                                         <textarea class="templateValue">@ev.Template</textarea>

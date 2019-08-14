@@ -46,8 +46,9 @@ namespace ST.Email
         /// <param name="emails"></param>
         /// <param name="subject"></param>
         /// <param name="message"></param>
+        /// <param name="isBodyHtml"></param>
         /// <returns></returns>
-        public virtual async Task SendEmailAsync(IEnumerable<string> emails, string subject, string message)
+        public virtual async Task SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true)
         {
             if (!_options.Value.Enabled) return;
             var settings = _options.Value;
@@ -69,7 +70,9 @@ namespace ST.Email
                         DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure,
                         From = new MailAddress(settings.NetworkCredential.Email),
                         Subject = subject,
-                        Body = message
+                        Body = message,
+                        Priority = MailPriority.High,
+                        IsBodyHtml = isBodyHtml
                     };
 
                     foreach (var emailTo in emails)
