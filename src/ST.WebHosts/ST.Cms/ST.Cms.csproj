@@ -45,7 +45,7 @@
 	<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
 	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="4.0.1" />
 	<PackageReference Include="System.Drawing.Common" Version="4.5.1" />
-	<!--<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />-->
+	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.76" />
   </ItemGroup>
   <ItemGroup>
 	<DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
@@ -149,6 +149,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Files.Razor\ST.Files.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Files\ST.Files.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Form.Razor\ST.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.IdentityServer4\ST.Identity.IdentityServer4.csproj" />
@@ -173,6 +175,10 @@
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\chosen-jquery\lib\" />
+    <Folder Include="wwwroot\lib\popper.js\" />
   </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>

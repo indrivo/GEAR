@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div>
-                    <a href="http://localhost:9099/api/file/GetFile?id=df6c2261-95ea-423d-ad2a-40d9cde62896" class="btn btn-block btn-link" >Download File</a>
+                    <a href="http://localhost:9099/api/file/GetFile?id=" class="btn btn-block btn-link" >Download File</a>
                 </div>
             </div>
             <div class="card-body">
@@ -25,6 +25,11 @@
                     </div>
                 </div>
             </div>
+            <div class="card-body">
+                <button  class="btn btn-block btn-inverse" onclick="deleteLogical($('#deleteTxt').val())">Delete logical</button>
+                <button  class="btn btn-block btn-inverse" onclick="deletePermanent($('#deleteTxt').val())">Delete permanent</button>
+                <input type="text" id="deleteTxt"/>
+            </div>>
         </div>
     </div>
 </div>
@@ -35,6 +40,7 @@
 @section Scripts{
     <script src="jquery-3.2.1.min.js"></script>
     <script type="text/javascript" language="javascript">
+        var url = 'http://localhost:9099/api/File/';
         function uploadFiles(inputId) {
             var input = document.getElementById(inputId);
             var files = input.files;
@@ -42,17 +48,17 @@
             formData.append("files", files[0]);
             $.ajax(
                 {
-                    url: 'http://localhost:9099/api/File/Upload',
+                    url: url+ 'Upload',
                     data: formData,
                     processData: false,
                     contentType: false,
                     type: "POST",
                     success: function (data) {
-                        alert("Files Uploaded!");
+                        alert("Files Uploaded with id: " );
                     }
                 }
             );
-        }
+        };
         function uploadFilesMultiple(inputId) {
             var input = document.getElementById(inputId);
             var files = input.files;
@@ -62,13 +68,41 @@
             }
             $.ajax(
                 {
-                    url: 'http://localhost:9099/api/File/UploadMultiple',
+                    url: url + 'UploadMultiple',
                     data: formData,
                     processData: false,
                     contentType: false,
                     type: "POST",
                     success: function (data) {
                         alert("Files Uploaded!");
+                    }
+                }
+            );
+        };
+        function deleteLogical(param) {
+            $.ajax(
+                {
+                    url:  url +'/Delete',
+                    data: {id : param},
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("File deleted!");
+                    }
+                }
+            );
+        };
+        function deletePermanent(param) {
+            $.ajax(
+                {
+                    url: url + 'DeletePermanent',
+                    data: {id : param},
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("File deleted!");
                     }
                 }
             );

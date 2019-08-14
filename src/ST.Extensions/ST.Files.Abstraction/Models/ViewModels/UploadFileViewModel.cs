@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace ST.Files.Abstraction.ViewModels
+namespace ST.Files.Abstraction.Models.ViewModels
 {
     public class UploadFileViewModel
     {

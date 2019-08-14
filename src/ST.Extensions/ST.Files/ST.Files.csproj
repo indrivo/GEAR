@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>ST.Files</AssemblyName>
+    <RootNamespace>ST.Files</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

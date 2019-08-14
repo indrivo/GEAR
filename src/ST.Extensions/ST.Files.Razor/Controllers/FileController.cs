@@ -1,30 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ST.Core.BaseControllers;
 using ST.Core.Helpers;
 using ST.Files.Abstraction;
-using ST.Files.Abstraction.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Internal;
+using ST.Files.Abstraction.Models.ViewModels;
+
 
 namespace ST.Files.Razor.Controllers
 {
-   public class FileController : Controller
-   {
+    public class FileController : Controller
+    {
         /// <summary>
         /// Inject file service
         /// </summary>
-        private readonly IFileService _fileService;
-        public FileController(IFileService fileService)
+        private readonly IFileManager _fileManager;
+
+        public FileController(IFileManager fileManager)
         {
-            _fileService = fileService;
+            _fileManager = fileManager;
         }
 
-
-        public IActionResult Index()
+        public IActionResult File()
         {
             return View();
         }
@@ -38,13 +34,12 @@ namespace ST.Files.Razor.Controllers
         [HttpGet]
         public FileResult GetFile(Guid id)
         {
-            var response = _fileService.GetFileById(id);
-            return File(response.Result.EncryptedFile,response.Result.FileExtension,response.Result.FileName);
-
+            var response = _fileManager.GetFileById(id);
+            return response.Result != null ? File(response.Result.EncryptedFile, "application/octet-stream", response.Result.FileName) : null;
         }
 
         /// <summary>
-        /// Get file
+        /// Upload/Update file
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -57,33 +52,26 @@ namespace ST.Files.Razor.Controllers
                 File = Request.Form.Files.FirstOrDefault(),
                 Id = id
             };
-            var response = _fileService.AddFile(file);
+            var response = _fileManager.AddFile(file);
             return Json(response);
         }
 
         /// <summary>
-        /// Get file
+        /// Multiple Upload
         /// </summary>
-        /// <param name="id"></param>
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
         [HttpPost]
         public JsonResult UploadMultiple()
         {
-            var response = new List<ResultModel<Guid>>();
-            foreach (var item in Request.Form.Files)
+            var response = Request.Form.Files.Select(item => new UploadFileViewModel
             {
-                var file = new UploadFileViewModel
-                {
-                    File = item,
-                    Id = Guid.Empty
-                };
-                response.Add(_fileService.AddFile(file));
-            }
+                File = item,
+                Id = Guid.Empty
+            }).Select(file => _fileManager.AddFile(file)).ToList();
+
             return Json(response);
         }
-
-
 
         /// <summary>
         /// Delete file logical
@@ -91,12 +79,29 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
-        [ValidateAntiForgeryToken]
-        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(string id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete form!", success = false });
-            var res = _fileService.DeleteFile(Guid.Parse(id));
+            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete file!", success = false });
+
+            var res = _fileManager.DeleteFile(Guid.Parse(id));
+            return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
+        }
+
+        /// <summary>
+        /// Restore File
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("api/[controller]/[action]")]
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public JsonResult Restore(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to restore file!", success = false });
+
+            var res = _fileManager.RestoreFile(Guid.Parse(id));
             return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
         }
 
@@ -106,13 +111,14 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
-        [ValidateAntiForgeryToken]
-        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult DeletePermanent(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete form!", success = false });
-            var res = _fileService.DeleteFilePermanent(Guid.Parse(id));
+
+            var res = _fileManager.DeleteFilePermanent(Guid.Parse(id));
             return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
         }
-   }
+    }
 }

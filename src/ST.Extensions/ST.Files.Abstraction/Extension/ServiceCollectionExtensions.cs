@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core.Helpers;
@@ -9,12 +7,11 @@ namespace ST.Files.Abstraction.Extension
 {
     public static class ServiceCollectionExtensions
     {
-
         public static IServiceCollection AddFileService<TFileService>(this IServiceCollection services)
-            where TFileService : class , IFileService
+            where TFileService : class , IFileManager
         {
-            services.AddTransient<IFileService,TFileService>();
-            IoC.RegisterService<IFileService,TFileService>();
+            services.AddTransient<IFileManager, TFileService>();
+            IoC.RegisterService<IFileManager, TFileService>();
             return services;
         }
 
@@ -25,8 +22,6 @@ namespace ST.Files.Abstraction.Extension
             services.AddDbContext<TFileContext>(options);
             return services;
         }
-
-
     }
 
 

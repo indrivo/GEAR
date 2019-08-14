@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ST.Core;
+﻿using ST.Core;
 
 namespace ST.Files.Abstraction.Models
 {
-   public class File : BaseModel
+    public class File : BaseModel
     {
         /// <summary>
         /// File name
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// Hash
-        /// </summary>
-        public byte[] Hash { get; set; }
 
         /// <summary>
         /// Description

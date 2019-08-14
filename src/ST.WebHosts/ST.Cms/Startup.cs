@@ -48,6 +48,9 @@ using ST.Entities.Abstractions.Extensions;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Entities.Security.Extensions;
+using ST.Files;
+using ST.Files.Abstraction.Extension;
+using ST.Files.Data;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
@@ -289,6 +292,15 @@ namespace ST.Cms
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
 
+			//------------------------------------File Module-------------------------------------
+			services
+				.AddFileService<FileManager<FileDbContext>>()
+				.AddFileModuleStorage<FileDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			});
+
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 
@@ -308,7 +320,7 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
-
+			
 
 			//---------------------------------------Report Module-------------------------------------
 			services.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()

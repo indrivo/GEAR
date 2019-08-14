@@ -35,6 +35,10 @@ namespace ST.Cms.Controllers
 			_context = context;
 		}
 
+		public IActionResult File()
+		{
+			return View();
+		}
 		/// <summary>
 		/// Dashboard view
 		/// </summary>

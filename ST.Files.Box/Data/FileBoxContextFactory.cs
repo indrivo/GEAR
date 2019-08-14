@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using ST.Core.Helpers.DbContexts;
 
-namespace ST.Files.Data
+namespace ST.Files.Box.Data
 {
-    public class FileServiceExtension : IDesignTimeDbContextFactory<FileDbContext>
+    public class FileBoxContextFactory : IDesignTimeDbContextFactory<FileBoxDbContext>
     {
         /// <inheritdoc />
         /// <summary>
@@ -11,9 +11,9 @@ namespace ST.Files.Data
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public FileDbContext CreateDbContext(string[] args)
+        public FileBoxDbContext CreateDbContext(string[] args)
         {
-            return DbContextFactory<FileDbContext, FileDbContext>.CreateFactoryDbContext();
+            return DbContextFactory<FileBoxDbContext, FileBoxDbContext>.CreateFactoryDbContext();
         }
     }
 }

@@ -4,9 +4,9 @@ using ST.Core.Abstractions;
 using ST.Files.Abstraction;
 using ST.Files.Abstraction.Models;
 
-namespace ST.Files.Data
+namespace ST.Files.Box.Data
 {
-    public class FileDbContext : TrackerDbContext, IFileContext
+    public class FileBoxDbContext : TrackerDbContext, IFileContext
     {
         /// <summary>
         /// Schema
@@ -19,7 +19,7 @@ namespace ST.Files.Data
         /// Options
         /// </summary>
         /// <param name="options"></param>
-        public FileDbContext(DbContextOptions options)
+        public FileBoxDbContext(DbContextOptions options)
             : base(options)
         {
             //TODO: Do some actions on context instance
@@ -28,7 +28,7 @@ namespace ST.Files.Data
         /// <summary>
         /// Files
         /// </summary>
-        public virtual DbSet<FileStorage> Files { get; set; }
+        public virtual DbSet<FileBox> FilesBox { get; set; }
 
 
         /// <inheritdoc />

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ST.Files.Abstraction.ViewModels
+﻿namespace ST.Files.Abstraction.Models.ViewModels
 {
     public class DownloadFileViewModel
     {
@@ -15,6 +11,12 @@ namespace ST.Files.Abstraction.ViewModels
         /// FileExtension
         /// </summary>
         public string FileName { get; set; }
+
+
+        /// <summary>
+        /// FileExtension
+        /// </summary>
+        public string Path { get; set; }
 
         /// <summary>
         /// Byte array of file
