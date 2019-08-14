@@ -143,8 +143,13 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
         {
+            var anonymousRole = "Anonymous User";
             if (string.IsNullOrEmpty(menuItemAllowedRoles)) return false;
-            if (!userRoles.Any()) return false;
+            if (!userRoles.Any() || !userRoles.Contains(anonymousRole))
+            {
+                userRoles.Add(anonymousRole);
+            }
+
             try
             {
                 var menuItemRoles = menuItemAllowedRoles.Split('#');
@@ -179,7 +184,7 @@ namespace ST.PageRender.Razor.Services
             if (!match.IsSuccess || menu == null) return new ResultModel<Guid>();
             if (!roles.Contains("Administrator")) roles.Add("Administrator");
             menu.AllowedRoles = string.Join("#", roles);
-            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menuId.ToString()));
+            await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menu.MenuId.ToString()));
             return await _service.UpdateWithReflection(menu);
         }
     }

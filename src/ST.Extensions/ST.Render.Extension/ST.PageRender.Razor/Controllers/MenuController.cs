@@ -252,15 +252,15 @@ namespace ST.PageRender.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> LoadMenuItems(DTParameters param, Guid menuId, Guid? parentId = null)
         {
-            var filtered = await _service.Filter<MenuItem>(param.Search.Value, param.SortOrder, param.Start,
+            var (data, count) = await _service.Filter<MenuItem>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length, x => x.MenuId.Equals(menuId) && x.ParentMenuItemId.Equals(parentId));
 
             var finalResult = new DTResult<MenuItem>
             {
                 Draw = param.Draw,
-                Data = filtered.Item1.OrderBy(x => x.Order).ToList(),
-                RecordsFiltered = filtered.Item2,
-                RecordsTotal = filtered.Item1.Count()
+                Data = data.OrderBy(x => x.Order).ToList(),
+                RecordsFiltered = count,
+                RecordsTotal = data.Count()
             };
             return Json(finalResult);
         }

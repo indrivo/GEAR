@@ -89,8 +89,11 @@ namespace ST.Entities.Data
             var dbResult = await _context.SaveAsync();
             if (dbResult.IsSuccess)
             {
-                var response = _tablesService.CreateSqlTable(table, _connectionString);
-                if (!response.Result) return;
+                if (!table.IsPartOfDbContext)
+                {
+                    var response = _tablesService.CreateSqlTable(table, _connectionString);
+                    if (!response.Result) return;
+                }
                 await SyncEntityFieldsAsync(tableModel, table);
             }
         }

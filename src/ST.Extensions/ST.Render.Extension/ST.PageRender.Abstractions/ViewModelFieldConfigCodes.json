@@ -12,8 +12,6 @@
       "Code": 1003,
       "Name": "ManyToMany_Second_Target_PropertyName"
     },
-
-
     {
       "Code": 2001,
       "Name": "ManyToMany_Storage_Target_EntitySchema"
