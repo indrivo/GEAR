@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using ST.Core.Helpers.DbContexts;
 
-namespace ST.Notifications.Data
+namespace ST.Entities.Security.Data
 {
     /// <summary>
     /// Do not remove this
     /// It is used for generate migrations
     /// </summary>
-    public class NotificationDbContextFactory : IDesignTimeDbContextFactory<NotificationDbContext>
+    public class EntitySecurityDbContextFactory : IDesignTimeDbContextFactory<EntitySecurityDbContext>
     {
         /// <inheritdoc />
         /// <summary>
@@ -15,9 +15,9 @@ namespace ST.Notifications.Data
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public NotificationDbContext CreateDbContext(string[] args)
+        public EntitySecurityDbContext CreateDbContext(string[] args)
         {
-            return DbContextFactory<NotificationDbContext, NotificationDbContext>.CreateFactoryDbContext();
+            return DbContextFactory<EntitySecurityDbContext, EntitySecurityDbContext>.CreateFactoryDbContext();
         }
     }
 }

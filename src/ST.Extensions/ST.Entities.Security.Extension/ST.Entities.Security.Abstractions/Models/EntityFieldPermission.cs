@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using ST.Core;
 using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Security.Enums;
+using ST.Entities.Security.Abstractions.Enums;
 
-namespace ST.Entities.Security.Models
+namespace ST.Entities.Security.Abstractions.Models
 {
     public class EntityFieldPermission : BaseModel
     {

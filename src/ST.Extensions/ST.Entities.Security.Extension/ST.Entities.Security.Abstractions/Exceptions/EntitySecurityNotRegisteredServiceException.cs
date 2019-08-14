@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ST.Entities.Security.Exceptions
+namespace ST.Entities.Security.Abstractions.Exceptions
 {
     public class EntitySecurityNotRegisteredServiceException : Exception
     {

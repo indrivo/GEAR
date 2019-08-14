@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ST.Entities.Security.Enums
+namespace ST.Entities.Security.Abstractions.Enums
 {
     public enum FieldAccessType
     {
@@ -8,6 +8,8 @@ namespace ST.Entities.Security.Enums
         Read,
         Update,
         Delete,
+        Restore,
+        DeletePermanent,
         Owner,
         InlineEdit,
         Disable
@@ -23,9 +25,11 @@ namespace ST.Entities.Security.Enums
         Update,
         [Display(Name = "Delete")]
         Delete,
+        [Display(Name = "Delete Permanent")]
+        DeletePermanent,
+        [Display(Name = "Restore")]
+        Restore,
         [Display(Name = "Write")]
-        Write,
-        [Display(Name = "Owner")]
-        Owner
+        Write
     }
 }

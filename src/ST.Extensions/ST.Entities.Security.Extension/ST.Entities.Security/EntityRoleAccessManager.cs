@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Entities.Security.Abstractions;
+using ST.Entities.Security.Abstractions.Enums;
 using ST.Entities.Security.Data;
-using ST.Entities.Security.Enums;
 using ST.Identity.Abstractions;
 
-namespace ST.Entities.Security.Services
+namespace ST.Entities.Security
 {
-    public class EntityAclService<TAclContext, TIdentityContext> : IEntityAclService
+    public class EntityRoleAccessManager<TAclContext, TIdentityContext> : IEntityRoleAccessManager
         where TAclContext : EntitySecurityDbContext
         where TIdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
@@ -32,7 +32,7 @@ namespace ST.Entities.Security.Services
         /// </summary>
         /// <param name="context"></param>
         /// <param name="identityContext"></param>
-        public EntityAclService(TAclContext context, TIdentityContext identityContext)
+        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext)
         {
             _context = context;
             _identityContext = identityContext;
@@ -78,8 +78,22 @@ namespace ST.Entities.Security.Services
             var accesses = await GetAccessControl(userRoles, entityId);
             if (accesses == null) return false;
             var grant = accesses.Contains(EntityAccessType.FullControl)
-                         || accesses.Contains(EntityAccessType.Owner)
-                         || accesses.Contains(EntityAccessType.Read);
+                        || accesses.Contains(EntityAccessType.Read);
+            return grant;
+        }
+
+        /// <summary>
+        /// Have delete permanent
+        /// </summary>
+        /// <param name="userRoles"></param>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> HaveDeletePermanentAccess(IEnumerable<string> userRoles, Guid entityId)
+        {
+            var accesses = await GetAccessControl(userRoles, entityId);
+            if (accesses == null) return false;
+            var grant = accesses.Contains(EntityAccessType.FullControl)
+                        || accesses.Contains(EntityAccessType.DeletePermanent);
             return grant;
         }
 
@@ -94,8 +108,22 @@ namespace ST.Entities.Security.Services
             var accesses = await GetAccessControl(userRoles, entityId);
             if (accesses == null) return false;
             var grant = accesses.Contains(EntityAccessType.FullControl)
-                        || accesses.Contains(EntityAccessType.Owner)
                         || accesses.Contains(EntityAccessType.Delete);
+            return grant;
+        }
+
+        /// <summary>
+        /// Have access 
+        /// </summary>
+        /// <param name="userRoles"></param>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> HaveRestoreAccess(IEnumerable<string> userRoles, Guid entityId)
+        {
+            var accesses = await GetAccessControl(userRoles, entityId);
+            if (accesses == null) return false;
+            var grant = accesses.Contains(EntityAccessType.FullControl)
+                        || accesses.Contains(EntityAccessType.Restore);
             return grant;
         }
 
@@ -110,7 +138,6 @@ namespace ST.Entities.Security.Services
             var accesses = await GetAccessControl(userRoles, entityId);
             if (accesses == null) return false;
             var grant = accesses.Contains(EntityAccessType.FullControl)
-                        || accesses.Contains(EntityAccessType.Owner)
                         || accesses.Contains(EntityAccessType.Update);
             return grant;
         }
@@ -126,8 +153,23 @@ namespace ST.Entities.Security.Services
             var accesses = await GetAccessControl(userRoles, entityId);
             if (accesses == null) return false;
             var grant = accesses.Contains(EntityAccessType.FullControl)
-                        || accesses.Contains(EntityAccessType.Owner)
                         || accesses.Contains(EntityAccessType.Write);
+            return grant;
+        }
+
+        /// <summary>
+        /// Have access
+        /// </summary>
+        /// <param name="userRoles"></param>
+        /// <param name="entityId"></param>
+        /// <param name="accessType"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> HaveAccess(IEnumerable<string> userRoles, Guid entityId, EntityAccessType accessType = EntityAccessType.Read)
+        {
+            var accesses = await GetAccessControl(userRoles, entityId);
+            if (accesses == null) return false;
+            var grant = accesses.Contains(EntityAccessType.FullControl)
+                        || accesses.Contains(accessType);
             return grant;
         }
     }

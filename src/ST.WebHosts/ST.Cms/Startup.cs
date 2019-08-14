@@ -47,7 +47,10 @@ using ST.Report.Dynamic.Data;
 using ST.Entities.Abstractions.Extensions;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
-using ST.Entities.Security.Extensions;
+using ST.Entities.Security;
+using ST.Entities.Security.Abstractions.Extensions;
+using ST.Entities.Security.Data;
+using ST.Entities.Security.Razor.Extensions;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
@@ -262,8 +265,16 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddEntityModuleEvents()
-				.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
+				.AddEntityModuleEvents();
+
+			//------------------------------Entity Security Module-------------------------------------
+			services.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
+				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddEntitySecurityRazorUIModule();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -279,7 +290,7 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddNotificationUiModule();
+				.AddNotificationRazorUIModule();
 
 			//---------------------------Background services ------------------------------------------
 			//services.AddHostedService<HostedTimeService>();

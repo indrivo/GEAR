@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Security.Abstractions;
-using ST.Entities.Security.Enums;
-using ST.Entities.Security.Exceptions;
+using ST.Entities.Security.Abstractions.Enums;
+using ST.Entities.Security.Abstractions.Exceptions;
 
 namespace ST.Entities.Security.Extensions
 {
@@ -19,9 +19,9 @@ namespace ST.Entities.Security.Extensions
         /// <returns></returns>
         public static async Task<IEnumerable<EntityAccessType>> GetUserRolesEntityAccesses(this TableModel table, IEnumerable<string> roles)
         {
-            var accessService = IoC.Resolve<IEntityAclService>();
+            var accessService = IoC.Resolve<IEntityRoleAccessManager>();
             if (accessService == null) throw
-                new EntitySecurityNotRegisteredServiceException($"{nameof(IEntityAclService)} is not registered!");
+                new EntitySecurityNotRegisteredServiceException($"{nameof(IEntityRoleAccessManager)} is not registered!");
             if (table == null) throw
                 new NullReferenceException($"Table is null on {nameof(EntityAclExtensions)} for {nameof(GetUserRolesEntityAccesses)} method body");
             return await accessService.GetAccessControl(roles, table.Id);

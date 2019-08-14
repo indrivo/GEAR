@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using ST.Core;
-using ST.Entities.Security.Enums;
+using ST.Entities.Security.Abstractions.Enums;
 
-namespace ST.Entities.Security.Models
+namespace ST.Entities.Security.Abstractions.Models
 {
     public class EntityPermissionAccess : BaseModel
     {
@@ -14,6 +14,7 @@ namespace ST.Entities.Security.Models
         public EntityAccessType AccessType { get; set; }
 
         public EntityPermission EntityPermission { get; set; }
+
         public Guid EntityPermissionId { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
-using ST.Entities.Security.Models;
+using ST.Entities.Security.Abstractions.Models;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Abstractions.Models.PagesACL;

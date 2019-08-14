@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Core;
-using ST.Entities.Abstractions.Models.Tables;
 
-namespace ST.Entities.Security.Models
+namespace ST.Entities.Security.Abstractions.Models
 {
     public class EntityPermission : BaseModel
     {
@@ -20,9 +19,8 @@ namespace ST.Entities.Security.Models
         public Guid ApplicationRoleId { get; set; }
 
         /// <summary>
-        /// Reference to entity
+        /// Table id
         /// </summary>
-        public TableModel TableModel { get; set; }
         [Required]
         public Guid TableModelId { get; set; }
     }
