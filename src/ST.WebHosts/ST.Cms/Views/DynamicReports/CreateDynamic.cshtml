@@ -1,0 +1,434 @@
+@{
+	ViewData["Title"] = "CreateDynamic";
+}
+
+<h2>Create Dynamic Report:</h2>
+
+<div class="card mb-3">
+	<div class="card-header">
+		Data options
+	</div>
+	<div class="card-block pl-3 pt-2">
+		<div class="row">
+			<div class="col-2">
+				<div class="form-group">
+					<label for="tableSelect">Select table:</label>
+					<select class="form-control tableSelect" id="tableSelect"></select>
+				</div>
+			</div>
+			<!--#region Relationships-->
+			<div class="col-md-1">
+				<div class="form-group">
+					<label>Relationships : </label>
+					<br />
+					<button class="btn btn-info text-white" id="AddRelationship"
+							role="button">
+						Add Relationship
+					</button>
+				</div>
+			</div>
+			<div class="col-6" id="pnlRelationships"></div>
+			<!--#endregion Relationships-->
+		</div>
+	</div>
+</div>
+
+
+<div class="card">
+	<div class="card-header">
+		Display options
+	</div>
+	<div class="card-block pl-3 pt-2">
+		<div class="row">
+			<div class="col-3">
+				<div class="form-group">
+					<label for="fieldsSelect">Select fields:</label>
+					<select class="form-control fieldsSelect" id="fieldsSelect"></select>
+				</div>
+			</div>
+			<!--#region Relationships-->
+			<div class="col-md-1">
+				<div class="form-group">
+					<label>Filters : </label>
+					<br />
+					<button class="btn btn-info text-white" id="AddFilter"
+							role="button">
+						Add Filter
+					</button>
+				</div>
+			</div>
+			<div class="col-6" id="pnlFilters"></div>
+			<!--#endregion Relationships-->
+		</div>
+	</div>
+</div>
+
+
+
+<style>
+	#select2-fieldsSelect-results ul li {
+		padding-top: 2px !important;
+		padding-bottom: 2px !important;
+	}
+
+	.select2-container--default .select2-results__group {
+		font-weight: bold;
+	}
+
+	.select2-selection--single .select2-selection__rendered {
+		line-height: 34px !important;
+	}
+
+	.select2-container .select2-selection--single {
+		height: 37px !important;
+	}
+
+	.select2-selection__arrow {
+		height: 36px !important;
+	}
+</style>
+
+
+
+
+
+@section Scripts
+{
+	<script>
+		$(document).ready(function () {
+			var relationId = 0;
+			var filterId = 0;
+			var items = [];
+
+			$('#tableSelect').select2({
+				placeholder: " - Select tables - ",
+				multiple: true
+			}).change(function () {
+				items = $(this).val();
+				SetRelValues();
+
+				var allFields = [];
+				var tableRequests = [];
+
+				$.each(items, function (i, option) {
+					tableRequests.push(prepareFields(allFields, option));
+				});
+
+				$.when.apply($, tableRequests).done(function () {
+					fieldPreparationDone(allFields);
+				});
+
+
+			});
+
+			$('#fieldsSelect').select2({
+				placeholder: " - Select fields - ",
+				templateSelection: function(item) {
+					var $option = $(item.element);
+					var $optGroup = $option.parent();
+					return $optGroup.attr('label') + ' (' + item.text + ')';
+				},
+				multiple: true
+			}).change(function () {
+				SetFilterValues();
+			});
+
+			updateReportList("@Url.Action("GetTablesAjax", "DynamicReports")", null, "tableSelect");
+
+
+			$("#AddFilter").click(function () {
+				var currentHtml = '<div class=\"col-12 row m-t-20 changedRow\"><div class=\"col-md-2\">' +
+					'<div class=\"form-group\"><label>Type:</label><select class=\"form-control filterTypeSelector\">' +
+					'<option></option><option>ORDER BY</option><option>GROUP BY</option><option>AND</option><option>OR</option></select></div></div><div class=\"col-md-3\"><div class=\"form-group\">' +
+					'<label>Column:</label><select class=\"form-control filterColumnSelector\"></select></div></div><div class=\"col-2\">' +
+					'<div class=\"form-group\"><label>Operation:</label><select class=\"form-control filterOperationSelector\"><option></option><option>=</option><option>!=</option><option>MIN</option><option>MAX</option><option>AVG</option></select></div></div>' +
+					'<div class=\"col-md-3\"><div class=\"form-group\"><label>Value:</label><input class=\"form-control filterValueSelector\"/></div></div><div class=\"col-2\">' +
+					'<button class=\"btn btn-danger m-t-30 removeFilter\">Remove Filter</button></div></div>';
+				$("#filterCollapse").append(currentHtml);
+			});
+
+			$("#AddRelationship").click(function () {
+				relationId++;
+				var currentHtml = `
+				<div class="row">
+					<div class="col-3">
+						<div class="form-group">
+							<label for="primaryKeyTableSelect`+relationId+`">Primary key table:</label>
+							<select class="form-control primaryKeyTableSelect" id="primaryKeyTableSelect`+relationId+`"><option></option></select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label for="foreignKeyTableSelect`+relationId+`">Foreign key table:</label>
+							<select class="form-control foreignKeyTableSelect" id="foreignKeyTableSelect`+relationId+`"><option></option></select>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="form-group">
+							<label for="foreignKeySelect`+relationId+`">Foreign key:</label>
+							<select class="form-control foreignKeySelect" id="foreignKeySelect`+relationId+`"><option></option></select>
+						</div>
+					</div>
+					<div class="col-2">
+						<label>&nbsp;</label>
+						<button class="btn btn-danger removeRelationship">Remove Relationship</button>
+					</div>
+				</div>`;
+				$("#pnlRelationships").append(currentHtml);
+				$('#primaryKeyTableSelect'+relationId).select2({
+					placeholder: " - Select table - ",
+					multiple: false
+				});
+				$('#foreignKeyTableSelect'+relationId).select2({
+					placeholder: " - Select table - ",
+					multiple: false
+				}).change(function () {
+					var data = { tableName : $(this).val() };
+					updateReportList("@Url.Action("GetTableColumnsAjax", "DynamicReports")", data, "foreignKeySelect"+relationId);
+				});
+				$('#foreignKeySelect'+relationId).select2({
+					placeholder: " - Select key - ",
+					multiple: false
+				});
+
+				SetRelValues();
+			});
+
+
+			$("#AddFilter").click(function () {
+				filterId++;
+				var currentHtml = `
+				<div class="row">
+					<div class="col-12 row m-t-20 changedRow">
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Field:</label>
+								<select class="form-control filterColumnSelector" id="filterColumnSelector`+filterId+`">
+								</select>
+							</div>
+						</div>
+						<div class="col-2">
+							<div class="form-group">
+								<label>Operation:</label>
+								<select class="form-control filterOperationSelector" id="filterOperationSelector`+filterId+`">
+									<option></option>
+									<option>=</option>
+									<option>!=</option>
+									<option>></option>
+									<option><</option>
+									<option>>=</option>
+									<option><=</option>
+									<option>Contains</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Value:</label>
+								<input class="form-control filterValueSelector" id="filterValueSelector`+filterId+`">
+							</div>
+						</div>
+						<div class="col-2">
+							<label>&nbsp;</label>
+							<button class="btn btn-danger removeFilter">Remove Filter</button>
+						</div>
+					</div>
+				</div>`;
+				$("#pnlFilters").append(currentHtml);
+				$('#filterColumnSelector'+filterId).select2({
+					placeholder: " - Select field - ",
+					multiple: false
+				});
+				$('#filterOperationSelector'+filterId).select2({
+					placeholder: " - Select operation - ",
+					multiple: false
+				});
+				SetFilterValues();
+			});
+
+
+			$("#pnlRelationships").on("click", ".removeRelationship", function () {
+				var parent = $(this).parent().parent();
+				Swal.fire({
+					title: 'Are you sure?',
+					text: "You won't be able to revert this!",
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.value) {
+						Swal.fire(
+							'Deleted!',
+							'Your file has been deleted.',
+							'success'
+						);
+						$(parent).remove();
+					}
+				});
+			});
+
+			$("#pnlFilters").on("click", ".removeFilter", function () {
+				var parent = $(this).parent().parent();
+				Swal.fire({
+					title: 'Are you sure?',
+					text: "You won't be able to revert this!",
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.value) {
+						Swal.fire(
+							'Deleted!',
+							'Your file has been deleted.',
+							'success'
+						);
+						$(parent).remove();
+					}
+				});
+			});
+
+			//#region Functions
+
+
+			function updateReportList(action, data, selectOptions) {
+				$("#" + selectOptions).html("");
+				var callback = function (data) {
+					var s;
+					for (let i = 0; i < data.length; i++) {
+						s += `<option value="${data[i]}">${data[i]}</option>`;
+					}
+					$("#" + selectOptions).html(s);
+				};
+				GetDataList(action, data, callback);
+			}
+
+			function GetDataList(action, data, callback) {
+				var requestAction = action;
+				$.ajax({
+					type: "POST",
+					url: requestAction,
+					dataType: 'json',
+					data: data,
+					success: function (data) {
+						callback(data);
+					}
+				});
+			}
+
+			function SetRelValues() {
+				$('#pnlRelationships > .row').each(function () {
+
+					var primaryKeyTableSelect = $(this).find(".primaryKeyTableSelect");
+					var foreignKeyTableSelect = $(this).find(".foreignKeyTableSelect");
+
+					var prevValuePKT = primaryKeyTableSelect.val();
+
+					primaryKeyTableSelect.val(null).empty();
+
+					$.each(items, function (i, option) {
+						var newOption = new Option(option, option, false, false);
+						primaryKeyTableSelect.append(newOption).trigger('change');
+						if (prevValuePKT == option) {
+							primaryKeyTableSelect.val(option);
+						}
+					});
+
+					var prevValueFKT = foreignKeyTableSelect.val();
+
+					foreignKeyTableSelect.val(null).empty();
+
+					$.each(items, function (i, option) {
+						var newOption = new Option(option, option, false, false);
+						foreignKeyTableSelect.append(newOption).trigger('change');
+						if (prevValueFKT == option) {
+							foreignKeyTableSelect.val(option);
+						}
+					});
+
+				});
+			}
+
+			function SetFilterValues() {
+				$('#pnlFilters > .row').each(function () {
+
+					var fields = $('#fieldsSelect').select2('data');
+
+					var filterColumnSelector = $(this).find(".filterColumnSelector");
+
+					var prevValueFCS = filterColumnSelector.val();
+
+					filterColumnSelector.val(null).empty();
+
+					$.each(fields, function (i, item) {
+						var $option = $(item.element);
+						var $optGroup = $option.parent();
+						var newOption = new Option($optGroup.attr('label') + ' (' + item.text + ')', item.id, false, false);
+						filterColumnSelector.append(newOption).trigger('change');
+						if (prevValueFCS == item.id) {
+							filterColumnSelector.val(item.id);
+						}
+					});
+				});
+			}
+
+			function fieldPreparationDone(data) {
+				var fieldsSelect = $('#fieldsSelect');
+				var prevValueFields = fieldsSelect.val();
+
+				var currentDataFields = [];
+				$.each(data, function (i, option) {
+					if (option.children != null && option.children.length > 0) {
+						$.map( option.children, function( val, i ) {
+							currentDataFields.push(val.id);
+						});
+					}
+				});
+
+				var intersection = $(prevValueFields).filter(currentDataFields);
+
+				fieldsSelect.val(null).empty();
+				fieldsSelect.select2({
+					placeholder: " - Select fields - ",
+					multiple: true,
+					templateSelection: function(item) {
+						var $option = $(item.element);
+						var $optGroup = $option.parent();
+						return $optGroup.attr('label') + ' (' + item.text + ')';
+					},
+					data: data
+				});
+
+				fieldsSelect.val(intersection).trigger('change');
+			}
+
+			function prepareFields($n, option) {
+				var dfd = $.Deferred();
+				var callback = function (data) {
+					var children = new Array();
+					$.each(data, function (i, field) {
+						children.push({ id: option+'.'+ field, text: field });
+					});
+					$n.push( {
+						id: option,
+						text: option,
+						children: children
+					});
+					dfd.resolve();
+					return 1;
+				};
+				var param = { tableName: option };
+				GetDataList("@Url.Action("GetTableColumnsAjax", "DynamicReports")", param, callback);
+				return dfd.promise();
+			}
+
+			//#endregion Functions
+
+
+        });
+	</script>
+
+}
