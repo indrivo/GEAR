@@ -3,7 +3,6 @@ if (typeof jQuery === 'undefined') {
 	throw new Error('Events requires jQuery');
 }
 
-//TODO: need to delete this gavno code and write new code
 const notificator = new Notificator();
 //Delete row from Jquery Table
 function DeleteData(object) {

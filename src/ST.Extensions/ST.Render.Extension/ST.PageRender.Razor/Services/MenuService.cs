@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using ST.Cache.Abstractions;
+using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
@@ -143,11 +144,10 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
         {
-            var anonymousRole = "Anonymous User";
             if (string.IsNullOrEmpty(menuItemAllowedRoles)) return false;
-            if (!userRoles.Any() || !userRoles.Contains(anonymousRole))
+            if (!userRoles.Any() || !userRoles.Contains(Settings.AnonimousUser))
             {
-                userRoles.Add(anonymousRole);
+                userRoles.Add(Settings.AnonimousUser);
             }
 
             try
@@ -155,9 +155,9 @@ namespace ST.PageRender.Razor.Services
                 var menuItemRoles = menuItemAllowedRoles.Split('#');
                 if (userRoles.Intersect(menuItemRoles).Any()) return true;
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine(e);
+                //Ignore
             }
             return false;
         }
@@ -173,16 +173,11 @@ namespace ST.PageRender.Razor.Services
         {
             var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
             {
-                new Filter
-                {
-                    Value = menuId,
-                    Criteria = Criteria.Equals,
-                    Parameter = "Id"
-                }
+                new Filter("Id", menuId)
             });
             var menu = match.Result?.FirstOrDefault();
             if (!match.IsSuccess || menu == null) return new ResultModel<Guid>();
-            if (!roles.Contains("Administrator")) roles.Add("Administrator");
+            if (!roles.Contains(Settings.SuperAdmin)) roles.Add(Settings.SuperAdmin);
             menu.AllowedRoles = string.Join("#", roles);
             await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menu.MenuId.ToString()));
             return await _service.UpdateWithReflection(menu);
