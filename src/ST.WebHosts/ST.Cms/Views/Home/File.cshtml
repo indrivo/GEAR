@@ -1,5 +1,5 @@
 @{
-	ViewData["Title"] = "Files";
+	ViewData["Title"] = "FileBox";
 	Layout = "_Layout";
 }
 
@@ -11,7 +11,7 @@
 				<div class="btn">
 					<div>
 						<div class="label">Upload</div>
-						<input id="files" name="files" type="file" size="1" onchange="uploadFiles('files');"/>
+						<input id="files" name="files" type="file" size="1" onchange="uploadFiles('files');" />
 					</div>
 				</div>
 			</div>
@@ -20,7 +20,7 @@
 				<div class="btn">
 					<div>
 						<div class="label">Upload Multiple</div>
-						<input id="filesMultiple" name="filesMultiple" type="file" size="1" multiple onchange="uploadFilesMultiple('filesMultiple');"/>
+						<input id="filesMultiple" name="filesMultiple" type="file" size="1" multiple onchange="uploadFilesMultiple('filesMultiple');" />
 					</div>
 				</div>
 			</div>
@@ -53,83 +53,83 @@
 
 @section Scripts{
 	<script type="text/javascript" language="javascript">
-        var url = 'http://localhost:9099/api/File/';
-        function uploadFiles(inputId) {
-            var input = document.getElementById(inputId);
-            var files = input.files;
-            var formData = new FormData();
-            formData.append("files", files[0]);
-            $.ajax(
-                {
-                    url: url+ 'Upload',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    type: "POST",
-                    success: function (data) {
-                        alert("Files Uploaded with id: " );
-                    }
-                }
-            );
-        };
-        function uploadFilesMultiple(inputId) {
-            var input = document.getElementById(inputId);
-            var files = input.files;
-            var formData = new FormData();
-            for (var i = 0; i != files.length; i++) {
-                formData.append("files", files[i]);
-            }
-            $.ajax(
-                {
-                    url: url + 'UploadMultiple',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    type: "POST",
-                    success: function (data) {
-                        alert("Files Uploaded!");
-                    }
-                }
-            );
+		var url = 'http://localhost:9099/api/FileBox/';
+		function uploadFiles(inputId) {
+			var input = document.getElementById(inputId);
+			var files = input.files;
+			var formData = new FormData();
+			formData.append("files", files[0]);
+			$.ajax(
+				{
+					url: url + 'Upload',
+					data: formData,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					success: function (data) {
+						alert("Files Uploaded with id: ");
+					}
+				}
+			);
 		};
-        function restore(param) {
-	        var form = new FormData();
-	        form.append("id", param);
-	        $.ajax(
-		        {
-			        url:  url +'/Restore',
-			        data: form,
-			        processData: false,
-			        contentType: false,
-			        type: "POST",
-			        success: function (data) {
-				        alert("File restored!");
-			        }
-		        }
-	        );
-        };
+		function uploadFilesMultiple(inputId) {
+			var input = document.getElementById(inputId);
+			var files = input.files;
+			var formData = new FormData();
+			for (var i = 0; i != files.length; i++) {
+				formData.append("files", files[i]);
+			}
+			$.ajax(
+				{
+					url: url + 'UploadMultiple',
+					data: formData,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					success: function (data) {
+						alert("Files Uploaded!");
+					}
+				}
+			);
+		};
+		function restore(param) {
+			var form = new FormData();
+			form.append("id", param);
+			$.ajax(
+				{
+					url: url + '/Restore',
+					data: form,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					success: function (data) {
+						alert("File restored!");
+					}
+				}
+			);
+		};
 		function deleteLogical(param) {
 			var form = new FormData();
 			form.append("id", param);
-            $.ajax(
-                {
-                    url:  url +'/Delete',
-                    data: form,
-                    processData: false,
-                    contentType: false,
-                    type: "POST",
-                    success: function (data) {
-                        alert("File deleted!");
-                    }
-                }
-            );
-        };
+			$.ajax(
+				{
+					url: url + '/Delete',
+					data: form,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					success: function (data) {
+						alert("File deleted!");
+					}
+				}
+			);
+		};
 		function deletePermanent(param) {
 			var form = new FormData();
 			form.append("id", param);
 			$.ajax(
 				{
-					url:  url +'/DeletePermanent',
+					url: url + '/DeletePermanent',
 					data: form,
 					processData: false,
 					contentType: false,
@@ -140,8 +140,8 @@
 				}
 			);
 		}
-        function download(fileId) {
-	        window.location.href = url + "GetFile?id=" + fileId;
-        }
+		function download(fileId) {
+			window.location.href = url + "GetFile?id=" + fileId;
+		}
 	</script>
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ST.Core.Events.EventArgs;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
@@ -15,12 +16,34 @@ namespace ST.Core.Events
             /// <summary>
             /// Store all system events
             /// </summary>
-            private static readonly ConcurrentDictionary<string, IEnumerable<string>> Events = new ConcurrentDictionary<string, IEnumerable<string>>();
+            private static readonly ConcurrentDictionary<string, Dictionary<string, IEnumerable<string>>> Events =
+                new ConcurrentDictionary<string, Dictionary<string, IEnumerable<string>>>();
 
             /// <summary>
             /// Get registered events
             /// </summary>
-            public static Dictionary<string, IEnumerable<string>> RegisteredEvents => Events.ToDictionary(k => k.Key, v => v.Value);
+            public static Dictionary<string, IEnumerable<string>> RegisteredEvents
+                => Events.ToDictionary(k => k.Key, v => v.Value.Keys as IEnumerable<string>);
+
+            /// <summary>
+            /// Get props of event
+            /// </summary>
+            /// <param name="eventName"></param>
+            /// <returns></returns>
+            public static IEnumerable<string> GetEventPropNames(string eventName)
+            {
+                foreach (var group in Events)
+                {
+                    foreach (var ev in group.Value)
+                    {
+                        if (ev.Key.Equals(eventName))
+                        {
+                            return ev.Value;
+                        }
+                    }
+                }
+                return new List<string>();
+            }
 
             /// <summary>
             /// Register event group
@@ -28,7 +51,7 @@ namespace ST.Core.Events
             /// <param name="groupName"></param>
             /// <param name="events"></param>
             /// <returns></returns>
-            public static bool RegisterEventGroup(string groupName, IEnumerable<string> events)
+            public static bool RegisterEventGroup(string groupName, Dictionary<string, IEnumerable<string>> events)
             {
                 return Events.TryAdd(groupName, events);
             }
@@ -41,7 +64,7 @@ namespace ST.Core.Events
             public static IEnumerable<string> GetGroupEvents(string groupName)
             {
                 Events.TryGetValue(groupName, out var events);
-                return events;
+                return events?.Keys;
             }
 
             /// <summary>
@@ -51,7 +74,7 @@ namespace ST.Core.Events
             /// <returns></returns>
             public static bool HasEvent(string eventName)
             {
-                return Events.Any(x => x.Value.Contains(eventName));
+                return Events.Any(x => x.Value.Keys.Contains(eventName));
             }
         }
 
@@ -125,7 +148,8 @@ namespace ST.Core.Events
                 Console.WriteLine(" was invoked");
                 Application.Event(new ApplicationEventEventArgs
                 {
-                    EventArgs = e.ToDictionary(),
+                    EventArgs = e.ToDictionary()
+                        .ToDictionary(x => x.Key, c => c.Value),
                     EventDate = DateTime.Now,
                     EventName = eventName
                 });
@@ -138,13 +162,24 @@ namespace ST.Core.Events
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static IEnumerable<string> GetEvents(Type type)
+        public static Dictionary<string, IEnumerable<string>> GetEvents(Type type)
         {
             Arg.NotNull(type, nameof(GetEvents));
-            var props = type.GetEvents()
-                .Select(x => x.Name).ToList();
+            return type.GetEvents().ToDictionary(ev => ev.Name, GetEventProps);
+        }
 
-            return props;
+        /// <summary>
+        /// Get event handler type props
+        /// </summary>
+        /// <param name="eventInfo"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetEventProps(EventInfo eventInfo)
+        {
+            var type = eventInfo.EventHandlerType.GetMethod("Invoke")
+                ?.GetParameters()[1].
+                ParameterType;
+
+            return type?.GetProperties().Select(x => x.Name);
         }
     }
 }

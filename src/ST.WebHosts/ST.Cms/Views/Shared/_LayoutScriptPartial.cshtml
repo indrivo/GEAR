@@ -19,8 +19,7 @@
 	var organization = TenantService.GetTenantById(user?.TenantId.GetValueOrDefault(Guid.Empty) ?? Guid.Empty);
 	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
-	<script>
-		const notificator = new Notificator();
+	<script>	
 		var st = new ST();
 
 		const storageSettings = localStorage.getItem("settings");

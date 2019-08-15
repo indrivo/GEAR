@@ -7,17 +7,16 @@
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-body">
+                <h2>Upload file</h2>
                 <div class="btn">
                     <div>
                         <div class="label">Upload</div>
                         <input id="files" name="files" type="file" size="1" onchange="uploadFiles('files');" />
                     </div>
                 </div>
-                <div>
-                    <a href="http://localhost:9099/api/file/GetFile?id=" class="btn btn-block btn-link" >Download File</a>
-                </div>
             </div>
             <div class="card-body">
+                <h2>Upload file multiple</h2>
                 <div class="btn">
                     <div>
                         <div class="label">Upload Multiple</div>
@@ -26,10 +25,25 @@
                 </div>
             </div>
             <div class="card-body">
-                <button  class="btn btn-block btn-inverse" onclick="deleteLogical($('#deleteTxt').val())">Delete logical</button>
-                <button  class="btn btn-block btn-inverse" onclick="deletePermanent($('#deleteTxt').val())">Delete permanent</button>
-                <input type="text" id="deleteTxt"/>
-            </div>>
+                <h2>Delete file logical</h2>
+                <button class="btn  btn-inverse" onclick="deleteLogical($('#deleteTxt1').val())">Delete</button>
+                ID:<input type="text" id="deleteTxt1" />
+            </div>
+            <div class="card-body">
+                <h2>Delete file permanent</h2>
+                <button class="btn  btn-inverse" onclick="deletePermanent($('#deleteTxt').val())">Delete</button>
+                ID:<input type="text" id="deleteTxt" />
+            </div>
+            <div class="card-body">
+                <h2>Restore file</h2>
+                <button class="btn  btn-inverse" onclick="restore($('#restoreTxt').val())">Restore</button>
+                ID:<input type="text" id="restoreTxt" />
+            </div>
+            <div class="card-body">
+                <h2>Download file</h2>
+                <button class="btn  btn-inverse" onclick="download($('#downloadTxt2').val())">Download</button>
+                ID: <input type="text" id="downloadTxt2" />
+            </div>
         </div>
     </div>
 </div>
@@ -38,7 +52,6 @@
 
 
 @section Scripts{
-    <script src="jquery-3.2.1.min.js"></script>
     <script type="text/javascript" language="javascript">
         var url = 'http://localhost:9099/api/File/';
         function uploadFiles(inputId) {
@@ -48,13 +61,13 @@
             formData.append("files", files[0]);
             $.ajax(
                 {
-                    url: url+ 'Upload',
+                    url: url + 'Upload',
                     data: formData,
                     processData: false,
                     contentType: false,
                     type: "POST",
                     success: function (data) {
-                        alert("Files Uploaded with id: " );
+                        alert("Files Uploaded with id: ");
                     }
                 }
             );
@@ -79,11 +92,29 @@
                 }
             );
         };
-        function deleteLogical(param) {
+        function restore(param) {
+            var form = new FormData();
+            form.append("id", param);
             $.ajax(
                 {
-                    url:  url +'/Delete',
-                    data: {id : param},
+                    url: url + '/Restore',
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("File restored!");
+                    }
+                }
+            );
+        };
+        function deleteLogical(param) {
+            var form = new FormData();
+            form.append("id", param);
+            $.ajax(
+                {
+                    url: url + '/Delete',
+                    data: form,
                     processData: false,
                     contentType: false,
                     type: "POST",
@@ -94,10 +125,12 @@
             );
         };
         function deletePermanent(param) {
+            var form = new FormData();
+            form.append("id", param);
             $.ajax(
                 {
-                    url: url + 'DeletePermanent',
-                    data: {id : param},
+                    url: url + '/DeletePermanent',
+                    data: form,
                     processData: false,
                     contentType: false,
                     type: "POST",
@@ -106,6 +139,9 @@
                     }
                 }
             );
+        }
+        function download(fileId) {
+            window.location.href = url + "GetFile?id=" + fileId;
         }
     </script>
 }

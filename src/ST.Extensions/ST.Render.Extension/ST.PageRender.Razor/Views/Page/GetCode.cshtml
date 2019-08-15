@@ -6,8 +6,11 @@
 	ViewData["Title"] = "GetCode";
 }
 
-<link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
-<link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+}
 
 @{
 	var data = (Page)ViewBag.Page;

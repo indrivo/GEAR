@@ -10,5 +10,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ST.Files.Abstraction\ST.Files.Abstraction.csproj" />
+    <ProjectReference Include="..\ST.Files.Box.Abstraction\ST.Files.Box.Abstraction.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\FileBox\" />
   </ItemGroup>
 </Project>

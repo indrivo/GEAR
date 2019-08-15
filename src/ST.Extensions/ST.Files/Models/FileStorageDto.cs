@@ -2,7 +2,7 @@
 
 namespace ST.Files.Models
 {
-    public class FileStorageDto : FileDto
+    public sealed class FileStorageDto : FileDto
     {
         /// <summary>
         /// Byte array of file
