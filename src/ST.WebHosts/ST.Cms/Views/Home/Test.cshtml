@@ -1,0 +1,100 @@
+@{
+	ViewData["Title"] = "Test";
+}
+
+<div id="test" class="multilevel-collapse"></div>
+
+@section Scripts {
+	<script src="~/themes/iso/js/meetings.js" asp-append-version="true"></script>
+}
+
+
+<script type="text/x-jsrender" id="rootCollapse">
+	<div class="card">
+		<div class="card-header d-flex justify-content-between align-items-center" id="head_{{:id}}">
+			<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse_{{:id}}"
+					aria-expanded="false" aria-controls="collapse_{{:id}}">
+				<span class="collapse-icon mr-1"></span>
+				{{:name}}
+				<span class="info-tooltip-circle info-tooltip ml-3 btn-outline-primary"
+					  data-content='Insert your content here'>?</span>
+			</button>
+		</div>
+		<div class="card-body">
+			<div id="collapse_{{:id}}" class="collapse" aria-labelledby="head_{{:id}}" data-parent="#accordion">
+				{{for items tmpl="secondLvl"/}}
+			</div>
+		</div>
+	</div>
+</script>
+<script type="text/x-jsrender" id="secondLvlCollapse">
+	<div class="card">
+		<div class="card-header d-flex justify-content-between align-items-center" id="head_{{:id}}">
+			<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse_{{:id}}"
+					aria-expanded="false" aria-controls="collapse_{{:id}}">
+				<span class="collapse-icon mr-1"></span>
+			{{:name}}
+			</button>
+		</div>
+		<div class="card-body">
+			<div id="collapse_{{:id}}" class="collapse p-2" aria-labelledby="head_{{:id}}" data-parent="#accordion">
+				<textarea class="form-control br-none">{{:value}}</textarea>
+			</div>
+		</div>
+	</div>
+</script>
+
+
+<script >
+	var helper = new ST();
+	var accordionItems = [
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_meeting_action_state"),
+			items: [
+				{
+					id: helper.newGuid(),
+					name: window.translate("iso_actions_from_previous_revisions"),
+					value: "content"
+				}
+			]
+		},
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_internal_and_external_aspects_relevant"),
+			items: [
+				{
+					id: helper.newGuid(),
+					name: "Rezultatul analizei de management",
+					value: "content"
+				}
+			]
+		},
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_stakeholder_feedback"),
+			items: []
+		},
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_stakeholder_feedback"),
+			items: []
+		},
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_the_result_of_the_risk_assessment"),
+			items: []
+		},
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_opportunities_for_continuous_improvement"),
+			items: []
+		},
+	];
+
+	$.templates("secondLvl", "#secondLvlCollapse");
+	var template = $.templates("#rootCollapse");
+	var htmlOutput = template.render(accordionItems);
+
+	$("#test").html(htmlOutput);
+</script>

@@ -448,5 +448,12 @@
   "commerce_how_it_works": "Как это работает",
   "commerce_features": "Особенности",
   "commerce_price_plans": "Ценовые планы ",
-  "commerce_demo": "Демо"
+  "commerce_demo": "Демо",
+  "iso_meeting_action_state": "Состояние мероприятий по ревизии ранее на управление",
+  "iso_actions_from_previous_revisions": "Условие акции-обзоры и предыдущие",
+  "iso_internal_and_external_aspects_relevant": "Изменения аспектах-внутренних и внешних, соответствующих для системы управления",
+  "iso_reactions_on_information_security_performance": "Реакции на их производительности, обеспечения безопасности и защиты информации",
+  "iso_stakeholder_feedback": "Реакции со стороны заинтересованных сторон",
+  "iso_the_result_of_the_risk_assessment": "В результате проведения оценки риска",
+  "iso_opportunities_for_continuous_improvement": "Возможности для улучшения, продолжать"
 }

@@ -448,5 +448,12 @@
   "commerce_how_it_works": "它是如何工作的",
   "commerce_features": "功能",
   "commerce_price_plans": "价格的计划",
-  "commerce_demo": "演示"
+  "commerce_demo": "演示",
+  "iso_meeting_action_state": "状态的行动从以前的修订的管理",
+  "iso_actions_from_previous_revisions": "状态的行动从以前的评论",
+  "iso_internal_and_external_aspects_relevant": "该变化方面的内部和外部的，有关管理系统",
+  "iso_reactions_on_information_security_performance": "反馈的业绩信息安全",
+  "iso_stakeholder_feedback": "反馈的利益攸关方",
+  "iso_the_result_of_the_risk_assessment": "结果的风险评估",
+  "iso_opportunities_for_continuous_improvement": "机会不断改进"
 }

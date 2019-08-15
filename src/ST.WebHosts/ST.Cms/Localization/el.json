@@ -448,5 +448,12 @@
   "commerce_how_it_works": "Πώς λειτουργεί",
   "commerce_features": "Χαρακτηριστικά",
   "commerce_price_plans": "Τιμή σχέδια",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_meeting_action_state": "Το καθεστώς των δράσεων από τις προηγούμενες αναθεωρήσεις από το διοικητικό",
+  "iso_actions_from_previous_revisions": "Το καθεστώς των δράσεων από τα προηγούμενα σχόλια",
+  "iso_internal_and_external_aspects_relevant": "Οι αλλαγές σε πτυχές του εσωτερικού και εξωτερικού, σχετικό με το σύστημα διαχείρισης",
+  "iso_reactions_on_information_security_performance": "Ανατροφοδότηση σχετικά με τις επιδόσεις ασφάλειας πληροφοριών",
+  "iso_stakeholder_feedback": "Ανατροφοδότηση από τα ενδιαφερόμενα μέρη",
+  "iso_the_result_of_the_risk_assessment": "Το αποτέλεσμα της αξιολόγησης κινδύνου",
+  "iso_opportunities_for_continuous_improvement": "Ευκαιρίες για συνεχή βελτίωση"
 }

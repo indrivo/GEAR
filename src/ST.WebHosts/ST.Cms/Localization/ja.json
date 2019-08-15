@@ -448,5 +448,12 @@
   "commerce_how_it_works": "その作品",
   "commerce_features": "特徴",
   "commerce_price_plans": "料金プラン",
-  "commerce_demo": "デモ"
+  "commerce_demo": "デモ",
+  "iso_meeting_action_state": "の状況を動からの修正に管理",
+  "iso_actions_from_previous_revisions": "の状況を動から前のレビュー",
+  "iso_internal_and_external_aspects_relevant": "の変化の側面の内部と外部の管理システム",
+  "iso_reactions_on_information_security_performance": "フィードバックの情報セキュリティ",
+  "iso_stakeholder_feedback": "からのフィードバックステークホルダー",
+  "iso_the_result_of_the_risk_assessment": "その結果、リスク評価",
+  "iso_opportunities_for_continuous_improvement": "機会の継続的改善"
 }

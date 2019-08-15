@@ -27,8 +27,8 @@ namespace ST.Cms.Controllers
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
-		/// <param name="service"></param>
-		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context)
+		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub,
+			ApplicationDbContext context)
 		{
 			_userManager = userManager;
 			_hub = hub;
@@ -39,15 +39,28 @@ namespace ST.Cms.Controllers
 		/// Dashboard view
 		/// </summary>
 		/// <returns></returns>
-		[Authorize]
 		public IActionResult Index()
 		{
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
 			ViewBag.TotalSessions = _hub.GetSessionsCount();
-			return View("Index");
+			return View();
+		}
+
+		/// <summary>
+		/// Contact view
+		/// </summary>
+		/// <returns></returns>
+		public IActionResult Contact()
+		{
+			return View();
+		}
+
+		public IActionResult Test()
+		{
+			return View();
 		}
 
 		public IActionResult Error() =>
-			View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+			View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
 	}
 }

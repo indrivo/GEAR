@@ -448,5 +448,12 @@
   "commerce_how_it_works": "Jak to działa",
   "commerce_features": "Cechy",
   "commerce_price_plans": "Plany cenowe ",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_meeting_action_state": "Stan działań w wersji wcześniej na zarządzanie",
+  "iso_actions_from_previous_revisions": "Warunek promocji-opinie i poprzednie",
+  "iso_internal_and_external_aspects_relevant": "Zmiany aspektach-wewnętrznych i zewnętrznych, istotnych dla systemu zarządzania",
+  "iso_reactions_on_information_security_performance": "Reakcje na ich wydajności, bezpieczeństwa i ochrony informacji",
+  "iso_stakeholder_feedback": "Reakcje ze strony zainteresowanych stron",
+  "iso_the_result_of_the_risk_assessment": "W wyniku przeprowadzenia oceny ryzyka",
+  "iso_opportunities_for_continuous_improvement": "Możliwości poprawy, nadal"
 }

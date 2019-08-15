@@ -23,7 +23,8 @@ namespace ST.MultiTenant.Razor.Controllers
 {
     [Authorize(Roles = "Company Administrator")]
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser, ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser,
+        ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         /// <summary>
         /// Inject organization service
@@ -32,7 +33,11 @@ namespace ST.MultiTenant.Razor.Controllers
 
         private readonly MultiTenantListSettings _listSettings;
 
-        public CompanyManageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
+        public CompanyManageController(UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager, ICacheService cacheService,
+            ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) :
+            base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
             _listSettings = new MultiTenantListSettings();

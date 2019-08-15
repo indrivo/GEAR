@@ -448,5 +448,12 @@
   "commerce_how_it_works": "Hoe het werkt",
   "commerce_features": "Kenmerken",
   "commerce_price_plans": "Prijs plannen",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_meeting_action_state": "De status van de acties uit eerdere herzieningen van het management",
+  "iso_actions_from_previous_revisions": "De status van de acties van de vorige beoordelingen",
+  "iso_internal_and_external_aspects_relevant": "De wijzigingen aan de aspecten van de interne en externe, relevant zijn voor het beheer systeem",
+  "iso_reactions_on_information_security_performance": "Feedback op de uitvoering van informatiebeveiliging",
+  "iso_stakeholder_feedback": "De Feedback van de stakeholders",
+  "iso_the_result_of_the_risk_assessment": "De uitkomst van de risicobeoordeling",
+  "iso_opportunities_for_continuous_improvement": "Mogelijkheden voor continue verbetering"
 }

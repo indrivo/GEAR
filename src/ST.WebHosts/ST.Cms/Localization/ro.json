@@ -448,5 +448,12 @@
   "commerce_how_it_works": "Cum funcționează",
   "commerce_features": "Caracteristici",
   "commerce_price_plans": "Planuri de preț",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_meeting_action_state": "Starea actiunilor din revizuirile anterioare de catre management",
+  "iso_actions_from_previous_revisions": "Starea acțiunilor din revizuirile anterioare",
+  "iso_internal_and_external_aspects_relevant": "Schimbarile aspectelor interne si externe relevante pentru sistemul de management",
+  "iso_reactions_on_information_security_performance": "Reacţii asupra performantelor securităţii informaţiei",
+  "iso_stakeholder_feedback": "Reacții din partea parților interesate",
+  "iso_the_result_of_the_risk_assessment": "Rezultatul evaluării riscului",
+  "iso_opportunities_for_continuous_improvement": "Oportunități pentru îmbunătățire continua"
 }

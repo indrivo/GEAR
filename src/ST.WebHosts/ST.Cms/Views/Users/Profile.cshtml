@@ -1,0 +1,166 @@
+@using Castle.Core.Internal
+@model ST.Identity.Razor.Users.ViewModels.UserViewModels.UserProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+@section Styles
+{
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css"/>
+}
+<div class="row">
+
+	<div class="col-lg-3 mb-2">
+		<div class="card h-100">
+			<div class="card-body">
+				<div class="mx-5 my-4 px-4">
+					<img src="@Url.Action("GetImage", "Users", new {id = Model.UserId})" class="img-thumbnail img-fluid rounded-circle" alt="@Model.UserName">
+				</div>
+				<div class="text-center">
+					<h5 class="weight-400">Hello, @Model.UserName</h5>
+					<p class="text-muted">@string.Join(", ", Model.Roles)</p>
+				</div>
+				<hr class="my-4 dashed">
+				<p>
+					<label asp-for="Email" class="weight-400"></label><span class="text-muted">@Model.Email</span>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9">
+		<div class="card mb-4">
+			<div class="card-header p-0">
+				<ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" href="#organization" role="tab" aria-controls="organization" aria-selected="false">Organization</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 rounded-0" id="profilePhoto-tab" data-toggle="tab" href="#profilePhoto" role="tab" aria-controls="profilePhoto" aria-selected="false">Profile Photo</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" href="#changePassword" role="tab" aria-controls="changePassword" aria-selected="false">Change Password</a>
+					</li>
+				</ul>
+			</div>
+			<div class="card-body">
+				<div class="tab-content" id="myTabContent">
+					<div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+						<h5 class="weight-400">Summary</h5>
+						<p>No data</p>
+					</div>
+					<div class="tab-pane fade " id="organization" role="tabpanel" aria-labelledby="organization-tab">
+						<p class="mb-4">@Model.Tenant.Description</p>
+						<p>
+							<span class="weight-400">Company name : </span><span class="text-muted">@Model.Tenant.Name</span>
+						</p>
+						<p>
+							<span class="weight-400">Address : </span><span class="text-muted">@Model.Tenant.Address</span>
+						</p>
+						<p>
+							<span class="weight-400">Company Website : </span><span class="text-muted">@Model.Tenant.SiteWeb</span>
+						</p>
+					</div>
+					<div class="tab-pane fade " id="profilePhoto" role="tabpanel" aria-labelledby="profilePhoto-tab">
+						<div class="col-lg-8 mb-4">
+							<div class="row">
+								<div class="col-md-4">
+									<div class="img-container">
+										<img id="userImg" src="https://fengyuanchen.github.io/cropper/images/picture.jpg" alt="Picture">
+									</div>
+								</div>
+								<div class="col-md-8">
+
+									<div class="docs-toggles">
+										<div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
+											<label class="btn btn-primary active">
+												<input type="radio" class="sr-only" id="aspectRatio0" name="aspectRatio" value="1.7777777777777777">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="aspectRatio: 16 / 9">
+													16:9
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="aspectRatio1" name="aspectRatio" value="1.3333333333333333">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="aspectRatio: 4 / 3">
+													4:3
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="aspectRatio2" name="aspectRatio" value="1">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="aspectRatio: 1 / 1">
+													1:1
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="aspectRatio3" name="aspectRatio" value="0.6666666666666666">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="aspectRatio: 2 / 3">
+													2:3
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="aspectRatio4" name="aspectRatio" value="NaN">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="aspectRatio: NaN">
+													Free
+												</span>
+											</label>
+										</div>
+
+										<div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
+											<label class="btn btn-primary active">
+												<input type="radio" class="sr-only" id="viewMode0" name="viewMode" value="0" checked>
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="View Mode 0">
+													VM0
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="viewMode1" name="viewMode" value="1">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="View Mode 1">
+													VM1
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="viewMode2" name="viewMode" value="2">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="View Mode 2">
+													VM2
+												</span>
+											</label>
+											<label class="btn btn-primary">
+												<input type="radio" class="sr-only" id="viewMode3" name="viewMode" value="3">
+												<span class="docs-tooltip" data-toggle="tooltip" data-animation="false" title="View Mode 3">
+													VM3
+												</span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+							</div>
+	
+						</div>
+					</div>
+					<div class="tab-pane fade " id="changePassword" role="tabpanel" aria-labelledby="changePassword-tab">
+						<div class="col-lg-8 mb-4">
+							<h2>TO DO</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts
+{
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
+
+	<script type="text/javascript">
+        const image = document.getElementById('userImg');
+        const options = {
+            aspectRatio: 1 / 1,
+            preview: '.img-preview'
+        }
+        const cropper = new Cropper(image, options);
+
+	</script>
+}
