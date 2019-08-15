@@ -35,10 +35,12 @@ namespace ST.Identity.Razor.Controllers
     public class AccountController : Controller
     {
         #region Private Dependency Injection Fields
+
         /// <summary>
         /// Inject distributed cache from redis 
         /// </summary>
         private readonly IDistributedCache _cache;
+
         private readonly IEmailSender _emailSender;
         private readonly IIdentityServerInteractionService _interactionService;
 
@@ -53,17 +55,22 @@ namespace ST.Identity.Razor.Controllers
         private readonly INotify<ApplicationRole> _notify;
 
         private readonly IOptions<MPassOptions> _mpassOptions;
+
         /// <summary>
         /// Inject M pass dataService
         /// </summary>
         private readonly IMPassService _mpassService;
+
         private readonly IMPassSigningCredentialsStore _mpassSigningCredentialStore;
+
         /// <summary>
         /// Inject SignIn Manager
         /// </summary>
         private readonly SignInManager<ApplicationUser> _signInManager;
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccesor;
+
         /// <summary>
         /// Inject Ldap User Manager
         /// </summary>
@@ -75,6 +82,7 @@ namespace ST.Identity.Razor.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
 
         #endregion Private Dependency Injection Fields
+
         private const string MpassRequestSessionKey = "mpass_request_id";
         private const string ReturnUrl = "ReturnUrl";
         private const string SamlRequest = "SAMLRequest";
@@ -90,7 +98,8 @@ namespace ST.Identity.Razor.Controllers
             INotify<ApplicationRole> notify,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
-            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
+            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env,
+            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
@@ -344,7 +353,8 @@ namespace ST.Identity.Razor.Controllers
 
                 if (user.IsPasswordExpired())
                 {
-                    ModelState.AddModelError(string.Empty, "Password has been expired, you need to change the password");
+                    ModelState.AddModelError(string.Empty,
+                        "Password has been expired, you need to change the password");
                     return View(model);
                 }
 
@@ -356,6 +366,7 @@ namespace ST.Identity.Razor.Controllers
                         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                         return View(model);
                     }
+
                     var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
                     if (!bind)
                     {
@@ -454,8 +465,10 @@ namespace ST.Identity.Razor.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "CORELdap");
             }
+
             return await _userManager.FindByNameAsync(user.UserName);
         }
+
         /// <summary>
         /// Handle logout page post-back
         /// </summary>
@@ -514,7 +527,7 @@ namespace ST.Identity.Razor.Controllers
             if (User.Identity.IsAuthenticated == false)
             {
                 // if the user is not authenticated, then just show logged out page
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+                return await Logout(new LogoutViewModel {LogoutId = logoutId});
             }
 
             //Test for Xamarin.
@@ -522,7 +535,7 @@ namespace ST.Identity.Razor.Controllers
             if (context?.ShowSignoutPrompt == false)
             {
                 //it's safe to automatically sign-out
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+                return await Logout(new LogoutViewModel {LogoutId = logoutId});
             }
 
             // show the logout prompt. this prevents attacks where the user
@@ -548,10 +561,10 @@ namespace ST.Identity.Razor.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return Json(new { message = "Error on logout!!", success = false });
+                return Json(new {message = "Error on logout!!", success = false});
             }
 
-            return Json(new { message = "Log Out success", success = true });
+            return Json(new {message = "Log Out success", success = true});
         }
 
         /// <summary>
@@ -580,7 +593,7 @@ namespace ST.Identity.Razor.Controllers
         {
             ViewData[ReturnUrl] = returnUrl;
             if (!ModelState.IsValid) return View(model);
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -611,7 +624,7 @@ namespace ST.Identity.Razor.Controllers
         public IActionResult ResetPassword(string code = null)
         {
             if (code == null) throw new ApplicationException("A code must be supplied for password reset.");
-            var model = new ResetPasswordViewModel { Code = code };
+            var model = new ResetPasswordViewModel {Code = code};
             return View(model);
         }
 
@@ -680,7 +693,7 @@ namespace ST.Identity.Razor.Controllers
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new {returnUrl});
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }

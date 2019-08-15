@@ -28,7 +28,7 @@ namespace ST.MultiTenant.Razor.Settings
                 },
                 StyleAttributes = new List<InlineStyleAttribute>
                 {
-                  new InlineStyleAttribute("width", "100%")
+                    new InlineStyleAttribute("width", "100%")
                 },
                 RenderColumns = new List<ListRenderColumn>
                 {
@@ -45,6 +45,17 @@ namespace ST.MultiTenant.Razor.Settings
                         AspController = "CompanyManage",
                         ButtonName = "Add new user to company",
                         Description = "New user will be added to company"
+                    },
+                    new UrlTagHelperViewModel
+                    {
+                        AspAction = null,
+                        AspController = "CompanyManage",
+                        ButtonName = "Invite",
+                        Description = null,
+                        HtmlAttributes = new List<HtmlAttribute>
+                        {
+                            new HtmlAttribute("id", "inviteBtn")
+                        }
                     }
                 },
                 HasActions = true,
