@@ -132,6 +132,9 @@
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Users\" />
+  </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>
 	  <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ST.Core.Abstractions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.MultiTenant.Abstractions
 {
@@ -88,5 +89,11 @@ namespace ST.MultiTenant.Abstractions
         /// <param name="roles"></param>
         /// <returns></returns>
         Task<ResultModel> CreateNewOrganizationUserAsync(ApplicationUser user, IEnumerable<string> roles);
+
+        /// <summary>
+        /// Get tenant by current user
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<Tenant>> GetTenantByCurrentUserAsync();
     }
 }

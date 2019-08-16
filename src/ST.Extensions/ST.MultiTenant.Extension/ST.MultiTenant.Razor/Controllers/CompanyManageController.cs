@@ -105,22 +105,18 @@ namespace ST.MultiTenant.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> InviteNewUserAsync([FromBody] InviteNewUserViewModel model)
         {
+            var resultModel = new ResultModel();
             if (ModelState.IsValid)
             {
                 if (await _organizationService.CheckIfUserExistAsync(model.Email))
                 {
-                    return new JsonResult(new ResultModel
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel
                     {
-                        IsSuccess = false,
-                        Errors = new List<IErrorModel>
-                        {
-                            new ErrorModel
-                            {
-                                Key = string.Empty,
-                                Message = "Email is in use"
-                            }
-                        }
+                        Key = string.Empty,
+                        Message = "Email is in use"
                     });
+                    return Json(resultModel);
                 }
 
                 var newUser = new ApplicationUser
@@ -131,24 +127,39 @@ namespace ST.MultiTenant.Razor.Controllers
                     NormalizedUserName = model.Email.Split('@')[0].ToUpper(),
                     EmailConfirmed = false,
                     Created = DateTime.Now,
-                    Author = HttpContext.User.Identity.Name,
-                    TenantId = Guid.Parse("9b14a02c-d949-404b-82a4-f0796c80d612")
+                    Author = HttpContext.User.Identity.Name
                 };
+
+                var tenant = await _organizationService.GetTenantByCurrentUserAsync();
+                if (!tenant.IsSuccess)
+                {
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel
+                    {
+                        Key = string.Empty,
+                        Message = "Tenant not found"
+                    });
+                    return Json(resultModel);
+                }
+
+                newUser.TenantId = tenant.Result.Id;
+
                 var result = await _organizationService.CreateNewOrganizationUserAsync(newUser, model.Roles);
                 if (result.IsSuccess)
                 {
                     await _organizationService.SendInviteToEmailAsync(newUser);
-                    return new JsonResult(new ResultModel
-                    {
-                        IsSuccess = true
-                    });
+                    resultModel.IsSuccess = true;
+                    return Json(resultModel);
                 }
             }
 
-            return new JsonResult(new ResultModel
+            resultModel.IsSuccess = false;
+            resultModel.Errors.Add(new ErrorModel
             {
-                IsSuccess = false
+                Key = string.Empty,
+                Message = "Invalid model"
             });
+            return Json(resultModel);
         }
     }
 }

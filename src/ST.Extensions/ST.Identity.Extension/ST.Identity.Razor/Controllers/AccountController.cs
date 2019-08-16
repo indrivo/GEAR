@@ -173,31 +173,6 @@ namespace ST.Identity.Razor.Controllers
         }
 
         /// <summary>
-        /// Confirm email
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        }
-
-        /// <summary>
         /// External auth
         /// </summary>
         /// <param name="model"></param>
@@ -787,6 +762,57 @@ namespace ST.Identity.Razor.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(Guid? userId, string confirmToken)
+        {
+            if (!userId.HasValue || string.IsNullOrEmpty(confirmToken))
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ConfirmEmailViewModel
+            {
+                UserId = currentUser.Id,
+                UserName = currentUser.UserName,
+                Email = currentUser.Email,
+                Token = confirmToken
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.UserId));
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
+            var result = await _userManager.ResetPasswordAsync(currentUser, resetToken, model.Password);
+            if (result.Succeeded)
+            {
+                await _userManager.ConfirmEmailAsync(currentUser, model.Token);
+                await _signInManager.PasswordSignInAsync(currentUser, model.Password, true, false);
+                return RedirectToAction("Index", "Home");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
         }
 
         #region Helpers

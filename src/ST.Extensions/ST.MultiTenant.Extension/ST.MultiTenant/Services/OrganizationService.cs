@@ -157,6 +157,10 @@ namespace ST.MultiTenant.Services
             return _context.Tenants.FirstOrDefault(x => x.Id.Equals(user.TenantId));
         }
 
+        /// <summary>
+        /// Get Tenant by current user 
+        /// </summary>
+        /// <returns></returns>
         public async Task<ResultModel<Tenant>> GetTenantByCurrentUserAsync()
         {
             var resultModel = new ResultModel<Tenant>();
@@ -168,6 +172,7 @@ namespace ST.MultiTenant.Services
                 return resultModel;
             }
 
+            resultModel.IsSuccess = false;
             return resultModel;
         }
 
@@ -179,7 +184,7 @@ namespace ST.MultiTenant.Services
         /// <returns></returns>
         public async Task<ResultModel> CreateNewOrganizationUserAsync(ApplicationUser user, IEnumerable<string> roles)
         {
-            var result = await _userManager.CreateAsync(user, "ForTest123123*");
+            var result = await _userManager.CreateAsync(user, GenerateRandomPassword());
             if (result.Succeeded)
             {
                 var userRoles = await _roleManager.Roles
@@ -210,10 +215,63 @@ namespace ST.MultiTenant.Services
         public async Task SendInviteToEmailAsync(ApplicationUser user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Account", new {user.Id, code},
+            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Account", new {userId = user.Id, confirmToken = code},
                 _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
-                $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>link</a>");
+                $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
+        }
+
+
+        private static string GenerateRandomPassword(PasswordOptions opts = null)
+        {
+            if (opts == null)
+                opts = new PasswordOptions()
+                {
+                    RequiredLength = 8,
+                    RequiredUniqueChars = 4,
+                    RequireDigit = true,
+                    RequireLowercase = true,
+                    RequireNonAlphanumeric = true,
+                    RequireUppercase = true
+                };
+
+            var randomChars = new[]
+            {
+                "ABCDEFGHJKLMNOPQRSTUVWXYZ", // uppercase 
+                "abcdefghijkmnopqrstuvwxyz", // lowercase
+                "0123456789", // digits
+                "!@$?_-" // non-alphanumeric
+            };
+            var rand = new Random(Environment.TickCount);
+            var chars = new List<char>();
+
+            if (opts.RequireUppercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
+
+            if (opts.RequireLowercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
+
+            if (opts.RequireDigit)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
+
+            if (opts.RequireNonAlphanumeric)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
+
+            for (var i = chars.Count;
+                i < opts.RequiredLength
+                || chars.Distinct().Count() < opts.RequiredUniqueChars;
+                i++)
+            {
+                var rcs = randomChars[rand.Next(0, randomChars.Length)];
+                chars.Insert(rand.Next(0, chars.Count),
+                    rcs[rand.Next(0, rcs.Length)]);
+            }
+
+            return new string(chars.ToArray());
         }
 
         #region Validation
