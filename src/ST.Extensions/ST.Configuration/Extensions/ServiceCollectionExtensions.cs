@@ -51,7 +51,6 @@ namespace ST.Configuration.Extensions
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<FormDbContext>>();
-            services.AddTransient<IOrganizationService<Tenant>, OrganizationService>();
             return services;
         }
 

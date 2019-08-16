@@ -155,8 +155,7 @@
 					const roles = getSystemRoles();
 
 					const menuId = $(context).attr("data-id");
-					console.log(menuId);
-					storeMenuId = menuId;
+                    storeMenuId = menuId;
 
 					const chosedRoles = load(`/PageRender/GetMenuItemRoles?menuId=${menuId}`);
 
@@ -176,8 +175,7 @@
 			}).then(function(result) {
 				if (result.value) {
 					const roles = [];
-					console.log(typeof result.value);
-					$.each(Array.from(result.value[0]),
+                    $.each(Array.from(result.value[0]),
 						function (index, role) {
 							console.log(role);
 							roles.push(role);

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,19 +13,22 @@ using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Abstractions;
 using ST.Core.BaseControllers;
+using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.MultiTenant.Razor.Settings;
 using ST.MultiTenant.Razor.ViewModels;
+using ST.MultiTenant.ViewModels;
 using ST.Notifications.Abstractions;
 
 namespace ST.MultiTenant.Razor.Controllers
 {
     [Authorize(Roles = "Company Administrator")]
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-    public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser, ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser,
+        ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         /// <summary>
         /// Inject organization service
@@ -32,7 +37,11 @@ namespace ST.MultiTenant.Razor.Controllers
 
         private readonly MultiTenantListSettings _listSettings;
 
-        public CompanyManageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
+        public CompanyManageController(UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager, ICacheService cacheService,
+            ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) :
+            base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
             _listSettings = new MultiTenantListSettings();
@@ -45,11 +54,6 @@ namespace ST.MultiTenant.Razor.Controllers
             ViewBag.User = user;
             ViewBag.UsersListSettings = _listSettings.GetCompanyUserListSettings();
             return base.Index();
-        }
-
-        public virtual IActionResult Users()
-        {
-            return View(_listSettings.GetCompanyUserListSettings());
         }
 
         /// <inheritdoc />
@@ -96,6 +100,66 @@ namespace ST.MultiTenant.Razor.Controllers
             };
 
             return Json(finalResult);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> InviteNewUserAsync([FromBody] InviteNewUserViewModel model)
+        {
+            var resultModel = new ResultModel();
+            if (ModelState.IsValid)
+            {
+                if (await _organizationService.CheckIfUserExistAsync(model.Email))
+                {
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel
+                    {
+                        Key = string.Empty,
+                        Message = "Email is in use"
+                    });
+                    return Json(resultModel);
+                }
+
+                var newUser = new ApplicationUser
+                {
+                    Email = model.Email,
+                    NormalizedEmail = model.Email.ToUpper(),
+                    UserName = model.Email.Split('@')[0],
+                    NormalizedUserName = model.Email.Split('@')[0].ToUpper(),
+                    EmailConfirmed = false,
+                    Created = DateTime.Now,
+                    Author = HttpContext.User.Identity.Name
+                };
+
+                var tenant = await _organizationService.GetTenantByCurrentUserAsync();
+                if (!tenant.IsSuccess)
+                {
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel
+                    {
+                        Key = string.Empty,
+                        Message = "Tenant not found"
+                    });
+                    return Json(resultModel);
+                }
+
+                newUser.TenantId = tenant.Result.Id;
+
+                var result = await _organizationService.CreateNewOrganizationUserAsync(newUser, model.Roles);
+                if (result.IsSuccess)
+                {
+                    await _organizationService.SendInviteToEmailAsync(newUser);
+                    resultModel.IsSuccess = true;
+                    return Json(resultModel);
+                }
+            }
+
+            resultModel.IsSuccess = false;
+            resultModel.Errors.Add(new ErrorModel
+            {
+                Key = string.Empty,
+                Message = "Invalid model"
+            });
+            return Json(resultModel);
         }
     }
 }

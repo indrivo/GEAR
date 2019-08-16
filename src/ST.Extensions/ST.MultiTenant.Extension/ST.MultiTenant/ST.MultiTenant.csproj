@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
     <ProjectReference Include="..\..\ST.Notifications.Extension\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\ST.MultiTenant.Abstractions\ST.MultiTenant.Abstractions.csproj" />

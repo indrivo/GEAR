@@ -41,6 +41,7 @@ using ST.Forms.Razor.Extensions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Extensions;
 using ST.Identity.Data;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.IdentityServer4.Extensions;
 using ST.Identity.LdapAuth;
 using ST.Identity.LdapAuth.Abstractions.Extensions;
@@ -79,6 +80,8 @@ using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
 using ST.Files.Box.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
+using ST.MultiTenant.Abstractions.Extensions;
+using ST.MultiTenant.Services;
 
 namespace ST.Cms
 {
@@ -176,10 +179,7 @@ namespace ST.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() =>
-			{
-				CoreApp.OnApplicationStarted(app);
-			});
+			lifetime.ApplicationStarted.Register(() => { CoreApp.OnApplicationStarted(app); });
 
 			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
 
@@ -198,6 +198,7 @@ namespace ST.Cms
 				//Use compression
 				services.AddResponseCompression();
 			}
+
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 
@@ -220,29 +221,27 @@ namespace ST.Cms
 			});
 
 			//------------------------------Identity Module-------------------------------------
-			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly,
+					HostingEnvironment)
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
 				.AddMvc()
-				.AddJsonOptions(x =>
-				{
-					x.SerializerSettings.DateFormatString = Settings.Date.DateFormat;
-				});
+				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
-			.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
-			.AddHealthChecks(checks =>
-			{
-				//var minutes = 1;
-				//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
-				//	minutes = minutesParsed;
+				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
+				.AddHealthChecks(checks =>
+				{
+					//var minutes = 1;
+					//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
+					//	minutes = minutesParsed;
 
-				//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
-			});
+					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
+				});
 
 			//Register MPass
 			services.AddMPassSigningCredentials(new MPassSigningCredentials
@@ -270,6 +269,9 @@ namespace ST.Cms
 				})
 				.AddEntityModuleEvents()
 				.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
+
+			//---------------------------Multi Tenant Module-------------------------------------
+			services.AddTenantModule<OrganizationService, Tenant>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -301,7 +303,9 @@ namespace ST.Cms
 			});
 
 			//------------------------------Database backup Module-------------------------------------
-			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>, PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
+			services
+				.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
+					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 			//------------------------------------Page render Module-------------------------------------
 			services.AddPageRenderUiModule();
@@ -371,7 +375,9 @@ namespace ST.Cms
 			}
 
 			//----------------------------------------Ldap Module-------------------------------------
-			services.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(Configuration);
+			services
+				.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(
+					Configuration);
 
 			//-------------------------------------Commerce module-------------------------------------
 			services.RegisterCommerceModule<CommerceDbContext>()
