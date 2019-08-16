@@ -229,8 +229,7 @@ namespace ST.MultiTenant.Services
         {
             var rolesToExclude = new HashSet<string>
             {
-                "Administrator",
-                "Super admin"
+                Core.Settings.SuperAdmin
             };
 
             var roles = await _roleManager.Roles
