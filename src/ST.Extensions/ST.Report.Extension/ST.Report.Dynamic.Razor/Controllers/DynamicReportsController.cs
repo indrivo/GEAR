@@ -6,7 +6,10 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Report.Abstractions;
 using ST.Report.Abstractions.Models;
+using ST.Report.Abstractions.Models.Enums;
 using ST.Report.Dynamic.Razor.ViewModels;
+using ST.Report.Abstractions.Extensions;
+using System.Linq;
 
 namespace ST.Report.Dynamic.Razor.Controllers
 {
@@ -267,9 +270,40 @@ namespace ST.Report.Dynamic.Razor.Controllers
             }
         }
 
+
+        [HttpPost]
+        public IActionResult GetReportData(DynamicReportViewModel dto)
+        {
+            var t = _service.GetReportContent(dto);
+            return Json(t);
+        }
+
         #endregion
 
         #region Database Methods
+
+        public ActionResult GetAggregateTypes()
+        {
+            var result = new List<SelectOption>();
+            var resultDict = Enum<AggregateType>.ToDictionary();
+            if (resultDict != null)
+            {
+                result = resultDict.Select(s => new SelectOption { id = s.Key, text = s.Value }).ToList();
+            }
+            return Json(result);
+        }
+
+        public ActionResult GetFilterTypes()
+        {
+            var result = new List<SelectOption>();
+            var resultDict = Enum<FilterType>.ToDictionary();
+            if (resultDict != null)
+            {
+                result = resultDict.Select(s => new SelectOption { id = s.Key, text = s.Value }).ToList();
+            }
+            return Json(result);
+        }
+
 
         /// <summary>
         /// Get the list of table in the database/Context/Schema

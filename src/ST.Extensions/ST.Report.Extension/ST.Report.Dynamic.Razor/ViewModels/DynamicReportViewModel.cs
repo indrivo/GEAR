@@ -33,4 +33,12 @@ namespace ST.Report.Dynamic.Razor.ViewModels
         public string Name { get; set; }
     }
 
+
+    public class SelectOption
+    {
+        public int id { get; set; }
+
+        public string text { get; set; }
+    }
+
 }

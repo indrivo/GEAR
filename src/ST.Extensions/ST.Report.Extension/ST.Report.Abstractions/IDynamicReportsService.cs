@@ -31,6 +31,8 @@ namespace ST.Report.Abstractions
             IEnumerable<DynamicReportColumnDataModel> columnNames, DateTime startDateTime, DateTime endDateTime,
             List<DynamicReportFilter> filtersList);
 
+        IEnumerable<dynamic> GetReportContent(DynamicReportViewModel dto);
+
         List<decimal> GetChartDataForTimeFrame(string tableName, List<DynamicReportColumnDataModel> columnList,
             DateTime startDateTime, DateTime endDateTime, List<DynamicReportFilter> filters,
             DynamicReportChartDto chartDto, int timeFrame);
