@@ -52,16 +52,12 @@ namespace ST.Files
         public virtual ResultModel<Guid> DeleteFile(Guid id)
         {
             var file = _context.Files.FirstOrDefault(x => x.Id == id);
-            if (file != null)
-            {
-                file.IsDeleted = true;
-                _context.Files.Update(file);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
-            }
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            file.IsDeleted = true;
+            _context.Files.Update(file);
+            _context.SaveChanges();
+
 
             return new ResultModel<Guid>
             {
@@ -73,16 +69,12 @@ namespace ST.Files
         public virtual ResultModel<Guid> RestoreFile(Guid id)
         {
             var file = _context.Files.FirstOrDefault(x => x.Id == id);
-            if (file != null)
-            {
-                file.IsDeleted = false;
-                _context.Files.Update(file);
-                _context.SaveChanges();
-            }
-            else
-            {
-                ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
-            }
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            file.IsDeleted = false;
+            _context.Files.Update(file);
+            _context.SaveChanges();
+
 
             return new ResultModel<Guid>
             {
@@ -93,12 +85,9 @@ namespace ST.Files
         public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
             var file = _context.Files.FirstOrDefault(x => x.Id == id);
-            if (file != null)
-                _context.Files.Remove(file);
-            else
-            {
-                ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
-            }
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            _context.Files.Remove(file);
 
             _context.SaveChanges();
             return new ResultModel<Guid>

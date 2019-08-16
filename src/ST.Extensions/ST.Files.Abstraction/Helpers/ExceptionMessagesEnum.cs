@@ -7,8 +7,10 @@ namespace ST.Files.Abstraction.Helpers
     /// </summary>
     public enum ExceptionMessagesEnum
     {
-        [Description("File Not Found")] FileNotFound = 0,
+        [Description("File Not Found")] FileNotFound,
 
-        [Description("IFormFile is null")] NullIFormFile = 0,
+        [Description("IFormFile is null")] NullIFormFile,
+
+        [Description("There was a error on saving file ")] FileNotSaved,
     }
 }

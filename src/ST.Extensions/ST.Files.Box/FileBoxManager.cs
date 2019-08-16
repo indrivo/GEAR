@@ -57,16 +57,11 @@ namespace ST.Files.Box
         public virtual ResultModel<Guid> DeleteFile(Guid id)
         {
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file != null)
-            {
-                file.IsDeleted = true;
-                _context.FilesBox.Update(file);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
-            }
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            file.IsDeleted = true;
+            _context.FilesBox.Update(file);
+            _context.SaveChanges();
 
             return new ResultModel<Guid>
             {
@@ -77,16 +72,12 @@ namespace ST.Files.Box
         public virtual ResultModel<Guid> RestoreFile(Guid id)
         {
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file != null)
-            {
-                file.IsDeleted = false;
-                _context.FilesBox.Update(file);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
-            }
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            file.IsDeleted = false;
+            _context.FilesBox.Update(file);
+            _context.SaveChanges();
+
 
             return new ResultModel<Guid>
             {
@@ -97,16 +88,11 @@ namespace ST.Files.Box
         public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file != null)
-            {
-                var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, file.Path, file.Name);
-                File.Delete(filePath);
-                _context.FilesBox.Remove(file);
-            }
-            else
-            {
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
-            }
+            if (file != null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, file.Path, file.Name);
+            File.Delete(filePath);
+            _context.FilesBox.Remove(file);
 
             _context.SaveChanges();
             return new ResultModel<Guid>
