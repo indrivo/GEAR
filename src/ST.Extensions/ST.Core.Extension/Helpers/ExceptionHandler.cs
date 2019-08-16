@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using ST.Core.Helpers;
 
-namespace ST.Files.Abstraction.Helpers
+namespace ST.Core.Helpers
 {
     public static class ExceptionHandler
     {
@@ -13,7 +12,7 @@ namespace ST.Files.Abstraction.Helpers
         /// <typeparam name="T"></typeparam>
         /// <param name="exceptionMessageEnum"></param>
         /// <returns></returns>
-        public static ResultModel<T> ReturnErrorModel<T>(ExceptionMessagesEnum exceptionMessageEnum)
+        public static ResultModel<T> ReturnErrorModel<T>(Enum exceptionMessageEnum)
         {
             return new ResultModel<T>
             {
@@ -23,34 +22,32 @@ namespace ST.Files.Abstraction.Helpers
                     new ErrorModel
                     {
                         Key = string.Empty,
-                        Message = GetEnumDescription(exceptionMessageEnum)
+                        Message = EnumHelper.GetEnumDescription(exceptionMessageEnum)
                     },
                 }
             };
         }
 
         /// <summary>
-        /// Get enumerator description
+        /// Returns ResultModel of type T with exception message passed from enumeration exception
         /// </summary>
-        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="exceptionMessage"></param>
         /// <returns></returns>
-        private static string GetEnumDescription(this Enum value)
+        public static ResultModel<T> ReturnErrorModel<T>(object exceptionMessage)
         {
-            var type = value.GetType();
-            var name = Enum.GetName(type, value);
-            if (name != null)
+            return new ResultModel<T>
             {
-                var field = type.GetField(name);
-                if (field != null)
+                IsSuccess = false,
+                Errors = new List<IErrorModel>
                 {
-                    DescriptionAttribute attr =
-                        Attribute.GetCustomAttribute(field,
-                            typeof(DescriptionAttribute)) as DescriptionAttribute;
-                    return attr?.Description;
+                    new ErrorModel
+                    {
+                        Key = string.Empty,
+                        Message = exceptionMessage.ToString()
+                    }
                 }
-            }
-
-            return null;
+            };
         }
     }
 }

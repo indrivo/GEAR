@@ -80,11 +80,11 @@ namespace ST.Files.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult Delete(string id)
+        public JsonResult Delete(Guid id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to delete file!", success = false});
+            if (id != Guid.Empty) return Json(new {message = "Fail to delete file!", success = false});
 
-            var response = _fileManager.DeleteFile(Guid.Parse(id));
+            var response = _fileManager.DeleteFile(id);
             return Json(response);
         }
 
@@ -95,11 +95,11 @@ namespace ST.Files.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult Restore(string id)
+        public JsonResult Restore(Guid id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to restore file!", success = false});
+            if (id != Guid.Empty) return Json(new {message = "Fail to restore file!", success = false});
 
-            var response = _fileManager.RestoreFile(Guid.Parse(id));
+            var response = _fileManager.RestoreFile(id);
             return Json(response);
         }
 
@@ -110,11 +110,11 @@ namespace ST.Files.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult DeletePermanent(string id)
+        public JsonResult DeletePermanent(Guid id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to delete form!", success = false});
+            if (id != Guid.Empty) return Json(new {message = "Fail to delete form!", success = false});
 
-            var response = _fileManager.DeleteFilePermanent(Guid.Parse(id));
+            var response = _fileManager.DeleteFilePermanent(id);
             return Json(response);
         }
     }
