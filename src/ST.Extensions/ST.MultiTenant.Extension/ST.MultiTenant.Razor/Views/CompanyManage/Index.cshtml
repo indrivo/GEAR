@@ -109,7 +109,7 @@
                     onOpen: () => {
                         $('#roleSelect').select2({
                             dropdownCssClass: "increased-z-index",
-                            data: load("/PageRender/GetRoles").map(roles => ({ id: roles.id, text: roles.name }))
+                            data: load("@Url.Action("GetRoles")").map(roles => ({ id: roles.id, text: roles.name }))
                         });
                     },
                     preConfirm: () => {

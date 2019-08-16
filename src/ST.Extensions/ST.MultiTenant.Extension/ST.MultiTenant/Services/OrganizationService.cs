@@ -221,6 +221,23 @@ namespace ST.MultiTenant.Services
                 $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
         }
 
+        /// <summary>
+        /// Return list of available roles
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<ApplicationRole>> GetRoles()
+        {
+            var rolesToExclude = new HashSet<string>
+            {
+                Core.Settings.SuperAdmin
+            };
+
+            var roles = await _roleManager.Roles
+                .Where(x => !x.IsDeleted && !rolesToExclude.Any(z => z.Equals(x.Name)))
+                .ToListAsync();
+
+            return roles;
+        }
 
         private static string GenerateRandomPassword(PasswordOptions opts = null)
         {
