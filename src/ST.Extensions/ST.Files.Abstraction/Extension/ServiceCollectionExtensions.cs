@@ -21,7 +21,7 @@ namespace ST.Files.Abstraction.Extension
             where TFileContext : DbContext, IFileContext
         {
             services.AddScopedContextFactory<IFileContext, TFileContext>();
-            services.AddDbContext<TFileContext>(options);
+            services.AddDbContext<TFileContext>(options, ServiceLifetime.Transient);
             return services;
         }
     }

@@ -8,7 +8,7 @@ using ST.Files.Abstraction.Models.ViewModels;
 
 namespace ST.Files.Razor.Controllers
 {
-    public class FileController : Controller
+    public sealed class FileController : Controller
     {
         /// <summary>
         /// Inject file service
@@ -20,7 +20,7 @@ namespace ST.Files.Razor.Controllers
             _fileManager = fileManager;
         }
 
-        public IActionResult File()
+        public IActionResult Index()
         {
             return View();
         }
@@ -57,7 +57,7 @@ namespace ST.Files.Razor.Controllers
         }
 
         /// <summary>
-        /// Multiple Upload
+        /// Multiple file upload
         /// </summary>
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
@@ -83,10 +83,10 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(string id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete file!", success = false });
+            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to delete file!", success = false});
 
             var res = _fileManager.DeleteFile(Guid.Parse(id));
-            return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
+            return Json(new {message = "Form was delete with success!", success = res.IsSuccess});
         }
 
         /// <summary>
@@ -99,10 +99,10 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Restore(string id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to restore file!", success = false });
+            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to restore file!", success = false});
 
             var res = _fileManager.RestoreFile(Guid.Parse(id));
-            return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
+            return Json(new {message = "Form was delete with success!", success = res.IsSuccess});
         }
 
         /// <summary>
@@ -115,10 +115,10 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult DeletePermanent(string id)
         {
-            if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete form!", success = false });
+            if (string.IsNullOrEmpty(id)) return Json(new {message = "Fail to delete form!", success = false});
 
             var res = _fileManager.DeleteFilePermanent(Guid.Parse(id));
-            return Json(new { message = "Form was delete with success!", success = res.IsSuccess });
+            return Json(new {message = "Form was delete with success!", success = res.IsSuccess});
         }
     }
 }

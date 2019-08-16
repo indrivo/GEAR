@@ -8,7 +8,7 @@ using ST.Files.Box.Abstraction;
 
 namespace ST.Files.Razor.Controllers
 {
-    public class FileBoxController : Controller
+    public sealed class FileBoxController : Controller
     {
         /// <summary>
         /// Inject file service
@@ -20,7 +20,7 @@ namespace ST.Files.Razor.Controllers
             _fileManager = fileManager;
         }
 
-        public IActionResult FileBox()
+        public IActionResult Index()
         {
             return View();
         }
@@ -35,7 +35,7 @@ namespace ST.Files.Razor.Controllers
         public FileResult GetFile(Guid id)
         {
             var response = _fileManager.GetFileById(id);
-            return PhysicalFile(Path.Combine(response.Result.Path, response.Result.FileName), "text/plain");
+            return response.IsSuccess ? PhysicalFile(Path.Combine(response.Result.Path, response.Result.FileName), "application/octet-stream", response.Result.FileName) : null;
         }
 
         /// <summary>

@@ -319,7 +319,7 @@ namespace ST.Cms
 			});
 
 			services
-				.AddFileBoxModule<FileBoxManager<FileDbContext>>()
+				.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()
 				.AddFileBoxModuleStorage<FileBoxDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

@@ -1,4 +1,6 @@
-﻿namespace ST.Files.Abstraction.Models
+﻿using ST.Files.Abstraction.Models;
+
+namespace ST.Files.Box.Abstraction.Models
 {
     public sealed class FileBox : File
     {

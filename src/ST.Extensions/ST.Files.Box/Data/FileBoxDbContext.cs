@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Audit.Contexts;
+using ST.Audit.Models;
 using ST.Core.Abstractions;
-using ST.Files.Abstraction;
 using ST.Files.Abstraction.Models;
+using ST.Files.Box.Abstraction;
+using ST.Files.Box.Abstraction.Models;
 
 namespace ST.Files.Box.Data
 {
-    public class FileBoxDbContext : TrackerDbContext, IFileContext
+    public class FileBoxDbContext : TrackerDbContext, IFileBoxContext
     {
         /// <summary>
         /// Schema
@@ -14,12 +16,14 @@ namespace ST.Files.Box.Data
         /// </summary>
         public const string Schema = "File";
 
+        public static bool IsMigrationMode { get; set; } = false;
+
         /// <inheritdoc />
         /// <summary>
         /// Options
         /// </summary>
         /// <param name="options"></param>
-        public FileBoxDbContext(DbContextOptions options)
+        public FileBoxDbContext(DbContextOptions<FileBoxDbContext> options)
             : base(options)
         {
             //TODO: Do some actions on context instance
@@ -28,7 +32,7 @@ namespace ST.Files.Box.Data
         /// <summary>
         /// Files
         /// </summary>
-        public virtual DbSet<FileBox> FilesBox { get; set; }
+        public DbSet<FileBox> FilesBox { get; set; }
 
 
         /// <inheritdoc />
@@ -40,6 +44,11 @@ namespace ST.Files.Box.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
+
+            if (!IsMigrationMode) return;
+
+            builder.Ignore<TrackAudit>();
+            builder.Ignore<TrackAuditDetails>();
         }
 
         /// <inheritdoc />
@@ -48,7 +57,7 @@ namespace ST.Files.Box.Data
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
+        public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
             return Set<TEntity>();
         }

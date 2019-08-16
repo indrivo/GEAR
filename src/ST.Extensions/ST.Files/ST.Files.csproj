@@ -11,8 +11,4 @@
     <ProjectReference Include="..\ST.Files.Abstraction\ST.Files.Abstraction.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

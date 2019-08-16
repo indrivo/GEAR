@@ -1,21 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using ST.Core.Helpers;
-using ST.Files.Abstraction;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using ST.Files.Abstraction.Models;
 using ST.Files.Abstraction.Models.ViewModels;
+using ST.Files.Abstraction.Utils;
 using ST.Files.Box.Abstraction;
+using ST.Files.Box.Abstraction.Models;
+using ST.Files.Box.Data;
 using ST.Files.Box.Models;
 
 
 namespace ST.Files.Box
 {
-    public class FileBoxManager<TContext> : IFileBoxManager where TContext : DbContext, IFileContext
+    public class FileBoxManager<TContext> : IFileBoxManager where TContext : FileBoxDbContext, IFileBoxContext
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly TContext _context;
@@ -36,7 +35,9 @@ namespace ST.Files.Box
         {
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
 
-            var encryptedFile = EncryptFile(dto.File);
+            var encryptedFile = SaveFilePhysical(dto.File);
+            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+
             var file = new FileBox
             {
                 FileExtension = encryptedFile.FileExtension,
@@ -44,7 +45,7 @@ namespace ST.Files.Box
                 Name = encryptedFile.FileName,
                 Size = encryptedFile.Size
             };
-            _context.Set<FileBox>().Add(file);
+            _context.FilesBox.Add(file);
             _context.SaveChanges();
             return new ResultModel<Guid>
             {
@@ -55,16 +56,16 @@ namespace ST.Files.Box
 
         public virtual ResultModel<Guid> DeleteFile(Guid id)
         {
-            var file = _context.Set<FileBox>().FirstOrDefault(x => x.Id == id);
+            var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
             if (file != null)
             {
                 file.IsDeleted = true;
-                _context.Set<FileBox>().Update(file);
+                _context.FilesBox.Update(file);
                 _context.SaveChanges();
             }
             else
             {
-                return ReturnErrorModel<Guid>("File not Found");
+                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
             }
 
             return new ResultModel<Guid>
@@ -75,17 +76,16 @@ namespace ST.Files.Box
 
         public virtual ResultModel<Guid> RestoreFile(Guid id)
         {
-
-            var file = _context.Set<FileBox>().FirstOrDefault(x => x.Id == id);
+            var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
             if (file != null)
             {
                 file.IsDeleted = false;
-                _context.Set<FileBox>().Update(file);
+                _context.FilesBox.Update(file);
                 _context.SaveChanges();
             }
             else
             {
-                return ReturnErrorModel<Guid>("File not Found");
+                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
             }
 
             return new ResultModel<Guid>
@@ -96,12 +96,16 @@ namespace ST.Files.Box
 
         public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
-            var file = _context.Set<FileBox>().FirstOrDefault(x => x.Id == id);
+            var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
             if (file != null)
-                _context.Set<FileBox>().Remove(file);
+            {
+                var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, file.Path, file.Name);
+                File.Delete(filePath);
+                _context.FilesBox.Remove(file);
+            }
             else
             {
-                return ReturnErrorModel<Guid>("File not Found");
+                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
             }
 
             _context.SaveChanges();
@@ -113,16 +117,16 @@ namespace ST.Files.Box
 
         public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
-            var dbFileResult = _context.Set<FileBox>().FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
+            var dbFileResult = _context.FilesBox.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
             var dto = new DownloadFileViewModel();
             if (dbFileResult == null)
                 return new ResultModel<DownloadFileViewModel>
                 {
-                    IsSuccess = true,
+                    IsSuccess = false,
                     Result = dto
                 };
-            var uploads = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath);
-            var filePath = Path.Combine(uploads, dbFileResult.Path);
+
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, dbFileResult.Path);
             dto.Path = filePath;
             dto.FileExtension = dbFileResult.FileExtension;
             dto.FileName = dbFileResult.Name;
@@ -134,12 +138,14 @@ namespace ST.Files.Box
             };
         }
 
-        private FileBoxDto EncryptFile(IFormFile file)
+        private FileBoxDto SaveFilePhysical(IFormFile file)
         {
             if (file.Length <= 0) return null;
 
-            var uploads = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath);
-            var filePath = Path.Combine(uploads, file.FileName);
+            var directory = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, DateTime.Now.ToLongDateString());
+            var exists = Directory.Exists(directory);
+            if (!exists) Directory.CreateDirectory(directory);
+            var filePath = Path.Combine(directory, file.FileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 file.CopyTo(fileStream);
@@ -148,51 +154,41 @@ namespace ST.Files.Box
             var response = new FileBoxDto
             {
                 FileExtension = file.ContentType,
-                Path = DateTime.Now.Month.ToString(),
+                Path = DateTime.Now.ToLongDateString(),
                 FileName = file.FileName,
                 Size = file.Length
             };
             return response;
         }
 
-        private static ResultModel<T> ReturnErrorModel<T>(object exceptionMessage)
-        {
-            return new ResultModel<T>
-            {
-                IsSuccess = false,
-                Errors = new List<IErrorModel>
-                {
-                    new ErrorModel
-                    {
-                        Key = string.Empty,
-                        Message = "Failed to execute action!"
-                    },
-                    new ErrorModel
-                    {
-                        Key = string.Empty,
-                        Message = exceptionMessage.ToString()
-                    }
-                }
-            };
-        }
-
         private ResultModel<Guid> UpdateFile(UploadFileViewModel dto)
         {
-            var encryptedFile = EncryptFile(dto.File);
-            var file = new FileBox
-            {
-                FileExtension = encryptedFile.FileExtension,
-                Path = encryptedFile.Path,
-                Name = encryptedFile.FileName,
-                Size = encryptedFile.Size
-            };
-            _context.Set<FileBox>().Add(file);
+            var file = _context.FilesBox.FirstOrDefault(x => x.Id == dto.Id);
+            if (file == null)
+                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
+            DeleteFilePhysical(file.Path, file.Name);
+            var encryptedFile = SaveFilePhysical(dto.File);
+            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+
+            file.FileExtension = encryptedFile.FileExtension;
+            file.Path = encryptedFile.Path;
+            file.Name = encryptedFile.FileName;
+            file.Size = encryptedFile.Size;
+            _context.FilesBox.Update(file);
             _context.SaveChanges();
+
             return new ResultModel<Guid>
             {
                 IsSuccess = true,
                 Result = file.Id
             };
+        }
+
+        private void DeleteFilePhysical(string path, string fileName)
+        {
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, path, fileName);
+            File.Delete(filePath);
         }
     }
 }

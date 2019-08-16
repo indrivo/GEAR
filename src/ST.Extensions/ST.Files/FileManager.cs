@@ -2,18 +2,18 @@
 using ST.Core.Helpers;
 using ST.Files.Abstraction;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using ST.Files.Abstraction.Models;
 using ST.Files.Abstraction.Models.ViewModels;
+using ST.Files.Abstraction.Utils;
+using ST.Files.Data;
 using ST.Files.Models;
 
 
 namespace ST.Files
 {
-    public class FileManager<TContext> : IFileManager where TContext : DbContext, IFileContext
+    public class FileManager<TContext> : IFileManager where TContext : FileDbContext, IFileContext
     {
         private readonly TContext _context;
 
@@ -31,6 +31,8 @@ namespace ST.Files
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
 
             var encryptedFile = EncryptFile(dto.File);
+            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+
             var file = new FileStorage
             {
                 FileExtension = encryptedFile.FileExtension,
@@ -38,7 +40,7 @@ namespace ST.Files
                 Name = encryptedFile.FileName,
                 Size = encryptedFile.Size
             };
-            _context.Set<FileStorage>().Add(file);
+            _context.Files.Add(file);
             _context.SaveChanges();
             return new ResultModel<Guid>
             {
@@ -49,16 +51,16 @@ namespace ST.Files
 
         public virtual ResultModel<Guid> DeleteFile(Guid id)
         {
-            var file = _context.Set<FileStorage>().FirstOrDefault(x => x.Id == id);
+            var file = _context.Files.FirstOrDefault(x => x.Id == id);
             if (file != null)
             {
                 file.IsDeleted = true;
-                _context.Set<FileStorage>().Update(file);
+                _context.Files.Update(file);
                 _context.SaveChanges();
             }
             else
             {
-                return ReturnErrorModel<Guid>("File not Found");
+                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
             }
 
             return new ResultModel<Guid>
@@ -70,17 +72,16 @@ namespace ST.Files
 
         public virtual ResultModel<Guid> RestoreFile(Guid id)
         {
-
-            var file = _context.Set<FileStorage>().FirstOrDefault(x => x.Id == id);
+            var file = _context.Files.FirstOrDefault(x => x.Id == id);
             if (file != null)
             {
                 file.IsDeleted = false;
-                _context.Set<FileStorage>().Update(file);
+                _context.Files.Update(file);
                 _context.SaveChanges();
             }
             else
             {
-                return ReturnErrorModel<Guid>("File not Found");
+                ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
             }
 
             return new ResultModel<Guid>
@@ -91,12 +92,12 @@ namespace ST.Files
 
         public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
-            var file = _context.Set<FileStorage>().FirstOrDefault(x => x.Id == id);
+            var file = _context.Files.FirstOrDefault(x => x.Id == id);
             if (file != null)
-                _context.Set<FileStorage>().Remove(file);
+                _context.Files.Remove(file);
             else
             {
-                return ReturnErrorModel<Guid>("File not Found");
+                ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
             }
 
             _context.SaveChanges();
@@ -108,7 +109,7 @@ namespace ST.Files
 
         public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
-            var dbFileResult = _context.Set<FileStorage>().FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
+            var dbFileResult = _context.Files.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
             var dto = new DownloadFileViewModel();
             if (dbFileResult == null)
                 return new ResultModel<DownloadFileViewModel>
@@ -135,10 +136,11 @@ namespace ST.Files
             using (var memoryStream = new MemoryStream())
             {
                 file.CopyToAsync(memoryStream);
+                var a = memoryStream.ToArray();
                 var response = new FileStorageDto
                 {
                     FileExtension = file.ContentType,
-                    EncryptedFile = memoryStream.ToArray(),
+                    EncryptedFile = a,
                     FileName = file.FileName,
                     Size = file.Length
                 };
@@ -147,38 +149,19 @@ namespace ST.Files
             }
         }
 
-        private static ResultModel<T> ReturnErrorModel<T>(object exceptionMessage)
-        {
-            return new ResultModel<T>
-            {
-                IsSuccess = false,
-                Errors = new List<IErrorModel>
-                {
-                    new ErrorModel
-                    {
-                        Key = string.Empty,
-                        Message = "Failed to execute action!"
-                    },
-                    new ErrorModel
-                    {
-                        Key = string.Empty,
-                        Message = exceptionMessage.ToString()
-                    }
-                }
-            };
-        }
-
         private ResultModel<Guid> UpdateFile(UploadFileViewModel dto)
         {
+            var file = _context.Files.FirstOrDefault(x => x.Id == dto.Id);
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+
             var encryptedFile = EncryptFile(dto.File);
-            var file = new FileStorage
-            {
-                FileExtension = encryptedFile.FileExtension,
-                Hash = encryptedFile.EncryptedFile,
-                Name = encryptedFile.FileName,
-                Size = encryptedFile.Size
-            };
-            _context.Set<FileStorage>().Add(file);
+            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+
+            file.FileExtension = encryptedFile.FileExtension;
+            file.Hash = encryptedFile.EncryptedFile;
+            file.Name = encryptedFile.FileName;
+            file.Size = encryptedFile.Size;
+            _context.Files.Add(file);
             _context.SaveChanges();
             return new ResultModel<Guid>
             {

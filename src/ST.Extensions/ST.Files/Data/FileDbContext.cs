@@ -6,7 +6,7 @@ using ST.Files.Abstraction.Models;
 
 namespace ST.Files.Data
 {
-    public class FileDbContext : TrackerDbContext, IFileContext
+    public  class FileDbContext : TrackerDbContext, IFileContext
     {
         /// <summary>
         /// Schema
@@ -19,7 +19,7 @@ namespace ST.Files.Data
         /// Options
         /// </summary>
         /// <param name="options"></param>
-        public FileDbContext(DbContextOptions options)
+        public FileDbContext(DbContextOptions<FileDbContext> options)
             : base(options)
         {
             //TODO: Do some actions on context instance
@@ -28,7 +28,7 @@ namespace ST.Files.Data
         /// <summary>
         /// Files
         /// </summary>
-        public virtual DbSet<FileStorage> Files { get; set; }
+        public DbSet<FileStorage> Files { get; set; }
 
 
         /// <inheritdoc />
@@ -48,7 +48,7 @@ namespace ST.Files.Data
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
+        public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
             return Set<TEntity>();
         }

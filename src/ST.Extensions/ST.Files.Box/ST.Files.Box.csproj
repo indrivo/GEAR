@@ -9,4 +9,8 @@
     <ProjectReference Include="..\ST.Files.Box.Abstraction\ST.Files.Box.Abstraction.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
