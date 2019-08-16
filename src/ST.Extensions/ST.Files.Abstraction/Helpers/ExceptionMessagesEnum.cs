@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace ST.Files.Abstraction.Utils
+namespace ST.Files.Abstraction.Helpers
 {
     /// <summary>
     /// File module exception messages

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using ST.Core.Helpers;
 
-namespace ST.Files.Abstraction.Utils
+namespace ST.Files.Abstraction.Helpers
 {
     public static class ExceptionHandler
     {
