@@ -576,8 +576,6 @@ namespace ST.Identity.Razor.Controllers
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
                 await _signInManager.SignInAsync(user, false);
                 _logger.LogInformation("User created a new account with password.");
                 return RedirectToLocal(returnUrl);
@@ -764,7 +762,12 @@ namespace ST.Identity.Razor.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
+        /// <summary>
+        /// Get view for confirmation new user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="confirmToken"></param>
+        /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(Guid? userId, string confirmToken)
@@ -790,6 +793,11 @@ namespace ST.Identity.Razor.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Save password for new user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -799,6 +807,12 @@ namespace ST.Identity.Razor.Controllers
             var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.UserId));
 
             var resetToken = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
+            if (resetToken == null)
+            {
+                ModelState.AddModelError(string.Empty, "Error on generate reset token");
+                return View(model);
+            }
+
             var result = await _userManager.ResetPasswordAsync(currentUser, resetToken, model.Password);
             if (result.Succeeded)
             {
@@ -807,11 +821,7 @@ namespace ST.Identity.Razor.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
+            AddErrors(result);
             return View(model);
         }
 
