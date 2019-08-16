@@ -18,6 +18,7 @@ namespace ST.Cms.Controllers.Custom
 		/// DB context
 		/// </summary>
 		private readonly EntitiesDbContext _context;
+
 		/// <summary>
 		/// Inject iso dataService
 		/// </summary>
@@ -42,7 +43,8 @@ namespace ST.Cms.Controllers.Custom
 		/// <param name="requirementEntityId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		public async Task<JsonResult> GetTreeData(Guid? standardEntityId, Guid? categoryEntityId, Guid? requirementEntityId)
+		public async Task<JsonResult> GetTreeData(Guid? standardEntityId, Guid? categoryEntityId,
+			Guid? requirementEntityId)
 		{
 			var result = new ResultModel();
 			if (standardEntityId == null || categoryEntityId == null || requirementEntityId == null)
@@ -53,6 +55,7 @@ namespace ST.Cms.Controllers.Custom
 				};
 				return Json(result);
 			}
+
 			var standardEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == standardEntityId);
 			var categoryEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == categoryEntityId);
 			var requirementEntity = await _context.Table.FirstOrDefaultAsync(x => x.Id == requirementEntityId);
@@ -76,11 +79,12 @@ namespace ST.Cms.Controllers.Custom
 		/// <param name="value"></param>
 		/// <returns></returns>
 		[HttpPost]
-		public async Task<JsonResult> AddOrUpdateStandardRequirementCompleteText([Required]Guid requirementId,
-			Guid? fillRequirementId, string value) => Json(await _isoService.AddOrUpdateStandardRequirementCompleteText(requirementId, fillRequirementId, value));
+		public async Task<JsonResult> AddOrUpdateStandardRequirementCompleteText([Required] Guid requirementId,
+			Guid? fillRequirementId, string value) =>
+			Json(await _isoService.AddOrUpdateStandardRequirementCompleteText(requirementId, fillRequirementId, value));
 
 		/// <summary>
-		/// Get iso responsibiles from control details 
+		/// Get iso responsibiles from control details
 		/// </summary>
 		/// <param name="controlDetailsId"></param>
 		/// <returns></returns>

@@ -26,7 +26,8 @@ namespace ST.Report.Abstractions.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddDynamicReportModuleStorage<TReportContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
+        public static IServiceCollection AddDynamicReportModuleStorage<TReportContext>(this IServiceCollection services,
+            Action<DbContextOptionsBuilder> options)
             where TReportContext : DbContext, IReportContext
         {
             services.AddDbContext<TReportContext>(options);

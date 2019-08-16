@@ -35,10 +35,12 @@ namespace ST.Identity.Razor.Controllers
     public class AccountController : Controller
     {
         #region Private Dependency Injection Fields
+
         /// <summary>
         /// Inject distributed cache from redis 
         /// </summary>
         private readonly IDistributedCache _cache;
+
         private readonly IEmailSender _emailSender;
         private readonly IIdentityServerInteractionService _interactionService;
 
@@ -53,17 +55,22 @@ namespace ST.Identity.Razor.Controllers
         private readonly INotify<ApplicationRole> _notify;
 
         private readonly IOptions<MPassOptions> _mpassOptions;
+
         /// <summary>
         /// Inject M pass dataService
         /// </summary>
         private readonly IMPassService _mpassService;
+
         private readonly IMPassSigningCredentialsStore _mpassSigningCredentialStore;
+
         /// <summary>
         /// Inject SignIn Manager
         /// </summary>
         private readonly SignInManager<ApplicationUser> _signInManager;
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccesor;
+
         /// <summary>
         /// Inject Ldap User Manager
         /// </summary>
@@ -75,6 +82,7 @@ namespace ST.Identity.Razor.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
 
         #endregion Private Dependency Injection Fields
+
         private const string MpassRequestSessionKey = "mpass_request_id";
         private const string ReturnUrl = "ReturnUrl";
         private const string SamlRequest = "SAMLRequest";
@@ -90,7 +98,8 @@ namespace ST.Identity.Razor.Controllers
             INotify<ApplicationRole> notify,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
-            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env, BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
+            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env,
+            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
@@ -161,31 +170,6 @@ namespace ST.Identity.Razor.Controllers
             await _signInManager.SignInAsync(existingUser, authProps);
 
             return !string.IsNullOrEmpty(returnUrl) ? RedirectToLocal(returnUrl) : RedirectToAction("Index", "Home");
-        }
-
-        /// <summary>
-        /// Confirm email
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
         /// <summary>
@@ -344,7 +328,8 @@ namespace ST.Identity.Razor.Controllers
 
                 if (user.IsPasswordExpired())
                 {
-                    ModelState.AddModelError(string.Empty, "Password has been expired, you need to change the password");
+                    ModelState.AddModelError(string.Empty,
+                        "Password has been expired, you need to change the password");
                     return View(model);
                 }
 
@@ -356,6 +341,7 @@ namespace ST.Identity.Razor.Controllers
                         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                         return View(model);
                     }
+
                     var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
                     if (!bind)
                     {
@@ -454,8 +440,10 @@ namespace ST.Identity.Razor.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "CORELdap");
             }
+
             return await _userManager.FindByNameAsync(user.UserName);
         }
+
         /// <summary>
         /// Handle logout page post-back
         /// </summary>
@@ -514,7 +502,7 @@ namespace ST.Identity.Razor.Controllers
             if (User.Identity.IsAuthenticated == false)
             {
                 // if the user is not authenticated, then just show logged out page
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+                return await Logout(new LogoutViewModel {LogoutId = logoutId});
             }
 
             //Test for Xamarin.
@@ -522,7 +510,7 @@ namespace ST.Identity.Razor.Controllers
             if (context?.ShowSignoutPrompt == false)
             {
                 //it's safe to automatically sign-out
-                return await Logout(new LogoutViewModel { LogoutId = logoutId });
+                return await Logout(new LogoutViewModel {LogoutId = logoutId});
             }
 
             // show the logout prompt. this prevents attacks where the user
@@ -548,10 +536,10 @@ namespace ST.Identity.Razor.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return Json(new { message = "Error on logout!!", success = false });
+                return Json(new {message = "Error on logout!!", success = false});
             }
 
-            return Json(new { message = "Log Out success", success = true });
+            return Json(new {message = "Log Out success", success = true});
         }
 
         /// <summary>
@@ -580,7 +568,7 @@ namespace ST.Identity.Razor.Controllers
         {
             ViewData[ReturnUrl] = returnUrl;
             if (!ModelState.IsValid) return View(model);
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -588,8 +576,6 @@ namespace ST.Identity.Razor.Controllers
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
                 await _signInManager.SignInAsync(user, false);
                 _logger.LogInformation("User created a new account with password.");
                 return RedirectToLocal(returnUrl);
@@ -611,7 +597,7 @@ namespace ST.Identity.Razor.Controllers
         public IActionResult ResetPassword(string code = null)
         {
             if (code == null) throw new ApplicationException("A code must be supplied for password reset.");
-            var model = new ResetPasswordViewModel { Code = code };
+            var model = new ResetPasswordViewModel {Code = code};
             return View(model);
         }
 
@@ -680,7 +666,7 @@ namespace ST.Identity.Razor.Controllers
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new {returnUrl});
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
@@ -774,6 +760,69 @@ namespace ST.Identity.Razor.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Home");
+        }
+
+        /// <summary>
+        /// Get view for confirmation new user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="confirmToken"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(Guid? userId, string confirmToken)
+        {
+            if (!userId.HasValue || string.IsNullOrEmpty(confirmToken))
+            {
+                return NotFound();
+            }
+
+            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ConfirmEmailViewModel
+            {
+                UserId = currentUser.Id,
+                UserName = currentUser.UserName,
+                Email = currentUser.Email,
+                Token = confirmToken
+            };
+            return View(model);
+        }
+
+        /// <summary>
+        /// Save password for new user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.UserId));
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
+            if (resetToken == null)
+            {
+                ModelState.AddModelError(string.Empty, "Error on generate reset token");
+                return View(model);
+            }
+
+            var result = await _userManager.ResetPasswordAsync(currentUser, resetToken, model.Password);
+            if (result.Succeeded)
+            {
+                await _userManager.ConfirmEmailAsync(currentUser, model.Token);
+                await _signInManager.PasswordSignInAsync(currentUser, model.Password, true, false);
+                return RedirectToAction("Index", "Home");
+            }
+
+            AddErrors(result);
+            return View(model);
         }
 
         #region Helpers

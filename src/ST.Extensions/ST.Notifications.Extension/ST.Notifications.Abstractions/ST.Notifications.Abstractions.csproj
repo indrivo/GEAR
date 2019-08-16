@@ -24,4 +24,10 @@
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Models\Data\" />
+    <Folder Include="ServiceBuilder\" />
+  </ItemGroup>
+
 </Project>
