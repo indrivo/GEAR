@@ -14,6 +14,10 @@ using ST.Report.Abstractions;
 using ST.Report.Abstractions.Models;
 using ST.Core.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
+using ST.Report.Abstractions.Models.Enums;
+using System.Dynamic;
+using System.Text;
+using ST.Report.Abstractions.Extensions;
 
 namespace ST.Report.Dynamic
 {
@@ -46,7 +50,7 @@ namespace ST.Report.Dynamic
             var columnListString = model.ColumnList.Aggregate("", (current, column)
                 => current + (column.Prefix + "(" + column.DataColumn + ")|"));
             var filtersListString = model.Filters.Aggregate("", (current, filter)
-                => current + (filter.FilterType + ":" + filter.ColumnName + ":" + filter.Operation + ":" + filter.Value + "|"));
+                => current + (filter.FilterType + ":" + filter.FieldName + ":" + filter.FilterType + ":" + filter.Value + "|"));
             databaseReport.Name = model.Name;
             databaseReport.ChartType = model.ChartType;
             databaseReport.ColumnNames = columnListString;
@@ -208,9 +212,8 @@ namespace ST.Report.Dynamic
                 var filterContent = filter.Split(":");
                 response.Filters.Add(new DynamicReportFilter()
                 {
-                    FilterType = filterContent[0],
-                    ColumnName = filterContent[1],
-                    Operation = filterContent[2],
+                    FilterType = (FilterType)int.Parse(filterContent[0]),
+                    FieldName = filterContent[1],
                     Value = filterContent[3]
                 });
             }
@@ -557,19 +560,19 @@ namespace ST.Report.Dynamic
 
                 foreach (var filter in filtersList)
                 {
-                    var tablePrimaryName = GetPrimaryTableName(filter.ColumnName);
+                    var tablePrimaryName = GetPrimaryTableName(filter.FieldName);
                     if (tablePrimaryName == string.Empty)
                     {
                         var tableSchema = GetTableSchema(tableName);
-                        if (filter.Operation == "MIN" || filter.Operation == "MAX" || filter.Operation == "AVG")
+                        if (filter.FilterType.ToString() == "MIN" || filter.FilterType.ToString() == "MAX" || filter.FilterType.ToString() == "AVG")
                         {
-                            filterCommand += " " + filter.FilterType + " " + filter.ColumnName + " = (SELECT " + filter.Operation + "\"" + tableName + "\".\"" + filter.ColumnName
+                            filterCommand += " " + filter.FilterType + " " + filter.FieldName + " = (SELECT " + filter.FilterType.ToString() + "\"" + tableName + "\".\"" + filter.FieldName
                                              + "\" FROM \"" + tableSchema + "\".\"" + tableName + "\")";
                         }
                         else
                         {
-                            filterCommand += " " + filter.FilterType + " " + tableName + "\".\"" + filter.ColumnName
-                                             + "\" " + filter.Operation;
+                            filterCommand += " " + filter.FilterType + " " + tableName + "\".\"" + filter.FieldName
+                                             + "\" " + filter.FilterType.ToString();
                         }
 
                         if (filter.Value != null)
@@ -579,14 +582,14 @@ namespace ST.Report.Dynamic
                     }
                     else
                     {
-                        if (tablePrimaryName != "" && (filter.FilterType == "GROUP BY" || filter.FilterType == "ORDER BY"))
+                        if (tablePrimaryName != "" && (filter.FilterType.ToString() == "GROUP BY" || filter.FilterType.ToString() == "ORDER BY"))
                         {
                             filterCommand += " " + filter.FilterType + " " + tablePrimaryName + ".\"Name\"";
                         }
                         else
                         {
-                            filterCommand += " " + filter.FilterType + " \"" + tableName + "\".\"" + filter.ColumnName
-                                             + "\" " + filter.Operation;
+                            filterCommand += " " + filter.FilterType + " \"" + tableName + "\".\"" + filter.FieldName
+                                             + "\" " + filter.FilterType.ToString();
                         }
 
                         if (filter.Value != null)
@@ -681,6 +684,141 @@ namespace ST.Report.Dynamic
             }
             return queryResultChart;
         }
+
+
+
+        public IEnumerable<dynamic> GetReportContent(DynamicReportViewModel dto)
+        {
+            if (_context == null) throw new ArgumentNullException(nameof(_context));
+
+
+            var resultContent = new List<DynamicReportQueryResultViewModel>();
+
+
+            using (var connection = new NpgsqlConnection(GetConnectionString()))
+            {
+                connection.Open();
+                using (var sqlCommand = connection.CreateCommand())
+                {
+                    var testCommand = @"
+                    SELECT 
+                      system.""Menu"".""Name"",
+                      COUNT(system.""MenuItem"".""Id"")
+                    FROM
+                      system.""Menu""
+                      INNER JOIN system.""MenuItem"" ON(system.""Menu"".""Id"" = system.""MenuItem"".""MenuId"")
+                      WHERE
+                      system.""Menu"".""Name"" LIKE '%Commerce Landing page%'
+                    GROUP BY system.""Menu"".""Id""
+                    ";
+
+                    StringBuilder queryBuilder = new StringBuilder();
+                    queryBuilder.Append("SELECT ");
+                    if (dto.FieldsList.Count() == 0)
+                    {
+                        queryBuilder.Append(" * ");
+                    }
+                    else
+                    {
+                        foreach (var field in dto.FieldsList)
+                        {
+                            if (field.AggregateType != AggregateType.None)
+                            {
+                                queryBuilder.Append($" {field.AggregateType}(system.{field.FieldName}) ");
+                            }
+                            else
+                            {
+                                queryBuilder.Append($" system.{field.FieldName} ");
+                            }
+
+                            if (!field.Equals(dto.FieldsList.Last()))
+                            {
+                                queryBuilder.Append($",");
+                            }
+                        }
+                    }
+
+                    queryBuilder.Append(" FROM ");
+
+                    foreach (var table in dto.Tables)
+                    {
+                        if (table.Equals(dto.Tables.First()))
+                        {
+                            queryBuilder.Append($@" system.""{table}"" ");
+                        }
+                        else
+                        {
+                            queryBuilder.Append($@" INNER JOIN system.""{table}"" ");
+                            var rel = dto.Relations.FirstOrDefault(s => s.ForeignKeyTable == table);
+                            if (rel != null)
+                            {
+                                queryBuilder.Append($@"  ON(system.""{rel.PrimaryKeyTable}"".""Id"" = system.""{rel.ForeignKeyTable}"".""{rel.ForeignKey}"") ");
+                            }
+                        }
+
+                    }
+
+                    var filterFields = dto.FiltersList.Where(s => s.FilterType != FilterType.GroupBy);
+
+                    if (filterFields != null)
+                    {
+                        foreach (var filter in filterFields)
+                        {
+                            if (filter.Equals(filterFields.First()))
+                            {
+                                queryBuilder.Append($@" WHERE system.{filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
+                            }
+                            else
+                            {
+                                queryBuilder.Append($@" AND system.{filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
+                            }
+                        }
+                    }
+
+                    var groupByFields = dto.FiltersList.Where(s => s.FilterType == FilterType.GroupBy);
+
+                    if (groupByFields != null)
+                    {
+                        foreach (var group in groupByFields)
+                        {
+                            if (group.Equals(groupByFields.First()))
+                            {
+                                queryBuilder.Append($@" GROUP BY system.{group.FieldName} ");
+                            }
+                            else
+                            {
+                                queryBuilder.Append($@", system.{group.FieldName} ");
+                            }
+                        }
+                    }
+
+                    sqlCommand.CommandText = queryBuilder.ToString();
+
+                    using (var reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            yield return SqlDataReaderToExpando(reader);
+                        }
+                    }
+                }
+                connection.Close();
+            }
+
+            //return resultContent;
+        }
+
+
+        private dynamic SqlDataReaderToExpando(NpgsqlDataReader reader)
+        {
+            var expandoObject = new ExpandoObject() as IDictionary<string, object>;
+
+            for (var i = 0; i < reader.FieldCount; i++)
+                expandoObject.Add($"{ reader.GetName(i)}[{i}]", reader[i]);
+
+            return expandoObject;
+        }
+
 
         #endregion
     }

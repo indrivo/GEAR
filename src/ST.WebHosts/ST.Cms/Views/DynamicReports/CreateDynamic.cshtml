@@ -2,6 +2,89 @@
 	ViewData["Title"] = "CreateDynamic";
 }
 
+@section PreScripts
+{
+	<script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+	<script src="~/lib/Chart.js/Chart.min.js"></script>
+}
+
+@section Styles
+{
+	<link href="~/lib/Chart.js/Chart.min.css" />
+	<style>
+		#queryResultTable table {
+			font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+			#queryResultTable table td, #queryResultTable th {
+				border: 1px solid #ddd;
+				padding: 8px;
+			}
+
+			#queryResultTable table tr:nth-child(even) {
+				background-color: wheat;
+			}
+
+			#queryResultTable table tr:hover {
+				background-color: #ddd;
+			}
+
+			#queryResultTable table th {
+				padding-top: 12px;
+				padding-bottom: 12px;
+				text-align: left;
+				background-color: #4CAF50;
+				color: white;
+			}
+
+		.select2-results__options ul li {
+			padding-top: 2px !important;
+			padding-bottom: 2px !important;
+		}
+
+		.select2-container--default .select2-results__group {
+			font-weight: bold;
+		}
+
+		.select2-selection--single .select2-selection__rendered {
+			line-height: 34px !important;
+		}
+
+		.select2-container .select2-selection--single {
+			height: 37px !important;
+		}
+
+		.select2-selection__arrow {
+			height: 36px !important;
+		}
+
+		.fieldSelectBox .select2-selection__choice {
+			width: 100%;
+			line-height: 36px;
+		}
+
+			.fieldSelectBox .select2-selection__choice .select2-selection__choice__remove {
+				float: left;
+			}
+
+			.fieldSelectBox .select2-selection__choice .displayField {
+				line-height: 18px;
+				margin: 2px;
+			}
+
+		.card-block {
+			min-height: 0px;
+			border-top: 1px solid rgba(0, 0, 0, 0.125);
+		}
+
+		.card-header {
+			border-bottom: 0;
+		}
+	</style>
+}
+
 <h2>Create Dynamic Report:</h2>
 
 <div class="card mb-3">
@@ -34,118 +117,196 @@
 </div>
 
 
-<div class="card">
+<div class="card mb-3">
 	<div class="card-header">
 		Display options
+		<button class="btn btn-info text-white ml-2" id="AddField" role="button">Add Field</button>
 	</div>
-	<div class="card-block pl-3 pt-2">
+	<div class="card-block pl-3 pt-2" style="display:none" id="cbFields">
 		<div class="row">
-			<div class="col-3">
-				<div class="form-group">
-					<label for="fieldsSelect">Select fields:</label>
-					<select class="form-control fieldsSelect" id="fieldsSelect"></select>
-				</div>
-			</div>
-			<!--#region Relationships-->
-			<div class="col-md-1">
-				<div class="form-group">
-					<label>Filters : </label>
-					<br />
-					<button class="btn btn-info text-white" id="AddFilter"
-							role="button">
-						Add Filter
-					</button>
-				</div>
-			</div>
+			<div class="col-6" id="pnlFields"></div>
+		</div>
+	</div>
+</div>
+
+<div class="card mb-3">
+	<div class="card-header">
+		Filters and agregates options
+		<button class="btn btn-info text-white ml-2" id="AddFilter" role="button">Add Filter</button>
+	</div>
+	<div class="card-block pl-3 pt-2" style="display:none" id="cbFilters">
+		<div class="row">
 			<div class="col-6" id="pnlFilters"></div>
-			<!--#endregion Relationships-->
 		</div>
 	</div>
 </div>
 
 
+<button class="btn btn-info m-t-20" id="runReport">Run</button>
 
-<style>
-	#select2-fieldsSelect-results ul li {
-		padding-top: 2px !important;
-		padding-bottom: 2px !important;
-	}
+<div class="m-t-30 bg-white" id="queryResultTable">
+</div>
 
-	.select2-container--default .select2-results__group {
-		font-weight: bold;
-	}
-
-	.select2-selection--single .select2-selection__rendered {
-		line-height: 34px !important;
-	}
-
-	.select2-container .select2-selection--single {
-		height: 37px !important;
-	}
-
-	.select2-selection__arrow {
-		height: 36px !important;
-	}
-</style>
-
-
-
-
+<canvas class="col-10" id="myChart" style="width:1000px; height:278px"></canvas>
 
 @section Scripts
 {
 	<script>
 		$(document).ready(function () {
 			var relationId = 0;
+			var fieldId = 0;
 			var filterId = 0;
 			var items = [];
+			var allFields = [];
 
-			$('#tableSelect').select2({
-				placeholder: " - Select tables - ",
-				multiple: true
-			}).change(function () {
-				items = $(this).val();
-				SetRelValues();
+			function updateReportList(action, data, selectOptions) {
+				$("#" + selectOptions).html("");
+				var callback = function (data) {
+					var s;
+					for (let i = 0; i < data.length; i++) {
+						s += `<option value="${data[i]}">${data[i]}</option>`;
+					}
+					$("#" + selectOptions).html(s);
+				};
+				GetDataList(action, data, callback);
+			}
 
-				var allFields = [];
-				var tableRequests = [];
+			function updateReportListKeyValue(action, data, selectOptions) {
+				$("#" + selectOptions).html("");
+				var callback = function (data) {
+					var s;
+					for (let i = 0; i < data.length; i++) {
+						s += `<option value="${data[i].id}">${data[i].text}</option>`;
+					}
+					$("#" + selectOptions).html(s);
+				};
+				GetDataList(action, data, callback);
+			}
 
-				$.each(items, function (i, option) {
-					tableRequests.push(prepareFields(allFields, option));
+			function GetDataList(action, data, callback) {
+				var requestAction = action;
+				$.ajax({
+					type: "POST",
+					url: requestAction,
+					dataType: 'json',
+					data: data,
+					success: function (data) {
+						callback(data);
+					}
 				});
+			}
 
-				$.when.apply($, tableRequests).done(function () {
-					fieldPreparationDone(allFields);
-				});
+			//#endregion Common
 
-
-			});
-
-			$('#fieldsSelect').select2({
-				placeholder: " - Select fields - ",
-				templateSelection: function(item) {
-					var $option = $(item.element);
-					var $optGroup = $option.parent();
-					return $optGroup.attr('label') + ' (' + item.text + ')';
-				},
-				multiple: true
-			}).change(function () {
-				SetFilterValues();
-			});
+			//#region Data
 
 			updateReportList("@Url.Action("GetTablesAjax", "DynamicReports")", null, "tableSelect");
 
+			$('#tableSelect').select2({
+					placeholder: " - Select tables - ",
+					multiple: true
+				})
+				.change(function () {
+					items = $(this).val();
+					SetRelValues();
 
-			$("#AddFilter").click(function () {
-				var currentHtml = '<div class=\"col-12 row m-t-20 changedRow\"><div class=\"col-md-2\">' +
-					'<div class=\"form-group\"><label>Type:</label><select class=\"form-control filterTypeSelector\">' +
-					'<option></option><option>ORDER BY</option><option>GROUP BY</option><option>AND</option><option>OR</option></select></div></div><div class=\"col-md-3\"><div class=\"form-group\">' +
-					'<label>Column:</label><select class=\"form-control filterColumnSelector\"></select></div></div><div class=\"col-2\">' +
-					'<div class=\"form-group\"><label>Operation:</label><select class=\"form-control filterOperationSelector\"><option></option><option>=</option><option>!=</option><option>MIN</option><option>MAX</option><option>AVG</option></select></div></div>' +
-					'<div class=\"col-md-3\"><div class=\"form-group\"><label>Value:</label><input class=\"form-control filterValueSelector\"/></div></div><div class=\"col-2\">' +
-					'<button class=\"btn btn-danger m-t-30 removeFilter\">Remove Filter</button></div></div>';
-				$("#filterCollapse").append(currentHtml);
+					allFields = [];
+					var tableRequests = [];
+
+					$.each(items, function (i, option) {
+						tableRequests.push(prepareFields(allFields, option));
+					});
+
+					$.when.apply($, tableRequests).done(function () { SetFieldValues(allFields);SetFilterValues(allFields);});
+			}).on('select2:unselecting', function() {
+				$(this).data('unselecting', true);
+			}).on('select2:opening', function (e) {
+				if ($(this).data('unselecting')) {
+					$(this).removeData('unselecting');
+					e.preventDefault();
+				}
 			});
+
+
+
+			function prepareFields($n, option) {
+				var dfd = $.Deferred();
+				var callback = function (data) {
+					var children = new Array();
+					$.each(data, function (i, field) {
+						children.push({ id: '"' + option + '"."' + field + '"', text: field });
+					});
+					$n.push( {
+						id: option,
+						text: option,
+						children: children
+					});
+					dfd.resolve();
+					return 1;
+				};
+				var param = { tableName: option };
+				GetDataList("@Url.Action("GetTableColumnsAjax", "DynamicReports")", param, callback);
+				return dfd.promise();
+			}
+
+			//#endregion Data
+
+			//#region Relationships
+
+			$("#pnlRelationships").on("click", ".removeRelationship", function () {
+				var parent = $(this).parent().parent();
+				Swal.fire({
+					title: 'Are you sure?',
+					text: "You won't be able to revert this!",
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.value) {
+						Swal.fire(
+							'Deleted!',
+							'Your file has been deleted.',
+							'success'
+						);
+						$(parent).remove();
+					}
+				});
+			});
+
+			function SetRelValues() {
+				$('#pnlRelationships > .row').each(function () {
+
+					var primaryKeyTableSelect = $(this).find(".primaryKeyTableSelect");
+					var foreignKeyTableSelect = $(this).find(".foreignKeyTableSelect");
+
+					var prevValuePKT = primaryKeyTableSelect.val();
+
+					primaryKeyTableSelect.val(null).empty();
+
+					$.each(items, function (i, option) {
+						var newOption = new Option(option, option, false, false);
+						primaryKeyTableSelect.append(newOption).trigger('change');
+						if (prevValuePKT == option) {
+							primaryKeyTableSelect.val(option);
+						}
+					});
+
+					var prevValueFKT = foreignKeyTableSelect.val();
+
+					foreignKeyTableSelect.val(null).empty();
+
+					$.each(items, function (i, option) {
+						var newOption = new Option(option, option, false, false);
+						foreignKeyTableSelect.append(newOption).trigger('change');
+						if (prevValueFKT == option) {
+							foreignKeyTableSelect.val(option);
+						}
+					});
+
+				});
+			}
 
 			$("#AddRelationship").click(function () {
 				relationId++;
@@ -195,47 +356,228 @@
 			});
 
 
-			$("#AddFilter").click(function () {
-				filterId++;
+			//#region Fields
+
+			$("#pnlFields").on("click", ".removeField", function () {
+				var parent = $(this).parent().parent().parent();
+				Swal.fire({
+					title: 'Are you sure?',
+					text: "You won't be able to revert this!",
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.value) {
+						Swal.fire(
+							'Deleted!',
+							'Your file has been deleted.',
+							'success'
+						);
+						$(parent).remove();
+						if ($('#pnlFields > div').length == 0) {
+							$('#cbFields').hide();
+						}
+					}
+				});
+			});
+
+			function SetFieldValues(data) {
+				if (data.length > 0) {
+					$('#pnlFields > .row').each(function () {
+
+						var fieldsSelect = $(this).find(".fieldSelector");
+						var prevValueFields = [];
+						prevValueFields.push(fieldsSelect.val());
+						var currentDataFields = [];
+						$.each(data, function (i, option) {
+							if (option.children != null && option.children.length > 0) {
+								$.map(option.children, function (val, i) {
+									currentDataFields.push(val.id);
+								});
+							}
+						});
+
+						var intersection = $(prevValueFields).filter(currentDataFields);
+
+						fieldsSelect.val(null).empty();
+						fieldsSelect.select2({
+							placeholder: " - Select fields - ",
+							multiple: false,
+							templateSelection: function (item) {
+								var $option = $(item.element);
+								var $optGroup = $option.parent();
+								if ($optGroup.attr('label')) {
+									return $optGroup.attr('label') + ' (' + item.text + ')';
+								}
+								else {
+									return " - Select fields - ";
+								}
+							},
+							data: data
+						});
+
+						fieldsSelect.val(intersection).trigger('change');
+					});
+				}
+			}
+
+
+			$("#AddField").click(function () {
+				fieldId++;
+				$('#cbFields').show();
 				var currentHtml = `
 				<div class="row">
-					<div class="col-12 row m-t-20 changedRow">
-						<div class="col-md-3">
+					<div class="col-12 row m-t-20">
+						<div class="col-md-4">
 							<div class="form-group">
 								<label>Field:</label>
-								<select class="form-control filterColumnSelector" id="filterColumnSelector`+filterId+`">
+								<select class="form-control fieldSelector" id="fieldSelector`+fieldId+`">
 								</select>
 							</div>
 						</div>
-						<div class="col-2">
+						<div class="col-4">
+							<div class="form-group">
+								<label>Aggregates:</label>
+								<select class="form-control fieldOperationSelector" id="fieldOperationSelector`+fieldId+`">
+								</select>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="form-group">
+								<label>Caption:</label>
+								<input class="form-control filterValueSelector" type="text" id="fieldCaptionSelector`+fieldId+`">
+							</div>
+						</div>
+						<div class="col-1">
+							<label>&nbsp;</label>
+							<button class="btn btn-danger removeField">Remove Field</button>
+						</div>
+					</div>
+				</div>`;
+				$("#pnlFields").append(currentHtml);
+
+				$('#fieldSelector'+fieldId).select2({
+					placeholder: " - Select field - ",
+					multiple: false
+				});
+				$('#fieldOperationSelector'+fieldId).select2({
+					placeholder: " - Select operation - ",
+					multiple: false
+				});
+				updateReportListKeyValue("@Url.Action("GetAggregateTypes", "DynamicReports")", null, 'fieldOperationSelector'+fieldId)
+
+				SetFieldValues(allFields);
+			});
+
+			//#endregion Fields
+
+
+
+
+			//#region Filters
+
+			$("#pnlFilters").on("click", ".removeFilter", function () {
+				var parent = $(this).parent().parent().parent();
+				Swal.fire({
+					title: 'Are you sure?',
+					text: "You won't be able to revert this!",
+					type: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.value) {
+						Swal.fire(
+							'Deleted!',
+							'Your file has been deleted.',
+							'success'
+						);
+						$(parent).remove();
+						if ($('#pnlFilters > div').length == 0) {
+							$('#cbFilters').hide();
+						}
+					}
+				});
+			});
+
+			function SetFilterValues(data) {
+				if (data.length > 0) {
+					$('#pnlFilters > .row').each(function () {
+
+						var filterFieldSelector = $(this).find(".filterFieldSelector");
+						var prevValueFields = [];
+						prevValueFields.push(filterFieldSelector.val());
+						var currentDataFields = [];
+						$.each(data, function (i, option) {
+							if (option.children != null && option.children.length > 0) {
+								$.map(option.children, function (val, i) {
+									currentDataFields.push(val.id);
+								});
+							}
+						});
+
+						var intersection = $(prevValueFields).filter(currentDataFields);
+
+						filterFieldSelector.val(null).empty();
+						filterFieldSelector.select2({
+							placeholder: " - Select field - ",
+							multiple: false,
+							templateSelection: function (item) {
+								var $option = $(item.element);
+								var $optGroup = $option.parent();
+								if ($optGroup.attr('label')) {
+									return $optGroup.attr('label') + ' (' + item.text + ')';
+								}
+								else {
+									return " - Select field - ";
+								}
+							},
+							data: data
+						});
+
+						filterFieldSelector.val(intersection).trigger('change');
+					});
+				}
+			}
+
+
+			$("#AddFilter").click(function () {
+				filterId++;
+				$('#cbFilters').show();
+				var currentHtml = `
+				<div class="row">
+					<div class="col-12 row m-t-20 changedRow">
+						<div class="col-md-4">
+							<div class="form-group">
+								<label>Field:</label>
+								<select class="form-control filterFieldSelector" id="filterFieldSelector`+filterId+`">
+								</select>
+							</div>
+						</div>
+						<div class="col-4">
 							<div class="form-group">
 								<label>Operation:</label>
 								<select class="form-control filterOperationSelector" id="filterOperationSelector`+filterId+`">
-									<option></option>
-									<option>=</option>
-									<option>!=</option>
-									<option>></option>
-									<option><</option>
-									<option>>=</option>
-									<option><=</option>
-									<option>Contains</option>
 								</select>
 							</div>
 						</div>
 						<div class="col-md-3">
 							<div class="form-group">
 								<label>Value:</label>
-								<input class="form-control filterValueSelector" id="filterValueSelector`+filterId+`">
+								<input class="form-control filterValueSelector" type="text" id="filterValueSelector`+filterId+`">
 							</div>
 						</div>
-						<div class="col-2">
+						<div class="col-1">
 							<label>&nbsp;</label>
 							<button class="btn btn-danger removeFilter">Remove Filter</button>
 						</div>
 					</div>
 				</div>`;
 				$("#pnlFilters").append(currentHtml);
-				$('#filterColumnSelector'+filterId).select2({
+				$('#filterFieldSelector'+filterId).select2({
 					placeholder: " - Select field - ",
 					multiple: false
 				});
@@ -243,192 +585,203 @@
 					placeholder: " - Select operation - ",
 					multiple: false
 				});
-				SetFilterValues();
+
+				updateReportListKeyValue("@Url.Action("GetFilterTypes", "DynamicReports")", null, 'filterOperationSelector'+filterId)
+
+				SetFilterValues(allFields);
 			});
 
-
-			$("#pnlRelationships").on("click", ".removeRelationship", function () {
-				var parent = $(this).parent().parent();
-				Swal.fire({
-					title: 'Are you sure?',
-					text: "You won't be able to revert this!",
-					type: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#3085d6',
-					cancelButtonColor: '#d33',
-					confirmButtonText: 'Yes, delete it!'
-				}).then((result) => {
-					if (result.value) {
-						Swal.fire(
-							'Deleted!',
-							'Your file has been deleted.',
-							'success'
-						);
-						$(parent).remove();
-					}
-				});
-			});
-
-			$("#pnlFilters").on("click", ".removeFilter", function () {
-				var parent = $(this).parent().parent();
-				Swal.fire({
-					title: 'Are you sure?',
-					text: "You won't be able to revert this!",
-					type: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#3085d6',
-					cancelButtonColor: '#d33',
-					confirmButtonText: 'Yes, delete it!'
-				}).then((result) => {
-					if (result.value) {
-						Swal.fire(
-							'Deleted!',
-							'Your file has been deleted.',
-							'success'
-						);
-						$(parent).remove();
-					}
-				});
-			});
-
-			//#region Functions
-
-
-			function updateReportList(action, data, selectOptions) {
-				$("#" + selectOptions).html("");
-				var callback = function (data) {
-					var s;
-					for (let i = 0; i < data.length; i++) {
-						s += `<option value="${data[i]}">${data[i]}</option>`;
-					}
-					$("#" + selectOptions).html(s);
-				};
-				GetDataList(action, data, callback);
-			}
-
-			function GetDataList(action, data, callback) {
-				var requestAction = action;
-				$.ajax({
-					type: "POST",
-					url: requestAction,
-					dataType: 'json',
-					data: data,
-					success: function (data) {
-						callback(data);
-					}
-				});
-			}
-
-			function SetRelValues() {
-				$('#pnlRelationships > .row').each(function () {
-
-					var primaryKeyTableSelect = $(this).find(".primaryKeyTableSelect");
-					var foreignKeyTableSelect = $(this).find(".foreignKeyTableSelect");
-
-					var prevValuePKT = primaryKeyTableSelect.val();
-
-					primaryKeyTableSelect.val(null).empty();
-
-					$.each(items, function (i, option) {
-						var newOption = new Option(option, option, false, false);
-						primaryKeyTableSelect.append(newOption).trigger('change');
-						if (prevValuePKT == option) {
-							primaryKeyTableSelect.val(option);
-						}
-					});
-
-					var prevValueFKT = foreignKeyTableSelect.val();
-
-					foreignKeyTableSelect.val(null).empty();
-
-					$.each(items, function (i, option) {
-						var newOption = new Option(option, option, false, false);
-						foreignKeyTableSelect.append(newOption).trigger('change');
-						if (prevValueFKT == option) {
-							foreignKeyTableSelect.val(option);
-						}
-					});
-
-				});
-			}
-
-			function SetFilterValues() {
-				$('#pnlFilters > .row').each(function () {
-
-					var fields = $('#fieldsSelect').select2('data');
-
-					var filterColumnSelector = $(this).find(".filterColumnSelector");
-
-					var prevValueFCS = filterColumnSelector.val();
-
-					filterColumnSelector.val(null).empty();
-
-					$.each(fields, function (i, item) {
-						var $option = $(item.element);
-						var $optGroup = $option.parent();
-						var newOption = new Option($optGroup.attr('label') + ' (' + item.text + ')', item.id, false, false);
-						filterColumnSelector.append(newOption).trigger('change');
-						if (prevValueFCS == item.id) {
-							filterColumnSelector.val(item.id);
-						}
-					});
-				});
-			}
-
-			function fieldPreparationDone(data) {
-				var fieldsSelect = $('#fieldsSelect');
-				var prevValueFields = fieldsSelect.val();
-
-				var currentDataFields = [];
-				$.each(data, function (i, option) {
-					if (option.children != null && option.children.length > 0) {
-						$.map( option.children, function( val, i ) {
-							currentDataFields.push(val.id);
-						});
-					}
-				});
-
-				var intersection = $(prevValueFields).filter(currentDataFields);
-
-				fieldsSelect.val(null).empty();
-				fieldsSelect.select2({
-					placeholder: " - Select fields - ",
-					multiple: true,
-					templateSelection: function(item) {
-						var $option = $(item.element);
-						var $optGroup = $option.parent();
-						return $optGroup.attr('label') + ' (' + item.text + ')';
-					},
-					data: data
-				});
-
-				fieldsSelect.val(intersection).trigger('change');
-			}
-
-			function prepareFields($n, option) {
-				var dfd = $.Deferred();
-				var callback = function (data) {
-					var children = new Array();
-					$.each(data, function (i, field) {
-						children.push({ id: option+'.'+ field, text: field });
-					});
-					$n.push( {
-						id: option,
-						text: option,
-						children: children
-					});
-					dfd.resolve();
-					return 1;
-				};
-				var param = { tableName: option };
-				GetDataList("@Url.Action("GetTableColumnsAjax", "DynamicReports")", param, callback);
-				return dfd.promise();
-			}
-
-			//#endregion Functions
-
+			//#endregion Filters
 
         });
 	</script>
+
+	<script>
+		$('#runReport').click(function () {
+            GenerateData('@Url.Action("GetReportData", "DynamicReports")');
+        });
+
+
+		function GenerateData(graphUrl) {
+
+			var tables = $('#tableSelect').val();
+			var relations = [];
+			var fieldsList = [];
+			var filtersList = [];
+
+
+			$('#pnlRelationships > .row').each(function () {
+
+				var primaryKeyTableSelect = $(this).find(".primaryKeyTableSelect");
+				var foreignKeyTableSelect = $(this).find(".foreignKeyTableSelect");
+				var foreignKeySelect = $(this).find(".foreignKeySelect");
+
+				relations.push({
+					"primaryKeyTable": primaryKeyTableSelect.val(),
+					"foreignKeyTable": foreignKeyTableSelect.val(),
+					"foreignKey": foreignKeySelect.val()
+				});
+
+			});
+
+			$('#pnlFields > .row').each(function () {
+
+				var fieldsSelect = $(this).find(".fieldSelector");
+				var fieldOperationSelector = $(this).find(".fieldOperationSelector");
+				var filterValueSelector = $(this).find(".filterValueSelector");
+
+				fieldsList.push({
+					"fieldName": fieldsSelect.val(),
+					"fieldAlias": filterValueSelector.val(),
+					"aggregateType": fieldOperationSelector.val()
+				});
+
+			});
+
+			$('#pnlFilters > .row').each(function () {
+				var filterFieldSelector = $(this).find(".filterFieldSelector");
+				var filterOperationSelector = $(this).find(".filterOperationSelector");
+				var filterValueSelector = $(this).find(".filterValueSelector");
+
+				filtersList.push({
+					"fieldName": filterFieldSelector.val(),
+					"filterType": filterOperationSelector.val(),
+					"value": filterValueSelector.val()
+				});
+			});
+
+
+
+			//Create data to send to server
+			var data = {
+				"id": "00000000-0000-0000-0000-000000000000",
+				"name": 'Test',
+				"tables": tables,
+				"relations": relations,
+				"fieldsList": fieldsList,
+				"filtersList": filtersList
+			}
+
+			//Send data and receive model
+			$.ajax({
+				url: graphUrl,
+				content: "application/json; charset=utf-8",
+				type: 'POST',
+				data: data,
+				success: function (result) {
+					//console.log(result);
+					var table = $.makeTable(result);
+					$("#queryResultTable").html('');
+					$(table).appendTo("#queryResultTable");
+					generateChart('pie',result)
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					ShowError(jqXHR.status);
+				}
+			});
+		}
+
+		$.makeTable = function (mydata) {
+			var table = $('<table border=1>');
+			var tblHeader = "<tr>";
+			for (var k in mydata[0]) tblHeader += "<th>" + k.replace(/\[.*?\]/g,""); + "</th>";
+			tblHeader += "</tr>";
+			$(tblHeader).appendTo(table);
+			$.each(mydata, function (index, value) {
+				var TableRow = "<tr>";
+				$.each(value, function (key, val) {
+					TableRow += "<td>" + val + "</td>";
+				});
+				TableRow += "</tr>";
+				$(table).append(TableRow);
+			});
+			return ($(table));
+		};
+
+		function generateChart(type, dataArray) {
+            var chartLabels = [];
+            var tableValues = [];
+            var colorSets = [];
+
+			if (type == 'pie') {
+				var obj = dataArray;
+				console.log(obj);
+				$.each(obj, function (index, value) {
+					chartLabels.push(value.Name);
+				});
+
+				$.each(obj, function (index, value) {
+					tableValues.push(value.count);
+				});
+			};
+
+
+            if (type == 'line' || type == "bar") {
+                tableValues = $.parseJSON(dataArray);
+                var addingValue = 1;
+                var startDateTime = new Date($('#startDateSelect').val());
+                if ($("#timeFrameTypeSelect").val() == "Week") {
+                    addingValue = 7;
+                }
+                if ($("#timeFrameTypeSelect").val() == "Month") {
+                    addingValue = 30;
+                }
+                tableValues.forEach(function () {
+                    chartLabels.push(startDateTime.toDateString());
+                    startDateTime.setDate(startDateTime.getDate() + addingValue);
+                });
+            }
+
+            if (type == 'doughnut') {
+                var obj = $.parseJSON(result.queryData);
+                console.log(obj);
+            }
+
+            tableValues.forEach(function () {
+                colorSets.push(getRandomColor());
+            });
+
+            //Change for colors
+            if (type == 'line') {
+                colorSets = [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ];
+			}
+			console.log(type);
+			console.log(chartLabels);
+			console.log(tableValues);
+            var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: type,
+                data: {
+                    label: '# of Votes',
+                    labels: chartLabels,
+                    datasets: [{
+                        data: tableValues,
+                        backgroundColor: colorSets,
+                        borderColor: colorSets,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+
+	</script>
+
+
 
 }

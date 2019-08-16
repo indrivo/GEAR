@@ -3,12 +3,12 @@
 namespace ST.Report.Abstractions.Models
 {
     /// <summary>
-    /// Dynamic Report Filters
+    /// Dynamic Report Field
     /// </summary>
-    public class DynamicReportFilter
+    public class DynamicReportField
     {
         public string FieldName { get; set; }
-        public FilterType FilterType { get; set; }
-        public string Value { get; set; }
+        public string FieldAlias { get; set; }
+        public AggregateType AggregateType { get; set; }
     }
 }
