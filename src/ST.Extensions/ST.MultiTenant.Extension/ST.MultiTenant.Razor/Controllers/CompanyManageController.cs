@@ -102,6 +102,12 @@ namespace ST.MultiTenant.Razor.Controllers
             return Json(finalResult);
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetRoles()
+        {
+            return Json(await _organizationService.GetRoles());
+        }
+
         [HttpPost]
         public async Task<JsonResult> InviteNewUserAsync([FromBody] InviteNewUserViewModel model)
         {

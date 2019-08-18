@@ -95,5 +95,11 @@ namespace ST.MultiTenant.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<Tenant>> GetTenantByCurrentUserAsync();
+
+        /// <summary>
+        /// Return list of available roles
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<ApplicationRole>> GetRoles();
     }
 }
