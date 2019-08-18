@@ -194,7 +194,7 @@ namespace ST.Cms
 			}
 
 			//Register system config
-			services.RegisterSystemConfig(Configuration);
+			services.RegisterCore(Configuration);
 
 			services.Configure<SecurityStampValidatorOptions>(options =>
 			{

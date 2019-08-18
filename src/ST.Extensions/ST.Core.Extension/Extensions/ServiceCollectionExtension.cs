@@ -13,7 +13,7 @@ namespace ST.Core.Extensions
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterSystemConfig(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection RegisterCore(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SystemConfig>(configuration.GetSection(nameof(SystemConfig)));
             services.AddHostedService<QueuedHostedService>();
