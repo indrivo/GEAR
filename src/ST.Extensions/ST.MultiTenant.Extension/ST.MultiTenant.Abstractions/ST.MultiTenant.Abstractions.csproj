@@ -8,4 +8,8 @@
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>
