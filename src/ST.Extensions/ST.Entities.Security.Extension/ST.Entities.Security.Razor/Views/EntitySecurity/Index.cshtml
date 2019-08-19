@@ -38,6 +38,7 @@
                                 var identifier = $"collapse_{table.Name}_{normalizedName}";
                                 var rolePermissions = tableConf.IsNull() ? new List<string>()
                                     : tableConf.Value?.FirstOrDefault(x => x.Key.Equals(role.Id.ToGuid())).Value?.ToList();
+                                var haveFullControl = rolePermissions?.Any(x => x.Equals(nameof(EntityAccessType.FullControl))) ?? false;
                                 <div>
                                     <a class="btn" data-toggle="collapse" href="#@identifier" role="button" aria-expanded="false" aria-controls="@identifier">
                                         @role.Name
@@ -49,8 +50,10 @@
                                         {
                                             var check = rolePermissions?.Contains(grant.ToString()) ?? false;
                                             var checkIdentifier = $"_{grant}_check_{table.Name}_{normalizedName}";
+                                            var fullControl = grant.ToString().Equals(nameof(EntityAccessType.FullControl));
+                                            var isCheckedFullControl = !fullControl && haveFullControl;
                                             <div class="custom-control custom-checkbox" style="padding-bottom: 1em;">
-                                                <input @(check ? "checked=''" : "") type="checkbox" id="@checkIdentifier" class="custom-control-input vis-check" data-permission="@grant">
+                                                <input @(isCheckedFullControl ? "disabled=''" : "") @(check ? "checked=''" : "") type="checkbox" id="@checkIdentifier" class="custom-control-input vis-check @(fullControl ? " fullControl" : " permission ")" data-permission="@grant">
                                                 <label class="custom-control-label" for="@checkIdentifier">@grant</label>
                                             </div>
                                         }

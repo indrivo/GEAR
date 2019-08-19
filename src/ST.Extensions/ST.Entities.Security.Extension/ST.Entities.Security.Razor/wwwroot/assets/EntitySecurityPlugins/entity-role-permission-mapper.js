@@ -10,6 +10,20 @@
             });
         });
 
+    $(".fullControl").on("change", function () {
+        const ctx = $(this);
+        const isChecked = ctx.is(":checked");
+        const checks = ctx.closest(".grantSection").find(".permission");
+        $.each(checks,
+            (k, v) => {
+                if (isChecked) {
+                    $(v).attr("disabled", "");
+                    v.checked = false;
+                }
+                else $(v).removeAttr("disabled");
+            });
+    });
+
     $("#searchEntity").on("input keypress",
         function () {
             const toFind = $(this).val().toLowerCase();

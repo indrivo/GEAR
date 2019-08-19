@@ -266,7 +266,7 @@ TableBuilder.prototype.deleteItemForever = function (rowId, tableId, viewModelId
  * Render table cell
  * @param {any} column
  */
-TableBuilder.prototype.renderCell = function (target, row, column) {
+TableBuilder.prototype.renderCell = function (row, column) {
 	try {
 		return eval(column.template);
 	}
@@ -638,7 +638,7 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 							elDiv.setAttribute("data-viewmodel", dataX.viewmodelId);
 							elDiv.setAttribute("data-id", row.id);
 							elDiv.setAttribute("data-column-id", column.id);
-							elDiv.innerHTML = ctx.renderCell(elDiv, row, column);
+							elDiv.innerHTML = ctx.renderCell(row, column);
 							return elDiv.outerHTML;
 						}
 					});
