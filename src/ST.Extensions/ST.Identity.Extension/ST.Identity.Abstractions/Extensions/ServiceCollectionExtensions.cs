@@ -20,13 +20,13 @@ namespace ST.Identity.Abstractions.Extensions
         /// <param name="environment"></param>
         /// <returns></returns>
         public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services,
-            IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly, IHostingEnvironment environment)
-        where TContext : DbContext, IIdentityContext
+            IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly,
+            IHostingEnvironment environment)
+            where TContext : DbContext, IIdentityContext
         {
-
             services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddEntityFrameworkStores<TContext>()
-            .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<TContext>()
+                .AddDefaultTokenProviders();
             return services;
         }
 
@@ -52,7 +52,8 @@ namespace ST.Identity.Abstractions.Extensions
         /// <param name="configuration"></param>
         /// <param name="migrationsAssembly"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services, IConfiguration configuration, string migrationsAssembly)
+        public static IServiceCollection AddIdentityModuleStorage<TIdentityContext>(this IServiceCollection services,
+            IConfiguration configuration, string migrationsAssembly)
             where TIdentityContext : DbContext, IIdentityContext
         {
             services.AddDbContext<TIdentityContext>(options =>

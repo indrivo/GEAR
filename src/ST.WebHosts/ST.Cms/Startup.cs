@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,23 +13,13 @@ using ST.Backup.Abstractions.BackgroundServices;
 using ST.Backup.Abstractions.Extensions;
 using ST.Backup.PostGresSql;
 using ST.Cache.Extensions;
+using ST.Cms.Services.Abstractions;
 using ST.Configuration.Extensions;
 using ST.Configuration.Server;
-using ST.DynamicEntityStorage.Extensions;
-using ST.Entities.Data;
-using ST.Identity.Abstractions;
-using ST.Identity.Data;
-using ST.Identity.Versioning;
-using ST.Localization;
-using ST.MPass.Gov;
-using ST.Notifications.Extensions;
-using ST.PageRender.Razor.Extensions;
-using ST.Procesess.Data;
-using ST.Process.Razor.Extensions;
-using ST.Cms.Services.Abstractions;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Razor.Extensions;
+using ST.DynamicEntityStorage.Extensions;
 using ST.ECommerce.Abstractions.Extensions;
 using ST.ECommerce.Abstractions.Models;
 using ST.ECommerce.BaseImplementations.Data;
@@ -42,41 +27,66 @@ using ST.ECommerce.BaseImplementations.Repositories;
 using ST.Email;
 using ST.Email.Abstractions.Extensions;
 using ST.Entities;
-using ST.InternalCalendar.Razor.Extensions;
-using ST.Report.Dynamic.Data;
 using ST.Entities.Abstractions.Extensions;
+using ST.Entities.Data;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
 using ST.Entities.Razor.Extensions;
 using ST.Entities.Security;
 using ST.Entities.Security.Abstractions.Extensions;
 using ST.Entities.Security.Data;
-using ST.Entities.Security.Razor.Extensions;
+using ST.Entities.Security.Extensions;
+using ST.Files;
+using ST.Files.Abstraction.Extension;
+using ST.Files.Data;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
+using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Extensions;
+using ST.Identity.Data;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.IdentityServer4.Extensions;
 using ST.Identity.LdapAuth;
 using ST.Identity.LdapAuth.Abstractions.Extensions;
+using ST.Identity.Permissions;
+using ST.Identity.Permissions.Abstractions.Extensions;
 using ST.Identity.Services;
+using ST.Identity.Versioning;
 using ST.Install;
 using ST.Install.Abstractions.Extensions;
+using ST.InternalCalendar.Razor.Extensions;
+using ST.Localization;
 using ST.Localization.Abstractions;
 using ST.Localization.Abstractions.Extensions;
 using ST.Localization.Abstractions.Models;
 using ST.Localization.Services;
-using ST.PageRender.Abstractions.Extensions;
-using ST.PageRender.Data;
-using ST.Report.Abstractions.Extensions;
-using ST.Report.Dynamic;
-using TreeIsoService = ST.Cms.Services.TreeIsoService;
-using ST.Identity.Permissions.Abstractions.Extensions;
-using ST.Identity.Permissions;
+using ST.MPass.Gov;
 using ST.Notifications;
 using ST.Notifications.Abstractions.Extensions;
 using ST.Notifications.Data;
+using ST.Notifications.Extensions;
 using ST.Notifications.Razor.Extensions;
+using ST.PageRender.Abstractions.Extensions;
+using ST.PageRender.Data;
+using ST.PageRender.Razor.Extensions;
+using ST.Procesess.Data;
+using ST.Process.Razor.Extensions;
+using ST.Report.Abstractions.Extensions;
+using ST.Report.Dynamic;
+using ST.Report.Dynamic.Data;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using ST.Entities.Security.Razor.Extensions;
+using ST.Files.Box;
+using ST.Files.Box.Abstraction.Extension;
+using ST.Files.Box.Data;
+using TreeIsoService = ST.Cms.Services.TreeIsoService;
+using ST.MultiTenant.Abstractions.Extensions;
+using ST.MultiTenant.Services;
 
 namespace ST.Cms
 {
@@ -174,10 +184,7 @@ namespace ST.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() =>
-			{
-				CoreApp.OnApplicationStarted(app);
-			});
+			lifetime.ApplicationStarted.Register(() => { CoreApp.OnApplicationStarted(app); });
 
 			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
 
@@ -196,6 +203,7 @@ namespace ST.Cms
 				//Use compression
 				services.AddResponseCompression();
 			}
+
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 
@@ -225,23 +233,20 @@ namespace ST.Cms
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
 				.AddMvc()
-				.AddJsonOptions(x =>
-				{
-					x.SerializerSettings.DateFormatString = Settings.Date.DateFormat;
-				});
+				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
-			.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
-			.AddHealthChecks(checks =>
-			{
-				//var minutes = 1;
-				//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
-				//	minutes = minutesParsed;
+				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
+				.AddHealthChecks(checks =>
+				{
+					//var minutes = 1;
+					//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
+					//	minutes = minutesParsed;
 
-				//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
-			});
+					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
+				});
 
 			//Register MPass
 			services.AddMPassSigningCredentials(new MPassSigningCredentials
@@ -279,6 +284,9 @@ namespace ST.Cms
 				})
 				.AddEntitySecurityRazorUIModule();
 
+			//---------------------------Multi Tenant Module-------------------------------------
+			services.AddTenantModule<OrganizationService, Tenant>();
+
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
 
@@ -309,13 +317,32 @@ namespace ST.Cms
 			});
 
 			//------------------------------Database backup Module-------------------------------------
-			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>, PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
+			services
+				.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
+					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 			//------------------------------------Page render Module-------------------------------------
 			services.AddPageRenderUiModule();
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
+
+			//------------------------------------File Module-------------------------------------
+			services
+				.AddFileModule<FileManager<FileDbContext>>()
+				.AddFileModuleStorage<FileDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			});
+
+			services
+				.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()
+				.AddFileBoxModuleStorage<FileBoxDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
@@ -362,7 +389,9 @@ namespace ST.Cms
 			}
 
 			//----------------------------------------Ldap Module-------------------------------------
-			services.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(Configuration);
+			services
+				.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(
+					Configuration);
 
 			//-------------------------------------Commerce module-------------------------------------
 			services.RegisterCommerceModule<CommerceDbContext>()
