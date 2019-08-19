@@ -216,7 +216,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
         {
             var entity = _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -364,7 +364,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="menuId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> GetMenuItemRoles([Required] Guid menuId)
         {
             if (menuId == Guid.Empty) return Json(new ResultModel());
@@ -401,7 +401,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="roles"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> UpdateMenuItemRoleAccess([Required] Guid menuId, IList<string> roles)
         {
             return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
@@ -479,7 +479,7 @@ namespace ST.PageRender.Razor.Controllers
 
             var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
                 param.Start,
-                param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin), filters);
+                param.Length, x => x.SortByUserRoleAccess(roles, Settings.ADMINISTRATOR), filters);
 
             var final = await LoadManyToManyReferences(data, viewModel);
 
@@ -732,7 +732,6 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
         public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids, bool mode = true)
         {
             if (ids == null) return Json(new { message = "Fail to delete!", success = false });
@@ -770,7 +769,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)

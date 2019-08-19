@@ -10,7 +10,7 @@ namespace ST.Entities.Security.Abstractions.Models
         /// <summary>
         /// Accesses
         /// </summary>
-        public IEnumerable<EntityPermissionAccess> EntityPermissionAccesses { get; set; }
+        public ICollection<EntityPermissionAccess> EntityPermissionAccesses { get; set; }
 
         /// <summary>
         /// Reference to roles

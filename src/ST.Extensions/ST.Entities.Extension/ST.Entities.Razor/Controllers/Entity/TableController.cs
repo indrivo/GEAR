@@ -292,7 +292,7 @@ namespace ST.Entities.Razor.Controllers.Entity
 
             if (!table.IsCommon)
             {
-                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
                 foreach (var tenant in tenants)
                 {
                     _tablesService.AddFieldSql(field, tableName, ConnectionString, true, tenant.MachineName);
@@ -530,7 +530,7 @@ namespace ST.Entities.Razor.Controllers.Entity
             }
 
             var tenants = _organizationService.GetAllTenants()
-                .Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                .Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
 
             if (field.TableFieldTypeId == fieldType.Id)
             {

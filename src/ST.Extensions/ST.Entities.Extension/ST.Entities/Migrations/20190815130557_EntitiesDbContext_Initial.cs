@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ST.Entities.Migrations
 {
-    public partial class EntityDbContext_Initial : Migration
+    public partial class EntitiesDbContext_Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -97,34 +97,6 @@ namespace ST.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EntityPermissions",
-                schema: "Entities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Author = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: true),
-                    Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Version = table.Column<int>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    ApplicationRoleId = table.Column<Guid>(nullable: false),
-                    TableModelId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EntityPermissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EntityPermissions_Table_TableModelId",
-                        column: x => x.TableModelId,
-                        principalSchema: "Entities",
-                        principalTable: "Table",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TableFieldTypes",
                 schema: "Entities",
                 columns: table => new
@@ -172,34 +144,6 @@ namespace ST.Entities.Migrations
                         column: x => x.TrackAuditId,
                         principalSchema: "Entities",
                         principalTable: "TrackAudits",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EntityPermissionAccesses",
-                schema: "Entities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Author = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: true),
-                    Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Version = table.Column<int>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    AccessType = table.Column<int>(nullable: false),
-                    EntityPermissionId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EntityPermissionAccesses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EntityPermissionAccesses_EntityPermissions_EntityPermission~",
-                        column: x => x.EntityPermissionId,
-                        principalSchema: "Entities",
-                        principalTable: "EntityPermissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -272,35 +216,6 @@ namespace ST.Entities.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EntityFieldPermissions",
-                schema: "Entities",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    Author = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: true),
-                    Changed = table.Column<DateTime>(nullable: false),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Version = table.Column<int>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    TableModelFieldId = table.Column<Guid>(nullable: false),
-                    FieldAccessType = table.Column<int>(nullable: false),
-                    ApplicationRoleId = table.Column<Guid>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EntityFieldPermissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EntityFieldPermissions_TableFields_TableModelFieldId",
-                        column: x => x.TableModelFieldId,
-                        principalSchema: "Entities",
-                        principalTable: "TableFields",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TableFieldConfigValues",
                 schema: "Entities",
                 columns: table => new
@@ -327,36 +242,6 @@ namespace ST.Entities.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EntityFieldPermissions_ApplicationRoleId",
-                schema: "Entities",
-                table: "EntityFieldPermissions",
-                column: "ApplicationRoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EntityFieldPermissions_TableModelFieldId",
-                schema: "Entities",
-                table: "EntityFieldPermissions",
-                column: "TableModelFieldId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EntityPermissionAccesses_EntityPermissionId",
-                schema: "Entities",
-                table: "EntityPermissionAccesses",
-                column: "EntityPermissionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EntityPermissions_ApplicationRoleId",
-                schema: "Entities",
-                table: "EntityPermissions",
-                column: "ApplicationRoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_EntityPermissions_TableModelId",
-                schema: "Entities",
-                table: "EntityPermissions",
-                column: "TableModelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EntityTypes_TenantId",
@@ -416,14 +301,6 @@ namespace ST.Entities.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "EntityFieldPermissions",
-                schema: "Entities");
-
-            migrationBuilder.DropTable(
-                name: "EntityPermissionAccesses",
-                schema: "Entities");
-
-            migrationBuilder.DropTable(
                 name: "EntityTypes",
                 schema: "Entities");
 
@@ -433,10 +310,6 @@ namespace ST.Entities.Migrations
 
             migrationBuilder.DropTable(
                 name: "TrackAuditDetails",
-                schema: "Entities");
-
-            migrationBuilder.DropTable(
-                name: "EntityPermissions",
                 schema: "Entities");
 
             migrationBuilder.DropTable(

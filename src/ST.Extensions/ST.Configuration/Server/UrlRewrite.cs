@@ -106,7 +106,7 @@ namespace ST.Configuration.Server
             {
                 if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "language").Equals(default(KeyValuePair<string, string>)))
                 {
-                    ctx.Response.Cookies.Append("language", Settings.DefaultLanguage);
+                    ctx.Response.Cookies.Append("language", Settings.DEFAULT_LANGUAGE);
                 }
             }
             catch (Exception e)

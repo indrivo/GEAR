@@ -9,16 +9,18 @@ namespace ST.Entities.Security.Data
     public class EntitySecurityDbContext : TrackerDbContext, IEntitySecurityDbContext
     {
         /// <summary>
-        /// Entities schema
+        /// Schema
+        /// Do not remove this, is used on audit 
         /// </summary>
-        public const string Schema = "EntitySecurity";
+        // ReSharper disable once MemberCanBePrivate.Global
+        public const string Schema = "Entities";
 
         /// <inheritdoc />
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public EntitySecurityDbContext(DbContextOptions options) : base(options)
+        public EntitySecurityDbContext(DbContextOptions<EntitySecurityDbContext> options) : base(options)
         {
 
         }
@@ -47,6 +49,7 @@ namespace ST.Entities.Security.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
+
             builder.Entity<EntityPermission>()
                 .HasIndex(x => x.ApplicationRoleId);
 

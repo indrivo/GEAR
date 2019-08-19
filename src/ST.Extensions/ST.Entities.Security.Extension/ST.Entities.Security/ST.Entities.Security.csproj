@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190815174735_EntitySecurityDbContext_Initial.cs" />
+    <Compile Remove="Migrations\20190815174735_EntitySecurityDbContext_Initial.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ST.Entities.Security.Abstractions\ST.Entities.Security.Abstractions.csproj" />
   </ItemGroup>
 

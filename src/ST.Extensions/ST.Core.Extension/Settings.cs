@@ -2,16 +2,37 @@
 
 namespace ST.Core
 {
-    public static class Settings
+    public struct Settings
     {
-        public static string DefaultLanguage = "English";
-
+        /// <summary>
+        /// Default tenant id
+        /// </summary>
         public static Guid TenantId = Guid.Parse("d11eeb3d-9545-4f1a-a199-632257326765");
 
-        public const string SuperAdmin = "Administrator";
-        public const string AnonimousUser = "Anonymous User";
+        /// <summary>
+        /// Default language
+        /// </summary>
+        public const string DEFAULT_LANGUAGE = "English";
 
-        public static string DefaultEntitySchema = "system";
+        /// <summary>
+        /// Super admin role
+        /// </summary>
+        public const string ADMINISTRATOR = "Administrator";
+
+        /// <summary>
+        /// Anonimous User role
+        /// </summary>
+        public const string ANONIMOUS_USER = "Anonymous User";
+
+        /// <summary>
+        /// Entity default schema
+        /// </summary>
+        public const string DEFAULT_ENTITY_SCHEMA = "system";
+
+        /// <summary>
+        /// Access denied message
+        /// </summary>
+        public const string ACCESS_DENIED_MESSAGE = "Access denied";
 
         public struct Tables
         {

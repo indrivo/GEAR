@@ -10,8 +10,8 @@ using ST.Entities.Data;
 namespace ST.Entities.Migrations
 {
     [DbContext(typeof(EntitiesDbContext))]
-    [Migration("20190609164755_EntityDbContext_Initial")]
-    partial class EntityDbContext_Initial
+    [Migration("20190815130557_EntitiesDbContext_Initial")]
+    partial class EntitiesDbContext_Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,7 +19,7 @@ namespace ST.Entities.Migrations
             modelBuilder
                 .HasDefaultSchema("Entities")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
@@ -285,102 +285,6 @@ namespace ST.Entities.Migrations
                     b.ToTable("TableFields");
                 });
 
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("ApplicationRoleId");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<int>("FieldAccessType");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("TableModelFieldId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationRoleId");
-
-                    b.HasIndex("TableModelFieldId");
-
-                    b.ToTable("EntityFieldPermissions");
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("ApplicationRoleId");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid>("TableModelId");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationRoleId");
-
-                    b.HasIndex("TableModelId");
-
-                    b.ToTable("EntityPermissions");
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermissionAccess", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("AccessType");
-
-                    b.Property<string>("Author");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<Guid>("EntityPermissionId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EntityPermissionId");
-
-                    b.ToTable("EntityPermissionAccesses");
-                });
-
             modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
                 {
                     b.HasOne("ST.Audit.Models.TrackAudit")
@@ -428,30 +332,6 @@ namespace ST.Entities.Migrations
                     b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "Table")
                         .WithMany("TableFields")
                         .HasForeignKey("TableId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelField", "TableModelField")
-                        .WithMany()
-                        .HasForeignKey("TableModelFieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
-                        .WithMany()
-                        .HasForeignKey("TableModelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermissionAccess", b =>
-                {
-                    b.HasOne("ST.Entities.Security.Models.EntityPermission", "EntityPermission")
-                        .WithMany("EntityPermissionAccesses")
-                        .HasForeignKey("EntityPermissionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

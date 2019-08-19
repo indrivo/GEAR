@@ -11,7 +11,6 @@ namespace ST.Entities.Security.Abstractions.Models
         /// <summary>
         /// Reference to entity field
         /// </summary>
-        public TableModelField TableModelField { get; set; }
         [Required]
         public Guid TableModelFieldId { get; set; }
 

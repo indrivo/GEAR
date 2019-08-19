@@ -13,6 +13,9 @@ namespace ST.Entities.Security.Abstractions.Models
         [Required]
         public EntityAccessType AccessType { get; set; }
 
+        /// <summary>
+        /// Entity permission
+        /// </summary>
         public EntityPermission EntityPermission { get; set; }
 
         public Guid EntityPermissionId { get; set; }

@@ -24,7 +24,7 @@ namespace ST.Entities.Security.Extensions
                 new EntitySecurityNotRegisteredServiceException($"{nameof(IEntityRoleAccessManager)} is not registered!");
             if (table == null) throw
                 new NullReferenceException($"Table is null on {nameof(EntityAclExtensions)} for {nameof(GetUserRolesEntityAccesses)} method body");
-            return await accessService.GetAccessControl(roles, table.Id);
+            return await accessService.GetPermissionsAsync(roles, table.Id);
         }
     }
 }

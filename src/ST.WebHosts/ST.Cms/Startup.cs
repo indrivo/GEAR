@@ -47,6 +47,7 @@ using ST.Report.Dynamic.Data;
 using ST.Entities.Abstractions.Extensions;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
+using ST.Entities.Razor.Extensions;
 using ST.Entities.Security;
 using ST.Entities.Security.Abstractions.Extensions;
 using ST.Entities.Security.Data;
@@ -218,6 +219,7 @@ namespace ST.Cms
 
 			//------------------------------Identity Module-------------------------------------
 			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+				.AddIdentityUserManager<IdentityUserManager, ApplicationUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
@@ -265,7 +267,8 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddEntityModuleEvents();
+				.AddEntityModuleEvents()
+				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
 			services.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
