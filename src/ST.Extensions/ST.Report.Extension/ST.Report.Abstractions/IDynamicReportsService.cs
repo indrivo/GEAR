@@ -8,12 +8,12 @@ namespace ST.Report.Abstractions
 {
     public interface IDynamicReportsService
     {
-        DTResult<DynamicReportDbModel> GetFilteredReports(DTParameters param);
+        DTResult<DynamicReport> GetFilteredReports(DTParameters param);
         void CreateFolder(DynamicReportFolder name);
         DynamicReportFolder GetFolder(Guid id);
         void EditFolder(DynamicReportFolder newFolder);
         void DeleteFolder(Guid id);
-        IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReportDbModel>> GetAllFolders();
+        IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders();
         void CreateReport(DynamicReport reportModel);
         DynamicReport CloneReport(Guid id);
         DynamicReport ParseReport(Guid id);
@@ -31,7 +31,7 @@ namespace ST.Report.Abstractions
             IEnumerable<DynamicReportColumnDataModel> columnNames, DateTime startDateTime, DateTime endDateTime,
             List<DynamicReportFilter> filtersList);
 
-        IEnumerable<dynamic> GetReportContent(DynamicReportViewModel dto);
+        IEnumerable<dynamic> GetReportContent(DynamicReportDataModel dto);
 
         List<decimal> GetChartDataForTimeFrame(string tableName, List<DynamicReportColumnDataModel> columnList,
             DateTime startDateTime, DateTime endDateTime, List<DynamicReportFilter> filters,

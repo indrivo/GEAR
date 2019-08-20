@@ -45,22 +45,22 @@ namespace ST.Report.Dynamic
             }
         }
 
-        private static DynamicReportDbModel ParseForDbModel(DynamicReportDbModel databaseReport, DynamicReport model)
+        private static DynamicReport ParseForDbModel(DynamicReport databaseReport, DynamicReport model)
         {
-            var columnListString = model.ColumnList.Aggregate("", (current, column)
-                => current + (column.Prefix + "(" + column.DataColumn + ")|"));
-            var filtersListString = model.Filters.Aggregate("", (current, filter)
-                => current + (filter.FilterType + ":" + filter.FieldName + ":" + filter.FilterType + ":" + filter.Value + "|"));
+            //var columnListString = model.ColumnList.Aggregate("", (current, column)
+            //    => current + (column.Prefix + "(" + column.DataColumn + ")|"));
+            //var filtersListString = model.Filters.Aggregate("", (current, filter)
+            //    => current + (filter.FilterType + ":" + filter.FieldName + ":" + filter.FilterType + ":" + filter.Value + "|"));
             databaseReport.Name = model.Name;
-            databaseReport.ChartType = model.ChartType;
-            databaseReport.ColumnNames = columnListString;
-            databaseReport.EndDateTime = model.EndDateTime;
-            databaseReport.StartDateTime = model.StartDateTime;
-            databaseReport.GraphType = model.GraphType;
-            databaseReport.DynamicReportFolderId = model.DynamicReportFolderId;
-            databaseReport.TableName = model.InitialTable;
-            databaseReport.TimeFrameEnum = model.TimeFrameEnum;
-            databaseReport.FiltersList = filtersListString;
+            //databaseReport.ChartType = model.ChartType;
+            //databaseReport.ColumnNames = columnListString;
+            //databaseReport.EndDateTime = model.EndDateTime;
+            //databaseReport.StartDateTime = model.StartDateTime;
+            //databaseReport.GraphType = model.GraphType;
+            //databaseReport.DynamicReportFolderId = model.DynamicReportFolderId;
+            //databaseReport.TableName = model.InitialTable;
+            //databaseReport.TimeFrameEnum = model.TimeFrameEnum;
+            //databaseReport.FiltersList = filtersListString;
 
             return databaseReport;
         }
@@ -105,7 +105,7 @@ namespace ST.Report.Dynamic
             _context.SaveChanges();
         }
 
-        public IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReportDbModel>> GetAllFolders()
+        public IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders()
         {
             return _context.DynamicReportsFolders.Include(x => x.Reports);
         }
@@ -119,13 +119,13 @@ namespace ST.Report.Dynamic
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public DTResult<DynamicReportDbModel> GetFilteredReports(DTParameters param)
+        public DTResult<DynamicReport> GetFilteredReports(DTParameters param)
         {
-            var filtered = _context.Filter<DynamicReportDbModel>(param.Search.Value, param.SortOrder, param.Start,
+            var filtered = _context.Filter<DynamicReport>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount);
 
-            var finalResult = new DTResult<DynamicReportDbModel>
+            var finalResult = new DTResult<DynamicReport>
             {
                 Draw = param.Draw,
                 Data = filtered.Select(x =>
@@ -149,9 +149,8 @@ namespace ST.Report.Dynamic
         /// Create Report
         /// </summary>
         /// <param name="reportModel"></param>
-        public void CreateReport(DynamicReport reportModel)
+        public void CreateReport(DynamicReport report)
         {
-            var report = ParseForDbModel(new DynamicReportDbModel(), reportModel);
             _context.DynamicReports.Add(report);
             _context.SaveChanges();
         }
@@ -179,44 +178,44 @@ namespace ST.Report.Dynamic
             {
                 Id = model.Id,
                 Name = model.Name,
-                StartDateTime = model.StartDateTime,
-                EndDateTime = model.EndDateTime,
-                ChartType = model.ChartType,
-                GraphType = model.GraphType,
-                InitialTable = model.TableName,
-                TimeFrameEnum = model.TimeFrameEnum,
+                //StartDateTime = model.StartDateTime,
+                //EndDateTime = model.EndDateTime,
+                //ChartType = model.ChartType,
+                //GraphType = model.GraphType,
+                //InitialTable = model.TableName,
+                //TimeFrameEnum = model.TimeFrameEnum,
                 IsDeleted = model.IsDeleted,
                 Author = model.Author,
                 Changed = model.Changed,
                 ModifiedBy = model.ModifiedBy,
                 Created = model.Created,
-                ColumnList = new List<DynamicReportColumnDataModel>(),
-                Filters = new List<DynamicReportFilter>(),
+                //ColumnList = new List<DynamicReportColumnDataModel>(),
+                //Filters = new List<DynamicReportFilter>(),
                 DynamicReportFolderId = model.DynamicReportFolderId
             };
 
             //TODO: Check parser for update
-            foreach (var column in model.ColumnNames.Split("|"))
-            {
-                if (column == "") continue;
-                response.ColumnList.Add(new DynamicReportColumnDataModel()
-                {
-                    DataColumn = column.Substring(column.IndexOf("(", StringComparison.Ordinal) + 1).Replace(")", ""),
-                    Prefix = column.Substring(0, column.IndexOf("(", StringComparison.Ordinal))
-                });
-            }
+            //foreach (var column in model.ColumnNames.Split("|"))
+            //{
+            //    if (column == "") continue;
+            //    response.ColumnList.Add(new DynamicReportColumnDataModel()
+            //    {
+            //        DataColumn = column.Substring(column.IndexOf("(", StringComparison.Ordinal) + 1).Replace(")", ""),
+            //        Prefix = column.Substring(0, column.IndexOf("(", StringComparison.Ordinal))
+            //    });
+            //}
 
-            foreach (var filter in model.FiltersList.Split("|"))
-            {
-                if (filter == "") continue;
-                var filterContent = filter.Split(":");
-                response.Filters.Add(new DynamicReportFilter()
-                {
-                    FilterType = (FilterType)int.Parse(filterContent[0]),
-                    FieldName = filterContent[1],
-                    Value = filterContent[3]
-                });
-            }
+            //foreach (var filter in model.FiltersList.Split("|"))
+            //{
+            //    if (filter == "") continue;
+            //    var filterContent = filter.Split(":");
+            //    response.Filters.Add(new DynamicReportFilter()
+            //    {
+            //        FilterType = (FilterType)int.Parse(filterContent[0]),
+            //        FieldName = filterContent[1],
+            //        Value = filterContent[3]
+            //    });
+            //}
             return response;
         }
 
@@ -665,29 +664,29 @@ namespace ST.Report.Dynamic
 
             var queryResultChart = new List<decimal>();
 
-            for (var date = startDateTime; date.Date <= endDateTime.Date; date = date.AddDays(timeFrame))
-            {
-                switch (chartDto.ChartType)
-                {
-                    case ChartType.Total:
-                        decimal.TryParse(
-                            GetContent(tableName, columnList, date, date.AddDays(timeFrame), filters).First().Columns.First().Value,
-                            out var value);
-                        queryResultChart.Add(value);
-                        break;
-                    case ChartType.Count:
-                        queryResultChart.Add(GetContent(tableName, columnList, date, date.AddDays(timeFrame), filters).Count);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+            //for (var date = startDateTime; date.Date <= endDateTime.Date; date = date.AddDays(timeFrame))
+            //{
+            //    switch (chartDto.ChartType)
+            //    {
+            //        case ChartType.Total:
+            //            decimal.TryParse(
+            //                GetContent(tableName, columnList, date, date.AddDays(timeFrame), filters).First().Columns.First().Value,
+            //                out var value);
+            //            queryResultChart.Add(value);
+            //            break;
+            //        case ChartType.Count:
+            //            queryResultChart.Add(GetContent(tableName, columnList, date, date.AddDays(timeFrame), filters).Count);
+            //            break;
+            //        default:
+            //            throw new ArgumentOutOfRangeException();
+            //    }
+            //}
             return queryResultChart;
         }
 
 
 
-        public IEnumerable<dynamic> GetReportContent(DynamicReportViewModel dto)
+        public IEnumerable<dynamic> GetReportContent(DynamicReportDataModel dto)
         {
             if (_context == null) throw new ArgumentNullException(nameof(_context));
 

@@ -1,4 +1,6 @@
-﻿namespace ST.Report.Abstractions.Models
+﻿using ST.Report.Abstractions.Models.Enums;
+
+namespace ST.Report.Abstractions.Models
 {
     public class DynamicReportChartDto
     {

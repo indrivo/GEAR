@@ -15,14 +15,14 @@ namespace ST.Report.Abstractions.Extensions
                            .GetCustomAttribute<DisplayAttribute>()
                            .Name;
         }
-
     }
 
     public static class Enum<T> where T : Enum, IConvertible
     {
-        public static Dictionary<int, string> ToDictionary()
+        public static Dictionary<T, string> ToDictionary(bool displayName = true)
         {
-            return Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(e => Convert.ToInt32(e), e => e.GetDisplayName());
+            return Enum.GetValues(typeof(T)).Cast<T>().ToDictionary(e => e, e => displayName ? e.GetDisplayName() : e.ToString());
         }
+
     }
 }

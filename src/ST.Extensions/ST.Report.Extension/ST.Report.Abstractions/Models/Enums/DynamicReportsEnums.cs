@@ -1,4 +1,4 @@
-﻿namespace ST.Report.Abstractions.Models
+﻿namespace ST.Report.Abstractions.Models.Enums
 {
 
     /// <summary>
@@ -15,9 +15,9 @@
     /// <summary>
     /// Report Types for data gathering
     /// </summary>
-    public enum ChartType
-    {
-        Count,
-        Total
-    }
+    //public enum ChartType
+    //{
+    //    Count,
+    //    Total
+    //}
 }
