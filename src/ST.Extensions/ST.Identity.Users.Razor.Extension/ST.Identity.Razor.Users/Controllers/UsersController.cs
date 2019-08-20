@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,14 +30,21 @@ using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
+using ST.MultiTenant.Abstractions;
 
 namespace ST.Identity.Razor.Users.Controllers
 {
-    public class UsersController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class UsersController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser,
+        ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injections
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager, ILogger<UsersController> logger) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+            ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context,
+            INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager,
+            ILogger<UsersController> logger) : base(userManager, roleManager, cacheService,
+            applicationDbContext,
+            context, notify)
         {
             _ldapUserManager = ldapUserManager;
             Logger = logger;
@@ -215,6 +224,7 @@ namespace ST.Identity.Razor.Users.Controllers
 
             return RedirectToAction(nameof(Index), "Users");
         }
+
         /// <summary>
         /// Get Ad users
         /// </summary>
@@ -224,7 +234,8 @@ namespace ST.Identity.Razor.Users.Controllers
         public virtual JsonResult GetAdUsers()
         {
             var result = new ResultModel<IEnumerable<ApplicationUser>>();
-            var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).ToList();
+            var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad))
+                .ToList();
             var users = _ldapUserManager.Users;
             if (addedUsers.Any())
             {
@@ -243,7 +254,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public virtual async Task<JsonResult> AddAdUser([Required]string userName)
+        public virtual async Task<JsonResult> AddAdUser([Required] string userName)
         {
             var result = new ResultModel<Guid>();
             if (string.IsNullOrEmpty(userName))
@@ -258,6 +269,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 result.Errors.Add(new ErrorModel(string.Empty, $"UserName {userName} exists!"));
                 return Json(result);
             }
+
             var user = new ApplicationUser();
 
             var ldapUser = await _ldapUserManager.FindByNameAsync(userName);
@@ -266,6 +278,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 result.Errors.Add(new ErrorModel(string.Empty, $"There is no AD user with this username : {userName}"));
                 return Json(result);
             }
+
             user.Id = Guid.NewGuid().ToString();
             user.UserName = ldapUser.SamAccountName;
             user.Email = ldapUser.EmailAddress;
@@ -326,23 +339,23 @@ namespace ST.Identity.Razor.Users.Controllers
         {
             if (id.IsNullOrEmpty())
             {
-                return Json(new { success = false, message = "Id is null" });
+                return Json(new {success = false, message = "Id is null"});
             }
 
             if (IsCurrentUser(id))
             {
-                return Json(new { success = false, message = "You can't delete current user" });
+                return Json(new {success = false, message = "You can't delete current user"});
             }
 
             var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
             if (applicationUser == null)
             {
-                return Json(new { success = false, message = "User not found" });
+                return Json(new {success = false, message = "User not found"});
             }
 
             if (applicationUser.IsEditable == false)
             {
-                return Json(new { succsess = false, message = "Is system user!!!" });
+                return Json(new {succsess = false, message = "Is system user!!!"});
             }
 
             try
@@ -355,12 +368,12 @@ namespace ST.Identity.Razor.Users.Controllers
                     Subject = "Info",
                     NotificationTypeId = NotificationType.Info
                 });
-                return Json(new { success = true, message = "Delete success" });
+                return Json(new {success = true, message = "Delete success"});
             }
             catch (Exception e)
             {
                 Logger.LogError(e.Message);
-                return Json(new { success = false, message = "Error on delete!!!" });
+                return Json(new {success = false, message = "Error on delete!!!"});
             }
         }
 
@@ -532,12 +545,13 @@ namespace ST.Identity.Razor.Users.Controllers
             if (model.Groups != null && model.Groups.Any())
             {
                 //Refresh groups
-                var currentGroupsList = await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
+                var currentGroupsList =
+                    await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
                 ApplicationDbContext.UserGroups.RemoveRange(currentGroupsList);
 
 
                 var userGroupList = model.SelectedGroupId
-                    .Select(groupId => new UserGroup { UserId = user.Id, AuthGroupId = Guid.Parse(groupId) }).ToList();
+                    .Select(groupId => new UserGroup {UserId = user.Id, AuthGroupId = Guid.Parse(groupId)}).ToList();
                 await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
             }
 
@@ -562,10 +576,43 @@ namespace ST.Identity.Razor.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        /// <summary>
+        /// User profile info
+        /// </summary>
+        /// <param name="organizationService"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Profile([FromServices] IOrganizationService<Tenant> organizationService)
+        {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileViewModel
+            {
+                UserId = currentUser.Id.ToGuid(),
+                UserName = currentUser.UserName,
+                Email = currentUser.Email,
+                Tenant = organizationService.GetUserOrganization(currentUser),
+                Roles = await UserManager.GetRolesAsync(currentUser),
+                Groups = await ApplicationDbContext.UserGroups
+                    .Include(x => x.AuthGroup)
+                    .Where(x => x.UserId.Equals(currentUser.Id))
+                    .Select(x => x.AuthGroup.Name)
+                    .ToListAsync()
+            };
+            return View(model);
+        }
+
+
         /// <summary>
         /// Get view for change user password
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="callBackUrl"></param>
         /// <returns></returns>
         [HttpGet]
         public virtual async Task<IActionResult> ChangeUserPassword([Required] Guid? userId, string callBackUrl)
@@ -589,7 +636,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public virtual async Task<IActionResult> ChangeUserPassword([Required]ChangeUserPasswordViewModel model)
+        public virtual async Task<IActionResult> ChangeUserPassword([Required] ChangeUserPasswordViewModel model)
         {
             if (model.AuthenticationType.Equals(AuthenticationType.Ad))
             {
@@ -617,7 +664,7 @@ namespace ST.Identity.Razor.Users.Controllers
             var result = await UserManager.UpdateAsync(user);
             if (result.Succeeded)
             {
-                await Notify.SendNotificationAsync(new List<Guid> { user.Id.ToGuid() }, new SystemNotifications
+                await Notify.SendNotificationAsync(new List<Guid> {user.Id.ToGuid()}, new SystemNotifications
                 {
                     Content = $"Your password was changed to : {model.Password}",
                     Subject = "Password changed",
@@ -625,6 +672,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 });
                 return Redirect(model.CallBackUrl);
             }
+
             foreach (var _ in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, _.Description);
@@ -769,16 +817,6 @@ namespace ST.Identity.Razor.Users.Controllers
         }
 
         /// <summary>
-        /// User profile info
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public virtual IActionResult Profile()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// Get user image
         /// </summary>
         /// <param name="id"></param>
@@ -803,6 +841,7 @@ namespace ST.Identity.Razor.Users.Controllers
             {
                 Console.WriteLine(e);
             }
+
             return NotFound();
         }
 
@@ -821,7 +860,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var binary = new BinaryReader(stream))
                 {
-                    var data = binary.ReadBytes((int)stream.Length);
+                    var data = binary.ReadBytes((int) stream.Length);
                     return data;
                 }
             }
@@ -847,12 +886,45 @@ namespace ST.Identity.Razor.Users.Controllers
                 return Json(true);
             }
 
-            if (await ApplicationDbContext.Users.AsNoTracking().AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
+            if (await ApplicationDbContext.Users
+                .AsNoTracking()
+                .AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
             {
                 return Json($"User name {userName} is already in use.");
             }
 
             return Json(true);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> UserPasswordChange(ChangePasswordViewModel model)
+        {
+            var resultModel = new ResultModel();
+            if (!ModelState.IsValid)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Invalid model"});
+                return Json(resultModel);
+            }
+
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "User not found"});
+                return Json(resultModel);
+            }
+
+            var result = await UserManager.ChangePasswordAsync(currentUser, model.CurrentPassword, model.Password);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                return Json(resultModel);
+            }
+
+            resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Error on change password"});
+            return Json(resultModel);
         }
     }
 }

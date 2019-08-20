@@ -241,22 +241,47 @@ namespace ST.Identity.Razor.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<JsonResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
-                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            var resultModel = new ResultModel();
+            if (!ModelState.IsValid)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
 
-            // For more information on how to enable account confirmation and password reset please
-            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
+                return Json(resultModel);
+            }
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Email is not confirmed"));
+                return Json(resultModel);
+            }
+
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (code == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Error on generate reset token"));
+                return Json(resultModel);
+            }
+
             var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
             await _emailSender.SendEmailAsync(model.Email, "Reset Password",
                 $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-            return RedirectToAction(nameof(ForgotPasswordConfirmation));
 
-            // If we got this far, something failed, redisplay form
+
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
         }
 
         /// <summary>
