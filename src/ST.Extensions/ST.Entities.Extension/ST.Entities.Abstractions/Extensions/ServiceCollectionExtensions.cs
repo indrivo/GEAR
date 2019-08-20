@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ST.Core.Events;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Events;
 using ST.Entities.Abstractions.Query;

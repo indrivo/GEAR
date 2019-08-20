@@ -1,0 +1,106 @@
+﻿@using ST.Core.Events
+@using ST.Identity.Abstractions
+@using ST.Notifications.Razor.ViewModels.Subscriptions
+@{
+    ViewData["Title"] = "Notification subscriptions";
+    var groups = ((IEnumerable<IGrouping<string, NotificationSubscribeGetViewModel>>)ViewBag.Events).ToList();
+    var roles = ((IEnumerable<ApplicationRole>)ViewBag.Roles).ToList();
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="accordion">
+            @foreach (var group in groups)
+            {
+                var index = groups.IndexOf(group);
+                <div class="card">
+                    <div class="card-header" id="head_@group.Key">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#@group.Key" aria-expanded="true" aria-controls="collapseOne">
+                                @group.Key
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="@group.Key" class="collapse @( index == 0 ? "show" : "")" aria-labelledby="head_@group.Key">
+                        <div class="card-body">
+                            @foreach (var ev in group)
+                            {
+                                <div class="row eventSection" data-event="@ev.EventId">
+                                    <div class="col-md-1">
+                                        <h4><code>@ev.EventId</code></h4>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row sections">
+                                                    <div class="col-md-2">
+                                                        <h4>Role list</h4>
+                                                        <div class="roles">
+                                                            <ul class="list-group m-b-0">
+                                                                @foreach (var role in roles)
+                                                                {
+                                                                    <li class="list-group-item">
+                                                                        <div class="custom-control custom-checkbox">
+                                                                            <input @(ev.IsRoleSubscribed(role) ? "checked=''" : "") type="checkbox" id="_@(ev.EventId)_check_@role.Name" class="custom-control-input vis-check" data-id="@role.Id">
+                                                                            <label class="custom-control-label" for="_@(ev.EventId)_check_@role.Name">@role.Name</label>
+                                                                        </div>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label>Subject</label>
+                                                            <textarea class="notificationSubject form-control">@ev.Subject</textarea>
+                                                        </div>
+                                                        <h4>Template</h4>
+                                                        <span>Available props: <code> @string.Join(", ", SystemEvents.Common.GetEventPropNames(ev.EventId)) </code> </span>
+                                                        <textarea class="templateValue">@ev.Template</textarea>
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <h4>Preview</h4>
+                                                        <div class="card">
+                                                            <div class="card-body" style="min-height: 10em;">
+                                                                <div class="templatePreview">
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <a href="javascript:void(0)" class="saveConfig btn btn-primary float-right mb-4 mr-4">@Localizer["save"]</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/lib/codemirror/codemirror.min.js"></script>
+    <script src="~/lib/codemirror/keymap/sublime.min.js"></script>
+    <script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="~/lib/codemirror/mode/javascript/javascript.min.js"></script>
+    <script src="~/lib/codemirror/mode/css/css.min.js"></script>
+    <script src="~/lib/codemirror/mode/xml/xml.min.js"></script>
+    <script src="~/assets/notification-plugins/notification-subscription.js" asp-append-version="true"></script>
+}

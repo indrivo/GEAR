@@ -31,7 +31,11 @@ namespace ST.Core.Razor.Extensions
             {
                 routes.ApplicationBuilder.Use(async (context, next) =>
                 {
-                    if (routeMapping != null)
+                    if (routeMapping == null || !isConfigured)
+                    {
+                        await next();
+                    }
+                    else
                     {
                         var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
                         if (!match.IsNull())

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ST.Organization.ViewModels
+namespace ST.MultiTenant.ViewModels
 {
     public class CreateTenantViewModel
     {

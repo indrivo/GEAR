@@ -1,0 +1,402 @@
+/*
+ * Copyright © 2019 Indrivo
+ *
+ * This file is for seed menu items
+ *
+ * This file contains a list with menu items
+ * for seed in database and it can be view
+ * in left panel of application 
+ */
+[
+  {
+    "Children": null,
+    "Name": "Dashboard",
+    "Href": "/home",
+    "Translate": "dashboard",
+    "Icon": null,
+    "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+    "Author": "system",
+    "AllowedRoles": "Administrator#"
+  },
+  {
+    "Children": [
+      {
+        "Children": [
+          {
+            "Children": null,
+            "Name": "App Management",
+            "Href": "/ApplicationsManagement",
+            "Translate": "apps_management",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Api Resources",
+            "Href": "/ApiResource",
+            "Translate": "api_resources",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          }
+        ],
+        "Name": "Applications",
+        "Href": null,
+        "Translate": "apps",
+        "Icon": "mdi mdi-apple",
+        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+        "Author": "system",
+        "AllowedRoles": "Administrator#"
+      },
+      {
+        "Children": [
+          {
+            "Children": null,
+            "Name": "Users",
+            "Href": "/Users",
+            "Translate": "users",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Roles",
+            "Href": "/Roles",
+            "Translate": "roles",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Tenants",
+            "Href": "/Tenant",
+            "Translate": "tenants",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Groups",
+            "Href": "/Groups",
+            "Translate": "groups",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Profile",
+            "Href": "/Profile",
+            "Translate": "profiles",
+            "Icon": null,
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Id": "63fa0f20-39db-4506-8e18-4e87458ee591",
+            "AllowedRoles": "Administrator#"
+          }
+        ],
+        "Name": "People",
+        "Href": null,
+        "Translate": "people",
+        "Icon": "mdi mdi-alert",
+        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+        "Author": "system",
+        "AllowedRoles": "Administrator#"
+      },
+      {
+        "Children": [
+          {
+            "Children": [
+              {
+                "Children": null,
+                "Name": "Tables",
+                "Href": "/Table?page=1&perPage=10",
+                "Translate": "tables",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Entity Type",
+                "Href": "/EntityType",
+                "Translate": "entity_type",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "View Models",
+                "Href": "/ViewModel",
+                "Translate": "view_models",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              }
+            ],
+            "Name": "Entities",
+            "Href": null,
+            "Translate": "entities",
+            "Icon": "mdi mdi-table",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": [
+              {
+                "Children": null,
+                "Name": "Forms",
+                "Href": "/Form",
+                "Translate": "forms",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Layouts",
+                "Href": "/Page/Layouts",
+                "Translate": "layouts",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Pages",
+                "Href": "/Page",
+                "Translate": "pages",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Page Types",
+                "Href": "/PageType",
+                "Translate": "page_types",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Menus",
+                "Href": "/Menu",
+                "Translate": "menus",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Render Blocks",
+                "Href": "/Blocks",
+                "Translate": "render_blocks",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Render Block categories",
+                "Href": "/BlockCategory",
+                "Translate": "render_blocks_categories",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Templates",
+                "Href": "/templates",
+                "Translate": "templates",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              }
+            ],
+            "Name": "Appearance",
+            "Href": null,
+            "Translate": "appearance",
+            "Icon": "mdi mdi-file",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          }
+        ],
+        "Name": "Structure",
+        "Href": null,
+        "Translate": "structure",
+        "Icon": "mdi mdi-calendar",
+        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+        "Author": "system",
+        "AllowedRoles": "Administrator#"
+      },
+      {
+        "Children": [
+          {
+            "Children": [
+              {
+                "Children": null,
+                "Name": "Export",
+                "Href": "/Data/Export",
+                "Translate": "",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Import",
+                "Href": "/Data/Import",
+                "Translate": "",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              }
+            ],
+            "Name": "Backup",
+            "Href": null,
+            "Translate": "",
+            "Icon": "mdi mdi-transcribe",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": [
+              {
+                "Children": null,
+                "Name": "Languages",
+                "Href": "/Localization/GetLanguages?page=1&perPage=10",
+                "Translate": "languages",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              },
+              {
+                "Children": null,
+                "Name": "Keys",
+                "Href": "/Localization?page=1&perPage=10",
+                "Translate": "keys",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              }
+            ],
+            "Name": "Localization",
+            "Href": null,
+            "Translate": "localization",
+            "Icon": "mdi mdi-transcribe",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": [
+              {
+                "Children": null,
+                "Name": "Logs",
+                "Href": "/handler/logs",
+                "Translate": "logs",
+                "Icon": null,
+                "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+                "Author": "system",
+                "AllowedRoles": "Administrator#"
+              }
+            ],
+            "Name": "Logs",
+            "Href": null,
+            "Translate": "logs",
+            "Icon": "mdi mdi-transcribe",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Process",
+            "Href": "/Process",
+            "Translate": "process",
+            "Icon": "mdi mdi-dice-2",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          },
+          {
+            "Children": null,
+            "Name": "Cache",
+            "Href": "/cache",
+            "Translate": "",
+            "Icon": "mdi mdi-dice-2",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          }
+        ],
+        "Name": "Configuration",
+        "Href": null,
+        "Translate": "configuration",
+        "Icon": "mdi mdi-contain",
+        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+        "Author": "system",
+        "AllowedRoles": "Administrator#"
+      },
+      {
+        "Children": [
+          {
+            "Children": null,
+            "Name": "Audit",
+            "Href": "/Audit",
+            "Translate": "audit",
+            "Icon": "mdi mdi-transcribe",
+            "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+            "Author": "system",
+            "AllowedRoles": "Administrator#"
+          }
+        ],
+        "Name": "Reports",
+        "Href": null,
+        "Translate": "reports",
+        "Icon": "mdi mdi-file-document",
+        "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+        "Author": "system",
+        "AllowedRoles": "Administrator#"
+      }
+    ],
+    "Name": "Administration",
+    "Href": null,
+    "Translate": "administration",
+    "Icon": "mdi mdi-alert",
+    "MenuId": "46eacba3-d515-47b0-9ba7-5391ce1d26b1",
+    "Author": "system",
+    "AllowedRoles": "Administrator#"
+  }
+]

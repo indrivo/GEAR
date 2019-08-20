@@ -4,13 +4,13 @@
 @{
 	ViewData["Title"] = Localizer["title_home"];
 	var user = await UserManager.GetUserAsync(User);
-	ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
+	//ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
 }
 
-<link rel="stylesheet" type="text/css" href="~/lib/chartist/chartist.min.css" />
+<link rel="stylesheet" type="text/css" href="~/lib/chartist/chartist.min.css"/>
 
 <div class="row">
-	<h1>In coming ...</h1>
+	<h1>Incoming ...</h1>
 
 	@*<!-- Column -->
 	<div class="col-md-6 col-lg-3 col-xlg-3">
@@ -97,4 +97,7 @@
 	<script src="~/lib/chartist/chartist.min.js"></script>
 
 	<script src="~/lib/Chart.js/Chart.min.js"></script>
+
+
+
 }

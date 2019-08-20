@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using Microsoft.EntityFrameworkCore.Internal;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
@@ -17,6 +18,10 @@ namespace ST.PageRender.Razor.Helpers
         /// </summary>
         public static Guid NavBarId => Guid.Parse("46EACBA3-D515-47B0-9BA7-5391CE1D26B1".ToLower());
 
+        /// <summary>
+        /// Dynamic service
+        /// </summary>
+        private static IDynamicService DynamicService => IoC.Resolve<IDynamicService>();
         /// <summary>
         /// List of menus
         /// </summary>
@@ -37,46 +42,35 @@ namespace ST.PageRender.Razor.Helpers
         /// </summary>
         public static async Task SyncMenuItemsAsync()
         {
-            var dataService = IoC.Resolve<IDynamicService>();
-            if (dataService == null) throw new Exception("IDynamicService is not registered");
-            var exists = await dataService.Any<Menu>();
+            if (DynamicService == null) throw new Exception("IDynamicService is not registered");
+            var exists = await DynamicService.Any<Menu>();
             if (exists.Result) return;
-            var rq = await dataService.AddDataRangeWithReflection(Menu);
+            var rq = await DynamicService.AddDataRangeWithReflection(Menu);
             if (rq.Result.All(x => x.Item2 != null))
             {
-                foreach (var item in GetMenus())
+                var menus = GetMenus().ToList();
+                foreach (var item in menus)
                 {
-                    item.Created = DateTime.Now;
-                    item.Changed = DateTime.Now;
-                    var res = await dataService.AddWithReflection(item.Adapt<MenuItem>());
-                    if (!res.IsSuccess) continue;
-                    foreach (var i in item.Children)
-                    {
-                        var obj = i.Adapt<MenuItem>();
-                        obj.ParentMenuItemId = res.Result;
-                        obj.Created = DateTime.Now;
-                        obj.Changed = DateTime.Now;
-                        var r = await dataService.AddWithReflection(obj);
-                        if (!r.IsSuccess || i.Children == null) continue;
-                        foreach (var j in i.Children)
-                        {
-                            var ob = j.Adapt<MenuItem>();
-                            ob.ParentMenuItemId = r.Result;
-                            ob.Created = DateTime.Now;
-                            ob.Changed = DateTime.Now;
-                            var r1 = await dataService.AddWithReflection(ob);
-                            if (!r1.IsSuccess || j.Children == null) continue;
-                            foreach (var m in j.Children)
-                            {
-                                var ob1 = m.Adapt<MenuItem>();
-                                ob1.ParentMenuItemId = r1.Result;
-                                ob1.Created = DateTime.Now;
-                                ob1.Changed = DateTime.Now;
-                                await dataService.AddWithReflection(ob1);
-                            }
-                        }
-                    }
+                    item.Order = menus.IndexOf(item);
+                    await SyncMenuItem(item);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sync menu item
+        /// </summary>
+        /// <param name="menu"></param>
+        /// <returns></returns>
+        private static async Task SyncMenuItem(MenuViewModel menu)
+        {
+            var res = await DynamicService.AddWithReflection(menu.Adapt<MenuItem>());
+            if (!res.IsSuccess || menu.Children == null) return;
+            foreach (var item in menu.Children)
+            {
+                item.ParentMenuItemId = res.Result;
+                item.Order = menu.Children.IndexOf(item);
+                await SyncMenuItem(item);
             }
         }
 

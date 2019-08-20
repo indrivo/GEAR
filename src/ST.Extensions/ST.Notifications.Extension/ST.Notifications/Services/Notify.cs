@@ -136,7 +136,7 @@ namespace ST.Notifications.Services
                     _logger.LogError("Fail to add new notification in database");
                 }
             }
-            await _emailSender.SendEmailAsync(emails, notification.Content, notification.Subject);
+            await _emailSender.SendEmailAsync(emails, notification.Subject, notification.Content);
         }
         /// <inheritdoc />
         /// <summary>

@@ -3,7 +3,7 @@ if (typeof jQuery === 'undefined') {
 	throw new Error('Events requires jQuery');
 }
 
-//TODO: need to delete this gavno code and write new code
+const notificator = new Notificator();
 //Delete row from Jquery Table
 function DeleteData(object) {
 	swal({
@@ -465,7 +465,7 @@ Notificator.prototype.createNotificationBodyContainer = function (n) {
 				</span>
 		</div>`;
 	const block = `
-		<a class="notification-item" data-notification-id="${n.id}" href="#">
+		<a class="notification-item" data-notification-id="${n.id}" href="javascript:void(0)">
 			<div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
 			${content}
 		</a>`;

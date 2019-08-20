@@ -17,7 +17,7 @@ using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.MultiTenant.Helpers;
-using ST.Organization.ViewModels;
+using ST.MultiTenant.ViewModels;
 
 namespace ST.MultiTenant.Razor.Controllers
 {

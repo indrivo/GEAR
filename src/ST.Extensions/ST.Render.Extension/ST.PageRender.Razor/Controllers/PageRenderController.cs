@@ -377,16 +377,19 @@ namespace ST.PageRender.Razor.Controllers
         /// Get menus
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public async Task<JsonResult> GetMenus(Guid? menuId = null)
         {
             if (menuId == null)
             {
                 menuId = MenuManager.NavBarId;
             }
-
+            IList<string> roles = new List<string>();
             var user = await _userManager.GetUserAsync(User);
-            var roles = await _userManager.GetRolesAsync(user);
+            if (user != null)
+            {
+                roles = await _userManager.GetRolesAsync(user);
+            }
             var req = await _menuService.GetMenus(menuId, roles);
             return Json(req);
         }

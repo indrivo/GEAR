@@ -4,6 +4,7 @@
 			Customize system theme js
 ************************************************/
 
+
 const settings = JSON.parse(localStorage.getItem("settings"));
 
 const tManager = new TemplateManager();
@@ -36,7 +37,7 @@ IsoTableHeadActions.prototype.constructor = IsoTableHeadActions;
 /*
  * Get configurations
  */
-IsoTableHeadActions.prototype.getConfiguration = function () {
+IsoTableHeadActions.prototype.getConfiguration = function() {
 	return this;
 };
 
@@ -44,7 +45,7 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
  * text cell position
  */
 function changeTextCellPosition() {
-	$(this).parent().focusout(function () {
+	$(this).parent().focusout(function() {
 		$(this).css("left", "");
 	});
 	const expandCell = $(this).parent();
@@ -74,18 +75,19 @@ function changeTextCellPosition() {
 
 
 $(".table")
-	.on("preInit.dt", function () {
-		const conf = new IsoTableHeadActions().getConfiguration();
-		//Risk company matrix
-		if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
-			conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
-		}
-		const content = tManager.render("template_headListActions", conf);
-		const selector = $("div.CustomTableHeadBar");
-		selector.html(content);
-		selector.find(".add-matrix").on("click", riskMatrixCreate);
-		window.forceTranslate("div.CustomTableHeadBar");
-	});
+	.on("preInit.dt",
+		function() {
+			const conf = new IsoTableHeadActions().getConfiguration();
+			//Risk company matrix
+			if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
+				conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
+			}
+			const content = tManager.render("template_headListActions", conf);
+			const selector = $("div.CustomTableHeadBar");
+			selector.html(content);
+			selector.find(".add-matrix").on("click", riskMatrixCreate);
+			window.forceTranslate("div.CustomTableHeadBar");
+		});
 
 
 function riskMatrixCreate() {
@@ -116,7 +118,8 @@ function riskMatrixCreate() {
 									db.getAllWhereNoIncludesAsync("MatrixImpactDefinition", filters).then(y => {
 										if (y.is_success) {
 											if (y.result.length < parseInt(common.result.impactUnitScale))
-												reject("All the details in the template can not be added because the template has not been completely set up");
+												reject(
+													"All the details in the template can not be added because the template has not been completely set up");
 											else
 												resolve(y);
 										} else {
@@ -129,7 +132,8 @@ function riskMatrixCreate() {
 									db.getAllWhereNoIncludesAsync("MatrixCellValues", filters).then(y => {
 										if (y.is_success) {
 											if (y.result.length < parseInt(common.result.impactUnitScale))
-												reject("All the details in the template can not be added because the template has not been completely set up");
+												reject(
+													"All the details in the template can not be added because the template has not been completely set up");
 											else
 												resolve(y);
 										} else {
@@ -202,22 +206,26 @@ if (typeof TableColumnsVisibility !== "undefined") {
 	 * Trigger handler then columns visibility are changed
 	 * @param {any} source
 	 */
-	TableColumnsVisibility.prototype.onColumnsVisibilityStateChanged = function (source) {
+	TableColumnsVisibility.prototype.onColumnsVisibilityStateChanged = function(source) {
 		const jqSource = $(source);
 		const nodeName = source.nodeName;
 		switch (nodeName) {
-			case "INPUT": {
+		case "INPUT":
+			{
 				const tableIdentifier = jqSource.data("table");
 				$(tableIdentifier).DataTable().draw();
-			} break;
-			case "A": {
+			}
+			break;
+		case "A":
+			{
 				const tableIdentifier = jqSource.closest(".modal-body")
 					.find("ul")
 					.find("li:first-child")
 					.find("input")
 					.data("table");
 				$(tableIdentifier).DataTable().draw();
-			} break;
+			}
+			break;
 		}
 	};
 
@@ -227,10 +235,11 @@ if (typeof TableColumnsVisibility !== "undefined") {
 	 * @param {any} id
 	 * @param {any} vis
 	 */
-	TableColumnsVisibility.prototype.renderCheckBox = function (data, id, vis) {
+	TableColumnsVisibility.prototype.renderCheckBox = function(data, id, vis) {
 		const title = (data.targets === "no-sort") ? "#" : data.sTitle;
 		return `<div class="custom-control custom-checkbox">
-            	<input type="checkbox" ${vis} data-table="${id}" id="_check_${data.idx}" class="custom-control-input vis-check" data-id="${data.idx}" required />
+            	<input type="checkbox" ${vis} data-table="${id}" id="_check_${data.idx
+			}" class="custom-control-input vis-check" data-id="${data.idx}" required />
               <label class="custom-control-label" for="_check_${data.idx}">${title}</label>
           </div>`;
 	};
@@ -239,7 +248,7 @@ if (typeof TableColumnsVisibility !== "undefined") {
 	 * Init column visibility control
 	 * @param {any} ctx
 	 */
-	TableColumnsVisibility.prototype.init = function (ctx) {
+	TableColumnsVisibility.prototype.init = function(ctx) {
 		const tableId = `#${$(ctx).attr("id")}`;
 		const table = $(tableId);
 		const dto = table.DataTable();
@@ -252,7 +261,7 @@ if (typeof TableColumnsVisibility !== "undefined") {
 		} else {
 			const template = this.renderTemplate(ctx);
 			$("div.CustomizeColumns").html(template);
-			$(".list-side-toggle").click(function () {
+			$(".list-side-toggle").click(function() {
 				new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
 				$("#hiddenColumnsModal").modal();
 			});
@@ -262,38 +271,41 @@ if (typeof TableColumnsVisibility !== "undefined") {
 	/*
 	 * Register events for control initialization
 	*/
-	TableColumnsVisibility.prototype.registerInitEvents = function () {
-		$(".table-search").keyup(function () {
+	TableColumnsVisibility.prototype.registerInitEvents = function() {
+		$(".table-search").keyup(function() {
 			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
 			oTable.search($(this).val()).draw();
 		});
 
 		//Delete multiple rows
-		$(".deleteMultipleRows").on("click", function () {
-			const cTable = $(this).closest(".card").find(".dynamic-table");
-			if (cTable) {
-				if (typeof TableBuilder !== "undefined") {
-					new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+		$(".deleteMultipleRows").on("click",
+			function() {
+				const cTable = $(this).closest(".card").find(".dynamic-table");
+				if (cTable) {
+					if (typeof TableBuilder !== "undefined") {
+						new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+					}
 				}
-			}
-		});
+			});
 
-		$(".add_new_inline").on("click", function () {
-			new TableInlineEdit().addNewHandler(this);
-		});
+		$(".add_new_inline").on("click",
+			function() {
+				new TableInlineEdit().addNewHandler(this);
+			});
 
 		//Items on page
-		$(".tablePaginationView a").on("click", function () {
-			const ctx = $(this);
-			const onPageValue = ctx.data("page");
-			const onPageText = ctx.text();
-			ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
-			const table = ctx.closest(".card").find(".dynamic-table").DataTable();
-			table.page.len(onPageValue).draw();
-		});
+		$(".tablePaginationView a").on("click",
+			function() {
+				const ctx = $(this);
+				const onPageValue = ctx.data("page");
+				const onPageText = ctx.text();
+				ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
+				const table = ctx.closest(".card").find(".dynamic-table").DataTable();
+				table.page.len(onPageValue).draw();
+			});
 
 		//hide columns
-		$(".hidden-columns-event").click(function () {
+		$(".hidden-columns-event").click(function() {
 			new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
 			$("#hiddenColumnsModal").modal();
 		});
@@ -311,7 +323,7 @@ if (typeof TableBuilder !== "undefined") {
 	//Table buttons
 	TableBuilder.prototype.buttons = [];
 
-	RenderTableSelect.prototype.selectHandler = function (context) {
+	RenderTableSelect.prototype.selectHandler = function(context) {
 		const row = $(context).closest("tr");
 		const table = row.closest("table").DataTable();
 		if (row.hasClass("selected")) {
@@ -321,7 +333,7 @@ if (typeof TableBuilder !== "undefined") {
 		}
 	};
 
-	RenderTableSelect.prototype.selectHeadHandler = function (context) {
+	RenderTableSelect.prototype.selectHeadHandler = function(context) {
 		const table = $(context).closest(".card").find(".dynamic-table");
 		const dTable = table.DataTable();
 		const rows = table.find("tbody tr");
@@ -337,10 +349,11 @@ if (typeof TableBuilder !== "undefined") {
 		});
 	};
 
-	RenderTableSelect.prototype.selectTemplateCommom = function (id, handler) {
+	RenderTableSelect.prototype.selectTemplateCommom = function(id, handler) {
 		return `<div class="checkbox-container">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" onchange="${handler}" class="custom-control-input" id="_select_${id}"
+                                    <input type="checkbox" onchange="${handler
+			}" class="custom-control-input" id="_select_${id}"
                                            required>
                                     <label class="custom-control-label" for="_select_${id}"></label>
                                 </div>
@@ -352,31 +365,34 @@ if (typeof TableBuilder !== "undefined") {
 		return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHeadHandler(this)");
 	};
 
-	RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
+	RenderTableSelect.prototype.templateSelect = function(data, type, row, meta) {
 		const id = st.newGuid();
 		return new RenderTableSelect().selectTemplateCommom(id, "new RenderTableSelect().selectHandler(this)");
 	};
 
 	//Table actions
-	TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dataX) {
+	TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function(row, dataX) {
 		return `${dataX.hasDeleteRestore
 			? `${row.isDeleted
-				? `<a title="${window.translate("restore")}" href="javascript:void(0)" onclick="new TableBuilder().restoreItem('${row.id
-				}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">restore</i></a>`
-				: `<a title="${window.translate("delete")}" href="javascript:void(0)" onclick="new TableBuilder().deleteItem('${row.id
-				}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">delete</i></a>`}`
+			? `<a title="${window.translate("restore")
+			}" href="javascript:void(0)" onclick="new TableBuilder().restoreItem('${row.id
+			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">restore</i></a>`
+			: `<a title="${window.translate("delete")
+			}" href="javascript:void(0)" onclick="new TableBuilder().deleteItem('${row.id
+			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')"><i class="material-icons">delete</i></a>`}`
 			: ``}`;
 	};
 
-	TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
+	TableBuilder.prototype.getTableRowInlineActionButton = function(row, dataX) {
 		if (row.isDeleted) return "";
 		return `${dataX.hasInlineEdit
-			? `	<a title="${window.translate("edit")}" class="inline-edit" data-viewmodel="${dataX.viewmodelData.result.id
+			? `	<a title="${window.translate("edit")}" class="inline-edit" data-viewmodel="${dataX.viewmodelData.result
+			.id
 			}" href="javascript:void(0)"><i class="material-icons">edit</i></a>`
 			: ``}`;
 	};
 
-	TableBuilder.prototype.getTableDeleteForeverActionButton = function (row, dataX) {
+	TableBuilder.prototype.getTableDeleteForeverActionButton = function(row, dataX) {
 		return `${dataX.hasDeleteForever
 			? `	<a onclick="new TableBuilder().deleteItemForever('${row.id
 			}', '#${dataX.listId}', '${dataX.viewmodelData.result.id}')" data-viewmodel="${dataX.viewmodelData.result.id
@@ -385,15 +401,16 @@ if (typeof TableBuilder !== "undefined") {
 	};
 
 	//Rewrite actions for table
-	TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
+	TableBuilder.prototype.getTableRowEditActionButton = function(row, dataX) {
 		if (row.isDeleted) return "";
-		return `${dataX.hasEditPage ? `<a href="${dataX.editPageLink}?itemId=${row.id
+		return `${dataX.hasEditPage
+			? `<a href="${dataX.editPageLink}?itemId=${row.id
 			}&&listId=${dataX.viewmodelData.result.id}"><i class="material-icons">edit</i></a>`
 			: ``}`;
 	};
 
 	//Rewrite jq dt translations
-	TableBuilder.prototype.replaceTableSystemTranslations = function () {
+	TableBuilder.prototype.replaceTableSystemTranslations = function() {
 		const customReplace = new Array();
 		customReplace.push({ Key: "sProcessing", Value: `<div class="col-md lds-dual-ring"></div>` });
 		//customReplace.push({ Key: "processing", Value: `<div class="col-md lds-dual-ring"></div>` });
@@ -406,8 +423,9 @@ if (typeof TableBuilder !== "undefined") {
  * @param {any} settings
  * @param {any} json
  */
-	TableBuilder.prototype.onInitComplete = function (settings, json) {
-		if (this.configurations.table.name === "CommonRiskMatrixTemplate" || this.configurations.table.name === "CompanyRiskMatrix") return;
+	TableBuilder.prototype.onInitComplete = function(settings, json) {
+		if (this.configurations.table.name === "CommonRiskMatrixTemplate" ||
+			this.configurations.table.name === "CompanyRiskMatrix") return;
 		new TableInlineEdit().addNewHandler($(settings.nTable).parent());
 		// The second argument is not required
 		this.configurations.overflowIndicator = $.Iso.OverflowIndicator($($(settings.nTable)), { trigger: "focus" });
@@ -419,16 +437,16 @@ if (typeof TableBuilder !== "undefined") {
 			Override inline edit templates
 ************************************************/
 if (typeof TableInlineEdit !== "undefined") {
-	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function (ctx, state) {
+	TableInlineEdit.prototype.toggleVisibilityColumnsButton = function(ctx, state) {
 		return;
 	};
 
-	TableInlineEdit.prototype.renderActiveInlineButton = function (ctx) {
+	TableInlineEdit.prototype.renderActiveInlineButton = function(ctx) {
 		//ctx.find("i").html("check");
 	};
 
 	//Set actions for table
-	TableInlineEdit.prototype.getActionsOnAdd = function () {
+	TableInlineEdit.prototype.getActionsOnAdd = function() {
 		const template = `<div class="btn-group" role="group" aria-label="Action buttons">
 							<a href="javascript:void(0)" class='add-new-item'><i class="material-icons">check</i></a>
 							<a href="javascript:void(0)" class='cancel-new-item'><i class="material-icons">cancel</i></a>
@@ -437,7 +455,7 @@ if (typeof TableInlineEdit !== "undefined") {
 	};
 
 	//On add new cell for inline edit
-	TableInlineEdit.prototype.onGetNewAddCell = function (cell) {
+	TableInlineEdit.prototype.onGetNewAddCell = function(cell) {
 		const ctx = $(cell);
 		ctx.addClass("expandable-cell");
 		ctx.find("div:first-child").addClass("hasTooltip");
@@ -448,13 +466,14 @@ if (typeof TableInlineEdit !== "undefined") {
  * @param {any} el
  * @param {any} data
  */
-	TableInlineEdit.prototype.onAfterInitAddReferenceCell = function (el, data) {
+	TableInlineEdit.prototype.onAfterInitAddReferenceCell = function(el, data) {
 		const scope = this;
 		const select = $(el).find("select");
 		select.attr("class", "inline-add-event data-new form-control");
-		$(el).find("select.inline-add-event").on("change", function () {
-			scope.addNewItem($(this));
-		});
+		$(el).find("select.inline-add-event").on("change",
+			function() {
+				scope.addNewItem($(this));
+			});
 	};
 
 	/**
@@ -462,7 +481,7 @@ if (typeof TableInlineEdit !== "undefined") {
  * @param {any} columns
  * @param {any} index
  */
-	TableInlineEdit.prototype.onAfterInitTextEditCell = function (columns, index) {
+	TableInlineEdit.prototype.onAfterInitTextEditCell = function(columns, index) {
 		this.onAfterInitEditCellDefaultHandler(columns, index);
 		const columnCtx = $(columns[index]);
 		const expandCell = columnCtx.parent();
@@ -475,7 +494,7 @@ if (typeof TableInlineEdit !== "undefined") {
  * @param {any} el
  * @param {any} data
  */
-	TableInlineEdit.prototype.onAfterInitAddTextCell = function (el, data) {
+	TableInlineEdit.prototype.onAfterInitAddTextCell = function(el, data) {
 		el.setAttribute("class", "inline-add-event data-new form-control");
 		if (!data.allowNull) {
 			el.setAttribute("required", "required");
@@ -492,7 +511,7 @@ if (typeof TableInlineEdit !== "undefined") {
  * @param {any} data
  * @param {any} dataIndex
  */
-	TableBuilder.prototype.onRowCreate = function (row, data, dataIndex) {
+	TableBuilder.prototype.onRowCreate = function(row, data, dataIndex) {
 		const scope = this;
 		if (data.isDeleted) {
 			$(row).addClass("row-deleted");
@@ -502,10 +521,11 @@ if (typeof TableInlineEdit !== "undefined") {
 		const rowScope = $(row);
 		rowScope.attr("data-viewmodel", scope.configurations.viewmodelId);
 		rowScope.unbind();
-		rowScope.on("dblclick", function () {
-			new ST().clearSelectedText();
-			new TableInlineEdit().initInlineEditForRow(this);
-		});
+		rowScope.on("dblclick",
+			function() {
+				new ST().clearSelectedText();
+				new TableInlineEdit().initInlineEditForRow(this);
+			});
 	};
 
 	//Restyle inline edit controls
@@ -545,7 +565,7 @@ if (typeof TableInlineEdit !== "undefined") {
 	 * Get reference edit cell
 	 * @param {any} conf
 	 */
-	TableInlineEdit.prototype.getReferenceEditCell = function (conf) {
+	TableInlineEdit.prototype.getReferenceEditCell = function(conf) {
 		const gScope = this;
 		const div = document.createElement("div");
 		//div.setAttribute("class", "");
@@ -562,7 +582,8 @@ if (typeof TableInlineEdit !== "undefined") {
 			dropdown.setAttribute("data-required", "");
 		}
 		const container = document.createElement("div");
-		container.setAttribute("class", "fire-reference-component input-group outline-control br-none inline-editing-input");
+		container.setAttribute("class",
+			"fire-reference-component input-group outline-control br-none inline-editing-input");
 		const el = document.createElement("input");
 		el.setAttribute("class", "form-control virtual-el-reference");
 		el.setAttribute("type", "text");
@@ -583,12 +604,13 @@ if (typeof TableInlineEdit !== "undefined") {
 			if (data) {
 				if (data.is_success) {
 					const entityName = data.result.entityName;
-					$.each(data.result.data, function (index, obj) {
-						if (obj.id === conf.value) {
-							el.value = obj.name;
-						}
-						dropdown.options[dropdown.options.length] = new Option(obj.name, obj.id);
-					});
+					$.each(data.result.data,
+						function(index, obj) {
+							if (obj.id === conf.value) {
+								el.value = obj.name;
+							}
+							dropdown.options[dropdown.options.length] = new Option(obj.name, obj.id);
+						});
 					dropdown.setAttribute("data-ref-entity", entityName);
 					const items = data.result.data.map(x => {
 						return {
@@ -596,107 +618,121 @@ if (typeof TableInlineEdit !== "undefined") {
 							value: x.name
 						};
 					});
-					$($(div).find(".fire-reference-component")).on("click", function (event) {
-						if (event.originalEvent.detail > 1) return;
-						const cellCtx = this;
-						const item = $.Iso.dynamicFilter("list",
-							event.target, items,
-							{
-								create: function (value) {
-									return new Promise((resolve, reject) => {
-										gScope.db.addAsync(entityName, { name: value }).then(response => {
-											if (response.is_success) {
-												dropdown.options[dropdown.options.length] = new Option(value, response.result);
-												const successMessage = `${window.translate("system_record")} ${value} ${window.translate("system_record_added_into")} ${entityName}`;
-												gScope.toast.notify({ heading: successMessage, icon: "success" });
-												resolve(response.result);
-											} else {
-												reject();
-												gScope.toast.notifyErrorList(response.error_keys);
-											}
+					$($(div).find(".fire-reference-component")).on("click",
+						function(event) {
+							if (event.originalEvent.detail > 1) return;
+							const cellCtx = this;
+							const item = $.Iso.dynamicFilter("list",
+								event.target,
+								items,
+								{
+									create: function(value) {
+										return new Promise((resolve, reject) => {
+											gScope.db.addAsync(entityName, { name: value }).then(response => {
+												if (response.is_success) {
+													dropdown.options[dropdown.options.length] =
+														new Option(value, response.result);
+													const successMessage =
+														`${window.translate("system_record")} ${value} ${window
+															.translate("system_record_added_into")} ${entityName}`;
+													gScope.toast.notify({ heading: successMessage, icon: "success" });
+													resolve(response.result);
+												} else {
+													reject();
+													gScope.toast.notifyErrorList(response.error_keys);
+												}
+											});
 										});
-									});
-								},
-								update: function (obj) {
-									return new Promise((resolve, reject) => {
-										gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
-											if (x.is_success) {
-												const newObj = x.result;
-												newObj.name = obj.value;
-												gScope.db.updateAsync(entityName, newObj).then(y => {
-													if (y.is_success) {
-														gScope.toast.notify({ heading: window.translate("system_entry_updaded"), icon: "success" });
-														resolve();
-													} else {
-														gScope.toast.notifyErrorList(y.error_keys);
-														reject();
-													}
-												}).catch(err => {
-													reject(err);
-												});
-											} else {
-												gScope.toast.notify({ heading: window.translate("system_data_no_item_found") });
-											}
-										}).catch(err => {
-											reject(err);
+									},
+									update: function(obj) {
+										return new Promise((resolve, reject) => {
+											gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
+												if (x.is_success) {
+													const newObj = x.result;
+													newObj.name = obj.value;
+													gScope.db.updateAsync(entityName, newObj).then(y => {
+														if (y.is_success) {
+															gScope.toast.notify({
+																heading: window.translate("system_entry_updaded"),
+																icon: "success"
+															});
+															resolve();
+														} else {
+															gScope.toast.notifyErrorList(y.error_keys);
+															reject();
+														}
+													}).catch(err => {
+														reject(err);
+													});
+												} else {
+													gScope.toast.notify({
+														heading: window.translate("system_data_no_item_found")
+													});
+												}
+											}).catch(err => {
+												reject(err);
+											});
 										});
-									});
-								},
-								delete: function (obj) {
-									return new Promise((resolve, reject) => {
-										const params = [{ parameter: "Id", value: obj.id }];
-										gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
-											if (x.is_success) {
-												gScope.toast.notify({ heading: window.translate("system_data_record_deleted"), icon: "success" });
-												resolve();
-											} else {
-												gScope.toast.notifyErrorList(x.error_keys);
-												reject();
-											}
-										}).catch(err => {
-											reject(err);
+									},
+									delete: function(obj) {
+										return new Promise((resolve, reject) => {
+											const params = [{ parameter: "Id", value: obj.id }];
+											gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
+												if (x.is_success) {
+													gScope.toast.notify({
+														heading: window.translate("system_data_record_deleted"),
+														icon: "success"
+													});
+													resolve();
+												} else {
+													gScope.toast.notifyErrorList(x.error_keys);
+													reject();
+												}
+											}).catch(err => {
+												reject(err);
+											});
 										});
-									});
-								}
-							},
-							{
-								entity: entityName,
-								ctx: cellCtx,
-								items: items,
-								searchBarPlaceholder: window.translate("system_search_add"),
-								addButtonLabel: window.translate("add")
-							},
-							{ placement: "bottom-auto" });
-
-						$(item.container).on("selectValueChange", (event, arg) => {
-							const { ctx, entity, items } = arg.options;
-							//const exist = items.find(x => x.id === arg.value);
-							$(dropdown).val(arg.value);
-							$(dropdown).trigger("change");
-							gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
-								if (x.is_success) {
-									const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
-									//if (conf.addMode) {
-									//	const template = conf.viewModel
-									//		.tableModelFields.tableFieldConfigValues
-									//		.find(z => z.tableFieldConfigId === tId).value;
-
-									//	console.log(template);
-									//} else {
-
-									//}
-									let param = "name";
-									if (entity == "Users") {
-										param = "userName";
 									}
+								},
+								{
+									entity: entityName,
+									ctx: cellCtx,
+									items: items,
+									searchBarPlaceholder: window.translate("system_search_add"),
+									addButtonLabel: window.translate("add")
+								},
+								{ placement: "bottom-auto" });
 
-									$(ctx).find(".virtual-el-reference").val(x.result[param]);
-								} else {
-									gScope.toast.notifyErrorList(x.error_keys);
-								}
-							});
+							$(item.container).on("selectValueChange",
+								(event, arg) => {
+									const { ctx, entity, items } = arg.options;
+									//const exist = items.find(x => x.id === arg.value);
+									$(dropdown).val(arg.value);
+									$(dropdown).trigger("change");
+									gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
+										if (x.is_success) {
+											const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
+											//if (conf.addMode) {
+											//	const template = conf.viewModel
+											//		.tableModelFields.tableFieldConfigValues
+											//		.find(z => z.tableFieldConfigId === tId).value;
+
+											//	console.log(template);
+											//} else {
+
+											//}
+											let param = "name";
+											if (entity == "Users") {
+												param = "userName";
+											}
+
+											$(ctx).find(".virtual-el-reference").val(x.result[param]);
+										} else {
+											gScope.toast.notifyErrorList(x.error_keys);
+										}
+									});
+								});
 						});
-					});
 				}
 				dropdown.value = conf.value;
 			}
@@ -745,69 +781,73 @@ if (typeof TableInlineEdit !== "undefined") {
  * @param {any} el
  * @param {any} data
  */
-	TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
+	TableInlineEdit.prototype.onAfterInitAddDateCell = function(el, data) {
 		const input = $(el).find(".inline-update-event");
 		input.get(0).setAttribute("class", "inline-add-event data-new form-control datepicker-control");
-		input.on("change", function () { })
+		input.on("change", function() {})
 			.datepicker({
 				format: "dd/mm/yyyy"
-			});//.addClass("datepicker");
-		input.on("change", function () {
-			if (!this.hasAttribute("data-required")) return;
-			if ($(this).val()) {
-				$(this).parent().removeClass("cell-red");
-			} else {
-				$(this).parent().removeClass("cell-red").addClass("cell-red");
-			}
-		});
+			}); //.addClass("datepicker");
+		input.on("change",
+			function() {
+				if (!this.hasAttribute("data-required")) return;
+				if ($(this).val()) {
+					$(this).parent().removeClass("cell-red");
+				} else {
+					$(this).parent().removeClass("cell-red").addClass("cell-red");
+				}
+			});
 	};
 
 	/**
  * Validate row
  * @param {any} context
  */
-	TableInlineEdit.prototype.isValidNewRow = function (context) {
+	TableInlineEdit.prototype.isValidNewRow = function(context) {
 		const els = context.get(0).querySelectorAll("textarea.data-new");
 		let isValid = true;
-		$.each(els, (index, el) => {
-			if (el.hasAttribute("data-required")) {
-				if (!el.value) {
-					if (!el.classList.contains("cell-red")) {
-						el.classList.add("cell-red");
+		$.each(els,
+			(index, el) => {
+				if (el.hasAttribute("data-required")) {
+					if (!el.value) {
+						if (!el.classList.contains("cell-red")) {
+							el.classList.add("cell-red");
+						}
+						isValid = false;
 					}
-					isValid = false;
 				}
-			}
-		});
+			});
 
 		const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
 
-		$.each(elsDates, (index, el) => {
-			const ctx = $(el).parent();
-			if (el.hasAttribute("data-required")) {
-				if (!el.value) {
-					if (!ctx.hasClass("cell-red")) {
-						ctx.addClass("cell-red");
+		$.each(elsDates,
+			(index, el) => {
+				const ctx = $(el).parent();
+				if (el.hasAttribute("data-required")) {
+					if (!el.value) {
+						if (!ctx.hasClass("cell-red")) {
+							ctx.addClass("cell-red");
+						}
+						isValid = false;
 					}
-					isValid = false;
 				}
-			}
-		});
+			});
 
 		const referenceCells = context.get(0).querySelectorAll("select.data-new");
-		$.each(referenceCells, (index, el) => {
-			if (el.hasAttribute("data-required")) {
-				const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
-				if (!el.value) {
-					if (!input.classList.contains("cell-red")) {
-						input.classList.add("cell-red");
+		$.each(referenceCells,
+			(index, el) => {
+				if (el.hasAttribute("data-required")) {
+					const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
+					if (!el.value) {
+						if (!input.classList.contains("cell-red")) {
+							input.classList.add("cell-red");
+						}
+						isValid = false;
+					} else {
+						$(input).removeClass("cell-red");
 					}
-					isValid = false;
-				} else {
-					$(input).removeClass("cell-red");
 				}
-			}
-		});
+			});
 		return isValid;
 	};
 
@@ -816,7 +856,7 @@ if (typeof TableInlineEdit !== "undefined") {
 	 * @param {any} ctx
 	 * @param {any} jdt
 	 */
-	TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
+	TableInlineEdit.prototype.addNewHandler = function(ctx, jdt = null) {
 		const scope = this;
 		const card = $(ctx).closest(".card");
 		const dto = card.find(".dynamic-table");
@@ -825,7 +865,10 @@ if (typeof TableInlineEdit !== "undefined") {
 		}
 		const activeNewRows = dto.find("tbody tr[isNew='true']");
 		if (activeNewRows.length > 0) {
-			return this.displayNotification({ heading: window.translate("system_inline_edit_add_fail"), icon: "warning" });
+			return this.displayNotification({
+				heading: window.translate("system_inline_edit_add_fail"),
+				icon: "warning"
+			});
 		}
 		const row = document.createElement("tr");
 		row.setAttribute("isNew", "true");
@@ -836,15 +879,15 @@ if (typeof TableInlineEdit !== "undefined") {
 			let cell = document.createElement("td");
 			if (columns[i].targets === "no-sort") {
 				cell.innerHTML = this.defaultNotEditFieldContainer;
-			}
-			else {
+			} else {
 				const newCell = this.getAddRowCell(columns[i], cell);
 				cell = newCell.cell;
 				if (newCell.entityName)
 					row.setAttribute("entityName", newCell.entityName);
-				$(cell).find("textarea.inline-add-event, input.inline-add-event").on("blur", function () {
-					scope.addNewItem($(this));
-				});
+				$(cell).find("textarea.inline-add-event, input.inline-add-event").on("blur",
+					function() {
+						scope.addNewItem($(this));
+					});
 			}
 
 			row.appendChild(cell);
@@ -864,7 +907,7 @@ if (typeof TableInlineEdit !== "undefined") {
  * Transform row in inline edit mode
  * @param {any} target
  */
-	TableInlineEdit.prototype.initInlineEditForRow = function (target) {
+	TableInlineEdit.prototype.initInlineEditForRow = function(target) {
 		const targetCtx = $(target);
 		this.renderActiveInlineButton(targetCtx);
 		targetCtx.removeClass("inline-edit");
@@ -900,60 +943,66 @@ if (typeof TableInlineEdit !== "undefined") {
 					const allowNull = fieldData.allowNull;
 					let container = value;
 					const data = {
-						cellId, tableId, propId, value,
-						propName, allowNull,
+						cellId,
+						tableId,
+						propId,
+						value,
+						propName,
+						allowNull,
 						addMode: false,
 						viewModel: viewModel.result
 					};
 					switch (fieldData.dataType) {
-						case "nvarchar":
-							{
-								container = this.getTextEditCell(data);
-								columnCtx.html(container);
-								this.onAfterInitTextEditCell(columns, i);
-							}
-							break;
-						case "int32":
-						case "decimal":
-							{
-								container = this.getNumberEditCell(data);
-								columnCtx.html(container);
-								this.onAfterInitNumberEditCell(columns, i);
-							}
-							break;
-						case "bool":
-							{
-								container = this.getBooleanEditCell(data);
-								columnCtx.html(container);
-								this.onAfterInitBooleanEditCell(columns, i);
-							}
-							break;
-						case "datetime":
-						case "date":
-							{
-								container = this.getDateEditCell(data);
-								columnCtx.html(container);
-								this.onAfterInitDateEditCell(columns, i);
-							}
-							break;
-						case "uniqueidentifier":
-							{
-								container = this.getReferenceEditCell(data);
-								columnCtx.html(container);
-								this.onAfterInitReferenceCell(columns, i);
-							}
-							break;
+					case "nvarchar":
+						{
+							container = this.getTextEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitTextEditCell(columns, i);
+						}
+						break;
+					case "int32":
+					case "decimal":
+						{
+							container = this.getNumberEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitNumberEditCell(columns, i);
+						}
+						break;
+					case "bool":
+						{
+							container = this.getBooleanEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitBooleanEditCell(columns, i);
+						}
+						break;
+					case "datetime":
+					case "date":
+						{
+							container = this.getDateEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitDateEditCell(columns, i);
+						}
+						break;
+					case "uniqueidentifier":
+						{
+							container = this.getReferenceEditCell(data);
+							columnCtx.html(container);
+							this.onAfterInitReferenceCell(columns, i);
+						}
+						break;
 					}
 				} else if (viewModelConfigurations.configurations.length > 0) {
 					switch (viewModelConfigurations.virtualDataType) {
 						//Many to many
-						case 3:
-							{
-								this.initManyToManyControl({
-									viewModelConfigurations, columnCtx, cellId
-								});
-							}
-							break;
+					case 3:
+						{
+							this.initManyToManyControl({
+								viewModelConfigurations,
+								columnCtx,
+								cellId
+							});
+						}
+						break;
 					}
 				} else {
 					this.getOnNonRecognizedField(columnCtx, viewModelConfigurations);
@@ -970,7 +1019,7 @@ if (typeof TableInlineEdit !== "undefined") {
  * Transform row from edit mode to read mode
  * @param {any} target
  */
-	TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
+	TableInlineEdit.prototype.completeInlineEditForRow = function(target) {
 		const targetCtx = $(target);
 		const htTable = targetCtx.closest("table");
 		const table = htTable.DataTable();
@@ -1009,32 +1058,32 @@ if (typeof TableInlineEdit !== "undefined") {
 						const value = inspect.val();
 
 						switch (type) {
-							case "bool":
-								{
-									obj[parsedPropName] = inspect.prop("checked");
+						case "bool":
+							{
+								obj[parsedPropName] = inspect.prop("checked");
+								pr1Resolve();
+							}
+							break;
+						case "uniqueidentifier":
+							{
+								const refEntity = inspect.attr("data-ref-entity");
+								this.db.getByIdWithIncludesAsync(refEntity, value).then(refObject => {
+									if (refObject.is_success) {
+										obj[`${parsedPropName}Reference`] = refObject.result;
+										obj[parsedPropName] = value;
+									} else {
+										this.toast.notifyErrorList(refObject.error_keys);
+									}
 									pr1Resolve();
-								}
-								break;
-							case "uniqueidentifier":
-								{
-									const refEntity = inspect.attr("data-ref-entity");
-									this.db.getByIdWithIncludesAsync(refEntity, value).then(refObject => {
-										if (refObject.is_success) {
-											obj[`${parsedPropName}Reference`] = refObject.result;
-											obj[parsedPropName] = value;
-										} else {
-											this.toast.notifyErrorList(refObject.error_keys);
-										}
-										pr1Resolve();
-									}).catch(err => { console.warn(err) });
-								}
-								break;
-							default:
-								{
-									obj[parsedPropName] = value;
-									pr1Resolve();
-								}
-								break;
+								}).catch(err => { console.warn(err) });
+							}
+							break;
+						default:
+							{
+								obj[parsedPropName] = value;
+								pr1Resolve();
+							}
+							break;
 						}
 					}).then(() => {
 						columnCtx.find(".inline-update-event").off("blur", onInputEventHandler);
@@ -1045,27 +1094,32 @@ if (typeof TableInlineEdit !== "undefined") {
 						if (viewModelConfigurations) {
 							switch (viewModelConfigurations.virtualDataType) {
 								//Many to many
-								case 3:
-									{
-										const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } =
-											this.getManyToManyViewModelConfigurations(viewModelConfigurations);
-										const filters = [{ parameter: sourceSelfParamName.value, value: obj.id }];
-										this.db.getAllWhereWithIncludesAsync(sourceEntity.value, filters).then(mResult => {
-											if (mResult.is_success) {
-												obj[`${sourceEntity.value.toLowerFirstLetter()}Reference`] = mResult.result;
-											} else {
-												this.toast.notifyErrorList(mResult.error_keys);
-											}
-											localResolve();
-										}).catch(err => {
-											console.warn(err);
-											localResolve();
-										});
-									}
-									break;
-								default:
-									localResolve();
-									break;
+							case 3:
+								{
+									const {
+											sourceEntity,
+											sourceSelfParamName,
+											sourceRefParamName,
+											referenceEntityName
+										} =
+										this.getManyToManyViewModelConfigurations(viewModelConfigurations);
+									const filters = [{ parameter: sourceSelfParamName.value, value: obj.id }];
+									this.db.getAllWhereWithIncludesAsync(sourceEntity.value, filters).then(mResult => {
+										if (mResult.is_success) {
+											obj[`${sourceEntity.value.toLowerFirstLetter()}Reference`] = mResult.result;
+										} else {
+											this.toast.notifyErrorList(mResult.error_keys);
+										}
+										localResolve();
+									}).catch(err => {
+										console.warn(err);
+										localResolve();
+									});
+								}
+								break;
+							default:
+								localResolve();
+								break;
 							}
 						} else localResolve();
 					});
@@ -1084,9 +1138,10 @@ if (typeof TableInlineEdit !== "undefined") {
 				obj = Object.assign(obj, additionalDependencies);
 				const redraw = table.row(index).data(obj).invalidate();
 				$(redraw.row(index).nodes()).unbind();
-				$(redraw.row(index).nodes()).on("dblclick", function () {
-					new TableInlineEdit().initInlineEditForRow(this);
-				});
+				$(redraw.row(index).nodes()).on("dblclick",
+					function() {
+						new TableInlineEdit().initInlineEditForRow(this);
+					});
 				$.Iso.OverflowIndicator(htTable, { trigger: "focus" });
 			});
 
@@ -1097,20 +1152,22 @@ if (typeof TableInlineEdit !== "undefined") {
 
 
 	//bind events after inline edit was started for row
-	TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function (row) {
+	TableInlineEdit.prototype.bindEventsAfterInitInlineEdit = function(row) {
 		try {
 			// ReSharper disable once ConstructorCallNotUsed
 			new $.Iso.InlineEditingCells();
-		} catch (e) { };
+		} catch (e) {
+		}
 		const ctx = $(row);
 		ctx.unbind();
 		if (!ctx.get(0).hasAttribute("isnew")) {
-			row.on("dblclick", function (e) {
-				e.preventDefault();
-				new ST().clearSelectedText();
-				$(this).unbind();
-				new TableInlineEdit().completeInlineEditForRow(this);
-			});
+			row.on("dblclick",
+				function(e) {
+					e.preventDefault();
+					new ST().clearSelectedText();
+					$(this).unbind();
+					new TableInlineEdit().completeInlineEditForRow(this);
+				});
 		}
 	};
 
@@ -1118,79 +1175,99 @@ if (typeof TableInlineEdit !== "undefined") {
 	 * Many to many control
 	 * @param {any} data
 	 */
-	TableInlineEdit.prototype.initManyToManyControl = function (data) {
+	TableInlineEdit.prototype.initManyToManyControl = function(data) {
 		const { viewModelConfigurations, columnCtx, cellId } = data;
 		const scope = this;
 		const mCtx = columnCtx.closest("td");
-		const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName }
-			= scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
-		mCtx.on("click", function () {
-			if (event.detail > 1) return;
-			const promiseArr = [];
-			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
-			promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
-				[{ parameter: sourceSelfParamName.value, value: cellId }]));
-			//get data
-			Promise.all(promiseArr).then(pResult => {
-				const rAll = pResult[0];
-				const rSelected = pResult[1];
-				if (!rAll.is_success || !rSelected.is_success) {
-					return scope.displayNotification({ heading: window.translate("system_something_went_wrong") });
-				}
+		const { sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } =
+			scope.getManyToManyViewModelConfigurations(viewModelConfigurations);
+		mCtx.on("click",
+			function() {
+				if (event.detail > 1) return;
+				const promiseArr = [];
+				promiseArr.push(scope.db.getAllWhereWithIncludesAsync(referenceEntityName.value));
+				promiseArr.push(scope.db.getAllWhereWithIncludesAsync(sourceEntity.value,
+					[{ parameter: sourceSelfParamName.value, value: cellId }]));
+				//get data
+				Promise.all(promiseArr).then(pResult => {
+					const rAll = pResult[0];
+					const rSelected = pResult[1];
+					if (!rAll.is_success || !rSelected.is_success) {
+						return scope.displayNotification({ heading: window.translate("system_something_went_wrong") });
+					}
 
-				const dItems = rAll.result.map(x => {
-					const e = rSelected.result.find(y =>
-						y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
-					const o = {
-						id: x.id,
-						value: x.name,
-						checked: e ? true : false
-					};
-					return o;
-				});
-
-				const multiSelectItem = $.Iso.dynamicFilter("multi-select",
-					mCtx, dItems, null,
-					{
-						sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName,
-						recordId: cellId,
-						searchBarPlaceholder: window.translate("system_search")
+					const dItems = rAll.result.map(x => {
+						const e = rSelected.result.find(y =>
+							y[sourceRefParamName.value.toString().toLowerFirstLetter()] === x.id);
+						const o = {
+							id: x.id,
+							value: x.name,
+							checked: e ? true : false
+						};
+						return o;
 					});
 
-				$(multiSelectItem.container).on("selectValueChange", (event, arg) => {
-					const { id, checked } = arg.value.changedValue;
-					const { recordId, sourceEntity, sourceSelfParamName, sourceRefParamName, referenceEntityName } = arg.options;
-					if (checked) {
-						const addO = {};
-						addO[sourceSelfParamName.value] = recordId;
-						addO[sourceRefParamName.value] = id;
-						scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
-							if (addResult.is_success) {
-								scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
-							} else {
-								scope.toast.notifyErrorList(addResult.error_keys);
-							}
-						}).catch(err => {
-							console.warn(err);
+					const multiSelectItem = $.Iso.dynamicFilter("multi-select",
+						mCtx,
+						dItems,
+						null,
+						{
+							sourceEntity,
+							sourceSelfParamName,
+							sourceRefParamName,
+							referenceEntityName,
+							recordId: cellId,
+							searchBarPlaceholder: window.translate("system_search")
 						});
-					} else {
-						const deleteFilters = [
-							{ parameter: sourceSelfParamName.value, value: recordId },
-							{ parameter: sourceRefParamName.value, value: id }
-						];
-						scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(deleteResult => {
-							if (deleteResult.is_success) {
-								scope.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+
+					$(multiSelectItem.container).on("selectValueChange",
+						(event, arg) => {
+							const { id, checked } = arg.value.changedValue;
+							const {
+								recordId,
+								sourceEntity,
+								sourceSelfParamName,
+								sourceRefParamName,
+								referenceEntityName
+							} = arg.options;
+							if (checked) {
+								const addO = {};
+								addO[sourceSelfParamName.value] = recordId;
+								addO[sourceRefParamName.value] = id;
+								scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
+									if (addResult.is_success) {
+										scope.toast.notify({
+											heading: window.translate("system_inline_saved"),
+											icon: "success"
+										});
+									} else {
+										scope.toast.notifyErrorList(addResult.error_keys);
+									}
+								}).catch(err => {
+									console.warn(err);
+								});
 							} else {
-								scope.toast.notifyErrorList(deleteResult.error_keys);
+								const deleteFilters = [
+									{ parameter: sourceSelfParamName.value, value: recordId },
+									{ parameter: sourceRefParamName.value, value: id }
+								];
+								scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(
+									deleteResult => {
+										if (deleteResult.is_success) {
+											scope.toast.notify({
+												heading: window.translate("system_inline_saved"),
+												icon: "success"
+											});
+										} else {
+											scope.toast.notifyErrorList(deleteResult.error_keys);
+										}
+									}).catch(err => err);
 							}
-						}).catch(err => err);
-					}
+						});
+				}).catch(err => {
+					console.warn(err);
 				});
-			}).catch(err => {
-				console.warn(err);
 			});
-		});
 	};
 }
 
@@ -1199,7 +1276,7 @@ if (typeof TableInlineEdit !== "undefined") {
 ************************************************/
 if (typeof Notificator !== "undefined") {
 	//override notification populate container
-	Notificator.prototype.addNewNotificationToContainer = function (notification) {
+	Notificator.prototype.addNewNotificationToContainer = function(notification) {
 		const _ = $("#notificationAlarm");
 		if (!_.hasClass("notification"))
 			_.addClass("notification");
@@ -1208,9 +1285,10 @@ if (typeof Notificator !== "undefined") {
 		this.registerOpenNotificationEvent();
 	}
 
-	Notificator.prototype.createNotificationBodyContainer = function (n) {
+	Notificator.prototype.createNotificationBodyContainer = function(n) {
 		const block = `
-		<a data-notification-id="${n.id}" href="#" class="notification-item dropdown-item py-3 border-bottom">
+		<a data-notification-id="${n.id
+			}" href="javascript:void(0)" class="notification-item dropdown-item py-3 border-bottom">
             <p><small>${n.subject}</small></p>
             <p class="text-muted mb-1"><small>${n.content}</small></p>
             <p class="text-muted mb-1"><small>${n.created}</small></p>
@@ -1228,7 +1306,7 @@ if (typeof DataInjector !== "undefined") {
 	 * @param {any} entityName
 	 * @param {any} object
 	 */
-	DataInjector.prototype.addAsync = function (entityName, object) {
+	DataInjector.prototype.addAsync = function(entityName, object) {
 		const promises = [];
 		const entityCodeFormats = [
 			{ name: "Objective", code: 1000, propName: "Code" },
@@ -1280,10 +1358,10 @@ if (typeof DataInjector !== "undefined") {
 					method: "post",
 					contentType: "application/json; charset=utf-8",
 					dataType: "json",
-					success: function (data) {
+					success: function(data) {
 						resolve(data);
 					},
-					error: function (error) {
+					error: function(error) {
 						reject(error);
 					}
 				});
@@ -1296,21 +1374,31 @@ if (typeof DataInjector !== "undefined") {
 
 function getIdentifier(idt) {
 	switch (idt) {
-		case "en": {
+	case "en":
+		{
 			idt = "gb";
-		} break;
-		case "ja": {
+		}
+		break;
+	case "ja":
+		{
 			idt = "jp";
-		} break;
-		case "zh": {
+		}
+		break;
+	case "zh":
+		{
 			idt = "cn";
-		} break;
-		case "uk": {
+		}
+		break;
+	case "uk":
+		{
 			idt = "ua";
-		} break;
-		case "el": {
+		}
+		break;
+	case "el":
+		{
 			idt = "gr";
-		} break;
+		}
+		break;
 	}
 	return idt;
 }
@@ -1328,10 +1416,10 @@ function makeMenuActive(target) {
 	}
 }
 
-$(document).ready(function () {
+$(document).ready(function() {
 	window.forceTranslate();
 	//Log Out
-	$(".sa-logout").click(function () {
+	$(".sa-logout").click(function() {
 		swal({
 			title: window.translate("confirm_log_out_question"),
 			text: window.translate("log_out_message"),
@@ -1347,7 +1435,7 @@ $(document).ready(function () {
 					type: "post",
 					dataType: "json",
 					contentType: "application/x-www-form-urlencoded; charset=utf-8",
-					success: function (data) {
+					success: function(data) {
 						if (data.success) {
 
 							swal("Success!", data.message, "success");
@@ -1356,7 +1444,7 @@ $(document).ready(function () {
 							swal("Fail!", data.message, "error");
 						}
 					},
-					error: function () {
+					error: function() {
 						swal("Fail!", "Server no response!", "error");
 					}
 				});
@@ -1370,9 +1458,11 @@ $(document).ready(function () {
 	loadMenusPromise.then(menus => {
 		const renderMenuContainer = $("#left-nav-bar");
 		if (menus.is_success) {
-			const content = tManager.render("template_RenderIsoMenuItem.html", menus.result, {
-				host: location.origin
-			});
+			const content = tManager.render("template_RenderIsoMenuItem.html",
+				menus.result,
+				{
+					host: location.origin
+				});
 			renderMenuContainer.html(content);
 			window.forceTranslate("#left-nav-bar");
 			let route = location.href;
@@ -1382,7 +1472,9 @@ $(document).ready(function () {
 			const activeMenu = renderMenuContainer.find(`a[href='${route}']`);
 			activeMenu.parent()
 				.addClass("active");
-			$(".breadcrumb").html(null).prepend(`<li class="breadcrumb-item active" aria-current="page">${activeMenu.find("span.nav-item-text").text()}</li>`);
+			$(".breadcrumb").html(null)
+				.prepend(`<li class="breadcrumb-item active" aria-current="page">${activeMenu.find("span.nav-item-text")
+					.text()}</li>`);
 			makeMenuActive(activeMenu);
 			if (history.length > 2) {
 				$("#history_back").css("display", "block");
@@ -1401,21 +1493,25 @@ $(document).ready(function () {
 	});
 
 	localizationPromise.then(languageBlock => {
-		$.each(settings.localization.languages, function (index, lang) {
-			const language = `<a href="/Localization/ChangeLanguage?identifier=${lang.identifier}" class="dropdown-item language-event">
+		$.each(settings.localization.languages,
+			function(index, lang) {
+				const language =
+					`<a href="/Localization/ChangeLanguage?identifier=${lang.identifier
+						}" class="dropdown-item language-event">
 							<i class="flag-icon flag-icon-${getIdentifier(lang.identifier)}"></i> ${lang.name}
 						</a>`;
-			languageBlock.append(language);
-		});
+				languageBlock.append(language);
+			});
 	});
 
 	localizationPromise.then(() => {
-		$(".language-event").on("click", function () {
-			localStorage.removeItem("hasLoadedTranslations");
-		});
+		$(".language-event").on("click",
+			function() {
+				localStorage.removeItem("hasLoadedTranslations");
+			});
 	});
 
-	Promise.all([loadMenusPromise, localizationPromise]).then(function (values) {
+	Promise.all([loadMenusPromise, localizationPromise]).then(function(values) {
 		window.forceTranslate();
 	});
 });
@@ -1427,15 +1523,17 @@ $(document).ready(function () {
 
 var PreLoader;
 
-$(window).on("load", function () {
-	$(".loader-wrapper").not(".incomponent").fadeOut(1000, function () {
-		PreLoader = $(this).detach();
+$(window).on("load",
+	function() {
+		$(".loader-wrapper").not(".incomponent").fadeOut(1000,
+			function() {
+				PreLoader = $(this).detach();
+			});
 	});
-});
 
 
 /* Dom Ready */
-(function ($) {
+(function($) {
 
 	"use strict";
 
@@ -1450,66 +1548,78 @@ $(window).on("load", function () {
 
 
 	/* Initialize Lightbox */
-	$body.delegate('[data-toggle="lightbox"]', "click", function (event) {
-		event.preventDefault();
-		$(this).ekkoLightbox();
-	});
+	$body.delegate('[data-toggle="lightbox"]',
+		"click",
+		function(event) {
+			event.preventDefault();
+			$(this).ekkoLightbox();
+		});
 
 
-    /************************************************
-     Append Preloader (use in ajax call)
-     ************************************************/
-	$body.delegate(".append-preloader", "click", function () {
+	/************************************************
+	 Append Preloader (use in ajax call)
+	 ************************************************/
+	$body.delegate(".append-preloader",
+		"click",
+		function() {
 
-		$(PreLoader).show();
-		$body.append(PreLoader);
-		setTimeout(function () {
+			$(PreLoader).show();
+			$body.append(PreLoader);
+			setTimeout(function() {
 
-			$(".loader-wrapper").fadeOut(1000, function () {
-				PreLoader = $(this).detach();
-			});
+					$(".loader-wrapper").fadeOut(1000,
+						function() {
+							PreLoader = $(this).detach();
+						});
 
-		}, 3000);
+				},
+				3000);
 
-	});
-
-
-    /************************************************
-     Toggle Preloader in card or box
-     ************************************************/
-	$body.delegate('[data-toggle="loader"]', "click", function () {
-
-		var target = $(this).attr("data-target");
-		$("#" + target).show();
-
-	});
+		});
 
 
-    /************************************************
-     Toggle Sidebar Nav
-     ************************************************/
-	$body.delegate(".toggle-sidebar", "click", function () {
-		$(".sidebar").toggleClass("collapsed");
+	/************************************************
+	 Toggle Preloader in card or box
+	 ************************************************/
+	$body.delegate('[data-toggle="loader"]',
+		"click",
+		function() {
 
-		if (localStorage.getItem("asideMode") === "collapsed") {
-			localStorage.setItem("asideMode", "expanded")
-		} else {
-			localStorage.setItem("asideMode", "collapsed")
-		}
-		return false;
-	});
+			var target = $(this).attr("data-target");
+			$("#" + target).show();
+
+		});
+
+
+	/************************************************
+	 Toggle Sidebar Nav
+	 ************************************************/
+	$body.delegate(".toggle-sidebar",
+		"click",
+		function() {
+			$(".sidebar").toggleClass("collapsed");
+
+			if (localStorage.getItem("asideMode") === "collapsed") {
+				localStorage.setItem("asideMode", "expanded")
+			} else {
+				localStorage.setItem("asideMode", "collapsed")
+			}
+			return false;
+		});
 
 	var p;
-	$body.delegate(".hide-sidebar", "click", function () {
-		if (p) {
-			p.prependTo(".wrapper");
-			p = null;
-		} else {
-			p = $(".sidebar").detach();
-		}
-	});
+	$body.delegate(".hide-sidebar",
+		"click",
+		function() {
+			if (p) {
+				p.prependTo(".wrapper");
+				p = null;
+			} else {
+				p = $(".sidebar").detach();
+			}
+		});
 
-	$.fn.setAsideMode = function () {
+	$.fn.setAsideMode = function() {
 		if (localStorage.getItem("asideMode") === null) {
 
 		} else if (localStorage.getItem("asideMode") === "collapsed") {
@@ -1523,66 +1633,86 @@ $(window).on("load", function () {
 	}
 
 
-    /************************************************
-     Sidebar Nav Accordion
-     ************************************************/
-	$body.on("click", ".navigation li:has(.sub-nav) > a", function () {
-		/*$('.navigation li').removeClass('open');*/
-		$(this).siblings(".sub-nav").slideToggle();
-		$(this).parent().toggleClass("open");
-		return false;
-	});
+	/************************************************
+	 Sidebar Nav Accordion
+	 ************************************************/
+	$body.on("click",
+		".navigation li:has(.sub-nav) > a",
+		function() {
+			/*$('.navigation li').removeClass('open');*/
+			$(this).siblings(".sub-nav").slideToggle();
+			$(this).parent().toggleClass("open");
+			return false;
+		});
 
 
-    /************************************************
-     Sidebar Colapsed state submenu position
-     ************************************************/
-	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover", function () {
-		if ($(".sidebar").hasClass("collapsed")) {
-			const $menuItem = $(this),
-				$submenuWrapper = $("> .sub-nav", $menuItem);
-			// grab the menu item's position relative to its positioned parent
-			const menuItemPos = $menuItem.position();
+	/************************************************
+	 Sidebar Colapsed state submenu position
+	 ************************************************/
+	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover",
+		function() {
+			if ($(".sidebar").hasClass("collapsed")) {
+				const $menuItem = $(this),
+					$submenuWrapper = $("> .sub-nav", $menuItem);
+				// grab the menu item's position relative to its positioned parent
+				const menuItemPos = $menuItem.position();
 
-			// place the submenu in the correct position relevant to the menu item
-			$submenuWrapper.css({
-				top: menuItemPos.top,
-				left: menuItemPos.left + $menuItem.outerWidth()
-			});
-		}
-	});
+				// place the submenu in the correct position relevant to the menu item
+				$submenuWrapper.css({
+					top: menuItemPos.top,
+					left: menuItemPos.left + $menuItem.outerWidth()
+				});
+			}
+		});
 
-    /************************************************
-     Toggle Controls on small devices
-     ************************************************/
-	$body.delegate(".toggle-controls", "click", function () {
-		$(".controls-wrapper").toggle().toggleClass("d-none");
-	});
-
-
-    /************************************************
-     Toast Messages
-     ************************************************/
-	$body.delegate('[data-toggle="toast"]', "click", function () {
-
-		var dataAlignment = $(this).attr("data-alignment");
-		var dataPlacement = $(this).attr("data-placement");
-		var dataContent = $(this).attr("data-content");
-		var dataStyle = $(this).attr("data-style");
+	/************************************************
+	 Toggle Controls on small devices
+	 ************************************************/
+	$body.delegate(".toggle-controls",
+		"click",
+		function() {
+			$(".controls-wrapper").toggle().toggleClass("d-none");
+		});
 
 
-		if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
-			$(".toast." + dataAlignment + "-" + dataPlacement).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
-		} else {
-			$body.append('<div class="toast ' + dataAlignment + "-" + dataPlacement + '"> <div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
-		}
+	/************************************************
+	 Toast Messages
+	 ************************************************/
+	$body.delegate('[data-toggle="toast"]',
+		"click",
+		function() {
 
-	});
+			var dataAlignment = $(this).attr("data-alignment");
+			var dataPlacement = $(this).attr("data-placement");
+			var dataContent = $(this).attr("data-content");
+			var dataStyle = $(this).attr("data-style");
 
 
-    /**************************************
-     Chosen Form Control
-     **************************************/
+			if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
+				$(".toast." + dataAlignment + "-" + dataPlacement).append(
+					'<div class="alert alert-dismissible fade show alert-' +
+					dataStyle +
+					' "> ' +
+					dataContent +
+					'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
+			} else {
+				$body.append('<div class="toast ' +
+					dataAlignment +
+					"-" +
+					dataPlacement +
+					'"> <div class="alert alert-dismissible fade show alert-' +
+					dataStyle +
+					' "> ' +
+					dataContent +
+					'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
+			}
+
+		});
+
+
+	/**************************************
+	 Chosen Form Control
+	 **************************************/
 	$(".form-control-chosen").chosen({
 		allow_single_deselect: true,
 		width: "100%"
@@ -1599,49 +1729,54 @@ $(window).on("load", function () {
 	$(".form-control-chosen-optgroup").chosen({
 		width: "100%"
 	});
-	$(function () {
+	$(function() {
 		$('[title="clickable_optgroup"]').addClass("chosen-container-optgroup-clickable");
 	});
-	$(document).delegate('[title="clickable_optgroup"] .group-result', "click", function () {
-		var unselected = $(this).nextUntil(".group-result").not(".result-selected");
-		if (unselected.length) {
-			unselected.trigger("mouseup");
-		} else {
-			$(this).nextUntil(".group-result").each(function () {
-				$('a.search-choice-close[data-option-array-index="' + $(this).data("option-array-index") + '"]').trigger("click");
-			});
-		}
-	});
+	$(document).delegate('[title="clickable_optgroup"] .group-result',
+		"click",
+		function() {
+			var unselected = $(this).nextUntil(".group-result").not(".result-selected");
+			if (unselected.length) {
+				unselected.trigger("mouseup");
+			} else {
+				$(this).nextUntil(".group-result").each(function() {
+					$('a.search-choice-close[data-option-array-index="' + $(this).data("option-array-index") + '"]')
+						.trigger("click");
+				});
+			}
+		});
 
 
-    /*****************************************
-     Themer Changer with local storage
-     *****************************************/
+	/*****************************************
+	 Themer Changer with local storage
+	 *****************************************/
 
-	$.fn.removeClassStartingWith = function (filter) {
-		$(this).removeClass(function (index, className) {
+	$.fn.removeClassStartingWith = function(filter) {
+		$(this).removeClass(function(index, className) {
 			return (className.match(new RegExp("\\S*" + filter + "\\S*", "g")) || []).join(" ")
 		});
 		return this;
 	};
 
 
-	$body.delegate(".theme-changer", "click", function () {
-		var primaryColor = $(this).attr("primary-color");
-		var sidebarBg = $(this).attr("sidebar-bg");
-		var logoBg = $(this).attr("logo-bg");
-		var headerBg = $(this).attr("header-bg");
+	$body.delegate(".theme-changer",
+		"click",
+		function() {
+			var primaryColor = $(this).attr("primary-color");
+			var sidebarBg = $(this).attr("sidebar-bg");
+			var logoBg = $(this).attr("logo-bg");
+			var headerBg = $(this).attr("header-bg");
 
-		localStorage.setItem("primaryColor", primaryColor);
-		localStorage.setItem("sidebarBg", sidebarBg);
-		localStorage.setItem("logoBg", logoBg);
-		localStorage.setItem("headerBg", headerBg);
+			localStorage.setItem("primaryColor", primaryColor);
+			localStorage.setItem("sidebarBg", sidebarBg);
+			localStorage.setItem("logoBg", logoBg);
+			localStorage.setItem("headerBg", headerBg);
 
-		$.fn.setThemeTone(primaryColor);
-	});
+			$.fn.setThemeTone(primaryColor);
+		});
 
 
-	$.fn.setThemeTone = function (primaryColor) {
+	$.fn.setThemeTone = function(primaryColor) {
 
 		if (localStorage.getItem("primaryColor") === null) {
 
@@ -1659,24 +1794,29 @@ $(window).on("load", function () {
 			if (localStorage.getItem("primaryColor") === "primary") {
 				document.documentElement.style.setProperty("--theme-colors-primary", "#4B89FC");
 			} else {
-				var colorCode = getComputedStyle(document.body).getPropertyValue("--theme-colors-" + localStorage.getItem("primaryColor"));
+				var colorCode = getComputedStyle(document.body)
+					.getPropertyValue("--theme-colors-" + localStorage.getItem("primaryColor"));
 				document.documentElement.style.setProperty("--theme-colors-primary", colorCode);
 			}
 
 
 			/* LOGO */
 			if (localStorage.getItem("logoBg") === "white" || localStorage.getItem("logoBg") === "light") {
-				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark").addClass("navbar-light bg-" + localStorage.getItem("logoBg"));
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
+					.addClass("navbar-light bg-" + localStorage.getItem("logoBg"));
 			} else {
-				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light").addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
+					.addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
 			}
 
 
 			/* HEADER */
 			if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
-				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark").addClass("navbar-light bg-" + localStorage.getItem("headerBg"));
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
+					.addClass("navbar-light bg-" + localStorage.getItem("headerBg"));
 			} else {
-				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light").addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
+					.addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
 			}
 
 		}
@@ -1695,7 +1835,8 @@ $(window).on("load", function () {
  Full Screen Toggle
  *****************************************/
 function toggleFullScreen() {
-	if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+	if ((document.fullScreenElement && document.fullScreenElement !== null) ||
+		(!document.mozFullScreen && !document.webkitIsFullScreen)) {
 		if (document.documentElement.requestFullScreen) {
 			document.documentElement.requestFullScreen();
 		} else if (document.documentElement.mozRequestFullScreen) {

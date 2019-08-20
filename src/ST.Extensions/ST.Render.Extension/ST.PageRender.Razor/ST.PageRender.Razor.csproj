@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\ST.CORE.Razor\ST.Core.Razor.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms.Abstractions\ST.Forms.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
     <ProjectReference Include="..\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />
   </ItemGroup>
