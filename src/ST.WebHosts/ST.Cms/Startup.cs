@@ -186,7 +186,7 @@ namespace ST.Cms
 			//-------------------------Register on app events-------------------------------------
 			lifetime.ApplicationStarted.Register(() => { CoreApp.OnApplicationStarted(app); });
 
-			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
+			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 
 			if (env.IsProduction())
 			{
