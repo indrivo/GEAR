@@ -6,7 +6,7 @@ namespace ST.Report.Abstractions
 {
     public interface IReportContext: IDbContext
     {
-        DbSet<DynamicReportDbModel> DynamicReports { get; set; }
+        DbSet<DynamicReport> DynamicReports { get; set; }
         DbSet<DynamicReportFolder> DynamicReportsFolders { get; set; }
     }
 }
