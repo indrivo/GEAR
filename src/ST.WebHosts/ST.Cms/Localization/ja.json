@@ -455,5 +455,13 @@
   "iso_reactions_on_information_security_performance": "フィードバックの情報セキュリティ",
   "iso_stakeholder_feedback": "からのフィードバックステークホルダー",
   "iso_the_result_of_the_risk_assessment": "その結果、リスク評価",
-  "iso_opportunities_for_continuous_improvement": "機会の継続的改善"
+  "iso_opportunities_for_continuous_improvement": "機会の継続的改善",
+  "nonconformities_and_corrective_actions": "不適合の是正措置",
+  "show_actions": "ショーの行動",
+  "surveillance_and_measurement_results": "監視及び測定結果",
+  "audit_results": "監査の結果を、",
+  "iso_achieving_information_security_objectives": "目的の情報セキュリティ",
+  "iso_trends_in_main_indicators_of_information_security": "の動向の指標のセキュリティ情報",
+  "iso_trends": "動向",
+  "iso_changes_in_internal_and_external_aspects": "の変化の面内外の"
 }

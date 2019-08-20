@@ -455,5 +455,13 @@
   "iso_reactions_on_information_security_performance": "反馈的业绩信息安全",
   "iso_stakeholder_feedback": "反馈的利益攸关方",
   "iso_the_result_of_the_risk_assessment": "结果的风险评估",
-  "iso_opportunities_for_continuous_improvement": "机会不断改进"
+  "iso_opportunities_for_continuous_improvement": "机会不断改进",
+  "nonconformities_and_corrective_actions": "不遵守规定和采取纠正行动",
+  "show_actions": "展示行动",
+  "surveillance_and_measurement_results": "监测和衡量结果",
+  "audit_results": "结果审计的",
+  "iso_achieving_information_security_objectives": "实现目标的信息安全",
+  "iso_trends_in_main_indicators_of_information_security": "该趋势的主要指标的信息的安全",
+  "iso_trends": "趋势",
+  "iso_changes_in_internal_and_external_aspects": "该变化方面的内部和外部的"
 }

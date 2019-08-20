@@ -455,5 +455,13 @@
   "iso_reactions_on_information_security_performance": "Reacţii asupra performantelor securităţii informaţiei",
   "iso_stakeholder_feedback": "Reacții din partea parților interesate",
   "iso_the_result_of_the_risk_assessment": "Rezultatul evaluării riscului",
-  "iso_opportunities_for_continuous_improvement": "Oportunități pentru îmbunătățire continua"
+  "iso_opportunities_for_continuous_improvement": "Oportunități pentru îmbunătățire continua",
+  "nonconformities_and_corrective_actions": "Neconformitati si actiuni corective",
+  "show_actions": "Arata acțiuni",
+  "surveillance_and_measurement_results": "Supraveghere si rezultatele masurarilor",
+  "audit_results": "Rezultatele auditurilor",
+  "iso_achieving_information_security_objectives": "Atingerea obiectivelor de securitate a informatiei",
+  "iso_trends_in_main_indicators_of_information_security": "Tendinte in principali indicatori de securitate a informatiei",
+  "iso_trends": "Tendinte",
+  "iso_changes_in_internal_and_external_aspects": "Schimbarile aspectelor interne si externe"
 }

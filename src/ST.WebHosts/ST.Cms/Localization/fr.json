@@ -455,5 +455,13 @@
   "iso_reactions_on_information_security_performance": "Commentaires sur la performance de la sécurité de l'information",
   "iso_stakeholder_feedback": "Commentaires des intervenants",
   "iso_the_result_of_the_risk_assessment": "Le résultat de l'évaluation des risques",
-  "iso_opportunities_for_continuous_improvement": "Possibilités d'amélioration continue"
+  "iso_opportunities_for_continuous_improvement": "Possibilités d'amélioration continue",
+  "nonconformities_and_corrective_actions": "La Non-conformité et actions correctives",
+  "show_actions": "Afficher les actions",
+  "surveillance_and_measurement_results": "La surveillance et la mesure des résultats",
+  "audit_results": "Les résultats des audits de l'",
+  "iso_achieving_information_security_objectives": "La réalisation des objectifs de la sécurité de l'information",
+  "iso_trends_in_main_indicators_of_information_security": "L'évolution des principaux indicateurs de la sécurité de l'information",
+  "iso_trends": "Les tendances",
+  "iso_changes_in_internal_and_external_aspects": "Les modifications pour les aspects internes et externes"
 }

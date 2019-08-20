@@ -455,5 +455,13 @@
   "iso_reactions_on_information_security_performance": "Реакції на їх продуктивності, забезпечення безпеки і захисту інформації",
   "iso_stakeholder_feedback": "Реакції з боку зацікавлених сторін",
   "iso_the_result_of_the_risk_assessment": "В результаті проведення оцінки ризику",
-  "iso_opportunities_for_continuous_improvement": "Можливості для поліпшення, продовжувати"
+  "iso_opportunities_for_continuous_improvement": "Можливості для поліпшення, продовжувати",
+  "nonconformities_and_corrective_actions": "Невідповідностей і коригувальні дії",
+  "show_actions": "Показати дії",
+  "surveillance_and_measurement_results": "Спостереження і результати masurarilor",
+  "audit_results": "Результати перевірок",
+  "iso_achieving_information_security_objectives": "В досягненні цілей в області інформаційної безпеки",
+  "iso_trends_in_main_indicators_of_information_security": "Тенденції в основних показниках в області безпеки інформаційних технологій",
+  "iso_trends": "Тенденції",
+  "iso_changes_in_internal_and_external_aspects": "Зміни аспектах-внутрішніх і зовнішніх"
 }

@@ -3,11 +3,9 @@
 }
 
 <div id="test" class="multilevel-collapse"></div>
-
 @section Scripts {
 	<script src="~/themes/iso/js/meetings.js" asp-append-version="true"></script>
 }
-
 
 <script type="text/x-jsrender" id="rootCollapse">
 	<div class="card">
@@ -33,63 +31,264 @@
 			<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse_{{:id}}"
 					aria-expanded="false" aria-controls="collapse_{{:id}}">
 				<span class="collapse-icon mr-1"></span>
-			{{:name}}
+				{{:name}}
 			</button>
 		</div>
 		<div class="card-body">
 			<div id="collapse_{{:id}}" class="collapse p-2" aria-labelledby="head_{{:id}}" data-parent="#accordion">
+				<h3 class="d-flex align-items-center">{{:label}}</h3>
 				<textarea class="form-control br-none">{{:value}}</textarea>
+				{{if hasButton}}
+				{{if button.isLink}}
+				<a class="btn btn-link text-black-50" href="{{:button.link}}">
+					<span class="align-middle button-label">{{:button.buttonText}}</span>
+				</a>
+				{{else button.isLink = "false"}}
+				<h2>
+					<button type="button"
+							class="btn btn-link text-color-heading text-bold text-size-inherit spoiler d-flex align-items-center collapsed"
+							data-toggle="collapse"
+							data-target="#collapse_{{:collapseId}}"
+							aria-expanded="false"
+							aria-controls="collapse_{{:collapseId}}">
+						<span class="spoiler-icon mr-1 align-middle"></span>
+						<span class="align-middle button-label">{{:button.buttonText}}</span>
+					</button>
+				</h2>
+				<div class="collapse spoiler-collapse" id="collapse_{{:collapseId}}">
+					<div class="common-control">
+						<div class="control-area justify-content-end">
+							<button type="button"
+									class="btn btn-link text-black-50">
+								<span class="material-icons mr-1 align-middle">add_circle_outline</span>
+								<span class="align-middle button-label">Adaugă</span>
+							</button>
+							<button type="button"
+									class="btn btn-link text-black-50">
+								<span class="material-icons mr-1 align-middle">clear</span>
+								<span class="align-middle button-label">Șterge</span>
+							</button>
+							<button type="button"
+									class="btn btn-link text-black-50">
+								<span class="material-icons mr-1 align-middle">view_list</span>
+								<span class="align-middle button-label">Coloane ascunse</span>
+								<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
+							</button>
+							<div class="dropdown">
+								<button type="button"
+										class="btn btn-link text-black-50"
+										data-toggle="dropdown"
+										aria-haspopup="true"
+										aria-expanded="false"
+										id="visualize">
+									<span class="material-icons mr-1 align-middle">remove_red_eye</span>
+									<span class="align-middle button-label">Vizualizare</span>
+									<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
+								</button>
+								<div class="dropdown-menu"
+									 aria-labelledby="visualize">
+									<a class="dropdown-item" href="#">
+										Another
+										action
+									</a>
+									<a class="dropdown-item" href="#">
+										Something
+										else here
+									</a>
+								</div>
+							</div>
+							<div class="input-group table-search-bar">
+								<input type="text" class="form-control">
+								<div class="input-group-append">
+									<span class="input-group-text">
+										<span class="material-icons">search</span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<table id="data-table"
+						   class="table table-striped mb-4 bg-white table-bordered">
+						<thead>
+							<tr>
+								<th>
+									<div class="checkbox-container">
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox"
+												   class="custom-control-input"
+												   id="customControlValidation1"
+												   required>
+											<label class="custom-control-label"
+												   for="customControlValidation1"></label>
+										</div>
+									</div>
+								</th>
+								<th>Id</th>
+								<th>Nume proces</th>
+								<th>Subproces</th>
+								<th>Descriere procese descriere</th>
+								<th>Inclus în scop</th>
+								<th>Locație</th>
+								<th>Furnizor externalizat</th>
+								<th>Interfețe și dependențe</th>
+								<th>Comentariu</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				{{/if}}
+
+				{{/if}}
 			</div>
 		</div>
 	</div>
 </script>
 
 
-<script >
-	var helper = new ST();
+<script type="text/javascript">
+	//var helper = new ST();
+	
 	var accordionItems = [
 		{
 			id: helper.newGuid(),
 			name: window.translate("iso_meeting_action_state"),
+			hasChildNodes: true,
 			items: [
 				{
 					id: helper.newGuid(),
 					name: window.translate("iso_actions_from_previous_revisions"),
-					value: "content"
+					label: window.translate("iso_meeting_action_state"),
+					value: "content",
+					hasButton: false
 				}
 			]
 		},
 		{
 			id: helper.newGuid(),
 			name: window.translate("iso_internal_and_external_aspects_relevant"),
+			hasChildNodes: true,
 			items: [
 				{
 					id: helper.newGuid(),
-					name: "Rezultatul analizei de management",
-					value: "content"
+					name: window.translate("iso_changes_in_internal_and_external_aspects"),
+					label: window.translate("iso_changes_in_internal_and_external_aspects"),
+					value: "content",
+					hasButton: false
+				}
+			]
+		},
+		{
+			id: helper.newGuid(),
+			name: window.translate("iso_reactions_on_information_security_performance"),
+			hasChildNodes: true,
+			items: [
+				{
+					id: helper.newGuid(),
+					name: window.translate("nonconformities_and_corrective_actions"),
+					label: window.translate("nonconformities_and_corrective_actions"),
+					value: "value",
+					hasButton: true,
+					button: {
+						isLink: true,
+						buttonText: window.translate("show_actions"),
+						link: ""
+					}
+				},
+				{
+					id: helper.newGuid(),
+					name: window.translate("surveillance_and_measurement_results"),
+					label: window.translate("surveillance_and_measurement_results"),
+					value: "value",
+					hasButton: true,
+					button: {
+						isLink: true,
+						buttonText: `${window.translate("show")} ${window.translate("iso_kpi")}`,
+						link: ""
+					}
+				},
+				{
+					id: helper.newGuid(),
+					name: window.translate("audit_results"),
+					label: window.translate("audit_results"),
+					value: "value",
+					hasButton: true,
+					button: {
+						isLink: true,
+						buttonText: window.translate("show_actions"),
+						link: ""
+					}
+				},
+				{
+					id: helper.newGuid(),
+					name: window.translate("iso_achieving_information_security_objectives"),
+					label: window.translate("iso_achieving_information_security_objectives"),
+					value: "value",
+					hasButton: true,
+					button: {
+						isLink: false,
+						buttonText: `${window.translate("show")} ${window.translate("iso_objectives")}`
+					}
+				},
+				{
+					id: helper.newGuid(),
+					name: window.translate("iso_trends_in_main_indicators_of_information_security"),
+					label: window.translate("iso_trends_in_main_indicators_of_information_security"),
+					value: "value",
+					hasButton: true,
+					button: {
+						isLink: false,
+						buttonText: `${window.translate("show")} ${window.translate("iso_trends")}`
+					}
 				}
 			]
 		},
 		{
 			id: helper.newGuid(),
 			name: window.translate("iso_stakeholder_feedback"),
-			items: []
-		},
-		{
-			id: helper.newGuid(),
-			name: window.translate("iso_stakeholder_feedback"),
-			items: []
+			hasChildNodes: true,
+			items: [
+				{
+					id: helper.newGuid(),
+					name: window.translate("iso_stakeholder_feedback"),
+					label: window.translate("iso_stakeholder_feedback"),
+					value: "value",
+					hasButton: false
+
+				}
+			]
 		},
 		{
 			id: helper.newGuid(),
 			name: window.translate("iso_the_result_of_the_risk_assessment"),
-			items: []
+			hasChildNodes: true,
+			items: [
+				{
+					id: helper.newGuid(),
+					name: window.translate("iso_the_result_of_the_risk_assessment"),
+					label: window.translate("iso_stakeholder_feedback"),
+					value: "test",
+					hasButton: false
+				}
+			]
 		},
 		{
 			id: helper.newGuid(),
 			name: window.translate("iso_opportunities_for_continuous_improvement"),
-			items: []
-		},
+			hasChildNodes: true,
+			items: [
+				{
+					id: helper.newGuid(),
+					name: window.translate("iso_opportunities_for_continuous_improvement"),
+					label: window.translate("iso_opportunities_for_continuous_improvement"),
+					value: "value",
+					hasButton: true,
+					button: {
+						buttonText: window.translate("show_actions"),
+						isLink: false
+					}
+				}
+			]
+		}
 	];
 
 	$.templates("secondLvl", "#secondLvlCollapse");
@@ -97,4 +296,5 @@
 	var htmlOutput = template.render(accordionItems);
 
 	$("#test").html(htmlOutput);
+
 </script>
