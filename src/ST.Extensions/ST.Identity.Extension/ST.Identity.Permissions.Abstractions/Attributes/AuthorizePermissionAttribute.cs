@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ST.Identity.Permissions.Abstractions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace ST.Identity.Attributes
+namespace ST.Identity.Permissions.Abstractions.Attributes
 {
     /// <inheritdoc />
     /// <summary>
     /// Attribute checks if User has required permission
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
     public class AuthorizePermissionAttribute : TypeFilterAttribute
     {
         /// <inheritdoc />

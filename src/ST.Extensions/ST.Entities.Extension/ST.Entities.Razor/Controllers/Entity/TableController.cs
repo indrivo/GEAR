@@ -28,9 +28,9 @@ using ST.Entities.Data;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.MultiTenant.Abstractions;
 using ST.Notifications.Abstractions;
 

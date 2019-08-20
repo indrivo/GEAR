@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ST.Core;
@@ -14,10 +13,9 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
-using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Data;
-using ST.Entities.Security.Abstractions;
+using ST.Entities.Security.Abstractions.Attributes;
 using ST.Entities.Security.Abstractions.Enums;
+using ST.Entities.Security.Abstractions.Helpers;
 
 namespace ST.Entities.Razor.Controllers
 {
@@ -30,42 +28,17 @@ namespace ST.Entities.Razor.Controllers
         private readonly IDynamicService _dynamicService;
 
         /// <summary>
-        /// Inject entity role access manager
-        /// </summary>
-        private readonly IEntityRoleAccessManager _accessManager;
-
-        /// <summary>
-        /// Inject context
-        /// </summary>
-        private readonly EntitiesDbContext _context;
-
-        /// <summary>
         /// json settings
         /// </summary>
         private readonly JsonSerializerSettings _jsonSerializeOptions;
 
         /// <summary>
-        /// Access denied
-        /// </summary>
-        private ResultModel AccessDenied => new ResultModel
-        {
-            Errors = new List<IErrorModel>
-            {
-                new ErrorModel(nameof(Settings.ACCESS_DENIED_MESSAGE), Settings.ACCESS_DENIED_MESSAGE)
-            }
-        };
-
-        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dynamicService"></param>
-        /// <param name="context"></param>
-        /// <param name="accessManager"></param>
-        public DataInjectorController(IDynamicService dynamicService, EntitiesDbContext context, IEntityRoleAccessManager accessManager)
+        public DataInjectorController(IDynamicService dynamicService)
         {
             _dynamicService = dynamicService;
-            _context = context;
-            _accessManager = accessManager;
             _jsonSerializeOptions = new JsonSerializerSettings
             {
                 DateFormatString = Settings.Date.DateFormat,
@@ -75,47 +48,15 @@ namespace ST.Entities.Razor.Controllers
         }
 
         /// <summary>
-        /// Is valid entity
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <returns></returns>
-        [NonAction]
-        private async Task<ResultModel<TableModel>> IsValid(string tableName)
-        {
-            var badParams = new ErrorModel(string.Empty, "Entity not identified!");
-            var entityNotFound = new ErrorModel(string.Empty, "Entity not found!");
-            var result = new ResultModel<TableModel>();
-            if (string.IsNullOrEmpty(tableName))
-            {
-                result.Errors.Add(badParams);
-                return result;
-            }
-            var entity = await _context.Table.FirstOrDefaultAsync(x => x.Name == tableName);
-
-            if (entity == null)
-            {
-                result.Errors.Add(entityNotFound);
-                return result;
-            }
-
-            result.IsSuccess = true;
-            result.Result = entity;
-            return result;
-        }
-
-        /// <summary>
         /// Get item by id async
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Read)]
         public async Task<JsonResult> GetByIdWithIncludesAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveReadAccessAsync(isValid.Result.Id);
-            if (!grant) return Json(AccessDenied);
             Guid.TryParse(data.Object, out var itemId);
             var rq = await _dynamicService.GetByIdWithInclude(data.EntityName, itemId);
             return Json(rq, _jsonSerializeOptions);
@@ -127,13 +68,10 @@ namespace ST.Entities.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Update)]
         public async Task<JsonResult> UpdateAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id, EntityAccessType.Update);
-            if (!grant) return Json(AccessDenied);
             var result = new ResultModel();
             var operationalTable = _dynamicService.Table(data.EntityName);
             try
@@ -160,13 +98,10 @@ namespace ST.Entities.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Write)]
         public async Task<JsonResult> AddAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id, EntityAccessType.Write);
-            if (!grant) return Json(AccessDenied);
             var result = new ResultModel();
             try
             {
@@ -192,13 +127,10 @@ namespace ST.Entities.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Write)]
         public async Task<JsonResult> AddRangeAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id, EntityAccessType.Write);
-            if (!grant) return Json(AccessDenied);
             var result = new ResultModel();
             try
             {
@@ -211,7 +143,7 @@ namespace ST.Entities.Razor.Controllers
             }
             catch (JsonReaderException e)
             {
-               result.Errors.Add(new ErrorModel(nameof(JsonReaderException), e.Message));
+                result.Errors.Add(new ErrorModel(nameof(JsonReaderException), e.Message));
             }
             catch (Exception e)
             {
@@ -227,13 +159,10 @@ namespace ST.Entities.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
+        [AuthorizeEntity(EntityAccessType.DeletePermanent)]
         public async Task<JsonResult> DeletePermanentWhereAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id, EntityAccessType.DeletePermanent);
-            if (!grant) return Json(AccessDenied);
             var result = new ResultModel();
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
@@ -258,13 +187,10 @@ namespace ST.Entities.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
+        [AuthorizeEntity(EntityAccessType.Delete, EntityAccessType.Update)]
         public async Task<JsonResult> DeleteWhereAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id, EntityAccessType.Delete);
-            if (!grant) return Json(AccessDenied);
             var result = new ResultModel();
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
@@ -290,13 +216,10 @@ namespace ST.Entities.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Read)]
         public async Task<JsonResult> GetAllWhereNoIncludesAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveReadAccessAsync(isValid.Result.Id);
-            if (!grant) return Json(AccessDenied);
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
@@ -310,13 +233,10 @@ namespace ST.Entities.Razor.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Read)]
         public async Task<JsonResult> CountAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id);
-            if (!grant) return Json(AccessDenied);
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
@@ -331,13 +251,10 @@ namespace ST.Entities.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Read)]
         public async Task<JsonResult> GetAllWhereWithIncludesAsync([Required][FromBody] RequestData data)
         {
             if (data == null) return RequestData.InvalidRequest;
-            var isValid = await IsValid(data.EntityName);
-            if (!isValid.IsSuccess) return new JsonResult(isValid);
-            var grant = await _accessManager.HaveAccessAsync(isValid.Result.Id);
-            if (!grant) return Json(AccessDenied);
             var serial = JsonConvert.SerializeObject(data.Filters);
             var filters = ParseFilters(serial).ToList();
             filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
@@ -369,20 +286,6 @@ namespace ST.Entities.Razor.Controllers
             {
                 return null;
             }
-        }
-
-        public class RequestData
-        {
-            public string EntityName { get; set; }
-            public IEnumerable<Filter> Filters { get; set; } = new List<Filter>();
-            public string Object { get; set; }
-            public static JsonResult InvalidRequest => new JsonResult(new ResultModel
-            {
-                Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("invalid_data", "Invalid data!")
-                }
-            });
         }
     }
 }

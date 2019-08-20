@@ -69,7 +69,7 @@ namespace ST.Entities.Security
         /// Tables
         /// </summary>
         public IQueryable<TableModel> Tables => _entityContext.Table
-            .Where(x => x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA));
+            .Where(x => x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA) || x.IsPartOfDbContext);
 
         /// <summary>
         /// 
@@ -198,6 +198,28 @@ namespace ST.Entities.Security
         }
 
         /// <summary>
+        /// Get permissions by entity name
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(string entityName)
+        {
+            var defResult = new Collection<EntityAccessType>();
+            if (string.IsNullOrEmpty(entityName)) return defResult;
+            var table = await Tables.FirstOrDefaultAsync(x =>
+                x.Name.Equals(entityName));
+            if (table == null) return defResult;
+            var user = await _userManager.GetCurrentUserAsync();
+            IEnumerable<string> roles = new List<string> { Settings.ANONIMOUS_USER };
+            if (user.IsSuccess)
+            {
+                roles = _userManager.GetRolesFromClaims();
+            }
+
+            return await GetPermissionsAsync(roles, table.Id);
+        }
+
+        /// <summary>
         /// Get permissions for user
         /// </summary>
         /// <param name="user"></param>
@@ -233,7 +255,7 @@ namespace ST.Entities.Security
 
             var toCheck = new List<Guid> { entityId };
 
-            var table = _entityContext.Table.FirstOrDefault(x => x.Id.Equals(entityId));
+            var table = Tables.FirstOrDefault(x => x.Id.Equals(entityId));
             if (table != null)
             {
                 if (!table.IsCommon)
@@ -393,6 +415,22 @@ namespace ST.Entities.Security
             if (accesses == null) return false;
             var grant = accesses.Contains(EntityAccessType.FullControl)
                         || accesses.Contains(accessType);
+            return grant;
+        }
+
+        /// <summary>
+        /// Have access
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="accessTypes"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> HaveAccessAsync(string entityName, IEnumerable<EntityAccessType> accessTypes)
+        {
+            if (string.IsNullOrEmpty(entityName)) return false;
+            var accesses = await GetPermissionsAsync(entityName);
+            if (accesses == null || !accesses.Any()) return false;
+            var grant = accesses.Contains(EntityAccessType.FullControl)
+                        || accesses.All(accessTypes.Contains);
             return grant;
         }
     }

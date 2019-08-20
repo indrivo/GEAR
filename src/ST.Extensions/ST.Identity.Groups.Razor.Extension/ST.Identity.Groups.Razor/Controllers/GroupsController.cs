@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Core;
 using ST.Identity.Abstractions;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Groups;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Groups.Razor.ViewModels.GroupViewModels;
+using ST.Identity.Permissions.Abstractions.Attributes;
 
 namespace ST.Identity.Groups.Razor.Controllers
 {

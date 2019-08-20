@@ -122,5 +122,13 @@ namespace ST.Entities.Security.Abstractions
         /// <param name="entityId"></param>
         /// <returns></returns>
         Task<ICollection<EntityAccessType>> GetPermissionsAsync(Guid entityId);
+
+        /// <summary>
+        /// Check access by entity name
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="accessTypes"></param>
+        /// <returns></returns>
+        Task<bool> HaveAccessAsync(string entityName, IEnumerable<EntityAccessType> accessTypes);
     }
 }

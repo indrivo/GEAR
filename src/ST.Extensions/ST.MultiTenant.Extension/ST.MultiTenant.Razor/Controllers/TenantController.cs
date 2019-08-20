@@ -13,9 +13,9 @@ using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.MultiTenant.Helpers;
 using ST.MultiTenant.ViewModels;
 
