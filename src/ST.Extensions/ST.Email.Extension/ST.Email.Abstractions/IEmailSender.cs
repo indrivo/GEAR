@@ -13,8 +13,9 @@ namespace ST.Email.Abstractions
         /// <param name="emails"></param>
         /// <param name="subject"></param>
         /// <param name="message"></param>
+        /// <param name="isBodyHtml"></param>
         /// <returns></returns>
-        Task SendEmailAsync(IEnumerable<string> emails, string subject, string message);
+        Task SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true);
 
         /// <summary>
         /// Update email settings

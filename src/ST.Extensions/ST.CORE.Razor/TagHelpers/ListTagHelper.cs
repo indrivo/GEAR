@@ -3,8 +3,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
+using ST.Core.Extensions;
 using ST.Core.Razor.Enums;
-using ST.Core.Razor.Extensions;
 using ST.Core.Razor.Helpers;
 using ST.Core.Razor.TagHelpersStructures;
 

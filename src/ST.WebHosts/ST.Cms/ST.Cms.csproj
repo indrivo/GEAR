@@ -10,7 +10,7 @@
 	<Version>1.0.1</Version>
 	<Authors>Lupei Nicolae</Authors>
 	<Company>Soft-Tehnica</Company>
-	<Product>ISO DMS</Product>
+	<Product>ST Gear</Product>
 	<Description>BPMN</Description>
 	<Copyright>Soft-tehnica 2019</Copyright>
   </PropertyGroup>
@@ -20,7 +20,6 @@
   <ItemGroup>
 	<None Remove="app_offline.htm" />
 	<None Remove="ExtraStatic\modeler.js" />
-	<None Remove="Static\Pages\performanceserver\performanceserver.html" />
 	<None Remove="Static\Templates\category.html" />
 	<None Remove="Static\Templates\folders.html" />
 	<None Remove="Static\Templates\folders_layout.html" />
@@ -45,7 +44,7 @@
 	<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
 	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="4.0.1" />
 	<PackageReference Include="System.Drawing.Common" Version="4.5.1" />
-	<!--<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />-->
+	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.76" />
   </ItemGroup>
   <ItemGroup>
 	<DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
@@ -61,45 +60,6 @@
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Configuration\CustomEntities.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Embedded Resources\user.jpg">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\index\index.css">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\index\index.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\index\index.js">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\index\settings.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\layout\layout.css">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\layout\layout.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\layout\layout.js">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\layout\settings.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.css">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\performanceserver\performanceserver.js">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Pages\performanceserver\settings.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
 	<EmbeddedResource Include="Static\Templates\category.html">
@@ -149,6 +109,9 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Files.Box\ST.Files.Box.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Files.Razor\ST.Files.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Files\ST.Files.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Form.Razor\ST.Forms.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.Extension\ST.Identity.IdentityServer4\ST.Identity.IdentityServer4.csproj" />
@@ -160,6 +123,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization\ST.Localization.Services.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications.Razor\ST.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Processes.Extension\ST.Process.Razor\ST.Process.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />
@@ -167,12 +131,15 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Report.Extension\ST.Report.Dynamic.Razor\ST.Report.Dynamic.Razor.csproj" />
   </ItemGroup>
   <ItemGroup>
-	<Content Update="menus.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\FileBox\Thursday, August 15, 2019\" />
+    <Folder Include="wwwroot\lib\chosen-jquery\lib\" />
+    <Folder Include="wwwroot\lib\popper.js\" />
+    <Folder Include="Views\Users\" />
   </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>

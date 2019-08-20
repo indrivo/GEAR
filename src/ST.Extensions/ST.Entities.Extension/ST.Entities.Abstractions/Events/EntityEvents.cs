@@ -49,6 +49,7 @@ namespace ST.Entities.Abstractions.Events
 
             //register events on global storage
             SystemEvents.Common.RegisterEventGroup(nameof(SqlQuery), SystemEvents.GetEvents(typeof(SqlQuery)));
+            SystemEvents.Common.RegisterEventGroup(nameof(Entities), SystemEvents.GetEvents(typeof(Entities)));
         }
     }
 }

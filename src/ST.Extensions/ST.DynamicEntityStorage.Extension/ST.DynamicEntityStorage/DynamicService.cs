@@ -596,18 +596,14 @@ namespace ST.DynamicEntityStorage
         /// <returns></returns>
         public virtual async Task<ResultModel<bool>> Any<TEntity>() where TEntity : BaseModel
         {
+            var result = new ResultModel<bool>();
             var entity = typeof(TEntity).Name;
-            if (string.IsNullOrEmpty(entity)) return default;
+            if (string.IsNullOrEmpty(entity)) return result;
             var count = await Count<TEntity>();
-            if (count.IsSuccess)
-            {
-                return new ResultModel<bool>
-                {
-                    Result = count.Result > 0,
-                    IsSuccess = true
-                };
-            }
-            return default;
+            if (!count.IsSuccess) return result;
+            result.Result = count.Result > 0;
+            result.IsSuccess = true;
+            return result;
         }
         /// <inheritdoc />
         /// <summary>
