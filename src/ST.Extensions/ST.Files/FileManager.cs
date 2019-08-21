@@ -124,12 +124,15 @@ namespace ST.Files
 
             using (var memoryStream = new MemoryStream())
             {
-                file.CopyToAsync(memoryStream);
-                var a = memoryStream.ToArray();
+                file.CopyTo(memoryStream);
+                byte[] array = new byte[memoryStream.Length];
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                memoryStream.Read(array, 0, array.Length);
+     
                 var response = new FileStorageDto
                 {
                     FileExtension = file.ContentType,
-                    EncryptedFile = a,
+                    EncryptedFile = array,
                     FileName = file.FileName,
                     Size = file.Length
                 };
