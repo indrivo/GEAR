@@ -1,7 +1,223 @@
+@model ST.Identity.Razor.Users.ViewModels.UserViewModels.UserProfileViewModel
 
 @{
-	ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Profile";
+    var img = Url.RouteUrl(new { controller = "Users", action = "GetImage", id = Model.UserId });
 }
 
+@section Styles
+{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css" />
+}
 
-<h1>Page is in construction</h1>
+<div class="row">
+    <div class="col-lg-3 mb-2">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-center">
+                    <label class="label" title="Change your avatar">
+                        <img src="@img" id="avatar" class="img-thumbnail img-fluid rounded-circle" alt="@Model.UserName">
+                        <input type="file" class="sr-only" id="input" name="image" accept="image/*">
+
+                    </label>
+                </div>
+                <div class="text-center">
+                    <h5 class="weight-400">Hello, @Model.UserName</h5>
+                    <p class="text-muted">@string.Join(", ", Model.Roles)</p>
+                </div>
+                <hr class="my-4 dashed">
+                <p>
+                    <label asp-for="Email" class="weight-400"></label><span class="text-muted">@Model.Email</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="card mb-4">
+            <div class="card-header p-0">
+                <ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" href="#organization" role="tab" aria-controls="organization" aria-selected="false">Organization</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" href="#changePassword" role="tab" aria-controls="changePassword" aria-selected="false">Change Password</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <h5 class="weight-400">Summary</h5>
+                        <p>No data</p>
+                    </div>
+                    <div class="tab-pane fade " id="organization" role="tabpanel" aria-labelledby="organization-tab">
+                        <p class="mb-4">@Model.Tenant.Description</p>
+                        <p>
+                            <span class="weight-400">Company name : </span><span class="text-muted">@Model.Tenant.Name</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">Address : </span><span class="text-muted">@Model.Tenant.Address</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">Company Website : </span><span class="text-muted">@Model.Tenant.SiteWeb</span>
+                        </p>
+                    </div>
+                    <div class="tab-pane fade " id="changePassword" role="tabpanel" aria-labelledby="changePassword-tab">
+                        <div class="col-lg-8 mb-4">
+                            <partial name="Partial/_ChangePassword" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Crop the image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="image" src="@img" alt="@Model.UserName">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="crop">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
+    <script type="text/javascript">
+
+		window.addEventListener('DOMContentLoaded',
+			function() {
+				var avatar = document.getElementById('avatar');
+				var image = document.getElementById('image');
+				var input = document.getElementById('input');
+				var $progress = $('.progress');
+				var $progressBar = $('.progress-bar');
+				var $alert = $('.alert');
+				var $modal = $('#modal');
+				var cropper;
+				input.addEventListener('change',
+					function(e) {
+						var reader;
+						var file;
+						var url;
+						var files = e.target.files;
+						var done = function(url) {
+							input.value = '';
+							image.src = url;
+							$alert.hide();
+							$modal.modal('show');
+						};
+
+						if (files && files.length > 0) {
+							file = files[0];
+
+							if (URL) {
+								done(URL.createObjectURL(file));
+							} else if (FileReader) {
+								reader = new FileReader();
+								reader.onload = function(e) {
+									done(reader.result);
+								};
+								reader.readAsDataURL(file);
+							}
+						}
+					});
+
+				$modal.on('shown.bs.modal',
+					function() {
+						cropper = new Cropper(image,
+							{
+								aspectRatio: 1,
+								viewMode: 3
+							});
+					}).on('hidden.bs.modal',
+					function() {
+						cropper.destroy();
+						cropper = null;
+					});
+
+				document.getElementById('crop').addEventListener('click',
+					function() {
+						var initialAvatarURL;
+						var canvas;
+
+						$modal.modal('hide');
+
+						if (cropper) {
+							canvas = cropper.getCroppedCanvas({
+								width: 160,
+								height: 160
+							});
+							initialAvatarURL = avatar.src;
+							avatar.src = canvas.toDataURL();
+							$progress.show();
+							$alert.removeClass('alert-success alert-warning');
+							canvas.toBlob(function(blob) {
+								var formData = new FormData();
+
+								formData.append('file', blob, 'avatar.jpg');
+								$.ajax('@Url.Action("UploadUserPhoto", "Users")',
+									{
+										method: 'POST',
+										data: formData,
+										processData: false,
+										contentType: false,
+										xhr: function() {
+											var xhr = new XMLHttpRequest();
+											xhr.upload.onprogress = function(e) {
+												var percent = '0';
+												var percentage = '0%';
+
+												if (e.lengthComputable) {
+													percent = Math.round((e.loaded / e.total) * 100);
+													percentage = percent + '%';
+													$progressBar.width(percentage).attr('aria-valuenow', percent)
+														.text(percentage);
+												}
+											};
+
+											return xhr;
+										},
+
+										success: function(result) {
+											if (result.is_success) {
+												notification.notify({ heading: "Avatar was changed", icon: "success" });
+											} else {
+												notification.notifyErrorList(data.error_keys);
+											}
+										},
+
+										error: () => {
+											notification.notify({ heading: "Server error" });
+											avatar.src = initialAvatarURL;
+											$alert.show().addClass('alert-warning').text('Upload error');
+										},
+
+										complete: function() {
+											$progress.hide();
+										}
+									});
+							});
+						}
+					});
+			});
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

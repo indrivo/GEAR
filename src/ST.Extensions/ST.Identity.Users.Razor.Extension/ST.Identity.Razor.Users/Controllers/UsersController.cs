@@ -176,15 +176,8 @@ namespace ST.Identity.Razor.Users.Controllers
 
             if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
             {
-                var userGroupList = new List<UserGroup>();
-                foreach (var _ in model.SelectedGroupId)
-                {
-                    userGroupList.Add(new UserGroup
-                    {
-                        AuthGroupId = Guid.Parse(_),
-                        UserId = user.Id
-                    });
-                }
+                var userGroupList = model.SelectedGroupId
+                    .Select(_ => new UserGroup {AuthGroupId = Guid.Parse(_), UserId = user.Id}).ToList();
 
                 await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
                 await Context.SaveChangesAsync();
@@ -924,6 +917,47 @@ namespace ST.Identity.Razor.Users.Controllers
             }
 
             resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Error on change password"});
+            return Json(resultModel);
+        }
+
+        [HttpPost]
+        public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)
+        {
+            var resultModel = new ResultModel();
+            if (file == null || file.Length == 0)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Image not found"});
+                return Json(resultModel);
+            }
+
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "User not found"});
+                return Json(resultModel);
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                currentUser.UserPhoto = memoryStream.ToArray();
+            }
+
+            var result = await UserManager.UpdateAsync(currentUser);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = false;
+            foreach (var error in result.Errors)
+            {
+                resultModel.Errors.Add(new ErrorModel {Key = error.Code, Message = error.Description});
+            }
+
             return Json(resultModel);
         }
     }
