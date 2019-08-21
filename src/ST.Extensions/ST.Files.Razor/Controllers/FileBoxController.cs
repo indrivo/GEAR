@@ -3,13 +3,14 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ST.Core;
 using ST.Core.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
 using ST.Files.Box.Abstraction;
 
 namespace ST.Files.Razor.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Settings.ADMINISTRATOR)]
     [Route("api/[controller]/[action]")]
     public sealed class FileBoxController : Controller
     {
@@ -23,6 +24,11 @@ namespace ST.Files.Razor.Controllers
             _fileManager = fileManager;
         }
 
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/FileBox")]
         public IActionResult Index()
         {
             return View();
@@ -37,7 +43,9 @@ namespace ST.Files.Razor.Controllers
         public FileResult GetFile(Guid id)
         {
             var response = _fileManager.GetFileById(id);
-            return response.IsSuccess ? PhysicalFile(Path.Combine(response.Result.Path, response.Result.FileName), "application/octet-stream", response.Result.FileName) : null;
+            return response.IsSuccess
+                ? PhysicalFile(Path.Combine(response.Result.Path, response.Result.FileName), "application/octet-stream", response.Result.FileName)
+                : null;
         }
 
         /// <summary>
@@ -46,7 +54,7 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult Upload(Guid id)
         {
             var file = new UploadFileViewModel
@@ -63,7 +71,7 @@ namespace ST.Files.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult UploadMultiple()
         {
             var response = Request.Form.Files.Select(item => new UploadFileViewModel
@@ -81,10 +89,10 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult Delete(Guid id)
         {
-            if (id != Guid.Empty) return Json(new {message = "Fail to delete file!", success = false});
+            if (id != Guid.Empty) return Json(new { message = "Fail to delete file!", success = false });
 
             var response = _fileManager.DeleteFile(id);
             return Json(response);
@@ -96,10 +104,10 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult Restore(Guid id)
         {
-            if (id != Guid.Empty) return Json(new {message = "Fail to restore file!", success = false});
+            if (id != Guid.Empty) return Json(new { message = "Fail to restore file!", success = false });
 
             var response = _fileManager.RestoreFile(id);
             return Json(response);
@@ -111,10 +119,10 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel))]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult DeletePermanent(Guid id)
         {
-            if (id != Guid.Empty) return Json(new {message = "Fail to delete form!", success = false});
+            if (id != Guid.Empty) return Json(new { message = "Fail to delete form!", success = false });
 
             var response = _fileManager.DeleteFilePermanent(id);
             return Json(response);

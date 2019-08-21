@@ -7,7 +7,7 @@ using ST.Core.Helpers;
 
 namespace ST.Cache.Razor.Controllers
 {
-    [Authorize(Roles = Core.Settings.SuperAdmin)]
+    [Authorize(Roles = Core.Settings.ADMINISTRATOR)]
     public class CacheController : Controller
     {
         /// <summary>

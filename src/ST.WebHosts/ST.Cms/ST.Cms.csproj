@@ -109,6 +109,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Security.Extension\ST.Entities.Security.Razor\ST.Entities.Security.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Security.Extension\ST.Entities.Security\ST.Entities.Security.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Files.Box\ST.Files.Box.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Files.Razor\ST.Files.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Files\ST.Files.csproj" />

@@ -28,9 +28,9 @@ using ST.Entities.Data;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.MultiTenant.Abstractions;
 using ST.Notifications.Abstractions;
 
@@ -292,7 +292,7 @@ namespace ST.Entities.Razor.Controllers.Entity
 
             if (!table.IsCommon)
             {
-                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
                 foreach (var tenant in tenants)
                 {
                     _tablesService.AddFieldSql(field, tableName, ConnectionString, true, tenant.MachineName);
@@ -530,7 +530,7 @@ namespace ST.Entities.Razor.Controllers.Entity
             }
 
             var tenants = _organizationService.GetAllTenants()
-                .Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                .Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
 
             if (field.TableFieldTypeId == fieldType.Id)
             {

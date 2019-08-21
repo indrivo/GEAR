@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ST.Core.Abstractions;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Extensions;
@@ -14,7 +13,7 @@ namespace ST.Entities.Data
         /// Do not remove this, is used on audit 
         /// </summary>
         // ReSharper disable once MemberCanBePrivate.Global
-        public const string Schema = "Entities";
+        public new const string Schema = "Entities";
 
         /// <inheritdoc />
         /// <summary>
@@ -22,7 +21,7 @@ namespace ST.Entities.Data
         /// </summary>
         /// <param name="options"></param>
         // ReSharper disable once SuggestBaseTypeForParameter
-        public EntitiesDbContext(DbContextOptions<EntitiesDbContext> options)
+        public EntitiesDbContext(DbContextOptions<EntitySecurityDbContext> options)
                     : base(options)
         {
 
@@ -71,17 +70,6 @@ namespace ST.Entities.Data
             builder.Entity<TableFieldConfigValue>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
             builder.Entity<TableModelField>().HasOne(typeof(TableFieldType), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.RegisterIndexes();
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Set entity
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
-        {
-            return Set<TEntity>();
         }
     }
 }

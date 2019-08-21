@@ -10,7 +10,7 @@ using ST.Notifications.Razor.ViewModels.Subscriptions;
 
 namespace ST.Notifications.Razor.Controllers.Notifications
 {
-    [Authorize(Roles = Settings.SuperAdmin)]
+    [Authorize(Roles = Settings.ADMINISTRATOR)]
     public class NotificationSubscriptionsController : Controller
     {
         /// <summary>

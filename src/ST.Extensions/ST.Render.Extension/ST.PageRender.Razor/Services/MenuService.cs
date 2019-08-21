@@ -120,12 +120,7 @@ namespace ST.PageRender.Razor.Services
         {
             var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
             {
-                new Filter
-                {
-                    Value = menuId,
-                    Criteria = Criteria.Equals,
-                    Parameter = "Id"
-                }
+                new Filter(nameof(BaseModel.Id), menuId)
             });
             var menu = match.Result?.FirstOrDefault();
             if (menu == null) return default;
@@ -145,9 +140,9 @@ namespace ST.PageRender.Razor.Services
         public virtual bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
         {
             if (string.IsNullOrEmpty(menuItemAllowedRoles)) return false;
-            if (!userRoles.Any() || !userRoles.Contains(Settings.AnonimousUser))
+            if (!userRoles.Any() || !userRoles.Contains(Settings.ANONIMOUS_USER))
             {
-                userRoles.Add(Settings.AnonimousUser);
+                userRoles.Add(Settings.ANONIMOUS_USER);
             }
 
             try
@@ -177,7 +172,7 @@ namespace ST.PageRender.Razor.Services
             });
             var menu = match.Result?.FirstOrDefault();
             if (!match.IsSuccess || menu == null) return new ResultModel<Guid>();
-            if (!roles.Contains(Settings.SuperAdmin)) roles.Add(Settings.SuperAdmin);
+            if (!roles.Contains(Settings.ADMINISTRATOR)) roles.Add(Settings.ADMINISTRATOR);
             menu.AllowedRoles = string.Join("#", roles);
             await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menu.MenuId.ToString()));
             return await _service.UpdateWithReflection(menu);

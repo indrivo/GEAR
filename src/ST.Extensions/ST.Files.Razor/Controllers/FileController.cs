@@ -4,12 +4,13 @@ using ST.Files.Abstraction;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using ST.Core;
 using ST.Files.Abstraction.Models.ViewModels;
 
 
 namespace ST.Files.Razor.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Settings.ADMINISTRATOR)]
     [Route("api/[controller]/[action]")]
     public sealed class FileController : Controller
     {
@@ -23,6 +24,11 @@ namespace ST.Files.Razor.Controllers
             _fileManager = fileManager;
         }
 
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/File")]
         public IActionResult Index()
         {
             return View();

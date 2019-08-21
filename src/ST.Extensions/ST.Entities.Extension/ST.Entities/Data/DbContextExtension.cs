@@ -5,9 +5,12 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using ST.Core;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Events;
 using ST.Entities.Abstractions.Events.EventArgs;
+using ST.Entities.Abstractions.Helpers;
 using ST.Entities.Abstractions.Query;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
@@ -117,12 +120,9 @@ namespace ST.Entities.Data
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
 
-                    using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
+                    using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
-
-                        if (cmd.Connection.State != ConnectionState.Open)
-                            cmd.Connection.Open();
 
                         if (dbContext.Database.CurrentTransaction != null)
                             cmd.Transaction = ((RelationalTransaction)dbContext.Database.CurrentTransaction)
@@ -131,7 +131,7 @@ namespace ST.Entities.Data
                         foreach (var item in viewModel.Fields)
                         {
                             var dbParameter = cmd.CreateParameter();
-                            dbParameter.ParameterName = string.Format("@{0}", item.ColumnName);
+                            dbParameter.ParameterName = $"@{item.ColumnName}";
                             if (value[item.ColumnName] is Guid val)
                             {
                                 if (val == Guid.Empty)
@@ -186,11 +186,9 @@ namespace ST.Entities.Data
                     var sqlQuery = queryBuilder.UpdateQuery(viewModel);
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
-                    using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
+                    using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
-                        if (cmd.Connection.State != ConnectionState.Open)
-                            cmd.Connection.Open();
 
                         if (dbContext.Database.CurrentTransaction != null)
                             cmd.Transaction = ((RelationalTransaction)dbContext.Database.CurrentTransaction)
@@ -207,7 +205,7 @@ namespace ST.Entities.Data
                             }
 
                             var dbParameter = cmd.CreateParameter();
-                            dbParameter.ParameterName = string.Format("@{0}", item.ColumnName);
+                            dbParameter.ParameterName = $"@{item.ColumnName}";
                             dbParameter.Value = value[item.ColumnName] ?? DBNull.Value;
                             cmd.Parameters.Add(dbParameter);
                         }
@@ -323,7 +321,7 @@ namespace ST.Entities.Data
 
                     //var sqlQuery = EntityQueryBuilder.DeleteByIdQuery(viewModel.TableName, (Guid)value["Id"]);
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
-                    using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
+                    using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
                         if (cmd.Connection.State != ConnectionState.Open)
@@ -416,7 +414,7 @@ namespace ST.Entities.Data
                 var sqlQuery = QueryBuilder.GetCountByParameter(viewModel, filters);
                 var result = EntitiesFromSql(dbContext, sqlQuery, filters).FirstOrDefault();
                 var data = result?.FirstOrDefault();
-                if (data.Equals(default(KeyValuePair<string, object>))) return returnModel;
+                if (data.IsNull()) return returnModel;
                 returnModel.Result = Convert.ToInt32(data?.Value);
                 returnModel.IsSuccess = true;
                 return returnModel;
@@ -439,11 +437,10 @@ namespace ST.Entities.Data
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
             var result = new List<Dictionary<string, object>>();
-            using (var cmd = dbContext.Database.GetDbConnection().CreateCommand())
+
+            using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
             {
                 cmd.CommandText = sql;
-                if (cmd.Connection.State != ConnectionState.Open)
-                    cmd.Connection.Open();
 
                 if (dbContext.Database.CurrentTransaction != null)
                     cmd.Transaction =
@@ -478,7 +475,6 @@ namespace ST.Entities.Data
                 return result;
             }
         }
-
 
         //Denis
         //To Delete 
@@ -639,16 +635,16 @@ namespace ST.Entities.Data
         /// <returns></returns>
         private static EntityViewModel SetDefaultInsertValues(EntityViewModel viewModel)
         {
-            if (viewModel.Fields.All(s => s.ColumnName != "Id"))
+            if (viewModel.Fields.All(s => s.ColumnName != nameof(BaseModel.Id)))
             {
                 viewModel.Fields.Add(new EntityFieldsViewModel
                 {
                     IsSystem = true,
-                    ColumnName = "Id"
+                    ColumnName = nameof(BaseModel.Id)
                 });
             }
 
-            if (viewModel.Fields.All(s => s.ColumnName != "Created"))
+            if (viewModel.Fields.All(s => s.ColumnName != nameof(BaseModel.Created)))
             {
                 viewModel.Fields.Add(new EntityFieldsViewModel
                 {
@@ -659,15 +655,15 @@ namespace ST.Entities.Data
 
             foreach (var value in viewModel.Values)
             {
-                if (!value.ContainsKey("Id"))
+                if (!value.ContainsKey(nameof(BaseModel.Id)))
                 {
-                    value.Add("Id", Guid.NewGuid());
+                    value.Add(nameof(BaseModel.Id), Guid.NewGuid());
                 }
-                else if (value.ContainsKey("Id"))
+                else if (value.ContainsKey(nameof(BaseModel.Id)))
                 {
                     try
                     {
-                        if (Guid.Parse(value["Id"].ToString()) == Guid.Empty) value["Id"] = Guid.NewGuid();
+                        if (Guid.Parse(value[nameof(BaseModel.Id)].ToString()) == Guid.Empty) value[nameof(BaseModel.Id)] = Guid.NewGuid();
                     }
                     catch (Exception ex)
                     {
@@ -675,32 +671,32 @@ namespace ST.Entities.Data
                     }
                 }
 
-                if (!value.ContainsKey("Created"))
+                if (!value.ContainsKey(nameof(BaseModel.Created)))
                 {
-                    value.Add("Created", DateTime.Now);
+                    value.Add(nameof(BaseModel.Created), DateTime.Now);
                 }
 
-                if (value.ContainsKey("Created"))
+                if (value.ContainsKey(nameof(BaseModel.Created)))
                 {
-                    value["Created"] = DateTime.Now;
+                    value[nameof(BaseModel.Created)] = DateTime.Now;
                 }
 
-                if (value.ContainsKey("Changed"))
+                if (value.ContainsKey(nameof(BaseModel.Changed)))
                 {
-                    value["Changed"] = DateTime.Now;
+                    value[nameof(BaseModel.Changed)] = DateTime.Now;
                 }
                 else
                 {
-                    value.Add("Changed", DateTime.Now);
+                    value.Add(nameof(BaseModel.Changed), DateTime.Now);
                 }
 
-                if (value.ContainsKey("IsDeleted"))
+                if (value.ContainsKey(nameof(BaseModel.IsDeleted)))
                 {
-                    value["IsDeleted"] = false;
+                    value[nameof(BaseModel.IsDeleted)] = false;
                 }
                 else
                 {
-                    value.Add("IsDeleted", false);
+                    value.Add(nameof(BaseModel.IsDeleted), false);
                 }
             }
 
