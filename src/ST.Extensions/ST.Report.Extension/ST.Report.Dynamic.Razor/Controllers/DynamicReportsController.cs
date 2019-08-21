@@ -38,7 +38,11 @@ namespace ST.Report.Dynamic.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPageData(DTParameters param) => Json(_service.GetFilteredReports(param));
+        public JsonResult LoadPageData(DTParameters param)
+        {
+            var result = _service.GetFilteredReports(param);
+            return Json(result);
+        }
 
         [HttpGet]
         public IActionResult CreateFolder()
@@ -108,18 +112,30 @@ namespace ST.Report.Dynamic.Razor.Controllers
         #region DynamicReports
 
         [HttpGet]
-        public IActionResult CreateDynamic()
+        public IActionResult Save(Guid id)
         {
+            var result = _service.GetReport(id);
+            DynamicReportViewModel model = new DynamicReportViewModel();
+            if (result != null)
+            {
+                model = new DynamicReportViewModel()
+                {
+                    Id = result.Id,
+                    Name = result.Name,
+                    ReportDataModel = result.ReportDataModel,
+                    DynamicReportFolderId = result.DynamicReportFolderId
+                };
+            }
             ViewBag.Folders = _service.GetAllFolders();
-            return View();
+            return View(model);
         }
 
         [HttpPost]
-        public IActionResult CreateDynamic(DynamicReportViewModel dto)
+        public IActionResult Save(DynamicReportViewModel dto)
         {
             var reportDb = new DynamicReport()
             {
-                Id = new Guid(),
+                Id = dto.Id,
                 Name = dto.Name,
                 ReportDataModel = dto.ReportDataModel,
                 IsDeleted = false,
@@ -129,7 +145,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 Changed = DateTime.Now,
                 DynamicReportFolderId = dto.DynamicReportFolderId
             };
-            _service.CreateReport(reportDb);
+            _service.SaveReport(reportDb);
             return Json(new
             {
                 success = true,
@@ -274,6 +290,14 @@ namespace ST.Report.Dynamic.Razor.Controllers
         {
             var data = _service.GetReportContent(dto);
             return Json(new { charts = dto.DynamicReportCharts, data });
+        }
+
+        [HttpPost]
+        public IActionResult GetReportDataById(Guid id)
+        {
+            var report = _service.GetReport(id);
+            var data = _service.GetReportContent(report.ReportDataModel);
+            return Json(new { charts = report.ReportDataModel.DynamicReportCharts, data });
         }
 
         #endregion

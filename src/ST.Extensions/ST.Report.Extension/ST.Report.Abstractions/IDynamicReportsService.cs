@@ -14,7 +14,7 @@ namespace ST.Report.Abstractions
         void EditFolder(DynamicReportFolder newFolder);
         void DeleteFolder(Guid id);
         IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders();
-        void CreateReport(DynamicReport reportModel);
+        void SaveReport(DynamicReport reportModel);
         DynamicReport CloneReport(Guid id);
         DynamicReport ParseReport(Guid id);
         void EditReport(DynamicReport reportModel);
@@ -30,6 +30,8 @@ namespace ST.Report.Abstractions
         List<DynamicReportQueryResultViewModel> GetContent(string tableName,
             IEnumerable<DynamicReportColumnDataModel> columnNames, DateTime startDateTime, DateTime endDateTime,
             List<DynamicReportFilter> filtersList);
+
+        DynamicReport GetReport(Guid id);
 
         IEnumerable<dynamic> GetReportContent(DynamicReportDataModel dto);
 

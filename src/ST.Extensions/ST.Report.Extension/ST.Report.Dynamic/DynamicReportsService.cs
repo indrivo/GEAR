@@ -47,21 +47,7 @@ namespace ST.Report.Dynamic
 
         private static DynamicReport ParseForDbModel(DynamicReport databaseReport, DynamicReport model)
         {
-            //var columnListString = model.ColumnList.Aggregate("", (current, column)
-            //    => current + (column.Prefix + "(" + column.DataColumn + ")|"));
-            //var filtersListString = model.Filters.Aggregate("", (current, filter)
-            //    => current + (filter.FilterType + ":" + filter.FieldName + ":" + filter.FilterType + ":" + filter.Value + "|"));
             databaseReport.Name = model.Name;
-            //databaseReport.ChartType = model.ChartType;
-            //databaseReport.ColumnNames = columnListString;
-            //databaseReport.EndDateTime = model.EndDateTime;
-            //databaseReport.StartDateTime = model.StartDateTime;
-            //databaseReport.GraphType = model.GraphType;
-            //databaseReport.DynamicReportFolderId = model.DynamicReportFolderId;
-            //databaseReport.TableName = model.InitialTable;
-            //databaseReport.TimeFrameEnum = model.TimeFrameEnum;
-            //databaseReport.FiltersList = filtersListString;
-
             return databaseReport;
         }
 
@@ -149,9 +135,24 @@ namespace ST.Report.Dynamic
         /// Create Report
         /// </summary>
         /// <param name="reportModel"></param>
-        public void CreateReport(DynamicReport report)
+        public void SaveReport(DynamicReport report)
         {
-            _context.DynamicReports.Add(report);
+            if (report.Id == Guid.Empty)
+            {
+                report.Id = Guid.NewGuid();
+                _context.DynamicReports.Add(report);
+            }
+            else
+            {
+                var entity = _context.DynamicReports.First(x => x.Id == report.Id);
+                entity.Name = report.Name;
+                entity.ReportDataModel = report.ReportDataModel;
+                entity.IsDeleted = report.IsDeleted;
+                entity.ModifiedBy = report.ModifiedBy;
+                entity.Changed = report.Changed;
+                entity.DynamicReportFolderId = report.DynamicReportFolderId;
+                _context.Update(entity);
+            }
             _context.SaveChanges();
         }
 
@@ -162,6 +163,11 @@ namespace ST.Report.Dynamic
         public DynamicReport CloneReport(Guid id)
         {
             return DeepClone(ParseReport(id));
+        }
+
+        public DynamicReport GetReport(Guid id)
+        {
+            return _context.DynamicReports.FirstOrDefault(x => x.Id == id);
         }
 
         /// <summary>
@@ -699,18 +705,6 @@ namespace ST.Report.Dynamic
                 connection.Open();
                 using (var sqlCommand = connection.CreateCommand())
                 {
-                    var testCommand = @"
-                    SELECT 
-                      system.""Menu"".""Name"",
-                      COUNT(system.""MenuItem"".""Id"")
-                    FROM
-                      system.""Menu""
-                      INNER JOIN system.""MenuItem"" ON(system.""Menu"".""Id"" = system.""MenuItem"".""MenuId"")
-                      WHERE
-                      system.""Menu"".""Name"" LIKE '%Commerce Landing page%'
-                    GROUP BY system.""Menu"".""Id""
-                    ";
-
                     StringBuilder queryBuilder = new StringBuilder();
                     queryBuilder.Append("SELECT ");
                     if (dto.FieldsList.Count() == 0)
@@ -723,11 +717,11 @@ namespace ST.Report.Dynamic
                         {
                             if (field.AggregateType != AggregateType.None)
                             {
-                                queryBuilder.Append($" {field.AggregateType}(system.{field.FieldName}) ");
+                                queryBuilder.Append($" {field.AggregateType}(system.{field.FieldName}) {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
                             }
                             else
                             {
-                                queryBuilder.Append($" system.{field.FieldName} ");
+                                queryBuilder.Append($" system.{field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
                             }
 
                             if (!field.Equals(dto.FieldsList.Last()))
@@ -803,18 +797,25 @@ namespace ST.Report.Dynamic
                 }
                 connection.Close();
             }
-
-            //return resultContent;
         }
 
 
         private dynamic SqlDataReaderToExpando(NpgsqlDataReader reader)
         {
             var expandoObject = new ExpandoObject() as IDictionary<string, object>;
-
+            short duplicates = 0;
             for (var i = 0; i < reader.FieldCount; i++)
-                expandoObject.Add($"{ reader.GetName(i)}[{i}]", reader[i]);
-
+            {
+                if (expandoObject.ContainsKey(reader.GetName(i)))
+                {
+                    expandoObject.Add($"{reader.GetName(i)}_{duplicates}", reader[i]);
+                    duplicates++;
+                }
+                else
+                {
+                    expandoObject.Add(reader.GetName(i), reader[i]);
+                }
+            }
             return expandoObject;
         }
 
