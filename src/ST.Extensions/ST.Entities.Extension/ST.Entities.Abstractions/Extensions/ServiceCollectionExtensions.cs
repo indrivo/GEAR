@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Core.Events;
+using ST.Core.Events.EventArgs;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Events;
+using ST.Entities.Abstractions.Helpers;
 using ST.Entities.Abstractions.Query;
 
 namespace ST.Entities.Abstractions.Extensions
@@ -29,6 +32,18 @@ namespace ST.Entities.Abstractions.Extensions
                 { typeof(IEntityContext), typeof(TEntityContext) },
                 { typeof(IEntityRepository), typeof(TEntityRepository) }
             });
+
+            SystemEvents.Application.OnApplicationStarted += delegate (object sender, ApplicationStartedEventArgs args)
+            {
+                var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
+                DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
+            };
+
+            SystemEvents.Application.OnApplicationStopped += delegate
+            {
+                DbConnectionFactory.Connection.Close();
+            };
+
             return services;
         }
 

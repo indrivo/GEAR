@@ -5,7 +5,6 @@ using ST.Audit.Extensions;
 using ST.Audit.Interfaces;
 using ST.Audit.Models;
 using ST.Core;
-using ST.Core.Extensions;
 
 namespace ST.Audit.Contexts
 {

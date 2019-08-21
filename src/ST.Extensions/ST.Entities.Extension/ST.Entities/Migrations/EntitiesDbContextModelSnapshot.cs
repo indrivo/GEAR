@@ -17,7 +17,7 @@ namespace ST.Entities.Migrations
             modelBuilder
                 .HasDefaultSchema("Entities")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
@@ -283,7 +283,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("TableFields");
                 });
 
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
+            modelBuilder.Entity("ST.Entities.Security.Abstractions.Models.EntityFieldPermission", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -317,7 +317,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("EntityFieldPermissions");
                 });
 
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
+            modelBuilder.Entity("ST.Entities.Security.Abstractions.Models.EntityPermission", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -349,7 +349,7 @@ namespace ST.Entities.Migrations
                     b.ToTable("EntityPermissions");
                 });
 
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermissionAccess", b =>
+            modelBuilder.Entity("ST.Entities.Security.Abstractions.Models.EntityPermissionAccess", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -429,25 +429,9 @@ namespace ST.Entities.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityFieldPermission", b =>
+            modelBuilder.Entity("ST.Entities.Security.Abstractions.Models.EntityPermissionAccess", b =>
                 {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModelField", "TableModelField")
-                        .WithMany()
-                        .HasForeignKey("TableModelFieldId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermission", b =>
-                {
-                    b.HasOne("ST.Entities.Abstractions.Models.Tables.TableModel", "TableModel")
-                        .WithMany()
-                        .HasForeignKey("TableModelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("ST.Entities.Security.Models.EntityPermissionAccess", b =>
-                {
-                    b.HasOne("ST.Entities.Security.Models.EntityPermission", "EntityPermission")
+                    b.HasOne("ST.Entities.Security.Abstractions.Models.EntityPermission", "EntityPermission")
                         .WithMany("EntityPermissionAccesses")
                         .HasForeignKey("EntityPermissionId")
                         .OnDelete(DeleteBehavior.Cascade);

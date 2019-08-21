@@ -5,9 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
-    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
-    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+    <Compile Remove="Migrations\20190815174735_EntitySecurityDbContext_Initial.cs" />
+    <Compile Remove="Migrations\20190815174735_EntitySecurityDbContext_Initial.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ST.Entities.Security.Abstractions\ST.Entities.Security.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

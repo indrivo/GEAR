@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
-using ST.Entities.Security.Models;
+using ST.Entities.Security.Abstractions.Models;
+using ST.Entities.Security.Data;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Abstractions.Models.PagesACL;
@@ -26,7 +27,7 @@ namespace ST.PageRender.Data
         public static bool IsMigrationMode { get; set; } = false;
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public DynamicPagesDbContext(DbContextOptions<EntitiesDbContext> options) : base(options)
+        public DynamicPagesDbContext(DbContextOptions<EntitySecurityDbContext> options) : base(options)
         {
         }
 

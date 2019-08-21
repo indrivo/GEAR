@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
 using ST.Core;
+using ST.Identity.Permissions.Abstractions.Attributes;
 
 namespace ST.Identity.Razor.Controllers
 {
