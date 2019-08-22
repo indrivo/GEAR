@@ -448,5 +448,15 @@
   "commerce_how_it_works": "その作品",
   "commerce_features": "特徴",
   "commerce_price_plans": "料金プラン",
-  "commerce_demo": "デモ"
+  "commerce_demo": "デモ",
+  "iso_hello": "hello",
+  "iso_company_name": "会社名",
+  "iso_company_website": "当社Webサイト",
+  "iso_crop_the_image": "作物の画像",
+  "iso_avatar_was_changed": "アバターを変更した",
+  "system_auth_repeat_password": "繰り返しパスワード",
+  "system_auth_password_was_changed": "パスワードの変更",
+  "validator_email_incorrect": "e-mailアドレス形式が間違っ",
+  "system_password_does_not_match": "パスワードに一致\"しない",
+  "email_check_email": "成功メールチェック"
 }

@@ -138,7 +138,6 @@
 	</Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Account\" />
     <Folder Include="wwwroot\FileBox\Thursday, August 15, 2019\" />
     <Folder Include="wwwroot\lib\chosen-jquery\lib\" />
     <Folder Include="wwwroot\lib\popper.js\" />

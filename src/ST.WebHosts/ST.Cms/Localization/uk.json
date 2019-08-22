@@ -448,5 +448,15 @@
   "commerce_how_it_works": "Як це працює",
   "commerce_features": "Особливості",
   "commerce_price_plans": "Цінові плани ",
-  "commerce_demo": "Демо"
+  "commerce_demo": "Демо",
+  "iso_hello": "привіт",
+  "iso_company_name": "Назва компанії ",
+  "iso_company_website": "Сайт Компанії ",
+  "iso_crop_the_image": "Обрізати зображення",
+  "iso_avatar_was_changed": "Аватар був змінений",
+  "system_auth_repeat_password": "Повторіть пароль",
+  "system_auth_password_was_changed": "Змінено пароль ",
+  "validator_email_incorrect": "у форматі електронної пошти некоректний",
+  "system_password_does_not_match": "Пароль не співпадає",
+  "email_check_email": "Успіх, перевіряти електронну пошту"
 }

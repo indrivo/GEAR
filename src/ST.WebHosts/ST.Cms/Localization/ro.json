@@ -448,5 +448,15 @@
   "commerce_how_it_works": "Cum funcționează",
   "commerce_features": "Caracteristici",
   "commerce_price_plans": "Planuri de preț",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_hello": "salut",
+  "iso_company_name": "Numele companiei",
+  "iso_company_website": "Site-Ul Companiei",
+  "iso_crop_the_image": "Decupa imaginea",
+  "iso_avatar_was_changed": "Avatar a fost schimbat",
+  "system_auth_repeat_password": "Repetați parola",
+  "system_auth_password_was_changed": "Parola a fost schimbata",
+  "validator_email_incorrect": "adresa de e-mail are format incorect",
+  "system_password_does_not_match": "Parolele nu se potrivesc",
+  "email_check_email": "Succes, verifica e-mail"
 }

@@ -22,6 +22,18 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         [Display(Name = "Email Address :", Description = "email", Prompt = "email")]
         public string Email { get; set; }
 
+        [Display(Name = "First name :", Description = "first name", Prompt = "ex: John")]
+        public string UserFirstName { get; set; }
+
+        [Display(Name = "Last name :", Description = "last name", Prompt = "ex: Doe")]
+        public string UserLastName { get; set; }
+
+        [Display(Name = "Last name :", Description = "last name", Prompt = "ex: Doe")]
+        public string UserPhoneNumber { get; set; }
+        public bool IsDisabled { get; set; }
+        public DateTime Birthday { get; set; }
+        [MaxLength(500)] public string AboutMe { get; set; }
+
         public Tenant Tenant { get; set; }
 
 

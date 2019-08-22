@@ -448,5 +448,15 @@
   "commerce_how_it_works": "Πώς λειτουργεί",
   "commerce_features": "Χαρακτηριστικά",
   "commerce_price_plans": "Τιμή σχέδια",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_hello": "γεια σας",
+  "iso_company_name": "Το όνομα της εταιρείας",
+  "iso_company_website": "Ιστοσελίδα Της Εταιρείας",
+  "iso_crop_the_image": "Περικοπή της εικόνας",
+  "iso_avatar_was_changed": "Άλλαξε Avatar",
+  "system_auth_repeat_password": "Επαναλάβετε τον κωδικό πρόσβασης",
+  "system_auth_password_was_changed": "Κωδικός πρόσβασης άλλαξε",
+  "validator_email_incorrect": "e-mail μορφή είναι εσφαλμένη",
+  "system_password_does_not_match": "Κωδικό πρόσβασης δεν ταιριάζουν",
+  "email_check_email": "Επιτυχία, ελέγξτε το ηλεκτρονικό ταχυδρομείο"
 }

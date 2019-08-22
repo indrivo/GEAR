@@ -448,5 +448,15 @@
   "commerce_how_it_works": "How it works",
   "commerce_features": "Features",
   "commerce_price_plans": "Price plans",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_hello": "hello",
+  "iso_company_name": "Company name",
+  "iso_company_website": "Company Website",
+  "iso_crop_the_image": "Crop the image",
+  "iso_avatar_was_changed": "Avatar was changed",
+  "system_auth_repeat_password": "Repeat password",
+  "system_auth_password_was_changed": "Password was changed",
+  "validator_email_incorrect": "E-mail address format is incorrect",
+  "system_password_does_not_match": "Password does not match",
+  "email_check_email": "Success, check email"
 }

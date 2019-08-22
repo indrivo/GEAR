@@ -448,5 +448,15 @@
   "commerce_how_it_works": "Cómo funciona",
   "commerce_features": "Características",
   "commerce_price_plans": "Planes de precios",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_hello": "hola",
+  "iso_company_name": "Nombre de la empresa",
+  "iso_company_website": "Sitio Web De La Empresa",
+  "iso_crop_the_image": "Recortar la imagen",
+  "iso_avatar_was_changed": "Avatar fue cambiado",
+  "system_auth_repeat_password": "Repita la contraseña",
+  "system_auth_password_was_changed": "La contraseña se ha cambiado",
+  "validator_email_incorrect": "formato de la dirección es incorrecta",
+  "system_password_does_not_match": "La contraseña no coincide",
+  "email_check_email": "Éxito, consultar el correo electrónico"
 }

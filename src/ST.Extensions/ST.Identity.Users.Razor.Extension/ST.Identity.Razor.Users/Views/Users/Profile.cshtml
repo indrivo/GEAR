@@ -22,12 +22,12 @@
                     </label>
                 </div>
                 <div class="text-center">
-                    <h5 class="weight-400">Hello, @Model.UserName</h5>
+                    <h5 class="weight-400">@Localizer["iso_hello"], @Model.UserName</h5>
                     <p class="text-muted">@string.Join(", ", Model.Roles)</p>
                 </div>
                 <hr class="my-4 dashed">
                 <p>
-                    <label asp-for="Email" class="weight-400"></label><span class="text-muted">@Model.Email</span>
+                    <label class="weight-400">@Localizer["email"]</label> : <span class="text-muted">@Model.Email</span>
                 </p>
             </div>
         </div>
@@ -37,13 +37,13 @@
             <div class="card-header p-0">
                 <ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["profile"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" href="#organization" role="tab" aria-controls="organization" aria-selected="false">Organization</a>
+                        <a class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" href="#organization" role="tab" aria-controls="organization" aria-selected="false">@Localizer["organization"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" href="#changePassword" role="tab" aria-controls="changePassword" aria-selected="false">Change Password</a>
+                        <a class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" href="#changePassword" role="tab" aria-controls="changePassword" aria-selected="false">@Localizer["system_user_change_password"]</a>
                     </li>
                 </ul>
             </div>
@@ -56,13 +56,13 @@
                     <div class="tab-pane fade " id="organization" role="tabpanel" aria-labelledby="organization-tab">
                         <p class="mb-4">@Model.Tenant.Description</p>
                         <p>
-                            <span class="weight-400">Company name : </span><span class="text-muted">@Model.Tenant.Name</span>
+                            <span class="weight-400">@Localizer["iso_company_name"] : </span><span class="text-muted">@Model.Tenant.Name</span>
                         </p>
                         <p>
-                            <span class="weight-400">Address : </span><span class="text-muted">@Model.Tenant.Address</span>
+                            <span class="weight-400">@Localizer["system_adress"] : </span><span class="text-muted">@Model.Tenant.Address</span>
                         </p>
                         <p>
-                            <span class="weight-400">Company Website : </span><span class="text-muted">@Model.Tenant.SiteWeb</span>
+                            <span class="weight-400">@Localizer["iso_company_website"] : </span><span class="text-muted">@Model.Tenant.SiteWeb</span>
                         </p>
                     </div>
                     <div class="tab-pane fade " id="changePassword" role="tabpanel" aria-labelledby="changePassword-tab">
@@ -79,7 +79,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Crop the image</h5>
+                <h5 class="modal-title" id="modalLabel">@Localizer["iso_crop_the_image"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -90,8 +90,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="crop">Crop</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["cancel"]</button>
+                <button type="button" class="btn btn-primary" id="crop">@Localizer["save"]</button>
             </div>
         </div>
     </div>
@@ -198,14 +198,14 @@
 
 										success: function(result) {
 											if (result.is_success) {
-												notification.notify({ heading: "Avatar was changed", icon: "success" });
+												notification.notify({ heading: window.translate("iso_avatar_was_changed"), icon: "success" });
 											} else {
 												notification.notifyErrorList(data.error_keys);
 											}
 										},
 
 										error: () => {
-											notification.notify({ heading: "Server error" });
+											notification.notify({ heading: window.translate("system_server_not_respond") });
 											avatar.src = initialAvatarURL;
 											$alert.show().addClass('alert-warning').text('Upload error');
 										},

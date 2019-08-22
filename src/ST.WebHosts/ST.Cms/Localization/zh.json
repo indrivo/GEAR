@@ -448,5 +448,15 @@
   "commerce_how_it_works": "它是如何工作的",
   "commerce_features": "功能",
   "commerce_price_plans": "价格的计划",
-  "commerce_demo": "演示"
+  "commerce_demo": "演示",
+  "iso_hello": "你好",
+  "iso_company_name": "公司名称",
+  "iso_company_website": "公司的网站",
+  "iso_crop_the_image": "作物的图像",
+  "iso_avatar_was_changed": "头像是改变了",
+  "system_auth_repeat_password": "重复密码",
+  "system_auth_password_was_changed": "密码被改变了",
+  "validator_email_incorrect": "电子格式的邮件地址是错误的",
+  "system_password_does_not_match": "密码不匹配",
+  "email_check_email": "成功的，检查电子邮件"
 }

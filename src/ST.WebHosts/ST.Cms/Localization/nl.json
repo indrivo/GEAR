@@ -448,5 +448,15 @@
   "commerce_how_it_works": "Hoe het werkt",
   "commerce_features": "Kenmerken",
   "commerce_price_plans": "Prijs plannen",
-  "commerce_demo": "Demo"
+  "commerce_demo": "Demo",
+  "iso_hello": "hallo",
+  "iso_company_name": "Naam bedrijf",
+  "iso_company_website": "De Website Van Het Bedrijf",
+  "iso_crop_the_image": "De afbeelding bijsnijden",
+  "iso_avatar_was_changed": "Avatar is gewijzigd",
+  "system_auth_repeat_password": "Herhaal het wachtwoord",
+  "system_auth_password_was_changed": "Het wachtwoord is gewijzigd",
+  "validator_email_incorrect": "e-mail adres formaat is onjuist",
+  "system_password_does_not_match": "Wachtwoord komt niet overeen",
+  "email_check_email": "Succes, e-mail controleren"
 }

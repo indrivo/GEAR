@@ -448,5 +448,15 @@
   "commerce_how_it_works": "Как это работает",
   "commerce_features": "Особенности",
   "commerce_price_plans": "Ценовые планы ",
-  "commerce_demo": "Демо"
+  "commerce_demo": "Демо",
+  "iso_hello": "привет",
+  "iso_company_name": "Название компании ",
+  "iso_company_website": "Сайт Компании ",
+  "iso_crop_the_image": "Обрезать изображение",
+  "iso_avatar_was_changed": "Аватар был изменен",
+  "system_auth_repeat_password": "Повторите пароль",
+  "system_auth_password_was_changed": "Был изменен пароль ",
+  "validator_email_incorrect": "Формате электронной почты некорректен",
+  "system_password_does_not_match": "Пароль не совпадает",
+  "email_check_email": "Успех, проверять электронную почту"
 }
