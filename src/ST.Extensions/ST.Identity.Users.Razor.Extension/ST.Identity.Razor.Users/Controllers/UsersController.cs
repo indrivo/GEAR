@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
 using ST.Entities.Data;
@@ -27,8 +29,10 @@ using ST.Core.Helpers;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
+using ST.Identity.LdapAuth.Abstractions.Models;
 using ST.MultiTenant.Abstractions;
 using ST.Identity.Permissions.Abstractions.Attributes;
 
@@ -42,12 +46,13 @@ namespace ST.Identity.Razor.Users.Controllers
         public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
             ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context,
             INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager,
-            ILogger<UsersController> logger) : base(userManager, roleManager, cacheService,
+            ILogger<UsersController> logger, IStringLocalizer localizer) : base(userManager, roleManager, cacheService,
             applicationDbContext,
             context, notify)
         {
             _ldapUserManager = ldapUserManager;
             Logger = logger;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -59,6 +64,8 @@ namespace ST.Identity.Razor.Users.Controllers
         /// Inject Ldap User Manager
         /// </summary>
         private readonly BaseLdapUserManager<ApplicationUser> _ldapUserManager;
+
+        private readonly IStringLocalizer _localizer;
 
         #endregion
 
@@ -79,13 +86,14 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <returns></returns>
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserCreate)]
-        public virtual IActionResult Create()
+        public virtual async Task<IActionResult> Create()
         {
             var model = new CreateUserViewModel
             {
                 Roles = RoleManager.Roles.AsEnumerable(),
                 Groups = ApplicationDbContext.AuthGroups.AsEnumerable(),
-                Tenants = ApplicationDbContext.Tenants.AsEnumerable()
+                Tenants = ApplicationDbContext.Tenants.AsEnumerable(),
+                CountrySelectListItems = await GetCountrySelectList()
             };
             return View(model);
         }
@@ -121,27 +129,28 @@ namespace ST.Identity.Razor.Users.Controllers
                 AuthenticationType = model.AuthenticationType,
                 IsEditable = true,
                 TenantId = model.TenantId,
-                LastPasswordChanged = DateTime.Now
+                LastPasswordChanged = DateTime.Now,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Birthday = model.Birthday ?? DateTime.MinValue,
+                AboutMe = model.AboutMe,
             };
 
             if (model.UserPhoto != null)
             {
-                using (var _ = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
-                    await model.UserPhoto.CopyToAsync(_);
-                    user.UserPhoto = _.ToArray();
+                    await model.UserPhoto.CopyToAsync(memoryStream);
+                    user.UserPhoto = memoryStream.ToArray();
                 }
             }
 
-            var hasher = new PasswordHasher<ApplicationUser>();
-            var hashedPassword = hasher.HashPassword(user, model.Password);
-            user.PasswordHash = hashedPassword;
-            var result = await UserManager.CreateAsync(user);
+            var result = await UserManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                foreach (var _ in result.Errors)
+                foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, _.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 return View(model);
@@ -149,9 +158,9 @@ namespace ST.Identity.Razor.Users.Controllers
 
             Logger.LogInformation("User {0} created successfully", user.UserName);
             var roleNameList = new List<string>();
-            foreach (var _ in model.SelectedRoleId)
+            foreach (var roleId in model.SelectedRoleId)
             {
-                var role = await RoleManager.FindByIdAsync(_);
+                var role = await RoleManager.FindByIdAsync(roleId);
                 if (role == null)
                 {
                     Logger.LogWarning(
@@ -166,9 +175,9 @@ namespace ST.Identity.Razor.Users.Controllers
             var roleAddResult = await UserManager.AddToRolesAsync(user, roleNameList);
             if (!roleAddResult.Succeeded)
             {
-                foreach (var _ in roleAddResult.Errors)
+                foreach (var error in roleAddResult.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, _.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 return View(model);
@@ -419,6 +428,35 @@ namespace ST.Identity.Razor.Users.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Return list of State Or Provinces by country id
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public virtual JsonResult GetCityByCountryId([Required] string countryId)
+        {
+            var resultModel = new ResultModel<IEnumerable<SelectListItem>>();
+            if (string.IsNullOrEmpty(countryId))
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Country id is null"));
+                return Json(resultModel);
+            }
+
+            var citySelectList = ApplicationDbContext.StateOrProvinces
+                .AsNoTracking()
+                .Where(x => x.CountryId.Equals(countryId))
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList();
+            citySelectList.Insert(0, new SelectListItem("Select city", string.Empty));
+
+            resultModel.Result = citySelectList;
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
 
         /// <summary>
         ///     Save user data
@@ -429,8 +467,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public virtual async Task<IActionResult> Edit(string id,
-            UpdateUserViewModel model)
+        public virtual async Task<IActionResult> Edit(string id, UpdateUserViewModel model)
         {
             if (Guid.Parse(id) != model.Id)
             {
@@ -959,6 +996,21 @@ namespace ST.Identity.Razor.Users.Controllers
             }
 
             return Json(resultModel);
+        }
+
+        private async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
+        {
+            var countrySelectList = await ApplicationDbContext.Countries
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id
+                }).ToListAsync();
+
+            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
+
+            return countrySelectList;
         }
     }
 }

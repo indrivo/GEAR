@@ -42,7 +42,8 @@ namespace ST.Identity.Abstractions
         /// <summary>
         /// Stores same additional info about user
         /// </summary>
-        [MaxLength(500)] public string AboutMe { get; set; }
+        [MaxLength(500)]
+        public string AboutMe { get; set; }
 
         /// <inheritdoc />
         /// <summary>

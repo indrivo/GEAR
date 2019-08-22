@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "Змінено пароль ",
   "validator_email_incorrect": "у форматі електронної пошти некоректний",
   "system_password_does_not_match": "Пароль не співпадає",
-  "email_check_email": "Успіх, перевіряти електронну пошту"
+  "email_check_email": "Успіх, перевіряти електронну пошту",
+  "system_select_country": "Виберіть країну",
+  "system_select_city": "Виберіть місто"
 }

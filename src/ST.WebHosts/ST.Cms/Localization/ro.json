@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "Parola a fost schimbata",
   "validator_email_incorrect": "adresa de e-mail are format incorect",
   "system_password_does_not_match": "Parolele nu se potrivesc",
-  "email_check_email": "Succes, verifica e-mail"
+  "email_check_email": "Succes, verifica e-mail",
+  "system_select_country": "Selectați țară",
+  "system_select_city": "Selectați orașul"
 }

@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "La contraseña se ha cambiado",
   "validator_email_incorrect": "formato de la dirección es incorrecta",
   "system_password_does_not_match": "La contraseña no coincide",
-  "email_check_email": "Éxito, consultar el correo electrónico"
+  "email_check_email": "Éxito, consultar el correo electrónico",
+  "system_select_country": "Seleccione el país",
+  "system_select_city": "Seleccione la ciudad"
 }

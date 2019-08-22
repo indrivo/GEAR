@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "Het wachtwoord is gewijzigd",
   "validator_email_incorrect": "e-mail adres formaat is onjuist",
   "system_password_does_not_match": "Wachtwoord komt niet overeen",
-  "email_check_email": "Succes, e-mail controleren"
+  "email_check_email": "Succes, e-mail controleren",
+  "system_select_country": "Selecteer een land",
+  "system_select_city": "Selecteer stad"
 }

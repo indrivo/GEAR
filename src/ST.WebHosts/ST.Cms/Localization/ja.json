@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "パスワードの変更",
   "validator_email_incorrect": "e-mailアドレス形式が間違っ",
   "system_password_does_not_match": "パスワードに一致\"しない",
-  "email_check_email": "成功メールチェック"
+  "email_check_email": "成功メールチェック",
+  "system_select_country": "相手の国選択",
+  "system_select_city": "都市を選択してください"
 }

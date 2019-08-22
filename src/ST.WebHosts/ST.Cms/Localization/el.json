@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "Κωδικός πρόσβασης άλλαξε",
   "validator_email_incorrect": "e-mail μορφή είναι εσφαλμένη",
   "system_password_does_not_match": "Κωδικό πρόσβασης δεν ταιριάζουν",
-  "email_check_email": "Επιτυχία, ελέγξτε το ηλεκτρονικό ταχυδρομείο"
+  "email_check_email": "Επιτυχία, ελέγξτε το ηλεκτρονικό ταχυδρομείο",
+  "system_select_country": "Επιλέξτε χώρα",
+  "system_select_city": "Επιλέξτε την πόλη"
 }

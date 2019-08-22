@@ -458,5 +458,7 @@
   "system_auth_password_was_changed": "Был изменен пароль ",
   "validator_email_incorrect": "Формате электронной почты некорректен",
   "system_password_does_not_match": "Пароль не совпадает",
-  "email_check_email": "Успех, проверять электронную почту"
+  "email_check_email": "Успех, проверять электронную почту",
+  "system_select_country": "Выберите страну",
+  "system_select_city": "Выберите город"
 }
