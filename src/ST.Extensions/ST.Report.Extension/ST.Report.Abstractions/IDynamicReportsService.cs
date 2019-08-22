@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore.Query;
 using ST.Core;
 using ST.Report.Abstractions.Models;
+using System;
+using System.Collections.Generic;
 
 namespace ST.Report.Abstractions
 {
@@ -15,9 +15,6 @@ namespace ST.Report.Abstractions
         void DeleteFolder(Guid id);
         IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders();
         void SaveReport(DynamicReport reportModel);
-        DynamicReport CloneReport(Guid id);
-        DynamicReport ParseReport(Guid id);
-        void EditReport(DynamicReport reportModel);
         void DeleteReport(Guid id);
         IEnumerable<string> GetTableNames();
         string GetTableSchema(string tableName);
@@ -26,17 +23,7 @@ namespace ST.Report.Abstractions
         string GetConnectionString();
         string GetPrimaryTableName(string columnName);
         dynamic GetForeignKeySelectValues(string tableName, string columnName);
-
-        List<DynamicReportQueryResultViewModel> GetContent(string tableName,
-            IEnumerable<DynamicReportColumnDataModel> columnNames, DateTime startDateTime, DateTime endDateTime,
-            List<DynamicReportFilter> filtersList);
-
         DynamicReport GetReport(Guid id);
-
         IEnumerable<dynamic> GetReportContent(DynamicReportDataModel dto);
-
-        List<decimal> GetChartDataForTimeFrame(string tableName, List<DynamicReportColumnDataModel> columnList,
-            DateTime startDateTime, DateTime endDateTime, List<DynamicReportFilter> filters,
-            DynamicReportChartDto chartDto, int timeFrame);
     }
 }
