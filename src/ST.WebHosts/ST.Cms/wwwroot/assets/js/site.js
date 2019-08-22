@@ -868,11 +868,14 @@ ST.prototype.rgbToHex = function (color) {
 }
 
 
+String.prototype.toLowerFirstLetter = function () {
+	const first = this[0].toLowerCase();
+	const res = `${first}${this.slice(1, this.length)}`;
+	return res;
+}
 
-if (typeof String != 'undefined') {
-	String.prototype.toLowerFirstLetter = function () {
-		const first = this[0].toLowerCase();
-		const res = `${first}${this.slice(1, this.length)}`;
-		return res;
-	}
+String.prototype.toUpperFirstLetter = function () {
+	const first = this[0].toUpperCase();
+	const res = `${first}${this.slice(1, this.length)}`;
+	return res;
 }

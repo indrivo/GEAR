@@ -5,6 +5,7 @@ using ST.Audit.Attributes;
 using ST.Audit.Enums;
 using ST.Core.Abstractions;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.LdapAuth.Abstractions.Models;
 
 namespace ST.Identity.Abstractions
@@ -25,13 +26,6 @@ namespace ST.Identity.Abstractions
         [MaxLength(50)]
         [TrackField(Option = TrackFieldOption.Allow)]
         public string UserLastName { get; set; }
-
-        /// <summary>
-        /// Stores user phone number
-        /// </summary>
-        [MaxLength(20)]
-        [TrackField(Option = TrackFieldOption.Allow)]
-        public string UserPhoneNumber { get; set; }
 
         /// <summary>
         /// Is disabled field status
@@ -139,5 +133,10 @@ namespace ST.Identity.Abstractions
         /// Version
         /// </summary>
         public int Version { get; set; } = 1;
+
+        /// <summary>
+        /// User addresses
+        /// </summary>
+        public ICollection<Address> Addresses { get; set; }
     }
 }

@@ -1448,7 +1448,7 @@ $(document).ready(function () {
 						swal("Fail!", "Server no response!", "error");
 					}
 				});
-			};
+			}
 		});
 	});
 

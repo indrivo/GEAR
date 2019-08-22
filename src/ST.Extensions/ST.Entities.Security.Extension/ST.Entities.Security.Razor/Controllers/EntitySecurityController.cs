@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ using ST.Entities.Security.Razor.ViewModels;
 
 namespace ST.Entities.Security.Razor.Controllers
 {
-    //[Authorize(Roles = Settings.SuperAdmin)]
+    [Authorize(Roles = Settings.ADMINISTRATOR)]
     public class EntitySecurityController : Controller
     {
         /// <summary>
