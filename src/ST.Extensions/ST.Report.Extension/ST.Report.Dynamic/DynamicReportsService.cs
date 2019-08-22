@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using ST.Core;
-using ST.Report.Abstractions;
-using ST.Report.Abstractions.Models;
 using ST.Core.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
-using ST.Report.Abstractions.Models.Enums;
-using System.Dynamic;
-using System.Text;
+using ST.Report.Abstractions;
 using ST.Report.Abstractions.Extensions;
+using ST.Report.Abstractions.Models;
+using ST.Report.Abstractions.Models.Enums;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Dynamic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace ST.Report.Dynamic
 {
@@ -156,84 +156,9 @@ namespace ST.Report.Dynamic
             _context.SaveChanges();
         }
 
-        /// <summary>
-        /// Clone from Existing
-        /// </summary>
-        /// <param name="id"></param>
-        public DynamicReport CloneReport(Guid id)
-        {
-            return DeepClone(ParseReport(id));
-        }
-
         public DynamicReport GetReport(Guid id)
         {
             return _context.DynamicReports.FirstOrDefault(x => x.Id == id);
-        }
-
-        /// <summary>
-        /// Parse Report
-        /// Get one from db and parse to working version
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public DynamicReport ParseReport(Guid id)
-        {
-            var model = _context.DynamicReports.First(x => x.Id == id);
-
-            var response = new DynamicReport()
-            {
-                Id = model.Id,
-                Name = model.Name,
-                //StartDateTime = model.StartDateTime,
-                //EndDateTime = model.EndDateTime,
-                //ChartType = model.ChartType,
-                //GraphType = model.GraphType,
-                //InitialTable = model.TableName,
-                //TimeFrameEnum = model.TimeFrameEnum,
-                IsDeleted = model.IsDeleted,
-                Author = model.Author,
-                Changed = model.Changed,
-                ModifiedBy = model.ModifiedBy,
-                Created = model.Created,
-                //ColumnList = new List<DynamicReportColumnDataModel>(),
-                //Filters = new List<DynamicReportFilter>(),
-                DynamicReportFolderId = model.DynamicReportFolderId
-            };
-
-            //TODO: Check parser for update
-            //foreach (var column in model.ColumnNames.Split("|"))
-            //{
-            //    if (column == "") continue;
-            //    response.ColumnList.Add(new DynamicReportColumnDataModel()
-            //    {
-            //        DataColumn = column.Substring(column.IndexOf("(", StringComparison.Ordinal) + 1).Replace(")", ""),
-            //        Prefix = column.Substring(0, column.IndexOf("(", StringComparison.Ordinal))
-            //    });
-            //}
-
-            //foreach (var filter in model.FiltersList.Split("|"))
-            //{
-            //    if (filter == "") continue;
-            //    var filterContent = filter.Split(":");
-            //    response.Filters.Add(new DynamicReportFilter()
-            //    {
-            //        FilterType = (FilterType)int.Parse(filterContent[0]),
-            //        FieldName = filterContent[1],
-            //        Value = filterContent[3]
-            //    });
-            //}
-            return response;
-        }
-
-        /// <summary>
-        /// Edit existing report
-        /// </summary>
-        /// <param name="model"></param>
-        public void EditReport(DynamicReport model)
-        {
-            var report = _context.DynamicReports.First(x => x.Id == model.Id);
-            _context.Update(ParseForDbModel(report, model));
-            _context.SaveChanges();
         }
 
         /// <summary>
@@ -483,214 +408,6 @@ namespace ST.Report.Dynamic
             return resultContent;
 
         }
-
-        /// <summary>
-        /// Build query and
-        /// Get data from the database
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnNames"></param>
-        /// <param name="startDateTime"></param>
-        /// <param name="endDateTime"></param>
-        /// <param name="filtersList"></param>
-        /// <returns></returns>
-        public List<DynamicReportQueryResultViewModel> GetContent(string tableName,
-            IEnumerable<DynamicReportColumnDataModel> columnNames, DateTime startDateTime, DateTime endDateTime, List<DynamicReportFilter> filtersList)
-        {
-            if (_context == null) throw new ArgumentNullException(nameof(_context));
-            if (columnNames == null) return new List<DynamicReportQueryResultViewModel>();
-
-            var columnList = "";
-            var tableJoinerList = "\"" + GetTableSchema(tableName) + "\".\"" + tableName + "\"";
-
-            var reportDynamicDataModels = columnNames.ToList();
-
-            foreach (var column in reportDynamicDataModels)
-            {
-                var primaryTableName = GetPrimaryTableName(column.DataColumn);
-                if (primaryTableName == "")
-                {
-                    if (column.Prefix != string.Empty)
-                    {
-                        columnList += ", " + column.Prefix + "\"" + tableName + "\".\"" + column.DataColumn + "\"";
-                    }
-                    else
-                    {
-                        columnList += ", \"" + tableName + "\".\"" + column.DataColumn + "\"";
-                    }
-                }
-                else
-                {
-                    var fkTable = primaryTableName;
-                    var tableSchema = GetTableSchema(fkTable);
-
-                    var joinType = " INNER JOIN ";
-
-                    //if (GetColumnType(tableName, column.DataColumn).ToString() == "Nullable`1") joinType = " LEFT OUTER JOIN ";
-
-                    if (fkTable == "Users" && tableSchema == "Identity")
-                    {
-                        if (column.Prefix != string.Empty)
-                        {
-                            columnList += ", " + column.Prefix + "\"" + fkTable + "\".UserName\" AS " + fkTable + "Name ";
-                        }
-                        else
-                        {
-                            columnList += ", " + fkTable + ".\"UserName\" AS " + fkTable + "\"Name\" ";
-                        }
-                    }
-                    else
-                    {
-                        if (column.Prefix != null)
-                        {
-                            columnList += ", "/* + fkTable + ".Name "+ ", "*/ + column.Prefix + "\"" + fkTable + "\".\"Name\" AS " + fkTable + "Name ";
-                        }
-                        else
-                        {
-                            columnList += ", \"" + fkTable + "\".\"Name\" AS " + fkTable + "Name ";
-                        }
-                    }
-
-                    tableJoinerList += joinType + "\"" + tableSchema + "\".\"" + fkTable +
-                                       "\" ON \"" + tableName + "\".\"" + column.DataColumn + "\" = \"" + fkTable + "\".\"Id\"";
-                }
-            }
-
-            var command = "SELECT " + columnList.Substring(1, columnList.Length - 1) + " FROM " + tableJoinerList + " WHERE \"" + tableName + "\".\"Changed\" BETWEEN '" +
-                          startDateTime.Date + "' AND '" + endDateTime.Date + "'";
-
-            if (filtersList.Any())
-            {
-                var filterCommand = "";
-
-                foreach (var filter in filtersList)
-                {
-                    var tablePrimaryName = GetPrimaryTableName(filter.FieldName);
-                    if (tablePrimaryName == string.Empty)
-                    {
-                        var tableSchema = GetTableSchema(tableName);
-                        if (filter.FilterType.ToString() == "MIN" || filter.FilterType.ToString() == "MAX" || filter.FilterType.ToString() == "AVG")
-                        {
-                            filterCommand += " " + filter.FilterType + " " + filter.FieldName + " = (SELECT " + filter.FilterType.ToString() + "\"" + tableName + "\".\"" + filter.FieldName
-                                             + "\" FROM \"" + tableSchema + "\".\"" + tableName + "\")";
-                        }
-                        else
-                        {
-                            filterCommand += " " + filter.FilterType + " " + tableName + "\".\"" + filter.FieldName
-                                             + "\" " + filter.FilterType.ToString();
-                        }
-
-                        if (filter.Value != null)
-                        {
-                            filterCommand += " '" + filter.Value + "'";
-                        }
-                    }
-                    else
-                    {
-                        if (tablePrimaryName != "" && (filter.FilterType.ToString() == "GROUP BY" || filter.FilterType.ToString() == "ORDER BY"))
-                        {
-                            filterCommand += " " + filter.FilterType + " " + tablePrimaryName + ".\"Name\"";
-                        }
-                        else
-                        {
-                            filterCommand += " " + filter.FilterType + " \"" + tableName + "\".\"" + filter.FieldName
-                                             + "\" " + filter.FilterType.ToString();
-                        }
-
-                        if (filter.Value != null)
-                        {
-                            filterCommand += " '" + filter.Value + "'";
-                        }
-                    }
-
-                }
-
-                command += "" + filterCommand;
-            }
-
-            var resultContent = new List<DynamicReportQueryResultViewModel>();
-
-
-            using (var connection = new NpgsqlConnection(GetConnectionString()))
-            {
-                connection.Open();
-                using (var sqlCommand = connection.CreateCommand())
-                {
-                    sqlCommand.CommandText = command;
-
-                    using (var reader = sqlCommand.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                var item = new DynamicReportQueryResultViewModel();
-
-                                var array = reportDynamicDataModels.Select(data => data.DataColumn).ToList();
-
-
-                                if (array.Count < columnList.Split(",").Length - 1) array.Add("Total");
-
-                                for (var i = 0; i < array.Count; i++)
-                                {
-                                    item.Columns.Add(new ResultValues()
-                                    {
-                                        Column = array[i],
-                                        Value = reader.GetValue(i).ToString()
-                                    });
-                                }
-
-                                resultContent.Add(item);
-                            }
-                        }
-                        reader.Close();
-                    }
-                }
-                connection.Close();
-            }
-
-            return resultContent;
-        }
-
-        /// <summary>
-        /// Get chart data for specific timeFrame of days
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnList"></param>
-        /// <param name="startDateTime"></param>
-        /// <param name="endDateTime"></param>
-        /// <param name="filters"></param>
-        /// <param name="chartDto"></param>
-        /// <param name="timeFrame"></param>
-        /// <returns></returns>
-        public List<decimal> GetChartDataForTimeFrame(string tableName, List<DynamicReportColumnDataModel> columnList,
-            DateTime startDateTime, DateTime endDateTime, List<DynamicReportFilter> filters, DynamicReportChartDto chartDto, int timeFrame)
-        {
-            if (chartDto == null) return null;
-
-            var queryResultChart = new List<decimal>();
-
-            //for (var date = startDateTime; date.Date <= endDateTime.Date; date = date.AddDays(timeFrame))
-            //{
-            //    switch (chartDto.ChartType)
-            //    {
-            //        case ChartType.Total:
-            //            decimal.TryParse(
-            //                GetContent(tableName, columnList, date, date.AddDays(timeFrame), filters).First().Columns.First().Value,
-            //                out var value);
-            //            queryResultChart.Add(value);
-            //            break;
-            //        case ChartType.Count:
-            //            queryResultChart.Add(GetContent(tableName, columnList, date, date.AddDays(timeFrame), filters).Count);
-            //            break;
-            //        default:
-            //            throw new ArgumentOutOfRangeException();
-            //    }
-            //}
-            return queryResultChart;
-        }
-
-
 
         public IEnumerable<dynamic> GetReportContent(DynamicReportDataModel dto)
         {

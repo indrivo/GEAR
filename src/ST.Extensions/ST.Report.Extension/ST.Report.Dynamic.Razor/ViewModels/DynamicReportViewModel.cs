@@ -42,4 +42,10 @@ namespace ST.Report.Dynamic.Razor.ViewModels
         public string text { get; set; }
     }
 
+    public class ResponseClass
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
 }
