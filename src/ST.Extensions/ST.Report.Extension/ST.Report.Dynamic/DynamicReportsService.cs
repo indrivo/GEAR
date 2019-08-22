@@ -462,7 +462,7 @@ namespace ST.Report.Dynamic
                             var rel = dto.Relations.FirstOrDefault(s => s.ForeignKeyTable == table);
                             if (rel != null)
                             {
-                                queryBuilder.Append($@"  ON(system.""{rel.PrimaryKeyTable}"".""Id"" = system.""{rel.ForeignKeyTable}"".""{rel.ForeignKey}"") ");
+                                queryBuilder.Append($@" ON(system.""{rel.PrimaryKeyTable}"".""Id"" = system.""{rel.ForeignKeyTable}"".""{rel.ForeignKey}"") ");
                             }
                         }
 
