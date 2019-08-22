@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -237,6 +238,7 @@ namespace ST.Entities.Security
             return await GetPermissionsAsync(roles, entityId);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get access by roles and entity
         /// </summary>
@@ -245,8 +247,8 @@ namespace ST.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(IEnumerable<string> userRoles, Guid entityId)
         {
-            var result = new HashSet<EntityAccessType>();
-            var roles = await _identityContext.Set<ApplicationRole>().Where(x => userRoles.Contains(x.Name)).ToListAsync();
+            var result = new List<EntityAccessType>();
+            var roles = _identityContext.Set<ApplicationRole>().Where(x => userRoles.Contains(x.Name)).ToList();
             if (roles.Select(x => x.Name).Contains(Settings.ADMINISTRATOR))
             {
                 result.Add(EntityAccessType.FullControl);
@@ -255,7 +257,7 @@ namespace ST.Entities.Security
 
             var toCheck = new List<Guid> { entityId };
 
-            var table = Tables.FirstOrDefault(x => x.Id.Equals(entityId));
+            var table = await _entityContext.Table.FirstOrDefaultAsync(x => x.Id.Equals(entityId));
             if (table != null)
             {
                 if (!table.IsCommon)
@@ -270,19 +272,25 @@ namespace ST.Entities.Security
                 }
             }
 
-            foreach (var role in roles)
+            if (table == null) return result;
+
+            var permissionGroup = await _context.EntityPermissions
+                .Include(x => x.EntityPermissionAccesses)
+                .Where(x => roles.Select(b => b.Id.ToGuid())
+                                .Contains(x.ApplicationRoleId) && toCheck
+                                .Any(v => v
+                                    .Equals(x.TableModelId)))
+                .Select(j => j.EntityPermissionAccesses
+                    .Select(p => p.AccessType))
+                .ToListAsync();
+
+            foreach (var permissions in permissionGroup)
             {
-                var config = await _context
-                    .EntityPermissions
-                    .Include(x => x.EntityPermissionAccesses)
-                    .FirstOrDefaultAsync(x => x.ApplicationRoleId == role.Id.ToGuid()
-                                              && toCheck
-                                                  .Any(v => v.Equals(x.TableModelId)));
-                if (config == null) continue;
-                result.AddRange(config.EntityPermissionAccesses.Select(x => x.AccessType).ToList());
+                result.AddRange(permissions);
             }
 
             return result;
+
         }
 
         /// <summary>
