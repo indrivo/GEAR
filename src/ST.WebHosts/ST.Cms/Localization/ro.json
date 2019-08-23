@@ -462,5 +462,7 @@
   "system_select_country": "Selectați țară",
   "system_select_city": "Selectați orașul",
   "system_inline_edit_text_chnaged": "S-a schimbat",
-  "system_inline_edit_select_value_changed": "A fost selectat"
+  "system_inline_edit_select_value_changed": "A fost selectat",
+  "system_birthday": "Ziua de nastere",
+  "profile_updated_successfully": "Profil actualizat cu succes"
 }

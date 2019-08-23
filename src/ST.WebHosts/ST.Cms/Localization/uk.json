@@ -462,5 +462,7 @@
   "system_select_country": "Виберіть країну",
   "system_select_city": "Виберіть місто",
   "system_inline_edit_text_chnaged": "Змінилося",
-  "system_inline_edit_select_value_changed": "Був обраний"
+  "system_inline_edit_select_value_changed": "Був обраний",
+  "system_birthday": "День народження",
+  "profile_updated_successfully": "Профіль успішно оновлено "
 }

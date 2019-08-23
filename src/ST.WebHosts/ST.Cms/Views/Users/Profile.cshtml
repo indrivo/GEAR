@@ -43,7 +43,7 @@
 						<a class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" href="#organization" role="tab" aria-controls="organization" aria-selected="false">@Localizer["organization"]</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" href="#changePassword" role="tab" aria-controls="changePassword" aria-selected="false">@Localizer["system_user_change_password"]</a>
+						<a class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" href="@Url.Action("UserPasswordChange","Users")" role="tab" aria-controls="changePassword" aria-selected="false">@Localizer["system_user_change_password"]</a>
                     </li>					
                     <li class="nav-item">
 						<a class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" href="#addresList" role="tab" aria-controls="addresList" aria-selected="false">Addres list</a>
@@ -266,6 +266,24 @@
 			    });
 	    });
 
+    </script>
+    <script type="text/javascript">
+	    (function ($) {
+		    var contentResult;
+		    $("#jq").text( $.fn.jquery );
+		    $("a[data-toggle='tab']").on("show.bs.tab", function (e) {
+			    if ( e.relatedTarget ) {
+				    $( $(e.relatedTarget).data("target") ).empty();
+			    }
+			    var url = $(e.target).attr("href");
+			    var $tabTarget = $( $(e.target).data("target") );
+			    $.get( url, function( result ) {
+				    $tabTarget.html(result);
+			    });
+			    $( $(e.relatedTarget).data("target") ).removeClass('active');
+		    });
+
+	    })(jQuery);
     </script>
     <partial name="_ValidationScriptsPartial" />
 }

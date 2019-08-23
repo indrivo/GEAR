@@ -462,5 +462,7 @@
   "system_select_country": "Selecteer een land",
   "system_select_city": "Selecteer stad",
   "system_inline_edit_text_chnaged": "Gewijzigd",
-  "system_inline_edit_select_value_changed": "Was geselecteerd"
+  "system_inline_edit_select_value_changed": "Was geselecteerd",
+  "system_birthday": "Verjaardag",
+  "profile_updated_successfully": "Profiel bijgewerkt"
 }

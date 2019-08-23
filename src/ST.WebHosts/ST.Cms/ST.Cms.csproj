@@ -122,7 +122,6 @@
 	</Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\lib\chosen-jquery\lib\" />
     <Folder Include="wwwroot\lib\popper.js\" />
   </ItemGroup>

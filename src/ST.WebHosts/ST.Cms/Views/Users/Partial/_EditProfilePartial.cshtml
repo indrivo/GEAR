@@ -1,0 +1,71 @@
+@model ST.Identity.Razor.Users.ViewModels.UserViewModels.UserProfileEditViewModel
+
+
+<form asp-controller="Users" asp-action="EditProfile" name="EditProfile" id="EditProfile" autocomplete="off" method="post">
+	<input type="hidden" asp-for="Id"/>
+	<div class="modal-header px-4">
+		<h5 class="modal-title" id="exampleModalLabel">@Localizer["profile_edit"]</h5>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span class="material-icons ">close</span>
+		</button>
+	</div>
+	<div class="modal-body p-4">
+		<div class="form-group">
+			<label asp-for="UserFirstName">@Localizer["system_first_name"]</label>
+			<input class="form-control" asp-for="UserFirstName">
+			<span asp-validation-for="UserFirstName" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label asp-for="UserLastName">@Localizer["system_last_name"]</label>
+			<input class="form-control" asp-for="UserLastName">
+			<span asp-validation-for="UserLastName" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label asp-for="Birthday">@Localizer["system_birthday"]</label>
+			<input class="form-control" asp-for="Birthday" value="@Model.Birthday.ToString("d")" type="text">
+			<span asp-validation-for="Birthday" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label asp-for="UserPhoneNumber">@Localizer["system_phone"]</label>
+			<input class="form-control" asp-for="UserPhoneNumber" type="number">
+			<span asp-validation-for="UserPhoneNumber" class="text-danger"></span>
+		</div>
+
+		<div class="form-group">
+			<label asp-for="AboutMe">@Localizer["description"]</label>
+			<textarea asp-for="AboutMe" class="form-control" rows="3"></textarea>
+		</div>
+	</div>
+	<div class="modal-footer px-4">
+		<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["cancel"]</button>
+		<button type="submit" class="btn btn-primary">@Localizer["save"]</button>
+	</div>
+</form>
+
+<script type="text/javascript">
+	$("form[name='EditProfile']").submit(function(e) {
+		e.preventDefault();
+		const form = $(this);
+		$.ajax({
+			type: form.attr('method'),
+			url: form.attr('action'),
+			data: form.serialize()
+		}).done((data) => {
+			if (data.is_success) {
+				notification.notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
+				$('#modal-container').modal('hide');
+				setTimeout(location.reload(), 5000);
+			} else {
+				notification.notifyErrorList(data.error_keys);
+			}
+
+		}).fail(() => {
+			notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
+		});
+    });
+
+    $("#Birthday").datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true
+    });
+</script>

@@ -462,5 +462,7 @@
   "system_select_country": "选择国家",
   "system_select_city": "选择的城市",
   "system_inline_edit_text_chnaged": "改变了",
-  "system_inline_edit_select_value_changed": "被选中的"
+  "system_inline_edit_select_value_changed": "被选中的",
+  "system_birthday": "生日",
+  "profile_updated_successfully": "配置文件的更新的成功"
 }

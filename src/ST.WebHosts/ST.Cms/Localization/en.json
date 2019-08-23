@@ -462,5 +462,7 @@
   "system_select_country": "Select country",
   "system_select_city": "Select city",
   "system_inline_edit_text_chnaged": "Changed",
-  "system_inline_edit_select_value_changed": "Was selected"
+  "system_inline_edit_select_value_changed": "Was selected",
+  "system_birthday": "Birthday",
+  "profile_updated_successfully": "Profile updated successfully"
 }

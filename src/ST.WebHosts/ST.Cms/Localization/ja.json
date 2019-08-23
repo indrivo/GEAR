@@ -462,5 +462,7 @@
   "system_select_country": "相手の国選択",
   "system_select_city": "都市を選択してください",
   "system_inline_edit_text_chnaged": "変更",
-  "system_inline_edit_select_value_changed": "選択した"
+  "system_inline_edit_select_value_changed": "選択した",
+  "system_birthday": "誕生日",
+  "profile_updated_successfully": "概要の更新に成功し"
 }

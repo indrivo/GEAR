@@ -462,5 +462,7 @@
   "system_select_country": "Επιλέξτε χώρα",
   "system_select_city": "Επιλέξτε την πόλη",
   "system_inline_edit_text_chnaged": "Άλλαξε",
-  "system_inline_edit_select_value_changed": "Επιλέχθηκε"
+  "system_inline_edit_select_value_changed": "Επιλέχθηκε",
+  "system_birthday": "Γενέθλια",
+  "profile_updated_successfully": "Το προφίλ ενημερώθηκε με επιτυχία"
 }

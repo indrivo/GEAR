@@ -90,9 +90,9 @@ namespace ST.Identity.Razor.Users.Controllers
         {
             var model = new CreateUserViewModel
             {
-                Roles = RoleManager.Roles.AsEnumerable(),
-                Groups = ApplicationDbContext.AuthGroups.AsEnumerable(),
-                Tenants = ApplicationDbContext.Tenants.AsEnumerable(),
+                Roles = await GetRoleSelectListItemAsync(),
+                Groups = await GetAuthGroupSelectListItemAsync(),
+                Tenants = await GetTenantsSelectListItemAsync(),
                 CountrySelectListItems = await GetCountrySelectList()
             };
             return View(model);
@@ -108,120 +108,114 @@ namespace ST.Identity.Razor.Users.Controllers
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserCreate)]
         public virtual async Task<IActionResult> Create(CreateUserViewModel model)
         {
-            model.Roles = RoleManager.Roles.AsEnumerable();
-            model.Groups = await ApplicationDbContext.AuthGroups.ToListAsync();
-            model.Profiles = new List<EntityViewModel>();
-            model.Tenants = ApplicationDbContext.Tenants.AsEnumerable();
-
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(model);
-            }
-
-            var user = new ApplicationUser
-            {
-                UserName = model.UserName,
-                Email = model.Email,
-                Created = DateTime.Now,
-                Changed = DateTime.Now,
-                IsDeleted = model.IsDeleted,
-                Author = User.Identity.Name,
-                AuthenticationType = model.AuthenticationType,
-                IsEditable = true,
-                TenantId = model.TenantId,
-                LastPasswordChanged = DateTime.Now,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Birthday = model.Birthday ?? DateTime.MinValue,
-                AboutMe = model.AboutMe,
-            };
-
-            if (model.UserPhoto != null)
-            {
-                using (var memoryStream = new MemoryStream())
+                var user = new ApplicationUser
                 {
-                    await model.UserPhoto.CopyToAsync(memoryStream);
-                    user.UserPhoto = memoryStream.ToArray();
-                }
-            }
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    Created = DateTime.Now,
+                    Changed = DateTime.Now,
+                    IsDeleted = model.IsDeleted,
+                    Author = User.Identity.Name,
+                    AuthenticationType = model.AuthenticationType,
+                    IsEditable = true,
+                    TenantId = model.TenantId,
+                    LastPasswordChanged = DateTime.Now,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Birthday = model.Birthday ?? DateTime.MinValue,
+                    AboutMe = model.AboutMe,
+                };
 
-            var result = await UserManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
+                if (model.UserPhoto != null)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await model.UserPhoto.CopyToAsync(memoryStream);
+                        user.UserPhoto = memoryStream.ToArray();
+                    }
                 }
 
-                return View(model);
-            }
-
-            Logger.LogInformation("User {0} created successfully", user.UserName);
-            var roleNameList = new List<string>();
-            foreach (var roleId in model.SelectedRoleId)
-            {
-                var role = await RoleManager.FindByIdAsync(roleId);
-                if (role == null)
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (!result.Succeeded)
                 {
-                    Logger.LogWarning(
-                        "The user has sent an invalid roleId which is bizarre since the role is selected from the html select tag, possible attack");
-                    ModelState.AddModelError(string.Empty, "The role you've selected does not exist");
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    model.Roles = await GetRoleSelectListItemAsync();
+                    model.Groups = await GetAuthGroupSelectListItemAsync();
+                    model.Tenants = await GetTenantsSelectListItemAsync();
+                    model.CountrySelectListItems = await GetCountrySelectList();
                     return View(model);
                 }
 
-                roleNameList.Add(role.Name);
-            }
+                Logger.LogInformation("User {0} created successfully", user.UserName);
 
-            var roleAddResult = await UserManager.AddToRolesAsync(user, roleNameList);
-            if (!roleAddResult.Succeeded)
-            {
-                foreach (var error in roleAddResult.Errors)
+                if (model.SelectedRoleId != null && model.SelectedRoleId.Any())
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    var rolesNameList = await RoleManager.Roles.Where(x => model.SelectedRoleId.Contains(x.Id))
+                        .Select(x => x.Name).ToListAsync();
+                    var roleAddResult = await UserManager.AddToRolesAsync(user, rolesNameList);
+                    if (!roleAddResult.Succeeded)
+                    {
+                        foreach (var error in roleAddResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        model.Roles = await GetRoleSelectListItemAsync();
+                        model.Groups = await GetAuthGroupSelectListItemAsync();
+                        model.Tenants = await GetTenantsSelectListItemAsync();
+                        model.CountrySelectListItems = await GetCountrySelectList();
+                        return View(model);
+                    }
                 }
 
-                return View(model);
-            }
-
-            if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
-            {
-                var userGroupList = model.SelectedGroupId
-                    .Select(_ => new UserGroup {AuthGroupId = Guid.Parse(_), UserId = user.Id}).ToList();
-
-                await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
-                await Context.SaveChangesAsync();
-            }
-            //ToDO: Modify letter !!!
-            else
-            {
-                var groupId = await ApplicationDbContext.AuthGroups.FirstOrDefaultAsync();
-                if (groupId != null)
+                if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
                 {
-                    ApplicationDbContext.UserGroups.Add(new UserGroup
+                    var userGroupList = model.SelectedGroupId
+                        .Select(_ => new UserGroup {AuthGroupId = Guid.Parse(_), UserId = user.Id}).ToList();
+
+                    await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
+                }
+                //ToDO: Modify letter !!!
+                else
+                {
+                    var groupId = await ApplicationDbContext.AuthGroups.FirstOrDefaultAsync();
+                    if (groupId != null)
                     {
-                        AuthGroupId = groupId.Id,
-                        UserId = user.Id
+                        ApplicationDbContext.UserGroups.Add(new UserGroup
+                        {
+                            AuthGroupId = groupId.Id,
+                            UserId = user.Id
+                        });
+                    }
+                }
+
+
+                try
+                {
+                    await ApplicationDbContext.SaveChangesAsync();
+                    await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+                    {
+                        Content = $"{user.UserName} was created by {User.Identity.Name}",
+                        Subject = "Info",
+                        NotificationTypeId = NotificationType.Info
                     });
                 }
-
-                await Context.SaveChangesAsync();
-            }
-
-
-            try
-            {
-                await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+                catch (Exception e)
                 {
-                    Content = $"{user.UserName} was created by {User.Identity.Name}",
-                    Subject = "Info",
-                    NotificationTypeId = NotificationType.Info
-                });
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e.Message);
-                ModelState.AddModelError(string.Empty, "Error on save User Groups!");
-                return View(model);
+                    Logger.LogError(e.Message);
+                    ModelState.AddModelError(string.Empty, "Error on save");
+                    model.Roles = await GetRoleSelectListItemAsync();
+                    model.Groups = await GetAuthGroupSelectListItemAsync();
+                    model.Tenants = await GetTenantsSelectListItemAsync();
+                    model.CountrySelectListItems = await GetCountrySelectList();
+                    return View(model);
+                }
             }
 
             return RedirectToAction(nameof(Index), "Users");
@@ -388,7 +382,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
         public virtual async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -423,40 +417,13 @@ namespace ST.Identity.Razor.Users.Controllers
                 UserPhoto = applicationUser.UserPhoto,
                 AuthenticationType = applicationUser.AuthenticationType,
                 TenantId = applicationUser.TenantId,
-                Tenants = ApplicationDbContext.Tenants.Where(x => !x.IsDeleted).ToList()
+                Tenants = ApplicationDbContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
+                FirstName = applicationUser.FirstName,
+                LastName = applicationUser.LastName
             };
             return View(model);
         }
 
-        /// <summary>
-        /// Return list of State Or Provinces by country id
-        /// </summary>
-        /// <param name="countryId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public virtual JsonResult GetCityByCountryId([Required] string countryId)
-        {
-            var resultModel = new ResultModel<IEnumerable<SelectListItem>>();
-            if (string.IsNullOrEmpty(countryId))
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Country id is null"));
-                return Json(resultModel);
-            }
-
-            var citySelectList = ApplicationDbContext.StateOrProvinces
-                .AsNoTracking()
-                .Where(x => x.CountryId.Equals(countryId))
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList();
-            citySelectList.Insert(0, new SelectListItem("Select city", string.Empty));
-
-            resultModel.Result = citySelectList;
-            resultModel.IsSuccess = true;
-            return Json(resultModel);
-        }
 
         /// <summary>
         ///     Save user data
@@ -492,12 +459,9 @@ namespace ST.Identity.Razor.Users.Controllers
             if (!ModelState.IsValid)
             {
                 model.SelectedRoleId = userRoleList;
-                foreach (var _ in ViewData.ModelState.Values)
+                foreach (var error in ViewData.ModelState.Values.SelectMany(stateValue => stateValue.Errors))
                 {
-                    foreach (var error in _.Errors)
-                    {
-                        ModelState.AddModelError("", error.ErrorMessage);
-                    }
+                    ModelState.AddModelError(string.Empty, error.ErrorMessage);
                 }
 
                 return View(model);
@@ -530,13 +494,15 @@ namespace ST.Identity.Razor.Users.Controllers
             user.ModifiedBy = User.Identity.Name;
             user.UserName = model.UserName;
             user.TenantId = model.TenantId;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
 
             if (model.UserPhotoUpdateFile != null)
             {
-                using (var _ = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
-                    await model.UserPhotoUpdateFile.CopyToAsync(_);
-                    user.UserPhoto = _.ToArray();
+                    await model.UserPhotoUpdateFile.CopyToAsync(memoryStream);
+                    user.UserPhoto = memoryStream.ToArray();
                 }
             }
 
@@ -608,12 +574,43 @@ namespace ST.Identity.Razor.Users.Controllers
 
 
         /// <summary>
+        /// Return list of State Or Provinces by country id
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public virtual JsonResult GetCityByCountryId([Required] string countryId)
+        {
+            var resultModel = new ResultModel<IEnumerable<SelectListItem>>();
+            if (string.IsNullOrEmpty(countryId))
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Country id is null"));
+                return Json(resultModel);
+            }
+
+            var citySelectList = ApplicationDbContext.StateOrProvinces
+                .AsNoTracking()
+                .Where(x => x.CountryId.Equals(countryId))
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList();
+            citySelectList.Insert(0, new SelectListItem("Select city", string.Empty));
+
+            resultModel.Result = citySelectList;
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
+        /// <summary>
         /// User profile info
         /// </summary>
         /// <param name="organizationService"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Profile([FromServices] IOrganizationService<Tenant> organizationService)
+        public virtual async Task<IActionResult> Profile(
+            [FromServices] IOrganizationService<Tenant> organizationService)
         {
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
@@ -625,6 +622,11 @@ namespace ST.Identity.Razor.Users.Controllers
             {
                 UserId = currentUser.Id.ToGuid(),
                 UserName = currentUser.UserName,
+                UserFirstName = currentUser.UserFirstName,
+                UserLastName = currentUser.UserLastName,
+                UserPhoneNumber = currentUser.PhoneNumber,
+                AboutMe = currentUser.AboutMe,
+                Birthday = currentUser.Birthday,
                 Email = currentUser.Email,
                 Tenant = organizationService.GetUserOrganization(currentUser),
                 Roles = await UserManager.GetRolesAsync(currentUser),
@@ -637,6 +639,80 @@ namespace ST.Identity.Razor.Users.Controllers
             return View(model);
         }
 
+
+        /// <summary>
+        /// Get view for edit profile info
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public virtual async Task<IActionResult> EditProfile(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return NotFound();
+            }
+
+            var currentUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileEditViewModel
+            {
+                Id = currentUser.Id,
+                UserFirstName = currentUser.UserFirstName,
+                UserLastName = currentUser.UserLastName,
+                Birthday = currentUser.Birthday,
+                AboutMe = currentUser.AboutMe,
+                UserPhoneNumber = currentUser.PhoneNumber
+            };
+            return PartialView("Partial/_EditProfilePartial", model);
+        }
+
+        /// <summary>
+        /// Update user profile info
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> EditProfile(UserProfileEditViewModel model)
+        {
+            var resultModel = new ResultModel();
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
+
+            var currentUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            if (currentUser == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
+                return Json(resultModel);
+            }
+
+            currentUser.UserLastName = model.UserFirstName;
+            currentUser.UserLastName = model.UserLastName;
+            currentUser.Birthday = model.Birthday;
+            currentUser.AboutMe = model.AboutMe;
+
+            var result = await UserManager.UpdateAsync(currentUser);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                return Json(resultModel);
+            }
+
+            foreach (var identityError in result.Errors)
+            {
+                resultModel.Errors.Add(new ErrorModel(identityError.Code, identityError.Description));
+            }
+
+            return Json(resultModel);
+        }
 
         /// <summary>
         /// Get view for change user password
@@ -836,6 +912,38 @@ namespace ST.Identity.Razor.Users.Controllers
             });
         }
 
+        [HttpGet]
+        public virtual async Task<IActionResult> UserAddress([Required] Guid? userId)
+        {
+            if (!userId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var addressList = await ApplicationDbContext.Addresses
+                .AsNoTracking()
+                .Where(x => x.ApplicationUserId.Equals(userId))
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince)
+                .Include(x => x.District)
+                .ToListAsync();
+
+            var userAddressModel = addressList.Select(address => new UserAddressViewModel
+                {
+                    Id = address.Id,
+                    AddressLine1 = address.AddressLine1,
+                    AddressLine2 = address.AddressLine2,
+                    Phone = address.Phone,
+                    District = address.District.Name,
+                    Country = address.Country.Name,
+                    City = address.City,
+                    IsPrimary = true,
+                    ZipCode = address.ZipCode
+                }).ToList();
+            return View("Partial/_AddressList", userAddressModel);
+
+        }
+
         /// <summary>
         /// Check if is current user
         /// </summary>
@@ -926,6 +1034,12 @@ namespace ST.Identity.Razor.Users.Controllers
             return Json(true);
         }
 
+        [HttpGet]
+        public virtual PartialViewResult UserPasswordChange()
+        {
+            return PartialView("Partial/_ChangePassword");
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public virtual async Task<JsonResult> UserPasswordChange(ChangePasswordViewModel model)
@@ -998,7 +1112,7 @@ namespace ST.Identity.Razor.Users.Controllers
             return Json(resultModel);
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
+        protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
         {
             var countrySelectList = await ApplicationDbContext.Countries
                 .AsNoTracking()
@@ -1011,6 +1125,61 @@ namespace ST.Identity.Razor.Users.Controllers
             countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
 
             return countrySelectList;
+        }
+
+        /// <summary>
+        /// Return roles select list items
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetRoleSelectListItemAsync()
+        {
+            var roles = await RoleManager.Roles
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id,
+                    Text = x.Name
+                }).ToListAsync();
+            roles.Insert(0, new SelectListItem("Select role", string.Empty));
+
+            return roles;
+        }
+
+        /// <summary>
+        /// Return Auth Group select list items
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetAuthGroupSelectListItemAsync()
+        {
+            var authGroups = await ApplicationDbContext.AuthGroups
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToListAsync();
+            authGroups.Insert(0, new SelectListItem("Select auth group", string.Empty));
+
+            return authGroups;
+        }
+
+        /// <summary>
+        /// Return tenants select list items
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetTenantsSelectListItemAsync()
+        {
+            var tenants = await ApplicationDbContext.Tenants
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToListAsync();
+            tenants.Insert(0, new SelectListItem("Select tenant", string.Empty));
+
+            return tenants;
         }
     }
 }

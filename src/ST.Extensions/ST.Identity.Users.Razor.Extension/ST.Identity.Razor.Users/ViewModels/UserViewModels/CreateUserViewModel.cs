@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
-using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Models.AddressModels;
-using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
 {
@@ -16,9 +14,9 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
     {
         public CreateUserViewModel()
         {
-            Tenants = new HashSet<Tenant>();
-            Roles = new HashSet<ApplicationRole>();
-            Groups = new HashSet<AuthGroup>();
+            Tenants = new HashSet<SelectListItem>();
+            Roles = new HashSet<SelectListItem>();
+            Groups = new HashSet<SelectListItem>();
             SelectedRoleId = new HashSet<string>();
             SelectedGroupId = new HashSet<string>();
             Profiles = new HashSet<EntityViewModel>();
@@ -73,10 +71,10 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         /// <summary>
         /// List with tenants
         /// </summary>
-        public IEnumerable<Tenant> Tenants { get; set; }
+        public IEnumerable<SelectListItem> Tenants { get; set; }
 
-        public IEnumerable<ApplicationRole> Roles { get; set; }
-        public IEnumerable<AuthGroup> Groups { get; set; }
+        public IEnumerable<SelectListItem> Roles { get; set; }
+        public IEnumerable<SelectListItem> Groups { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Select a role for this user"),
          Display(Name = "User's Role")]
