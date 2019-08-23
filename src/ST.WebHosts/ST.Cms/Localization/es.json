@@ -460,5 +460,7 @@
   "system_password_does_not_match": "La contraseña no coincide",
   "email_check_email": "Éxito, consultar el correo electrónico",
   "system_select_country": "Seleccione el país",
-  "system_select_city": "Seleccione la ciudad"
+  "system_select_city": "Seleccione la ciudad",
+  "system_inline_edit_text_chnaged": "Ha cambiado",
+  "system_inline_edit_select_value_changed": "Fue seleccionado"
 }

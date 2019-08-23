@@ -460,5 +460,7 @@
   "system_password_does_not_match": "Parolele nu se potrivesc",
   "email_check_email": "Succes, verifica e-mail",
   "system_select_country": "Selectați țară",
-  "system_select_city": "Selectați orașul"
+  "system_select_city": "Selectați orașul",
+  "system_inline_edit_text_chnaged": "S-a schimbat",
+  "system_inline_edit_select_value_changed": "A fost selectat"
 }

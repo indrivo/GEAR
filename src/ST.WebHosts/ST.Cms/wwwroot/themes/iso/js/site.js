@@ -47,29 +47,30 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
 function changeTextCellPosition() {
 	$(this).parent().focusout(function () {
 		$(this).css("left", "");
+		$(this).css("top", "");
 	});
+
 	const expandCell = $(this).parent();
-	const pos = new TableInlineEdit().elementOffset(this);
+	const pos = new TableInlineEdit().elementOffset($(this).parent().get(0));
 	const docHeight = $(document).height();
 	const docWidth = $(document).width();
 	const hPercent = pos.top * 100 / docHeight;
 	const diffH = docHeight - pos.top;
 	const textareaWidth = $(expandCell).innerWidth();
 
-	const expandedCell = $(this).parent();
 	const navBarWidth = $(".navigation").width();
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
-	const diffW = docWidth - pos.left;
+	//const diffW = docWidth - pos.left;
 
 	if (hPercent > 70 && hPercent < 80) {
-		expandedCell.css("top", `${pos.top - diffH}px`);
+		expandCell.css("top", `${pos.top - diffH}px`);
 	} else if (hPercent > 80) {
-		expandedCell.css("top", `${pos.top - diffH - 240}px`);
+		expandCell.css("top", `${pos.top - diffH - 240}px`);
 	}
 
 	if (wPercent > 70) {
-		expandedCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
 	}
 }
 
@@ -786,8 +787,9 @@ if (typeof TableInlineEdit !== "undefined") {
 		input.get(0).setAttribute("class", "inline-add-event data-new form-control datepicker-control");
 		input.on("change", function () { })
 			.datepicker({
-				format: "dd/mm/yyyy"
-			}); //.addClass("datepicker");
+				format: "dd/mm/yyyy",
+				autoclose: true
+			});
 		input.on("change",
 			function () {
 				if (!this.hasAttribute("data-required")) return;

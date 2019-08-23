@@ -567,8 +567,9 @@ TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
 	el.setAttribute("class", "inline-add-event data-new form-control");
 	$(el).on("change", function () { })
 		.datepicker({
-			format: "dd/mm/yyyy"
-		});//.addClass("datepicker");
+			format: "dd/mm/yyyy",
+			autoclose: true
+		});
 	$(el).on("change", function () {
 		if (!this.hasAttribute("data-required")) return;
 		if ($(this).val()) {
@@ -639,8 +640,9 @@ TableInlineEdit.prototype.onAfterInitDateEditCell = function (columns, index) {
 	$(columns[index]).find(".inline-update-event")
 		.on("change", onInputEventHandler)
 		.datepicker({
-			format: "dd/mm/yyyy"
-		});//.addClass("datepicker");
+			format: "dd/mm/yyyy",
+			autoclose: true
+		});
 	$(columns[index]).find(".inline-update-event").on("change", function () {
 		if (!this.hasAttribute("data-required")) return;
 		if ($(this).val()) {
@@ -687,12 +689,12 @@ TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 		case "bool":
 			{
 				value = targetCtx.prop("checked");
-				displaySuccessText = `You turned ${value ? "on" : "off"} checkbox`;
+				displaySuccessText = `${window.translate("system_inline_edit_select_value_changed")} ${value ? "on" : "off"} checkbox`;
 			} break;
 		case "uniqueidentifier":
 			{
 				value = targetCtx.val();
-				displaySuccessText = `Was selected : ${targetCtx.find("option:selected").text()}`;
+				displaySuccessText = `${window.translate("system_inline_edit_select_value_changed")} : ${targetCtx.find("option:selected").text()}`;
 			} break;
 		default: {
 			value = targetCtx.val();
@@ -702,8 +704,8 @@ TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 					isValid = false;
 				}
 			}
-
-			displaySuccessText = `You change ${value} value`;
+			const displayValue = value.length > 10 ? `${value.substr(0, 9)} ...` : value;
+			displaySuccessText = `${window.translate("system_inline_edit_text_chnaged")} ${displayValue}`;
 		} break;
 	}
 

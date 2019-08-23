@@ -460,5 +460,7 @@
   "system_password_does_not_match": "Κωδικό πρόσβασης δεν ταιριάζουν",
   "email_check_email": "Επιτυχία, ελέγξτε το ηλεκτρονικό ταχυδρομείο",
   "system_select_country": "Επιλέξτε χώρα",
-  "system_select_city": "Επιλέξτε την πόλη"
+  "system_select_city": "Επιλέξτε την πόλη",
+  "system_inline_edit_text_chnaged": "Άλλαξε",
+  "system_inline_edit_select_value_changed": "Επιλέχθηκε"
 }

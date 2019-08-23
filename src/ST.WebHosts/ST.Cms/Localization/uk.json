@@ -460,5 +460,7 @@
   "system_password_does_not_match": "Пароль не співпадає",
   "email_check_email": "Успіх, перевіряти електронну пошту",
   "system_select_country": "Виберіть країну",
-  "system_select_city": "Виберіть місто"
+  "system_select_city": "Виберіть місто",
+  "system_inline_edit_text_chnaged": "Змінилося",
+  "system_inline_edit_select_value_changed": "Був обраний"
 }

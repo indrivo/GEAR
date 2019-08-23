@@ -460,5 +460,7 @@
   "system_password_does_not_match": "Пароль не совпадает",
   "email_check_email": "Успех, проверять электронную почту",
   "system_select_country": "Выберите страну",
-  "system_select_city": "Выберите город"
+  "system_select_city": "Выберите город",
+  "system_inline_edit_text_chnaged": "Изменилось",
+  "system_inline_edit_select_value_changed": "Был выбран"
 }

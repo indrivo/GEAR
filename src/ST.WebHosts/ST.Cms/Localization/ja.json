@@ -460,5 +460,7 @@
   "system_password_does_not_match": "パスワードに一致\"しない",
   "email_check_email": "成功メールチェック",
   "system_select_country": "相手の国選択",
-  "system_select_city": "都市を選択してください"
+  "system_select_city": "都市を選択してください",
+  "system_inline_edit_text_chnaged": "変更",
+  "system_inline_edit_select_value_changed": "選択した"
 }
