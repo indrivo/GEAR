@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -131,6 +131,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender\ST.PageRender.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Report.Extension\ST.Report.Dynamic.Razor\ST.Report.Dynamic.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.TaskManager\ST.TaskManager\ST.TaskManager.csproj" />
   </ItemGroup>
   <ItemGroup>
 	<Content Update="nlog.config">
