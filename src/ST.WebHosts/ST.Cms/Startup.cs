@@ -232,6 +232,7 @@ namespace ST.Cms
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
+				.AddIdentityModuleEvents()
 				.AddMvc()
 				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
 

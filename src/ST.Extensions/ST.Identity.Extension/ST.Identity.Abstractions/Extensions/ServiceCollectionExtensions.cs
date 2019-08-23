@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions.Configurations;
+using ST.Identity.Abstractions.Events;
 
 namespace ST.Identity.Abstractions.Extensions
 {
@@ -91,6 +92,17 @@ namespace ST.Identity.Abstractions.Extensions
         {
             services.AddTransient<IAppProvider, TAppProvider>();
             IoC.RegisterService<IAppProvider, TAppProvider>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register events
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddIdentityModuleEvents(this IServiceCollection services)
+        {
+            IdentityEvents.RegisterEvents();
             return services;
         }
     }

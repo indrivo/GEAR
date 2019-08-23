@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using ST.Core;
@@ -42,6 +43,7 @@ namespace ST.Identity.Services
         public async Task<ResultModel<ApplicationUser>> GetCurrentUserAsync()
         {
             var result = new ResultModel<ApplicationUser>();
+            if (_httpContextAccessor.HttpContext == null) return result;
             var user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             result.IsSuccess = user != null;
             result.Result = user;

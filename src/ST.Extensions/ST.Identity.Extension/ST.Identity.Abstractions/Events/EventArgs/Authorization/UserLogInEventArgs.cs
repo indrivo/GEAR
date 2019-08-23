@@ -1,0 +1,12 @@
+﻿using System;
+
+namespace ST.Identity.Abstractions.Events.EventArgs.Authorization
+{
+    public class UserLogInEventArgs : System.EventArgs
+    {
+        public Guid UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
+}
