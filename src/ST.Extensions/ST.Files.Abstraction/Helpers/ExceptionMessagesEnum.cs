@@ -11,6 +11,7 @@ namespace ST.Files.Abstraction.Helpers
 
         [Description("IFormFile is null")] NullIFormFile,
 
-        [Description("There was a error on saving file ")] FileNotSaved,
+        [Description("There was a error on saving file ")]
+        FileNotSaved,
     }
 }

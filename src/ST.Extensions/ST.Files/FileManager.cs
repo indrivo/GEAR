@@ -100,12 +100,7 @@ namespace ST.Files
         {
             var dbFileResult = _context.Files.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
             var dto = new DownloadFileViewModel();
-            if (dbFileResult == null)
-                return new ResultModel<DownloadFileViewModel>
-                {
-                    IsSuccess = true,
-                    Result = dto
-                };
+            if (dbFileResult == null) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.FileNotFound);
 
             dto.EncryptedFile = dbFileResult.Hash;
             dto.FileExtension = dbFileResult.FileExtension;
@@ -128,7 +123,7 @@ namespace ST.Files
                 byte[] array = new byte[memoryStream.Length];
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 memoryStream.Read(array, 0, array.Length);
-     
+
                 var response = new FileStorageDto
                 {
                     FileExtension = file.ContentType,
