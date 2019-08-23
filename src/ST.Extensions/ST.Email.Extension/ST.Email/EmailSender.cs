@@ -98,13 +98,6 @@ namespace ST.Email
         public virtual ResultModel ChangeSettings(EmailSettingsViewModel newSettings)
         {
             var result = new ResultModel();
-            //_options.Value.NetworkCredential = newSettings.NetworkCredential;
-            //_options.Value.Enabled = newSettings.Enabled;
-            //_options.Value.Host = newSettings.Host;
-            //_options.Value.Port = newSettings.Port;
-            //_options.Value.Timeout = newSettings.Timeout;
-            //_options.Value.EnableSsl = newSettings.EnableSsl;
-
             _options.Update(options =>
             {
                 options.NetworkCredential = newSettings.NetworkCredential;
@@ -114,6 +107,7 @@ namespace ST.Email
                 options.Timeout = newSettings.Timeout;
                 options.EnableSsl = newSettings.EnableSsl;
             });
+            result.IsSuccess = true;
             return result;
         }
     }
