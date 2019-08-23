@@ -57,6 +57,7 @@ namespace ST.Identity.Abstractions.Extensions
             IConfiguration configuration, string migrationsAssembly)
             where TIdentityContext : DbContext, IIdentityContext
         {
+            services.AddTransient<IIdentityContext, TIdentityContext>();
             services.AddDbContext<TIdentityContext>(options =>
             {
                 var connectionString = DbUtil.GetConnectionString(configuration);

@@ -13,8 +13,9 @@ namespace ST.DynamicEntityStorage.Abstractions
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
+        /// <param name="dbSchema"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel;
+        Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model, string dbSchema = null) where TEntity : BaseModel;
 
         /// <summary>
         /// Add new value to entity

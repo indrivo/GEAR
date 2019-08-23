@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using ST.Core;
@@ -25,15 +24,21 @@ namespace ST.Identity.Services
         public RoleManager<ApplicationRole> RoleManager { get; }
 
         /// <summary>
+        /// Identity context
+        /// </summary>
+        public IIdentityContext IdentityContext { get; }
+
+        /// <summary>
         /// Inject context accessor
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IdentityUserManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<ApplicationRole> roleManager)
+        public IdentityUserManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<ApplicationRole> roleManager, IIdentityContext identityContext)
         {
             UserManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             RoleManager = roleManager;
+            IdentityContext = identityContext;
         }
 
         /// <summary>

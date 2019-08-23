@@ -667,14 +667,16 @@ namespace ST.DynamicEntityStorage
             result.IsSuccess = true;
             return result;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Implement add new item
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
+        /// <param name="dbSchema"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model, string dbSchema = null) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
 
@@ -691,7 +693,7 @@ namespace ST.DynamicEntityStorage
                 result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
-            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
+            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(dbSchema ?? schema);
             var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
             model.SetDefaultValues(table);
