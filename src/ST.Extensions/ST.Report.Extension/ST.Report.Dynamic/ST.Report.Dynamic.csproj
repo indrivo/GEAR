@@ -11,6 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
+    <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant.Abstractions\ST.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Report.Abstractions\ST.Report.Abstractions.csproj" />
   </ItemGroup>
 

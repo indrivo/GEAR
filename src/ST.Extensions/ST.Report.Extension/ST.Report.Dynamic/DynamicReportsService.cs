@@ -6,6 +6,9 @@ using Npgsql;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
+using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Models.MultiTenants;
+using ST.MultiTenant.Abstractions;
 using ST.Report.Abstractions;
 using ST.Report.Abstractions.Extensions;
 using ST.Report.Abstractions.Models;
@@ -26,11 +29,18 @@ namespace ST.Report.Dynamic
         private readonly TContext _context;
         private readonly IConfiguration _configuration;
         private IHostingEnvironment HostingEnvironment { get; }
+        private readonly IUserManager<ApplicationUser> _userManager;
+        /// <summary>
+        /// Inject organization service
+        /// </summary>
+        private readonly IOrganizationService<Tenant> _organizationService;
 
-        public DynamicReportsService(TContext context, IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        public DynamicReportsService(TContext context, IConfiguration configuration, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
+            _userManager = userManager;
+            _organizationService = organizationService;
             HostingEnvironment = hostingEnvironment;
         }
 
@@ -179,24 +189,23 @@ namespace ST.Report.Dynamic
         /// Get all table names from DB
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetTableNames()
+        public IEnumerable<dynamic> GetTableNames()
         {
             if (_context == null) throw new ArgumentNullException(nameof(_context));
-            var tableNames = new List<string>();
+            var schemas = GetUserSchemas().Select(s => $"\'{s}\'").ToList();
 
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 connection.Open();
-                using (var command = connection.CreateCommand())
+                using (var command = new NpgsqlCommand($"SELECT Distinct TABLE_SCHEMA as \"id\", TABLE_NAME as \"text\" FROM information_schema.TABLES WHERE TABLE_SCHEMA IN ({string.Join(", ", schemas)})", connection))
                 {
-                    command.CommandText = "SELECT Distinct TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA LIKE 'system'";
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
                         {
                             while (reader.Read())
                             {
-                                tableNames.Add(reader.GetString(0));
+                                yield return SqlDataReaderToExpando(reader);
                             }
                         }
                         reader.Close();
@@ -204,7 +213,24 @@ namespace ST.Report.Dynamic
                 }
                 connection.Close();
             }
-            return tableNames.ToList();
+        }
+
+
+        public IEnumerable<string> GetUserSchemas()
+        {
+            var userTenant = _userManager.CurrentUserTenantId;
+            List<string> schemas = new List<string>();
+            var tenants = _organizationService.GetAllTenants().Select(s => new { s.Id, Name = s.MachineName });
+            if (tenants.Any(s => s.Id == userTenant.Value && s.Name == Settings.DEFAULT_ENTITY_SCHEMA))
+            {
+                schemas = tenants.Select(s => s.Name).ToList();
+            }
+            else
+            {
+                schemas = tenants.Where(s => s.Id == userTenant).Select(s => s.Name).ToList();
+            }
+
+            return schemas;
         }
 
         /// <summary>
@@ -244,12 +270,20 @@ namespace ST.Report.Dynamic
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public IEnumerable<string> GetTableColumns(string tableName)
+        public IEnumerable<string> GetTableColumns(string tableFullName)
         {
-            //var props = typeof(TContext).GetProperties().FirstOrDefault(x => x.Name.Equals(tableName) &&
-            //                                                                   x.PropertyType.IsGenericType && x.PropertyType.GetGenericArguments().Any())
-            //    ?.PropertyType.GetGenericArguments()[0].GetProperties().Where(x => (!x.PropertyType.IsClass && !x.PropertyType.IsInterface) || x.PropertyType == typeof(string)).Select(x => x.Name).ToList();
-            var query = $"SELECT column_name FROM information_schema.columns WHERE table_schema = 'system' AND table_name = '{tableName}'";
+            var tableName = tableFullName;
+            var schema = string.Empty;
+
+            var tableParts = tableFullName.Split('.');
+            if (tableParts.Length > 1)
+            {
+                tableName = tableParts[1];
+                schema = tableParts[0];
+            }
+
+            var query = $"SELECT column_name FROM information_schema.columns WHERE table_schema = '{schema}' AND table_name = '{tableName}'";
+
             using (var connection = new NpgsqlConnection(GetConnectionString()))
             {
                 connection.Open();
@@ -434,11 +468,11 @@ namespace ST.Report.Dynamic
                         {
                             if (field.AggregateType != AggregateType.None)
                             {
-                                queryBuilder.Append($" {field.AggregateType}(system.{field.FieldName}) {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
+                                queryBuilder.Append($" {field.AggregateType}({field.FieldName}) {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
                             }
                             else
                             {
-                                queryBuilder.Append($" system.{field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
+                                queryBuilder.Append($" {field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
                             }
 
                             if (!field.Equals(dto.FieldsList.Last()))
@@ -450,19 +484,51 @@ namespace ST.Report.Dynamic
 
                     queryBuilder.Append(" FROM ");
 
+                    dto.Tables = dto.Tables.OrderByDescending(s => dto.Relations.Any(x => x.PrimaryKeyTable == s));
+
                     foreach (var table in dto.Tables)
                     {
+                        var tableName = string.Empty;
+                        var schema = string.Empty;
+                        var tableParts = table.Split('.');
+                        if (tableParts.Length > 1)
+                        {
+                            tableName = tableParts[1];
+                            schema = tableParts[0];
+                        }
+
                         if (table.Equals(dto.Tables.First()))
                         {
-                            queryBuilder.Append($@" system.""{table}"" ");
+                            queryBuilder.Append($@" {schema}.""{tableName}"" ");
                         }
                         else
                         {
-                            queryBuilder.Append($@" INNER JOIN system.""{table}"" ");
-                            var rel = dto.Relations.FirstOrDefault(s => s.ForeignKeyTable == table);
+                            queryBuilder.Append($@" LEFT JOIN {schema}.""{tableName}"" ");
+                            var rel = dto.Relations.FirstOrDefault(s => s.ForeignKeyTable == table || s.PrimaryKeyTable == table);
                             if (rel != null)
                             {
-                                queryBuilder.Append($@" ON(system.""{rel.PrimaryKeyTable}"".""Id"" = system.""{rel.ForeignKeyTable}"".""{rel.ForeignKey}"") ");
+                                var relPrimaryName = string.Empty;
+                                var relPrimarySchema = string.Empty;
+                                var relPrimaryTableParts = rel.PrimaryKeyTable.Split('.');
+                                if (relPrimaryTableParts.Length > 1)
+                                {
+                                    relPrimaryName = relPrimaryTableParts[1];
+                                    relPrimarySchema = relPrimaryTableParts[0];
+                                }
+
+                                var relForeignName = string.Empty;
+                                var relForeignSchema = string.Empty;
+                                var relForeignTableParts = rel.ForeignKeyTable.Split('.');
+                                if (relForeignTableParts.Length > 1)
+                                {
+                                    relForeignName = relForeignTableParts[1];
+                                    relForeignSchema = relForeignTableParts[0];
+                                }
+                                queryBuilder.Append($@" ON({relPrimarySchema}.""{relPrimaryName}"".""Id"" = {relForeignSchema}.""{relForeignName}"".""{rel.ForeignKey}"") ");
+                            }
+                            else
+                            {
+                                queryBuilder.Append($@" ON(1=1) ");
                             }
                         }
 
@@ -476,11 +542,11 @@ namespace ST.Report.Dynamic
                         {
                             if (filter.Equals(filterFields.First()))
                             {
-                                queryBuilder.Append($@" WHERE system.{filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
+                                queryBuilder.Append($@" WHERE {filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
                             }
                             else
                             {
-                                queryBuilder.Append($@" AND system.{filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
+                                queryBuilder.Append($@" AND {filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
                             }
                         }
                     }
@@ -493,11 +559,11 @@ namespace ST.Report.Dynamic
                         {
                             if (group.Equals(groupByFields.First()))
                             {
-                                queryBuilder.Append($@" GROUP BY system.{group.FieldName} ");
+                                queryBuilder.Append($@" GROUP BY {group.FieldName} ");
                             }
                             else
                             {
-                                queryBuilder.Append($@", system.{group.FieldName} ");
+                                queryBuilder.Append($@", {group.FieldName} ");
                             }
                         }
                     }

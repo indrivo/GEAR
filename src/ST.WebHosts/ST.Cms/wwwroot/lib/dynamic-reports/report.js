@@ -3,13 +3,43 @@ var fieldId = 0;
 var filterId = 0;
 var chartId = 0;
 var items = [];
+var tables = [];
 var allFields = [];
 var LoadFinished = false;
 
 function LoadReportData(data) {
-	console.log(data);
 	var dfd = $.Deferred();
-	$.when(updateReportList($('#tableSelect').data('request-url'), null, "tableSelect")).done(function () {
+	var callback = function (tData) {
+		tables = $.merge([], tData);
+		$('#tableSelect').select2({
+			placeholder: " - Select tables - ",
+			multiple: true,
+			data: tData
+		}).change(function () {
+			if (LoadFinished) {
+				items = $(this).val();
+				SetRelValues();
+
+				allFields = [];
+				var tableRequests = [];
+
+				$.each(items, function (i, option) {
+					tableRequests.push(prepareFields(allFields, option));
+				});
+
+				$.when.apply($, tableRequests).done(function () {
+					SetFieldValues(allFields);
+					SetFilterValues(allFields);
+				});
+			}
+		}).on('select2:unselecting', function () {
+			$(this).data('unselecting', true);
+		}).on('select2:opening', function (e) {
+			if ($(this).data('unselecting')) {
+				$(this).removeData('unselecting');
+				e.preventDefault();
+			}
+		});
 		if (data.Tables) {
 			$('#tableSelect').val(data.Tables).trigger('change');
 			items = data.Tables;
@@ -110,7 +140,20 @@ function LoadReportData(data) {
 				});
 			});
 		}
-	});
+
+
+
+
+	};
+	GetDataList($('#tableSelect').data('request-url'), null, callback);
+
+
+
+
+
+	//$.when(updateReportList($('#tableSelect').data('request-url'), null, "tableSelect")).done(function () {
+
+	//});
 	return dfd.promise();
 }
 
@@ -160,7 +203,7 @@ function updateReportListKeyValue(action, data, selectOptions) {
 function AddRelationship() {
 	relationId++;
 	var currentHtml = `
-				<div class="row">
+		<div class="row">
 			<div class="col-3">
 				<div class="form-group">
 					<label for="primaryKeyTableSelect`+ relationId + `">Primary key table:</label>
@@ -179,7 +222,7 @@ function AddRelationship() {
 					<select class="form-control foreignKeySelect" id="foreignKeySelect`+ relationId + `"><option></option></select>
 				</div>
 			</div>
-			<div class="col-2">
+			<div class="col-1">
 				<label>&nbsp;</label>
 				<button class="btn btn-danger removeRelationship">Remove Relationship</button>
 			</div>
@@ -361,16 +404,20 @@ function AddChart(chartType) {
 						</div>
 					</div>`;
 		//$("#pnlCharts").append(chartType);
-		$("#pnlCharts").append(currentHtml);
-
+		$("#pnlCharts").append(currentHtml);			   
 
 		$('#pnlCharts > .row').each(function () {
 			var chartFieldCollection = $(this).find(".chartFieldSelector");
 			chartFieldCollection.each(function () {
+				var fieldType = chartFieldCollection.parent().find("input[name=fieldType]");
+				var isMultiselect = false;
+				if (fieldType.val() == 0) {
+					isMultiselect = true;
+				}
 				chartField = $(this);
 				chartField.select2({
 					placeholder: " - Select field - ",
-					multiple: false
+					multiple: isMultiselect
 				});
 			});
 		});
@@ -429,8 +476,11 @@ function prepareFields($n, option) {
 	var dfd = $.Deferred();
 	var callback = function (data) {
 		var children = new Array();
+
+		var tableData = option.split(".");
+
 		$.each(data, function (i, field) {
-			children.push({ id: '"' + option + '"."' + field + '"', text: field });
+			children.push({ id: tableData[0] + '."' + tableData[1] + '"."' + field + '"', text: field });
 		});
 		$n.push({
 			id: option,
@@ -547,6 +597,10 @@ function SetChartValues(data) {
 			chartFieldCollection.each(function () {
 				chartFieldSelector = $(this);
 				var prevValueFields = [];
+				if (fieldType.val() == 0) {
+					console.log(chartFieldSelector.val());
+				}
+
 				if (chartFieldSelector.val()) {
 					if ($.isArray(chartFieldSelector.val())) {
 						prevValueFields = chartFieldSelector.val();
@@ -573,41 +627,78 @@ function SetChartValues(data) {
 //});
 
 function LoadNew() {
-	updateReportList($('#tableSelect').data('request-url'), null, "tableSelect");
+	//updateReportListKeyValue($('#tableSelect').data('request-url'), null, "tableSelect");
+	var callback = function (data) {
+		tables = $.merge([], data);
+		$('#tableSelect').select2({
+			placeholder: " - Select tables - ",
+			multiple: true,
+			data: data
+		}).change(function () {
+			if (LoadFinished) {
+				items = $(this).val();
+				SetRelValues();
+
+				allFields = [];
+				var tableRequests = [];
+
+				$.each(items, function (i, option) {
+					tableRequests.push(prepareFields(allFields, option));
+				});
+
+				$.when.apply($, tableRequests).done(function () {
+					SetFieldValues(allFields);
+					SetFilterValues(allFields);
+				});
+			}
+		}).on('select2:unselecting', function () {
+			$(this).data('unselecting', true);
+		}).on('select2:opening', function (e) {
+			if ($(this).data('unselecting')) {
+				$(this).removeData('unselecting');
+				e.preventDefault();
+			}
+		});
+	};
+	GetDataList($('#tableSelect').data('request-url'), null, callback);
 	updateReportListKeyValue($('#chartSelector').data('request-url'), null, "chartSelector");
 	LoadFinished = true;
 }
 
 $(document).ready(function () {
 	//#endregion Common
-	$('#tableSelect').select2({
-		placeholder: " - Select tables - ",
-		multiple: true
-	}).change(function () {
-		if (LoadFinished) {
-			items = $(this).val();
-			SetRelValues();
+	//$('#tableSelect').select2({
+	//	placeholder: " - Select tables - ",
+	//	multiple: true,
+	//	query: function (q) {
+	//		var data = { results: tables };
+	//		q.callback(data);
+	//	}
+	//}).change(function () {
+	//	if (LoadFinished) {
+	//		items = $(this).val();
+	//		SetRelValues();
 
-			allFields = [];
-			var tableRequests = [];
+	//		allFields = [];
+	//		var tableRequests = [];
 
-			$.each(items, function (i, option) {
-				tableRequests.push(prepareFields(allFields, option));
-			});
+	//		$.each(items, function (i, option) {
+	//			tableRequests.push(prepareFields(allFields, option));
+	//		});
 
-			$.when.apply($, tableRequests).done(function () {
-				SetFieldValues(allFields);
-				SetFilterValues(allFields);
-			});
-		}
-	}).on('select2:unselecting', function () {
-		$(this).data('unselecting', true);
-	}).on('select2:opening', function (e) {
-		if ($(this).data('unselecting')) {
-			$(this).removeData('unselecting');
-			e.preventDefault();
-		}
-	});
+	//		$.when.apply($, tableRequests).done(function () {
+	//			SetFieldValues(allFields);
+	//			SetFilterValues(allFields);
+	//		});
+	//	}
+	//}).on('select2:unselecting', function () {
+	//	$(this).data('unselecting', true);
+	//}).on('select2:opening', function (e) {
+	//	if ($(this).data('unselecting')) {
+	//		$(this).removeData('unselecting');
+	//		e.preventDefault();
+	//	}
+	//});
 
 	//script for generation of report
 	$('#openReportModal').click(function () {
@@ -882,8 +973,6 @@ function GetReportData() {
 	});
 
 	return {
-		"id": "00000000-0000-0000-0000-000000000000",
-		"name": 'Test',
 		"tables": tables,
 		"relations": relations,
 		"fieldsList": fieldsList,
@@ -903,7 +992,17 @@ function GenerateData(graphUrl) {
 		type: 'POST',
 		data: data,
 		success: function (result) {
-			if (result.charts) {
+			if (result.error != '') {
+				swal({
+					position: 'top-end',
+					type: 'warning',
+					title: result.error,
+					showConfirmButton: false,
+					timer: 7000
+				});
+
+			}
+			else if (result.charts) {
 				$("#queryResultTable").html('');
 				$('#chart-box').html('');
 				$.each(result.charts, function (i, chart) {
@@ -994,7 +1093,7 @@ $.makeTable = function (mydata, chartDataSource) {
 		var c = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
 			return a.fieldIndex == columnIndex;
 		});
-		if (c.length>0) {
+		if (c.length > 0) {
 			tblHeader += "<th>" + k + "</th>";
 		}
 		columnIndex++;

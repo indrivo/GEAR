@@ -151,7 +151,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             });
         }
 
- 
+
         [HttpPost]
         public IActionResult DeleteReport(Guid id)
         {
@@ -165,14 +165,23 @@ namespace ST.Report.Dynamic.Razor.Controllers
             {
                 return Json(new { success = false, message = "Server error!!!" });
             }
-        }        
+        }
 
 
         [HttpPost]
         public IActionResult GetReportData(DynamicReportDataModel dto)
         {
-            var data = _service.GetReportContent(dto);
-            return Json(new { charts = dto.DynamicReportCharts, data });
+            IEnumerable<dynamic> data = null;
+            string error = string.Empty;
+            try
+            {
+                data = _service.GetReportContent(dto).ToList();
+            }
+            catch(Exception ex)
+            {
+                error = ex.Message;
+            }
+            return Json(new { charts = dto.DynamicReportCharts, data, error });
         }
 
         [HttpPost]
@@ -256,7 +265,21 @@ namespace ST.Report.Dynamic.Razor.Controllers
         /// <returns></returns>
         public ActionResult GetTablesAjax()
         {
-            var result = _service.GetTableNames();
+            var tables = _service.GetTableNames();
+            var schemas = _service.GetUserSchemas();
+
+            var result = new List<dynamic>();
+
+            foreach (var s in schemas)
+            {
+                result.Add(new
+                {
+                    id = s,
+                    text = s,
+                    children = tables.Where(x => x.id == s).Select(x=> new { id = x.id + "." + x.text, x.text }).ToList()
+                });
+            }
+
             return Json(result);
         }
 

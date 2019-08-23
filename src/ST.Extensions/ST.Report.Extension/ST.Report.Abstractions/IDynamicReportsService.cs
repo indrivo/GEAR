@@ -16,7 +16,8 @@ namespace ST.Report.Abstractions
         IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders();
         void SaveReport(DynamicReport reportModel);
         void DeleteReport(Guid id);
-        IEnumerable<string> GetTableNames();
+        IEnumerable<dynamic> GetTableNames();
+        IEnumerable<string> GetUserSchemas();
         string GetTableSchema(string tableName);
         IEnumerable<string> GetTableColumns(string tableName);
         dynamic GetColumnType(string tableName, string columnName);
