@@ -79,6 +79,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using ST.Email.Razor.Extensions;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
@@ -213,7 +214,7 @@ namespace ST.Cms
 			});
 
 			//---------------------------------Custom cache Module-------------------------------------
-			services.UseCustomCacheModule(HostingEnvironment, Configuration);
+			services.AddCacheModule(HostingEnvironment, Configuration);
 
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
@@ -378,6 +379,7 @@ namespace ST.Cms
 
 			//----------------------------------------Email Module-------------------------------------
 			services.AddEmailModule<EmailSender>()
+				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
 			if (CoreApp.IsHostedOnLinux())

@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage\ST.DynamicEntityStorage.csproj" />
     <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
   </ItemGroup>

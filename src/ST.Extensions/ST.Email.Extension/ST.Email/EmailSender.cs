@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+using ST.Core.Abstractions;
 using ST.Core.Helpers;
 using ST.Email.Abstractions;
 using ST.Email.Abstractions.Models.EmailViewModels;
@@ -18,9 +18,9 @@ namespace ST.Email
         /// <summary>
         /// Email settings
         /// </summary>
-        private readonly IOptions<EmailSettingsViewModel> _options;
+        private readonly IWritableOptions<EmailSettingsViewModel> _options;
 
-        public EmailSender(IOptions<EmailSettingsViewModel> options)
+        public EmailSender(IWritableOptions<EmailSettingsViewModel> options)
         {
             if (options.Value == null) throw new Exception("Email settings not register in appsettings file");
             _options = options;
@@ -98,13 +98,22 @@ namespace ST.Email
         public virtual ResultModel ChangeSettings(EmailSettingsViewModel newSettings)
         {
             var result = new ResultModel();
-            _options.Value.NetworkCredential = newSettings.NetworkCredential;
-            _options.Value.Enabled = newSettings.Enabled;
-            _options.Value.Host = newSettings.Host;
-            _options.Value.Port = newSettings.Port;
-            _options.Value.Timeout = newSettings.Timeout;
-            _options.Value.EnableSsl = newSettings.EnableSsl;
-            //TODO: Update email settings into appsettings.envName.json
+            //_options.Value.NetworkCredential = newSettings.NetworkCredential;
+            //_options.Value.Enabled = newSettings.Enabled;
+            //_options.Value.Host = newSettings.Host;
+            //_options.Value.Port = newSettings.Port;
+            //_options.Value.Timeout = newSettings.Timeout;
+            //_options.Value.EnableSsl = newSettings.EnableSsl;
+
+            _options.Update(options =>
+            {
+                options.NetworkCredential = newSettings.NetworkCredential;
+                options.Enabled = newSettings.Enabled;
+                options.Host = newSettings.Host;
+                options.Port = newSettings.Port;
+                options.Timeout = newSettings.Timeout;
+                options.EnableSsl = newSettings.EnableSsl;
+            });
             return result;
         }
     }

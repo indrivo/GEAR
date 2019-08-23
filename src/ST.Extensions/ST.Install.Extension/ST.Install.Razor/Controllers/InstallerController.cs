@@ -172,7 +172,7 @@ namespace ST.Install.Razor.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Setup(SetupModel model)
 		{
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            //Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             var settings = Application.CoreApp.Settings(_hostingEnvironment);
 
 			if (model.DataBaseType == DbProviderType.MsSqlServer)

@@ -4,7 +4,7 @@ using ST.Notifications.Razor.Helpers;
 
 namespace ST.Notifications.Razor.Extensions
 {
-    public static class ServiceCollection
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Register ui module

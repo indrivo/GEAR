@@ -89,7 +89,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.BaseImplementations\ST.ECommerce.BaseImplementations.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Razor\ST.ECommerce.Razor.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email\ST.Email.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Extension\ST.Email\ST.Email.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.MsSql\ST.Entities.EntityBuilder.MsSql.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.EntityBuilder.Postgres\ST.Entities.EntityBuilder.Postgres.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj" />
