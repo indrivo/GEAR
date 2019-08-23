@@ -14,6 +14,8 @@ namespace ST.TaskManager.Abstractions.Helpers
 
         [Description("Task is null")] NullTask,
 
+        [Description("Parameter is null")] NullParameter,
+
         [Description("There was a error on saving Task ")]
         TaskNotSaved,
     }

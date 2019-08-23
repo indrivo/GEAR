@@ -87,6 +87,8 @@ using ST.Files.Box.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
 using ST.MultiTenant.Services;
+using ST.TaskManager.Data;
+using ST.TaskManager.Abstractions.Extensions;
 
 namespace ST.Cms
 {
@@ -343,7 +345,14 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
-
+			//------------------------------------Task Module-------------------------------------
+			services
+				.AddTaskModule<TaskManager.TaskManager<TaskManagerDbContext>>()
+				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 

@@ -137,7 +137,8 @@ namespace ST.TaskManager
 
         public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel task)
         {
-            var taskModel = new TaskItem { Name = task.Name };
+            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == task.TaskId));
+            var taskModel = new TaskItem { Name = task.Name,Task = dbTaskResult};
 
             _context.TaskItems.Add(taskModel);
             var result = await _context.SaveAsync();
@@ -214,10 +215,10 @@ namespace ST.TaskManager
                 Status = taskViewModel.Status,
                 TaskPriority = taskViewModel.TaskPriority
             };
-            foreach (var item in taskViewModel.TaskItems)
-            {
-                dto.TaskItems.Add(new TaskItem {IsDone = item.IsDone, Name = item.Name});
-            }
+            if (taskViewModel.TaskItems == null) return dto;
+
+            foreach (var item in taskViewModel.TaskItems) dto.TaskItems.Add(new TaskItem { IsDone = item.IsDone, Name = item.Name });
+
 
             return dto;
         }
@@ -234,7 +235,7 @@ namespace ST.TaskManager
                 Status = dbTaskResult.Status,
                 TaskPriority = dbTaskResult.TaskPriority
             };
-            if (dbTaskResult.TaskItems.Count > 0)
+            if (dbTaskResult.TaskItems?.Count > 0)
                 dto.TaskItems.AddRange(TaskItemsMapper(dbTaskResult));
             return dto;
         }
@@ -243,6 +244,5 @@ namespace ST.TaskManager
         {
             return dbTaskResult.TaskItems.Select(item => new TaskItemViewModel {Id = item.Id, IsDone = item.IsDone, Name = item.Name}).ToList();
         }
-
     }
 }

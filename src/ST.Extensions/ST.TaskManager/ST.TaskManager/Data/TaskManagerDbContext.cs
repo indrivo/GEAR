@@ -42,7 +42,8 @@ namespace ST.TaskManager.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
-            builder.Entity<Task>().HasMany(x => x.TaskItems);
+            builder.Entity<Task>()
+                .HasMany(x => x.TaskItems);
             builder.Entity<Task>()
                 .HasIndex(p => p.UserId)
                 .IsUnique();
@@ -52,7 +53,11 @@ namespace ST.TaskManager.Data
             builder.Entity<Task>()
                 .HasIndex(p => new {p.Id, p.IsDeleted})
                 .IsUnique();
-            builder.Entity<TaskItem>().HasKey(x => new {x.Id});
+            builder.Entity<TaskItem>()
+                .HasKey(x => new {x.Id});
+            builder.Entity<TaskItem>()
+                .HasOne(p => p.Task).WithMany(x => x.TaskItems)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         /// <inheritdoc />

@@ -8,10 +8,9 @@ using ST.Core.Helpers;
 
 namespace ST.TaskManager.Abstractions.Extensions
 {
-
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddFileModule<TTaskService>(this IServiceCollection services)
+        public static IServiceCollection AddTaskModule<TTaskService>(this IServiceCollection services)
             where TTaskService : class, ITaskManager
         {
             services.AddTransient<ITaskManager, TTaskService>();
@@ -20,7 +19,7 @@ namespace ST.TaskManager.Abstractions.Extensions
         }
 
 
-        public static IServiceCollection AddFileModuleStorage<TTaskManagerContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
+        public static IServiceCollection AddTaskModuleStorage<TTaskManagerContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TTaskManagerContext : DbContext, ITaskManagerContext
         {
             services.AddScopedContextFactory<ITaskManagerContext, TTaskManagerContext>();
