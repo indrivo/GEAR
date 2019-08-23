@@ -40,7 +40,7 @@
   "email_info1": "Un indirizzo valido di posta elettronica. Tutte le e-mail dal sistema saranno inviate a questo indirizzo. ",
   "email_info2": "L'e-mail non viene reso pubblico e verrà utilizzato soltanto se desideri ricevere una nuova password o se vuoi ricevere notizie e avvisi via e-mail.",
   "pass_info1": "Impostazione di una password per accedere a vostro conto BPMN",
-  "pass_info2": "Fare almeno 6 caratteri, Aggiungere le lettere minuscole, Aggiungere le lettere maiuscole, Aggiungere i numeri, Aggiungere la punteggiatura",
+  "pass_info2": "Fare almeno 8 caratteri, Aggiungere le lettere minuscole, Aggiungere le lettere maiuscole, Aggiungere i numeri, Aggiungere la punteggiatura",
   "role_info": "Selezionare i ruoli per questo utente",
   "sel_role": "Selezionare un ruolo...",
   "sel_group": "Selezionare un gruppo di...",

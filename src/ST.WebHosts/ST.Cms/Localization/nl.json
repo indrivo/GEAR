@@ -40,7 +40,7 @@
   "email_info1": "Een geldig e-mail adres. Alle e-mails van het systeem zullen naar dit adres verzonden worden. ",
   "email_info2": "Het e-mail adres wordt niet openbaar gemaakt worden en zal alleen gebruikt worden wanneer u wenst te ontvangen een nieuw wachtwoord wenst te ontvangen over bepaald nieuws per e-mail.",
   "pass_info1": "Instellen van het wachtwoord voor aanmelden in uw BPMN account",
-  "pass_info2": "Maak het minstens 6 tekens, het Toevoegen van kleine letters, Voeg hoofdletters, nummers Toevoegen, Voeg interpunctie",
+  "pass_info2": "Maak het minstens 8 tekens, het Toevoegen van kleine letters, Voeg hoofdletters, nummers Toevoegen, Voeg interpunctie",
   "role_info": "Selecteer de functies voor de gebruiker",
   "sel_role": "Een rol te selecteren...",
   "sel_group": "Selecteer een groep...",

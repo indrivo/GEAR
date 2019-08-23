@@ -40,7 +40,7 @@
   "email_info1": "Prawidłowy adres e-mail. Wszystkie e-maile z systemu zostaną wysłane na ten adres. ",
   "email_info2": "Adres e-mail nie jest udostępniany publicznie i będzie wykorzystywany jedynie, jeśli chcesz uzyskać nowe hasło lub chcesz otrzymywać pewne wiadomości lub powiadomienia e-mail.",
   "pass_info1": "Ustawić hasło, aby zalogować się na swoje konto w BPMN ",
-  "pass_info2": "Sprawiają, że nie mniej niż 6 znaków, dodać małe litery, dodać litery, dodać cyfry, znaki interpunkcyjne dodać",
+  "pass_info2": "Sprawiają, że nie mniej niż 8 znaków, dodać małe litery, dodać litery, dodać cyfry, znaki interpunkcyjne dodać",
   "role_info": "Wybierz roli dla tego użytkownika",
   "sel_role": "Wybierz rolę...",
   "sel_group": "Wybierz grupę...",

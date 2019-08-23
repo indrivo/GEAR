@@ -7,30 +7,14 @@
 	<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 	<IsPackable>false</IsPackable>
 	<LangVersion>7.3</LangVersion>
-	<Version>1.0.1</Version>
+	<Version>1.0.2</Version>
 	<Authors>Lupei Nicolae</Authors>
 	<Company>Soft-Tehnica</Company>
 	<Product>ST Gear</Product>
 	<Description>BPMN</Description>
-	<Copyright>Soft-tehnica 2019</Copyright>
+	<Copyright>Indrivo 2019</Copyright>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Configuration\CustomEntities.json" />
-  </ItemGroup>
-  <ItemGroup>
-	<None Remove="app_offline.htm" />
-	<None Remove="ExtraStatic\modeler.js" />
-	<None Remove="Static\Templates\category.html" />
-	<None Remove="Static\Templates\folders.html" />
-	<None Remove="Static\Templates\folders_layout.html" />
-	<None Remove="Static\Templates\notifications.html" />
-	<None Remove="Static\Templates\preview.html" />
-	<None Remove="Static\Templates\profilefields.html" />
-	<None Remove="Static\Templates\profilefieldsvalues.html" />
-	<None Remove="Static\Templates\renderMenu.html" />
-	<None Remove="Static\Templates\requirements.html" />
-	<None Remove="Static\Templates\standard.html" />
-  </ItemGroup>
+
   <ItemGroup>
 	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.1.0" />
 	<PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
@@ -139,7 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Users\" />
-    <Folder Include="wwwroot\FileBox\Thursday, August 15, 2019\" />
     <Folder Include="wwwroot\lib\chosen-jquery\lib\" />
     <Folder Include="wwwroot\lib\popper.js\" />
   </ItemGroup>

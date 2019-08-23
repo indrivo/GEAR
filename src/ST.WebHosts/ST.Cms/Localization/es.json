@@ -40,7 +40,7 @@
   "email_info1": "Una dirección de correo electrónico válida. Todos los correos del sistema se enviaran a esta dirección. ",
   "email_info2": "La dirección de correo no es pública y sólo se utiliza si quiere recibir una contraseña nueva o si quiere recibir noticias o notificaciones por correo electrónico.",
   "pass_info1": "Establecer contraseña para iniciar sesión en su cuenta de BPMN",
-  "pass_info2": "Al menos 6 caracteres, Añadir letras minúsculas, Añadir las letras en mayúsculas, Agregar números, Agregar los signos de puntuación",
+  "pass_info2": "Al menos 8 caracteres, Añadir letras minúsculas, Añadir las letras en mayúsculas, Agregar números, Agregar los signos de puntuación",
   "role_info": "Seleccione las funciones para este usuario",
   "sel_role": "Seleccione un papel...",
   "sel_group": "Seleccione un grupo de...",

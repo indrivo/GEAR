@@ -445,19 +445,19 @@ namespace ST.Entities.Data
                 if (dbContext.Database.CurrentTransaction != null)
                     cmd.Transaction =
                         ((RelationalTransaction)dbContext.Database.CurrentTransaction).GetDbTransaction();
-
-                foreach (var param in parameters)
-                {
-                    if (param.Value == null) continue;
-                    var dbParameter = cmd.CreateParameter();
-                    dbParameter.ParameterName = $"@{param.Key}";
-                    dbParameter.Value = param.Value;
-
-                    cmd.Parameters.Add(dbParameter);
-                }
-
                 try
                 {
+                    foreach (var param in parameters)
+                    {
+                        if (param.Value == null) continue;
+                        var dbParameter = cmd.CreateParameter();
+                        dbParameter.ParameterName = $"@{param.Key}";
+                        dbParameter.Value = param.Value;
+
+                        cmd.Parameters.Add(dbParameter);
+                    }
+
+
                     using (var dataReader = cmd.ExecuteReader())
                     {
                         while (dataReader.Read())

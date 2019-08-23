@@ -40,7 +40,7 @@
   "email_info1": "Une adresse e-mail valide. Tous les e-mails à partir de ce système seront envoyés à cette adresse. ",
   "email_info2": "L'adresse électronique ne sera pas rendue publique et ne sera utilisée que si vous souhaitez recevoir un nouveau mot de passe ou recevoir personnellement certaines nouvelles ou des notifications par e-mail.",
   "pass_info1": "Définir le mot de passe pour se connecter dans votre compte BPMN",
-  "pass_info2": "Faire au moins 6 caractères, Ajouter des lettres minuscules, Ajouter des majuscules, Ajouter des numéros, Ajouter de la ponctuation",
+  "pass_info2": "Faire au moins 8 caractères, Ajouter des lettres minuscules, Ajouter des majuscules, Ajouter des numéros, Ajouter de la ponctuation",
   "role_info": "Sélectionnez les rôles pour cet utilisateur",
   "sel_role": "Sélectionnez un rôle...",
   "sel_group": "Sélectionnez un groupe de...",

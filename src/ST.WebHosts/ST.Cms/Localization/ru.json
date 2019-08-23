@@ -172,7 +172,7 @@
   "layouts_add_info": "Новый макет будет добавлен.",
   "add_layout": "Добавление макета",
   "confirm_logout": "Да, выйдите!",
-  "log_out_message": "Вы собираетесь де-авторизовать себя!",
+  "log_out_message": "Вы собираетесь выйти?",
   "confirm_log_out_question": "Вы уверены?",
   "cancel": "Отменить",
   "delete_no_selected_items": "Вы не выбрали ни одной строки",
