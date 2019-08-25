@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using ST.Core;
 using ST.Core.Extensions;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
@@ -16,7 +19,9 @@ using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Permissions.Abstractions.Attributes;
+using ST.MultiTenant.Abstractions;
 using ST.MultiTenant.Helpers;
+using ST.MultiTenant.Razor.ViewModels;
 using ST.MultiTenant.ViewModels;
 
 namespace ST.MultiTenant.Razor.Controllers
@@ -28,6 +33,7 @@ namespace ST.MultiTenant.Razor.Controllers
     [Authorize]
     public class TenantController : Controller
     {
+        #region Services
         /// <summary>
         /// Inject context
         /// </summary>
@@ -49,19 +55,34 @@ namespace ST.MultiTenant.Razor.Controllers
         private readonly IEntityRepository _service;
 
         /// <summary>
+        /// Inject localizer
+        /// </summary>
+        private readonly IStringLocalizer _localizer;
+
+        /// <summary>
+        /// Inject organization service
+        /// </summary>
+        private readonly IOrganizationService<Tenant> _organizationService;
+        #endregion
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="logger"></param>
         /// <param name="entitiesDbContext"></param>
         /// <param name="service"></param>
+        /// <param name="localizer"></param>
+        /// <param name="organizationService"></param>
         public TenantController(
-            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IEntityRepository service)
+            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IEntityRepository service, IStringLocalizer localizer, IOrganizationService<Tenant> organizationService)
         {
             Context = context;
             _logger = logger;
             _entitiesDbContext = entitiesDbContext;
             _service = service;
+            _localizer = localizer;
+            _organizationService = organizationService;
         }
 
         /// <summary>
@@ -76,73 +97,6 @@ namespace ST.MultiTenant.Razor.Controllers
         }
 
         /// <summary>
-        /// Get ordered list
-        /// </summary>
-        /// <param name="search"></param>
-        /// <param name="sortOrder"></param>
-        /// <param name="start"></param>
-        /// <param name="length"></param>
-        /// <param name="totalCount"></param>
-        /// <returns></returns>
-        private List<Tenant> GetOrderFiltered(string search, string sortOrder, int start, int length,
-            out int totalCount)
-        {
-            var result = Context.Tenants.Where(p =>
-                search == null || p.Name != null &&
-                p.Name.ToLower().Contains(search.ToLower()) || p.Description != null &&
-                p.Description.ToLower().Contains(search.ToLower()) || p.Author != null &&
-                p.Author.ToString().ToLower().Contains(search.ToLower()) || p.ModifiedBy != null &&
-                p.ModifiedBy.ToString().ToLower().Contains(search.ToLower())).ToList();
-            totalCount = result.Count;
-
-            result = result.Skip(start).Take(length).ToList();
-            switch (sortOrder)
-            {
-                case "id":
-                    result = result.OrderBy(a => a.Id).ToList();
-                    break;
-                case "name":
-                    result = result.OrderBy(a => a.Name).ToList();
-                    break;
-                case "description":
-                    result = result.OrderBy(a => a.Description).ToList();
-                    break;
-                case "created":
-                    result = result.OrderBy(a => a.Created).ToList();
-                    break;
-                case "modifiedBy":
-                    result = result.OrderBy(a => a.ModifiedBy).ToList();
-                    break;
-                case "isDeleted":
-                    result = result.OrderBy(a => a.IsDeleted).ToList();
-                    break;
-                case "id DESC":
-                    result = result.OrderByDescending(a => a.Id).ToList();
-                    break;
-                case "name DESC":
-                    result = result.OrderByDescending(a => a.Name).ToList();
-                    break;
-                case "description DESC":
-                    result = result.OrderByDescending(a => a.Description).ToList();
-                    break;
-                case "created DESC":
-                    result = result.OrderByDescending(a => a.Created).ToList();
-                    break;
-                case "modifiedBy DESC":
-                    result = result.OrderByDescending(a => a.ModifiedBy).ToList();
-                    break;
-                case "isDeleted DESC":
-                    result = result.OrderByDescending(a => a.IsDeleted).ToList();
-                    break;
-                default:
-                    result = result.AsQueryable().ToList();
-                    break;
-            }
-
-            return result.ToList();
-        }
-
-        /// <summary>
         /// Get list
         /// </summary>
         /// <param name="param"></param>
@@ -150,13 +104,26 @@ namespace ST.MultiTenant.Razor.Controllers
         [HttpPost]
         public JsonResult OrderList(DTParameters param)
         {
-            var filtered = GetOrderFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
+            var filtered = Context.Filter<Tenant>(param.Search.Value, param.SortOrder, param.Start,
+                param.Length,
                 out var totalCount);
 
-            var finalResult = new DTResult<Tenant>
+            var list = filtered.Select(x => new OrganizationListViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                Created = x.Created,
+                Changed = x.Changed,
+                ModifiedBy = x.ModifiedBy,
+                Author = x.Author,
+                Users = _organizationService.GetUsersByOrganization(x).Count()
+            });
+
+            var finalResult = new DTResult<OrganizationListViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered.ToList(),
+                Data = list.ToList(),
                 RecordsFiltered = totalCount,
                 RecordsTotal = filtered.Count
             };
@@ -170,7 +137,14 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
-        public IActionResult Create() => View();
+        public async Task<IActionResult> Create()
+        {
+            var model = new CreateTenantViewModel
+            {
+                CountrySelectListItems = await GetCountrySelectList()
+            };
+            return View(model);
+        }
 
         /// <summary>
         /// Add new tenant
@@ -186,15 +160,27 @@ namespace ST.MultiTenant.Razor.Controllers
             if (string.IsNullOrEmpty(tenantMachineName))
             {
                 ModelState.AddModelError(string.Empty, "Invalid name for tenant");
+                data.CountrySelectListItems = await GetCountrySelectList();
                 return View(data);
             }
-            var model = data.Adapt<Tenant>();
+
+            var model = data.GetBase();
             model.MachineName = tenantMachineName;
             var check = Context.Tenants.FirstOrDefault(x => x.MachineName == tenantMachineName);
             if (check != null)
             {
                 ModelState.AddModelError(string.Empty, "Tenant exists");
+                data.CountrySelectListItems = await GetCountrySelectList();
                 return View(data);
+            }
+
+            if (data.OrganizationLogoFormFile != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await data.OrganizationLogoFormFile.CopyToAsync(memoryStream);
+                    model.OrganizationLogo = memoryStream.ToArray();
+                }
             }
 
             Context.Tenants.Add(model);
@@ -221,6 +207,7 @@ namespace ST.MultiTenant.Razor.Controllers
             }
 
             ModelState.AddModelError("", "Fail to save");
+            data.CountrySelectListItems = await GetCountrySelectList();
 
             return View(data);
 
@@ -233,15 +220,16 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
-        public IActionResult Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id)
         {
             var response = Context.Tenants.FirstOrDefault(x => x.Id == id);
-            if (response != null)
+            if (response == null) return RedirectToAction(nameof(Index), "Tenant");
+            var model = new EditTenantViewModel(response)
             {
-                return View(response);
-            }
+                CountrySelectListItems = await GetCountrySelectList()
+            };
+            return View(model);
 
-            return RedirectToAction(nameof(Index), "Tenant");
         }
 
         /// <summary>
@@ -251,56 +239,61 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
-        public IActionResult Edit(Tenant model)
+        public async Task<IActionResult> Edit(EditTenantViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
-            Context.Tenants.Update(model);
-
-            try
+            var updateModel = model.GetBase();
+            if (model.OrganizationLogoFormFile != null)
             {
-                Context.SaveChanges();
-                return RedirectToAction(nameof(Index), "Tenant");
+                using (var memoryStream = new MemoryStream())
+                {
+                    await model.OrganizationLogoFormFile.CopyToAsync(memoryStream);
+                    updateModel.OrganizationLogo = memoryStream.ToArray();
+                }
             }
-            catch (Exception e)
-            {
-                ModelState.AddModelError("Fail", e.Message);
-            }
+            Context.Tenants.Update(updateModel);
 
+            var dbResult = await Context.SaveAsync();
+            if (dbResult.IsSuccess) return RedirectToAction(nameof(Index), "Tenant");
+            ModelState.AppendResultModelErrors(dbResult.Errors);
             return View(model);
         }
 
-
-        /// <summary>
-        /// Delete role
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-        [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityDelete)]
-        public JsonResult Delete(Guid? id)
+        public virtual IActionResult GetImage(Guid id)
         {
-            if (!id.HasValue)
-            {
-                return Json(new { success = false, message = "Id not found" });
-            }
-
-            var tenant = Context.Tenants.AsNoTracking().SingleOrDefault(x => x.Id == id);
-            if (tenant == null)
-            {
-                return Json(new { success = false, message = "Tenant not found" });
-            }
-
             try
             {
-                Context.Tenants.Remove(tenant);
-                Context.SaveChanges();
-                return Json(new { success = true, message = "Tenant deleted !" });
+                var photo = _organizationService.GetTenantById(id);
+                if (photo?.OrganizationLogo != null) return File(photo.OrganizationLogo, "image/png");
+                var def = _organizationService.GetDefaultImage();
+                if (def == null) return NotFound();
+                return File(def, "image/png");
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
-                return Json(new { success = false, message = "Error on save in DB" });
+                Console.WriteLine(e);
             }
+
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Get countries
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
+        {
+            var countrySelectList = await Context.Countries
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id
+                }).ToListAsync();
+
+            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
+
+            return countrySelectList;
         }
     }
 }

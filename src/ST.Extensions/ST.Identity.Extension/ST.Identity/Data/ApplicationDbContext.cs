@@ -1,10 +1,8 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using ST.Audit.Contexts;
 using ST.Core.Abstractions;
-using ST.Core.Helpers.DbContexts;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models;
 using ST.Identity.Abstractions.Models.AddressModels;

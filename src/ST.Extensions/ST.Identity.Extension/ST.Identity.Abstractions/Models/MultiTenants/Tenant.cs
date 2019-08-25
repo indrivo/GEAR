@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ST.Core;
+using ST.Identity.Abstractions.Models.AddressModels;
 
 namespace ST.Identity.Abstractions.Models.MultiTenants
 {
@@ -42,5 +43,34 @@ namespace ST.Identity.Abstractions.Models.MultiTenants
         /// </summary>
         [NotMapped]
         public override int Version { get; set; }
+
+        /// <summary>
+        /// Photo
+        /// </summary>
+        public byte[] OrganizationLogo { get; set; }
+
+        /// <summary>
+        /// Country
+        /// </summary>
+        public Country Country { get; set; }
+        [Display(Name = "Select country")]
+        public string CountryId { get; set; }
+
+        /// <summary>
+        /// City
+        /// </summary>
+        public StateOrProvince City { get; set; }
+        [Display(Name = "Select country")]
+        public int? CityId { get; set; }
+
+        /// <summary>
+        /// TIme zone
+        /// </summary>
+        public string TimeZone { get; set; }
+
+        /// <summary>
+        /// Date format
+        /// </summary>
+        public string DateFormat { get; set; }
     }
 }

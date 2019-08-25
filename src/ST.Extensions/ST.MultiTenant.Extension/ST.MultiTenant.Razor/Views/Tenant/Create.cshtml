@@ -2,70 +2,142 @@
 
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = "Add new tenant";
+    ViewData["Title"] = "Add new organization";
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
 }
 
 <div class="card card-outline-primary">
-	<div class="card-header">
-		<h4 class="mb-0 text-white">Add new tenant </h4>
-	</div>
-	<div class="card-body">
-		<form id="block_create" asp-action="Create" role="form">
-			<div class="form-body">
-				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-				<div class="row p-t-20">
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label" asp-for="Name"></label>
-							<input class="form-control" type="text" asp-for="Name" />
-							<span asp-validation-for="Name" class="text-danger"></span><br />
-							<small>Name of the tenant</small>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label" asp-for="Description"></label>
-							<input class="form-control" type="text" asp-for="Description" />
-							<span asp-validation-for="Description" class="text-danger"></span><br />
-							<small>Description of the tenant</small>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label" asp-for="SiteWeb"></label>
-							<input class="form-control" type="text" asp-for="SiteWeb" />
-							<span asp-validation-for="SiteWeb" class="text-danger"></span><br />
-							<small>Site Web of the tenant</small>
-						</div>
-					</div>
-					<div class="col-md-12">
-						<div class="form-group">
-							<label class="control-label" asp-for="Address"></label>
-							<input class="form-control" type="text" asp-for="Address" />
-							<span asp-validation-for="Address" class="text-danger"></span><br />
-							<small>Address of the tenant</small>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row button-group">
-				<div class="col-lg-2 col-md-3">
-					<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
-				</div>
-				<div class="col-lg-2 col-md-3">
-					<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
-				</div>
-				<div class="col-lg-2 col-md-3">
-					<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
-				</div>
-			</div>
-		</form>
-	</div>
+    <div class="card-header">
+        <h4 class="mb-0 text-white">Add new organization </h4>
+    </div>
+    <div class="card-body">
+        <form id="block_create" asp-action="Create" role="form" enctype="multipart/form-data">
+            <div class="form-body">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row p-t-20">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="OrganizationLogoFormFile" class="control-label"></label>
+                            <input type="file" asp-for="OrganizationLogoFormFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mt-5">
+                            Upload the organization logo here. Preferred image is 240x240 pixels and less wahn 1 MB.
+                        </p>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Name"></label>
+                            <input class="form-control" type="text" asp-for="Name" />
+                            <span asp-validation-for="Name" class="text-danger"></span><br />
+                            <small>Name of the organization</small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Description"></label>
+                            <input class="form-control" type="text" asp-for="Description" />
+                            <span asp-validation-for="Description" class="text-danger"></span><br />
+                            <small>Description of the organization</small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="SiteWeb"></label>
+                            <input class="form-control" type="text" asp-for="SiteWeb" />
+                            <span asp-validation-for="SiteWeb" class="text-danger"></span><br />
+                            <small>Site Web of the organization</small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Address"></label>
+                            <input class="form-control" type="text" asp-for="Address" />
+                            <span asp-validation-for="Address" class="text-danger"></span><br />
+                            <small>Address of the organization</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CountryId" class="control-label"></label>
+                            <select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
+                            <span asp-validation-for="CountryId" class="text-danger"></span><br />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="CityId" class="control-label"></label>
+                            <select disabled="disabled" class="form-control" asp-for="CityId"></select>
+                            <span asp-validation-for="CityId" class="text-danger"></span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 
 @section Scripts {
-	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            $('.dropify').dropify();
+            $("CountryId").select2();
+			$("#CityId").select2({
+				placeholder: {
+					id: '',
+					text: "@Localizer["system_select_city"]"
+				}
+			});
+
+        });
+
+        const notification = new ToastNotifier();
+		$("#CountryId").change(function() {
+			const selectedValue = this.value;
+			const citySelect = $("#CityId");
+			if ($("#CountryId").prop('selectedIndex') > 0) {
+				$.ajax({
+					type: "GET",
+					url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
+				}).done((response) => {
+					if (response.is_success) {
+						citySelect.empty();
+						citySelect.prop("disabled", false);
+						for (let city of response.result) {
+							citySelect.append(new Option(city.text, city.value, false, city.selected));
+						}
+					} else {
+						notification.notifyErrorList(response.error_keys);
+					}
+				}).fail(() => {
+					notify({ heading: "Error", text: window.translate("system_internal_error") });
+				});
+			} else {
+				citySelect.prop("disabled", true);
+				citySelect.empty();
+			}
+		});
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
 

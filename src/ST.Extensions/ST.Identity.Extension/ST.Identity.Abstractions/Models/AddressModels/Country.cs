@@ -14,6 +14,11 @@ namespace ST.Identity.Abstractions.Models.AddressModels
         /// </summary>
         public string Id { get; set; }
 
+        public Country()
+        {
+
+        }
+
         public Country(string id)
         {
             Id = id;

@@ -1283,7 +1283,9 @@ if (typeof Notificator !== "undefined") {
 		if (!_.hasClass("notification"))
 			_.addClass("notification");
 		const template = this.createNotificationBodyContainer(notification);
-		$("#notificationList").prepend(template);
+		const target = $("#notificationList");
+		$("#noNotifications").remove();
+		target.prepend(template);
 		this.registerOpenNotificationEvent();
 	}
 

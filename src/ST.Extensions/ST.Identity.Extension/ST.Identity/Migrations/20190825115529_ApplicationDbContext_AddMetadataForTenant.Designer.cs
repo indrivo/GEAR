@@ -10,8 +10,8 @@ using ST.Identity.Data;
 namespace ST.Identity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190822105447_ApplicationDbContext_AddCountries")]
-    partial class ApplicationDbContext_AddCountries
+    [Migration("20190825115529_ApplicationDbContext_AddMetadataForTenant")]
+    partial class ApplicationDbContext_AddMetadataForTenant
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -4789,7 +4789,15 @@ namespace ST.Identity.Migrations
 
                     b.Property<DateTime>("Changed");
 
+                    b.Property<int?>("CityId");
+
+                    b.Property<long?>("CityId1");
+
+                    b.Property<string>("CountryId");
+
                     b.Property<DateTime>("Created");
+
+                    b.Property<string>("DateFormat");
 
                     b.Property<string>("Description");
 
@@ -4803,9 +4811,17 @@ namespace ST.Identity.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<byte[]>("OrganizationLogo");
+
                     b.Property<string>("SiteWeb");
 
+                    b.Property<string>("TimeZone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId1");
+
+                    b.HasIndex("CountryId");
 
                     b.ToTable("Tenants");
                 });
@@ -5054,6 +5070,17 @@ namespace ST.Identity.Migrations
                     b.HasOne("ST.Identity.Abstractions.AuthGroup", "AuthGroup")
                         .WithMany()
                         .HasForeignKey("AuthGroupId");
+                });
+
+            modelBuilder.Entity("ST.Identity.Abstractions.Models.MultiTenants.Tenant", b =>
+                {
+                    b.HasOne("ST.Identity.Abstractions.Models.AddressModels.StateOrProvince", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId1");
+
+                    b.HasOne("ST.Identity.Abstractions.Models.AddressModels.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId");
                 });
 
             modelBuilder.Entity("ST.Identity.Abstractions.Models.RolePermission", b =>

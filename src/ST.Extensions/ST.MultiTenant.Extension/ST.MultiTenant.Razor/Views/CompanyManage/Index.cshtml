@@ -17,10 +17,10 @@
 
 <div class="row">
     <div class="col-lg-2 mb-2">
-        <div class="card h-100">
+        <div class="card h-400">
             <div class="card-body">
-                <div class="mx-5 my-4 px-4">
-                    <img src="/Users/GetImage?id=@user.Id" class="img-thumbnail img-fluid rounded-circle" alt="@user.Name">
+                <div class="mx-3 my-2 px-2">
+                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.Name">
                 </div>
                 <div class="text-center">
                     <h5 class="weight-400">Hello, @user.UserName</h5>
@@ -115,8 +115,6 @@
                     preConfirm: () => {
                         const email = document.getElementById('userEmail').value;
                         const selectedRoles = $('#roleSelect').select2('data').map(roleId => roleId.id);
-                        console.log(email);
-                        console.log(selectedRoles);
                         const info = {
                             'email': email,
                             'roles': selectedRoles

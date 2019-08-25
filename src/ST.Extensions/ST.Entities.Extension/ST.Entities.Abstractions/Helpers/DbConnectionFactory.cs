@@ -1,36 +1,72 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 
 namespace ST.Entities.Abstractions.Helpers
 {
     public static class DbConnectionFactory
     {
-        public static class Connection
+        /// <summary>
+        /// Connections
+        /// </summary>
+        private static List<DbConnection> Connections { get; set; } = new List<DbConnection>();
+
+        /// <summary>
+        /// Get free connection
+        /// </summary>
+        /// <returns></returns>
+        private static DbConnection GetConnection()
         {
-            /// <summary>
-            /// Close connection
-            /// </summary>
-            public static void Close()
+            var connection = Connections.FirstOrDefault(x =>
+                x.State != ConnectionState.Executing || x.State != ConnectionState.Fetching);
+
+            var unusedConnections =
+                Connections.Where(x => x.State == ConnectionState.Broken || x.State == ConnectionState.Closed).ToList();
+
+            if (unusedConnections.Count > Connections.Count + 2)
             {
-                DbConnection?.Close();
+                foreach (var unusedConnection in unusedConnections)
+                {
+                    unusedConnection.Close();
+                    Connections.Remove(unusedConnection);
+                }
             }
 
-            /// <summary>
-            /// Store connection
-            /// </summary>
-            private static DbConnection DbConnection { get; set; }
+            if (connection != null) return connection;
+            var first = Connections.FirstOrDefault();
+            first?.Close();
+            Connections.Add(first);
+            connection = first;
+            return connection;
+        }
 
+        /// <summary>
+        /// Close all connections
+        /// </summary>
+        public static void CloseAll()
+        {
+            Connections.ToList().ForEach(x =>
+            {
+                x.Close();
+            });
+        }
+
+        public static class Connection
+        {
             /// <summary>
             /// Get connection
             /// </summary>
             /// <returns></returns>
             public static DbConnection Get()
             {
-                if (DbConnection == null) throw new Exception("Connection not configured");
-                if (DbConnection.State != ConnectionState.Open)
-                    DbConnection.Open();
-                return DbConnection;
+                if (!Connections.Any()) throw new Exception("Connection not initiated");
+                var connection = GetConnection();
+                if (connection.State == ConnectionState.Closed)
+                    connection.Open();
+                return connection;
             }
 
             /// <summary>
@@ -41,8 +77,7 @@ namespace ST.Entities.Abstractions.Helpers
             public static void SetConnection<TProvider>(TProvider connection)
                 where TProvider : DbConnection
             {
-                if (DbConnection == null)
-                    DbConnection = connection;
+                Connections.Add(connection);
             }
         }
     }

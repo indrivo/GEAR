@@ -1,27 +1,94 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.MultiTenant.ViewModels
 {
-    public class CreateTenantViewModel
+    public class CreateTenantViewModel : Tenant
     {
-        /// <summary>
-        /// Name of tenant
-        /// </summary>
-        [Required]
-        public string Name { get; set; }
+        public CreateTenantViewModel()
+        {
+
+        }
 
         /// <summary>
-        /// Description for this tenant
+        /// Constructor
         /// </summary>
-        public string Description { get; set; }
-        /// <summary>
-        /// The url of site web
-        /// </summary>
-        public string SiteWeb { get; set; }
+        /// <param name="tenant"></param>
+        public CreateTenantViewModel(Tenant tenant)
+        {
+            CountryId = tenant.CountryId;
+            Country = tenant.Country;
+            Address = tenant.Address;
+            Author = tenant.Author;
+            Changed = tenant.Changed;
+            Created = tenant.Created;
+            CityId = tenant.CityId;
+            City = tenant.City;
+            DateFormat = tenant.DateFormat;
+            Description = tenant.Description;
+            Id = tenant.Id;
+            IsDeleted = tenant.IsDeleted;
+            TimeZone = tenant.TimeZone;
+            Name = tenant.Name;
+            MachineName = tenant.MachineName;
+            SiteWeb = tenant.SiteWeb;
+            ModifiedBy = tenant.ModifiedBy;
+        }
 
         /// <summary>
-        /// Address
+        /// Get base
         /// </summary>
-        public string Address { get; set; }
+        /// <returns></returns>
+        public Tenant GetBase() => new Tenant
+        {
+            Name = Name,
+            CountryId = CountryId,
+            OrganizationLogo = OrganizationLogo,
+            Description = Description,
+            Address = Address,
+            MachineName = MachineName,
+            Author = Author,
+            City = City,
+            TimeZone = TimeZone,
+            SiteWeb = SiteWeb,
+            CityId = CityId,
+            DateFormat = DateFormat,
+            Country = Country,
+            IsDeleted = IsDeleted,
+            Id = Id,
+            ModifiedBy = ModifiedBy,
+            Changed = Changed,
+            Created = Created,
+            TenantId = TenantId,
+            Version = Version
+        };
+        /// <summary>
+        /// Country list
+        /// </summary>
+        public virtual IEnumerable<SelectListItem> CountrySelectListItems { get; set; } = new List<SelectListItem>();
+
+
+        /// <summary>
+        /// Organization logo
+        /// </summary>
+        [Display(Name = "Organization Logo")]
+        public virtual IFormFile OrganizationLogoFormFile { get; set; }
+    }
+
+
+    public sealed class EditTenantViewModel : CreateTenantViewModel
+    {
+        public EditTenantViewModel()
+        {
+
+        }
+
+        public EditTenantViewModel(Tenant tenant) : base(tenant)
+        {
+
+        }
     }
 }

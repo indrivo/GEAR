@@ -1,15 +1,13 @@
 ﻿using ST.Identity.Data;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Policy;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using ST.Core.Helpers;
 using ST.Email.Abstractions;
@@ -207,6 +205,7 @@ namespace ST.MultiTenant.Services
             };
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Send email for confirmation
         /// </summary>
@@ -219,6 +218,34 @@ namespace ST.MultiTenant.Services
                 _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
                 $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get default user image
+        /// </summary>
+        /// <returns></returns>
+        public virtual byte[] GetDefaultImage()
+        {
+            var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/company.png");
+            if (!File.Exists(path))
+                return default;
+
+            try
+            {
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var binary = new BinaryReader(stream))
+                {
+                    var data = binary.ReadBytes((int)stream.Length);
+                    return data;
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+
+            return default;
         }
 
         /// <summary>

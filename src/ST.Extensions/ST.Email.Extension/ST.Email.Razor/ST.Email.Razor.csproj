@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="libman.json" />
-    <None Remove="wwwroot\assets\EmailPlugins\email-settings.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="libman.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

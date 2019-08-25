@@ -437,8 +437,9 @@ namespace ST.Entities.Data
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
             var result = new List<Dictionary<string, object>>();
+            var connector = DbConnectionFactory.Connection.Get();
 
-            using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
+            using (var cmd = connector.CreateCommand())
             {
                 cmd.CommandText = sql;
 

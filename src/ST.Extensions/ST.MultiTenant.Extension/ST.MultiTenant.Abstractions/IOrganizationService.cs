@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using ST.Core.Abstractions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
@@ -101,5 +100,11 @@ namespace ST.MultiTenant.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<ApplicationRole>> GetRoles();
+
+        /// <summary>
+        /// Get default image
+        /// </summary>
+        /// <returns></returns>
+        byte[] GetDefaultImage();
     }
 }

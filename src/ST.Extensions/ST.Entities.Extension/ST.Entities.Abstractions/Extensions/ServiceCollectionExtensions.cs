@@ -41,7 +41,7 @@ namespace ST.Entities.Abstractions.Extensions
 
             SystemEvents.Application.OnApplicationStopped += delegate
             {
-                DbConnectionFactory.Connection.Close();
+                DbConnectionFactory.CloseAll();
             };
 
             return services;
