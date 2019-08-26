@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.TaskManager.Data;
@@ -9,9 +10,10 @@ using ST.TaskManager.Data;
 namespace ST.TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerDbContext))]
-    partial class TaskManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190826125313_Migration5")]
+    partial class Migration5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,7 +129,8 @@ namespace ST.TaskManager.Migrations
 
                     b.HasIndex("Id", "IsDeleted");
 
-                    b.HasIndex("UserId", "IsDeleted");
+                    b.HasIndex("UserId", "IsDeleted")
+                        .IsUnique();
 
                     b.ToTable("Tasks");
                 });

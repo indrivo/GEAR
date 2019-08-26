@@ -45,14 +45,11 @@ namespace ST.TaskManager.Data
             builder.Entity<Task>()
                 .HasMany(x => x.TaskItems);
             builder.Entity<Task>()
-                .HasIndex(p => p.UserId)
-                .IsUnique();
+                .HasIndex(p => p.UserId);
             builder.Entity<Task>()
-                .HasIndex(p => new {p.UserId, p.IsDeleted})
-                .IsUnique();
+                .HasIndex(p => new {p.UserId, p.IsDeleted});
             builder.Entity<Task>()
-                .HasIndex(p => new {p.Id, p.IsDeleted})
-                .IsUnique();
+                .HasIndex(p => new {p.Id, p.IsDeleted});
             builder.Entity<TaskItem>()
                 .HasKey(x => new {x.Id});
             builder.Entity<TaskItem>()

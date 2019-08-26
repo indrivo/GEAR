@@ -79,7 +79,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<UpdateTaskViewModel>))]
         public async Task<JsonResult> UpdateTask(UpdateTaskViewModel model)
         {
-            if (model == null || model.Id != Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (model == null || model.Id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = await _taskManager.UpdateTaskAsync(model);
             return Json(response);
@@ -92,6 +92,16 @@ namespace ST.TaskManager.Razor.Controllers
             if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = await _taskManager.DeleteTaskAsync(id);
+            return Json(response);
+        }
+
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> DeleteTaskPermanent(Guid id)
+        {
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+
+            var response = await _taskManager.DeletePermanentTaskAsync(id);
             return Json(response);
         }
 

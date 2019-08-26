@@ -115,6 +115,7 @@ namespace ST.Core.Extensions
             catch (Exception e)
             {
                 rs.Errors.Add(new ErrorModel(nameof(Exception), e.Message));
+                rs.Errors.Add(new ErrorModel(nameof(Exception), e.InnerException?.Message));
             }
 
             return rs;

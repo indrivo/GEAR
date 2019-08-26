@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.TaskManager.Abstractions;
@@ -12,6 +10,7 @@ using ST.TaskManager.Abstractions.Helpers;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 using ST.TaskManager.Data;
+using Task = ST.TaskManager.Abstractions.Models.Task;
 
 namespace ST.TaskManager
 {
@@ -45,13 +44,15 @@ namespace ST.TaskManager
 
         public async Task<ResultModel<List<TaskItemViewModel>>> GetTaskItemsAsync(Guid taskId)
         {
-            var dbTaskItemsResult = await _context.Tasks.FirstOrDefaultAsync(x => (x.Id == taskId) & (x.IsDeleted == false));
-            var dto = new List<TaskItemViewModel>();
-            if (dbTaskItemsResult == null)
-                return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
+            var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == taskId);
+            if(task == null) return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
 
-            if (dbTaskItemsResult.TaskItems.Count > 0)
-                dto.AddRange(TaskItemsMapper(dbTaskItemsResult));
+            var dbTaskItemsResult = await _context.TaskItems.Where(x => x.Task == task).ToListAsync();
+            var dto = new List<TaskItemViewModel>();
+            if (dbTaskItemsResult.Any())
+                dto.AddRange(TaskItemsMapper(new Task {TaskItems = dbTaskItemsResult}));
+            else
+                return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
 
             return new ResultModel<List<TaskItemViewModel>>
             {
@@ -95,7 +96,7 @@ namespace ST.TaskManager
         {
             var taskModel = UpdateTaskMapper(task);
 
-            _context.Tasks.Add(taskModel);
+            _context.Tasks.Update(taskModel);
             var result = await _context.SaveAsync();
 
             return new ResultModel
@@ -138,7 +139,7 @@ namespace ST.TaskManager
         public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel task)
         {
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == task.TaskId));
-            var taskModel = new TaskItem { Name = task.Name,Task = dbTaskResult};
+            var taskModel = new TaskItem {Name = task.Name, Task = dbTaskResult};
 
             _context.TaskItems.Add(taskModel);
             var result = await _context.SaveAsync();
@@ -157,7 +158,7 @@ namespace ST.TaskManager
             {
                 dbTaskResult.Name = task.Name;
                 dbTaskResult.IsDone = task.IsDone;
-                _context.TaskItems.Add(dbTaskResult);
+                _context.TaskItems.Update(dbTaskResult);
             }
             else
             {
@@ -188,7 +189,7 @@ namespace ST.TaskManager
             };
         }
 
-        private Abstractions.Models.Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel)
+        private Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel)
         {
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == taskViewModel.Id) & (x.IsDeleted == false));
 
@@ -200,30 +201,32 @@ namespace ST.TaskManager
             dbTaskResult.EndDate = taskViewModel.EndDate;
             dbTaskResult.Status = taskViewModel.Status;
             dbTaskResult.TaskPriority = taskViewModel.TaskPriority;
+            dbTaskResult.UserId = taskViewModel.UserId;
 
             return dbTaskResult;
         }
 
-        private static Abstractions.Models.Task CreateTaskMapper(CreateTaskViewModel taskViewModel)
+        private static Task CreateTaskMapper(CreateTaskViewModel taskViewModel)
         {
-            var dto = new Abstractions.Models.Task
+            var dto = new Task
             {
                 Name = taskViewModel.Name,
                 Description = taskViewModel.Description,
                 StartDate = taskViewModel.StartDate,
                 EndDate = taskViewModel.EndDate,
                 Status = taskViewModel.Status,
-                TaskPriority = taskViewModel.TaskPriority
+                UserId = taskViewModel.UserId,
+                TaskPriority = taskViewModel.TaskPriority,
             };
             if (taskViewModel.TaskItems == null) return dto;
 
-            foreach (var item in taskViewModel.TaskItems) dto.TaskItems.Add(new TaskItem { IsDone = item.IsDone, Name = item.Name });
+            foreach (var item in taskViewModel.TaskItems) dto.TaskItems.Add(new TaskItem {IsDone = item.IsDone, Name = item.Name});
 
 
             return dto;
         }
 
-        private static GetTaskViewModel GetTaskMapper(Abstractions.Models.Task dbTaskResult)
+        private static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
         {
             var dto = new GetTaskViewModel
             {
@@ -233,16 +236,15 @@ namespace ST.TaskManager
                 StartDate = dbTaskResult.StartDate,
                 EndDate = dbTaskResult.EndDate,
                 Status = dbTaskResult.Status,
+                UserId = dbTaskResult.UserId,
                 TaskPriority = dbTaskResult.TaskPriority
             };
-            if (dbTaskResult.TaskItems?.Count > 0)
-                dto.TaskItems.AddRange(TaskItemsMapper(dbTaskResult));
             return dto;
         }
 
-        private static IEnumerable<TaskItemViewModel> TaskItemsMapper(Abstractions.Models.Task dbTaskResult)
+        private static IEnumerable<TaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
         {
-            return dbTaskResult.TaskItems.Select(item => new TaskItemViewModel {Id = item.Id, IsDone = item.IsDone, Name = item.Name}).ToList();
+            return dbTaskResult.TaskItems.Select(item => new TaskItemViewModel {Id = item.Id, IsDone = item.IsDone, Name = item.Name, TaskId = item.Task.Id}).ToList();
         }
     }
 }

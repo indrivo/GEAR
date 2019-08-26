@@ -55,6 +55,8 @@ namespace ST.Files.Razor.Controllers
         [HttpPost]
         public JsonResult Upload(Guid id)
         {
+            if (id != Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+
             var file = new UploadFileViewModel
             {
                 File = Request.Form.Files.FirstOrDefault(),

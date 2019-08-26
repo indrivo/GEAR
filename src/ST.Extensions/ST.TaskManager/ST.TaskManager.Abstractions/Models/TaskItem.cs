@@ -17,6 +17,6 @@ namespace ST.TaskManager.Abstractions.Models
         public string Name { get; set; }
 
         public bool IsDone { get; set; }
-        public Task Task { get; set; }
+        public virtual Task Task { get; set; }
     }
 }
