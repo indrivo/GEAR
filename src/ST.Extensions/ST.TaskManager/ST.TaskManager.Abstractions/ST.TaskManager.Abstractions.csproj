@@ -9,4 +9,11 @@
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enums\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Models\ViewModels\" />
+  </ItemGroup>
+
 </Project>
