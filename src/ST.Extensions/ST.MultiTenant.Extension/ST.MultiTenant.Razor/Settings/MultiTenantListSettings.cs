@@ -8,6 +8,9 @@ namespace ST.MultiTenant.Razor.Settings
 {
     public class MultiTenantListSettings
     {
+        /// <summary>
+        /// Localizer
+        /// </summary>
         private readonly IStringLocalizer _localizer;
 
         public MultiTenantListSettings()
@@ -41,17 +44,11 @@ namespace ST.MultiTenant.Razor.Settings
                 {
                     new UrlTagHelperViewModel
                     {
-                        AspAction = "Create",
-                        AspController = "CompanyManage",
-                        ButtonName = "Add new user to company",
-                        Description = "New user will be added to company"
-                    },
-                    new UrlTagHelperViewModel
-                    {
                         AspAction = null,
                         AspController = "CompanyManage",
-                        ButtonName = "Invite",
+                        ButtonName = $"<i class='mdi mdi-account-multiple-plus mr-2' aria-hidden='true'></i> {_localizer["system_invite_user"]}",
                         Description = null,
+                        BootstrapButton = BootstrapButton.Success,
                         HtmlAttributes = new List<HtmlAttribute>
                         {
                             new HtmlAttribute("id", "inviteBtn")

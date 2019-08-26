@@ -144,6 +144,7 @@ namespace ST.MultiTenant.Services
             return _context.Users.Where(x => x.TenantId == organizationId);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get user organization
         /// </summary>
@@ -152,7 +153,9 @@ namespace ST.MultiTenant.Services
         public Tenant GetUserOrganization(ApplicationUser user)
         {
             Arg.NotNull(user, nameof(GetUserOrganization));
-            return _context.Tenants.FirstOrDefault(x => x.Id.Equals(user.TenantId));
+            return _context.Tenants
+                .Include(x => x.Country)
+                .FirstOrDefault(x => x.Id.Equals(user.TenantId));
         }
 
         /// <summary>

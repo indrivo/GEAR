@@ -464,5 +464,6 @@
   "system_inline_edit_text_chnaged": "変更",
   "system_inline_edit_select_value_changed": "選択した",
   "system_birthday": "誕生日",
-  "profile_updated_successfully": "概要の更新に成功し"
+  "profile_updated_successfully": "概要の更新に成功し",
+  "system_invite_user": "新しいユーザーを招待"
 }

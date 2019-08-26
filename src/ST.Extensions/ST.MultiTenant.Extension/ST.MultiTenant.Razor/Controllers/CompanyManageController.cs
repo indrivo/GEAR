@@ -53,6 +53,7 @@ namespace ST.MultiTenant.Razor.Controllers
             ViewBag.UserRoles = string.Join(", ", UserManager.GetRolesAsync(user).GetAwaiter().GetResult());
             ViewBag.User = user;
             ViewBag.UsersListSettings = _listSettings.GetCompanyUserListSettings();
+            ViewBag.Organization = _organizationService.GetUserOrganization(user);
             return base.Index();
         }
 

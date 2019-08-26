@@ -464,5 +464,6 @@
   "system_inline_edit_text_chnaged": "S-a schimbat",
   "system_inline_edit_select_value_changed": "A fost selectat",
   "system_birthday": "Ziua de nastere",
-  "profile_updated_successfully": "Profil actualizat cu succes"
+  "profile_updated_successfully": "Profil actualizat cu succes",
+  "system_invite_user": "Invitați un utilizator nou"
 }

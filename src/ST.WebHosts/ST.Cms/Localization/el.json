@@ -464,5 +464,6 @@
   "system_inline_edit_text_chnaged": "Άλλαξε",
   "system_inline_edit_select_value_changed": "Επιλέχθηκε",
   "system_birthday": "Γενέθλια",
-  "profile_updated_successfully": "Το προφίλ ενημερώθηκε με επιτυχία"
+  "profile_updated_successfully": "Το προφίλ ενημερώθηκε με επιτυχία",
+  "system_invite_user": "Προσκαλέστε νέο χρήστη"
 }

@@ -1,9 +1,12 @@
 ﻿@using ST.Identity.Abstractions
+@using ST.Identity.Abstractions.Models.MultiTenants
+@using ST.MultiTenant.ViewModels;
 @{
     ViewData["Title"] = "My company";
     ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
     var user = (ApplicationUser) ViewBag.User;
     var roles = (string) ViewBag.UserRoles;
+    var organization = (Tenant)ViewBag.Organization;
 }
 
 @section Styles
@@ -44,10 +47,10 @@
             <div class="card-header p-0">
                 <ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["iso_menu_company_settings"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 rounded-0" id="messages-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">Users</a>
+                        <a class="nav-link px-4 py-3 rounded-0" id="messages-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">@Localizer["users"]</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link px-4 py-3 rounded-0" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
@@ -57,8 +60,7 @@
             <div class="card-body">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <h5 class="weight-400">Summary</h5>
-                        <p>No data</p>
+                        <partial  name="Partial/_EditTenantDataPartialView" model="new EditTenantViewModel(organization)"/>
                     </div>
                     <div class="tab-pane fade show" id="users" role="tabpanel" aria-labelledby="users-tab">
                         <JList asp-for="@ViewBag.UsersListSettings"></JList>

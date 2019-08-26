@@ -49,7 +49,8 @@ namespace ST.Core.Razor.TagHelpers
                         .Inject(button)
                         .Inject(new Dictionary<string, string>
                         {
-                            {"Attrs", bAttrs}
+                            {"Attrs", bAttrs},
+                            {"ButtonBootstrapStyle",  button.BootstrapButton.ToString().ToLower()}
                         }));
                 });
 
@@ -66,7 +67,7 @@ namespace ST.Core.Razor.TagHelpers
                 }
             }
 
-            var tInlineStyles = string.Join(" " , AspFor.StyleAttributes.Select(x => x.ToString()));
+            var tInlineStyles = string.Join(" ", AspFor.StyleAttributes.Select(x => x.ToString()));
             var content = template.Result.Inject(AspFor).Inject(new Dictionary<string, string>
             {
                 { "ColumnsContainer", GetHeadColumns() },

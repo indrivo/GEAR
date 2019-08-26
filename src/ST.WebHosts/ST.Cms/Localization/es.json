@@ -464,5 +464,6 @@
   "system_inline_edit_text_chnaged": "Ha cambiado",
   "system_inline_edit_select_value_changed": "Fue seleccionado",
   "system_birthday": "Cumpleaños",
-  "profile_updated_successfully": "Perfil actualizado correctamente"
+  "profile_updated_successfully": "Perfil actualizado correctamente",
+  "system_invite_user": "Invitar a un nuevo usuario"
 }

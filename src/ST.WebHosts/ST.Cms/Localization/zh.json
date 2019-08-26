@@ -464,5 +464,6 @@
   "system_inline_edit_text_chnaged": "改变了",
   "system_inline_edit_select_value_changed": "被选中的",
   "system_birthday": "生日",
-  "profile_updated_successfully": "配置文件的更新的成功"
+  "profile_updated_successfully": "配置文件的更新的成功",
+  "system_invite_user": "邀请新的用户"
 }

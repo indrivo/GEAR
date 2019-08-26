@@ -464,5 +464,6 @@
   "system_inline_edit_text_chnaged": "Змінилося",
   "system_inline_edit_select_value_changed": "Був обраний",
   "system_birthday": "День народження",
-  "profile_updated_successfully": "Профіль успішно оновлено "
+  "profile_updated_successfully": "Профіль успішно оновлено ",
+  "system_invite_user": "Запрошуйте нових користувачів"
 }
