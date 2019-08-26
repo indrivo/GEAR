@@ -1,0 +1,71 @@
+@model IEnumerable<ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress.UserProfileAddressViewModel>
+
+
+
+<div class="card">
+	<div class="card-header d-flex">
+		<span class="d-flex align-items-center">
+			Address list
+		</span>
+		<a asp-controller="Users" asp-action="AddUserProfileAddress" asp-route-userId="" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white ml-auto">Add new address</a>
+
+	</div>
+	<div class="card-body">
+		@if (Model != null && Model.Any())
+		{
+			@foreach (var address in Model)
+			{
+				<div class="card mb-4">
+					<div class="card-header d-flex">
+						<span class="d-flex align-items-center">
+							@address.ContactName
+							@if (address.IsPrimary)
+							{
+								<span class="badge badge-primary ml-3">Is primary</span>
+							}
+						</span>
+						<button class="btn btn-secondary ml-auto">Edit</button>
+					</div>
+					<div class="card-body">
+						<div class="col-md-12 row">
+							<div class="col-md-6">
+								<p>
+									<span class="weight-400">Contact Name : </span><span class="text-muted">@address.ContactName</span>
+								</p>
+								<p>
+									<span class="weight-400">Phone : </span><span class="text-muted">@address.Phone</span>
+								</p>
+								<p>
+									<span class="weight-400">Address line 1 : </span><span class="text-muted">@address.AddressLine1</span>
+								</p>
+								<p>
+									<span class="weight-400">Country : </span><span class="text-muted">@address.Country</span>
+								</p>
+							</div>
+							<div class="col-md-6">
+								<p>
+									<span class="weight-400">Address line 2 : </span><span class="text-muted">@address.AddressLine2</span>
+								</p>
+								<p>
+									<span class="weight-400">City : </span><span class="text-muted">@address.City</span>
+								</p>
+								<p>
+									<span class="weight-400">Zip Code : </span><span class="text-muted">@address.ZipCode</span>
+								</p>
+								<p>
+									<span class="weight-400">District : </span><span class="text-muted">@address.District</span>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		}
+		else
+		{
+			<div class="row justify-content-center">
+				<h2>No data</h2>
+			</div>
+		}
+	</div>
+</div>

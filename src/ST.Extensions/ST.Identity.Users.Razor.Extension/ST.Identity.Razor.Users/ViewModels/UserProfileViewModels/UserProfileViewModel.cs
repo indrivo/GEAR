@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Identity.Abstractions.Models.MultiTenants;
 
-namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
+namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels
 {
     public class UserProfileViewModel
     {
@@ -11,11 +11,10 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         {
             Roles = new HashSet<string>();
             Groups = new HashSet<string>();
-            Tenant = new Tenant();
         }
 
         public Guid UserId { get; set; }
-
+        public Guid TenantId { get; set; }
 
         [Display(Name = "User Name", Description = "user name", Prompt = "User Name")]
         public string UserName { get; set; }
@@ -35,17 +34,12 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         [Display(Name = "Phone number", Description = "phone number ", Prompt = "0123456789")]
         public string UserPhoneNumber { get; set; }
 
-        [Display(Name = "User status", Description = "user status")]
-        public bool IsDisabled { get; set; }
-
         [Display(Name = "Birthday", Description = "birthday")]
         public DateTime Birthday { get; set; }
 
         [MaxLength(500)]
         [Display(Name = "About me", Description = "same description")]
         public string AboutMe { get; set; }
-
-        public Tenant Tenant { get; set; }
 
         public IEnumerable<string> Roles { get; set; }
         public IEnumerable<string> Groups { get; set; }

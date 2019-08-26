@@ -33,6 +33,8 @@ using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
 using ST.MultiTenant.Abstractions;
 using ST.Identity.Permissions.Abstractions.Attributes;
+using ST.Identity.Razor.Users.ViewModels.UserProfileViewModels;
+using ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress;
 
 namespace ST.Identity.Razor.Users.Controllers
 {
@@ -175,7 +177,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
                 {
                     var userGroupList = model.SelectedGroupId
-                        .Select(_ => new UserGroup { AuthGroupId = Guid.Parse(_), UserId = user.Id }).ToList();
+                        .Select(_ => new UserGroup {AuthGroupId = Guid.Parse(_), UserId = user.Id}).ToList();
 
                     await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
                 }
@@ -191,6 +193,7 @@ namespace ST.Identity.Razor.Users.Controllers
                         });
                     }
                 }
+
                 var dbResult = await ApplicationDbContext.SaveAsync();
                 if (!dbResult.IsSuccess)
                 {
@@ -330,23 +333,23 @@ namespace ST.Identity.Razor.Users.Controllers
         {
             if (id.IsNullOrEmpty())
             {
-                return Json(new { success = false, message = "Id is null" });
+                return Json(new {success = false, message = "Id is null"});
             }
 
             if (IsCurrentUser(id))
             {
-                return Json(new { success = false, message = "You can't delete current user" });
+                return Json(new {success = false, message = "You can't delete current user"});
             }
 
             var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
             if (applicationUser == null)
             {
-                return Json(new { success = false, message = "User not found" });
+                return Json(new {success = false, message = "User not found"});
             }
 
             if (applicationUser.IsEditable == false)
             {
-                return Json(new { succsess = false, message = "Is system user!!!" });
+                return Json(new {succsess = false, message = "Is system user!!!"});
             }
 
             try
@@ -359,12 +362,12 @@ namespace ST.Identity.Razor.Users.Controllers
                     Subject = "Info",
                     NotificationTypeId = NotificationType.Info
                 });
-                return Json(new { success = true, message = "Delete success" });
+                return Json(new {success = true, message = "Delete success"});
             }
             catch (Exception e)
             {
                 Logger.LogError(e.Message);
-                return Json(new { success = false, message = "Error on delete!!!" });
+                return Json(new {success = false, message = "Error on delete!!!"});
             }
         }
 
@@ -542,7 +545,7 @@ namespace ST.Identity.Razor.Users.Controllers
 
 
                 var userGroupList = model.SelectedGroupId
-                    .Select(groupId => new UserGroup { UserId = user.Id, AuthGroupId = Guid.Parse(groupId) }).ToList();
+                    .Select(groupId => new UserGroup {UserId = user.Id, AuthGroupId = Guid.Parse(groupId)}).ToList();
                 await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
             }
 
@@ -596,8 +599,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="organizationService"></param>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> Profile(
-            [FromServices] IOrganizationService<Tenant> organizationService)
+        public virtual async Task<IActionResult> Profile()
         {
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
@@ -608,6 +610,7 @@ namespace ST.Identity.Razor.Users.Controllers
             var model = new UserProfileViewModel
             {
                 UserId = currentUser.Id.ToGuid(),
+                TenantId = currentUser.TenantId ?? Guid.Empty,
                 UserName = currentUser.UserName,
                 UserFirstName = currentUser.UserFirstName,
                 UserLastName = currentUser.UserLastName,
@@ -615,7 +618,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 AboutMe = currentUser.AboutMe,
                 Birthday = currentUser.Birthday,
                 Email = currentUser.Email,
-                Tenant = organizationService.GetUserOrganization(currentUser),
+                
                 Roles = await UserManager.GetRolesAsync(currentUser),
                 Groups = await ApplicationDbContext.UserGroups
                     .Include(x => x.AuthGroup)
@@ -900,37 +903,6 @@ namespace ST.Identity.Razor.Users.Controllers
             });
         }
 
-        [HttpGet]
-        public virtual async Task<IActionResult> UserAddress([Required] Guid? userId)
-        {
-            if (!userId.HasValue)
-            {
-                return NotFound();
-            }
-
-            var addressList = await ApplicationDbContext.Addresses
-                .AsNoTracking()
-                .Where(x => x.ApplicationUserId.Equals(userId))
-                .Include(x => x.Country)
-                .Include(x => x.StateOrProvince)
-                .Include(x => x.District)
-                .ToListAsync();
-
-            var userAddressModel = addressList.Select(address => new UserAddressViewModel
-            {
-                Id = address.Id,
-                AddressLine1 = address.AddressLine1,
-                AddressLine2 = address.AddressLine2,
-                Phone = address.Phone,
-                District = address.District.Name,
-                Country = address.Country.Name,
-                City = address.City,
-                IsPrimary = true,
-                ZipCode = address.ZipCode
-            }).ToList();
-            return View("Partial/_AddressList", userAddressModel);
-
-        }
 
         /// <summary>
         /// Check if is current user
@@ -986,7 +958,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var binary = new BinaryReader(stream))
                 {
-                    var data = binary.ReadBytes((int)stream.Length);
+                    var data = binary.ReadBytes((int) stream.Length);
                     return data;
                 }
             }
@@ -1035,14 +1007,14 @@ namespace ST.Identity.Razor.Users.Controllers
             var resultModel = new ResultModel();
             if (!ModelState.IsValid)
             {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Invalid model" });
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Invalid model"});
                 return Json(resultModel);
             }
 
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
             {
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "User not found"});
                 return Json(resultModel);
             }
 
@@ -1060,9 +1032,100 @@ namespace ST.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Error on change password" });
+            resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Error on change password"});
             return Json(resultModel);
         }
+
+        #region Partial Views
+
+        [HttpGet]
+        public virtual async Task<IActionResult> UserOrganizationPartial(Guid? tenantId)
+        {
+            if (!tenantId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var tenant = await ApplicationDbContext.Tenants.FindAsync(tenantId);
+            if (tenant == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileTenantViewModel
+            {
+                Name = tenant.Name,
+                TenantId = tenant.TenantId,
+                Description = tenant.Description,
+                Address = tenant.Address,
+                SiteWeb = tenant.SiteWeb
+            };
+            return PartialView("Partial/_OrganizationPartial", model);
+        }
+
+        [HttpGet]
+        public virtual async Task<IActionResult> UserAddressPartial(Guid? userId)
+        {
+            if (!userId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var addressList = await ApplicationDbContext.Addresses
+                .AsNoTracking()
+                .Where(x => x.ApplicationUserId.Equals(userId))
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince)
+                .Include(x => x.District)
+                .ToListAsync();
+
+            var userAddressModel = addressList.Select(address => new UserProfileAddressViewModel
+            {
+                Id = address.Id,
+                AddressLine1 = address.AddressLine1,
+                AddressLine2 = address.AddressLine2,
+                Phone = address.Phone,
+                ContactName = address.ContactName,
+                District = address.District.Name,
+                Country = address.Country.Name,
+                City = address.City,
+                IsPrimary = true,
+                ZipCode = address.ZipCode,
+            }).ToList();
+            return PartialView("Partial/_AddressListPartial", userAddressModel);
+        }
+
+        [HttpGet]
+        public virtual PartialViewResult ChangeUserPasswordPartial()
+        {
+            return PartialView("Partial/_ChangePasswordPartial");
+        }
+
+        [HttpGet]
+        public virtual async Task<IActionResult> AddUserProfileAddress()
+        {
+            var model = new AddUserProfileAddressViewModel
+            {
+                CountrySelectListItems = await GetCountrySelectList()
+            };
+            return PartialView("Partial/_AddUserProfileAddress", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> AddUserProfileAddress(AddUserProfileAddressViewModel model)
+        {
+            var resultModel = new ResultModel();
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
+
+            return Json(resultModel);
+        }
+
+        #endregion
 
         [HttpPost]
         public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)
@@ -1071,7 +1134,7 @@ namespace ST.Identity.Razor.Users.Controllers
             if (file == null || file.Length == 0)
             {
                 resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Image not found" });
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Image not found"});
                 return Json(resultModel);
             }
 
@@ -1079,7 +1142,7 @@ namespace ST.Identity.Razor.Users.Controllers
             if (currentUser == null)
             {
                 resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "User not found"});
                 return Json(resultModel);
             }
 
@@ -1099,7 +1162,7 @@ namespace ST.Identity.Razor.Users.Controllers
             resultModel.IsSuccess = false;
             foreach (var error in result.Errors)
             {
-                resultModel.Errors.Add(new ErrorModel { Key = error.Code, Message = error.Description });
+                resultModel.Errors.Add(new ErrorModel {Key = error.Code, Message = error.Description});
             }
 
             return Json(resultModel);

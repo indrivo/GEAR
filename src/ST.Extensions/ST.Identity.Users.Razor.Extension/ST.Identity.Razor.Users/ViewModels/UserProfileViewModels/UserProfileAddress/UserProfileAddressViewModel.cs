@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
+namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress
 {
-    public class UserAddressViewModel
+   public class UserProfileAddressViewModel
     {
         public Guid Id { get; set; }
         public bool IsPrimary { get; set; }
-        public string CompanyName { get; set; }
+        public string ContactName { get; set; }
         public string Phone { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }
