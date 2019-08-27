@@ -27,7 +27,6 @@ namespace ST.Cms.Controllers
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
-		/// <param name="service"></param>
 		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context)
 		{
 			_userManager = userManager;

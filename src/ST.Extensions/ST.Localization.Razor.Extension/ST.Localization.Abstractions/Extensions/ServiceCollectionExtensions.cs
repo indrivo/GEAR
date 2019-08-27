@@ -4,12 +4,14 @@ using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using ST.Core.Helpers;
+using ST.Localization.Abstractions.Attributes;
 using ST.Localization.Abstractions.Models;
 using ST.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
@@ -72,6 +74,8 @@ namespace ST.Localization.Abstractions.Extensions
                 opts.IdleTimeout = TimeSpan.FromDays(1);
                 opts.Cookie.HttpOnly = true;
             });
+
+            services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();
             return services;
         }
     }
