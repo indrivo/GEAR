@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ST.Audit.Contexts;
 using ST.Core.Abstractions;
 using ST.TaskManager.Abstractions;

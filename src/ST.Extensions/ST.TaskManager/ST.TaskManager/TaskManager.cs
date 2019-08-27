@@ -14,18 +14,16 @@ using Task = ST.TaskManager.Abstractions.Models.Task;
 
 namespace ST.TaskManager
 {
-    public class TaskManager<TContext> : ITaskManager where TContext : TaskManagerDbContext, ITaskManagerContext
+    public class TaskManager<TContext> : TaskManagerHelper, ITaskManager where TContext : TaskManagerDbContext, ITaskManagerContext
     {
         private readonly TContext _context;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="context"></param>
         public TaskManager(TContext context)
         {
             _context = context;
         }
+
+        #region Task GET
 
         public async Task<ResultModel<GetTaskViewModel>> GetTaskAsync(Guid taskId)
         {
@@ -61,22 +59,21 @@ namespace ST.TaskManager
             };
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetTasksAsync(Guid userId)
+        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(Guid userId)
+        {
+            var dbTasksResult = await _context.Tasks.Where(x => (x.Author == userId.ToString()) & (x.IsDeleted == false)).ToListAsync();
+            return GetTasksAsync(dbTasksResult);
+        }
+
+        public async Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId)
         {
             var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
-            var taskList = new List<GetTaskViewModel>();
-
-            if (dbTasksResult.Count > 0)
-                taskList.AddRange(dbTasksResult.Select(GetTaskMapper));
-            else
-                return ExceptionHandler.ReturnErrorModel<List<GetTaskViewModel>>(ExceptionMessagesEnum.TaskNotFound);
-
-            return new ResultModel<List<GetTaskViewModel>>
-            {
-                IsSuccess = true,
-                Result = taskList
-            };
+            return GetTasksAsync(dbTasksResult);
         }
+
+        #endregion
+
+        #region Task
 
         public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
@@ -88,20 +85,25 @@ namespace ST.TaskManager
             return new ResultModel<Guid>
             {
                 IsSuccess = result.IsSuccess,
-                Result = taskModel.Id
+                Result = taskModel.Id,
+                Errors = result.Errors
             };
         }
 
         public async Task<ResultModel> UpdateTaskAsync(UpdateTaskViewModel task)
         {
-            var taskModel = UpdateTaskMapper(task);
+            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == task.Id) & (x.IsDeleted == false));
+            if (dbTaskResult == null)
+                return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.TaskNotFound);
 
+            var taskModel = UpdateTaskMapper(task, dbTaskResult);
             _context.Tasks.Update(taskModel);
             var result = await _context.SaveAsync();
 
             return new ResultModel
             {
                 IsSuccess = result.IsSuccess,
+                Errors = result.Errors
             };
         }
 
@@ -117,7 +119,8 @@ namespace ST.TaskManager
 
             return new ResultModel
             {
-                IsSuccess = result.IsSuccess
+                IsSuccess = result.IsSuccess,
+                Errors = result.Errors
             };
         }
 
@@ -132,9 +135,14 @@ namespace ST.TaskManager
 
             return new ResultModel
             {
-                IsSuccess = result.IsSuccess
+                IsSuccess = result.IsSuccess,
+                Errors = result.Errors
             };
         }
+
+        #endregion
+
+        #region Task Items
 
         public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel task)
         {
@@ -147,7 +155,8 @@ namespace ST.TaskManager
             return new ResultModel<Guid>
             {
                 IsSuccess = result.IsSuccess,
-                Result = taskModel.Id
+                Result = taskModel.Id,
+                Errors = result.Errors
             };
         }
 
@@ -170,7 +179,8 @@ namespace ST.TaskManager
             return new ResultModel<Guid>
             {
                 IsSuccess = result.IsSuccess,
-                Result = dbTaskResult.Id
+                Result = dbTaskResult.Id,
+                Errors = result.Errors
             };
         }
 
@@ -185,66 +195,11 @@ namespace ST.TaskManager
 
             return new ResultModel
             {
-                IsSuccess = result.IsSuccess
+                IsSuccess = result.IsSuccess,
+                Errors = result.Errors
             };
         }
 
-        private Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel)
-        {
-            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == taskViewModel.Id) & (x.IsDeleted == false));
-
-            if (dbTaskResult == null) return null;
-
-            dbTaskResult.Name = taskViewModel.Name;
-            dbTaskResult.Description = taskViewModel.Description;
-            dbTaskResult.StartDate = taskViewModel.StartDate;
-            dbTaskResult.EndDate = taskViewModel.EndDate;
-            dbTaskResult.Status = taskViewModel.Status;
-            dbTaskResult.TaskPriority = taskViewModel.TaskPriority;
-            dbTaskResult.UserId = taskViewModel.UserId;
-
-            return dbTaskResult;
-        }
-
-        private static Task CreateTaskMapper(CreateTaskViewModel taskViewModel)
-        {
-            var dto = new Task
-            {
-                Name = taskViewModel.Name,
-                Description = taskViewModel.Description,
-                StartDate = taskViewModel.StartDate,
-                EndDate = taskViewModel.EndDate,
-                Status = taskViewModel.Status,
-                UserId = taskViewModel.UserId,
-                TaskPriority = taskViewModel.TaskPriority,
-            };
-            if (taskViewModel.TaskItems == null) return dto;
-
-            foreach (var item in taskViewModel.TaskItems) dto.TaskItems.Add(new TaskItem {IsDone = item.IsDone, Name = item.Name});
-
-
-            return dto;
-        }
-
-        private static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
-        {
-            var dto = new GetTaskViewModel
-            {
-                Id = dbTaskResult.Id,
-                Name = dbTaskResult.Name,
-                Description = dbTaskResult.Description,
-                StartDate = dbTaskResult.StartDate,
-                EndDate = dbTaskResult.EndDate,
-                Status = dbTaskResult.Status,
-                UserId = dbTaskResult.UserId,
-                TaskPriority = dbTaskResult.TaskPriority
-            };
-            return dto;
-        }
-
-        private static IEnumerable<TaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
-        {
-            return dbTaskResult.TaskItems.Select(item => new TaskItemViewModel {Id = item.Id, IsDone = item.IsDone, Name = item.Name, TaskId = item.Task.Id}).ToList();
-        }
+        #endregion
     }
 }

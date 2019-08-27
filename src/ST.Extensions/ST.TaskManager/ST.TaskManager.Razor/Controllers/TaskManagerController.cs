@@ -15,7 +15,7 @@ namespace ST.TaskManager.Razor.Controllers
     public sealed class TaskManagerController : Controller
     {
         /// <summary>
-        /// Inject file service
+        /// Inject Task service
         /// </summary>
         private readonly ITaskManager _taskManager;
 
@@ -47,13 +47,22 @@ namespace ST.TaskManager.Razor.Controllers
 
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
-        public async Task<JsonResult> GetUserTasks(Guid id)
+        public async Task<JsonResult> GetUserTasks()
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
-
-            var response = await _taskManager.GetTasksAsync(id);
+            var userId = new Guid();
+            var response = await _taskManager.GetUserTasksAsync(userId);
             return Json(response);
         }
+
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
+        public async Task<JsonResult> GetAssignedTasks()
+        {
+            var userId = new Guid();
+            var response = await _taskManager.GetAssignedTasksAsync(userId);
+            return Json(response);
+        }
+
 
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<List<TaskItemViewModel>>))]
