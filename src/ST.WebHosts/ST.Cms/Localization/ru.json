@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "Был выбран",
   "system_birthday": "День рождения",
   "profile_updated_successfully": "Профиль успешно обновлен ",
-  "system_invite_user": "Приглашайте новых пользователей"
+  "system_invite_user": "Приглашайте новых пользователей",
+  "system_tenant_logo_info": "Загрузите здесь логотип организации. Предпочтительный изображения 240х240 пикселей и менее Вахний 1 МБ.",
+  "system_my_company": "Моя компания",
+  "system_tenant_logo": "Логотип организации ",
+  "system_company_add": "Добавить компанию"
 }

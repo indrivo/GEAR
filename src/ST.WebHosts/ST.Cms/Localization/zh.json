@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "被选中的",
   "system_birthday": "生日",
   "profile_updated_successfully": "配置文件的更新的成功",
-  "system_invite_user": "邀请新的用户"
+  "system_invite_user": "邀请新的用户",
+  "system_tenant_logo_info": "上传本组织的标志在这里。 优选的图像是240x240素和少望恩1MB。",
+  "system_my_company": "我的公司",
+  "system_tenant_logo": "组织的标志",
+  "system_company_add": "加入公司"
 }

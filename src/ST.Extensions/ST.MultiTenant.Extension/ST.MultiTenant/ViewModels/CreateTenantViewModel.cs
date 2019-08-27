@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ST.Core.Attributes;
 using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.MultiTenant.ViewModels
@@ -75,6 +76,7 @@ namespace ST.MultiTenant.ViewModels
         /// Organization logo
         /// </summary>
         [Display(Name = "Organization Logo")]
+        [DisplayTranslate(Key = "system_tenant_logo")]
         public virtual IFormFile OrganizationLogoFormFile { get; set; }
     }
 

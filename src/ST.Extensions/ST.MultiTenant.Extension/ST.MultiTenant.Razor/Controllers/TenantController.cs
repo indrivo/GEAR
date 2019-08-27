@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -236,12 +237,14 @@ namespace ST.MultiTenant.Razor.Controllers
         /// Update tenant model
         /// </summary>
         /// <param name="model"></param>
+        /// <param name="callBack"></param>
         /// <returns></returns>
         [HttpPost]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityUpdate)]
-        public async Task<IActionResult> Edit(EditTenantViewModel model)
+        public async Task<IActionResult> Edit(EditTenantViewModel model, string callBack = null)
         {
             if (!ModelState.IsValid) return View(model);
+            var dbTenant = _organizationService.GetTenantById(model.Id);
             var updateModel = model.GetBase();
             if (model.OrganizationLogoFormFile != null)
             {
@@ -251,9 +254,19 @@ namespace ST.MultiTenant.Razor.Controllers
                     updateModel.OrganizationLogo = memoryStream.ToArray();
                 }
             }
+            else
+            {
+                updateModel.OrganizationLogo = dbTenant.OrganizationLogo;
+                updateModel.MachineName = dbTenant.MachineName;
+            }
+
             Context.Tenants.Update(updateModel);
 
             var dbResult = await Context.SaveAsync();
+            if (dbResult.IsSuccess && !string.IsNullOrEmpty(callBack))
+            {
+                return Redirect(callBack);
+            }
             if (dbResult.IsSuccess) return RedirectToAction(nameof(Index), "Tenant");
             ModelState.AppendResultModelErrors(dbResult.Errors);
             return View(model);
@@ -271,7 +284,7 @@ namespace ST.MultiTenant.Razor.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
 
             return NotFound();

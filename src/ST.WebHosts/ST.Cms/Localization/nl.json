@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "Was geselecteerd",
   "system_birthday": "Verjaardag",
   "profile_updated_successfully": "Profiel bijgewerkt",
-  "system_invite_user": "Nieuwe gebruiker uitnodigen"
+  "system_invite_user": "Nieuwe gebruiker uitnodigen",
+  "system_tenant_logo_info": "Het uploaden van de organisatie logo hier. De voorkeur afbeelding is 240x240 pixels en minder wahn (1 MB.",
+  "system_my_company": "Mijn bedrijf",
+  "system_tenant_logo": "Organisatie logo",
+  "system_company_add": "Voeg bedrijf"
 }

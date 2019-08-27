@@ -6,6 +6,8 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using ST.Identity.Abstractions;
 using ST.MultiTenant.Abstractions;
@@ -18,7 +20,7 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
-using ST.MultiTenant.Razor.Settings;
+using ST.MultiTenant.Razor.Helpers;
 using ST.MultiTenant.Razor.ViewModels;
 using ST.MultiTenant.ViewModels;
 using ST.Notifications.Abstractions;
@@ -35,15 +37,24 @@ namespace ST.MultiTenant.Razor.Controllers
         /// </summary>
         private readonly IOrganizationService<Tenant> _organizationService;
 
+        /// <summary>
+        /// Inject localizer
+        /// </summary>
+        private readonly IStringLocalizer _localizer;
+
+        /// <summary>
+        /// Users settings
+        /// </summary>
         private readonly MultiTenantListSettings _listSettings;
 
         public CompanyManageController(UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager, ICacheService cacheService,
             ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
-            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) :
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IStringLocalizer stringLocalizer) :
             base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
+            _localizer = stringLocalizer;
             _listSettings = new MultiTenantListSettings();
         }
 
@@ -54,6 +65,7 @@ namespace ST.MultiTenant.Razor.Controllers
             ViewBag.User = user;
             ViewBag.UsersListSettings = _listSettings.GetCompanyUserListSettings();
             ViewBag.Organization = _organizationService.GetUserOrganization(user);
+            ViewBag.Countries = GetCountrySelectList().GetAwaiter().GetResult();
             return base.Index();
         }
 
@@ -167,6 +179,25 @@ namespace ST.MultiTenant.Razor.Controllers
                 Message = "Invalid model"
             });
             return Json(resultModel);
+        }
+
+        /// <summary>
+        /// Get countries
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
+        {
+            var countrySelectList = await ApplicationDbContext.Countries
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id
+                }).ToListAsync();
+
+            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
+
+            return countrySelectList;
         }
     }
 }

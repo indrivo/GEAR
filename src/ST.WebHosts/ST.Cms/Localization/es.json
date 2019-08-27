@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "Fue seleccionado",
   "system_birthday": "Cumpleaños",
   "profile_updated_successfully": "Perfil actualizado correctamente",
-  "system_invite_user": "Invitar a un nuevo usuario"
+  "system_invite_user": "Invitar a un nuevo usuario",
+  "system_tenant_logo_info": "Cargar el logotipo de la organización aquí. Imagen preferido es 240x240 píxeles y menos wahn 1 MB.",
+  "system_my_company": "Mi empresa",
+  "system_tenant_logo": "El logotipo de la organización",
+  "system_company_add": "Añadir empresa"
 }

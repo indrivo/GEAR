@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "Was selected",
   "system_birthday": "Birthday",
   "profile_updated_successfully": "Profile updated successfully",
-  "system_invite_user": "Invite new user"
+  "system_invite_user": "Invite new user",
+  "system_tenant_logo_info": "Upload the organization logo here. Preferred image is 240x240 pixels and less wahn 1 MB.",
+  "system_my_company": "My  company",
+  "system_tenant_logo": "Organization logo",
+  "system_company_add": "Add company"
 }

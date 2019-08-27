@@ -98,7 +98,7 @@ namespace ST.MultiTenant.Services
         /// <returns></returns>
         public Tenant GetTenantById(Guid tenantId)
         {
-            return _context.Tenants.FirstOrDefault(x => x.Id == tenantId);
+            return _context.Tenants.AsNoTracking().FirstOrDefault(x => x.Id == tenantId);
         }
 
         /// <inheritdoc />

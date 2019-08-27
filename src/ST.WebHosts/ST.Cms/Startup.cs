@@ -86,6 +86,7 @@ using ST.Files.Box.Abstraction.Extension;
 using ST.Files.Box.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
+using ST.MultiTenant.Razor.Extensions;
 using ST.MultiTenant.Services;
 
 namespace ST.Cms
@@ -286,7 +287,8 @@ namespace ST.Cms
 				.AddEntitySecurityRazorUIModule();
 
 			//---------------------------Multi Tenant Module-------------------------------------
-			services.AddTenantModule<OrganizationService, Tenant>();
+			services.AddTenantModule<OrganizationService, Tenant>()
+				.AddMultiTenantRazorUIModule();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();

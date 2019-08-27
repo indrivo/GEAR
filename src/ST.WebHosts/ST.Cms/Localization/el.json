@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "Επιλέχθηκε",
   "system_birthday": "Γενέθλια",
   "profile_updated_successfully": "Το προφίλ ενημερώθηκε με επιτυχία",
-  "system_invite_user": "Προσκαλέστε νέο χρήστη"
+  "system_invite_user": "Προσκαλέστε νέο χρήστη",
+  "system_tenant_logo_info": "Ανεβάστε την οργάνωση λογότυπο εδώ. Προτιμώμενη εικόνα είναι 240x240 pixels και λιγότερο υιαχν 1 MB.",
+  "system_my_company": "Η εταιρεία μου",
+  "system_tenant_logo": "Οργάνωση λογότυπο",
+  "system_company_add": "Προσθέστε την επιχείρηση"
 }

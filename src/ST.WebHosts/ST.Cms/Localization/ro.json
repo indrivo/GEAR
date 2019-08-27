@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "A fost selectat",
   "system_birthday": "Ziua de nastere",
   "profile_updated_successfully": "Profil actualizat cu succes",
-  "system_invite_user": "Invitați un utilizator nou"
+  "system_invite_user": "Invitați un utilizator nou",
+  "system_tenant_logo_info": "Încărcați logo-ul organizației aici. Imaginea preferată este 240x240 pixeli și mai puțin wahn 1 MB.",
+  "system_my_company": "Compania mea",
+  "system_tenant_logo": "Logo-ul organizației",
+  "system_company_add": "Adauga companie"
 }

@@ -4,7 +4,7 @@ using ST.Core.Helpers;
 using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 using ST.Core.Razor.TagHelpersStructures;
 
-namespace ST.MultiTenant.Razor.Settings
+namespace ST.MultiTenant.Razor.Helpers
 {
     public class MultiTenantListSettings
     {

@@ -1,7 +1,8 @@
+@using ST.Core.Extensions
 @model ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel
 
 @{
-	ViewData["Title"] = "Profile";
+	ViewData["Title"] = Localizer["profile"];
 	var img = Url.RouteUrl(new {controller = "Users", action = "GetImage", id = Model.UserId});
 }
 
@@ -22,7 +23,7 @@
 					</label>
 				</div>
 				<div class="text-center">
-					<h5 class="weight-400">@Localizer["iso_hello"], @Model.UserName</h5>
+					<h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @Model.UserName</h5>
 					<p class="text-muted">@string.Join(", ", Model.Roles)</p>
 				</div>
 				<hr class="my-4 dashed">

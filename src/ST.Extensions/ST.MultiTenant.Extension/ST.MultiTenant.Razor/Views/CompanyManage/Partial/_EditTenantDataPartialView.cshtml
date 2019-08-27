@@ -1,6 +1,7 @@
 ﻿@model ST.MultiTenant.ViewModels.EditTenantViewModel
 
-<form asp-action="Edit" role="form" enctype="multipart/form-data">
+
+<form asp-action="Edit" asp-controller="Tenant" asp-route-callback="/CompanyManage" role="form" enctype="multipart/form-data">
     @Html.HiddenFor(x => x.Changed)
     @Html.HiddenFor(x => x.Created)
     @Html.HiddenFor(x => x.Author)
@@ -13,18 +14,18 @@
         <div class="row p-t-20">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label asp-for="OrganizationLogoFormFile" class="control-label"></label>
+                    <JTranslateLabel asp-for="OrganizationLogoFormFile" class="control-label"></JTranslateLabel>
                     <input type="file" asp-for="OrganizationLogoFormFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
                 </div>
             </div>
             <div class="col-md-6">
                 <p class="mt-5">
-                    Upload the organization logo here. Preferred image is 240x240 pixels and less wahn 1 MB.
+                    @Localizer["system_tenant_logo_info"]
                 </p>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="control-label" asp-for="Name"></label>
+                    <JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
                     <input class="form-control" type="text" asp-for="Name" />
                     <span asp-validation-for="Name" class="text-danger"></span><br />
                     <small>Name of the organization</small>
@@ -32,7 +33,7 @@
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="control-label" asp-for="SiteWeb"></label>
+                    <JTranslateLabel class="control-label" asp-for="SiteWeb"></JTranslateLabel>
                     <input class="form-control" type="text" asp-for="SiteWeb" />
                     <span asp-validation-for="SiteWeb" class="text-danger"></span><br />
                     <small></small>
@@ -40,7 +41,7 @@
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="control-label" asp-for="Address"></label>
+                    <JTranslateLabel class="control-label" asp-for="Address"></JTranslateLabel>
                     <input class="form-control" type="text" asp-for="Address" />
                     <span asp-validation-for="Address" class="text-danger"></span><br />
                     <small></small>
@@ -49,14 +50,14 @@
 
             <div class="col-md-6">
                 <div class="form-group">
-                    <label asp-for="CountryId" class="control-label"></label>
+                    <JTranslateLabel asp-for="CountryId" class="control-label"></JTranslateLabel>
                     <select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
                     <span asp-validation-for="CountryId" class="text-danger"></span><br />
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label asp-for="CityId" class="control-label"></label>
+                    <JTranslateLabel asp-for="CityId" class="control-label"></JTranslateLabel>
                     <select disabled="disabled" class="form-control" asp-for="CityId"></select>
                     <span asp-validation-for="CityId" class="text-danger"></span><br />
                 </div>

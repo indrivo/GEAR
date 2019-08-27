@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "Został wybrany",
   "system_birthday": "Urodziny",
   "profile_updated_successfully": "Profil pomyślnie zaktualizowany ",
-  "system_invite_user": "Zaproś nowych użytkowników"
+  "system_invite_user": "Zaproś nowych użytkowników",
+  "system_tenant_logo_info": "Pobierz tutaj logo organizacji. Preferowany obraz 240х240 pikseli i mniej Вахний 1 MB.",
+  "system_my_company": "Moja firma",
+  "system_tenant_logo": "Logo organizacji ",
+  "system_company_add": "Dodaj firmę"
 }

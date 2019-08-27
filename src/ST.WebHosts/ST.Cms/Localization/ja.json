@@ -465,5 +465,9 @@
   "system_inline_edit_select_value_changed": "選択した",
   "system_birthday": "誕生日",
   "profile_updated_successfully": "概要の更新に成功し",
-  "system_invite_user": "新しいユーザーを招待"
+  "system_invite_user": "新しいユーザーを招待",
+  "system_tenant_logo_info": "アップロードの組織のロゴです。 優先画像は240x240ピクセル以下wahn1応募を推奨いたします。",
+  "system_my_company": "私の会社",
+  "system_tenant_logo": "組織のロゴ",
+  "system_company_add": "追加会社"
 }
