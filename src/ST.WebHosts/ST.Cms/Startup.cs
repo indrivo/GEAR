@@ -80,6 +80,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using ST.Core.Services;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
@@ -217,10 +218,10 @@ namespace ST.Cms
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.UseCustomCacheModule(HostingEnvironment, Configuration);
-
+			//------------------------------ HttpContextAccessorService -------------------------------------
+			services.AddTransient<IHttpContextAccessorService, HttpContextAccessorService>();
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
-
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration);

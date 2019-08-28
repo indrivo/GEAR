@@ -43,7 +43,7 @@ namespace ST.TaskManager
         public async Task<ResultModel<List<TaskItemViewModel>>> GetTaskItemsAsync(Guid taskId)
         {
             var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == taskId);
-            if(task == null) return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
+            if (task == null) return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
 
             var dbTaskItemsResult = await _context.TaskItems.Where(x => x.Task == task).ToListAsync();
             var dto = new List<TaskItemViewModel>();
@@ -59,14 +59,18 @@ namespace ST.TaskManager
             };
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(Guid userId)
+        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName)
         {
-            var dbTasksResult = await _context.Tasks.Where(x => (x.Author == userId.ToString()) & (x.IsDeleted == false)).ToListAsync();
+            if (string.IsNullOrEmpty(userName)) return ExceptionHandler.ReturnErrorModel<List<GetTaskViewModel>>(ExceptionMessagesEnum.NullParameter);
+
+            var dbTasksResult = await _context.Tasks.Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 
         public async Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId)
         {
+            if (userId == Guid.Empty) return ExceptionHandler.ReturnErrorModel<List<GetTaskViewModel>>(ExceptionMessagesEnum.NullParameter);
+
             var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
@@ -77,6 +81,7 @@ namespace ST.TaskManager
 
         public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
+
             var taskModel = CreateTaskMapper(task);
 
             _context.Tasks.Add(taskModel);

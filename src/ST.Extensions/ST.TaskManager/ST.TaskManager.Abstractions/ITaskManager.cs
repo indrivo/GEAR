@@ -25,9 +25,9 @@ namespace ST.TaskManager.Abstractions
         /// <summary>
         /// Get tasks list by author user id
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(Guid userId);
+        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName);
 
         /// <summary>
         /// Get tasks list by assigner id

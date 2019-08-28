@@ -2,8 +2,8 @@
 using ST.Core.Helpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
 using ST.TaskManager.Abstractions.Helpers;
 using ST.TaskManager.Abstractions.Models.ViewModels;
@@ -19,9 +19,12 @@ namespace ST.TaskManager.Razor.Controllers
         /// </summary>
         private readonly ITaskManager _taskManager;
 
-        public TaskManagerController(ITaskManager taskManager)
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        public TaskManagerController(ITaskManager taskManager, IUserManager<ApplicationUser> userManager)
         {
             _taskManager = taskManager;
+            _userManager = userManager;
         }
 
 
@@ -49,8 +52,9 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
         public async Task<JsonResult> GetUserTasks()
         {
-            var userId = new Guid();
-            var response = await _taskManager.GetUserTasksAsync(userId);
+            var userName = HttpContext.User.Identity.Name;
+
+            var response = await _taskManager.GetUserTasksAsync(userName);
             return Json(response);
         }
 
@@ -58,8 +62,9 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
         public async Task<JsonResult> GetAssignedTasks()
         {
-            var userId = new Guid();
-            var response = await _taskManager.GetAssignedTasksAsync(userId);
+            var userId = _userManager.CurrentUserTenantId;
+
+            var response = await _taskManager.GetAssignedTasksAsync(userId ?? Guid.Empty);
             return Json(response);
         }
 
