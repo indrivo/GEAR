@@ -55,8 +55,6 @@ namespace ST.Files.Razor.Controllers
         [HttpPost]
         public JsonResult Upload(Guid id)
         {
-            if (id != Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
-
             var file = new UploadFileViewModel
             {
                 File = Request.Form.Files.FirstOrDefault(),
@@ -91,7 +89,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(Guid id)
         {
-            if (id != Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.DeleteFile(id);
             return Json(response);
@@ -106,7 +104,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Restore(Guid id)
         {
-            if (id != Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.RestoreFile(id);
             return Json(response);
@@ -121,7 +119,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult DeletePermanent(Guid id)
         {
-            if (id != Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.DeleteFilePermanent(id);
             return Json(response);
