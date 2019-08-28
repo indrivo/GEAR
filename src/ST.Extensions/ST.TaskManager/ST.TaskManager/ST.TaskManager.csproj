@@ -5,14 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
     <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
-    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Enums\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Helpers\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

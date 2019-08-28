@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using ST.Core;
+using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
 
 
@@ -88,7 +89,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(Guid id)
         {
-            if (id != Guid.Empty) return Json(new {message = "Fail to delete file!", success = false});
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.DeleteFile(id);
             return Json(response);
@@ -103,7 +104,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Restore(Guid id)
         {
-            if (id != Guid.Empty) return Json(new {message = "Fail to restore file!", success = false});
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.RestoreFile(id);
             return Json(response);
@@ -118,7 +119,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult DeletePermanent(Guid id)
         {
-            if (id != Guid.Empty) return Json(new {message = "Fail to delete form!", success = false});
+            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.DeleteFilePermanent(id);
             return Json(response);
