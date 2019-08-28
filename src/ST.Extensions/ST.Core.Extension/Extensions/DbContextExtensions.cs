@@ -89,7 +89,7 @@ namespace ST.Core.Extensions
 
             try
             {
-                AddTimestamps(context);
+                ChangeTracker(context);
                 context.SaveChanges();
                 rs.IsSuccess = true;
             }
@@ -117,7 +117,7 @@ namespace ST.Core.Extensions
 
             try
             {
-                AddTimestamps(context);
+                ChangeTracker(context);
                 await context.SaveChangesAsync();
                 rs.IsSuccess = true;
             }
@@ -179,7 +179,7 @@ namespace ST.Core.Extensions
         /// Adding values to BaseModel fields
         /// </summary>
         /// <param name="context"></param>
-        private static void AddTimestamps(DbContext context)
+        private static void ChangeTracker(DbContext context)
         {
             var currentUsername = Settings.ANONIMOUS_USER;
             try
