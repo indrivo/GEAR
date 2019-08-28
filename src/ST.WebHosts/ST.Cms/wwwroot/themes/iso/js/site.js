@@ -802,58 +802,6 @@ if (typeof TableInlineEdit !== "undefined") {
 	};
 
 	/**
- * Validate row
- * @param {any} context
- */
-	TableInlineEdit.prototype.isValidNewRow = function (context) {
-		const els = context.get(0).querySelectorAll("textarea.data-new");
-		let isValid = true;
-		$.each(els,
-			(index, el) => {
-				if (el.hasAttribute("data-required")) {
-					if (!el.value) {
-						if (!el.classList.contains("cell-red")) {
-							el.classList.add("cell-red");
-						}
-						isValid = false;
-					}
-				}
-			});
-
-		const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
-
-		$.each(elsDates,
-			(index, el) => {
-				const ctx = $(el).parent();
-				if (el.hasAttribute("data-required")) {
-					if (!el.value) {
-						if (!ctx.hasClass("cell-red")) {
-							ctx.addClass("cell-red");
-						}
-						isValid = false;
-					}
-				}
-			});
-
-		const referenceCells = context.get(0).querySelectorAll("select.data-new");
-		$.each(referenceCells,
-			(index, el) => {
-				if (el.hasAttribute("data-required")) {
-					const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
-					if (!el.value) {
-						if (!input.classList.contains("cell-red")) {
-							input.classList.add("cell-red");
-						}
-						isValid = false;
-					} else {
-						$(input).removeClass("cell-red");
-					}
-				}
-			});
-		return isValid;
-	};
-
-	/**
 	 * Rewrite add new line
 	 * @param {any} ctx
 	 * @param {any} jdt
@@ -874,6 +822,8 @@ if (typeof TableInlineEdit !== "undefined") {
 		}
 		const row = document.createElement("tr");
 		row.setAttribute("isNew", "true");
+		row.setAttribute(scope.attributeNames.addingInProgressAttr, "false");
+		row.setAttribute(scope.attributeNames.validatorAttr, "false");
 		const columns = jdt.columns().context[0].aoColumns;
 		for (let i in columns) {
 			//Ignore hidden column
