@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Cargar el logotipo de la organización aquí. Imagen preferido es 240x240 píxeles y menos wahn 1 MB.",
   "system_my_company": "Mi empresa",
   "system_tenant_logo": "El logotipo de la organización",
-  "system_company_add": "Añadir empresa"
+  "system_company_add": "Añadir empresa",
+  "user_add_new_address": "Agregar nueva dirección",
+  "user_address_list": "Lista de direcciones",
+  "user_is_primary": "Es la principal",
+  "user_contact_name": "Nombre de contacto",
+  "user_address_line_1": "Línea de dirección 1",
+  "user_address_line_2": "Línea de dirección 2",
+  "user_zip_code": "El Código Postal De",
+  "user_district": "Distrito",
+  "user_not_found_any_address": "No se encontró ninguna dirección",
+  "edit_address": "Modificar la dirección",
+  "system_current_password": "Contraseña actual"
 }

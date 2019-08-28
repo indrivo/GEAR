@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Caricare il logo dell'organizzazione qui. Immagine preferita è di 240 x 240 pixel e meno wahn 1 MB.",
   "system_my_company": "La mia azienda",
   "system_tenant_logo": "Logo dell'organizzazione",
-  "system_company_add": "Aggiungere azienda"
+  "system_company_add": "Aggiungere azienda",
+  "user_add_new_address": "Aggiungi nuovo indirizzo",
+  "user_address_list": "Elenco di indirizzi",
+  "user_is_primary": "È primario",
+  "user_contact_name": "Nome del contatto",
+  "user_address_line_1": "Indirizzo 1",
+  "user_address_line_2": "Indirizzo 2",
+  "user_zip_code": "C.a.p.",
+  "user_district": "Distretto",
+  "user_not_found_any_address": "Non sono stati trovati indirizzi",
+  "edit_address": "Modificare l'indirizzo",
+  "system_current_password": "Password attuale"
 }

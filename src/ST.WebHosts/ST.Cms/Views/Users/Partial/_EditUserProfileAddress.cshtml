@@ -1,8 +1,9 @@
-@model ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress.AddUserProfileAddressViewModel
+@model ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress.EditUserProfileAddressViewModel
 
-<form asp-controller="Users" asp-action="AddUserProfileAddress" name="AddUserProfileAddress" id="AddUserProfileAddress" autocomplete="off" method="post">
+<form asp-controller="Users" asp-action="EditUserProfileAddress" name="EditUserProfileAddress" id="EditUserProfileAddress" autocomplete="off" method="post">
+	<input type="hidden" asp-for="Id"/>
 	<div class="modal-header px-4">
-		<h5 class="modal-title" id="exampleModalLabel">@Localizer["user_add_new_address"]</h5>
+		<h5 class="modal-title" id="exampleModalLabel">@Localizer["edit_address"]</h5>
 		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 			<span class="material-icons ">close</span>
 		</button>
@@ -25,7 +26,7 @@
 		</div>
 		<div class="form-group">
 			<JTranslateLabel asp-for="SelectedStateOrProvinceId"></JTranslateLabel>
-			<select class="form-control" asp-for="SelectedStateOrProvinceId" disabled="disabled"></select>
+			<select class="form-control" asp-for="SelectedStateOrProvinceId" asp-items="Model.SelectedStateOrProvinceSelectListItems"></select>
 			<span asp-validation-for="SelectedStateOrProvinceId" class="text-danger"></span>
 		</div>
 		<div class="form-group">
@@ -43,12 +44,6 @@
 			<input class="form-control" asp-for="ZipCode">
 			<span asp-validation-for="ZipCode" class="text-danger"></span>
 		</div>
-		<div class="form-group">
-			<div class="custom-control custom-switch">
-				<input asp-for="IsDefault" type="checkbox" class="custom-control-input"  id="customSwitch1">
-				<JTranslateLabel class="custom-control-label" for="customSwitch1"></JTranslateLabel>
-			</div>
-		</div>
 	</div>
 	<div class="modal-footer px-4">
 		<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["cancel"]</button>
@@ -57,7 +52,7 @@
 </form>
 <partial name="_ValidationScriptsPartial"/>
 <script type="text/javascript">
-	$("form[name='AddUserProfileAddress']").submit(function(e) {
+	$("form[name='EditUserProfileAddress']").submit(function(e) {
 		e.preventDefault();
 		const form = $(this);
 		if ($(form).validate().form()) {
@@ -67,6 +62,7 @@
 				data: form.serialize()
 			}).done((data) => {
 				if (data.is_success) {
+					new ToastNotifier().notify({ icon: "success", heading: "Success" });
 					$.ajax({
 						method: 'GET',
 						url: `@Url.Action("UserAddressPartial", "Users")?userId=${$("#userId").val()}`,
@@ -78,9 +74,7 @@
 								`<h2 class='text-danger'>${window.translate("system_server_not_respond")}</h2>`);
 						}
 					});
-					new ToastNotifier().notify({ icon: "success", heading: window.translate("system_inline_saved") });
 					$('#modal-container').modal('hide');
-
 				} else {
 					new ToastNotifier().notifyErrorList(data.error_keys);
 				}

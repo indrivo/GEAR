@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Ανεβάστε την οργάνωση λογότυπο εδώ. Προτιμώμενη εικόνα είναι 240x240 pixels και λιγότερο υιαχν 1 MB.",
   "system_my_company": "Η εταιρεία μου",
   "system_tenant_logo": "Οργάνωση λογότυπο",
-  "system_company_add": "Προσθέστε την επιχείρηση"
+  "system_company_add": "Προσθέστε την επιχείρηση",
+  "user_add_new_address": "Να προσθέσετε νέα διεύθυνση",
+  "user_address_list": "Λίστα διευθύνσεων",
+  "user_is_primary": "Είναι το πρωτεύον",
+  "user_contact_name": "Το όνομα της επαφής",
+  "user_address_line_1": "Διεύθυνση γραμμή 1",
+  "user_address_line_2": "Διεύθυνση γραμμή 2",
+  "user_zip_code": "Ταχυδρομικός Κώδικας",
+  "user_district": "Περιοχή",
+  "user_not_found_any_address": "Δεν βρέθηκε οποιαδήποτε διεύθυνση",
+  "edit_address": "Επεξεργαστείτε τη διεύθυνση",
+  "system_current_password": "Τρέχοντα κωδικό πρόσβασης"
 }

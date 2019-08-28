@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "上传本组织的标志在这里。 优选的图像是240x240素和少望恩1MB。",
   "system_my_company": "我的公司",
   "system_tenant_logo": "组织的标志",
-  "system_company_add": "加入公司"
+  "system_company_add": "加入公司",
+  "user_add_new_address": "添加新的地址",
+  "user_address_list": "地址列表",
+  "user_is_primary": "是主要的",
+  "user_contact_name": "联系人姓名",
+  "user_address_line_1": "地址1号线",
+  "user_address_line_2": "地址2号线",
+  "user_zip_code": "邮政编码",
+  "user_district": "区",
+  "user_not_found_any_address": "没有发现任何地址",
+  "edit_address": "编辑的地址",
+  "system_current_password": "当前的密码"
 }

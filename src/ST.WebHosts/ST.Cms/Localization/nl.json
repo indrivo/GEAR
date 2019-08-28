@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Het uploaden van de organisatie logo hier. De voorkeur afbeelding is 240x240 pixels en minder wahn (1 MB.",
   "system_my_company": "Mijn bedrijf",
   "system_tenant_logo": "Organisatie logo",
-  "system_company_add": "Voeg bedrijf"
+  "system_company_add": "Voeg bedrijf",
+  "user_add_new_address": "Nieuw adres toevoegen",
+  "user_address_list": "Adres lijst",
+  "user_is_primary": "Primair Is",
+  "user_contact_name": "Contact naam",
+  "user_address_line_1": "Adres lijn 1",
+  "user_address_line_2": "Adres lijn 2",
+  "user_zip_code": "Zip Code",
+  "user_district": "Wijk",
+  "user_not_found_any_address": "Niet gevonden adres",
+  "edit_address": "Adres bewerken",
+  "system_current_password": "Huidige wachtwoord in"
 }

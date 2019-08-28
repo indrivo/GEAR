@@ -29,6 +29,7 @@ using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Events;
 using ST.Identity.Abstractions.Events.EventArgs.Users;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
 using ST.MultiTenant.Abstractions;
@@ -618,7 +619,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 AboutMe = currentUser.AboutMe,
                 Birthday = currentUser.Birthday,
                 Email = currentUser.Email,
-                
+
                 Roles = await UserManager.GetRolesAsync(currentUser),
                 Groups = await ApplicationDbContext.UserGroups
                     .Include(x => x.AuthGroup)
@@ -994,6 +995,39 @@ namespace ST.Identity.Razor.Users.Controllers
             return Json(true);
         }
 
+        [HttpPost]
+        public virtual async Task<JsonResult> DeleteUserAddress(Guid? id)
+        {
+            var resultModel = new ResultModel();
+            if (!id.HasValue)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Null id"));
+                return Json(resultModel);
+            }
+
+            var currentAddress = await ApplicationDbContext.Addresses.FindAsync(id.Value);
+            if (currentAddress == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
+                return Json(resultModel);
+            }
+
+            currentAddress.IsDeleted = true;
+            var result = await ApplicationDbContext.SaveAsync();
+            if (!result.IsSuccess)
+            {
+                foreach (var error in result.Errors)
+                {
+                    resultModel.Errors.Add(new ErrorModel(error.Key, error.Message));
+                }
+
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
         [HttpGet]
         public virtual PartialViewResult UserPasswordChange()
         {
@@ -1064,35 +1098,35 @@ namespace ST.Identity.Razor.Users.Controllers
         }
 
         [HttpGet]
-        public virtual async Task<IActionResult> UserAddressPartial(Guid? userId)
+        public virtual IActionResult UserAddressPartial(Guid? userId)
         {
             if (!userId.HasValue)
             {
                 return NotFound();
             }
 
-            var addressList = await ApplicationDbContext.Addresses
+            var addressList = ApplicationDbContext.Addresses
                 .AsNoTracking()
-                .Where(x => x.ApplicationUserId.Equals(userId))
+                .Where(x => x.ApplicationUserId.Equals(userId.Value.ToString()) && x.IsDeleted == false)
                 .Include(x => x.Country)
                 .Include(x => x.StateOrProvince)
                 .Include(x => x.District)
-                .ToListAsync();
+                .Select(address => new UserProfileAddressViewModel
+                {
+                    Id = address.Id,
+                    AddressLine1 = address.AddressLine1,
+                    AddressLine2 = address.AddressLine2,
+                    Phone = address.Phone,
+                    ContactName = address.ContactName,
+                    District = address.District.Name,
+                    Country = address.Country.Name,
+                    City = address.City,
+                    IsPrimary = true,
+                    ZipCode = address.ZipCode,
+                })
+                .ToList();
 
-            var userAddressModel = addressList.Select(address => new UserProfileAddressViewModel
-            {
-                Id = address.Id,
-                AddressLine1 = address.AddressLine1,
-                AddressLine2 = address.AddressLine2,
-                Phone = address.Phone,
-                ContactName = address.ContactName,
-                District = address.District.Name,
-                Country = address.Country.Name,
-                City = address.City,
-                IsPrimary = true,
-                ZipCode = address.ZipCode,
-            }).ToList();
-            return PartialView("Partial/_AddressListPartial", userAddressModel);
+            return PartialView("Partial/_AddressListPartial", addressList);
         }
 
         [HttpGet]
@@ -1116,12 +1150,133 @@ namespace ST.Identity.Razor.Users.Controllers
         public virtual async Task<JsonResult> AddUserProfileAddress(AddUserProfileAddressViewModel model)
         {
             var resultModel = new ResultModel();
+
             if (!ModelState.IsValid)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
                 return Json(resultModel);
             }
 
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
+                return Json(resultModel);
+            }
+
+
+            var address = new Address
+            {
+                AddressLine1 = model.AddressLine1,
+                AddressLine2 = model.AddressLine2,
+                Created = DateTime.Now,
+                ContactName = model.ContactName,
+                ZipCode = model.ZipCode,
+                City = model.City,
+                Phone = model.Phone,
+                CountryId = model.SelectedCountryId,
+                StateOrProvinceId = model.SelectedStateOrProvinceId,
+                ApplicationUser = currentUser
+            };
+
+            await ApplicationDbContext.AddAsync(address);
+            var result = await ApplicationDbContext.SaveAsync();
+            if (!result.IsSuccess)
+            {
+                foreach (var resultError in result.Errors)
+                {
+                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
+                }
+
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
+
+        [HttpGet]
+        public virtual async Task<IActionResult> EditUserProfileAddress(Guid? addressId)
+        {
+            if (!addressId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var currentAddress = await ApplicationDbContext.Addresses
+                .FirstOrDefaultAsync(x => x.Id.Equals(addressId.Value));
+            var cityBySelectedCountry = await ApplicationDbContext.StateOrProvinces
+                .AsNoTracking()
+                .Where(x => x.CountryId.Equals(currentAddress.CountryId))
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToListAsync();
+            if (currentAddress == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserProfileAddressViewModel
+            {
+                Id = currentAddress.Id,
+                CountrySelectListItems = await GetCountrySelectList(),
+                AddressLine1 = currentAddress.AddressLine1,
+                AddressLine2 = currentAddress.AddressLine2,
+                Phone = currentAddress.Phone,
+                ContactName = currentAddress.ContactName,
+                City = currentAddress.City,
+                ZipCode = currentAddress.ZipCode,
+                SelectedCountryId = currentAddress.CountryId,
+                SelectedStateOrProvinceId = currentAddress.StateOrProvinceId,
+                SelectedStateOrProvinceSelectListItems = cityBySelectedCountry
+            };
+            return PartialView("Partial/_EditUserProfileAddress", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> EditUserProfileAddress(EditUserProfileAddressViewModel model)
+        {
+            var resultModel = new ResultModel();
+
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
+
+            var currentAddress = await ApplicationDbContext.Addresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            if (currentAddress == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
+                return Json(resultModel);
+            }
+
+            currentAddress.CountryId = model.SelectedCountryId;
+            currentAddress.StateOrProvinceId = model.SelectedStateOrProvinceId;
+            currentAddress.AddressLine1 = model.AddressLine1;
+            currentAddress.AddressLine2 = model.AddressLine2;
+            currentAddress.City = model.City;
+            currentAddress.ContactName = model.ContactName;
+            currentAddress.Phone = model.Phone;
+            currentAddress.ZipCode = model.ZipCode;
+
+            ApplicationDbContext.Update(currentAddress);
+            var result = await ApplicationDbContext.SaveAsync();
+            if (!result.IsSuccess)
+            {
+                foreach (var resultError in result.Errors)
+                {
+                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
+                }
+
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = true;
             return Json(resultModel);
         }
 
@@ -1196,7 +1351,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     Value = x.Id,
                     Text = x.Name
                 }).ToListAsync();
-            roles.Insert(0, new SelectListItem("Select role", string.Empty));
+            roles.Insert(0, new SelectListItem(_localizer["sel_role"], string.Empty));
 
             return roles;
         }
@@ -1214,7 +1369,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     Value = x.Id.ToString(),
                     Text = x.Name
                 }).ToListAsync();
-            authGroups.Insert(0, new SelectListItem("Select auth group", string.Empty));
+            authGroups.Insert(0, new SelectListItem(_localizer["sel_group"], string.Empty));
 
             return authGroups;
         }

@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Завантажте тут логотип організації. Переважний зображення 240х240 пікселів і менше Вахній 1 МБ.",
   "system_my_company": "Моя компанія",
   "system_tenant_logo": "Логотип організації ",
-  "system_company_add": "Додати компанію"
+  "system_company_add": "Додати компанію",
+  "user_add_new_address": "Додати нову адресу",
+  "user_address_list": "Список адрес ",
+  "user_is_primary": "Первинно",
+  "user_contact_name": "Контактне ім'я",
+  "user_address_line_1": "Рядок адреси 1",
+  "user_address_line_2": "Рядок 2 адреси",
+  "user_zip_code": "Поштовий Індекс",
+  "user_district": "Район",
+  "user_not_found_any_address": "Не знайшов жодної адреси",
+  "edit_address": "Змінити адресу",
+  "system_current_password": "Поточний пароль"
 }

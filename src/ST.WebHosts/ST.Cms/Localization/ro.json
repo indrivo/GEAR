@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Încărcați logo-ul organizației aici. Imaginea preferată este 240x240 pixeli și mai puțin wahn 1 MB.",
   "system_my_company": "Compania mea",
   "system_tenant_logo": "Logo-ul organizației",
-  "system_company_add": "Adauga companie"
+  "system_company_add": "Adauga companie",
+  "user_add_new_address": "Adăugați o nouă adresă",
+  "user_address_list": "Lista de adrese",
+  "user_is_primary": "Este primar",
+  "user_contact_name": "Nume de contact",
+  "user_address_line_1": "Adresa Rândul 1",
+  "user_address_line_2": "Linia de adresă 2",
+  "user_zip_code": "Cod Postal",
+  "user_district": "District",
+  "user_not_found_any_address": "Nu am gasit nici o adresa",
+  "edit_address": "Editați adresa",
+  "system_current_password": "Parola curentă"
 }

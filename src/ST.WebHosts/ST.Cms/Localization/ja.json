@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "アップロードの組織のロゴです。 優先画像は240x240ピクセル以下wahn1応募を推奨いたします。",
   "system_my_company": "私の会社",
   "system_tenant_logo": "組織のロゴ",
-  "system_company_add": "追加会社"
+  "system_company_add": "追加会社",
+  "user_add_new_address": "新規追加アドレス",
+  "user_address_list": "アドレス一覧",
+  "user_is_primary": "校",
+  "user_contact_name": "連絡先名",
+  "user_address_line_1": "住所1号線",
+  "user_address_line_2": "住所2",
+  "user_zip_code": "郵便番号",
+  "user_district": "地区",
+  "user_not_found_any_address": "見つかりませんで任意のアドレス",
+  "edit_address": "編集アドレス",
+  "system_current_password": "現在のパスワード"
 }

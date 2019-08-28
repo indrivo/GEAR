@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Laden Sie die Organisation logo hier. Bevorzugte Bild ist 240 x 240 Pixel und weniger wahn 1 MB.",
   "system_my_company": "Meine Firma",
   "system_tenant_logo": "Organisation logo",
-  "system_company_add": "Firma hinzufügen"
+  "system_company_add": "Firma hinzufügen",
+  "user_add_new_address": "Neue Adresse hinzufügen",
+  "user_address_list": "Adressliste",
+  "user_is_primary": "Primär ist",
+  "user_contact_name": "Kontakt name",
+  "user_address_line_1": "Adresse Zeile 1",
+  "user_address_line_2": "Adresse Zeile 2",
+  "user_zip_code": "Zip Code",
+  "user_district": "Bezirk",
+  "user_not_found_any_address": "Nicht gefunden keine Adresse",
+  "edit_address": "Adresse Bearbeiten",
+  "system_current_password": "Aktuelles Passwort"
 }

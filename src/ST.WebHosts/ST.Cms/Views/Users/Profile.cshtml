@@ -12,6 +12,7 @@
 }
 
 <div class="row">
+	<input type="hidden" asp-for="UserId" name="userId" id="userId"/>
 	<div class="col-lg-3 mb-2">
 		<div class="card h-100">
 			<div class="card-body">
@@ -19,7 +20,6 @@
 					<label class="label" title="Change your avatar">
 						<img src="@img" id="avatar" class="img-thumbnail img-fluid rounded-circle" alt="@Model.UserName">
 						<input type="file" class="sr-only" id="input" name="image" accept="image/*">
-
 					</label>
 				</div>
 				<div class="text-center">
@@ -47,7 +47,7 @@
 						<a asp-controller="Users" asp-action="ChangeUserPasswordPartial" class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" role="tab" aria-controls="changePassword" aria-selected="false" data-target="#changePassword">@Localizer["system_user_change_password"]</a>
 					</li>
 					<li class="nav-item" role="presentation">
-						<a asp-controller="Users" asp-action="UserAddressPartial" asp-route-userId="@Model.UserId" class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" role="tab" aria-controls="addresList" aria-selected="false" data-target="#addresList">Address list</a>
+						<a asp-controller="Users" asp-action="UserAddressPartial" asp-route-userId="@Model.UserId" class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" role="tab" aria-controls="addresList" aria-selected="false" data-target="#addresList">@Localizer["user_address_list"]</a>
 					</li>
 				</ul>
 			</div>
@@ -113,7 +113,6 @@
 {
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
 	<script type="text/javascript">
-
 		window.addEventListener('DOMContentLoaded',
 			function() {
 				var avatar = document.getElementById('avatar');
@@ -236,7 +235,7 @@
 					});
 			});
 	</script>
-	<script>
+	<script type="text/javascript">
 		$(function() {
 			const modalContainer = $("#modal-container");
 			$(modalContainer).on("show.bs.modal",
@@ -273,7 +272,6 @@
 								`<div class="lds-ring"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`);
 						},
 						success: (result) => {
-							console.log(result);
 							$tabTarget.html(result);
 						},
 						error: () => {

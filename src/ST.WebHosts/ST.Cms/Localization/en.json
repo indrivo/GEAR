@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Upload the organization logo here. Preferred image is 240x240 pixels and less wahn 1 MB.",
   "system_my_company": "My  company",
   "system_tenant_logo": "Organization logo",
-  "system_company_add": "Add company"
+  "system_company_add": "Add company",
+  "user_add_new_address": "Add new address",
+  "user_address_list": "Address list",
+  "user_is_primary": "Is primary",
+  "user_contact_name": "Contact name",
+  "user_address_line_1": "Address line 1",
+  "user_address_line_2": "Address line 2",
+  "user_zip_code": "Zip Code",
+  "user_district": "District",
+  "user_not_found_any_address": "Not found any address",
+  "edit_address": "Edit address",
+  "system_current_password": "Current password"
 }

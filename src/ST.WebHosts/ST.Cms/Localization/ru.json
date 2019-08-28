@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Загрузите здесь логотип организации. Предпочтительный изображения 240х240 пикселей и менее Вахний 1 МБ.",
   "system_my_company": "Моя компания",
   "system_tenant_logo": "Логотип организации ",
-  "system_company_add": "Добавить компанию"
+  "system_company_add": "Добавить компанию",
+  "user_add_new_address": "Добавить новый адрес",
+  "user_address_list": "Список адресов ",
+  "user_is_primary": "Первично",
+  "user_contact_name": "Контактное имя",
+  "user_address_line_1": "Строка адреса 1",
+  "user_address_line_2": "Строка адреса 2",
+  "user_zip_code": "Почтовый Индекс",
+  "user_district": "Район",
+  "user_not_found_any_address": "Не нашел ни одного адреса",
+  "edit_address": "Изменить адрес",
+  "system_current_password": "Текущий пароль"
 }

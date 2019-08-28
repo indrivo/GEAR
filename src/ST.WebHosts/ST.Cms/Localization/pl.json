@@ -469,5 +469,16 @@
   "system_tenant_logo_info": "Pobierz tutaj logo organizacji. Preferowany obraz 240х240 pikseli i mniej Вахний 1 MB.",
   "system_my_company": "Moja firma",
   "system_tenant_logo": "Logo organizacji ",
-  "system_company_add": "Dodaj firmę"
+  "system_company_add": "Dodaj firmę",
+  "user_add_new_address": "Dodaj nowy adres",
+  "user_address_list": "Lista adresów ",
+  "user_is_primary": "Początkowo",
+  "user_contact_name": "Imię i nazwisko osoby kontaktowej",
+  "user_address_line_1": "Pasek adresu 1",
+  "user_address_line_2": "Pasek adresu 2",
+  "user_zip_code": "Kod Pocztowy",
+  "user_district": "Powiat",
+  "user_not_found_any_address": "Nie znalazłem ani jednego adresu",
+  "edit_address": "Zmienić adres",
+  "system_current_password": "Bieżące hasło"
 }
