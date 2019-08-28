@@ -41,15 +41,22 @@ namespace ST.Core.Razor.TagHelpers
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = "label";
-            output.Attributes.Add("for", AspFor.Name);
-            output.Attributes.Add("class", Class);
-            output.TagMode = TagMode.StartTagAndEndTag;
-            var childs = await output.GetChildContentAsync();
-            var childsBody = childs.GetContent();
-            var body = new StringBuilder();
-            body.Append(string.IsNullOrEmpty(childsBody) ? GetTranslatedKey() : childsBody);
-            body.Append(childsBody);
-            output.Content.SetContent(body.ToString());
+            if (AspFor == null)
+            {
+                output.Content.SetContent("Bad configuration");
+            }
+            else
+            {
+                output.Attributes.Add("for", AspFor.Name);
+                output.Attributes.Add("class", Class);
+                output.TagMode = TagMode.StartTagAndEndTag;
+                var childs = await output.GetChildContentAsync();
+                var childsBody = childs.GetContent();
+                var body = new StringBuilder();
+                body.Append(string.IsNullOrEmpty(childsBody) ? GetTranslatedKey() : childsBody);
+                body.Append(childsBody);
+                output.Content.SetContent(body.ToString());
+            }
         }
 
         /// <summary>
