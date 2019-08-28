@@ -8,25 +8,25 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
     {
         [Required]
         [MaxLength(50)]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         [Required]
         [MaxLength(500)]
-        public string Description { get; set; }
+        public virtual string Description { get; set; }
 
         [Required]
-        public DateTime StartDate { get; set; }
+        public virtual DateTime StartDate { get; set; }
 
         [Required]
-        public DateTime EndDate { get; set; }
+        public virtual DateTime EndDate { get; set; }
 
         [Required]
-        public Guid UserId { get; set; }
+        public virtual Guid UserId { get; set; }
 
         [Required]
-        public TaskPriority TaskPriority { get; set; }
+        public virtual TaskPriority TaskPriority { get; set; }
 
         [Required]
-        public TaskStatus Status { get; set; }
+        public virtual TaskStatus Status { get; set; }
     }
 }

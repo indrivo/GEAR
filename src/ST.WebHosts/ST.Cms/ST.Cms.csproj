@@ -131,6 +131,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender.Razor\ST.PageRender.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Render.Extension\ST.PageRender\ST.PageRender.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Report.Extension\ST.Report.Dynamic.Razor\ST.Report.Dynamic.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.TaskManager\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.TaskManager\ST.TaskManager.Razor\ST.TaskManager.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.TaskManager\ST.TaskManager\ST.TaskManager.csproj" />
   </ItemGroup>

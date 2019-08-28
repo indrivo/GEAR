@@ -7,5 +7,4 @@
         High,
         Critical
     }
-
 }

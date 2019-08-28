@@ -3,6 +3,7 @@ using ST.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
 using ST.TaskManager.Abstractions.Helpers;
@@ -11,6 +12,7 @@ using ST.TaskManager.Abstractions.Models.ViewModels;
 
 namespace ST.TaskManager.Razor.Controllers
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     public sealed class TaskManagerController : Controller
     {
@@ -19,6 +21,9 @@ namespace ST.TaskManager.Razor.Controllers
         /// </summary>
         private readonly ITaskManager _taskManager;
 
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
         private readonly IUserManager<ApplicationUser> _userManager;
 
         public TaskManagerController(ITaskManager taskManager, IUserManager<ApplicationUser> userManager)
@@ -26,7 +31,6 @@ namespace ST.TaskManager.Razor.Controllers
             _taskManager = taskManager;
             _userManager = userManager;
         }
-
 
         /// <summary>
         /// Index page

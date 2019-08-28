@@ -6,7 +6,7 @@ using ST.TaskManager.Abstractions.Models;
 
 namespace ST.TaskManager.Data
 {
-    public class TaskManagerDbContext: TrackerDbContext, ITaskManagerContext
+    public class TaskManagerDbContext : TrackerDbContext, ITaskManagerContext
     {
         /// <summary>
         /// Schema
@@ -22,15 +22,20 @@ namespace ST.TaskManager.Data
         public TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options)
             : base(options)
         {
-            //TODO: Do some actions on context instance
+
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Tasks
         /// </summary>
-        public DbSet<Task> Tasks { get; set; }
+        public virtual DbSet<Task> Tasks { get; set; }
 
-        public DbSet<TaskItem> TaskItems { get; set; }
+        /// <inheritdoc />
+        /// <summary>
+        /// Task items
+        /// </summary>
+        public virtual DbSet<TaskItem> TaskItems { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -46,11 +51,11 @@ namespace ST.TaskManager.Data
             builder.Entity<Task>()
                 .HasIndex(p => p.UserId);
             builder.Entity<Task>()
-                .HasIndex(p => new {p.UserId, p.IsDeleted});
+                .HasIndex(p => new { p.UserId, p.IsDeleted });
             builder.Entity<Task>()
-                .HasIndex(p => new {p.Id, p.IsDeleted});
+                .HasIndex(p => new { p.Id, p.IsDeleted });
             builder.Entity<TaskItem>()
-                .HasKey(x => new {x.Id});
+                .HasKey(x => new { x.Id });
             builder.Entity<TaskItem>()
                 .HasOne(p => p.Task).WithMany(x => x.TaskItems)
                 .OnDelete(DeleteBehavior.Cascade);

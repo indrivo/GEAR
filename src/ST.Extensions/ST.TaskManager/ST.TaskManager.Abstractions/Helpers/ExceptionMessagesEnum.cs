@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace ST.TaskManager.Abstractions.Helpers
 {
@@ -17,6 +14,6 @@ namespace ST.TaskManager.Abstractions.Helpers
         [Description("Parameter is null")] NullParameter,
 
         [Description("There was a error on saving Task ")]
-        TaskNotSaved,
+        TaskNotSaved
     }
 }

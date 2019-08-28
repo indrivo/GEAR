@@ -9,16 +9,15 @@ using ST.TaskManager.Abstractions;
 using ST.TaskManager.Abstractions.Helpers;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
-using ST.TaskManager.Data;
 using Task = ST.TaskManager.Abstractions.Models.Task;
 
 namespace ST.TaskManager
 {
-    public class TaskManager<TContext> : TaskManagerHelper, ITaskManager where TContext : TaskManagerDbContext, ITaskManagerContext
+    public class TaskManager : TaskManagerHelper, ITaskManager
     {
-        private readonly TContext _context;
+        private readonly ITaskManagerContext _context;
 
-        public TaskManager(TContext context)
+        public TaskManager(ITaskManagerContext context)
         {
             _context = context;
         }
@@ -85,7 +84,7 @@ namespace ST.TaskManager
             var taskModel = CreateTaskMapper(task);
 
             _context.Tasks.Add(taskModel);
-            var result = await _context.SaveAsync();
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel<Guid>
             {
@@ -103,7 +102,7 @@ namespace ST.TaskManager
 
             var taskModel = UpdateTaskMapper(task, dbTaskResult);
             _context.Tasks.Update(taskModel);
-            var result = await _context.SaveAsync();
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel
             {
@@ -119,8 +118,7 @@ namespace ST.TaskManager
 
             file.IsDeleted = true;
             _context.Tasks.Update(file);
-            var result = await _context.SaveAsync();
-
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel
             {
@@ -136,7 +134,7 @@ namespace ST.TaskManager
 
             _context.Tasks.Remove(task);
 
-            var result = await _context.SaveAsync();
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel
             {
@@ -155,7 +153,7 @@ namespace ST.TaskManager
             var taskModel = new TaskItem {Name = task.Name, Task = dbTaskResult};
 
             _context.TaskItems.Add(taskModel);
-            var result = await _context.SaveAsync();
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel<Guid>
             {
@@ -179,7 +177,7 @@ namespace ST.TaskManager
                 return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
             }
 
-            var result = await _context.SaveAsync();
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel<Guid>
             {
@@ -196,7 +194,7 @@ namespace ST.TaskManager
 
             _context.TaskItems.Remove(task);
 
-            var result = await _context.SaveAsync();
+            var result = await _context.SaveDependenceAsync();
 
             return new ResultModel
             {

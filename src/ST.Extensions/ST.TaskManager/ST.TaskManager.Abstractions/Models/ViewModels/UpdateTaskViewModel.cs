@@ -16,8 +16,8 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
 
         public Guid UserId { get; set; }
 
-        public TaskPriority TaskPriority { get; set; }
+        public TaskPriority TaskPriority { get; set; } = TaskPriority.Low;
 
-        public TaskStatus Status { get; set; }
+        public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
     }
 }

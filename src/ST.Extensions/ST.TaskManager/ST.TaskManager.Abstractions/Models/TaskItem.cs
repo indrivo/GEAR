@@ -10,7 +10,9 @@ namespace ST.TaskManager.Abstractions.Models
             Id = Guid.NewGuid();
         }
 
-        /// <summary>Stores Id of the Object</summary>
+        /// <summary>
+        /// Stores Id of the Object
+        /// </summary>
         public Guid Id { get; set; }
 
 
@@ -26,7 +28,6 @@ namespace ST.TaskManager.Abstractions.Models
         /// Task item status
         /// </summary>
         public bool IsDone { get; set; }
-
 
         /// <summary>
         /// Reference to parent task

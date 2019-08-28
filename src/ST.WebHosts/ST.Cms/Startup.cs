@@ -35,7 +35,6 @@ using ST.Entities.Razor.Extensions;
 using ST.Entities.Security;
 using ST.Entities.Security.Abstractions.Extensions;
 using ST.Entities.Security.Data;
-using ST.Entities.Security.Extensions;
 using ST.Files;
 using ST.Files.Abstraction.Extension;
 using ST.Files.Data;
@@ -88,8 +87,9 @@ using ST.Files.Box.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
 using ST.MultiTenant.Services;
-using ST.TaskManager.Data;
 using ST.TaskManager.Abstractions.Extensions;
+using ST.TaskManager.Data;
+using ST.TaskManager.Razor.Extensions;
 
 namespace ST.Cms
 {
@@ -348,12 +348,13 @@ namespace ST.Cms
 				});
 			//------------------------------------Task Module-------------------------------------
 			services
-				.AddTaskModule<TaskManager.TaskManager<TaskManagerDbContext>>()
+				.AddTaskModule<TaskManager.TaskManager>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddTaskManagerRazorUIModule();
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 
