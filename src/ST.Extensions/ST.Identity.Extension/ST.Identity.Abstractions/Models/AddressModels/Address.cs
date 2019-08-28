@@ -43,6 +43,6 @@ namespace ST.Identity.Abstractions.Models.AddressModels
         public Country Country { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
-        public Guid ApplicationUserId { get; set; }
+        public string ApplicationUserId { get; set; }
     }
 }
