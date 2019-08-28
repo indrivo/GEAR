@@ -94,6 +94,8 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
 	//}
 	const row = document.createElement("tr");
 	row.setAttribute("isNew", "true");
+	row.setAttribute(scope.attributeNames.addingInProgressAttr, "false");
+	row.setAttribute(scope.attributeNames.validatorAttr, "false");
 	const columns = jdt.columns().context[0].aoColumns;
 	for (let i in columns) {
 		//Ignore hidden column
@@ -160,6 +162,14 @@ TableInlineEdit.prototype.cancelNewItem = function (context) {
 };
 
 
+/*
+ * Constants
+ */
+TableInlineEdit.prototype.attributeNames = {
+	addingInProgressAttr: "is-adding-in-progress",
+	validatorAttr: "is-validation-running"
+};
+
 /**
  * Add new item
  * @param {any} context
@@ -172,6 +182,10 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 	if (!isValid) {
 		return this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
 	}
+
+	if (rowContext.attr(this.attributeNames.addingInProgressAttr) === "true") return 1;
+	rowContext.attr(this.attributeNames.addingInProgressAttr, "true");
+
 	const data = this.getRowDataOnAddMode(rowContext);
 	this.db.addAsync(entityName, data).then(req => {
 		if (req.is_success) {
@@ -181,6 +195,7 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 			context.off("click");
 			this.cancelTableAddMode(context);
 		} else {
+			$(context).attr(this.attributeNames.addingInProgressAttr, "false");
 			this.toast.notify({ heading: req.error_keys[0].message });
 			this.toggleVisibilityColumnsButton(context, false);
 		}
@@ -203,18 +218,53 @@ TableInlineEdit.prototype.cancelTableAddMode = function (ctx) {
  * @param {any} context
  */
 TableInlineEdit.prototype.isValidNewRow = function (context) {
+	$(context).attr(this.attributeNames.validatorAttr, "true");
 	const els = context.get(0).querySelectorAll("textarea.data-new");
 	let isValid = true;
-	$.each(els, (index, el) => {
-		if (el.hasAttribute("data-required")) {
-			if (!el.value) {
-				if (!el.classList.contains('cell-red')) {
-					el.classList.add('cell-red')
+	$.each(els,
+		(index, el) => {
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!el.classList.contains("cell-red")) {
+						el.classList.add("cell-red");
+					}
+					isValid = false;
 				}
-				isValid = false;
 			}
-		}
-	});
+		});
+
+	const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
+
+	$.each(elsDates,
+		(index, el) => {
+			const ctx = $(el).parent();
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!ctx.hasClass("cell-red")) {
+						ctx.addClass("cell-red");
+					}
+					isValid = false;
+				}
+			}
+		});
+
+	const referenceCells = context.get(0).querySelectorAll("select.data-new");
+	$.each(referenceCells,
+		(index, el) => {
+			if (el.hasAttribute("data-required")) {
+				const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
+				if (!el.value) {
+					if (!input.classList.contains("cell-red")) {
+						input.classList.add("cell-red");
+					}
+					isValid = false;
+				} else {
+					$(input).removeClass("cell-red");
+				}
+			}
+		});
+
+	$(context).attr(this.attributeNames.validatorAttr, "false");
 	return isValid;
 };
 
