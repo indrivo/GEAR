@@ -16,14 +16,8 @@ namespace ST.Core.Extensions
 
         public static IHttpContextAccessorService ContextAccessor
         {
-            get
-            {
-                return _contextAccessor ?? IoC.Resolve<IHttpContextAccessorService>();
-            }
-            private set
-            {
-                _contextAccessor = value;
-            }
+            get => _contextAccessor ?? IoC.Resolve<IHttpContextAccessorService>();
+            private set => _contextAccessor = value;
         }
 
         /// <summary>
@@ -206,13 +200,13 @@ namespace ST.Core.Extensions
                 {
                     if (entity.State == EntityState.Added)
                     {
-                        ((BaseModel)entity.Entity).Created = DateTime.UtcNow;
-                        ((BaseModel)entity.Entity).Author = currentUsername;
-                        ((BaseModel)entity.Entity).TenantId = tenant;
+                        ((BaseModel) entity.Entity).Created = DateTime.UtcNow;
+                        ((BaseModel) entity.Entity).Author = currentUsername;
+                        ((BaseModel) entity.Entity).TenantId = tenant;
                     }
 
-                    ((BaseModel)entity.Entity).Changed = DateTime.UtcNow;
-                    ((BaseModel)entity.Entity).ModifiedBy = currentUsername;
+                    ((BaseModel) entity.Entity).Changed = DateTime.UtcNow;
+                    ((BaseModel) entity.Entity).ModifiedBy = currentUsername;
 
                     // TODO : to implement adding tenant on updating entity if is needed |  ((BaseModel)entity.Entity).TenantId = tenant; |
                 }
