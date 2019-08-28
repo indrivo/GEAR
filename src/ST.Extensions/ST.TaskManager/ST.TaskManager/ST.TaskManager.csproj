@@ -10,4 +10,8 @@
     <ProjectReference Include="..\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

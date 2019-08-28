@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ST.TaskManager.Migrations
 {
-    public partial class InitialTaskMngrMigration : Migration
+    public partial class TaskManagerDbContext_Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,8 +23,8 @@ namespace ST.TaskManager.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     Version = table.Column<int>(nullable: false),
                     TenantId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    Description = table.Column<string>(maxLength: 500, nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<Guid>(nullable: false),
@@ -66,7 +66,7 @@ namespace ST.TaskManager.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
                     IsDone = table.Column<bool>(nullable: false),
                     TaskId = table.Column<Guid>(nullable: true)
                 },
@@ -79,7 +79,7 @@ namespace ST.TaskManager.Migrations
                         principalSchema: "Task",
                         principalTable: "Tasks",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,6 +116,24 @@ namespace ST.TaskManager.Migrations
                 schema: "Task",
                 table: "TaskItems",
                 column: "TaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_UserId",
+                schema: "Task",
+                table: "Tasks",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_Id_IsDeleted",
+                schema: "Task",
+                table: "Tasks",
+                columns: new[] { "Id", "IsDeleted" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_UserId_IsDeleted",
+                schema: "Task",
+                table: "Tasks",
+                columns: new[] { "UserId", "IsDeleted" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TrackAuditDetails_TrackAuditId",

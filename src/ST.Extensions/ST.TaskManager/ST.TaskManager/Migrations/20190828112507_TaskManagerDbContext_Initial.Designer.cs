@@ -10,8 +10,8 @@ using ST.TaskManager.Data;
 namespace ST.TaskManager.Migrations
 {
     [DbContext(typeof(TaskManagerDbContext))]
-    [Migration("20190823130348_MigrationTask4")]
-    partial class MigrationTask4
+    [Migration("20190828112507_TaskManagerDbContext_Initial")]
+    partial class TaskManagerDbContext_Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -100,7 +100,8 @@ namespace ST.TaskManager.Migrations
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Description")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(500);
 
                     b.Property<DateTime>("EndDate");
 
@@ -109,7 +110,8 @@ namespace ST.TaskManager.Migrations
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.Property<DateTime>("StartDate");
 
@@ -125,14 +127,11 @@ namespace ST.TaskManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.HasIndex("Id", "IsDeleted")
-                        .IsUnique();
+                    b.HasIndex("Id", "IsDeleted");
 
-                    b.HasIndex("UserId", "IsDeleted")
-                        .IsUnique();
+                    b.HasIndex("UserId", "IsDeleted");
 
                     b.ToTable("Tasks");
                 });
@@ -145,7 +144,8 @@ namespace ST.TaskManager.Migrations
                     b.Property<bool>("IsDone");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.Property<Guid?>("TaskId");
 
