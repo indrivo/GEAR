@@ -147,7 +147,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Localization.Services", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Entities.Razor", "src\ST.Extensions\ST.Entities.Extension\ST.Entities.Razor\ST.Entities.Razor.csproj", "{5EE32D18-3642-4FC8-9439-DA12B76D3AC5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.TaskManager", "ST.TaskManager", "{8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.TaskManager.Extension", "ST.TaskManager.Extension", "{8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.TaskManager.Abstractions", "src\ST.Extensions\ST.TaskManager\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj", "{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}"
 EndProject
@@ -208,6 +208,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Email", "src\ST.Extensions\ST.Email.Extension\ST.Email\ST.Email.csproj", "{E3EF3E53-5153-4B2D-8766-00D825BA166E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Email.Razor", "src\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email.Razor.csproj", "{09DFDEDE-F564-4AF2-BE64-A94335F895AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.TaskManager", "src\ST.Extensions\ST.TaskManager\ST.TaskManager\ST.TaskManager.csproj", "{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.TaskManager.Razor", "src\ST.Extensions\ST.TaskManager\ST.TaskManager.Razor\ST.TaskManager.Razor.csproj", "{1845F3F6-9606-4F2C-978F-396C54A9EF92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -654,6 +658,18 @@ Global
 		{09DFDEDE-F564-4AF2-BE64-A94335F895AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09DFDEDE-F564-4AF2-BE64-A94335F895AE}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{09DFDEDE-F564-4AF2-BE64-A94335F895AE}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -760,6 +776,8 @@ Global
 		{84FA5472-4409-4288-B8E9-33E2247AA135} = {5F40BD8C-DC0F-48FA-9A1F-1893B896A575}
 		{E3EF3E53-5153-4B2D-8766-00D825BA166E} = {F92D0E7F-047D-40E0-A39A-428205AC5DF3}
 		{09DFDEDE-F564-4AF2-BE64-A94335F895AE} = {F92D0E7F-047D-40E0-A39A-428205AC5DF3}
+		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2} = {8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}
+		{1845F3F6-9606-4F2C-978F-396C54A9EF92} = {8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

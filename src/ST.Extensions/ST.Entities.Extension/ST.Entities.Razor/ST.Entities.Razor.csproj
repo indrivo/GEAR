@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <None Remove="libman.json" />
-    <None Remove="wwwroot\assets\EntityPlugins\st-data-data-injector-v.0.1.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,5 +39,11 @@
     <Content Include="wwwroot\**\*">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="wwwroot\assets\EntityPlugins\" />
   </ItemGroup>
 </Project>

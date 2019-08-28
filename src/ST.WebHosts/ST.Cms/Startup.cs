@@ -80,6 +80,7 @@ using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using ST.Email.Razor.Extensions;
+using ST.Core.Services;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
@@ -88,6 +89,9 @@ using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
 using ST.MultiTenant.Razor.Extensions;
 using ST.MultiTenant.Services;
+using ST.TaskManager.Abstractions.Extensions;
+using ST.TaskManager.Data;
+using ST.TaskManager.Razor.Extensions;
 
 namespace ST.Cms
 {
@@ -216,10 +220,10 @@ namespace ST.Cms
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.AddCacheModule(HostingEnvironment, Configuration);
-
+			//------------------------------ HttpContextAccessorService -------------------------------------
+			services.AddTransient<IHttpContextAccessorService, HttpContextAccessorService>();
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
-
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration);
@@ -346,7 +350,15 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
-
+			//------------------------------------Task Module-------------------------------------
+			services
+				.AddTaskModule<TaskManager.TaskManager>()
+				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddTaskManagerRazorUIModule();
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 
