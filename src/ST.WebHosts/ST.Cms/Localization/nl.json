@@ -480,5 +480,9 @@
   "user_district": "Wijk",
   "user_not_found_any_address": "Niet gevonden adres",
   "edit_address": "Adres bewerken",
-  "system_current_password": "Huidige wachtwoord in"
+  "system_current_password": "Huidige wachtwoord in",
+  "user_address_is_base": "De basis",
+  "system_is_default": "Standaard",
+  "system_error_on_generate_reset_token": "Fout bij het genereren van reset token",
+  "system_error_on_generate_token": "Fout bij het genereren van token"
 }

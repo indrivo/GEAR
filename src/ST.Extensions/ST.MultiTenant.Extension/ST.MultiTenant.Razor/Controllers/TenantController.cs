@@ -35,6 +35,7 @@ namespace ST.MultiTenant.Razor.Controllers
     public class TenantController : Controller
     {
         #region Services
+
         /// <summary>
         /// Inject context
         /// </summary>
@@ -64,6 +65,7 @@ namespace ST.MultiTenant.Razor.Controllers
         /// Inject organization service
         /// </summary>
         private readonly IOrganizationService<Tenant> _organizationService;
+
         #endregion
 
         /// <summary>
@@ -76,7 +78,8 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <param name="localizer"></param>
         /// <param name="organizationService"></param>
         public TenantController(
-            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext, IEntityRepository service, IStringLocalizer localizer, IOrganizationService<Tenant> organizationService)
+            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext,
+            IEntityRepository service, IStringLocalizer localizer, IOrganizationService<Tenant> organizationService)
         {
             Context = context;
             _logger = logger;
@@ -202,6 +205,7 @@ namespace ST.MultiTenant.Razor.Controllers
                     });
                     _entitiesDbContext.SaveChanges();
                 }
+
                 await _service.CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
 
                 return RedirectToAction(nameof(Index), "Tenant");
@@ -211,7 +215,6 @@ namespace ST.MultiTenant.Razor.Controllers
             data.CountrySelectListItems = await GetCountrySelectList();
 
             return View(data);
-
         }
 
         /// <summary>
@@ -230,7 +233,6 @@ namespace ST.MultiTenant.Razor.Controllers
                 CountrySelectListItems = await GetCountrySelectList()
             };
             return View(model);
-
         }
 
         /// <summary>
@@ -267,6 +269,7 @@ namespace ST.MultiTenant.Razor.Controllers
             {
                 return Redirect(callBack);
             }
+
             if (dbResult.IsSuccess) return RedirectToAction(nameof(Index), "Tenant");
             ModelState.AppendResultModelErrors(dbResult.Errors);
             return View(model);

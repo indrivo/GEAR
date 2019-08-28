@@ -146,7 +146,7 @@ namespace ST.MultiTenant.Razor.Controllers
                     NormalizedUserName = model.Email.Split('@')[0].ToUpper(),
                     EmailConfirmed = false,
                     Created = DateTime.Now,
-                    Author = HttpContext.User.Identity.Name
+                    Author = HttpContext.User.Identity.Name,
                 };
 
                 var tenant = await _organizationService.GetTenantByCurrentUserAsync();

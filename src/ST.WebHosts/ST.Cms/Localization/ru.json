@@ -480,5 +480,9 @@
   "user_district": "Район",
   "user_not_found_any_address": "Не нашел ни одного адреса",
   "edit_address": "Изменить адрес",
-  "system_current_password": "Текущий пароль"
+  "system_current_password": "Текущий пароль",
+  "user_address_is_base": "База",
+  "system_is_default": "По умолчанию",
+  "system_error_on_generate_reset_token": "Ошибка при создании маркера сброс ",
+  "system_error_on_generate_token": "Ошибка при создании маркера"
 }

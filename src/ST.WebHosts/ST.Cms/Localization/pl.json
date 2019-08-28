@@ -480,5 +480,9 @@
   "user_district": "Powiat",
   "user_not_found_any_address": "Nie znalazłem ani jednego adresu",
   "edit_address": "Zmienić adres",
-  "system_current_password": "Bieżące hasło"
+  "system_current_password": "Bieżące hasło",
+  "user_address_is_base": "Baza",
+  "system_is_default": "Domyślnie",
+  "system_error_on_generate_reset_token": "Błąd podczas tworzenia znacznika reset ",
+  "system_error_on_generate_token": "Błąd podczas tworzenia znacznika"
 }

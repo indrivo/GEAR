@@ -480,5 +480,9 @@
   "user_district": "District",
   "user_not_found_any_address": "Nu am gasit nici o adresa",
   "edit_address": "Editați adresa",
-  "system_current_password": "Parola curentă"
+  "system_current_password": "Parola curentă",
+  "user_address_is_base": "Este de bază",
+  "system_is_default": "Este default",
+  "system_error_on_generate_reset_token": "Eroare la generarea cu simbolul de reinițializare",
+  "system_error_on_generate_token": "Eroare la generarea semn"
 }

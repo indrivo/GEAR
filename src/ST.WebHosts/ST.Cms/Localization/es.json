@@ -480,5 +480,9 @@
   "user_district": "Distrito",
   "user_not_found_any_address": "No se encontró ninguna dirección",
   "edit_address": "Modificar la dirección",
-  "system_current_password": "Contraseña actual"
+  "system_current_password": "Contraseña actual",
+  "user_address_is_base": "Es la base de",
+  "system_is_default": "Es el valor predeterminado",
+  "system_error_on_generate_reset_token": "Error en generar el token de recuperación de",
+  "system_error_on_generate_token": "Error en generar el token"
 }

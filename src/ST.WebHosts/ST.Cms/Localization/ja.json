@@ -480,5 +480,9 @@
   "user_district": "地区",
   "user_not_found_any_address": "見つかりませんで任意のアドレス",
   "edit_address": "編集アドレス",
-  "system_current_password": "現在のパスワード"
+  "system_current_password": "現在のパスワード",
+  "user_address_is_base": "をなすものでは",
+  "system_is_default": "デフォルト",
+  "system_error_on_generate_reset_token": "エラー発生のリセットトークン",
+  "system_error_on_generate_token": "誤差をトークン"
 }

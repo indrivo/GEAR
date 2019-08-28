@@ -480,5 +480,9 @@
   "user_district": "Район",
   "user_not_found_any_address": "Не знайшов жодної адреси",
   "edit_address": "Змінити адресу",
-  "system_current_password": "Поточний пароль"
+  "system_current_password": "Поточний пароль",
+  "user_address_is_base": "База",
+  "system_is_default": "За замовчуванням",
+  "system_error_on_generate_reset_token": "Помилка при створенні маркера скидання ",
+  "system_error_on_generate_token": "Помилка при створенні маркера"
 }

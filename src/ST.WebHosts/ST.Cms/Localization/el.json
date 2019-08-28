@@ -480,5 +480,9 @@
   "user_district": "Περιοχή",
   "user_not_found_any_address": "Δεν βρέθηκε οποιαδήποτε διεύθυνση",
   "edit_address": "Επεξεργαστείτε τη διεύθυνση",
-  "system_current_password": "Τρέχοντα κωδικό πρόσβασης"
+  "system_current_password": "Τρέχοντα κωδικό πρόσβασης",
+  "user_address_is_base": "Είναι η βάση",
+  "system_is_default": "Είναι προεπιλεγμένη",
+  "system_error_on_generate_reset_token": "Σφάλμα στη δημιουργία επαναφορά token",
+  "system_error_on_generate_token": "Σφάλμα στη δημιουργία token"
 }

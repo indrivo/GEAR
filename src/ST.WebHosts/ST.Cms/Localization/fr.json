@@ -480,5 +480,9 @@
   "user_district": "Quartier",
   "user_not_found_any_address": "Pas trouvé d'adresse",
   "edit_address": "Modifier l'adresse",
-  "system_current_password": "Mot de passe actuel"
+  "system_current_password": "Mot de passe actuel",
+  "user_address_is_base": "Est la base de",
+  "system_is_default": "La valeur par défaut est",
+  "system_error_on_generate_reset_token": "Erreur sur générer token",
+  "system_error_on_generate_token": "Erreur sur générer un jeton"
 }

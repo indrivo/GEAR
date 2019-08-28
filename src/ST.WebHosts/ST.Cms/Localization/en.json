@@ -480,5 +480,9 @@
   "user_district": "District",
   "user_not_found_any_address": "Not found any address",
   "edit_address": "Edit address",
-  "system_current_password": "Current password"
+  "system_current_password": "Current password",
+  "user_address_is_base": "Is base",
+  "system_is_default": "Is default",
+  "system_error_on_generate_reset_token": "Error on generate reset token",
+  "system_error_on_generate_token": "Error on generate token"
 }

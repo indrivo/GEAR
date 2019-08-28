@@ -480,5 +480,9 @@
   "user_district": "区",
   "user_not_found_any_address": "没有发现任何地址",
   "edit_address": "编辑的地址",
-  "system_current_password": "当前的密码"
+  "system_current_password": "当前的密码",
+  "user_address_is_base": "是基",
+  "system_is_default": "是默认的",
+  "system_error_on_generate_reset_token": "错误的产生重牌",
+  "system_error_on_generate_token": "错误的产生令牌"
 }
