@@ -32,7 +32,6 @@ using ST.Identity.Abstractions.Events.EventArgs.Users;
 using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
-using ST.MultiTenant.Abstractions;
 using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.Identity.Razor.Users.ViewModels.UserProfileViewModels;
 using ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress;
@@ -597,7 +596,6 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <summary>
         /// User profile info
         /// </summary>
-        /// <param name="organizationService"></param>
         /// <returns></returns>
         [HttpGet]
         public virtual async Task<IActionResult> Profile()
@@ -1120,7 +1118,6 @@ namespace ST.Identity.Razor.Users.Controllers
                     ContactName = address.ContactName,
                     District = address.District.Name,
                     Country = address.Country.Name,
-                    City = address.City,
                     IsPrimary = true,
                     ZipCode = address.ZipCode,
                 })
@@ -1164,7 +1161,6 @@ namespace ST.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-
             var address = new Address
             {
                 AddressLine1 = model.AddressLine1,
@@ -1172,7 +1168,6 @@ namespace ST.Identity.Razor.Users.Controllers
                 Created = DateTime.Now,
                 ContactName = model.ContactName,
                 ZipCode = model.ZipCode,
-                City = model.City,
                 Phone = model.Phone,
                 CountryId = model.SelectedCountryId,
                 StateOrProvinceId = model.SelectedStateOrProvinceId,
@@ -1227,7 +1222,6 @@ namespace ST.Identity.Razor.Users.Controllers
                 AddressLine2 = currentAddress.AddressLine2,
                 Phone = currentAddress.Phone,
                 ContactName = currentAddress.ContactName,
-                City = currentAddress.City,
                 ZipCode = currentAddress.ZipCode,
                 SelectedCountryId = currentAddress.CountryId,
                 SelectedStateOrProvinceId = currentAddress.StateOrProvinceId,
@@ -1259,7 +1253,6 @@ namespace ST.Identity.Razor.Users.Controllers
             currentAddress.StateOrProvinceId = model.SelectedStateOrProvinceId;
             currentAddress.AddressLine1 = model.AddressLine1;
             currentAddress.AddressLine2 = model.AddressLine2;
-            currentAddress.City = model.City;
             currentAddress.ContactName = model.ContactName;
             currentAddress.Phone = model.Phone;
             currentAddress.ZipCode = model.ZipCode;
