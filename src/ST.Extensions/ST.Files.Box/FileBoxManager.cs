@@ -88,7 +88,7 @@ namespace ST.Files.Box
         public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file != null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, file.Path, file.Name);
             File.Delete(filePath);
@@ -104,15 +104,10 @@ namespace ST.Files.Box
         public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
             var dbFileResult = _context.FilesBox.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
-            var dto = new DownloadFileViewModel();
-            if (dbFileResult == null)
-                return new ResultModel<DownloadFileViewModel>
-                {
-                    IsSuccess = false,
-                    Result = dto
-                };
+            if (dbFileResult == null) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.FileNotFound);
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, dbFileResult.Path);
+            var dto = new DownloadFileViewModel();
             dto.Path = filePath;
             dto.FileExtension = dbFileResult.FileExtension;
             dto.FileName = dbFileResult.Name;

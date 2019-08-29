@@ -99,12 +99,14 @@ namespace ST.Files
         public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
             var dbFileResult = _context.Files.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
-            var dto = new DownloadFileViewModel();
             if (dbFileResult == null) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.FileNotFound);
 
-            dto.EncryptedFile = dbFileResult.Hash;
-            dto.FileExtension = dbFileResult.FileExtension;
-            dto.FileName = dbFileResult.Name;
+            var dto = new DownloadFileViewModel
+            {
+                EncryptedFile = dbFileResult.Hash,
+                FileExtension = dbFileResult.FileExtension,
+                FileName = dbFileResult.Name
+            };
 
             return new ResultModel<DownloadFileViewModel>
             {

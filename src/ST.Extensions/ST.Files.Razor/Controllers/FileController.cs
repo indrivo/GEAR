@@ -41,10 +41,12 @@ namespace ST.Files.Razor.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        public FileResult GetFile(Guid id)
+        public ActionResult GetFile(Guid id)
         {
             var response = _fileManager.GetFileById(id);
-            return response.Result != null ? File(response.Result.EncryptedFile, "application/octet-stream", response.Result.FileName) : null;
+            return response.Result != null
+                ? File(response.Result.EncryptedFile, "application/octet-stream", response.Result.FileName)
+                : null;
         }
 
         /// <summary>

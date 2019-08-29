@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ST.Core.Helpers
 {
@@ -69,6 +72,25 @@ namespace ST.Core.Helpers
                         Message = exceptionMessage.ToString()
                     }
                 }
+            };
+        }
+
+        /// <summary>
+        /// Returns ResultModel of type ModelStateDictionary with exception message passed from enumeration exception
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="modelStateErrors"></param>
+        /// <returns></returns>
+        public static ResultModel<T> ReturnErrorModel<T>(ModelStateDictionary modelStateErrors)
+        {
+            return new ResultModel<T>
+            {
+                IsSuccess = false,
+                Errors = modelStateErrors.Select(item => new ErrorModel
+                {
+                    Key = item.Key,
+                    Message = item.Value.ValidationState.ToString()
+                }).Cast<IErrorModel>().ToList()
             };
         }
     }

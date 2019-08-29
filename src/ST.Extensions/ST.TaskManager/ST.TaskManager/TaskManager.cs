@@ -80,7 +80,6 @@ namespace ST.TaskManager
 
         public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
-
             var taskModel = CreateTaskMapper(task);
 
             _context.Tasks.Add(taskModel);
@@ -147,10 +146,12 @@ namespace ST.TaskManager
 
         #region Task Items
 
-        public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel task)
+        public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel taskItem)
         {
-            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == task.TaskId));
-            var taskModel = new TaskItem {Name = task.Name, Task = dbTaskResult};
+            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == taskItem.TaskId));
+            if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
+
+            var taskModel = new TaskItem {Name = taskItem.Name, Task = dbTaskResult};
 
             _context.TaskItems.Add(taskModel);
             var result = await _context.SaveDependenceAsync();
@@ -163,19 +164,14 @@ namespace ST.TaskManager
             };
         }
 
-        public async Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel task)
+        public async Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel taskItem)
         {
-            var dbTaskResult = _context.TaskItems.FirstOrDefault(x => (x.Id == task.Id));
-            if (dbTaskResult != null)
-            {
-                dbTaskResult.Name = task.Name;
-                dbTaskResult.IsDone = task.IsDone;
-                _context.TaskItems.Update(dbTaskResult);
-            }
-            else
-            {
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
-            }
+            var dbTaskResult = _context.TaskItems.FirstOrDefault(x => (x.Id == taskItem.Id));
+            if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
+
+            dbTaskResult.Name = taskItem.Name;
+            dbTaskResult.IsDone = taskItem.IsDone;
+            _context.TaskItems.Update(dbTaskResult);
 
             var result = await _context.SaveDependenceAsync();
 
