@@ -333,7 +333,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
         {
             var result = new ResultModel();
@@ -358,7 +358,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> DeleteItemForeverFromDynamicEntity(Guid viewModelId, string id)
         {
             var result = new ResultModel();

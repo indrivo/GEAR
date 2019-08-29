@@ -187,7 +187,7 @@ namespace ST.Entities
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
-                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(Settings.DefaultEntitySchema))
+                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA))
                 .ToListAsync();
             var syncModels = new List<SynchronizeTableViewModel>();
             foreach (var item in entities)
@@ -282,7 +282,7 @@ namespace ST.Entities
                     if (tableName != null)
                     {
                         var table = _context.Table.FirstOrDefault(x =>
-                            x.Name.Equals(tableName.Value) && x.EntityType == Settings.DefaultEntitySchema);
+                            x.Name.Equals(tableName.Value) && x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
                         if (table != null && !table.IsPartOfDbContext && !table.IsSystem && !table.IsCommon)
                         {
                             config.Value = schema;

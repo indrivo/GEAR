@@ -3,6 +3,10 @@ using ST.Core.Helpers.DbContexts;
 
 namespace ST.Notifications.Data
 {
+    /// <summary>
+    /// Do not remove this
+    /// It is used for generate migrations
+    /// </summary>
     public class NotificationDbContextFactory : IDesignTimeDbContextFactory<NotificationDbContext>
     {
         /// <inheritdoc />

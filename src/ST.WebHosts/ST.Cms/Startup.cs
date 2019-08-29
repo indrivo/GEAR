@@ -31,7 +31,10 @@ using ST.Entities.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
-using ST.Entities.Security.Extensions;
+using ST.Entities.Razor.Extensions;
+using ST.Entities.Security;
+using ST.Entities.Security.Abstractions.Extensions;
+using ST.Entities.Security.Data;
 using ST.Files;
 using ST.Files.Abstraction.Extension;
 using ST.Files.Data;
@@ -76,12 +79,17 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using ST.Core.Services;
+using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
 using ST.Files.Box.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
 using ST.MultiTenant.Services;
+using ST.TaskManager.Abstractions.Extensions;
+using ST.TaskManager.Data;
+using ST.TaskManager.Razor.Extensions;
 
 namespace ST.Cms
 {
@@ -181,7 +189,7 @@ namespace ST.Cms
 			//-------------------------Register on app events-------------------------------------
 			lifetime.ApplicationStarted.Register(() => { CoreApp.OnApplicationStarted(app); });
 
-			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
+			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 
 			if (env.IsProduction())
 			{
@@ -210,10 +218,10 @@ namespace ST.Cms
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.UseCustomCacheModule(HostingEnvironment, Configuration);
-
+			//------------------------------ HttpContextAccessorService -------------------------------------
+			services.AddTransient<IHttpContextAccessorService, HttpContextAccessorService>();
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
-
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration);
@@ -221,8 +229,8 @@ namespace ST.Cms
 			});
 
 			//------------------------------Identity Module-------------------------------------
-			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly,
-					HostingEnvironment)
+			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+				.AddIdentityUserManager<IdentityUserManager, ApplicationUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
@@ -268,7 +276,16 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddEntityModuleEvents()
-				.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
+				.AddEntityRazorUIModule();
+
+			//------------------------------Entity Security Module-------------------------------------
+			services.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
+				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddEntitySecurityRazorUIModule();
 
 			//---------------------------Multi Tenant Module-------------------------------------
 			services.AddTenantModule<OrganizationService, Tenant>();
@@ -287,7 +304,7 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddNotificationUiModule();
+				.AddNotificationRazorUIModule();
 
 			//---------------------------Background services ------------------------------------------
 			//services.AddHostedService<HostedTimeService>();
@@ -329,7 +346,15 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				});
-
+			//------------------------------------Task Module-------------------------------------
+			services
+				.AddTaskModule<TaskManager.TaskManager>()
+				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddTaskManagerRazorUIModule();
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 

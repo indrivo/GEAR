@@ -10,8 +10,8 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.TableTypes;
-using ST.Identity.Attributes;
 using ST.Identity.Data.Permissions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 
 namespace ST.Entities.Razor.Controllers.Entity
 {

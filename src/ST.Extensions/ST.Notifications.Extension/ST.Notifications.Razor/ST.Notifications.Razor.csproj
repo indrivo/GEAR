@@ -44,4 +44,8 @@
       <Pack>false</Pack>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\NotificationType\" />
+  </ItemGroup>
 </Project>
