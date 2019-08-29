@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -280,7 +280,7 @@ namespace ST.Identity.Razor.Controllers
 
             var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
             await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                $"Please reset your password by clicking here : <a href='{callbackUrl}'>link</a>");
 
             IdentityEvents.Users.UserForgotPassword(new UserForgotPasswordEventArgs
             {

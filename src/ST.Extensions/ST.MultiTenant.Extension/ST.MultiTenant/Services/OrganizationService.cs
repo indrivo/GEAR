@@ -192,6 +192,7 @@ namespace ST.MultiTenant.Services
                     .Where(x => roles.Contains(x.Id))
                     .Select(x => x.Name)
                     .ToListAsync();
+                userRoles.Add(Core.Settings.ANONIMOUS_USER);
                 var userResult = await _userManager.AddToRolesAsync(user, userRoles);
                 if (userResult.Succeeded)
                 {
@@ -239,7 +240,7 @@ namespace ST.MultiTenant.Services
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var binary = new BinaryReader(stream))
                 {
-                    var data = binary.ReadBytes((int)stream.Length);
+                    var data = binary.ReadBytes((int) stream.Length);
                     return data;
                 }
             }
@@ -259,10 +260,12 @@ namespace ST.MultiTenant.Services
         {
             var rolesToExclude = new HashSet<string>
             {
-                Core.Settings.ADMINISTRATOR
+                Core.Settings.ADMINISTRATOR,
+                Core.Settings.ANONIMOUS_USER
             };
 
             var roles = await _roleManager.Roles
+                .AsNoTracking()
                 .Where(x => !x.IsDeleted && !rolesToExclude.Any(z => z.Equals(x.Name)))
                 .ToListAsync();
 
