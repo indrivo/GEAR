@@ -37,5 +37,11 @@ namespace ST.Identity.Abstractions
         /// </summary>
         /// <returns></returns>
         IEnumerable<string> GetRolesFromClaims();
+
+        /// <summary>
+        /// Get request ip address
+        /// </summary>
+        /// <returns></returns>
+        string GetRequestIpAdress();
     }
 }

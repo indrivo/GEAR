@@ -1,6 +1,4 @@
 $("#headerContainer").replaceWith($(".headContainer"));
-//block[0].outerHTML = $(".headContainer").map(x => x.outerHTML).join();
-
 
 const menuBlock = $("#navbarNavAltMarkup div:first-child");
 loadAsync("/PageRender/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").then(menus => {
@@ -23,38 +21,8 @@ new Notificator().getCurrentUser().then(user => {
         <a href="#" class="logoff btn btn-secondary px-3  py-2 circle sa-logout">${window.translate("logout")}</a>
     </div>`));
 
-		$(".sa-logout").click(function () {
-			swal({
-				title: window.translate("confirm_log_out_question"),
-				text: window.translate("log_out_message"),
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonColor: "#DD6B55",
-				confirmButtonText: window.translate("confirm_logout"),
-				cancelButtonText: window.translate("cancel")
-			}).then((result) => {
-				if (result.value) {
-					$.ajax({
-						url: "/Account/LocalLogout",
-						type: "post",
-						dataType: "json",
-						contentType: "application/x-www-form-urlencoded; charset=utf-8",
-						success: function (data) {
-							if (data.success) {
-
-								swal("Success!", data.message, "success");
-								window.location.href = "/Account/Login";
-							} else {
-								swal("Fail!", data.message, "error");
-							}
-						},
-						error: function () {
-							swal("Fail!", "Server no response!", "error");
-						}
-					});
-				}
-			});
-		});
+		//Log Out
+		new ST().registerLocalLogout(".sa-logout");
 	}
 });
 

@@ -27,7 +27,6 @@ using ST.Identity.LdapAuth.Abstractions;
 using ST.Identity.Razor.Extensions;
 using ST.Identity.Razor.ViewModels.AccountViewModels;
 using ST.MPass.Gov;
-using ST.Notifications.Abstractions;
 using ST.Identity.Abstractions.Events;
 using ST.Identity.Abstractions.Events.EventArgs.Authorization;
 using ST.Identity.Abstractions.Events.EventArgs.Users;
@@ -44,7 +43,16 @@ namespace ST.Identity.Razor.Controllers
         /// </summary>
         private readonly IDistributedCache _cache;
 
+        /// <summary>
+        /// Inject email sender
+        /// </summary>
         private readonly IEmailSender _emailSender;
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _manager;
+
         private readonly IIdentityServerInteractionService _interactionService;
 
         /// <summary>
@@ -53,10 +61,8 @@ namespace ST.Identity.Razor.Controllers
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Inject notifier
+        /// Inject M pass options
         /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
-
         private readonly IOptions<MPassOptions> _mpassOptions;
 
         private readonly IStringLocalizer _localizer;
@@ -98,12 +104,11 @@ namespace ST.Identity.Razor.Controllers
             IEmailSender emailSender,
             ILogger<AccountController> logger,
             IIdentityServerInteractionService interactionService,
-            IHttpContextAccessor httpContextAccessor,
             IMPassService mPassService,
-            INotify<ApplicationRole> notify,
+            IUserManager<ApplicationUser> manager,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
-            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor, IHostingEnvironment env,
+            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor,
             BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext,
             IStringLocalizer localizer)
         {
@@ -112,6 +117,7 @@ namespace ST.Identity.Razor.Controllers
             _ldapUserManager = ldapUserManager;
             _applicationDbContext = applicationDbContext;
             _localizer = localizer;
+            _manager = manager;
             _mpassOptions = mpassOptions;
             _mpassSigningCredentialStore = mpassSigningCredentialStore;
             _mpassService = mPassService;
@@ -119,7 +125,6 @@ namespace ST.Identity.Razor.Controllers
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
-            _notify = notify;
             _interactionService = interactionService;
         }
 
@@ -409,6 +414,7 @@ namespace ST.Identity.Razor.Controllers
 
                     IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
                     {
+                        IpAdress = _manager.GetRequestIpAdress(),
                         UserId = user.Id.ToGuid(),
                         Email = user.Email,
                         FirstName = user.UserFirstName,
@@ -537,7 +543,7 @@ namespace ST.Identity.Razor.Controllers
             if (User.Identity.IsAuthenticated == false)
             {
                 // if the user is not authenticated, then just show logged out page
-                return await Logout(new LogoutViewModel {LogoutId = logoutId});
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
             }
 
             //Test for Xamarin.
@@ -545,7 +551,7 @@ namespace ST.Identity.Razor.Controllers
             if (context?.ShowSignoutPrompt == false)
             {
                 //it's safe to automatically sign-out
-                return await Logout(new LogoutViewModel {LogoutId = logoutId});
+                return await Logout(new LogoutViewModel { LogoutId = logoutId });
             }
 
             // show the logout prompt. this prevents attacks where the user
@@ -564,28 +570,38 @@ namespace ST.Identity.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> LocalLogout([FromServices] IUserManager<ApplicationUser> manager)
         {
+            var result = new ResultModel();
             var userReq = await manager.GetCurrentUserAsync();
-            if (!userReq.IsSuccess) return Json(new {message = "Error on logout!!", success = false});
+            if (!userReq.IsSuccess)
+            {
+                result.Errors.Add(new ErrorModel(nameof(AuthorizationFailure), "Error on logout!!"));
+                return Json(result);
+            }
+
             var user = userReq.Result;
 
             try
             {
                 await _signInManager.SignOutAsync();
-                IdentityEvents.Authorization.UserLogout(new UserLogOutEventArgs
-                {
-                    UserId = user.Id.ToGuid(),
-                    Email = user.Email,
-                    FirstName = user.UserFirstName,
-                    LastName = user.UserLastName
-                });
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                return Json(new {message = "Error on logout!!", success = false});
+                result.Errors.Add(new ErrorModel(nameof(Exception), e.Message));
+                return Json(result);
             }
 
-            return Json(new {message = "Log Out success", success = true});
+            IdentityEvents.Authorization.UserLogout(new UserLogOutEventArgs
+            {
+                UserId = user.Id.ToGuid(),
+                Email = user.Email,
+                FirstName = user.UserFirstName,
+                LastName = user.UserLastName,
+                IpAdress = _manager.GetRequestIpAdress()
+            });
+
+            result.IsSuccess = true;
+            return Json(result);
         }
 
         /// <summary>
@@ -614,7 +630,7 @@ namespace ST.Identity.Razor.Controllers
         {
             ViewData[ReturnUrl] = returnUrl;
             if (!ModelState.IsValid) return View(model);
-            var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -731,7 +747,7 @@ namespace ST.Identity.Razor.Controllers
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new {returnUrl});
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
@@ -795,8 +811,6 @@ namespace ST.Identity.Razor.Controllers
                     break;
                 case "LinkedIn":
                     picture = info.Principal.FindFirstValue("image");
-                    break;
-                default:
                     break;
             }
 

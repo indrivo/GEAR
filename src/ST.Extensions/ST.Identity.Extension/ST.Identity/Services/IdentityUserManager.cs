@@ -13,16 +13,19 @@ namespace ST.Identity.Services
 {
     public class IdentityUserManager : IUserManager<ApplicationUser>
     {
+        /// <inheritdoc />
         /// <summary>
         /// Inject user manager
         /// </summary>
         public UserManager<ApplicationUser> UserManager { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Inject role manager
         /// </summary>
         public RoleManager<ApplicationRole> RoleManager { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Identity context
         /// </summary>
@@ -41,6 +44,7 @@ namespace ST.Identity.Services
             IdentityContext = identityContext;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get current user
         /// </summary>
@@ -55,6 +59,7 @@ namespace ST.Identity.Services
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get roles from claims
         /// </summary>
@@ -67,6 +72,17 @@ namespace ST.Identity.Services
             return roles;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Get request ip address
+        /// </summary>
+        /// <returns></returns>
+        public string GetRequestIpAdress()
+        {
+            return _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress.ToString();
+        }
+
+        /// <inheritdoc />
         /// <summary>
         /// Tenant id
         /// </summary>
