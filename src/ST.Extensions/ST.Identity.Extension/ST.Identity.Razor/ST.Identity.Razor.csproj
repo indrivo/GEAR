@@ -23,6 +23,9 @@
     <Content Update="Views\Account\ConfirmEmail.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Update="Views\Account\ResetPassword.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\ApiResource\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

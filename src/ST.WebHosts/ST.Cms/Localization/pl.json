@@ -484,5 +484,6 @@
   "user_address_is_base": "Baza",
   "system_is_default": "Domyślnie",
   "system_error_on_generate_reset_token": "Błąd podczas tworzenia znacznika reset ",
-  "system_error_on_generate_token": "Błąd podczas tworzenia znacznika"
+  "system_error_on_generate_token": "Błąd podczas tworzenia znacznika",
+  "system_reset_password": "Resetowanie hasła"
 }

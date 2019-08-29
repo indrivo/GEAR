@@ -52,11 +52,11 @@
 			data: form.serialize()
 		}).done((data) => {
 			if (data.is_success) {
-				notification.notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
+				new ToastNotifier().notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
 				$('#modal-container').modal('hide');
 				setTimeout(location.reload(), 5000);
 			} else {
-				notification.notifyErrorList(data.error_keys);
+				new ToastNotifier().notifyErrorList(data.error_keys);
 			}
 
 		}).fail(() => {

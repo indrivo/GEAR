@@ -484,5 +484,6 @@
   "user_address_is_base": "База",
   "system_is_default": "За замовчуванням",
   "system_error_on_generate_reset_token": "Помилка при створенні маркера скидання ",
-  "system_error_on_generate_token": "Помилка при створенні маркера"
+  "system_error_on_generate_token": "Помилка при створенні маркера",
+  "system_reset_password": "Скидання пароля"
 }

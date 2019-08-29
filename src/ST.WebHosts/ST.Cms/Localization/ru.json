@@ -484,5 +484,6 @@
   "user_address_is_base": "База",
   "system_is_default": "По умолчанию",
   "system_error_on_generate_reset_token": "Ошибка при создании маркера сброс ",
-  "system_error_on_generate_token": "Ошибка при создании маркера"
+  "system_error_on_generate_token": "Ошибка при создании маркера",
+  "system_reset_password": "Сброс пароля"
 }

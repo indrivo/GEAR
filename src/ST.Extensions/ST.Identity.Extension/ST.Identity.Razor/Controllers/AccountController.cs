@@ -636,14 +636,29 @@ namespace ST.Identity.Razor.Controllers
         /// <summary>
         /// Reset password
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="code"></param>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
+        public async Task<IActionResult> ResetPassword(string userId, string code)
         {
-            if (code == null) throw new ApplicationException("A code must be supplied for password reset.");
-            var model = new ResetPasswordViewModel {Code = code};
+            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(userId))
+            {
+                NotFound();
+            }
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ResetPasswordViewModel
+            {
+                Code = code,
+                Email = user.Email
+            };
             return View(model);
         }
 
@@ -654,7 +669,11 @@ namespace ST.Identity.Razor.Controllers
         {
             if (!ModelState.IsValid) return View(model);
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null) return RedirectToAction(nameof(ResetPasswordConfirmation));
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User not found");
+            }
+
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded) return RedirectToAction(nameof(ResetPasswordConfirmation));
             this.AddIdentityErrors(result);

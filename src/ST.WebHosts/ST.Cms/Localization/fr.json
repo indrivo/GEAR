@@ -484,5 +484,6 @@
   "user_address_is_base": "Est la base de",
   "system_is_default": "La valeur par défaut est",
   "system_error_on_generate_reset_token": "Erreur sur générer token",
-  "system_error_on_generate_token": "Erreur sur générer un jeton"
+  "system_error_on_generate_token": "Erreur sur générer un jeton",
+  "system_reset_password": "Réinitialiser le mot de passe"
 }

@@ -484,5 +484,6 @@
   "user_address_is_base": "Is base",
   "system_is_default": "Is default",
   "system_error_on_generate_reset_token": "Error on generate reset token",
-  "system_error_on_generate_token": "Error on generate token"
+  "system_error_on_generate_token": "Error on generate token",
+  "system_reset_password": "Reset password"
 }

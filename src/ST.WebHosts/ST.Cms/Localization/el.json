@@ -484,5 +484,6 @@
   "user_address_is_base": "Είναι η βάση",
   "system_is_default": "Είναι προεπιλεγμένη",
   "system_error_on_generate_reset_token": "Σφάλμα στη δημιουργία επαναφορά token",
-  "system_error_on_generate_token": "Σφάλμα στη δημιουργία token"
+  "system_error_on_generate_token": "Σφάλμα στη δημιουργία token",
+  "system_reset_password": "Επαναφορά του κωδικού πρόσβασης"
 }

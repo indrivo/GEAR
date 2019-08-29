@@ -617,7 +617,6 @@ namespace ST.Identity.Razor.Users.Controllers
                 AboutMe = currentUser.AboutMe,
                 Birthday = currentUser.Birthday,
                 Email = currentUser.Email,
-
                 Roles = await UserManager.GetRolesAsync(currentUser),
                 Groups = await ApplicationDbContext.UserGroups
                     .Include(x => x.AuthGroup)
@@ -655,7 +654,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 UserLastName = currentUser.UserLastName,
                 Birthday = currentUser.Birthday,
                 AboutMe = currentUser.AboutMe,
-                UserPhoneNumber = currentUser.PhoneNumber
+                UserPhoneNumber = currentUser.PhoneNumber,
             };
             return PartialView("Partial/_EditProfilePartial", model);
         }
@@ -687,6 +686,7 @@ namespace ST.Identity.Razor.Users.Controllers
             currentUser.UserLastName = model.UserLastName;
             currentUser.Birthday = model.Birthday;
             currentUser.AboutMe = model.AboutMe;
+            currentUser.PhoneNumber = model.UserPhoneNumber;
 
             var result = await UserManager.UpdateAsync(currentUser);
             if (result.Succeeded)
@@ -1178,8 +1178,8 @@ namespace ST.Identity.Razor.Users.Controllers
             if (model.IsDefault)
             {
                 ApplicationDbContext.Addresses
-                        .Where(x => x.ApplicationUserId.Equals(currentUser.Id))
-                        .ToList().ForEach(b=> b.IsDefault = false);
+                    .Where(x => x.ApplicationUserId.Equals(currentUser.Id))
+                    .ToList().ForEach(b => b.IsDefault = false);
             }
 
             await ApplicationDbContext.AddAsync(address);
@@ -1257,12 +1257,14 @@ namespace ST.Identity.Razor.Users.Controllers
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
                 return Json(resultModel);
             }
+
             if (model.IsDefault)
             {
                 ApplicationDbContext.Addresses
                     .Where(x => x.ApplicationUserId.Equals(currentAddress.ApplicationUserId))
                     .ToList().ForEach(b => b.IsDefault = false);
             }
+
             currentAddress.CountryId = model.SelectedCountryId;
             currentAddress.StateOrProvinceId = model.SelectedStateOrProvinceId;
             currentAddress.AddressLine1 = model.AddressLine1;
@@ -1272,7 +1274,6 @@ namespace ST.Identity.Razor.Users.Controllers
             currentAddress.ZipCode = model.ZipCode;
             currentAddress.IsDefault = model.IsDefault;
             currentAddress.Changed = DateTime.Now;
-
 
 
             ApplicationDbContext.Update(currentAddress);

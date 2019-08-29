@@ -484,5 +484,6 @@
   "user_address_is_base": "Ist die Basis",
   "system_is_default": "Ist Standard",
   "system_error_on_generate_reset_token": "Fehler auf generate reset token",
-  "system_error_on_generate_token": "Fehler auf token generieren"
+  "system_error_on_generate_token": "Fehler auf token generieren",
+  "system_reset_password": "Passwort zurücksetzen"
 }

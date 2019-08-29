@@ -484,5 +484,6 @@
   "user_address_is_base": "Este de bază",
   "system_is_default": "Este default",
   "system_error_on_generate_reset_token": "Eroare la generarea cu simbolul de reinițializare",
-  "system_error_on_generate_token": "Eroare la generarea semn"
+  "system_error_on_generate_token": "Eroare la generarea semn",
+  "system_reset_password": "Resetare parola"
 }

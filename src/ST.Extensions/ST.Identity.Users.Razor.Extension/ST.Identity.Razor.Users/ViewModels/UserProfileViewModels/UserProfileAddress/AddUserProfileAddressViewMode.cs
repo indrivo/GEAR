@@ -56,6 +56,7 @@ namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAd
         public string SelectedCountryId { get; set; }
 
         [Required]
+        [DisplayTranslate(Key = "system_is_default")]
         public bool IsDefault { get; set; }
 
         public IEnumerable<SelectListItem> CountrySelectListItems { get; set; }

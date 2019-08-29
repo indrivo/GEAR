@@ -484,5 +484,6 @@
   "user_address_is_base": "De basis",
   "system_is_default": "Standaard",
   "system_error_on_generate_reset_token": "Fout bij het genereren van reset token",
-  "system_error_on_generate_token": "Fout bij het genereren van token"
+  "system_error_on_generate_token": "Fout bij het genereren van token",
+  "system_reset_password": "Wachtwoord opnieuw instellen"
 }

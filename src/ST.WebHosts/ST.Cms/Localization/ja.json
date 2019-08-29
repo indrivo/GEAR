@@ -484,5 +484,6 @@
   "user_address_is_base": "をなすものでは",
   "system_is_default": "デフォルト",
   "system_error_on_generate_reset_token": "エラー発生のリセットトークン",
-  "system_error_on_generate_token": "誤差をトークン"
+  "system_error_on_generate_token": "誤差をトークン",
+  "system_reset_password": "パスワードのリセット"
 }
