@@ -29,6 +29,7 @@ using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
 using ST.Identity.Permissions.Abstractions.Attributes;
+using ST.MultiTenant.Abstractions;
 
 namespace ST.Identity.Razor.Users.Controllers
 {
