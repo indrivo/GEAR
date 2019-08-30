@@ -45,6 +45,10 @@ TableInlineEdit.prototype.createAndRenderTable = function (conf = {
 	table.setAttribute("id", conf.selector.substr(1));
 	table.setAttribute("class", "dynamic-table table table-striped table-bordered");
 	table.setAttribute("db-viewmodel", conf.dbViewModel);
+	const headSection = document.createElement("thead");
+	const defaultRow = document.createElement("tr");
+	headSection.append(defaultRow);
+	table.append(headSection);
 	cBody.append(table);
 	container.append(cBody);
 
