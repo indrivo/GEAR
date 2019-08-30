@@ -1,7 +1,7 @@
 const blockId = "#meetingBlock";
 const block = $(blockId);
 
-const meetingId = "79155b6a-a187-43f8-b087-374384367b12"; //helper.getParamFormUrl("meetingId");
+const meetingId = new ST().getParamFormUrl("meetingId");
 
 $(() => {
 	new IsoMeetings(meetingId);
@@ -20,6 +20,9 @@ class IsoMeetings {
 
 	//Inject helper
 	helper = new ST();
+
+	//Inject builder
+	builder = new TableInlineEdit();
 
 	//constructor
 	constructor(meetingId) {
@@ -83,7 +86,7 @@ class IsoMeetings {
 					key: "observation",
 					hasButton: true,
 					button: {
-						isLink: true,
+						isLink: false,
 						buttonText: `${window.translate("show")} ${window.translate("iso_kpi")}`,
 						link: ""
 					}
@@ -204,26 +207,19 @@ class IsoMeetings {
 									.map(x => `${x.personIdReference.name} ${x.personIdReference.lastName}`)
 									.join(", ");
 
-							const obj = Object.assign({}, dbResult.result);
+							const obj = Object.assign(dbResult.result, {
+								tabs: this.accordionItems
+							});
 							obj.participants = participants;
-							const content = this.templateManager.render("template_template_meeting_details", obj);
-							block.html(content);
 
-
-							//temp
-							$.templates("secondLvl", "#secondLvlCollapse");
-							var template = $.templates("#rootCollapse");
-							const htmlOutput = template.render(this.accordionItems, {
+							const content = this.templateManager.render("template_template_meeting_details", obj, {
 								obj: obj,
 								spinner: spinner
 							});
-
-							$("#test").html(htmlOutput);
+							block.html(content);
 
 							this.bindEventsToTextarea();
 							this.bindEventsToCollapseActions();
-
-							//end temp
 							window.forceTranslate(blockId);
 						} else {
 							this.toast.notifyErrorList(result.error_keys);
@@ -257,17 +253,18 @@ class IsoMeetings {
 	 * Bind events
 	 */
 	bindEventsToCollapseActions() {
+		const isLoadedAttrName = "is-loaded";
 		const scope = this;
 		$(".collapse-binder").on("click", function () {
 			const ctx = $(this);
 			const key = ctx.data("key");
 			const container = $(ctx.data("target"));
-
+			const state = ctx.attr(isLoadedAttrName);
+			if (state === "true") return;
 			switch (key) {
+				//Show objectives
 				case "reachingGoals": {
 					const dtoId = "#render_f3cb8b17-01a2-439b-938c-820835c77deb";
-					container.html(scope.getReachingGoalsTable());
-
 					const conf = {
 						showActionsColumn: false,
 						ajax: {
@@ -279,63 +276,39 @@ class IsoMeetings {
 						}
 					};
 
-					const jDto = $(dtoId)
-					const tBuilder = new TableBuilder(conf);
-					tBuilder.init(jDto.get(0));
-					new TableInlineEdit().init(dtoId);
-					jDto
-						.on("preInit.dt", function () {
-							const headConf = new IsoTableHeadActions().getConfiguration();
-							const content = tManager.render("template_headListActions", headConf);
-							const selector = $("div.CustomTableHeadBar");
-							selector.html(content);
-							$('.table-search').keyup(function () {
-								const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
-								oTable.search($(this).val()).draw();
-							});
-							//Delete multiple rows
-							$(".deleteMultipleRows").on("click", function () {
-								const cTable = $(this).closest(".card").find(tableSelector);
-								if (cTable) {
-									if (typeof TableBuilder !== 'undefined') {
-										new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
-									}
-								}
-							});
+					scope.builder.createAndRenderTable({
+						target: container,
+						selector: dtoId,
+						dbViewModel: "aa47eaf4-5b96-42a6-8387-72adb53ce713",
+						builderConfiguration: conf
+					});
+				} break;
 
-							$(".add_new_inline").on("click", function () {
-								new TableInlineEdit().addNewHandler(this);
-							});
+				//Show kpi's
+				case "observation": {
+					const dtoId = "#render_a7402009-1442-4d05-b62e-eb3d911269bf";
+					const conf = {
+						showActionsColumn: false,
+						ajax: {
+							url: "/PageRender/LoadPagedData",
+							type: "POST",
+							data: {
+								filters: []
+							}
+						}
+					};
 
-							//Items on page
-							$(".tablePaginationView a").on("click", function () {
-								const ctx = $(this);
-								const onPageValue = ctx.data("page");
-								const onPageText = ctx.text();
-								ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
-								const table = ctx.closest(".card").find(tableSelector).DataTable();
-								table.page.len(onPageValue).draw();
-							});
-
-							//hide columns
-							$(".hidden-columns-event").click(function () {
-								console.log(tableSelector);
-								const tables = $(this).closest(".card").find(tableSelector);
-								if (tables.length === 0) return;
-								new TableColumnsVisibility().toggleRightListSideBar(`#${tables[0].id}`);
-								$("#hiddenColumnsModal").modal();
-							});
-							window.forceTranslate("div.CustomTableHeadBar");
-						});
+					scope.builder.createAndRenderTable({
+						target: container,
+						selector: dtoId,
+						dbViewModel: "815544b9-5c25-40bb-b320-47723ca38653",
+						builderConfiguration: conf
+					});
 				} break;
 			}
-		});
-	}
 
-	getReachingGoalsTable() {
-		return `  <div class="card">
-                <div class="card-body"><table id="render_f3cb8b17-01a2-439b-938c-820835c77deb" db-viewmodel="aa47eaf4-5b96-42a6-8387-72adb53ce713"
-                class="dynamic-table table table-striped table-bordered"></table></div></div>`;
+			ctx.attr(isLoadedAttrName, "true");
+		});
 	}
 
 	/**

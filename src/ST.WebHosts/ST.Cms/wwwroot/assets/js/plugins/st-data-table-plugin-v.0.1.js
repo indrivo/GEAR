@@ -642,6 +642,7 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 							return elDiv.outerHTML;
 						}
 					});
+					console.log(tr);
 				});
 			//const htmlCol = document.createElement("th");
 			//htmlCol.innerHTML = ctx.appendColumnsBeforeActions();
