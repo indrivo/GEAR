@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "实现目标的信息安全",
   "iso_trends_in_main_indicators_of_information_security": "该趋势的主要指标的信息的安全",
   "iso_trends": "趋势",
-  "iso_changes_in_internal_and_external_aspects": "该变化方面的内部和外部的"
+  "iso_changes_in_internal_and_external_aspects": "该变化方面的内部和外部的",
+  "iso_meetings": "会议",
+  "iso_meeting_date": "日本拍摄",
+  "iso_meeting_participants": "参与者",
+  "iso_meeting_generate_report": "产生一个分析报告的管理",
+  "iso_no_participants": "有没有参与者",
+  "system_view_details": "看细节"
 }

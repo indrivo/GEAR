@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "De verwezenlijking van de doelstellingen van de information security",
   "iso_trends_in_main_indicators_of_information_security": "De trends in de belangrijkste indicatoren voor de veiligheid van de informatie",
   "iso_trends": "Trends",
-  "iso_changes_in_internal_and_external_aspects": "De wijzigingen aan de aspecten van de interne en externe"
+  "iso_changes_in_internal_and_external_aspects": "De wijzigingen aan de aspecten van de interne en externe",
+  "iso_meetings": "Vergaderingen",
+  "iso_meeting_date": "De datum van de shoot",
+  "iso_meeting_participants": "Deelnemers",
+  "iso_meeting_generate_report": "Genereert een rapport over de analyse van het management van",
+  "iso_no_participants": "Er zijn geen deelnemers",
+  "system_view_details": "Bekijk details"
 }

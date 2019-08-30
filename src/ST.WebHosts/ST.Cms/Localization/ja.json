@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "目的の情報セキュリティ",
   "iso_trends_in_main_indicators_of_information_security": "の動向の指標のセキュリティ情報",
   "iso_trends": "動向",
-  "iso_changes_in_internal_and_external_aspects": "の変化の面内外の"
+  "iso_changes_in_internal_and_external_aspects": "の変化の面内外の",
+  "iso_meetings": "会議",
+  "iso_meeting_date": "日の撮影",
+  "iso_meeting_participants": "参加者",
+  "iso_meeting_generate_report": "コンパイル時レポートを作成し、解析の管理",
+  "iso_no_participants": "ありませんの参加者",
+  "system_view_details": "詳細を表示"
 }

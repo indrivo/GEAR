@@ -1,6 +1,12 @@
 const blockId = "#meetingBlock";
 const block = $(blockId);
 
+const spinner = new TemplateManager().render("template_svgSpinner", {
+	id: new ST().newGuid()
+});
+
+block.html(spinner);
+
 const meetingId = new ST().getParamFormUrl("meetingId");
 
 $(() => {
@@ -74,7 +80,7 @@ class IsoMeetings {
 					key: "nonconformities",
 					hasButton: true,
 					button: {
-						isLink: true,
+						isLink: false,
 						buttonText: window.translate("show_actions"),
 						link: ""
 					}
@@ -98,7 +104,7 @@ class IsoMeetings {
 					key: "auditResults",
 					hasButton: true,
 					button: {
-						isLink: true,
+						isLink: false,
 						buttonText: window.translate("show_actions"),
 						link: ""
 					}
@@ -196,6 +202,11 @@ class IsoMeetings {
 		this.db.getByIdWithIncludesAsync(this.entities.meetings, this.meetingId)
 			.then(dbResult => {
 				if (dbResult.is_success) {
+					$("#history_back")
+						.parent()
+						.find("h1")
+						.append(` ${dbResult.result.code}`);
+
 					//store globaly meeting
 					this.meeting = dbResult.result;
 
@@ -210,7 +221,9 @@ class IsoMeetings {
 							const obj = Object.assign(dbResult.result, {
 								tabs: this.accordionItems
 							});
-							obj.participants = participants;
+							obj.participants = participants.length === 0
+								? window.translate("iso_no_participants")
+								: participants;
 
 							const content = this.templateManager.render("template_template_meeting_details", obj, {
 								obj: obj,
@@ -302,6 +315,52 @@ class IsoMeetings {
 						target: container,
 						selector: dtoId,
 						dbViewModel: "815544b9-5c25-40bb-b320-47723ca38653",
+						builderConfiguration: conf
+					});
+				} break;
+
+				//Show actions
+				case "nonconformities": {
+					const dtoId = "#render_a7402009-1442-4d05-b62e-eb3d91126876";
+					const conf = {
+						showActionsColumn: false,
+						ajax: {
+							url: "/PageRender/LoadPagedData",
+							type: "POST",
+							data: {
+								filters: [
+									{ parameter: "Source", searchValue: "5b79aaa8-807e-4e87-99d1-dee520653b39" }]
+							}
+						}
+					};
+
+					scope.builder.createAndRenderTable({
+						target: container,
+						selector: dtoId,
+						dbViewModel: "f845d6a0-648c-4050-afe1-ef8909bb91dd",
+						builderConfiguration: conf
+					});
+				} break;
+
+				//Show actions for audit
+				case "auditResults": {
+					const dtoId = "#render_a7402009-1442-4d05-b62e-eb3d91126812";
+					const conf = {
+						showActionsColumn: false,
+						ajax: {
+							url: "/PageRender/LoadPagedData",
+							type: "POST",
+							data: {
+								filters: [
+									{ parameter: "Source", searchValue: "53b83573-7bf0-479e-9598-03469c9e1ae9" }]
+							}
+						}
+					};
+
+					scope.builder.createAndRenderTable({
+						target: container,
+						selector: dtoId,
+						dbViewModel: "f845d6a0-648c-4050-afe1-ef8909bb91dd",
 						builderConfiguration: conf
 					});
 				} break;

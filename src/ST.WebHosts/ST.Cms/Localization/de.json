@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "Die Erreichung der Ziele der Informationssicherheit",
   "iso_trends_in_main_indicators_of_information_security": "Die trends in den wichtigsten Indikatoren für die Sicherheit der Informationen, die",
   "iso_trends": "Trends",
-  "iso_changes_in_internal_and_external_aspects": "Die änderungen zu den Aspekten des internen und externen"
+  "iso_changes_in_internal_and_external_aspects": "Die änderungen zu den Aspekten des internen und externen",
+  "iso_meetings": "Treffen",
+  "iso_meeting_date": "Der Zeitpunkt des Shootings",
+  "iso_meeting_participants": "Teilnehmer",
+  "iso_meeting_generate_report": "Erzeugt einen Bericht über die Analyse des Managements von",
+  "iso_no_participants": "Es gibt keine Teilnehmer",
+  "system_view_details": "Details anzeigen"
 }

@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "Atingerea obiectivelor de securitate a informatiei",
   "iso_trends_in_main_indicators_of_information_security": "Tendinte in principali indicatori de securitate a informatiei",
   "iso_trends": "Tendinte",
-  "iso_changes_in_internal_and_external_aspects": "Schimbarile aspectelor interne si externe"
+  "iso_changes_in_internal_and_external_aspects": "Schimbarile aspectelor interne si externe",
+  "iso_meetings": "Ședinte",
+  "iso_meeting_date": "Data ședintei",
+  "iso_meeting_participants": "Participanții",
+  "iso_meeting_generate_report": "Genereaza raport analiza de management",
+  "iso_no_participants": "Nu există participanți",
+  "system_view_details": "Vezi detalii"
 }

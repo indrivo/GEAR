@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "В досягненні цілей в області інформаційної безпеки",
   "iso_trends_in_main_indicators_of_information_security": "Тенденції в основних показниках в області безпеки інформаційних технологій",
   "iso_trends": "Тенденції",
-  "iso_changes_in_internal_and_external_aspects": "Зміни аспектах-внутрішніх і зовнішніх"
+  "iso_changes_in_internal_and_external_aspects": "Зміни аспектах-внутрішніх і зовнішніх",
+  "iso_meetings": "Зустрічі",
+  "iso_meeting_date": "Дата засідання",
+  "iso_meeting_participants": "Учасники",
+  "iso_meeting_generate_report": "Створення звітів, аналіз, управління",
+  "iso_no_participants": "Не було учасників",
+  "system_view_details": "Подивитися деталі"
 }

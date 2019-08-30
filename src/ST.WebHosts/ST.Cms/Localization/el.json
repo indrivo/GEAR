@@ -463,5 +463,11 @@
   "iso_achieving_information_security_objectives": "Η επίτευξη των στόχων της ασφάλειας των πληροφοριών",
   "iso_trends_in_main_indicators_of_information_security": "Η πορεία των βασικών δεικτών της ασφάλειας των πληροφοριών",
   "iso_trends": "Τάσεις",
-  "iso_changes_in_internal_and_external_aspects": "Οι αλλαγές στις πτυχές της εσωτερικής και εξωτερικής"
+  "iso_changes_in_internal_and_external_aspects": "Οι αλλαγές στις πτυχές της εσωτερικής και εξωτερικής",
+  "iso_meetings": "Συναντήσεις",
+  "iso_meeting_date": "Την ημερομηνία του βλαστού",
+  "iso_meeting_participants": "Οι συμμετέχοντες",
+  "iso_meeting_generate_report": "Δημιουργεί μια έκθεση σχετικά με την ανάλυση της διαχείρισης των",
+  "iso_no_participants": "Δεν υπάρχουν συμμετέχοντες",
+  "system_view_details": "Δείτε λεπτομέρειες"
 }
