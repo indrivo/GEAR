@@ -15,16 +15,19 @@ namespace ST.Identity.Abstractions.Models.MultiTenants
         [Required]
         [DisplayTranslate(Key = "iso_company_name")]
         public string Name { get; set; }
+
         /// <summary>
         /// Name for system
         /// </summary>
         [Required]
         public string MachineName { get; set; }
+
         /// <summary>
         /// Description for this tenant
         /// </summary>
         [DisplayTranslate(Key = "description")]
         public string Description { get; set; }
+
         /// <summary>
         /// The url of site web
         /// </summary>

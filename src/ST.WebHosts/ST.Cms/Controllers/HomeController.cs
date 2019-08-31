@@ -3,10 +3,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ST.Cms.ViewModels.InstallerModels;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
-using ST.Cms.ViewModels.ViewModels;
 
 namespace ST.Cms.Controllers
 {
@@ -38,15 +38,23 @@ namespace ST.Cms.Controllers
 		/// Dashboard view
 		/// </summary>
 		/// <returns></returns>
-		[Authorize]
 		public IActionResult Index()
 		{
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();
 			ViewBag.TotalSessions = _hub.GetSessionsCount();
-			return View("Index");
+			return View();
+		}
+
+		/// <summary>
+		/// Contact view
+		/// </summary>
+		/// <returns></returns>
+		public IActionResult Contact()
+		{
+			return View();
 		}
 
 		public IActionResult Error() =>
-			View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+			View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
 	}
 }

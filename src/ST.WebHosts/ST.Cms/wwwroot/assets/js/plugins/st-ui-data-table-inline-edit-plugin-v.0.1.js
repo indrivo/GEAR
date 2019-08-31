@@ -22,6 +22,87 @@ $(document).ready(function () {
 });
 
 /**
+ * Create and render new table with inline edit
+ * @param {any} conf
+ */
+TableInlineEdit.prototype.createAndRenderTable = function (conf = {
+	target: undefined,
+	selector: "",
+	dbViewModel: undefined,
+	builderConfiguration: {
+	}
+}) {
+	if (!conf || !conf.selector || !conf.target) {
+		console.warn("Bad configuration!!!");
+		return 0;
+	}
+
+	const container = document.createElement("div");
+	container.setAttribute("class", "card");
+	const cBody = document.createElement("div");
+	cBody.setAttribute("class", "card-body");
+	const table = document.createElement("table");
+	table.setAttribute("id", conf.selector.substr(1));
+	table.setAttribute("class", "dynamic-table table table-striped table-bordered");
+	table.setAttribute("db-viewmodel", conf.dbViewModel);
+	const headSection = document.createElement("thead");
+	const defaultRow = document.createElement("tr");
+	headSection.append(defaultRow);
+	table.append(headSection);
+	cBody.append(table);
+	container.append(cBody);
+
+	$(conf.target).html(container);
+	const jDto = $(conf.selector);
+	const tBuilder = new TableBuilder(conf.builderConfiguration);
+	tBuilder.init(jDto.get(0));
+	new TableInlineEdit().init(conf.selector);
+	jDto.on("preInit.dt", function () {
+		const headConf = new IsoTableHeadActions().getConfiguration();
+		const content = tManager.render("template_headListActions", headConf);
+		const selector = $("div.CustomTableHeadBar");
+		selector.html(content);
+		$('.table-search').keyup(function () {
+			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
+			oTable.search($(this).val()).draw();
+		});
+
+		//Delete multiple rows
+		$(".deleteMultipleRows").on("click", function () {
+			const cTable = $(this).closest(".card").find(conf.selector);
+			if (cTable) {
+				if (typeof TableBuilder !== 'undefined') {
+					tBuilder.deleteSelectedRowsHandler(cTable.DataTable());
+				}
+			}
+		});
+
+		$(".add_new_inline").on("click", function () {
+			new TableInlineEdit().addNewHandler(this);
+		});
+
+		//Items on page
+		$(".tablePaginationView a").on("click", function () {
+			const ctx = $(this);
+			const onPageValue = ctx.data("page");
+			const onPageText = ctx.text();
+			ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
+			const table = ctx.closest(".card").find(conf.selector).DataTable();
+			table.page.len(onPageValue).draw();
+		});
+
+		//hide columns
+		$(".hidden-columns-event").click(function () {
+			const tables = $(this).closest(".card").find(conf.selector);
+			if (tables.length === 0) return;
+			new TableColumnsVisibility().toggleRightListSideBar(`#${tables[0].id}`);
+			$("#hiddenColumnsModal").modal();
+		});
+		window.forceTranslate("div.CustomTableHeadBar");
+	});
+};
+
+/**
  * Constructor
  */
 TableInlineEdit.prototype.constructor = TableInlineEdit;
