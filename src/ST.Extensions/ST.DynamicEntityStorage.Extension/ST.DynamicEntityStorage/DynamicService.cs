@@ -184,20 +184,9 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null) where TEntity : BaseModel
         {
             var rq = await GetAllWithInclude<TEntity, TOutput>();
-            if (!rq.IsSuccess) return default;
-            try
-            {
-                var data = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
-                return new ResultModel<IEnumerable<TOutput>>
-                {
-                    IsSuccess = true,
-                    Result = data
-                };
-            }
-            catch
-            {
-                return default;
-            }
+            if (!rq.IsSuccess) return rq;
+            rq.Result = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
+            return rq;
         }
 
 

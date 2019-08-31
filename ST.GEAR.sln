@@ -207,11 +207,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Files.Box.Abstraction", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Email", "src\ST.Extensions\ST.Email.Extension\ST.Email\ST.Email.csproj", "{E3EF3E53-5153-4B2D-8766-00D825BA166E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Email.Razor", "src\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email.Razor.csproj", "{09DFDEDE-F564-4AF2-BE64-A94335F895AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Email.Razor", "src\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email.Razor.csproj", "{09DFDEDE-F564-4AF2-BE64-A94335F895AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.TaskManager", "src\ST.Extensions\ST.TaskManager\ST.TaskManager\ST.TaskManager.csproj", "{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.TaskManager.Razor", "src\ST.Extensions\ST.TaskManager\ST.TaskManager.Razor\ST.TaskManager.Razor.csproj", "{1845F3F6-9606-4F2C-978F-396C54A9EF92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.TaskManager.Razor", "src\ST.Extensions\ST.TaskManager\ST.TaskManager.Razor\ST.TaskManager.Razor.csproj", "{1845F3F6-9606-4F2C-978F-396C54A9EF92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

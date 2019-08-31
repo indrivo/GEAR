@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ST.Core;
 using ST.Core.Abstractions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
+using ST.MultiTenant.Abstractions.ViewModels;
 
 namespace ST.MultiTenant.Abstractions
 {
@@ -106,5 +108,12 @@ namespace ST.MultiTenant.Abstractions
         /// </summary>
         /// <returns></returns>
         byte[] GetDefaultImage();
+
+        /// <summary>
+        /// Filtered list
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DTResult<OrganizationListViewModel> GetFilteredList(DTParameters param);
     }
 }

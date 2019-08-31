@@ -1,7 +1,7 @@
 ﻿@using ST.Core.Extensions
 @using ST.Identity.Abstractions
 @using ST.Identity.Abstractions.Models.MultiTenants
-@using ST.MultiTenant.ViewModels
+@using ST.MultiTenant.Abstractions.ViewModels
 
 @{
     ViewData["Title"] = Localizer["system_my_company"];
@@ -9,6 +9,7 @@
     var user = (ApplicationUser)ViewBag.User;
     var roles = (string)ViewBag.UserRoles;
     var organization = (Tenant)ViewBag.Organization;
+    ViewData["TenantCallBackUrl"] = "/CompanyManage";
     var tenantEditModel = new EditTenantViewModel(organization)
     {
         CountrySelectListItems = (IEnumerable<SelectListItem>)ViewBag.Countries
@@ -79,7 +80,7 @@
             <div class="card-body">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" />
+                        <partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" view-data="@ViewData"/>
                     </div>
                     <div class="tab-pane fade show" id="users" role="tabpanel" aria-labelledby="users-tab">
                         <JList asp-for="@ViewBag.UsersListSettings"></JList>

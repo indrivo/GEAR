@@ -1,4 +1,4 @@
-﻿namespace ST.MultiTenant.Helpers
+﻿namespace ST.MultiTenant.Abstractions.Helpers
 {
     public static class TenantUtils
     {

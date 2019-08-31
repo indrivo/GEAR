@@ -1,6 +1,6 @@
 ﻿using ST.Identity.Abstractions.Models.MultiTenants;
 
-namespace ST.MultiTenant.Razor.ViewModels
+namespace ST.MultiTenant.Abstractions.ViewModels
 {
     public class OrganizationListViewModel : Tenant
     {

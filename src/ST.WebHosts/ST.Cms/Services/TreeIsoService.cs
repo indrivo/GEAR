@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
@@ -15,6 +14,10 @@ using ST.Cms.Services.Abstractions;
 using ST.Cms.ViewModels.TreeISOViewModels;
 using ST.Core;
 using ST.Core.Helpers.Comparers;
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
+#pragma warning disable 1998
 
 namespace ST.Cms.Services
 {

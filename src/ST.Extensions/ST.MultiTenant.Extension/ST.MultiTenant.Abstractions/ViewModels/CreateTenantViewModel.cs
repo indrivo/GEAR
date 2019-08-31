@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ST.Core.Attributes;
 using ST.Identity.Abstractions.Models.MultiTenants;
 
-namespace ST.MultiTenant.ViewModels
+namespace ST.MultiTenant.Abstractions.ViewModels
 {
     public class CreateTenantViewModel : Tenant
     {

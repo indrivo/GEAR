@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +28,7 @@ using ST.Identity.Data;
 using ST.Identity.Permissions.Abstractions;
 using ST.Install.Abstractions;
 using ST.Install.Abstractions.Models;
-using ST.MultiTenant.Helpers;
+using ST.MultiTenant.Abstractions.Helpers;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 

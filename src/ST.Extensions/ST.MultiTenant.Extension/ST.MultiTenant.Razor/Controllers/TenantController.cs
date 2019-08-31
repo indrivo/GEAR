@@ -12,7 +12,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using ST.Core;
 using ST.Core.Extensions;
-using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Data;
@@ -21,9 +20,8 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.MultiTenant.Abstractions;
-using ST.MultiTenant.Helpers;
-using ST.MultiTenant.Razor.ViewModels;
-using ST.MultiTenant.ViewModels;
+using ST.MultiTenant.Abstractions.Helpers;
+using ST.MultiTenant.Abstractions.ViewModels;
 
 namespace ST.MultiTenant.Razor.Controllers
 {
@@ -95,10 +93,7 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityRead)]
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
         /// <summary>
         /// Get list
@@ -106,34 +101,7 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult OrderList(DTParameters param)
-        {
-            var filtered = Context.Filter<Tenant>(param.Search.Value, param.SortOrder, param.Start,
-                param.Length,
-                out var totalCount);
-
-            var list = filtered.Select(x => new OrganizationListViewModel
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Description = x.Description,
-                Created = x.Created,
-                Changed = x.Changed,
-                ModifiedBy = x.ModifiedBy,
-                Author = x.Author,
-                Users = _organizationService.GetUsersByOrganization(x).Count()
-            });
-
-            var finalResult = new DTResult<OrganizationListViewModel>
-            {
-                Draw = param.Draw,
-                Data = list.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
-        }
+        public JsonResult OrderList(DTParameters param) => Json(_organizationService.GetFilteredList(param));
 
         /// <summary>
         /// View for create a tenant

@@ -9,11 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ST.Core;
 using ST.Core.Helpers;
+using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Email.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Abstractions;
+using ST.MultiTenant.Abstractions.ViewModels;
 
 namespace ST.MultiTenant.Services
 {
@@ -218,7 +221,7 @@ namespace ST.MultiTenant.Services
         public async Task SendInviteToEmailAsync(ApplicationUser user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Account", new {userId = user.Id, confirmToken = code},
+            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Account", new { userId = user.Id, confirmToken = code },
                 _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
                 $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
@@ -240,7 +243,7 @@ namespace ST.MultiTenant.Services
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var binary = new BinaryReader(stream))
                 {
-                    var data = binary.ReadBytes((int) stream.Length);
+                    var data = binary.ReadBytes((int)stream.Length);
                     return data;
                 }
             }
@@ -272,6 +275,44 @@ namespace ST.MultiTenant.Services
             return roles;
         }
 
+        /// <summary>
+        /// Get filtered list of organization
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public DTResult<OrganizationListViewModel> GetFilteredList(DTParameters param)
+        {
+            if (param == null) return new DTResult<OrganizationListViewModel>();
+            var filtered = _context.Filter<Tenant>(param.Search.Value, param.SortOrder, param.Start,
+                param.Length,
+                out var totalCount);
+
+            var list = filtered.Select(x => new OrganizationListViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                Created = x.Created,
+                Changed = x.Changed,
+                ModifiedBy = x.ModifiedBy,
+                Author = x.Author,
+                Users = GetUsersByOrganization(x).Count()
+            });
+
+            return new DTResult<OrganizationListViewModel>
+            {
+                Draw = param.Draw,
+                Data = list.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
+            };
+        }
+
+        /// <summary>
+        /// Generate random password
+        /// </summary>
+        /// <param name="opts"></param>
+        /// <returns></returns>
         private static string GenerateRandomPassword(PasswordOptions opts = null)
         {
             if (opts == null)

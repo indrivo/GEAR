@@ -20,9 +20,8 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
+using ST.MultiTenant.Abstractions.ViewModels;
 using ST.MultiTenant.Razor.Helpers;
-using ST.MultiTenant.Razor.ViewModels;
-using ST.MultiTenant.ViewModels;
 using ST.Notifications.Abstractions;
 
 namespace ST.MultiTenant.Razor.Controllers
@@ -198,6 +197,28 @@ namespace ST.MultiTenant.Razor.Controllers
             countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
 
             return countrySelectList;
+        }
+
+        /// <summary>
+        /// Register company
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/register-company"), AllowAnonymous]
+        public IActionResult RegisterCompany()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Register company
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost, AllowAnonymous]
+        public IActionResult RegisterCompany(CreateTenantViewModel model)
+        {
+
+            return View();
         }
     }
 }

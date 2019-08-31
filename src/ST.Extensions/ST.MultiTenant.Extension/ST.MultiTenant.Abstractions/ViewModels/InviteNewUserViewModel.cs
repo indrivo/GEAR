@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ST.MultiTenant.ViewModels
+namespace ST.MultiTenant.Abstractions.ViewModels
 {
     public class InviteNewUserViewModel
     {

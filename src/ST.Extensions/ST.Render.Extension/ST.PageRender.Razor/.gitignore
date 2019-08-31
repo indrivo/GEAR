@@ -243,3 +243,7 @@ wwwroot/lib/
 
 /obj
 /bin
+
+# Ignore directories
+
+!wwwroot/assets/*

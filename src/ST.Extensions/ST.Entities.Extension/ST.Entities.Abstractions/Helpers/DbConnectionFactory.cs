@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -48,10 +47,7 @@ namespace ST.Entities.Abstractions.Helpers
         /// </summary>
         public static void CloseAll()
         {
-            Connections.ToList().ForEach(x =>
-            {
-                x.Close();
-            });
+            Connections.ToList().ForEach(x => x.Close());
         }
 
         public static class Connection
