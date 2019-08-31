@@ -1,6 +1,5 @@
 @{
     ViewData["Title"] = "Files";
-    Layout = "_Layout";
 }
 
 <div class="row">
@@ -67,7 +66,7 @@
                     contentType: false,
                     type: "POST",
                     success: function (data) {
-                        alert("Files Uploaded with id: ");
+                        alert(`Files Uploaded with id: ${data.result}`);
                     }
                 }
             );
@@ -87,7 +86,7 @@
                     contentType: false,
                     type: "POST",
                     success: function (data) {
-                        alert("Files Uploaded!");
+                        alert(`Files Uploaded with id: ${data.result}`);
                     }
                 }
             );

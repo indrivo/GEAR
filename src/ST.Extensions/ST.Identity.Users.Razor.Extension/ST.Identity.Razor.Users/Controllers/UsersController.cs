@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
 using ST.Entities.Data;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
@@ -28,6 +27,7 @@ using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 
 namespace ST.Identity.Razor.Users.Controllers
 {

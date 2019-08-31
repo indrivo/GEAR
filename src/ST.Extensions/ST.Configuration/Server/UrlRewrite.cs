@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
@@ -29,13 +30,10 @@ namespace ST.Configuration.Server
         /// <param name="next"></param>
         private static async Task OnNonConfiguredSystem(this HttpContext ctx, Func<Task> next)
         {
-            if (ctx.Request.Cookies.Count >= 2)
-            {
-                ctx.DeleteCookies();
-            }
+            if (ctx.Request.Cookies.Count >= 2) ctx.DeleteCookies();
             if (ctx.Request.Path.Value != "/"
                 && ExcludeAssets(ctx.Request.Path.Value)
-                && !(ctx.Request.Path.Value.ToLower().StartsWith("/installer")))
+                && !ctx.Request.Path.Value.ToLowerInvariant().StartsWith("/installer", StringComparison.Ordinal))
             {
                 var originalPath = ctx.Request.Path.Value;
                 ctx.Items["originalPath"] = originalPath;
@@ -58,7 +56,7 @@ namespace ST.Configuration.Server
             await next();
             var isClientUrl = ctx.ParseClientRequest();
             if (isClientUrl) await next();
-            else if (ctx.Response.StatusCode == 404 && !ctx.Response.HasStarted)
+            else if (ctx.Response.StatusCode == StatusCodes.Status404NotFound && !ctx.Response.HasStarted)
             {
                 //Re-execute the request so the user gets the error page
                 var originalPath = ctx.Request.Path.Value;
@@ -75,17 +73,16 @@ namespace ST.Configuration.Server
         /// <returns></returns>
         private static async Task CheckTenant(this HttpContext ctx)
         {
-            var tenantId = ctx.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value?.ToGuid();
+            var tenantId = ctx.User?.Claims?.FirstOrDefault(x => x.Type == nameof(Tenant).ToLowerInvariant())?.Value?.ToGuid();
             if (tenantId == Guid.Empty || tenantId == null)
             {
                 try
                 {
                     var userManager = ctx.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-                    var user = userManager.GetUserAsync(ctx.User).GetAwaiter().GetResult();
+                    var user = await userManager.GetUserAsync(ctx.User);
                     if (user != null)
                     {
-                        var claim = new Claim("tenant", user.TenantId.ToString());
-                        //await userManager.RemoveClaimAsync(user, claim);
+                        var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
                         await userManager.AddClaimAsync(user, claim);
                     }
                 }
@@ -106,7 +103,7 @@ namespace ST.Configuration.Server
             {
                 if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "language").Equals(default(KeyValuePair<string, string>)))
                 {
-                    ctx.Response.Cookies.Append("language", Settings.DefaultLanguage);
+                    ctx.Response.Cookies.Append("language", Settings.DEFAULT_LANGUAGE);
                 }
             }
             catch (Exception e)
@@ -152,15 +149,15 @@ namespace ST.Configuration.Server
         /// <returns></returns>
         internal static bool ExcludeAssets(string value)
         {
-            return !value.StartsWith("/css")
-                && !value.StartsWith("/lib")
-                && !value.StartsWith("/assets")
-                && !value.StartsWith("/js")
-                && !value.StartsWith("/themes")
-                && !value.StartsWith("/PageRender")
-                && !value.StartsWith("/Localization")
-                && !value.StartsWith("/favicon.ico")
-                && !value.StartsWith("/images");
+            return !value.StartsWith("/css", StringComparison.Ordinal)
+                && !value.StartsWith("/lib", StringComparison.Ordinal)
+                && !value.StartsWith("/assets", StringComparison.Ordinal)
+                && !value.StartsWith("/js", StringComparison.Ordinal)
+                && !value.StartsWith("/themes", StringComparison.Ordinal)
+                && !value.StartsWith("/PageRender", StringComparison.Ordinal)
+                && !value.StartsWith("/Localization", StringComparison.Ordinal)
+                && !value.StartsWith("/favicon.ico", StringComparison.Ordinal)
+                && !value.StartsWith("/images", StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -207,16 +204,7 @@ namespace ST.Configuration.Server
         /// Route Match
         /// </summary>
         private static readonly Func<(Page, string, List<KeyValuePair<string, string>>), bool> RouteFinder =
-            delegate ((Page, string, List<KeyValuePair<string, string>>) data)
-            {
-                var search = data.Item2.Split("/");
-                //if (data.Item1.Path.StartsWith("/" + search[1]))
-                //{
-                //    return true;
-                //}
-
-                return data.Item1.Path.ToLower().Equals(data.Item2.ToLower()) && !data.Item2.Equals("/");
-            };
+            data => data.Item1.Path.ToLower().Equals(data.Item2.ToLower()) && !data.Item2.Equals("/");
 
         /// <summary>
         /// NameValueCollection to KeyValuePair
@@ -238,7 +226,7 @@ namespace ST.Configuration.Server
             app.Use(async (ctx, next) =>
             {
                 await next();
-                if (ctx.Response.StatusCode == 302 && !ctx.Response.HasStarted)
+                if (ctx.Response.StatusCode == StatusCodes.Status302Found && !ctx.Response.HasStarted)
                 {
                     //Get userName of user
                     var oid = ctx.User.Identity.Name;

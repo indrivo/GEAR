@@ -23,6 +23,7 @@ using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Entities.Abstractions.Constants;
+using ST.Entities.Security.Abstractions;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.PageRender.Abstractions;
@@ -36,7 +37,14 @@ namespace ST.PageRender.Razor.Controllers
     public class PageRenderController : Controller
     {
         #region InjectRegion
+        /// <summary>
+        /// Inject role access manager
+        /// </summary>
+        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
 
+        /// <summary>
+        /// Inject page context
+        /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
@@ -81,10 +89,11 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="userManager"></param>
         /// <param name="formContext"></param>
         /// <param name="pagesContext"></param>
+        /// <param name="entityRoleAccessManager"></param>
         public PageRenderController(ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext)
+            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext, IEntityRoleAccessManager entityRoleAccessManager)
         {
             _appContext = appContext;
             _service = service;
@@ -92,6 +101,7 @@ namespace ST.PageRender.Razor.Controllers
             _userManager = userManager;
             _formContext = formContext;
             _pagesContext = pagesContext;
+            _entityRoleAccessManager = entityRoleAccessManager;
             _pageRender = pageRender;
         }
 
@@ -216,7 +226,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
         {
             var entity = _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -364,7 +374,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="menuId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> GetMenuItemRoles([Required] Guid menuId)
         {
             if (menuId == Guid.Empty) return Json(new ResultModel());
@@ -401,7 +411,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="roles"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> UpdateMenuItemRoleAccess([Required] Guid menuId, IList<string> roles)
         {
             return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
@@ -434,7 +444,12 @@ namespace ST.PageRender.Razor.Controllers
         [AjaxOnly]
         public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, ICollection<ListFilter> filters)
         {
-            if (viewModelId == Guid.Empty) return Json(default(DTResult<object>));
+            var defaultResult = new DTResult<object>
+            {
+                Data = new List<object>()
+            };
+
+            if (viewModelId == Guid.Empty) return Json(defaultResult);
             var viewModel = await _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
@@ -444,7 +459,9 @@ namespace ST.PageRender.Razor.Controllers
                 .ThenInclude(x => x.Configurations)
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
-            if (viewModel == null) return Json(default(DTResult<object>));
+            if (viewModel == null) return Json(defaultResult);
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(viewModel.TableModelId)) return Json(defaultResult);
+
             filters?.ToList().ForEach(x =>
             {
                 x.SetValue();
@@ -479,7 +496,7 @@ namespace ST.PageRender.Razor.Controllers
 
             var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
                 param.Start,
-                param.Length, x => x.SortByUserRoleAccess(roles, Settings.SuperAdmin), filters);
+                param.Length, x => x.SortByUserRoleAccess(roles, Settings.ADMINISTRATOR), filters);
 
             var final = await LoadManyToManyReferences(data, viewModel);
 
@@ -730,9 +747,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="ids"></param>
         /// <param name="mode"></param>
         /// <returns></returns>
-        [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [AjaxOnly, HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids, bool mode = true)
         {
             if (ids == null) return Json(new { message = "Fail to delete!", success = false });
@@ -770,7 +785,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = Settings.ADMINISTRATOR)]
         public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)

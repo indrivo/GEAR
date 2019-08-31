@@ -13,6 +13,7 @@ using ST.Entities.Controls.Builders;
 using ST.Entities.Data;
 using ST.Core;
 using ST.Core.Helpers;
+using ST.DynamicEntityStorage.Abstractions;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace ST.DynamicEntityStorage
@@ -55,7 +56,7 @@ namespace ST.DynamicEntityStorage
                 return new DynamicObject
                 {
                     Type = stored.Result,
-                    Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
+                    Service = IoC.Resolve<IDynamicService>()
                 };
             }
 
@@ -111,7 +112,7 @@ namespace ST.DynamicEntityStorage
             return new DynamicObject
             {
                 Type = type,
-                Service = new DynamicService<EntitiesDbContext>(context, httpContextAccessor)
+                Service = IoC.Resolve<IDynamicService>()
             };
         }
 

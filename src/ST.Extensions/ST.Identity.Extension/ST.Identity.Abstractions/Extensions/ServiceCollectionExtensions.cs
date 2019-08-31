@@ -31,6 +31,21 @@ namespace ST.Identity.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Add identity user manager
+        /// </summary>
+        /// <typeparam name="TUserManager"></typeparam>
+        /// <typeparam name="TUser"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddIdentityUserManager<TUserManager, TUser>(this IServiceCollection services)
+            where TUser : ApplicationUser
+            where TUserManager : class, IUserManager<TUser>
+        {
+            services.AddTransient<IUserManager<TUser>, TUserManager>();
+            return services;
+        }
+
+        /// <summary>
         /// Add identity storage
         /// </summary>
         /// <param name="services"></param>

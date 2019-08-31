@@ -1,5 +1,7 @@
 ﻿const toast = new ToastNotifier();
 const cms = [];
+
+//TODO: Support for razor
 //CodeMirror.defineMIME("xml", {
 //    name: "xml",
 //    atAnnotations: true,
