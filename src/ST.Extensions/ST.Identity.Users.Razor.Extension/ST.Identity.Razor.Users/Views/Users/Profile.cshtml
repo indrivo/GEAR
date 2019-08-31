@@ -1,7 +1,65 @@
-
+@using Castle.Core.Internal
+@model ST.Identity.Razor.Users.ViewModels.UserViewModels.UserProfileViewModel
 @{
-	ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Profile";
 }
 
+<div class="row">
+    <div class="col-lg-3 mb-2">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="mx-5 my-4 px-4">
+                    <img src="@Url.Action("GetImage", "Users", new {id = Model.UserId})" class="img-thumbnail img-fluid rounded-circle" alt="@Model.UserName">
+                </div>
+                <div class="text-center">
+                    <h5 class="weight-400">Hello, @Model.UserName</h5>
+                    <p class="text-muted">@string.Join(", ", Model.Roles)</p>
+                </div>
+                <hr class="my-4 dashed">
+                <p>
+                    <label asp-for="Email" class="weight-400"></label><span class="text-muted">@Model.Email</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="card mb-4">
+            <div class="card-header p-0">
+                <ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" href="#organization" role="tab" aria-controls="organization" aria-selected="false">Organization</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-4 py-3 rounded-0" id="profilePhoto-tab" data-toggle="tab" href="#profilePhoto" role="tab" aria-controls="profilePhoto" aria-selected="false">Profile Photo</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <h5 class="weight-400">Summary</h5>
+                        <p>No data</p>
+                    </div>
+                    <div class="tab-pane fade " id="organization" role="tabpanel" aria-labelledby="organization-tab">
+                        <p class="mb-4">@Model.Tenant.Description</p>
+                        <p>
+                            <span class="weight-400">Company name : </span><span class="text-muted">@Model.Tenant.Name</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">Address : </span><span class="text-muted">@Model.Tenant.Address</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">Company Website : </span><span class="text-muted">@Model.Tenant.SiteWeb</span>
+                        </p>
+                    </div>
+                    <div class="tab-pane fade " id="profilePhoto" role="tabpanel" aria-labelledby="profilePhoto-tab">
 
-<h1>Page is in construction</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

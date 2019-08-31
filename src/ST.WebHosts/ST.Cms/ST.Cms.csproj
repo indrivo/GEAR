@@ -140,6 +140,11 @@
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\FileBox\Thursday, August 15, 2019\" />
+    <Folder Include="wwwroot\lib\chosen-jquery\lib\" />
+    <Folder Include="wwwroot\lib\popper.js\" />
+  </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>
 	  <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>
