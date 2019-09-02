@@ -20,4 +20,8 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Settings\" />
+  </ItemGroup>
 </Project>

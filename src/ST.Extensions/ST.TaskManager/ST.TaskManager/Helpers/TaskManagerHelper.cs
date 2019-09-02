@@ -4,7 +4,7 @@ using ST.Core.Helpers;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 
-namespace ST.TaskManager
+namespace ST.TaskManager.Helpers
 {
     public class TaskManagerHelper
     {

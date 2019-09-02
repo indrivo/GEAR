@@ -89,6 +89,7 @@ using ST.MultiTenant.Abstractions.Extensions;
 using ST.MultiTenant.Services;
 using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
+using ST.TaskManager.Helpers;
 using ST.TaskManager.Razor.Extensions;
 
 namespace ST.Cms
@@ -348,7 +349,7 @@ namespace ST.Cms
 				});
 			//------------------------------------Task Module-------------------------------------
 			services
-				.AddTaskModule<TaskManager.TaskManager>()
+				.AddTaskModule<TaskManager.TaskManager,TaskManagerNotificationService>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

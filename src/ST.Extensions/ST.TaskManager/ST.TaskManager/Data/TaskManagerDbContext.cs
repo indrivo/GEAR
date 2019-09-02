@@ -22,7 +22,6 @@ namespace ST.TaskManager.Data
         public TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options)
             : base(options)
         {
-
         }
 
         /// <inheritdoc />
@@ -54,6 +53,8 @@ namespace ST.TaskManager.Data
                 .HasIndex(p => new { p.UserId, p.IsDeleted });
             builder.Entity<Task>()
                 .HasIndex(p => new { p.Id, p.IsDeleted });
+            builder.Entity<Task>()
+                .HasIndex(p => new { p.EndDate});
             builder.Entity<TaskItem>()
                 .HasKey(x => new { x.Id });
             builder.Entity<TaskItem>()
