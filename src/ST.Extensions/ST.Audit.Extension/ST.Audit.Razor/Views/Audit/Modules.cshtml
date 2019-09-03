@@ -1,0 +1,17 @@
+﻿@model IEnumerable<string>
+
+@{
+    ViewData["Title"] = Localizer["system_modules"];
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <ul class="list-group">
+            @foreach (var module in Model)
+            {
+                <li class="list-group-item"><a asp-action="ModuleAudit" asp-controller="Audit" asp-route-module="@module">@module</a></li>
+            }
+        </ul>
+    </div>
+</div>
