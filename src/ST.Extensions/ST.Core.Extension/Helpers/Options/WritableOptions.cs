@@ -35,19 +35,20 @@ namespace ST.Core.Helpers.Options
         public T Value => _options.CurrentValue;
         public T Get(string name) => _options.Get(name);
 
+        /// <inheritdoc />
         /// <summary>
         /// Update options in json
         /// </summary>
         /// <param name="applyChanges"></param>
-        public void Update(Action<T> applyChanges)
+        /// <param name="filePath"></param>
+        public void Update(Action<T> applyChanges, string filePath = null)
         {
             var fileProvider = _environment.ContentRootFileProvider;
-            var fileInfo = fileProvider.GetFileInfo(_file);
+            var fileInfo = fileProvider.GetFileInfo(filePath ?? _file);
             var physicalPath = fileInfo.PhysicalPath;
 
             var jObject = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(physicalPath));
-            var sectionObject = jObject.TryGetValue(_section, out JToken section) ?
-                JsonConvert.DeserializeObject<T>(section.ToString()) : (Value ?? new T());
+            var sectionObject = jObject.TryGetValue(_section, out JToken section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : (Value ?? new T());
 
             applyChanges(sectionObject);
 

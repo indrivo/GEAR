@@ -2,8 +2,11 @@
 using ST.Core.Helpers;
 using ST.Files.Abstraction;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using ST.Core.Abstractions;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models;
 using ST.Files.Abstraction.Models.ViewModels;
@@ -15,15 +18,18 @@ namespace ST.Files
 {
     public class FileManager<TContext> : IFileManager where TContext : FileDbContext, IFileContext
     {
+        private readonly IWritableOptions<List<FileSettingsViewModel>> _options;
         private readonly TContext _context;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        public FileManager(TContext context)
+        /// <param name="options"></param>
+        public FileManager(TContext context, IWritableOptions<List<FileSettingsViewModel>> options)
         {
             _context = context;
+            _options = options;
         }
 
         public virtual ResultModel<Guid> AddFile(UploadFileViewModel dto)
@@ -165,6 +171,27 @@ namespace ST.Files
                 IsSuccess = true,
                 Result = file.Id
             };
+        }
+
+        public virtual ResultModel ChangeSettings(FileSettingsViewModel newSettings)
+        {
+            var result = new ResultModel();
+            var fileSettingsList = _options.Value ?? new List<FileSettingsViewModel>();
+            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
+            if (fileSettings == null)
+            {
+                fileSettingsList.Add(newSettings);
+            }
+            else
+            {
+                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
+                if (index >= 0)
+                    fileSettingsList[index] = newSettings;
+            }
+
+            _options.Update(x => x = fileSettingsList);
+            result.IsSuccess = true;
+            return result;
         }
     }
 }

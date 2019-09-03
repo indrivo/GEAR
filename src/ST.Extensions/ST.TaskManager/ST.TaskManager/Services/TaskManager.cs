@@ -89,7 +89,7 @@ namespace ST.TaskManager.Services
         public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
             var taskModel = CreateTaskMapper(task);
-            taskModel.TaskNumber = await GenerateTaskNumber();
+            taskModel.TaskNumber = await GenerateTaskNumberAsync();
             _context.Tasks.Add(taskModel);
             var result = await _context.SaveDependenceAsync();
 
@@ -216,7 +216,7 @@ namespace ST.TaskManager.Services
             };
         }
 
-        private async Task<string> GenerateTaskNumber()
+        private async Task<string> GenerateTaskNumberAsync()
         {
             const string number = "00001";
             var task = await _context.Tasks.LastOrDefaultAsync();

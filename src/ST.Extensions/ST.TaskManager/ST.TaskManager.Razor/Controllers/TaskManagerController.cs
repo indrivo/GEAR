@@ -2,12 +2,16 @@
 using ST.Core.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
+using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Helpers;
 using ST.TaskManager.Abstractions.Models.ViewModels;
+using TaskStatus = System.Threading.Tasks.TaskStatus;
 
 
 namespace ST.TaskManager.Razor.Controllers
@@ -40,6 +44,34 @@ namespace ST.TaskManager.Razor.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<SelectList>))]
+        public JsonResult GetTaskPriorityList()
+        {
+            var directions = from TaskPriority d in Enum.GetValues(typeof(TaskPriority))
+                select new {ID = (int) d, Name = d.ToString()};
+            return Json(new SelectList(directions, "ID", "Name", 0));
+        }
+
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<SelectList>))]
+        public JsonResult GetTaskStatusList()
+        {
+            var directions = from TaskStatus d in Enum.GetValues(typeof(TaskStatus))
+                select new { ID = (int) d, Name = d.ToString()};
+            return Json(new SelectList(directions, "ID", "Name", 0));
+        }
+
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<SelectList>))]
+        public JsonResult GetUsersList()
+        {
+            var users = _userManager.UserManager.Users.Where(x => x.TenantId == _userManager.CurrentUserTenantId).ToList();
+
+            var directions = from ApplicationUser d in users select new {ID = d.Id, Name = d.UserName};
+            return Json(new SelectList(directions, "ID", "Name", 0));
         }
 
         [HttpGet]

@@ -57,4 +57,10 @@
       <Pack>false</Pack>
     </Content>
   </ItemGroup>
+
+
+
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
 </Project>

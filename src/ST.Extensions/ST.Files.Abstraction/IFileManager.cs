@@ -40,5 +40,12 @@ namespace ST.Files.Abstraction
         /// <param name="id"></param>
         /// <returns></returns>
         ResultModel<Guid> RestoreFile(Guid id);
+
+        ///// <summary>
+        ///// Update file settings
+        ///// </summary>
+        ///// <param name="newSettings"></param>
+        ///// <returns></returns>
+        //ResultModel ChangeSettings(FileSettingsAttributeViewModel newSettings);
     }
 }
