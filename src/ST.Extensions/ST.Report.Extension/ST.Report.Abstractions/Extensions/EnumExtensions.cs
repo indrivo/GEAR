@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -14,6 +15,14 @@ namespace ST.Report.Abstractions.Extensions
                            .First()
                            .GetCustomAttribute<DisplayAttribute>()
                            .Name;
+        }
+
+        public static string GetDescription(this Enum enumType)
+        {
+            return enumType.GetType().GetMember(enumType.ToString())
+                .First()
+                .GetCustomAttribute<DescriptionAttribute>()
+                .Description;
         }
     }
 

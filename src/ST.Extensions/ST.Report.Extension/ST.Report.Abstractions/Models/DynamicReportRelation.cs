@@ -3,7 +3,7 @@
     /// <summary>
     /// Dynamic Report Relation
     /// </summary>
-    public class DynamicReportRelation
+    public sealed class  DynamicReportRelation
     {
         public string PrimaryKeyTable { get; set; }
         public string ForeignKeyTable { get; set; }

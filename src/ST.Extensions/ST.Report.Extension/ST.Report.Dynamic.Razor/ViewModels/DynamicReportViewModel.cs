@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using ST.Core.Extensions;
 using ST.Report.Abstractions.Models;
 using System;
 
@@ -10,23 +10,7 @@ namespace ST.Report.Dynamic.Razor.ViewModels
         public string Name { get; set; }
         public Guid DynamicReportFolderId { get; set; }
         public DynamicReportDataModel ReportDataModel { get; set; }
-
-        public string ReportData
-        {
-            get
-            {
-                string result = string.Empty;
-                if (ReportDataModel != null)
-                {
-                    try
-                    {
-                        result = JsonConvert.SerializeObject(ReportDataModel, Formatting.Indented);
-                    }
-                    catch { }
-                }
-                return result;
-            }
-        }
+        public string ReportData => ReportDataModel == null ? string.Empty : ReportDataModel.Serialize();
     }
 
     public class DynamicReportFolderViewModel
@@ -37,9 +21,9 @@ namespace ST.Report.Dynamic.Razor.ViewModels
 
     public class SelectOption
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public string text { get; set; }
+        public string Text { get; set; }
     }
 
     public class ResponseClass

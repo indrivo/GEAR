@@ -5,7 +5,7 @@ namespace ST.Report.Abstractions.Models
     /// <summary>
     /// Dynamic Report Filters
     /// </summary>
-    public class DynamicReportFilter
+    public sealed class DynamicReportFilter
     {
         public string FieldName { get; set; }
         public FilterType FilterType { get; set; }

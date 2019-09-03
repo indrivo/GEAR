@@ -53,16 +53,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
         public IActionResult CreateFolder(DynamicReportFolderViewModel folder)
         {
             if (!ModelState.IsValid) return View();
-            _service.CreateFolder(new DynamicReportFolder()
-            {
-                Name = folder.Name,
-                Id = new Guid(),
-                IsDeleted = false,
-                ModifiedBy = User.Identity.Name,
-                Author = User.Identity.Name,
-                Changed = DateTime.Now,
-                Created = DateTime.Now
-            });
+            _service.CreateFolder(folder.Name);
             return RedirectToAction("Index");
         }
 
@@ -76,24 +67,26 @@ namespace ST.Report.Dynamic.Razor.Controllers
         [HttpPost]
         public IActionResult EditFolder(Guid id, string name)
         {
-            if (name == "") return Json(new { success = false, message = "Name Empty!!!" });
+            if (string.IsNullOrEmpty(name)) return Json(new { success = false, message = "Folder name cannot be empty!" });
+            if (id == Guid.Empty) return Json(new { success = false, message = "This folder does not exist!" });
             try
             {
                 var folder = _service.GetFolder(id);
+                if (folder == null) return Json(new { success = false, message = "This folder does not exist!" });
                 folder.Name = name;
                 _service.EditFolder(folder);
                 return Json(new { success = true, message = "Saved!" });
             }
             catch (Exception)
             {
-                return Json(new { success = false, message = "Server error!!!" });
+                return Json(new { success = false, message = "Server error!" });
             }
         }
 
         [HttpPost]
         public IActionResult DeleteReportFolder(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "Id Empty!!!" });
+            if (id == Guid.Empty) return Json(new { success = false, message = "This folder does not exist!" });
             try
             {
                 _service.DeleteFolder(id);
@@ -101,7 +94,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             }
             catch (Exception)
             {
-                return Json(new { success = false, message = "Server error!!!" });
+                return Json(new { success = false, message = "Server error!" });
             }
         }
 
@@ -112,18 +105,21 @@ namespace ST.Report.Dynamic.Razor.Controllers
         [HttpGet]
         public IActionResult Save(Guid id)
         {
-            var result = _service.GetReport(id);
-            DynamicReportViewModel model = new DynamicReportViewModel();
-            if (result != null)
+            DynamicReport result = null;
+            if (id != Guid.Empty)
             {
-                model = new DynamicReportViewModel()
-                {
-                    Id = result.Id,
-                    Name = result.Name,
-                    ReportDataModel = result.ReportDataModel,
-                    DynamicReportFolderId = result.DynamicReportFolderId
-                };
+                result = _service.GetReport(id);
             }
+            var model = result != null ?
+            new DynamicReportViewModel()
+            {
+                Id = result.Id,
+                Name = result.Name,
+                ReportDataModel = result.ReportDataModel,
+                DynamicReportFolderId = result.DynamicReportFolderId
+            }
+            : new DynamicReportViewModel();
+
             ViewBag.Folders = _service.GetAllFolders();
             return View(model);
         }
@@ -131,31 +127,39 @@ namespace ST.Report.Dynamic.Razor.Controllers
         [HttpPost]
         public IActionResult Save(DynamicReportViewModel dto)
         {
+            if (dto.DynamicReportFolderId == Guid.Empty) return Json(new { success = false, message = "Report folder cannot be empty!" });
             var reportDb = new DynamicReport()
             {
                 Id = dto.Id,
                 Name = dto.Name,
                 ReportDataModel = dto.ReportDataModel,
-                IsDeleted = false,
-                Author = User.Identity.Name,
-                ModifiedBy = User.Identity.Name,
-                Created = DateTime.Now,
-                Changed = DateTime.Now,
                 DynamicReportFolderId = dto.DynamicReportFolderId
             };
-            _service.SaveReport(reportDb);
-            return Json(new
+            var result = _service.SaveReport(reportDb);
+            if (result.IsSuccess)
             {
-                success = true,
-                message = "Data Gathered successfully"
-            });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = "Data saving successfully"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = result.Errors.Any() ? result.Errors.First().Message : ""
+                });
+
+            }
         }
 
 
         [HttpPost]
         public IActionResult DeleteReport(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "Id Empty!!!" });
+            if (id == Guid.Empty) return Json(new { success = false, message = "This report does not exist!" });
             try
             {
                 _service.DeleteReport(id);
@@ -163,7 +167,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             }
             catch (Exception)
             {
-                return Json(new { success = false, message = "Server error!!!" });
+                return Json(new { success = false, message = "Server error!" });
             }
         }
 
@@ -171,17 +175,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
         [HttpPost]
         public IActionResult GetReportData(DynamicReportDataModel dto)
         {
-            IEnumerable<dynamic> data = null;
-            string error = string.Empty;
-            try
-            {
-                data = _service.GetReportContent(dto).ToList();
-            }
-            catch(Exception ex)
-            {
-                error = ex.Message;
-            }
-            return Json(new { charts = dto.DynamicReportCharts, data, error });
+            return Json(new { charts = dto.DynamicReportCharts, data = _service.GetReportContent(dto) });
         }
 
         [HttpPost]
@@ -202,7 +196,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             var resultDict = Enum<AggregateType>.ToDictionary();
             if (resultDict != null)
             {
-                result = resultDict.Select(s => new SelectOption { id = (int)s.Key, text = s.Value }).ToList();
+                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
             }
             return Json(result);
         }
@@ -213,7 +207,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             var resultDict = Enum<FilterType>.ToDictionary();
             if (resultDict != null)
             {
-                result = resultDict.Select(s => new SelectOption { id = (int)s.Key, text = s.Value }).ToList();
+                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
             }
             return Json(result);
         }
@@ -225,7 +219,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             var resultDict = Enum<ChartType>.ToDictionary();
             if (resultDict != null)
             {
-                result = resultDict.Select(s => new SelectOption { id = (int)s.Key, text = s.Value }).ToList();
+                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
             }
             return Json(result);
         }
@@ -233,28 +227,26 @@ namespace ST.Report.Dynamic.Razor.Controllers
 
         public ActionResult GetChartFieldTypes(ChartType chartType)
         {
-            var result = new List<SelectOption>();
             var resultDict = Enum<ChartFieldType>.ToDictionary().ToList();
-            if (resultDict != null)
+            switch (chartType)
             {
-                switch (chartType)
-                {
-                    case ChartType.Grid:
-                        resultDict = resultDict.Where(s => s.Key == ChartFieldType.Normal).ToList();
-                        break;
-                    case ChartType.PivotGrid:
-                    case ChartType.Line:
-                        resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis, ChartFieldType.YAxis }.Contains(s.Key)).ToList();
-                        break;
-                    case ChartType.BarHorizontal:
-                    case ChartType.BarVertical:
-                    case ChartType.Pie:
-                    case ChartType.Doughnut:
-                        resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis }.Contains(s.Key)).ToList();
-                        break;
-                }
-                result = resultDict.Select(s => new SelectOption { id = (int)s.Key, text = s.Value }).ToList();
+                case ChartType.Grid:
+                    resultDict = resultDict.Where(s => s.Key == ChartFieldType.Normal).ToList();
+                    break;
+                case ChartType.PivotGrid:
+                case ChartType.Line:
+                    resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis, ChartFieldType.YAxis }.Contains(s.Key)).ToList();
+                    break;
+                case ChartType.BarHorizontal:
+                case ChartType.BarVertical:
+                case ChartType.Pie:
+                case ChartType.Doughnut:
+                    resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis }.Contains(s.Key)).ToList();
+                    break;
             }
+
+            var result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
+
             return Json(result);
         }
 
@@ -267,62 +259,17 @@ namespace ST.Report.Dynamic.Razor.Controllers
         {
             var tables = _service.GetTableNames();
             var schemas = _service.GetUserSchemas();
-
-            var result = new List<dynamic>();
-
-            foreach (var s in schemas)
+            if (schemas != null && tables != null)
             {
-                result.Add(new
+                var result = schemas.Select(s => new
                 {
                     id = s,
                     text = s,
-                    children = tables.Where(x => x.id == s).Select(x=> new { id = x.id + "." + x.text, x.text }).ToList()
+                    children = tables.Where(x => x.id == s).Select(x => new { id = x.id + "." + x.text, x.text }).ToList()
                 });
+                return Json(result);
             }
-
-            return Json(result);
-        }
-
-        /// <summary>
-        /// Get the Column type for changing the input field
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnName"></param>
-        /// <returns></returns>
-        public ActionResult GetColumnTypeClient(string tableName, string columnName)
-        {
-            string result = _service.GetColumnType(tableName, columnName);
-            return Json(new { success = true, message = result });
-        }
-
-        /// <summary>
-        /// Get the select options for the foreign keys or enums on the client
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnName"></param>
-        /// <returns></returns>
-        public ActionResult GetForeignColumnDataForSelection(string tableName, string columnName)
-        {
-            var response = _service.GetForeignKeySelectValues(tableName, columnName);
-            var result = new List<ResponseClass>();
-
-            if (response.GetType() == new List<DynamicReportQueryResultViewModel>().GetType())
-            {
-                foreach (var item in response)
-                {
-                    result.Add(new ResponseClass()
-                    { Name = item.Columns[1].Value.ToString(), Id = item.Columns[0].Value.ToString() });
-                }
-            }
-            else
-            {
-                foreach (var item in response)
-                {
-                    result.Add(new ResponseClass() { Name = item.ToString(), Id = item.ToString() });
-                }
-            }
-
-            return Json(new { success = true, message = Json(result) });
+            return Json(new { success = false, message = "There is no data!" });
         }
 
         /// <summary>

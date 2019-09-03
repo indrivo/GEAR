@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using ST.Core;
+using ST.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace ST.Report.Abstractions.Models
 {
@@ -29,7 +31,10 @@ namespace ST.Report.Abstractions.Models
                     {
                         result = JsonConvert.DeserializeObject<DynamicReportDataModel>(ReportData);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        throw new SerializationException(ex.Message);
+                    }
                 }
                 return result;
             }
@@ -37,7 +42,7 @@ namespace ST.Report.Abstractions.Models
             {
                 if (value != null)
                 {
-                    ReportData = JsonConvert.SerializeObject(value);
+                    ReportData = value.Serialize();
                 }
             }
         }

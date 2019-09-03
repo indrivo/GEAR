@@ -10,8 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
-    <ProjectReference Include="..\ST.Report.Dynamic\ST.Report.Dynamic.csproj" />
+    <ProjectReference Include="..\ST.Report.Abstractions\ST.Report.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

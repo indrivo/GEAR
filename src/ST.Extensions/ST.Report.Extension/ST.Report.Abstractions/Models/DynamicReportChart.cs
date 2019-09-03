@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ST.Report.Abstractions.Models
 {
-    public class DynamicReportChart
+    public sealed class DynamicReportChart
     {
         public string ChartTitle { get; set; }
 
