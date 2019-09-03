@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -78,7 +77,7 @@ namespace ST.Entities.Razor.Controllers.Entity
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             _logger = logger;
             Queue = queue;

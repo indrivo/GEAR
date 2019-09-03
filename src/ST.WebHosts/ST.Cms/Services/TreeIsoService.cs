@@ -14,6 +14,10 @@ using ST.Cms.Services.Abstractions;
 using ST.Cms.ViewModels.TreeISOViewModels;
 using ST.Core;
 using ST.Core.Helpers.Comparers;
+// ReSharper disable MemberCanBeMadeStatic.Local
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
+#pragma warning disable 1998
 
 namespace ST.Cms.Services
 {

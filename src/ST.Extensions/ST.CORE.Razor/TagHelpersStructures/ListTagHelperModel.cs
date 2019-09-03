@@ -46,14 +46,14 @@ namespace ST.Core.Razor.TagHelpersStructures
         #endregion
 
         #region HeadList
-        public ICollection<UrlTagHelperViewModel> HeadButtons { get; set; }
+        public ICollection<UrlTagHelperViewModel> HeadButtons { get; set; } = new List<UrlTagHelperViewModel>();
         #endregion
 
         #region Columns
         /// <summary>
         /// List of rendered columns
         /// </summary>
-        public ICollection<ListRenderColumn> RenderColumns { get; set; }
+        public ICollection<ListRenderColumn> RenderColumns { get; set; } = new List<ListRenderColumn>();
         #endregion
 
         #region List Actions
@@ -62,7 +62,7 @@ namespace ST.Core.Razor.TagHelpersStructures
         /// </summary>
         public bool HasActions { get; set; }
 
-        public ICollection<ListActionViewModel> ListActions { get; set; }
+        public ICollection<ListActionViewModel> ListActions { get; set; } = new List<ListActionViewModel>();
         #endregion
     }
 

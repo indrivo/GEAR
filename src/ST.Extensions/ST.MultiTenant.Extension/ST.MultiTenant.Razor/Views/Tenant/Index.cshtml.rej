@@ -1,9 +1,0 @@
-diff a/src/ST.Extensions/ST.Identity.Extension/ST.Identity.Razor/Views/Tenant/Index.cshtml b/src/ST.Extensions/ST.Identity.Extension/ST.Identity.Razor/Views/Tenant/Index.cshtml	(rejected hunks)
-@@ -3,7 +3,6 @@
- }
- 
- <div class="card">
--						<div class="form-group">
-     <div class="card-body">
-         <h4 class="card-title">@Localizer["tenants"]</h4>
-         <h6 class="card-subtitle">@Localizer["organization_list"]</h6>

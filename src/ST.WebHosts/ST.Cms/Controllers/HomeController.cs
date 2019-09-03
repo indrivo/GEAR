@@ -3,10 +3,10 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ST.Cms.ViewModels.InstallerModels;
 using ST.Identity.Abstractions;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
-using ST.Cms.ViewModels.ViewModels;
 
 namespace ST.Cms.Controllers
 {
@@ -27,8 +27,7 @@ namespace ST.Cms.Controllers
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
-		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub,
-			ApplicationDbContext context)
+		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context)
 		{
 			_userManager = userManager;
 			_hub = hub;

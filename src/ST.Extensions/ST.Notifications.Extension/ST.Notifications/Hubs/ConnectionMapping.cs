@@ -44,7 +44,7 @@ namespace ST.Notifications.Hubs
                 var users = _connections.Select(x => x.UserId).Distinct().ToList();
                 return users;
             }
-            catch (Exception e)
+            catch
             {
                 return new List<Guid>();
             }

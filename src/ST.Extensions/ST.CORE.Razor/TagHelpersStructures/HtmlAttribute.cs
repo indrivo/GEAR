@@ -9,8 +9,8 @@
 
         public HtmlAttribute(string name, string value)
         {
-            this.Name = name;
-            this.Value = value;
+            Name = name;
+            Value = value;
         }
 
         public string Name { get; set; }

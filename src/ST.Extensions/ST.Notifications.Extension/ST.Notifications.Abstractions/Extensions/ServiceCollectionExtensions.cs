@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using RazorLight;
+using ST.Audit.Abstractions.Extensions;
 using ST.Core.Events;
 using ST.Core.Events.EventArgs;
 using ST.Core.Extensions;
@@ -41,6 +41,7 @@ namespace ST.Notifications.Abstractions.Extensions
             Arg.NotNull(services, nameof(AddNotificationSubscriptionModuleStorage));
             services.Services.AddDbContext<TContext>(options);
             services.Services.AddScopedContextFactory<INotificationDbContext, TContext>();
+            services.Services.RegisterAuditFor<INotificationDbContext>("Notification module");
             return services;
         }
 

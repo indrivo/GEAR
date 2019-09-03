@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
+    <ProjectReference Include="..\ST.Audit.Abstractions\ST.Audit.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Mapster;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,46 +9,67 @@ using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Abstractions;
 using ST.Core.BaseControllers;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
-using ST.DynamicEntityStorage.Abstractions.Extensions;
+using ST.Entities.Abstractions;
 using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
-using ST.MultiTenant.Razor.Settings;
-using ST.MultiTenant.Razor.ViewModels;
-using ST.MultiTenant.ViewModels;
+using ST.MultiTenant.Abstractions.Helpers;
+using ST.MultiTenant.Abstractions.ViewModels;
+using ST.MultiTenant.Razor.Helpers;
 using ST.Notifications.Abstractions;
 
 namespace ST.MultiTenant.Razor.Controllers
 {
-    [Authorize(Roles = "Company Administrator")]
+    [Authorize(Roles = Resources.Roles.COMPANY_ADMINISTRATOR)]
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser,
         ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
+        #region Injectable
+
         /// <summary>
         /// Inject organization service
         /// </summary>
         private readonly IOrganizationService<Tenant> _organizationService;
 
+        /// <summary>
+        /// Users settings
+        /// </summary>
         private readonly MultiTenantListSettings _listSettings;
+
+
+        /// <summary>
+        /// Inject dynamic service
+        /// </summary>
+        private readonly IEntityRepository _service;
+
+        #endregion
 
         public CompanyManageController(UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager, ICacheService cacheService,
             ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
-            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer) :
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service) :
             base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
+            _service = service;
             _listSettings = new MultiTenantListSettings();
         }
 
+        /// <summary>
+        /// Index view
+        /// </summary>
+        /// <returns></returns>
         public override IActionResult Index()
         {
             var user = GetCurrentUser();
             ViewBag.UserRoles = string.Join(", ", UserManager.GetRolesAsync(user).GetAwaiter().GetResult());
             ViewBag.User = user;
             ViewBag.UsersListSettings = _listSettings.GetCompanyUserListSettings();
+            ViewBag.Organization = _organizationService.GetUserOrganization(user);
+            ViewBag.Countries = _organizationService.GetCountrySelectList().GetAwaiter().GetResult();
             return base.Index();
         }
 
@@ -65,107 +82,88 @@ namespace ST.MultiTenant.Razor.Controllers
         [HttpPost]
         public override JsonResult LoadPageItems(DTParameters param)
         {
-            var currentUser = GetCurrentUser();
-            if (currentUser.TenantId != null)
-            {
-                var tenant = _organizationService.GetTenantById(currentUser.TenantId.Value);
-                if (tenant == null)
-                    return Json(new DTResult<CompanyUsersViewModel>
-                    {
-                        Draw = param.Draw,
-                        Data = new List<CompanyUsersViewModel>(),
-                        RecordsFiltered = 0,
-                        RecordsTotal = 0
-                    });
-            }
-
-            var filtered = ApplicationDbContext.Filter<ApplicationUser>(param.Search.Value, param.SortOrder,
-                param.Start,
-                param.Length,
-                out var totalCount, x => !x.IsDeleted && x.TenantId == currentUser.TenantId).ToList();
-
-            var rs = filtered.Select(async x =>
-            {
-                var u = x.Adapt<CompanyUsersViewModel>();
-                u.Roles = await UserManager.GetRolesAsync(x);
-                return u;
-            }).Select(x => x.Result);
-
-            var finalResult = new DTResult<CompanyUsersViewModel>
-            {
-                Draw = param.Draw,
-                Data = rs.ToList(),
-                RecordsFiltered = totalCount,
-                RecordsTotal = filtered.Count
-            };
-
-            return Json(finalResult);
+            var listObj = _organizationService
+                .LoadFilteredListCompanyUsersAsync(param)
+                .ExecuteAsync();
+            return Json(listObj);
         }
 
+        /// <summary>
+        /// Get system roles
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<JsonResult> GetRoles()
-        {
-            return Json(await _organizationService.GetRoles());
-        }
+        public async Task<JsonResult> GetRoles() => Json(await _organizationService.GetRoles());
 
+        /// <summary>
+        /// Invite new user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<JsonResult> InviteNewUserAsync([FromBody] InviteNewUserViewModel model)
         {
             var resultModel = new ResultModel();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                if (await _organizationService.CheckIfUserExistAsync(model.Email))
+                resultModel.Errors.Add(new ErrorModel
                 {
-                    resultModel.IsSuccess = false;
-                    resultModel.Errors.Add(new ErrorModel
-                    {
-                        Key = string.Empty,
-                        Message = "Email is in use"
-                    });
-                    return Json(resultModel);
-                }
-
-                var newUser = new ApplicationUser
-                {
-                    Email = model.Email,
-                    NormalizedEmail = model.Email.ToUpper(),
-                    UserName = model.Email.Split('@')[0],
-                    NormalizedUserName = model.Email.Split('@')[0].ToUpper(),
-                    EmailConfirmed = false,
-                    Created = DateTime.Now,
-                    Author = HttpContext.User.Identity.Name
-                };
-
-                var tenant = await _organizationService.GetTenantByCurrentUserAsync();
-                if (!tenant.IsSuccess)
-                {
-                    resultModel.IsSuccess = false;
-                    resultModel.Errors.Add(new ErrorModel
-                    {
-                        Key = string.Empty,
-                        Message = "Tenant not found"
-                    });
-                    return Json(resultModel);
-                }
-
-                newUser.TenantId = tenant.Result.Id;
-
-                var result = await _organizationService.CreateNewOrganizationUserAsync(newUser, model.Roles);
-                if (result.IsSuccess)
-                {
-                    await _organizationService.SendInviteToEmailAsync(newUser);
-                    resultModel.IsSuccess = true;
-                    return Json(resultModel);
-                }
+                    Key = string.Empty,
+                    Message = "Invalid model"
+                });
+                return Json(resultModel);
             }
 
-            resultModel.IsSuccess = false;
-            resultModel.Errors.Add(new ErrorModel
-            {
-                Key = string.Empty,
-                Message = "Invalid model"
-            });
+            resultModel = await _organizationService.InviteNewUserByEmailAsync(model);
+
             return Json(resultModel);
+        }
+
+        /// <summary>
+        /// Register company
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("/register-company"), AllowAnonymous]
+        public async Task<IActionResult> RegisterCompany()
+        {
+            var model = new CreateTenantViewModel
+            {
+                CountrySelectListItems = await _organizationService.GetCountrySelectList()
+            };
+            return View(model);
+        }
+
+        /// <summary>
+        /// Register company
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost("/register-company"), AllowAnonymous]
+        public async Task<IActionResult> RegisterCompany(CreateTenantViewModel data)
+        {
+            if (!ModelState.IsValid)
+            {
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                return View(data);
+            }
+            var reqTenant = await _organizationService.CreateOrganizationAsync(data);
+
+            if (reqTenant.IsSuccess)
+            {
+                var generateResult = await _service.GenerateTablesForTenantAsync(reqTenant.Result);
+                if (generateResult.IsSuccess)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AppendResultModelErrors(generateResult.Errors);
+
+                return View(reqTenant.Result);
+            }
+
+            ModelState.AppendResultModelErrors(reqTenant.Errors);
+
+            return View(reqTenant.Result);
         }
     }
 }

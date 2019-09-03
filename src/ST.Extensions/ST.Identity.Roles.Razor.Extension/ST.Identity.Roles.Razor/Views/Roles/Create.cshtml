@@ -3,99 +3,101 @@
 
 
 @{
-	ViewData["Title"] = Localizer["role_create_title"];
+    ViewData["Title"] = Localizer["role_create_title"];
 }
-		<div class="card card-outline-info">
-			<div class="card-header">
-				<h4 class="mb-0 text-white">@Localizer["add_role"]</h4>
-			</div>
-			<div class="card-body">
-			<blockquote>
-				@Localizer["role_header1"]<br/>
-				@Localizer["role_header2"]<br/>
-				<ul class="list-icons">
-					<li><i class="fa fa-check text-info"></i> @Localizer["role_header3"]</li>
-					<li><i class="fa fa-check text-info"></i> @Localizer["role_header4"]</li>
-				</ul>
-			</blockquote>
-				<form asp-action="Create" role="form">
-					<div class="form-body">
-						<h3 class="card-title">@Localizer["role_info"]</h3>
-						<hr>
-						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-						<div class="row p-t-20">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label asp-for="Name" class="control-label"></label>
-									<input asp-for="Name" class="form-control"/>
-									<span asp-validation-for="Name" class="text-danger"></span><br/>
-									<small>@Localizer["role_create_info"]</small>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label asp-for="Title" class="control-label"></label>
-									<input asp-for="Title" class="form-control"/>
-									<span asp-validation-for="Title" class="text-danger"></span>
-								</div>
-							</div>
-						</div>
 
-						<!--/row-->
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label asp-for="SelectedProfileId" class="control-label"></label>
-									<select asp-for="SelectedProfileId" asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
-									<span asp-validation-for="SelectedProfileId" class="text-danger"></span>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label asp-for="ClientId" class="control-label"></label>
-									<select asp-for="ClientId" asp-items="@(new SelectList(Model.Clients, "Id", "ClientId", null))" class="form-control">
-										<option>--Select Client--</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label class="control-label">@Localizer["permissions"]</label>
-									<select id="SelectedPermissionId" disabled multiple name="SelectedPermissionId" class="form-control">
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-6">
-								<div class="checkbox checkbox-success form-group">
-									<input asp-for="IsDeleted"/>
-									<label asp-for="IsDeleted"></label>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="row button-group">
-						<div class="col-lg-2 col-md-3">
-							<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
-						</div>
-						<div class="col-lg-2 col-md-3">
-							<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
 
-						</div>
-						<div class="col-lg-2 col-md-3">
-							<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
+<div class="card card-outline-info">
+    <div class="card-header">
+        <h4 class="mb-0 text-white">@Localizer["add_role"]</h4>
+    </div>
+    <div class="card-body">
+        <blockquote>
+            @Localizer["role_header1"]<br />
+            @Localizer["role_header2"]<br />
+            <ul class="list-icons">
+                <li><i class="fa fa-check text-info"></i> @Localizer["role_header3"]</li>
+                <li><i class="fa fa-check text-info"></i> @Localizer["role_header4"]</li>
+            </ul>
+        </blockquote>
+        <form asp-action="Create" role="form">
+            <div class="form-body">
+                <h3 class="card-title">@Localizer["role_info"]</h3>
+                <hr>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row p-t-20">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Name" class="control-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span><br />
+                            <small>@Localizer["role_create_info"]</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Title" class="control-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!--/row-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="SelectedProfileId" class="control-label"></label>
+                            <select asp-for="SelectedProfileId" asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
+                            <span asp-validation-for="SelectedProfileId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ClientId" class="control-label"></label>
+                            <select asp-for="ClientId" asp-items="@(new SelectList(Model.Clients, "Id", "ClientId", null))" class="form-control">
+                                <option>--Select Client--</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">@Localizer["permissions"]</label>
+                            <select id="SelectedPermissionId" disabled multiple name="SelectedPermissionId" class="form-control">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="checkbox checkbox-success form-group">
+                            <input asp-for="IsDeleted" />
+                            <label asp-for="IsDeleted"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 @section Scripts {
-	<script type="text/javascript" language="javascript">
+    <script type="text/javascript" language="javascript">
 		$(document).ready(function() {
 			$('#SelectedProfileId').select2({
 				allowClear: false,
@@ -129,6 +131,6 @@
 					}
 				});
 			});
-	</script>
-	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

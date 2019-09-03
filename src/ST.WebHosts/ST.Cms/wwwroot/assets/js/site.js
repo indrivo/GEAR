@@ -886,11 +886,52 @@ ST.prototype.getParamFormUrl = function(key, url = window.location.href) {
 	return searchParams.get(key);
 };
 
+/**
+ * Local logout
+ * @param {any} selector
+ */
+ST.prototype.registerLocalLogout = function (selector) {
+	$(selector).click(function () {
+		swal({
+			title: window.translate("confirm_log_out_question"),
+			text: window.translate("log_out_message"),
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: window.translate("confirm_logout"),
+			cancelButtonText: window.translate("cancel")
+		}).then((result) => {
+			if (result.value) {
+				$.ajax({
+					url: "/Account/LocalLogout",
+					type: "post",
+					dataType: "json",
+					contentType: "application/x-www-form-urlencoded; charset=utf-8",
+					success: function (data) {
+						if (data.is_success) {
+							swal("Success!", data.message, "success");
+							window.location.href = "/Account/Login";
+						} else {
+							swal("Fail!", data.error_keys[0].message, "error");
+						}
+					},
+					error: function () {
+						swal("Fail!", "Server no response!", "error");
+					}
+				});
+			}
+		});
+	});
+};
 
-if (typeof String != 'undefined') {
-	String.prototype.toLowerFirstLetter = function() {
-		const first = this[0].toLowerCase();
-		const res = `${first}${this.slice(1, this.length)}`;
-		return res;
-	}
+String.prototype.toLowerFirstLetter = function () {
+	const first = this[0].toLowerCase();
+	const res = `${first}${this.slice(1, this.length)}`;
+	return res;
+}
+
+String.prototype.toUpperFirstLetter = function () {
+	const first = this[0].toUpperCase();
+	const res = `${first}${this.slice(1, this.length)}`;
+	return res;
 }

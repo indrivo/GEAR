@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using ST.Audit.Extensions;
-using ST.Audit.Interfaces;
-using ST.Audit.Models;
+using ST.Audit.Abstractions;
+using ST.Audit.Abstractions.Helpers;
+using ST.Audit.Abstractions.Models;
 
 namespace ST.Audit.Contexts
 {
@@ -20,7 +21,7 @@ namespace ST.Audit.Contexts
         public TrackerIdentityDbContext(DbContextOptions options) : base(options)
         {
             //Enable tracking for identity db context
-            this.EnableIdentityTracking<TrackerIdentityDbContext<TUser, TRole, TKey>, TUser, TRole, TKey>();
+            //this.EnableIdentityTracking<TrackerIdentityDbContext<TUser, TRole, TKey>, TUser, TRole, TKey>();
         }
 
         /// <inheritdoc />
@@ -35,26 +36,26 @@ namespace ST.Audit.Contexts
         /// </summary>
         public DbSet<TrackAuditDetails> TrackAuditDetails { get; set; }
 
+
         /// <summary>
-        /// On update object
+        /// Save changes
         /// </summary>
-        /// <param name="entity"></param>
         /// <returns></returns>
-        public override EntityEntry Update(object entity)
+        public override int SaveChanges()
         {
-            Entry(entity).State = EntityState.Modified;
-            return base.Update(entity);
+            TrackerFactory.Track(this);
+            return base.SaveChanges();
         }
 
         /// <summary>
-        /// On update
+        /// Save changes
         /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="entity"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            return base.Update(entity);
+            TrackerFactory.Track(this);
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }
