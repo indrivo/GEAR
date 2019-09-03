@@ -51,6 +51,8 @@ namespace ST.Files
 
         public virtual ResultModel<Guid> DeleteFile(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
+
             var file = _context.Files.FirstOrDefault(x => x.Id == id);
             if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
 
@@ -68,6 +70,8 @@ namespace ST.Files
 
         public virtual ResultModel<Guid> RestoreFile(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
+
             var file = _context.Files.FirstOrDefault(x => x.Id == id);
             if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
 
@@ -84,6 +88,8 @@ namespace ST.Files
 
         public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
+
             var file = _context.Files.FirstOrDefault(x => x.Id == id);
             if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
 
@@ -98,6 +104,8 @@ namespace ST.Files
 
         public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.NullParameter);
+
             var dbFileResult = _context.Files.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
             if (dbFileResult == null) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.FileNotFound);
 

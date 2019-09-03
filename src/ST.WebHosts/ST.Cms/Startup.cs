@@ -91,6 +91,7 @@ using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
 using ST.TaskManager.Helpers;
 using ST.TaskManager.Razor.Extensions;
+using ST.TaskManager.Services;
 
 namespace ST.Cms
 {
@@ -128,10 +129,9 @@ namespace ST.Cms
 		/// </summary>
 		/// <param name="app"></param>
 		/// <param name="env"></param>
-		/// <param name="loggerFactory"></param>
 		/// <param name="languages"></param>
 		/// <param name="lifetime"></param>
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
 			if (CoreApp.IsHostedOnLinux())
@@ -349,7 +349,7 @@ namespace ST.Cms
 				});
 			//------------------------------------Task Module-------------------------------------
 			services
-				.AddTaskModule<TaskManager.TaskManager,TaskManagerNotificationService>()
+				.AddTaskModule<TaskManager.Services.TaskManager,TaskManagerNotificationService>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

@@ -13,7 +13,7 @@ using ST.TaskManager.Abstractions.Models.ViewModels;
 using ST.TaskManager.Helpers;
 using Task = ST.TaskManager.Abstractions.Models.Task;
 
-namespace ST.TaskManager
+namespace ST.TaskManager.Services
 {
     public class TaskManager : TaskManagerHelper, ITaskManager
     {
@@ -89,7 +89,7 @@ namespace ST.TaskManager
         public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
             var taskModel = CreateTaskMapper(task);
-            taskModel.TaskNumber = GenerateTaskNumber();
+            taskModel.TaskNumber = await GenerateTaskNumber();
             _context.Tasks.Add(taskModel);
             var result = await _context.SaveDependenceAsync();
 
@@ -163,7 +163,7 @@ namespace ST.TaskManager
 
         public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel taskItem)
         {
-            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == taskItem.TaskId));
+            var dbTaskResult = _context.Tasks.FirstOrDefault(x => x.Id == taskItem.TaskId);
             if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
 
             var taskModel = new TaskItem {Name = taskItem.Name, Task = dbTaskResult};
@@ -181,7 +181,7 @@ namespace ST.TaskManager
 
         public async Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel taskItem)
         {
-            var dbTaskResult = _context.TaskItems.FirstOrDefault(x => (x.Id == taskItem.Id));
+            var dbTaskResult = _context.TaskItems.FirstOrDefault(x => x.Id == taskItem.Id);
             if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
 
             dbTaskResult.Name = taskItem.Name;
@@ -216,10 +216,10 @@ namespace ST.TaskManager
             };
         }
 
-        private string GenerateTaskNumber()
+        private async Task<string> GenerateTaskNumber()
         {
             const string number = "00001";
-            var task = _context.Tasks.Last();
+            var task = await _context.Tasks.LastOrDefaultAsync();
             if (task != null)
             {
                 var lastNumber = int.Parse(task.TaskNumber);

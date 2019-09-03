@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
@@ -10,7 +11,7 @@ using ST.Notifications.Abstractions.Models.Notifications;
 using ST.TaskManager.Abstractions;
 using TaskStatus = ST.TaskManager.Abstractions.Enums.TaskStatus;
 
-namespace ST.TaskManager.Helpers
+namespace ST.TaskManager.Services
 {
     public sealed class TaskManagerNotificationService : ITaskManagerNotificationService
     {
@@ -18,12 +19,12 @@ namespace ST.TaskManager.Helpers
         private readonly IUserManager<ApplicationUser> _identity;
         private readonly ITaskManagerContext _context;
 
-        private const string TaskCreated = "Task {0} has been assigned to you.";
-        private const string TaskUpdated = "Task {0} has been updated by {1}.";
-        private const string TaskCompleted = "Task {0} has been completed by {1}.";
-        private const string TaskRemoved = "Task {0} has been removed.";
+        private const string TaskCreated = "Task #{0} has been assigned to you.";
+        private const string TaskUpdated = "Task #{0} has been updated by {1}.";
+        private const string TaskCompleted = "Task #{0} has been completed by {1}.";
+        private const string TaskRemoved = "Task #{0} has been removed.";
         private const string TaskTitle = "Task Notification";
-        private const string TaskExpires = "Task {0} expires tomorrow.";
+        private const string TaskExpires = "Task #{0} expires tomorrow.";
 
         public TaskManagerNotificationService(IUserManager<ApplicationUser> identity)
         {
@@ -32,20 +33,20 @@ namespace ST.TaskManager.Helpers
             _context = IoC.Resolve<ITaskManagerContext>();
         }
 
-        public async Task AddTaskNotificationAsync(Abstractions.Models.Task task)
+        internal async Task AddTaskNotificationAsync(Abstractions.Models.Task task)
         {
             await _notify.SendNotificationAsync(new List<Guid>
             {
                 task.UserId
             }, new SystemNotifications
             {
-                Content = string.Format(TaskCreated, task.Name),
+                Content = string.Format(TaskCreated, task.TaskNumber),
                 Subject = TaskTitle,
                 NotificationTypeId = NotificationType.Info
             });
         }
 
-        public async Task UpdateTaskNotificationAsync(Abstractions.Models.Task task)
+        internal async Task UpdateTaskNotificationAsync(Abstractions.Models.Task task)
         {
             string content;
             var recipients = new List<Guid>();
@@ -58,12 +59,12 @@ namespace ST.TaskManager.Helpers
             {
                 var user = await _identity.UserManager.FindByNameAsync(task.Author);
                 recipients.Add(user.Id.ToGuid());
-                content = task.Status != TaskStatus.Completed ? string.Format(TaskUpdated, task.Name, currentUser.Result.UserName) : string.Format(TaskCompleted, task.Name, currentUser.Result.UserName);
+                content = task.Status != TaskStatus.Completed ? string.Format(TaskUpdated, task.TaskNumber, currentUser.Result.UserName) : string.Format(TaskCompleted, task.TaskNumber, currentUser.Result.UserName);
             }
             else
             {
                 recipients.Add(currentUser.Result.Id.ToGuid());
-                content = string.Format(TaskUpdated, task.Name, task.Author);
+                content = string.Format(TaskUpdated, task.TaskNumber, task.Author);
             }
 
             await _notify.SendNotificationAsync(recipients,
@@ -75,14 +76,14 @@ namespace ST.TaskManager.Helpers
                 });
         }
 
-        public async Task DeleteTaskNotificationAsync(Abstractions.Models.Task task)
+        internal async Task DeleteTaskNotificationAsync(Abstractions.Models.Task task)
         {
             await _notify.SendNotificationAsync(new List<Guid>
             {
                 task.UserId
             }, new SystemNotifications
             {
-                Content = string.Format(TaskRemoved, task.Name),
+                Content = string.Format(TaskRemoved, task.TaskNumber),
                 Subject = TaskTitle,
                 NotificationTypeId = NotificationType.Info
             });
@@ -90,21 +91,26 @@ namespace ST.TaskManager.Helpers
 
         public async Task TaskExpirationNotificationAsync()
         {
-            var notificationItems = _context.Tasks.Where(x => x.EndDate.Date == DateTime.Now.Date.AddDays(0)).ToList();
+            var notificationItems = await _context.Tasks.Where(x => x.EndDate.Date == DateTime.Now.Date.AddDays(0)).ToListAsync();
 
-
-            foreach (var item in notificationItems)
+            try
             {
-                await _notify.SendNotificationAsync(new List<Guid>
-                {
-                    item.Id
-                }, new SystemNotifications
-                {
-                    Content = string.Format(TaskExpires, item.Name),
-                    Subject = TaskTitle,
-                    NotificationTypeId = NotificationType.Info
-                });
+                foreach (var item in notificationItems)
+                    await _notify.SendNotificationAsync(new List<Guid>
+                    {
+                        item.UserId
+                    }, new SystemNotifications
+                    {
+                        Content = string.Format(TaskExpires, item.TaskNumber),
+                        Subject = TaskTitle,
+                        NotificationTypeId = NotificationType.Info
+                    });
             }
+            catch(Exception ex)
+            {
+
+            }
+
         }
     }
 }

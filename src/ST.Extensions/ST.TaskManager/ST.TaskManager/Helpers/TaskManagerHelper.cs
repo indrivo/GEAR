@@ -8,7 +8,7 @@ namespace ST.TaskManager.Helpers
 {
     public class TaskManagerHelper
     {
-        internal static Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel,Task dbTaskResult)
+        internal static Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel, Task dbTaskResult)
         {
             if (dbTaskResult == null) return null;
 
@@ -33,16 +33,17 @@ namespace ST.TaskManager.Helpers
                 EndDate = taskViewModel.EndDate,
                 Status = taskViewModel.Status,
                 UserId = taskViewModel.UserId,
-                TaskPriority = taskViewModel.TaskPriority,
+                TaskPriority = taskViewModel.TaskPriority
             };
             if (taskViewModel.TaskItems == null) return dto;
 
-            foreach (var item in taskViewModel.TaskItems) dto.TaskItems.Add(
-                new TaskItem
-                {
-                    IsDone = false,
-                    Name = item.Name
-                });
+            foreach (var item in taskViewModel.TaskItems)
+                dto.TaskItems.Add(
+                    new TaskItem
+                    {
+                        IsDone = false,
+                        Name = item.Name
+                    });
 
             return dto;
         }
@@ -58,7 +59,8 @@ namespace ST.TaskManager.Helpers
                 EndDate = dbTaskResult.EndDate,
                 Status = dbTaskResult.Status,
                 UserId = dbTaskResult.UserId,
-                TaskPriority = dbTaskResult.TaskPriority
+                TaskPriority = dbTaskResult.TaskPriority,
+                TaskNumber = dbTaskResult.TaskNumber
             };
             return dto;
         }

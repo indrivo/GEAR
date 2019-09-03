@@ -34,11 +34,12 @@ namespace ST.TaskManager.Abstractions.BackgroundServices
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("TaskManager Background Service is starting.");
             _timer = new Timer(Execute, null, TimeSpan.Zero,
                 TimeSpan.FromHours(24));
+            return Task.CompletedTask;
         }
 
         /// <summary>
