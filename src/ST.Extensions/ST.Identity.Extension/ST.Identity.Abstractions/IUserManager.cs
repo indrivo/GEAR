@@ -18,6 +18,11 @@ namespace ST.Identity.Abstractions
         RoleManager<ApplicationRole> RoleManager { get; }
 
         /// <summary>
+        /// Identity context
+        /// </summary>
+        IIdentityContext IdentityContext { get; }
+
+        /// <summary>
         /// Get the tenant id of current user
         /// </summary>
         Guid? CurrentUserTenantId { get; }
@@ -32,5 +37,11 @@ namespace ST.Identity.Abstractions
         /// </summary>
         /// <returns></returns>
         IEnumerable<string> GetRolesFromClaims();
+
+        /// <summary>
+        /// Get request ip address
+        /// </summary>
+        /// <returns></returns>
+        string GetRequestIpAdress();
     }
 }

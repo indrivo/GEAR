@@ -79,13 +79,16 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using ST.Core.Services;
+using ST.Audit;
+using ST.Audit.Abstractions.Extensions;
+using ST.Email.Razor.Extensions;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
 using ST.Files.Box.Data;
 using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
+using ST.MultiTenant.Razor.Extensions;
 using ST.MultiTenant.Services;
 using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
@@ -218,9 +221,8 @@ namespace ST.Cms
 			});
 
 			//---------------------------------Custom cache Module-------------------------------------
-			services.UseCustomCacheModule(HostingEnvironment, Configuration);
-			//------------------------------ HttpContextAccessorService -------------------------------------
-			services.AddTransient<IHttpContextAccessorService, HttpContextAccessorService>();
+			services.AddCacheModule(HostingEnvironment, Configuration);
+
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
 			services.AddDbContext<ProcessesDbContext>(options =>
@@ -236,6 +238,7 @@ namespace ST.Cms
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
+				.AddIdentityModuleEvents()
 				.AddMvc()
 				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
 
@@ -288,8 +291,12 @@ namespace ST.Cms
 				})
 				.AddEntitySecurityRazorUIModule();
 
-			//---------------------------Multi Tenant Module-------------------------------------
-			services.AddTenantModule<OrganizationService, Tenant>();
+			//---------------------------------Multi Tenant Module-------------------------------------
+			services.AddTenantModule<OrganizationService, Tenant>()
+				.AddMultiTenantRazorUIModule();
+
+			//----------------------------------------Audit Module-------------------------------------
+			services.AddAuditModule<AuditManager>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -369,7 +376,7 @@ namespace ST.Cms
 				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------
-			services.AddPageModule<DynamicPagesDbContext>()
+			services.AddPageModule()
 				.AddPageModuleStorage<DynamicPagesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -390,6 +397,7 @@ namespace ST.Cms
 
 			//----------------------------------------Email Module-------------------------------------
 			services.AddEmailModule<EmailSender>()
+				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
 			if (CoreApp.IsHostedOnLinux())

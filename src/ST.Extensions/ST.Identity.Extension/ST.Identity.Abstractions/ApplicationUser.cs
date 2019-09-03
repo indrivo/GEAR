@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using ST.Audit.Attributes;
-using ST.Audit.Enums;
+using System.ComponentModel.DataAnnotations;
+using ST.Audit.Abstractions.Attributes;
+using ST.Audit.Abstractions.Enums;
 using ST.Core.Abstractions;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.LdapAuth.Abstractions.Models;
 
 namespace ST.Identity.Abstractions
@@ -11,12 +13,45 @@ namespace ST.Identity.Abstractions
     [TrackEntity(Option = TrackEntityOption.SelectedFields)]
     public class ApplicationUser : LdapUser, IBaseModel
     {
+        /// <summary>
+        /// Stores user first name
+        /// </summary>
+        [MaxLength(50)]
+        [TrackField(Option = TrackFieldOption.Allow)]
+        public string UserFirstName { get; set; }
+
+        /// <summary>
+        /// Stores user last name
+        /// </summary>
+        [MaxLength(50)]
+        [TrackField(Option = TrackFieldOption.Allow)]
+        public string UserLastName { get; set; }
+
+        /// <summary>
+        /// Is disabled field status
+        /// </summary>
+        [TrackField(Option = TrackFieldOption.Allow)]
+        public bool IsDisabled { get; set; }
+
+        /// <summary>
+        /// Stores user birthday
+        /// </summary>
+        [TrackField(Option = TrackFieldOption.Allow)]
+        public DateTime Birthday { get; set; }
+
+        /// <summary>
+        /// Stores same additional info about user
+        /// </summary>
+        [MaxLength(500)]
+        public string AboutMe { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Stores Id of the User that created the object
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public string Author { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// Stores the time when object was modified. Nullable
@@ -60,6 +95,7 @@ namespace ST.Identity.Abstractions
         /// </summary>
         [TrackField(Option = TrackFieldOption.Allow)]
         public byte[] UserPhoto { get; set; }
+
         /// <summary>
         /// Authentication Type
         /// </summary>
@@ -98,5 +134,10 @@ namespace ST.Identity.Abstractions
         /// Version
         /// </summary>
         public int Version { get; set; } = 1;
+
+        /// <summary>
+        /// User addresses
+        /// </summary>
+        public ICollection<Address> Addresses { get; set; }
     }
 }

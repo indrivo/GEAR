@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.Table;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Entities.Abstractions
 {
@@ -63,5 +64,12 @@ namespace ST.Entities.Abstractions
         /// <param name="tableModel"></param>
         /// <returns></returns>
         Task<ResultModel<SynchronizeTableViewModel>> GetTableConfiguration(Guid tableId, TableModel tableModel = null);
+
+        /// <summary>
+        /// Generate tables for tenant
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> GenerateTablesForTenantAsync(Tenant model);
     }
 }

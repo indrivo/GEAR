@@ -437,27 +437,28 @@ namespace ST.Entities.Data
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
             var result = new List<Dictionary<string, object>>();
+            var connector = DbConnectionFactory.Connection.Get();
 
-            using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
+            using (var cmd = connector.CreateCommand())
             {
                 cmd.CommandText = sql;
 
                 if (dbContext.Database.CurrentTransaction != null)
                     cmd.Transaction =
                         ((RelationalTransaction)dbContext.Database.CurrentTransaction).GetDbTransaction();
-
-                foreach (var param in parameters)
-                {
-                    if (param.Value == null) continue;
-                    var dbParameter = cmd.CreateParameter();
-                    dbParameter.ParameterName = $"@{param.Key}";
-                    dbParameter.Value = param.Value;
-
-                    cmd.Parameters.Add(dbParameter);
-                }
-
                 try
                 {
+                    foreach (var param in parameters)
+                    {
+                        if (param.Value == null) continue;
+                        var dbParameter = cmd.CreateParameter();
+                        dbParameter.ParameterName = $"@{param.Key}";
+                        dbParameter.Value = param.Value;
+
+                        cmd.Parameters.Add(dbParameter);
+                    }
+
+
                     using (var dataReader = cmd.ExecuteReader())
                     {
                         while (dataReader.Read())

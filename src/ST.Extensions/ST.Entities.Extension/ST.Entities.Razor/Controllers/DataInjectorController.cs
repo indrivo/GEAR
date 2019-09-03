@@ -245,7 +245,6 @@ namespace ST.Entities.Razor.Controllers
             return Json(rq);
         }
 
-
         /// <summary>
         /// Get all with includes
         /// </summary>

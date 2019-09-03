@@ -13,6 +13,7 @@ using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Entities
 {
@@ -365,6 +366,39 @@ namespace ST.Entities
                     }
                 });
             });
+        }
+
+        /// <summary>
+        /// Generate tables
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> GenerateTablesForTenantAsync(Tenant model)
+        {
+            Arg.NotNull(model, nameof(GenerateTablesForTenantAsync));
+            var response = new ResultModel();
+            if (_context.EntityTypes.Any(x => x.MachineName == model.MachineName))
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Schema is used, try to use another"));
+                return response;
+            }
+
+            _context.EntityTypes.Add(new EntityType
+            {
+                MachineName = model.MachineName,
+                Author = "System",
+                Created = DateTime.Now,
+                Changed = DateTime.Now,
+                Name = model.MachineName,
+                Description = $"Generated schema on created {model.Name} tenant"
+            });
+            var dbResult = await _context.SaveAsync();
+            if (!dbResult.IsSuccess) return dbResult;
+
+
+            await CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
+            response.IsSuccess = true;
+            return response;
         }
 
 

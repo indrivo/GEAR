@@ -6,20 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core.Abstractions;
 using ST.Core.Helpers;
-using ST.Core.Services;
 
 namespace ST.Core.Extensions
 {
     public static class DbContextExtensions
     {
-        private static IHttpContextAccessorService _contextAccessor;
-
-        public static IHttpContextAccessorService ContextAccessor
-        {
-            get => _contextAccessor ?? IoC.Resolve<IHttpContextAccessorService>();
-            private set => _contextAccessor = value;
-        }
-
         /// <summary>
         /// Check if context is disposed
         /// </summary>
@@ -89,7 +80,6 @@ namespace ST.Core.Extensions
 
             try
             {
-                ChangeTracker(context);
                 context.SaveChanges();
                 rs.IsSuccess = true;
             }
@@ -117,7 +107,6 @@ namespace ST.Core.Extensions
 
             try
             {
-                ChangeTracker(context);
                 await context.SaveChangesAsync();
                 rs.IsSuccess = true;
             }
@@ -173,48 +162,6 @@ namespace ST.Core.Extensions
 
             services.AddScoped(ContextFactory);
             return services;
-        }
-
-        /// <summary>
-        /// Adding values to BaseModel fields
-        /// </summary>
-        /// <param name="context"></param>
-        private static void ChangeTracker(DbContext context)
-        {
-            var currentUsername = Settings.ANONIMOUS_USER;
-            try
-            {
-                var httpContext = ContextAccessor;
-                Guid tenant;
-                if (ContextAccessor != null)
-                {
-                    currentUsername = ContextAccessor.GetUserContext().User.Identity.Name;
-                    var tenantId = ContextAccessor.GetUserContext().User.Claims.FirstOrDefault(x => x.Type == "tenant")?.Value;
-                    if (tenantId != null) tenant = Guid.Parse(tenantId);
-                }
-
-
-                var entities = context.ChangeTracker.Entries().Where(x => x.Entity is BaseModel && (x.State == EntityState.Added || x.State == EntityState.Modified));
-
-                foreach (var entity in entities)
-                {
-                    if (entity.State == EntityState.Added)
-                    {
-                        ((BaseModel) entity.Entity).Created = DateTime.UtcNow;
-                        ((BaseModel) entity.Entity).Author = currentUsername;
-                        ((BaseModel) entity.Entity).TenantId = tenant;
-                    }
-
-                    ((BaseModel) entity.Entity).Changed = DateTime.UtcNow;
-                    ((BaseModel) entity.Entity).ModifiedBy = currentUsername;
-
-                    // TODO : to implement adding tenant on updating entity if is needed |  ((BaseModel)entity.Entity).TenantId = tenant; |
-                }
-            }
-            catch
-            {
-                // TODO: catch exception and handle it when try to track entity.
-            }
         }
     }
 }

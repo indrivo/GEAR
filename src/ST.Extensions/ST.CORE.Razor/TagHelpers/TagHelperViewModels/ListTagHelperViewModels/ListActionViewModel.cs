@@ -23,6 +23,7 @@ namespace ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
             this.ParameterName = name;
             this.ObjectValue = value;
         }
+
         public string ParameterName { get; set; }
         public bool IsCustomValue { get; set; }
         public string ObjectValue { get; set; }

@@ -22,6 +22,87 @@ $(document).ready(function () {
 });
 
 /**
+ * Create and render new table with inline edit
+ * @param {any} conf
+ */
+TableInlineEdit.prototype.createAndRenderTable = function (conf = {
+	target: undefined,
+	selector: "",
+	dbViewModel: undefined,
+	builderConfiguration: {
+	}
+}) {
+	if (!conf || !conf.selector || !conf.target) {
+		console.warn("Bad configuration!!!");
+		return 0;
+	}
+
+	const container = document.createElement("div");
+	container.setAttribute("class", "card");
+	const cBody = document.createElement("div");
+	cBody.setAttribute("class", "card-body");
+	const table = document.createElement("table");
+	table.setAttribute("id", conf.selector.substr(1));
+	table.setAttribute("class", "dynamic-table table table-striped table-bordered");
+	table.setAttribute("db-viewmodel", conf.dbViewModel);
+	const headSection = document.createElement("thead");
+	const defaultRow = document.createElement("tr");
+	headSection.append(defaultRow);
+	table.append(headSection);
+	cBody.append(table);
+	container.append(cBody);
+
+	$(conf.target).html(container);
+	const jDto = $(conf.selector);
+	const tBuilder = new TableBuilder(conf.builderConfiguration);
+	tBuilder.init(jDto.get(0));
+	new TableInlineEdit().init(conf.selector);
+	jDto.on("preInit.dt", function () {
+		const headConf = new IsoTableHeadActions().getConfiguration();
+		const content = tManager.render("template_headListActions", headConf);
+		const selector = $("div.CustomTableHeadBar");
+		selector.html(content);
+		$('.table-search').keyup(function () {
+			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
+			oTable.search($(this).val()).draw();
+		});
+
+		//Delete multiple rows
+		$(".deleteMultipleRows").on("click", function () {
+			const cTable = $(this).closest(".card").find(conf.selector);
+			if (cTable) {
+				if (typeof TableBuilder !== 'undefined') {
+					tBuilder.deleteSelectedRowsHandler(cTable.DataTable());
+				}
+			}
+		});
+
+		$(".add_new_inline").on("click", function () {
+			new TableInlineEdit().addNewHandler(this);
+		});
+
+		//Items on page
+		$(".tablePaginationView a").on("click", function () {
+			const ctx = $(this);
+			const onPageValue = ctx.data("page");
+			const onPageText = ctx.text();
+			ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
+			const table = ctx.closest(".card").find(conf.selector).DataTable();
+			table.page.len(onPageValue).draw();
+		});
+
+		//hide columns
+		$(".hidden-columns-event").click(function () {
+			const tables = $(this).closest(".card").find(conf.selector);
+			if (tables.length === 0) return;
+			new TableColumnsVisibility().toggleRightListSideBar(`#${tables[0].id}`);
+			$("#hiddenColumnsModal").modal();
+		});
+		window.forceTranslate("div.CustomTableHeadBar");
+	});
+};
+
+/**
  * Constructor
  */
 TableInlineEdit.prototype.constructor = TableInlineEdit;
@@ -94,6 +175,8 @@ TableInlineEdit.prototype.addNewHandler = function (ctx, jdt = null) {
 	//}
 	const row = document.createElement("tr");
 	row.setAttribute("isNew", "true");
+	row.setAttribute(scope.attributeNames.addingInProgressAttr, "false");
+	row.setAttribute(scope.attributeNames.validatorAttr, "false");
 	const columns = jdt.columns().context[0].aoColumns;
 	for (let i in columns) {
 		//Ignore hidden column
@@ -160,6 +243,14 @@ TableInlineEdit.prototype.cancelNewItem = function (context) {
 };
 
 
+/*
+ * Constants
+ */
+TableInlineEdit.prototype.attributeNames = {
+	addingInProgressAttr: "is-adding-in-progress",
+	validatorAttr: "is-validation-running"
+};
+
 /**
  * Add new item
  * @param {any} context
@@ -172,6 +263,10 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 	if (!isValid) {
 		return this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
 	}
+
+	if (rowContext.attr(this.attributeNames.addingInProgressAttr) === "true") return 1;
+	rowContext.attr(this.attributeNames.addingInProgressAttr, "true");
+
 	const data = this.getRowDataOnAddMode(rowContext);
 	this.db.addAsync(entityName, data).then(req => {
 		if (req.is_success) {
@@ -181,6 +276,7 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 			context.off("click");
 			this.cancelTableAddMode(context);
 		} else {
+			$(context).attr(this.attributeNames.addingInProgressAttr, "false");
 			this.toast.notify({ heading: req.error_keys[0].message });
 			this.toggleVisibilityColumnsButton(context, false);
 		}
@@ -203,18 +299,53 @@ TableInlineEdit.prototype.cancelTableAddMode = function (ctx) {
  * @param {any} context
  */
 TableInlineEdit.prototype.isValidNewRow = function (context) {
+	$(context).attr(this.attributeNames.validatorAttr, "true");
 	const els = context.get(0).querySelectorAll("textarea.data-new");
 	let isValid = true;
-	$.each(els, (index, el) => {
-		if (el.hasAttribute("data-required")) {
-			if (!el.value) {
-				if (!el.classList.contains('cell-red')) {
-					el.classList.add('cell-red')
+	$.each(els,
+		(index, el) => {
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!el.classList.contains("cell-red")) {
+						el.classList.add("cell-red");
+					}
+					isValid = false;
 				}
-				isValid = false;
 			}
-		}
-	});
+		});
+
+	const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
+
+	$.each(elsDates,
+		(index, el) => {
+			const ctx = $(el).parent();
+			if (el.hasAttribute("data-required")) {
+				if (!el.value) {
+					if (!ctx.hasClass("cell-red")) {
+						ctx.addClass("cell-red");
+					}
+					isValid = false;
+				}
+			}
+		});
+
+	const referenceCells = context.get(0).querySelectorAll("select.data-new");
+	$.each(referenceCells,
+		(index, el) => {
+			if (el.hasAttribute("data-required")) {
+				const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
+				if (!el.value) {
+					if (!input.classList.contains("cell-red")) {
+						input.classList.add("cell-red");
+					}
+					isValid = false;
+				} else {
+					$(input).removeClass("cell-red");
+				}
+			}
+		});
+
+	$(context).attr(this.attributeNames.validatorAttr, "false");
 	return isValid;
 };
 
@@ -567,8 +698,9 @@ TableInlineEdit.prototype.onAfterInitAddDateCell = function (el, data) {
 	el.setAttribute("class", "inline-add-event data-new form-control");
 	$(el).on("change", function () { })
 		.datepicker({
-			format: "dd/mm/yyyy"
-		});//.addClass("datepicker");
+			format: "dd/mm/yyyy",
+			autoclose: true
+		});
 	$(el).on("change", function () {
 		if (!this.hasAttribute("data-required")) return;
 		if ($(this).val()) {
@@ -639,8 +771,9 @@ TableInlineEdit.prototype.onAfterInitDateEditCell = function (columns, index) {
 	$(columns[index]).find(".inline-update-event")
 		.on("change", onInputEventHandler)
 		.datepicker({
-			format: "dd/mm/yyyy"
-		});//.addClass("datepicker");
+			format: "dd/mm/yyyy",
+			autoclose: true
+		});
 	$(columns[index]).find(".inline-update-event").on("change", function () {
 		if (!this.hasAttribute("data-required")) return;
 		if ($(this).val()) {
@@ -687,12 +820,12 @@ TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 		case "bool":
 			{
 				value = targetCtx.prop("checked");
-				displaySuccessText = `You turned ${value ? "on" : "off"} checkbox`;
+				displaySuccessText = `${window.translate("system_inline_edit_select_value_changed")} ${value ? "on" : "off"} checkbox`;
 			} break;
 		case "uniqueidentifier":
 			{
 				value = targetCtx.val();
-				displaySuccessText = `Was selected : ${targetCtx.find("option:selected").text()}`;
+				displaySuccessText = `${window.translate("system_inline_edit_select_value_changed")} : ${targetCtx.find("option:selected").text()}`;
 			} break;
 		default: {
 			value = targetCtx.val();
@@ -702,8 +835,8 @@ TableInlineEdit.prototype.onEditCellValueChanged = function (target) {
 					isValid = false;
 				}
 			}
-
-			displaySuccessText = `You change ${value} value`;
+			const displayValue = value.length > 10 ? `${value.substr(0, 9)} ...` : value;
+			displaySuccessText = `${window.translate("system_inline_edit_text_chnaged")} ${displayValue}`;
 		} break;
 	}
 

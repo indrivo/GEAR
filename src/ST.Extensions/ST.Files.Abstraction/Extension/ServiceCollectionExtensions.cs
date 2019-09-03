@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Abstractions.Extensions;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 
@@ -16,16 +17,13 @@ namespace ST.Files.Abstraction.Extension
             return services;
         }
 
-
         public static IServiceCollection AddFileModuleStorage<TFileContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TFileContext : DbContext, IFileContext
         {
             services.AddScopedContextFactory<IFileContext, TFileContext>();
             services.AddDbContext<TFileContext>(options, ServiceLifetime.Transient);
+            services.RegisterAuditFor<TFileContext>("Physic File module");
             return services;
         }
     }
-
-
 }
-

@@ -47,29 +47,30 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
 function changeTextCellPosition() {
 	$(this).parent().focusout(function () {
 		$(this).css("left", "");
+		$(this).css("top", "");
 	});
+
 	const expandCell = $(this).parent();
-	const pos = new TableInlineEdit().elementOffset(this);
+	const pos = new TableInlineEdit().elementOffset($(this).parent().get(0));
 	const docHeight = $(document).height();
 	const docWidth = $(document).width();
 	const hPercent = pos.top * 100 / docHeight;
 	const diffH = docHeight - pos.top;
 	const textareaWidth = $(expandCell).innerWidth();
 
-	const expandedCell = $(this).parent();
 	const navBarWidth = $(".navigation").width();
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
-	const diffW = docWidth - pos.left;
+	//const diffW = docWidth - pos.left;
 
 	if (hPercent > 70 && hPercent < 80) {
-		expandedCell.css("top", `${pos.top - diffH}px`);
+		expandCell.css("top", `${pos.top - diffH}px`);
 	} else if (hPercent > 80) {
-		expandedCell.css("top", `${pos.top - diffH - 240}px`);
+		expandCell.css("top", `${pos.top - diffH - 240}px`);
 	}
 
 	if (wPercent > 70) {
-		expandedCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
 	}
 }
 
@@ -786,8 +787,9 @@ if (typeof TableInlineEdit !== "undefined") {
 		input.get(0).setAttribute("class", "inline-add-event data-new form-control datepicker-control");
 		input.on("change", function () { })
 			.datepicker({
-				format: "dd/mm/yyyy"
-			}); //.addClass("datepicker");
+				format: "dd/mm/yyyy",
+				autoclose: true
+			});
 		input.on("change",
 			function () {
 				if (!this.hasAttribute("data-required")) return;
@@ -797,58 +799,6 @@ if (typeof TableInlineEdit !== "undefined") {
 					$(this).parent().removeClass("cell-red").addClass("cell-red");
 				}
 			});
-	};
-
-	/**
- * Validate row
- * @param {any} context
- */
-	TableInlineEdit.prototype.isValidNewRow = function (context) {
-		const els = context.get(0).querySelectorAll("textarea.data-new");
-		let isValid = true;
-		$.each(els,
-			(index, el) => {
-				if (el.hasAttribute("data-required")) {
-					if (!el.value) {
-						if (!el.classList.contains("cell-red")) {
-							el.classList.add("cell-red");
-						}
-						isValid = false;
-					}
-				}
-			});
-
-		const elsDates = context.get(0).querySelectorAll("input.datepicker-control");
-
-		$.each(elsDates,
-			(index, el) => {
-				const ctx = $(el).parent();
-				if (el.hasAttribute("data-required")) {
-					if (!el.value) {
-						if (!ctx.hasClass("cell-red")) {
-							ctx.addClass("cell-red");
-						}
-						isValid = false;
-					}
-				}
-			});
-
-		const referenceCells = context.get(0).querySelectorAll("select.data-new");
-		$.each(referenceCells,
-			(index, el) => {
-				if (el.hasAttribute("data-required")) {
-					const input = $(el).closest(".data-cell").find(".fire-reference-component").get(0);
-					if (!el.value) {
-						if (!input.classList.contains("cell-red")) {
-							input.classList.add("cell-red");
-						}
-						isValid = false;
-					} else {
-						$(input).removeClass("cell-red");
-					}
-				}
-			});
-		return isValid;
 	};
 
 	/**
@@ -872,6 +822,8 @@ if (typeof TableInlineEdit !== "undefined") {
 		}
 		const row = document.createElement("tr");
 		row.setAttribute("isNew", "true");
+		row.setAttribute(scope.attributeNames.addingInProgressAttr, "false");
+		row.setAttribute(scope.attributeNames.validatorAttr, "false");
 		const columns = jdt.columns().context[0].aoColumns;
 		for (let i in columns) {
 			//Ignore hidden column
@@ -1281,7 +1233,9 @@ if (typeof Notificator !== "undefined") {
 		if (!_.hasClass("notification"))
 			_.addClass("notification");
 		const template = this.createNotificationBodyContainer(notification);
-		$("#notificationList").prepend(template);
+		const target = $("#notificationList");
+		$("#noNotifications").remove();
+		target.prepend(template);
 		this.registerOpenNotificationEvent();
 	}
 
@@ -1419,38 +1373,7 @@ function makeMenuActive(target) {
 $(document).ready(function () {
 	window.forceTranslate();
 	//Log Out
-	$(".sa-logout").click(function () {
-		swal({
-			title: window.translate("confirm_log_out_question"),
-			text: window.translate("log_out_message"),
-			type: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#DD6B55",
-			confirmButtonText: window.translate("confirm_logout"),
-			cancelButtonText: window.translate("cancel")
-		}).then((result) => {
-			if (result.value) {
-				$.ajax({
-					url: "/Account/LocalLogout",
-					type: "post",
-					dataType: "json",
-					contentType: "application/x-www-form-urlencoded; charset=utf-8",
-					success: function (data) {
-						if (data.success) {
-
-							swal("Success!", data.message, "success");
-							window.location.href = "/Account/Login";
-						} else {
-							swal("Fail!", data.message, "error");
-						}
-					},
-					error: function () {
-						swal("Fail!", "Server no response!", "error");
-					}
-				});
-			};
-		});
-	});
+	new ST().registerLocalLogout(".sa-logout");
 
 	//Menu render promise
 	const loadMenusPromise = loadAsync("/PageRender/GetMenus");

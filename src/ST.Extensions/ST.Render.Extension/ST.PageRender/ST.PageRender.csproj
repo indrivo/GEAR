@@ -1,17 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\20190609183224_Test.cs" />
-    <Compile Remove="Migrations\20190609183224_Test.Designer.cs" />
-    <Compile Remove="Migrations\20190609183719_Test.cs" />
-    <Compile Remove="Migrations\20190609183719_Test.Designer.cs" />
-    <Compile Remove="Migrations\20190609184313_Test.cs" />
-    <Compile Remove="Migrations\20190609184313_Test.Designer.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
