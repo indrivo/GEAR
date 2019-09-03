@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ST.Audit.Abstractions.Models;
 using ST.Audit.Contexts;
-using ST.Audit.Models;
 using ST.Core.Abstractions;
 using ST.Files.Abstraction.Models;
 using ST.Files.Box.Abstraction;

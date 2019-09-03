@@ -506,5 +506,17 @@
   "iso_meeting_participants": "参与者",
   "iso_meeting_generate_report": "产生一个分析报告的管理",
   "iso_no_participants": "有没有参与者",
-  "system_view_details": "看细节"
+  "system_view_details": "看细节",
+  "system_audit_record_id": "记录id",
+  "system_modules": "模块",
+  "system_audit_event_type": "事件类型",
+  "system_versions": "版本",
+  "system_audit_all_modules": "审计的所有模块",
+  "system_multitenant_register_new": "注册一个新的组织",
+  "system_multi_tenant_accept_agreement": "通过点击从现在开始，你接受我们的",
+  "system_start_now": "从现在开始",
+  "system_and": "和",
+  "system_subscriptions_agreement": "订购协议",
+  "system_privacy_policies": "隐私的政策",
+  "system_register": "注册"
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.DataAnnotations.Internal;
 using Microsoft.Extensions.Localization;
 using ST.Core.Attributes;
-using ST.Core.Helpers;
 
 namespace ST.Localization.Abstractions.Attributes
 {
@@ -14,9 +13,7 @@ namespace ST.Localization.Abstractions.Attributes
 
         public LocalizedRequiredAttributeAdapter(RequiredTranslateAttribute attribute, IStringLocalizer stringLocalizer) : base(attribute, stringLocalizer)
         {
-            var translated = stringLocalizer[attribute.Key].Value;
-            attribute.ErrorMessage = attribute.FormatErrorMessage("{0} " + translated);
-
+            attribute.ErrorMessage = attribute.Key;
         }
     }
 
@@ -24,7 +21,6 @@ namespace ST.Localization.Abstractions.Attributes
     {
         public virtual IAttributeAdapter GetAttributeAdapter(ValidationAttribute attribute, IStringLocalizer stringLocalizer)
         {
-            var localizer = IoC.Resolve<IStringLocalizer>();
             if (attribute == null)
             {
                 throw new ArgumentNullException(nameof(attribute));
@@ -36,12 +32,12 @@ namespace ST.Localization.Abstractions.Attributes
 
             if (type == typeof(RequiredAttribute))
             {
-                adapter = new LocalizedRequiredAttributeAdapter((RequiredAttribute)attribute, localizer);
+                adapter = new LocalizedRequiredAttributeAdapter((RequiredAttribute)attribute, stringLocalizer);
             }
 
             if (type == typeof(RequiredTranslateAttribute))
             {
-                adapter = new LocalizedRequiredAttributeAdapter((RequiredTranslateAttribute)attribute, localizer);
+                adapter = new LocalizedRequiredAttributeAdapter((RequiredTranslateAttribute)attribute, stringLocalizer);
             }
 
             return adapter;

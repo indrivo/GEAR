@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ST.Audit.Enums
+﻿namespace ST.Audit.Abstractions.Enums
 {
     public enum TrackEventType
     {

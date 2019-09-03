@@ -506,5 +506,17 @@
   "iso_meeting_participants": "Uczestnicy",
   "iso_meeting_generate_report": "Tworzenie raportów, analiza, zarządzanie",
   "iso_no_participants": "Nie było uczestników",
-  "system_view_details": "Zobacz szczegóły"
+  "system_view_details": "Zobacz szczegóły",
+  "system_audit_record_id": "Id wpisu",
+  "system_modules": "Moduły",
+  "system_audit_event_type": "Typ zdarzenia ",
+  "system_versions": "Opcje",
+  "system_audit_all_modules": "Audyt dla wszystkich modułów",
+  "system_multitenant_register_new": "Zarejestrować nową organizację",
+  "system_multi_tenant_accept_agreement": "Klikając na przycisk Rozpocznij teraz, akceptujesz nasze",
+  "system_start_now": "Zacznij Już Teraz",
+  "system_and": "i",
+  "system_subscriptions_agreement": "Umowa Subskrypcji ",
+  "system_privacy_policies": "Polityka Prywatności ",
+  "system_register": "Rejestracja"
 }

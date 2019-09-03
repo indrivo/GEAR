@@ -506,5 +506,17 @@
   "iso_meeting_participants": "Участники",
   "iso_meeting_generate_report": "Создание отчетов, анализ, управление",
   "iso_no_participants": "Не было участников",
-  "system_view_details": "Посмотреть детали"
+  "system_view_details": "Посмотреть детали",
+  "system_audit_record_id": "Id записи",
+  "system_modules": "Модули",
+  "system_audit_event_type": "Тип события ",
+  "system_versions": "Варианты",
+  "system_audit_all_modules": "Аудит для всех модулей",
+  "system_multitenant_register_new": "Зарегистрировать новую организацию",
+  "system_multi_tenant_accept_agreement": "Нажав на кнопку Начать сейчас, вы принимаете наши",
+  "system_start_now": "Начните Сейчас",
+  "system_and": "и",
+  "system_subscriptions_agreement": "Соглашение o Подписке ",
+  "system_privacy_policies": "Политика Конфиденциальности ",
+  "system_register": "Регистрация"
 }

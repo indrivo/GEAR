@@ -76,6 +76,14 @@ namespace ST.Localization.Abstractions.Extensions
             });
 
             services.AddSingleton<IValidationAttributeAdapterProvider, LocalizedValidationAttributeAdapterProvider>();
+            services.AddMvc()
+                .AddDataAnnotationsLocalization(o =>
+                    {
+                        o.DataAnnotationLocalizerProvider = (type, factory) =>
+                            {
+                                return services.BuildServiceProvider().GetRequiredService<IStringLocalizer>();
+                            };
+                    });
             return services;
         }
     }

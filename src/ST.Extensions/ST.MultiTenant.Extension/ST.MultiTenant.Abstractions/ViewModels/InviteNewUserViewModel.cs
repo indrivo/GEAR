@@ -5,13 +5,8 @@ namespace ST.MultiTenant.Abstractions.ViewModels
 {
     public class InviteNewUserViewModel
     {
-        public InviteNewUserViewModel()
-        {
-            Roles = new HashSet<string>();
-        }
-
         [Required]
         public string Email { get; set; }
-        public IEnumerable<string> Roles { get; set; }
+        public IEnumerable<string> Roles { get; set; } = new List<string>();
     }
 }

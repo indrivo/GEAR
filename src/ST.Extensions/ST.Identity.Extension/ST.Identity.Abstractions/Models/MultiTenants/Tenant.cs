@@ -20,7 +20,7 @@ namespace ST.Identity.Abstractions.Models.MultiTenants
         /// Name for system
         /// </summary>
         [Required]
-        public string MachineName { get; set; }
+        public virtual string MachineName { get; set; }
 
         /// <summary>
         /// Description for this tenant

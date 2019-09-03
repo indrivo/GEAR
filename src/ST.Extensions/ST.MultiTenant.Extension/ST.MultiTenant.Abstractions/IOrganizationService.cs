@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ST.Core;
 using ST.Core.Abstractions;
 using ST.Core.Helpers;
@@ -115,5 +116,32 @@ namespace ST.MultiTenant.Abstractions
         /// <param name="param"></param>
         /// <returns></returns>
         DTResult<OrganizationListViewModel> GetFilteredList(DTParameters param);
+
+        /// <summary>
+        /// Get country list for VM states
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<SelectListItem>> GetCountrySelectList();
+
+        /// <summary>
+        /// Invite new user by email
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> InviteNewUserByEmailAsync(InviteNewUserViewModel model);
+
+        /// <summary>
+        /// Get filtered list
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Task<DTResult<CompanyUsersViewModel>> LoadFilteredListCompanyUsersAsync(DTParameters param);
+
+        /// <summary>
+        /// Create new organization
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        Task<ResultModel<CreateTenantViewModel>> CreateOrganizationAsync(CreateTenantViewModel data);
     }
 }

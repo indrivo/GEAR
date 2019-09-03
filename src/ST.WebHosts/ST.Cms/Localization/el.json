@@ -506,5 +506,17 @@
   "iso_meeting_participants": "Οι συμμετέχοντες",
   "iso_meeting_generate_report": "Δημιουργεί μια έκθεση σχετικά με την ανάλυση της διαχείρισης των",
   "iso_no_participants": "Δεν υπάρχουν συμμετέχοντες",
-  "system_view_details": "Δείτε λεπτομέρειες"
+  "system_view_details": "Δείτε λεπτομέρειες",
+  "system_audit_record_id": "Id εγγραφής",
+  "system_modules": "Ενότητες",
+  "system_audit_event_type": "Τύπος συμβάντος",
+  "system_versions": "Εκδόσεις",
+  "system_audit_all_modules": "Ελέγχου για όλες τις ενότητες",
+  "system_multitenant_register_new": "Εγγραφείτε για ένα νέο οργανισμό",
+  "system_multi_tenant_accept_agreement": "Κάνοντας κλικ στο Έναρξη Τώρα, αποδέχεστε μας",
+  "system_start_now": "Ξεκινήστε Τώρα",
+  "system_and": "και",
+  "system_subscriptions_agreement": "Προεγγραφής",
+  "system_privacy_policies": "Πολιτικές Προστασίας Προσωπικών Δεδομένων",
+  "system_register": "Εγγραφείτε"
 }

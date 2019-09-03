@@ -2,7 +2,7 @@
 
 <form id="block_create" asp-action="Create" role="form" enctype="multipart/form-data">
     <div class="form-body">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div class="row p-t-20">
             <div class="col-md-6">
                 <div class="form-group">
@@ -20,15 +20,13 @@
                     <JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
                     <input class="form-control" type="text" asp-for="Name" />
                     <span asp-validation-for="Name" class="text-danger"></span><br />
-                    <small>Name of the organization</small>
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <JTranslateLabel class="control-label" asp-for="Description"></JTranslateLabel>
-                    <input class="form-control" type="text" asp-for="Description" />
+                    <textarea class="form-control" type="text" asp-for="Description"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span><br />
-                    <small>Description of the organization</small>
                 </div>
             </div>
             <div class="col-md-12">
@@ -36,7 +34,6 @@
                     <JTranslateLabel class="control-label" asp-for="SiteWeb"></JTranslateLabel>
                     <input class="form-control" type="text" asp-for="SiteWeb" />
                     <span asp-validation-for="SiteWeb" class="text-danger"></span><br />
-                    <small>Site Web of the organization</small>
                 </div>
             </div>
             <div class="col-md-12">
@@ -44,7 +41,6 @@
                     <JTranslateLabel class="control-label" asp-for="Address"></JTranslateLabel>
                     <input class="form-control" type="text" asp-for="Address" />
                     <span asp-validation-for="Address" class="text-danger"></span><br />
-                    <small>Address of the organization</small>
                 </div>
             </div>
 

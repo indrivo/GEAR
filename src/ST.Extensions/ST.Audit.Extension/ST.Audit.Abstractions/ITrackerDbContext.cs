@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ST.Audit.Models;
-using System;
-using System.Collections.Generic;
+using ST.Audit.Abstractions.Models;
 
-namespace ST.Audit.Interfaces
+namespace ST.Audit.Abstractions
 {
     public interface ITrackerDbContext
     {

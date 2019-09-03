@@ -31,7 +31,7 @@ namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels
         public string UserLastName { get; set; }
 
         [MaxLength(20)]
-        [Display(Name = "Phone number", Description = "phone number ", Prompt = "0123456789")]
+        [Display(Name = "PHONE number", Description = "phone number ", Prompt = "0123456789")]
         public string UserPhoneNumber { get; set; }
 
         [Display(Name = "Birthday", Description = "birthday")]

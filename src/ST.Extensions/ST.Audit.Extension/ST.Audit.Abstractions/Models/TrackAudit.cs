@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using ST.Audit.Enums;
+using ST.Audit.Abstractions.Enums;
 using ST.Core;
 
-namespace ST.Audit.Models
+namespace ST.Audit.Abstractions.Models
 {
     [Table("TrackAudits")]
     public class TrackAudit : BaseModel

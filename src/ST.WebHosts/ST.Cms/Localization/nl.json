@@ -506,5 +506,17 @@
   "iso_meeting_participants": "Deelnemers",
   "iso_meeting_generate_report": "Genereert een rapport over de analyse van het management van",
   "iso_no_participants": "Er zijn geen deelnemers",
-  "system_view_details": "Bekijk details"
+  "system_view_details": "Bekijk details",
+  "system_audit_record_id": "Record id",
+  "system_modules": "Modules",
+  "system_audit_event_type": "Soort gebeurtenis",
+  "system_versions": "Versies",
+  "system_audit_all_modules": "Audit voor alle modules",
+  "system_multitenant_register_new": "Het registreren van een nieuwe organisatie",
+  "system_multi_tenant_accept_agreement": "Door te klikken op Start Nu op, ga je akkoord met onze",
+  "system_start_now": "Start Nu",
+  "system_and": "en",
+  "system_subscriptions_agreement": "Abonnement Overeenkomst",
+  "system_privacy_policies": "Privacy Beleid",
+  "system_register": "Aanmelden"
 }

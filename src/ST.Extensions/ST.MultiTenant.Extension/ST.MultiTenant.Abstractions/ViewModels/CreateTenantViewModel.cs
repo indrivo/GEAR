@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ST.Core.Attributes;
 using ST.Identity.Abstractions.Models.MultiTenants;
+using ST.MultiTenant.Abstractions.Helpers;
 
 namespace ST.MultiTenant.Abstractions.ViewModels
 {
@@ -76,8 +78,13 @@ namespace ST.MultiTenant.Abstractions.ViewModels
         /// Organization logo
         /// </summary>
         [Display(Name = "Organization Logo")]
-        [DisplayTranslate(Key = "system_tenant_logo")]
+        [DisplayTranslate(Key = Resources.Translations.TENANT_LOGO)]
         public virtual IFormFile OrganizationLogoFormFile { get; set; }
+
+        /// <summary>
+        /// Machine name
+        /// </summary>
+        public override string MachineName { get; set; } = $"schema_{Guid.NewGuid().ToString()}";
     }
 
 

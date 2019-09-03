@@ -178,7 +178,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
                 {
                     var userGroupList = model.SelectedGroupId
-                        .Select(_ => new UserGroup {AuthGroupId = Guid.Parse(_), UserId = user.Id}).ToList();
+                        .Select(_ => new UserGroup { AuthGroupId = Guid.Parse(_), UserId = user.Id }).ToList();
 
                     await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
                 }
@@ -334,23 +334,23 @@ namespace ST.Identity.Razor.Users.Controllers
         {
             if (id.IsNullOrEmpty())
             {
-                return Json(new {success = false, message = "Id is null"});
+                return Json(new { success = false, message = "Id is null" });
             }
 
             if (IsCurrentUser(id))
             {
-                return Json(new {success = false, message = "You can't delete current user"});
+                return Json(new { success = false, message = "You can't delete current user" });
             }
 
             var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
             if (applicationUser == null)
             {
-                return Json(new {success = false, message = "User not found"});
+                return Json(new { success = false, message = "User not found" });
             }
 
             if (applicationUser.IsEditable == false)
             {
-                return Json(new {succsess = false, message = "Is system user!!!"});
+                return Json(new { succsess = false, message = "Is system user!!!" });
             }
 
             try
@@ -363,12 +363,12 @@ namespace ST.Identity.Razor.Users.Controllers
                     Subject = "Info",
                     NotificationTypeId = NotificationType.Info
                 });
-                return Json(new {success = true, message = "Delete success"});
+                return Json(new { success = true, message = "Delete success" });
             }
             catch (Exception e)
             {
                 Logger.LogError(e.Message);
-                return Json(new {success = false, message = "Error on delete!!!"});
+                return Json(new { success = false, message = "Error on delete!!!" });
             }
         }
 
@@ -546,7 +546,7 @@ namespace ST.Identity.Razor.Users.Controllers
 
 
                 var userGroupList = model.SelectedGroupId
-                    .Select(groupId => new UserGroup {UserId = user.Id, AuthGroupId = Guid.Parse(groupId)}).ToList();
+                    .Select(groupId => new UserGroup { UserId = user.Id, AuthGroupId = Guid.Parse(groupId) }).ToList();
                 await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
             }
 
@@ -569,7 +569,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <param name="countryId"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public virtual JsonResult GetCityByCountryId([Required] string countryId)
         {
             var resultModel = new ResultModel<IEnumerable<SelectListItem>>();
@@ -958,7 +958,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var binary = new BinaryReader(stream))
                 {
-                    var data = binary.ReadBytes((int) stream.Length);
+                    var data = binary.ReadBytes((int)stream.Length);
                     return data;
                 }
             }
@@ -1040,14 +1040,14 @@ namespace ST.Identity.Razor.Users.Controllers
             var resultModel = new ResultModel();
             if (!ModelState.IsValid)
             {
-                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Invalid model"});
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Invalid model" });
                 return Json(resultModel);
             }
 
             var currentUser = await GetCurrentUserAsync();
             if (currentUser == null)
             {
-                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "User not found"});
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
                 return Json(resultModel);
             }
 
@@ -1065,7 +1065,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Error on change password"});
+            resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Error on change password" });
             return Json(resultModel);
         }
 
@@ -1302,7 +1302,7 @@ namespace ST.Identity.Razor.Users.Controllers
             if (file == null || file.Length == 0)
             {
                 resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "Image not found"});
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Image not found" });
                 return Json(resultModel);
             }
 
@@ -1310,7 +1310,7 @@ namespace ST.Identity.Razor.Users.Controllers
             if (currentUser == null)
             {
                 resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel {Key = string.Empty, Message = "User not found"});
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
                 return Json(resultModel);
             }
 
@@ -1330,7 +1330,7 @@ namespace ST.Identity.Razor.Users.Controllers
             resultModel.IsSuccess = false;
             foreach (var error in result.Errors)
             {
-                resultModel.Errors.Add(new ErrorModel {Key = error.Code, Message = error.Description});
+                resultModel.Errors.Add(new ErrorModel { Key = error.Code, Message = error.Description });
             }
 
             return Json(resultModel);

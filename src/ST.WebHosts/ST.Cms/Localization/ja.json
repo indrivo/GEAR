@@ -506,5 +506,17 @@
   "iso_meeting_participants": "参加者",
   "iso_meeting_generate_report": "コンパイル時レポートを作成し、解析の管理",
   "iso_no_participants": "ありませんの参加者",
-  "system_view_details": "詳細を表示"
+  "system_view_details": "詳細を表示",
+  "system_audit_record_id": "レコードid",
+  "system_modules": "モジュール",
+  "system_audit_event_type": "イベントタイプ",
+  "system_versions": "バージョン",
+  "system_audit_all_modules": "監査のためのすべてのモジュール",
+  "system_multitenant_register_new": "新規登録組織",
+  "system_multi_tenant_accept_agreement": "をクリックする、お客",
+  "system_start_now": "始めないといけない",
+  "system_and": "や",
+  "system_subscriptions_agreement": "契約合意",
+  "system_privacy_policies": "個人情報保護方針",
+  "system_register": "登録"
 }

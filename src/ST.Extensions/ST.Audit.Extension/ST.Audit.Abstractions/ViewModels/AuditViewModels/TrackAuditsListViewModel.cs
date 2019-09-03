@@ -1,6 +1,6 @@
-using ST.Audit.Models;
+using ST.Audit.Abstractions.Models;
 
-namespace ST.Audit.Razor.ViewModels.AuditViewModels
+namespace ST.Audit.Abstractions.ViewModels.AuditViewModels
 {
 	public class TrackAuditsListViewModel : TrackAudit
 	{
@@ -8,5 +8,6 @@ namespace ST.Audit.Razor.ViewModels.AuditViewModels
 		public string ChangedString { get; set; }
 		public string EventType { get; set; }
 		public string EntityName { get; set; }
+        public string ModuleName { get; set; }
 	}
 }

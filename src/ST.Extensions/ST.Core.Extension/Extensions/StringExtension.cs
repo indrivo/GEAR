@@ -13,6 +13,7 @@ namespace ST.Core.Extensions
         /// <returns></returns>
         public static string[] Split(this string str, string delimiter)
         {
+            if (string.IsNullOrEmpty(str)) return new[] { str };
             return str.Split(new[] { delimiter }, StringSplitOptions.None);
         }
 
@@ -26,5 +27,12 @@ namespace ST.Core.Extensions
             if (string.IsNullOrEmpty(input)) return input;
             return input.First().ToString().ToUpper() + input.Substring(1);
         }
+
+        /// <summary>
+        /// Is Null or empty snippet
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool IsNullOrEmpty(this string str) => string.IsNullOrEmpty(str);
     }
 }

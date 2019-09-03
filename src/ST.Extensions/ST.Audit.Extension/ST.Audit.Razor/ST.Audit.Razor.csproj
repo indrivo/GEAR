@@ -10,10 +10,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
-    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
-    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
-    <ProjectReference Include="..\..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />
-    <ProjectReference Include="..\ST.Audit\ST.Audit.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Razor\ST.Core.Razor.csproj" />
+    <ProjectReference Include="..\ST.Audit.Abstractions\ST.Audit.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

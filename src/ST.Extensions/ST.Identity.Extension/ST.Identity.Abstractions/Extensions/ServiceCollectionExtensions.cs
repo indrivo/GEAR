@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Abstractions.Extensions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions.Configurations;
 using ST.Identity.Abstractions.Events;
@@ -78,6 +79,8 @@ namespace ST.Identity.Abstractions.Extensions
                     });
                 }
             });
+
+            services.RegisterAuditFor<IIdentityContext>("Identity module");
 
             return services;
         }

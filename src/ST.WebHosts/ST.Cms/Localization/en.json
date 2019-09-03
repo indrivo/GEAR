@@ -506,5 +506,17 @@
   "iso_meeting_participants": "Participants",
   "iso_meeting_generate_report": "Generates a report on the analysis of the management of",
   "iso_no_participants": "There are no participants",
-  "system_view_details": "View details"
+  "system_view_details": "View details",
+  "system_audit_record_id": "Record id",
+  "system_modules": "Modules",
+  "system_audit_event_type": "Event type",
+  "system_versions": "Versions",
+  "system_audit_all_modules": "Audit for all modules",
+  "system_multitenant_register_new": "Register a new organization",
+  "system_multi_tenant_accept_agreement": "By clicking on Start Now, you accept our",
+  "system_start_now": "Start Now",
+  "system_and": "and",
+  "system_subscriptions_agreement": "Subscription Agreement",
+  "system_privacy_policies": "Privacy Policies",
+  "system_register": "Sign up"
 }

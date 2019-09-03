@@ -1,7 +1,7 @@
 ﻿using System;
-using ST.Audit.Enums;
+using ST.Audit.Abstractions.Enums;
 
-namespace ST.Audit.Attributes
+namespace ST.Audit.Abstractions.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class TrackField : Attribute

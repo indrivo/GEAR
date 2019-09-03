@@ -349,7 +349,10 @@ namespace ST.Identity.Razor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            ViewData[ReturnUrl] = returnUrl;
+            ViewData[ReturnUrl] = returnUrl == Url.Action("LocalLogout")
+                ? Url.Action("Index", "Home")
+                : returnUrl;
+
             if (!ModelState.IsValid) return View(model);
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true

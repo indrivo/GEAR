@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\..\ST.Extensions\ST.Application.Extension\ST.Application\ST.Application.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Audit.Extension\ST.Audit.Razor\ST.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Backup.Extension\ST.Backup.Razor\ST.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.InternalCalendar.Razor.csproj" />

@@ -79,8 +79,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using ST.Audit;
+using ST.Audit.Abstractions.Extensions;
 using ST.Email.Razor.Extensions;
-using ST.Core.Services;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
 using ST.Files.Box.Abstraction.Extension;
@@ -220,8 +221,7 @@ namespace ST.Cms
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.AddCacheModule(HostingEnvironment, Configuration);
-			//------------------------------ HttpContextAccessorService -------------------------------------
-			services.AddTransient<IHttpContextAccessorService, HttpContextAccessorService>();
+
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
 			services.AddDbContext<ProcessesDbContext>(options =>
@@ -290,9 +290,12 @@ namespace ST.Cms
 				})
 				.AddEntitySecurityRazorUIModule();
 
-			//---------------------------Multi Tenant Module-------------------------------------
+			//---------------------------------Multi Tenant Module-------------------------------------
 			services.AddTenantModule<OrganizationService, Tenant>()
 				.AddMultiTenantRazorUIModule();
+
+			//----------------------------------------Audit Module-------------------------------------
+			services.AddAuditModule<AuditManager>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -372,7 +375,7 @@ namespace ST.Cms
 				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------
-			services.AddPageModule<DynamicPagesDbContext>()
+			services.AddPageModule()
 				.AddPageModuleStorage<DynamicPagesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

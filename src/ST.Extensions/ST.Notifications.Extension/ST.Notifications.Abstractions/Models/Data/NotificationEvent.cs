@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ST.Audit.Attributes;
-using ST.Audit.Enums;
+using ST.Audit.Abstractions.Attributes;
+using ST.Audit.Abstractions.Enums;
 
 namespace ST.Notifications.Abstractions.Models.Data
 {

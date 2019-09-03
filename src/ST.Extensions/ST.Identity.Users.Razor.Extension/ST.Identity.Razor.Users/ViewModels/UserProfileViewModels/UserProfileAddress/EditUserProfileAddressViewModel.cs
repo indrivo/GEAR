@@ -7,13 +7,8 @@ namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAd
 {
     public class EditUserProfileAddressViewModel : AddUserProfileAddressViewModel
     {
-        public EditUserProfileAddressViewModel()
-        {
-            SelectedStateOrProvinceSelectListItems = new HashSet<SelectListItem>();
-        }
-
         [Required] public Guid Id { get; set; }
 
-        public IEnumerable<SelectListItem> SelectedStateOrProvinceSelectListItems { get; set; }
+        public IEnumerable<SelectListItem> SelectedStateOrProvinceSelectListItems { get; set; } = new List<SelectListItem>();
     }
 }

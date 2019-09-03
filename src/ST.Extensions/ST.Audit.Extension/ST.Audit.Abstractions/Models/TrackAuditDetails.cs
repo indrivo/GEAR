@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using ST.Core;
 
-namespace ST.Audit.Models
+namespace ST.Audit.Abstractions.Models
 {
     [Table("TrackAuditDetails")]
     public class TrackAuditDetails : BaseModel

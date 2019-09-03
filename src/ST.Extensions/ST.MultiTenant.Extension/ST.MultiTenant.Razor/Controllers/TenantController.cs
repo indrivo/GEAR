@@ -1,26 +1,19 @@
 using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Entities.Abstractions;
-using ST.Entities.Abstractions.Models.Tables;
-using ST.Entities.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.MultiTenant.Abstractions;
-using ST.MultiTenant.Abstractions.Helpers;
 using ST.MultiTenant.Abstractions.ViewModels;
 
 namespace ST.MultiTenant.Razor.Controllers
@@ -40,24 +33,9 @@ namespace ST.MultiTenant.Razor.Controllers
         private ApplicationDbContext Context { get; }
 
         /// <summary>
-        /// Inject entities db context
-        /// </summary>
-        private readonly EntitiesDbContext _entitiesDbContext;
-
-        /// <summary>
-        /// Inject logger
-        /// </summary>
-        private readonly ILogger<TenantController> _logger;
-
-        /// <summary>
         /// Inject dynamic service
         /// </summary>
         private readonly IEntityRepository _service;
-
-        /// <summary>
-        /// Inject localizer
-        /// </summary>
-        private readonly IStringLocalizer _localizer;
 
         /// <summary>
         /// Inject organization service
@@ -70,20 +48,13 @@ namespace ST.MultiTenant.Razor.Controllers
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="logger"></param>
-        /// <param name="entitiesDbContext"></param>
         /// <param name="service"></param>
-        /// <param name="localizer"></param>
         /// <param name="organizationService"></param>
         public TenantController(
-            ApplicationDbContext context, ILogger<TenantController> logger, EntitiesDbContext entitiesDbContext,
-            IEntityRepository service, IStringLocalizer localizer, IOrganizationService<Tenant> organizationService)
+            ApplicationDbContext context, IEntityRepository service, IOrganizationService<Tenant> organizationService)
         {
             Context = context;
-            _logger = logger;
-            _entitiesDbContext = entitiesDbContext;
             _service = service;
-            _localizer = localizer;
             _organizationService = organizationService;
         }
 
@@ -113,7 +84,7 @@ namespace ST.MultiTenant.Razor.Controllers
         {
             var model = new CreateTenantViewModel
             {
-                CountrySelectListItems = await GetCountrySelectList()
+                CountrySelectListItems = await _organizationService.GetCountrySelectList()
             };
             return View(model);
         }
@@ -125,64 +96,27 @@ namespace ST.MultiTenant.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmEntityCreate)]
-        public async Task<IActionResult> Create(CreateTenantViewModel data)
+        public async Task<IActionResult> Create([Required]CreateTenantViewModel data)
         {
-            if (!ModelState.IsValid) return View(data);
-            var tenantMachineName = TenantUtils.GetTenantMachineName(data.Name);
-            if (string.IsNullOrEmpty(tenantMachineName))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, "Invalid name for tenant");
-                data.CountrySelectListItems = await GetCountrySelectList();
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
                 return View(data);
             }
+            var reqTenant = await _organizationService.CreateOrganizationAsync(data);
 
-            var model = data.GetBase();
-            model.MachineName = tenantMachineName;
-            var check = Context.Tenants.FirstOrDefault(x => x.MachineName == tenantMachineName);
-            if (check != null)
+            if (reqTenant.IsSuccess)
             {
-                ModelState.AddModelError(string.Empty, "Tenant exists");
-                data.CountrySelectListItems = await GetCountrySelectList();
-                return View(data);
+                var generateResult = await _service.GenerateTablesForTenantAsync(reqTenant.Result);
+                if (generateResult.IsSuccess) return RedirectToAction(nameof(Index));
+                ModelState.AppendResultModelErrors(generateResult.Errors);
+
+                return View(reqTenant.Result);
             }
 
-            if (data.OrganizationLogoFormFile != null)
-            {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await data.OrganizationLogoFormFile.CopyToAsync(memoryStream);
-                    model.OrganizationLogo = memoryStream.ToArray();
-                }
-            }
+            ModelState.AppendResultModelErrors(reqTenant.Errors);
 
-            Context.Tenants.Add(model);
-
-            var dbResult = await Context.SaveAsync();
-            if (dbResult.IsSuccess)
-            {
-                if (!_entitiesDbContext.EntityTypes.Any(x => x.MachineName == tenantMachineName))
-                {
-                    _entitiesDbContext.EntityTypes.Add(new EntityType
-                    {
-                        MachineName = tenantMachineName,
-                        Author = "System",
-                        Created = DateTime.Now,
-                        Changed = DateTime.Now,
-                        Name = tenantMachineName,
-                        Description = $"Generated schema on created {data.Name} tenant"
-                    });
-                    _entitiesDbContext.SaveChanges();
-                }
-
-                await _service.CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
-
-                return RedirectToAction(nameof(Index), "Tenant");
-            }
-
-            ModelState.AddModelError("", "Fail to save");
-            data.CountrySelectListItems = await GetCountrySelectList();
-
-            return View(data);
+            return View(reqTenant.Result);
         }
 
         /// <summary>
@@ -198,7 +132,7 @@ namespace ST.MultiTenant.Razor.Controllers
             if (response == null) return RedirectToAction(nameof(Index), "Tenant");
             var model = new EditTenantViewModel(response)
             {
-                CountrySelectListItems = await GetCountrySelectList()
+                CountrySelectListItems = await _organizationService.GetCountrySelectList()
             };
             return View(model);
         }
@@ -243,41 +177,21 @@ namespace ST.MultiTenant.Razor.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Get company image
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
         public virtual IActionResult GetImage(Guid id)
         {
-            try
+            if (id == Guid.Empty)
             {
-                var photo = _organizationService.GetTenantById(id);
-                if (photo?.OrganizationLogo != null) return File(photo.OrganizationLogo, "image/png");
-                var def = _organizationService.GetDefaultImage();
-                if (def == null) return NotFound();
-                return File(def, "image/png");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
+                return File(_organizationService.GetDefaultImage(), "image/png");
             }
 
-            return NotFound();
-        }
-
-        /// <summary>
-        /// Get countries
-        /// </summary>
-        /// <returns></returns>
-        protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
-        {
-            var countrySelectList = await Context.Countries
-                .AsNoTracking()
-                .Select(x => new SelectListItem
-                {
-                    Text = x.Name,
-                    Value = x.Id
-                }).ToListAsync();
-
-            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
-
-            return countrySelectList;
+            var photo = _organizationService.GetTenantById(id);
+            return File(photo?.OrganizationLogo ?? _organizationService.GetDefaultImage(), "image/png");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Abstractions.Extensions;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.PageRender.Abstractions.Events;
@@ -12,15 +13,12 @@ namespace ST.PageRender.Abstractions.Extensions
         /// <summary>
         /// Add page module
         /// </summary>
-        /// <typeparam name="TPageContext"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPageModule<TPageContext>(this IServiceCollection services)
-            where TPageContext : DbContext, IDynamicPagesContext
+        public static IServiceCollection AddPageModule(this IServiceCollection services)
         {
             Arg.NotNull(services, nameof(services));
             DynamicUiEvents.RegisterEvents();
-            services.AddScopedContextFactory<IDynamicPagesContext, TPageContext>();
             return services;
         }
 
@@ -35,7 +33,9 @@ namespace ST.PageRender.Abstractions.Extensions
             Action<DbContextOptionsBuilder> options)
             where TPageContext : DbContext, IDynamicPagesContext
         {
+            services.AddScopedContextFactory<IDynamicPagesContext, TPageContext>();
             services.AddDbContext<TPageContext>(options);
+            services.RegisterAuditFor<IDynamicPagesContext>("Page module");
             return services;
         }
     }

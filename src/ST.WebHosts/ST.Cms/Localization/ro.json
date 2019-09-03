@@ -506,5 +506,17 @@
   "iso_meeting_participants": "Participanții",
   "iso_meeting_generate_report": "Genereaza raport analiza de management",
   "iso_no_participants": "Nu există participanți",
-  "system_view_details": "Vezi detalii"
+  "system_view_details": "Vezi detalii",
+  "system_audit_record_id": "Record id",
+  "system_modules": "Module",
+  "system_audit_event_type": "Tip de eveniment",
+  "system_versions": "Versiuni",
+  "system_audit_all_modules": "Audit pentru toate modulele",
+  "system_multitenant_register_new": "Înregistreaza o nouă organizație",
+  "system_multi_tenant_accept_agreement": "Făcând clic pe Începe Acum, ai accepta",
+  "system_start_now": "Începe Acum",
+  "system_and": "și",
+  "system_subscriptions_agreement": "Contractul de abonament",
+  "system_privacy_policies": "Politicile De Confidențialitate",
+  "system_register": "Inregistreaza-te"
 }

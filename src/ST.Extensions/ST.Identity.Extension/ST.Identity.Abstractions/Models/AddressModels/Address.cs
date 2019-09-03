@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using ST.Audit.Attributes;
-using ST.Audit.Enums;
+using ST.Audit.Abstractions.Attributes;
+using ST.Audit.Abstractions.Enums;
 using ST.Core;
 
 namespace ST.Identity.Abstractions.Models.AddressModels
@@ -16,7 +16,7 @@ namespace ST.Identity.Abstractions.Models.AddressModels
         public string ContactName { get; set; }
 
         /// <summary>
-        /// Phone number
+        /// PHONE number
         /// </summary>
         [StringLength(450)]
         public string Phone { get; set; }
