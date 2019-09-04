@@ -4,5 +4,6 @@ namespace ST.Files.Box.Abstraction
 {
     public interface IFileBoxManager : IFileManager
     {
+
     }
 }

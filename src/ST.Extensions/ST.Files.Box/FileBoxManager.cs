@@ -1,21 +1,27 @@
 ﻿using Microsoft.AspNetCore.Http;
 using ST.Core.Helpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mapster;
 using Microsoft.AspNetCore.Hosting;
+using ST.Core.Abstractions;
+using ST.Files.Abstraction;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
 using ST.Files.Box.Abstraction;
 using ST.Files.Box.Abstraction.Models;
+using ST.Files.Box.Abstraction.Models.ViewModels;
 using ST.Files.Box.Data;
 using ST.Files.Box.Models;
 
 
 namespace ST.Files.Box
 {
-    public class FileBoxManager<TContext> : IFileBoxManager where TContext : FileBoxDbContext, IFileBoxContext
+    public class FileBoxManager<TContext> : FileManagerBase, IFileBoxManager where TContext : FileBoxDbContext, IFileBoxContext
     {
+        private readonly IWritableOptions<List<FileBoxSettingsViewModel>> _options;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly TContext _context;
         private const string FileRootPath = "FileBox";
@@ -25,13 +31,15 @@ namespace ST.Files.Box
         /// </summary>
         /// <param name="context"></param>
         /// <param name="hostingEnvironment"></param>
-        public FileBoxManager(TContext context, IHostingEnvironment hostingEnvironment)
+        /// <param name="options"></param>
+        public FileBoxManager(TContext context, IHostingEnvironment hostingEnvironment, IWritableOptions<List<FileBoxSettingsViewModel>> options)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _options = options;
         }
 
-        public virtual ResultModel<Guid> AddFile(UploadFileViewModel dto)
+        public override ResultModel<Guid> AddFile(UploadFileViewModel dto)
         {
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
 
@@ -54,7 +62,7 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<Guid> DeleteFile(Guid id)
+        public override ResultModel<Guid> DeleteFile(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
 
@@ -71,7 +79,7 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<Guid> RestoreFile(Guid id)
+        public override ResultModel<Guid> RestoreFile(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
 
@@ -89,7 +97,7 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
+        public override ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
 
@@ -107,7 +115,7 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
+        public override ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.NullParameter);
 
@@ -178,6 +186,28 @@ namespace ST.Files.Box
         {
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, path, fileName);
             File.Delete(filePath);
+        }
+
+        public override ResultModel ChangeSettings<TFileSettingsViewModel>(TFileSettingsViewModel newSettings)
+        {
+            var settings = newSettings.Adapt<FileBoxSettingsViewModel>();
+            var result = new ResultModel();
+            var fileSettingsList = _options.Value ?? new List<FileBoxSettingsViewModel>();
+            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
+            if (fileSettings == null)
+            {
+                fileSettingsList.Add(settings);
+            }
+            else
+            {
+                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
+                if (index >= 0)
+                    fileSettingsList[index] = settings;
+            }
+
+            _options.Update(x => x = fileSettingsList);
+            result.IsSuccess = true;
+            return result;
         }
     }
 }

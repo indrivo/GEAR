@@ -57,7 +57,7 @@ namespace ST.TaskManager.Services
             if (dbTaskItemsResult.Any())
                 dto.AddRange(TaskItemsMapper(new Task {TaskItems = dbTaskItemsResult}));
             else
-                return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
+                return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskItemsNotFound);
 
             return new ResultModel<List<TaskItemViewModel>>
             {

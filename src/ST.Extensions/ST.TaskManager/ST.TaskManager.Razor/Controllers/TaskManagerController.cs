@@ -159,7 +159,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<TaskItemViewModel>))]
         public async Task<JsonResult> CreateTaskItem(TaskItemViewModel model)
         {
-            if (ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
 
             var response = await _taskManager.CreateTaskItemAsync(model);
             return Json(response);
@@ -169,7 +169,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<TaskItemViewModel>))]
         public async Task<JsonResult> UpdateTaskItem(TaskItemViewModel model)
         {
-            if (ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
 
             var response = await _taskManager.UpdateTaskItemAsync(model);
             return Json(response);

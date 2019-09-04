@@ -15,5 +15,11 @@ namespace ST.Files.Abstraction.Helpers
 
         [Description("There was a error on saving file ")]
         FileNotSaved,
+
+        [Description("File extension is not accepted")]
+        InvalidExtension,
+
+        [Description("File size is not accepted")]
+        InvalidFileSize,
     }
 }

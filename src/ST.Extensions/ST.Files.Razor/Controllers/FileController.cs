@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using ST.Core;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
+using ST.Files.Box.Abstraction.Models.ViewModels;
+using ST.Identity.Abstractions;
 
 
 namespace ST.Files.Razor.Controllers
@@ -20,9 +22,16 @@ namespace ST.Files.Razor.Controllers
         /// </summary>
         private readonly IFileManager _fileManager;
 
-        public FileController(IFileManager fileManager)
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        public FileController(IFileManager fileManager, IUserManager<ApplicationUser> userManager)
         {
             _fileManager = fileManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -60,7 +69,8 @@ namespace ST.Files.Razor.Controllers
             var file = new UploadFileViewModel
             {
                 File = Request.Form.Files.FirstOrDefault(),
-                Id = id
+                Id = id,
+                TenantId = _userManager.CurrentUserTenantId
             };
             var response = _fileManager.AddFile(file);
             return Json(response);
@@ -76,7 +86,8 @@ namespace ST.Files.Razor.Controllers
             var response = Request.Form.Files.Select(item => new UploadFileViewModel
             {
                 File = item,
-                Id = Guid.Empty
+                Id = Guid.Empty,
+                TenantId = _userManager.CurrentUserTenantId
             }).Select(file => _fileManager.AddFile(file)).ToList();
 
             return Json(response);
@@ -124,6 +135,17 @@ namespace ST.Files.Razor.Controllers
             if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
 
             var response = _fileManager.DeleteFilePermanent(id);
+            return Json(response);
+        }
+
+
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel<FileSettingsViewModel>))]
+        public JsonResult CreateTask(FileBoxSettingsViewModel model)
+        {
+            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<FileSettingsViewModel>(ModelState));
+
+            var response = _fileManager.ChangeSettings(model);
             return Json(response);
         }
     }

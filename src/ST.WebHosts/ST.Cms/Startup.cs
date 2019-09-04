@@ -345,7 +345,7 @@ namespace ST.Cms
 			{
 				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
-			});
+			}, Configuration);
 
 			services
 				.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()

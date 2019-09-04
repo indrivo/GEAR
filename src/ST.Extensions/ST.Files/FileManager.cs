@@ -16,7 +16,7 @@ using ST.Files.Models;
 
 namespace ST.Files
 {
-    public class FileManager<TContext> : IFileManager where TContext : FileDbContext, IFileContext
+    public class FileManager<TContext> : FileManagerBase where TContext : FileDbContext, IFileContext
     {
         private readonly IWritableOptions<List<FileSettingsViewModel>> _options;
         private readonly TContext _context;
@@ -32,9 +32,15 @@ namespace ST.Files
             _options = options;
         }
 
-        public virtual ResultModel<Guid> AddFile(UploadFileViewModel dto)
+        public override ResultModel<Guid> AddFile(UploadFileViewModel dto)
         {
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
+
+
+            var fileValidation =
+                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == dto.TenantId));
+
+            if (!fileValidation.IsSuccess) return fileValidation;
 
             var encryptedFile = EncryptFile(dto.File);
             if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
@@ -55,7 +61,7 @@ namespace ST.Files
             };
         }
 
-        public virtual ResultModel<Guid> DeleteFile(Guid id)
+        public override ResultModel<Guid> DeleteFile(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
 
@@ -73,8 +79,7 @@ namespace ST.Files
             };
         }
 
-
-        public virtual ResultModel<Guid> RestoreFile(Guid id)
+        public override ResultModel<Guid> RestoreFile(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
 
@@ -92,7 +97,7 @@ namespace ST.Files
             };
         }
 
-        public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
+        public override ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
 
@@ -108,7 +113,7 @@ namespace ST.Files
             };
         }
 
-        public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
+        public override ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
             if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.NullParameter);
 
@@ -127,6 +132,27 @@ namespace ST.Files
                 IsSuccess = true,
                 Result = dto
             };
+        }
+
+        public override ResultModel ChangeSettings<TFileSettingsViewModel>(TFileSettingsViewModel newSettings)
+        {
+            var result = new ResultModel();
+            var fileSettingsList = _options.Value ?? new List<FileSettingsViewModel>();
+            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
+            if (fileSettings == null)
+            {
+                fileSettingsList.Add(newSettings);
+            }
+            else
+            {
+                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
+                if (index >= 0)
+                    fileSettingsList[index] = newSettings;
+            }
+
+            _options.Update(x => x = fileSettingsList);
+            result.IsSuccess = true;
+            return result;
         }
 
         private static FileStorageDto EncryptFile(IFormFile file)
@@ -157,6 +183,11 @@ namespace ST.Files
             var file = _context.Files.FirstOrDefault(x => x.Id == dto.Id);
             if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
 
+            var fileValidation =
+                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == dto.TenantId));
+
+            if (!fileValidation.IsSuccess) return fileValidation;
+
             var encryptedFile = EncryptFile(dto.File);
             if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
 
@@ -171,27 +202,6 @@ namespace ST.Files
                 IsSuccess = true,
                 Result = file.Id
             };
-        }
-
-        public virtual ResultModel ChangeSettings(FileSettingsViewModel newSettings)
-        {
-            var result = new ResultModel();
-            var fileSettingsList = _options.Value ?? new List<FileSettingsViewModel>();
-            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
-            if (fileSettings == null)
-            {
-                fileSettingsList.Add(newSettings);
-            }
-            else
-            {
-                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
-                if (index >= 0)
-                    fileSettingsList[index] = newSettings;
-            }
-
-            _options.Update(x => x = fileSettingsList);
-            result.IsSuccess = true;
-            return result;
         }
     }
 }

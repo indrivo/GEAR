@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ST.Files.Abstraction.Helpers;
 
 namespace ST.Files.Abstraction.Models.ViewModels
 {
@@ -20,9 +21,5 @@ namespace ST.Files.Abstraction.Models.ViewModels
         /// </summary>
         public string[] Extensions { get; set; }
 
-        /// <summary>
-        /// File extensions allowed
-        /// </summary>
-        public string Path { get; set; }
     }
 }
