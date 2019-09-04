@@ -1,8 +1,8 @@
 ﻿using ST.Report.Abstractions.Models.Enums;
 
-namespace ST.Report.Abstractions.Models
+namespace ST.Report.Abstractions.Models.Dto
 {
-    public class DynamicReportChartField
+    public class DynamicReportChartFieldDto
     {
         public int FieldIndex { get; set; }
 

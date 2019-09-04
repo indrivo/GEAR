@@ -1,9 +1,9 @@
-﻿namespace ST.Report.Abstractions.Models
+﻿namespace ST.Report.Abstractions.Models.Dto
 {
     /// <summary>
     /// Dynamic Report Relation
     /// </summary>
-    public sealed class  DynamicReportRelation
+    public sealed class  DynamicReportRelationDto
     {
         public string PrimaryKeyTable { get; set; }
         public string ForeignKeyTable { get; set; }

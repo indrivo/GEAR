@@ -1,11 +1,11 @@
 ﻿using ST.Report.Abstractions.Models.Enums;
 
-namespace ST.Report.Abstractions.Models
+namespace ST.Report.Abstractions.Models.Dto
 {
     /// <summary>
     /// Dynamic Report Filters
     /// </summary>
-    public sealed class DynamicReportFilter
+    public sealed class DynamicReportFilterDto
     {
         public string FieldName { get; set; }
         public FilterType FilterType { get; set; }

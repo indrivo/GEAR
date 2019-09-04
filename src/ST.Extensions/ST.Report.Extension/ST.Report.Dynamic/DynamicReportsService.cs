@@ -11,8 +11,11 @@ using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Abstractions;
 using ST.Report.Abstractions;
 using ST.Report.Abstractions.Extensions;
+using ST.Report.Abstractions.Helpers;
 using ST.Report.Abstractions.Models;
+using ST.Report.Abstractions.Models.Dto;
 using ST.Report.Abstractions.Models.Enums;
+using ST.Report.Abstractions.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -43,54 +46,111 @@ namespace ST.Report.Dynamic
 
         }
 
-        #region Maps Region
+        #region Report Folders
 
-        /// <summary>
-        /// Create Map
-        /// </summary>
-        public void CreateFolder(string folderName)
+        public ResultModel<bool> CreateFolder(string folderName)
         {
-            var folder = new DynamicReportFolder()
+            if (string.IsNullOrEmpty(folderName)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
+
+            try
             {
-                Id = new Guid(),
-                Name = folderName,
-                IsDeleted = false,
-                Author = _user.Result.UserName,
-                Created = DateTime.Now
+                var folder = new DynamicReportFolder()
+                {
+                    Id = new Guid(),
+                    Name = folderName,
+                    IsDeleted = false,
+                    Author = _user.Result.UserName,
+                    Created = DateTime.Now
+                };
+                _context.DynamicReportsFolders.Add(folder);
+                _context.SaveChanges();
+                return new ResultModel<bool>
+                {
+                    IsSuccess = true,
+                    KeyEntity = folder.Id
+                };
+            }
+            catch
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotSaved);
+            }
+        }
+
+
+        public ResultModel<DynamicReportFolderViewModel> GetFolder(Guid folderId)
+        {
+            if (folderId == Guid.Empty) return ExceptionHandler.ReturnErrorModel<DynamicReportFolderViewModel>(ResultMessagesEnum.FolderNotFound);
+
+            var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == folderId);
+
+            if (reportFolder == null)
+            {
+                return ExceptionHandler.ReturnErrorModel<DynamicReportFolderViewModel>(ResultMessagesEnum.FolderNotFound);
+            }
+
+            return new ResultModel<DynamicReportFolderViewModel>
+            {
+                IsSuccess = true,
+                KeyEntity = reportFolder.Id,
+                Result = new DynamicReportFolderViewModel(reportFolder.Id, reportFolder.Name)
             };
-            _context.DynamicReportsFolders.Add(folder);
-            _context.SaveChanges();
         }
 
-        /// <summary>
-        /// Get folder by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public DynamicReportFolder GetFolder(Guid id)
+
+        public ResultModel<bool> EditFolder(DynamicReportFolderViewModel folderModel)
         {
-            return _context.DynamicReportsFolders.First(x => x.Id == id);
+            try
+            {
+                if (string.IsNullOrEmpty(folderModel.Name)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
+
+                var entity = _context.DynamicReportsFolders.First(x => x.Id == folderModel.Id);
+
+                if (entity == null)
+                {
+                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                }
+
+                entity.Name = folderModel.Name;
+                entity.ModifiedBy = _user.Result.UserName;
+                entity.Changed = DateTime.Now;
+                _context.DynamicReportsFolders.Update(entity);
+                _context.SaveChanges();
+                return new ResultModel<bool>
+                {
+                    IsSuccess = true,
+                    KeyEntity = entity.Id
+                };
+            }
+            catch
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotSaved);
+            }
         }
 
-        /// <summary>
-        /// Edit Map
-        /// </summary>
-        /// <param name="newFolder"></param>
-        public void EditFolder(DynamicReportFolder newFolder)
-        {
-            newFolder.ModifiedBy = _user.Result.UserName;
-            newFolder.Changed = DateTime.Now;
-            _context.DynamicReportsFolders.Update(newFolder);
-            _context.SaveChanges();
-        }
 
-        /// <summary>
-        /// Delete Map
-        /// </summary>
-        public void DeleteFolder(Guid id)
+        public ResultModel<bool> DeleteFolder(Guid folderId)
         {
-            _context.DynamicReportsFolders.Remove(_context.DynamicReportsFolders.First(x => x.Id == id));
-            _context.SaveChanges();
+            var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == folderId);
+
+            if (reportFolder == null)
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+            }
+
+            try
+            {
+                _context.DynamicReportsFolders.Remove(reportFolder);
+                _context.SaveChanges();
+                return new ResultModel<bool>
+                {
+                    IsSuccess = false,
+                    KeyEntity = folderId
+                };
+            }
+            catch
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotDeleted);
+            }
         }
 
         public IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders()
@@ -100,30 +160,34 @@ namespace ST.Report.Dynamic
 
         #endregion
 
-        #region Reports Region
+        #region Reports
 
-        /// <summary>
-        /// Get reports
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        public DTResult<DynamicReport> GetFilteredReports(DTParameters param)
+
+        public DTResult<DynamicReportViewModel> GetFilteredReports(DTParameters param)
         {
             var filtered = _context.Filter<DynamicReport>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount);
+                out var totalCount).Select(x =>
+                {
+                    x.DynamicReportFolder = _context.DynamicReportsFolders.FirstOrDefault(y => y.Id == x.DynamicReportFolderId);
+                    return x;
+                }).ToList();
 
-            var finalResult = new DTResult<DynamicReport>
+            var finalResult = new DTResult<DynamicReportViewModel>
             {
                 Draw = param.Draw,
-                Data = filtered.Select(x =>
+                Data = filtered.Select(x => new DynamicReportViewModel
                 {
-                    var folder = _context.DynamicReportsFolders.FirstOrDefault(y => y.Id == x.DynamicReportFolderId);
-                    x.DynamicReportFolder = new DynamicReportFolder
-                    {
-                        Name = folder?.Name
-                    };
-                    return x;
+                    Id = x.Id,
+                    Name = x.Name,
+                    ReportDataModel = x.ReportDataModel,
+                    DynamicReportFolder = new DynamicReportFolderViewModel(x.DynamicReportFolder.Id, x.DynamicReportFolder.Name),
+                    Author = x.Author,
+                    ModifiedBy = x.ModifiedBy,
+                    Created = x.Created,
+                    Changed = x.Changed,
+                    IsDeleted = x.IsDeleted
+
                 }).ToList(),
                 RecordsFiltered = totalCount,
                 RecordsTotal = filtered.Count
@@ -131,63 +195,133 @@ namespace ST.Report.Dynamic
             return finalResult;
         }
 
+        public ResultModel<bool> CreateReport(DynamicReportViewModel reportModel)
+        {
+            try
+            {
+                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+
+                var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == reportModel.DynamicReportFolder.Id);
+
+                if (reportFolder == null)
+                {
+                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                }
+
+                var reportDb = new DynamicReport()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = reportModel.Name,
+                    ReportDataModel = reportModel.ReportDataModel,
+                    DynamicReportFolderId = reportModel.DynamicReportFolder.Id,
+                    Author = _user.Result.UserName,
+                    Created = DateTime.Now
+                };
+
+                _context.DynamicReports.Add(reportDb);
+                _context.SaveChanges();
+                return new ResultModel<bool>
+                {
+                    IsSuccess = true,
+                    KeyEntity = reportModel.Id
+                };
+            }
+            catch
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotSaved);
+            }
+        }
 
         /// <summary>
         /// Create Report
         /// </summary>
         /// <param name="reportModel"></param>
-        public ResultModel<bool> SaveReport(DynamicReport reportModel)
+        public ResultModel<bool> EditReport(DynamicReportViewModel reportModel)
         {
-            ResultModel<bool> result = new ResultModel<bool>
-            {
-                IsSuccess = false
-            };
             try
             {
-                if (reportModel.Id == Guid.Empty)
+                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+
+                var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == reportModel.DynamicReportFolder.Id);
+
+                if (reportFolder == null)
                 {
-                    reportModel.Id = Guid.NewGuid();
-                    reportModel.Author = _user.Result.UserName;
-                    reportModel.Created = DateTime.Now;
-                    _context.DynamicReports.Add(reportModel);
-                    result.KeyEntity = reportModel.Id;
+                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
                 }
-                else
+
+                var report = _context.DynamicReports.First(x => x.Id == reportModel.Id);
+
+                if (report == null)
                 {
-                    var entity = _context.DynamicReports.First(x => x.Id == reportModel.Id);
-                    entity.Name = reportModel.Name;
-                    entity.ReportDataModel = reportModel.ReportDataModel;
-                    entity.IsDeleted = reportModel.IsDeleted;
-                    entity.ModifiedBy = _user.Result.UserName;
-                    entity.Changed = DateTime.Now;
-                    entity.DynamicReportFolderId = reportModel.DynamicReportFolderId;
-                    _context.Update(entity);
-                    result.KeyEntity = entity.Id;
+                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotFound);
                 }
+
+                report.Name = reportModel.Name;
+                report.ReportDataModel = reportModel.ReportDataModel;
+                report.IsDeleted = reportModel.IsDeleted;
+                report.ModifiedBy = _user.Result.UserName;
+                report.Changed = DateTime.Now;
+                report.DynamicReportFolderId = reportModel.DynamicReportFolder.Id;
+                _context.Update(report);
                 _context.SaveChanges();
-                result.IsSuccess = true;
+                return new ResultModel<bool>
+                {
+                    IsSuccess = false,
+                    KeyEntity = report.Id
+                };
             }
-            catch (Exception ex)
+            catch
             {
-                result.Errors = new List<IErrorModel> { new ErrorModel("ServerError", ex.Message) };
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotSaved);
+            }
+        }
+
+        public ResultModel<DynamicReportViewModel> GetReport(Guid reportId)
+        {
+            var report = _context.DynamicReports.Include(s => s.DynamicReportFolder).FirstOrDefault(x => x.Id == reportId);
+
+            if (report == null)
+            {
+                return ExceptionHandler.ReturnErrorModel<DynamicReportViewModel>(ResultMessagesEnum.ReportNotFound);
             }
 
-            return result;
+            return new ResultModel<DynamicReportViewModel>
+            {
+                IsSuccess = false,
+                Result = new DynamicReportViewModel
+                {
+                    Id = report.Id,
+                    DynamicReportFolder = new DynamicReportFolderViewModel(report.DynamicReportFolder.Id, report.DynamicReportFolder.Name),
+                    Name = report.Name,
+                    ReportDataModel = report.ReportDataModel
+                }
+            };
         }
 
-        public DynamicReport GetReport(Guid id)
-        {
-            return _context.DynamicReports.FirstOrDefault(x => x.Id == id);
-        }
 
-        /// <summary>
-        /// Delete Report
-        /// </summary>
-        /// <param name="id"></param>
-        public void DeleteReport(Guid id)
+        public ResultModel<bool> DeleteReport(Guid reportId)
         {
-            _context.DynamicReports.Remove(_context.DynamicReports.First(x => x.Id == id));
-            _context.SaveChanges();
+            var report = _context.DynamicReports.First(x => x.Id == reportId);
+
+            if (report == null)
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotFound);
+            }
+
+            try
+            {
+                _context.DynamicReports.Remove(report);
+                _context.SaveChanges();
+                return new ResultModel<bool>
+                {
+                    KeyEntity = reportId,
+                    IsSuccess = false
+                };
+            }
+            catch
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotDeleted);
+            }
         }
 
         #endregion
@@ -195,9 +329,17 @@ namespace ST.Report.Dynamic
         #region Database Data Gathering Region
 
         /// <summary>
-        /// Get all table names from DB
+        /// Get Current ConnectionString
         /// </summary>
         /// <returns></returns>
+        public string GetConnectionString()
+        {
+            var connection = _configuration.GetSection("ConnectionStrings")
+                .GetSection("PostgreSQL")
+                .GetValue<string>("ConnectionString");
+            return connection;
+        }
+
         public IEnumerable<dynamic> GetTableNames()
         {
             var schemas = GetUserSchemas();
@@ -246,11 +388,7 @@ namespace ST.Report.Dynamic
         }
 
 
-        /// <summary>
-        /// Get a list of column names from a specific table
-        /// </summary>
-        /// <param name="tableFullName"></param>
-        /// <returns></returns>
+
         public IEnumerable<string> GetTableColumns(string tableFullName)
         {
             var tableName = tableFullName;
@@ -289,20 +427,8 @@ namespace ST.Report.Dynamic
             }
         }
 
-        /// <summary>
-        /// Get Current ConnectionString
-        /// </summary>
-        /// <returns></returns>
-        public string GetConnectionString()
-        {
-            var connection = _configuration.GetSection("ConnectionStrings")
-                .GetSection("PostgreSQL")
-                .GetValue<string>("ConnectionString");
-            return connection;
-        }
 
-
-        public ResultModel<IEnumerable<dynamic>> GetReportContent(DynamicReportDataModel dto)
+        public ResultModel<IEnumerable<dynamic>> GetReportContent(DynamicReportDto reportModel)
         {
             var result = new ResultModel<IEnumerable<dynamic>>
             {
@@ -318,13 +444,13 @@ namespace ST.Report.Dynamic
                     {
                         StringBuilder queryBuilder = new StringBuilder();
                         queryBuilder.Append("SELECT ");
-                        if (!dto.FieldsList.Any())
+                        if (!reportModel.FieldsList.Any())
                         {
                             queryBuilder.Append(" * ");
                         }
                         else
                         {
-                            foreach (var field in dto.FieldsList)
+                            foreach (var field in reportModel.FieldsList)
                             {
                                 if (field.AggregateType != AggregateType.None)
                                 {
@@ -335,7 +461,7 @@ namespace ST.Report.Dynamic
                                     queryBuilder.Append($" {field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
                                 }
 
-                                if (!field.Equals(dto.FieldsList.Last()))
+                                if (!field.Equals(reportModel.FieldsList.Last()))
                                 {
                                     queryBuilder.Append($",");
                                 }
@@ -344,9 +470,9 @@ namespace ST.Report.Dynamic
 
                         queryBuilder.Append(" FROM ");
 
-                        dto.Tables = dto.Tables.OrderByDescending(s => dto.Relations.Any(x => x.PrimaryKeyTable == s)).ToList();
+                        reportModel.Tables = reportModel.Tables.OrderByDescending(s => reportModel.Relations.Any(x => x.PrimaryKeyTable == s)).ToList();
 
-                        foreach (var table in dto.Tables)
+                        foreach (var table in reportModel.Tables)
                         {
                             var tableName = string.Empty;
                             var schema = string.Empty;
@@ -357,14 +483,14 @@ namespace ST.Report.Dynamic
                                 schema = tableParts[0];
                             }
 
-                            if (table.Equals(dto.Tables.First()))
+                            if (table.Equals(reportModel.Tables.First()))
                             {
                                 queryBuilder.Append($@" {schema}.""{tableName}"" ");
                             }
                             else
                             {
                                 queryBuilder.Append($@" LEFT JOIN {schema}.""{tableName}"" ");
-                                var rel = dto.Relations.FirstOrDefault(s => s.ForeignKeyTable == table || s.PrimaryKeyTable == table);
+                                var rel = reportModel.Relations.FirstOrDefault(s => s.ForeignKeyTable == table || s.PrimaryKeyTable == table);
                                 if (rel != null)
                                 {
                                     var relPrimaryName = string.Empty;
@@ -394,7 +520,7 @@ namespace ST.Report.Dynamic
 
                         }
 
-                        var filterFields = dto.FiltersList.Where(s => s.FilterType != FilterType.GroupBy).ToList();
+                        var filterFields = reportModel.FiltersList.Where(s => s.FilterType != FilterType.GroupBy).ToList();
 
 
                         foreach (var filter in filterFields)
@@ -409,7 +535,7 @@ namespace ST.Report.Dynamic
                             }
                         }
 
-                        var groupByFields = dto.FiltersList.Where(s => s.FilterType == FilterType.GroupBy).ToList();
+                        var groupByFields = reportModel.FiltersList.Where(s => s.FilterType == FilterType.GroupBy).ToList();
 
                         foreach (var group in groupByFields)
                         {
@@ -477,6 +603,30 @@ namespace ST.Report.Dynamic
                 }
             }
             return expandoObject;
+        }
+
+
+        public IEnumerable<SelectOption> GetChartFieldTypes(ChartType chartType)
+        {
+            var resultDict = Enum<ChartFieldType>.ToDictionary().ToList();
+            switch (chartType)
+            {
+                case ChartType.Grid:
+                    resultDict = resultDict.Where(s => s.Key == ChartFieldType.Normal).ToList();
+                    break;
+                case ChartType.PivotGrid:
+                case ChartType.Line:
+                    resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis, ChartFieldType.YAxis }.Contains(s.Key)).ToList();
+                    break;
+                case ChartType.BarHorizontal:
+                case ChartType.BarVertical:
+                case ChartType.Pie:
+                case ChartType.Doughnut:
+                    resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis }.Contains(s.Key)).ToList();
+                    break;
+            }
+
+            return resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
         }
 
 

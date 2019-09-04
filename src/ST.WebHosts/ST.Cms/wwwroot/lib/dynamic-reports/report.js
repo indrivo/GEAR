@@ -56,7 +56,7 @@ function LoadReportData(data) {
 				$.each(data.FiltersList, function (i, filter) {
 					AddFilter();
 					$.each($('#pnlFilters > .row'), function (j, row) {
-						if (i == j) {
+						if (i === j) {
 							SetFilterValues(allFields);
 							var filterFieldSelector = $(row).find(".filterFieldSelector");
 							var filterOperationSelector = $(row).find(".filterOperationSelector");
@@ -73,7 +73,7 @@ function LoadReportData(data) {
 				$.each(data.FieldsList, function (i, field) {
 					AddField();
 					$.each($('#pnlFields > .row'), function (j, row) {
-						if (i == j) {
+						if (i === j) {
 							SetFieldValues(allFields);
 							var fieldSelector = $(row).find(".fieldSelector");
 							var fieldOperationSelector = $(row).find(".fieldOperationSelector");
@@ -90,7 +90,7 @@ function LoadReportData(data) {
 				$.each(data.Relations, function (i, relation) {
 					AddRelationship();
 					$.each($('#pnlRelationships > .row'), function (j, row) {
-						if (i == j) {
+						if (i === j) {
 							SetRelValues();
 							var primaryKeyTableSelect = $(row).find(".primaryKeyTableSelect");
 							var foreignKeyTableSelect = $(row).find(".foreignKeyTableSelect");
@@ -119,9 +119,9 @@ function LoadReportData(data) {
 							var chartTitle = $(row).find(".chartTitle");
 							chartTitle.val(data.DynamicReportCharts[chartIndex - 1].ChartTitle);
 							var chartFields = $(row).find(".chartFieldSelector");
-							if (chartType == 1) {
+							if (chartType === 1) {
 								var multiselectChartFields = [];
-								$.map(data.DynamicReportCharts[chartIndex - 1].DynamicReportChartFields, function (val, i) {
+								$.map(data.DynamicReportCharts[chartIndex - 1].DynamicReportChartFields, function (val) {
 									multiselectChartFields.push(val.FieldName);
 								});
 								$.each(chartFields, function (j, chartField) {
@@ -161,7 +161,7 @@ function updateReportList(action, data, selectOptions) {
 	var dfd = $.Deferred();
 	$("#" + selectOptions).html("");
 	var callback = function (data) {
-		var s;
+		var s ="";
 		for (let i = 0; i < data.length; i++) {
 			s += `<option value="${data[i]}">${data[i]}</option>`;
 		}
@@ -189,7 +189,7 @@ function updateReportListKeyValue(action, data, selectOptions) {
 	var dfd = $.Deferred();
 	$("#" + selectOptions).html("");
 	var callback = function (data) {
-		var s;
+		var s="";
 		for (let i = 0; i < data.length; i++) {
 			s += `<option value="${data[i].id}">${data[i].text}</option>`;
 		}
@@ -411,10 +411,10 @@ function AddChart(chartType) {
 			chartFieldCollection.each(function () {
 				var fieldType = chartFieldCollection.parent().find("input[name=fieldType]");
 				var isMultiselect = false;
-				if (fieldType.val() == 0) {
+				if (fieldType.val() === 0) {
 					isMultiselect = true;
 				}
-				chartField = $(this);
+				var chartField = $(this);
 				chartField.select2({
 					placeholder: " - Select field - ",
 					multiple: isMultiselect
@@ -445,26 +445,26 @@ function SetRelValues() {
 		var primaryKeyTableSelect = $(this).find(".primaryKeyTableSelect");
 		var foreignKeyTableSelect = $(this).find(".foreignKeyTableSelect");
 
-		var prevValuePKT = primaryKeyTableSelect.val();
+		var prevValuePkt = primaryKeyTableSelect.val();
 
 		primaryKeyTableSelect.val(null).empty();
 
 		$.each(items, function (i, option) {
 			var newOption = new Option(option, option, false, false);
 			primaryKeyTableSelect.append(newOption).trigger('change');
-			if (prevValuePKT == option) {
+			if (prevValuePkt === option) {
 				primaryKeyTableSelect.val(option);
 			}
 		});
 
-		var prevValueFKT = foreignKeyTableSelect.val();
+		var prevValueFkt = foreignKeyTableSelect.val();
 
 		foreignKeyTableSelect.val(null).empty();
 
 		$.each(items, function (i, option) {
 			var newOption = new Option(option, option, false, false);
 			foreignKeyTableSelect.append(newOption).trigger('change');
-			if (prevValueFKT == option) {
+			if (prevValueFkt === option) {
 				foreignKeyTableSelect.val(option);
 			}
 		});
@@ -507,7 +507,7 @@ function SetFieldValues(data) {
 			var currentDataFields = [];
 			$.each(data, function (i, option) {
 				if (option.children != null && option.children.length > 0) {
-					$.map(option.children, function (val, i) {
+					$.map(option.children, function (val) {
 						currentDataFields.push(val.id);
 					});
 				}
@@ -547,7 +547,7 @@ function SetFilterValues(data) {
 			var currentDataFields = [];
 			$.each(data, function (i, option) {
 				if (option.children != null && option.children.length > 0) {
-					$.map(option.children, function (val, i) {
+					$.map(option.children, function (val) {
 						currentDataFields.push(val.id);
 					});
 				}
@@ -580,7 +580,7 @@ function SetFilterValues(data) {
 function SetChartValues(data) {
 	if (data.length > 0) {
 		var currentDataFields = [];
-		$.map(data, function (val, i) {
+		$.map(data, function (val) {
 			currentDataFields.push(val.id);
 		});
 		$('#pnlCharts > .row').each(function () {
@@ -590,14 +590,14 @@ function SetChartValues(data) {
 
 			var isMultiselect = false;
 
-			if (fieldType.val() == 0) {
+			if (fieldType.val() === 0) {
 				isMultiselect = true;
 			}
 
 			chartFieldCollection.each(function () {
-				chartFieldSelector = $(this);
+				var chartFieldSelector = $(this);
 				var prevValueFields = [];
-				if (fieldType.val() == 0) {
+				if (fieldType.val() === 0) {
 					console.log(chartFieldSelector.val());
 				}
 
@@ -665,42 +665,14 @@ function LoadNew() {
 	LoadFinished = true;
 }
 
+function GetHeaderColumn(chartDataSource, columnIndex) {
+	return $.grep(chartDataSource.dynamicReportChartFields,
+		function (a) {
+			return a.fieldIndex === columnIndex;
+		});
+}
+
 $(document).ready(function () {
-	//#endregion Common
-	//$('#tableSelect').select2({
-	//	placeholder: " - Select tables - ",
-	//	multiple: true,
-	//	query: function (q) {
-	//		var data = { results: tables };
-	//		q.callback(data);
-	//	}
-	//}).change(function () {
-	//	if (LoadFinished) {
-	//		items = $(this).val();
-	//		SetRelValues();
-
-	//		allFields = [];
-	//		var tableRequests = [];
-
-	//		$.each(items, function (i, option) {
-	//			tableRequests.push(prepareFields(allFields, option));
-	//		});
-
-	//		$.when.apply($, tableRequests).done(function () {
-	//			SetFieldValues(allFields);
-	//			SetFilterValues(allFields);
-	//		});
-	//	}
-	//}).on('select2:unselecting', function () {
-	//	$(this).data('unselecting', true);
-	//}).on('select2:opening', function (e) {
-	//	if ($(this).data('unselecting')) {
-	//		$(this).removeData('unselecting');
-	//		e.preventDefault();
-	//	}
-	//});
-
-	//script for generation of report
 	$('#openReportModal').click(function () {
 		$('#saveReportModal').modal('show');
 		$('#saveReport').click(function (e) {
@@ -793,7 +765,7 @@ $(document).ready(function () {
 					'success'
 				);
 				$(parent).remove();
-				if ($('#pnlFields > div').length == 0) {
+				if ($('#pnlFields > div').length === 0) {
 					$('#cbFields').hide();
 				}
 				var fields = [];
@@ -838,7 +810,7 @@ $(document).ready(function () {
 					'success'
 				);
 				$(parent).remove();
-				if ($('#pnlFilters > div').length == 0) {
+				if ($('#pnlFilters > div').length === 0) {
 					$('#cbFilters').hide();
 				}
 			}
@@ -873,7 +845,7 @@ $(document).ready(function () {
 					'success'
 				);
 				$(parent).remove();
-				if ($('#pnlCharts > div').length == 0) {
+				if ($('#pnlCharts > div').length === 0) {
 					$('#cbCharts').hide();
 				}
 			}
@@ -953,7 +925,7 @@ function GetReportData() {
 		var chartFieldCollection = $(this).find(".chartFieldSelector");
 
 		chartFieldCollection.each(function () {
-			chartField = $(this);
+			var chartField = $(this);
 			var chartFieldData = chartField.select2('data');
 			var fieldType = $(this).parent().find("input[name=fieldType]");
 			$.each(chartFieldData, function (i, chartFieldOption) {
@@ -992,49 +964,48 @@ function GenerateData(graphUrl) {
 		type: 'POST',
 		data: data,
 		success: function (result) {
-			if (result.error != '') {
+			if (result.data.result[0] && result.data.result[0].key) {
 				swal({
 					position: 'top-end',
 					type: 'warning',
-					title: result.error,
+					title: result.data.result[0].message,
 					showConfirmButton: false,
 					timer: 7000
 				});
-
 			}
 			else if (result.charts) {
 				$("#queryResultTable").html('');
 				$('#chart-box').html('');
 				$.each(result.charts, function (i, chart) {
-					if (chart.chartType == 1) {
-						var table = $.makeTable(result.data, chart);
+					if (chart.chartType === 1) {
+						var table = $.makeTable(result.data.result, chart);
 						$(table).appendTo("#queryResultTable");
 					}
-					else if (chart.chartType == 2) {
-						var tablePivot = $.makePivotTable(result.data, chart);
+					else if (chart.chartType === 2) {
+						var tablePivot = $.makePivotTable(result.data.result, chart);
 						$(tablePivot).appendTo("#queryResultTable");
 					}
-					else if (chart.chartType == 3) {
-						generateChart('pie', result.data, chart, 'chart-box');
+					else if (chart.chartType === 3) {
+						generateChart('pie', result.data.result, chart, 'chart-box');
 					}
-					else if (chart.chartType == 4) {
-						generateChart('doughnut', result.data, chart, 'chart-box');
+					else if (chart.chartType === 4) {
+						generateChart('doughnut', result.data.result, chart, 'chart-box');
 					}
-					else if (chart.chartType == 5) {
-						generateChart('bar', result.data, chart, 'chart-box');
+					else if (chart.chartType === 5) {
+						generateChart('bar', result.data.result, chart, 'chart-box');
 					}
-					else if (chart.chartType == 6) {
-						generateChart('horizontalBar', result.data, chart, 'chart-box');
+					else if (chart.chartType === 6) {
+						generateChart('horizontalBar', result.data.result, chart, 'chart-box');
 					}
-					else if (chart.chartType == 7) {
-						generateChart('line', result.data, chart, 'chart-box');
+					else if (chart.chartType === 7) {
+						generateChart('line', result.data.result, chart, 'chart-box');
 					}
 				});
 			}
 
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			ShowError(jqXHR.status);
+		error: function (jqXhr) {
+			window.ShowError(jqXhr.status);
 		}
 	});
 }
@@ -1046,74 +1017,86 @@ function GetReportDataById(getUrl, reportId, boxId) {
 		type: 'POST',
 		data: { id: reportId },
 		success: function (result) {
-			if (result.charts) {
+			if (result.data.result[0] && result.data.result[0].key) {
+				swal({
+					position: 'top-end',
+					type: 'warning',
+					title: result.data.result[0].message,
+					showConfirmButton: false,
+					timer: 7000
+				});
+			}
+			else if (result.charts) {
 				var box = $("#" + boxId);
 				box.html('');
 				$.each(result.charts, function (i, chart) {
-					if (chart.chartType == 1) {
-						var table = $.makeTable(result.data, chart);
+					if (chart.chartType === 1) {
+						var table = $.makeTable(result.data.result, chart);
 						$(table).appendTo($(box));
 					}
-					else if (chart.chartType == 2) {
-						var tablePivot = $.makePivotTable(result.data, chart);
+					else if (chart.chartType === 2) {
+						var tablePivot = $.makePivotTable(result.data.result, chart);
 						$(tablePivot).appendTo($(box));
 					}
-					else if (chart.chartType == 3) {
-						generateChart('pie', result.data, chart, boxId);
+					else if (chart.chartType === 3) {
+						generateChart('pie', result.data.result, chart, boxId);
 					}
-					else if (chart.chartType == 4) {
-						generateChart('doughnut', result.data, chart, boxId);
+					else if (chart.chartType === 4) {
+						generateChart('doughnut', result.data.result, chart, boxId);
 					}
-					else if (chart.chartType == 5) {
-						generateChart('bar', result.data, chart, boxId);
+					else if (chart.chartType === 5) {
+						generateChart('bar', result.data.result, chart, boxId);
 					}
-					else if (chart.chartType == 6) {
-						generateChart('horizontalBar', result.data, chart, boxId);
+					else if (chart.chartType === 6) {
+						generateChart('horizontalBar', result.data.result, chart, boxId);
 					}
-					else if (chart.chartType == 7) {
-						generateChart('line', result.data, chart, boxId);
+					else if (chart.chartType === 7) {
+						generateChart('line', result.data.result, chart, boxId);
 					}
 				});
 			}
 
 		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			ShowError(jqXHR.status);
+		error: function (jqXhr) {
+			window.ShowError(jqXhr.status);
 		}
 	});
 }
 
-$.makeTable = function (mydata, chartDataSource) {
+
+
+$.makeTable = function (myData, chartDataSource) {
 	var resultBox = $('<div class="mt-3 mb-3 row col-10 report-table"></div>');
 	var header = $('<h1>' + chartDataSource.chartTitle + '</h1>');
 	var table = $('<table class="mb-4" cellspacing="0" cellpadding="0">');
 	var tblHeader = "<tr>";
 	var columnIndex = 0;
-	for (var k in mydata[0]) {
-		var c = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.fieldIndex == columnIndex;
-		});
-		if (c.length > 0) {
-			tblHeader += "<th>" + k + "</th>";
+	let firstRow = myData[0];
+	for (var k in firstRow) {
+		if (firstRow.hasOwnProperty(k)) {
+			var c = GetHeaderColumn(chartDataSource, columnIndex);
+			if (c.length > 0) {
+				tblHeader += "<th>" + k + "</th>";
+			}
+			columnIndex++;
 		}
-		columnIndex++;
 	}
 	tblHeader += "</tr>";
 	$(tblHeader).appendTo(table);
-	$.each(mydata, function (index, value) {
-		var TableRow = "<tr>";
+	$.each(myData, function (index, value) {
+		var tableRow = "<tr>";
 		var columnIndex = 0;
 		$.each(value, function (index, val) {
 			var c = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-				return a.fieldIndex == columnIndex;
+				return a.fieldIndex === columnIndex;
 			});
 			if (c.length > 0) {
-				TableRow += "<td>" + val + "</td>";
+				tableRow += "<td>" + val + "</td>";
 			}
 			columnIndex++;
 		});
-		TableRow += "</tr>";
-		$(table).append(TableRow);
+		tableRow += "</tr>";
+		$(table).append(tableRow);
 	});
 	$(resultBox).append(header);
 	$(resultBox).append(table);
@@ -1128,15 +1111,15 @@ $.makePivotTable = function (dataArray, chartDataSource) {
 	var xAxis = [];
 
 	var label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-		return a.chartFieldType == 1;
+		return a.chartFieldType === 1;
 	});
 
 	var x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-		return a.chartFieldType == 2;
+		return a.chartFieldType === 2;
 	});
 
 	var y = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-		return a.chartFieldType == 3;
+		return a.chartFieldType === 3;
 	});
 
 	$.each(dataArray, function (index, value) {
@@ -1164,7 +1147,10 @@ $.makePivotTable = function (dataArray, chartDataSource) {
 
 	var tblHeader = "<tr>";
 	var firstHeaderCell = [];
-	for (var k in dataArray[label[0].fieldIndex]) firstHeaderCell.push(k);
+	let array = dataArray[label[0].fieldIndex];
+	for (var k in array)
+		if (array.hasOwnProperty(k))
+			firstHeaderCell.push(k);
 	tblHeader += "<th class='diag'><span class='inf'>" + firstHeaderCell[label[0].fieldIndex] + "</span><span class='sup'>" + firstHeaderCell[x[0].fieldIndex] + "</span></th>";
 	$.each(xAxis, function (index, xValue) {
 		tblHeader += "<th>" + xValue + "</th>";
@@ -1173,23 +1159,23 @@ $.makePivotTable = function (dataArray, chartDataSource) {
 	$(tblHeader).appendTo(table);
 
 	$.each(labels, function (index, yValue) {
-		var TableRow = "<tr>";
-		TableRow += "<td>" + yValue + "</td>";
+		var tableRow = "<tr>";
+		tableRow += "<td>" + yValue + "</td>";
 		$.each(xAxis, function (index, xValue) {
 			var arr = $.grep(dataArray, function (a) {
-				return a[Object.keys(a)[label[0].fieldIndex]] == yValue && a[Object.keys(a)[x[0].fieldIndex]] == xValue;
+				return a[Object.keys(a)[label[0].fieldIndex]].toString() === yValue.toString() && a[Object.keys(a)[x[0].fieldIndex]].toString() === xValue.toString();
 			});
 
 			if (arr[0]) {
-				TableRow += "<td>" + arr[0][Object.keys(arr[0])[y[0].fieldIndex]] + "</td>";
+				tableRow += "<td>" + arr[0][Object.keys(arr[0])[y[0].fieldIndex]] + "</td>";
 			}
 			else {
-				TableRow += "<td> - </td>";
+				tableRow += "<td> - </td>";
 			}
 		});
 
-		TableRow += "</tr>";
-		$(table).append(TableRow);
+		tableRow += "</tr>";
+		$(table).append(tableRow);
 	});
 	$(resultBox).append(header);
 	$(resultBox).append(table);
@@ -1204,14 +1190,17 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 
 	var options;
 
-	if (type == 'pie') {
+	var label;
+	var x;
+	var datasets;
+	if (type === 'pie') {
 
-		var label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 1;
+		label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 1;
 		});
 
-		var x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 2;
+		x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 2;
 		});
 
 
@@ -1242,15 +1231,15 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 		};
 
 	}
-	else if (type == "bar") {
-		var datasets = [];
+	else if (type === "bar") {
+		datasets = [];
 
-		var label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 1;
+		label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 1;
 		});
 
-		var x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 2;
+		x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 2;
 		});
 
 
@@ -1258,7 +1247,7 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 			datasets.push({
 				label: value[Object.keys(value)[label[0].fieldIndex]],
 				backgroundColor: getRandomColor(),
-				data: [value[Object.keys(value)[x[0].fieldIndex]]],
+				data: [value[Object.keys(value)[x[0].fieldIndex]]]
 			});
 		});
 
@@ -1277,7 +1266,7 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 					},
 					ticks: {
 						beginAtZero: true,
-						display: true,
+						display: true
 					}
 				}],
 				xAxes: [{
@@ -1287,9 +1276,9 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 					},
 					ticks: {
 						beginAtZero: true,
-						display: true,
+						display: true
 					}
-				}],
+				}]
 			},
 			title: {
 				display: true,
@@ -1297,15 +1286,15 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 			}
 		};
 	}
-	else if (type == "horizontalBar") {
-		var datasets = [];
+	else if (type === "horizontalBar") {
+		datasets = [];
 
-		var label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 1;
+		label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 1;
 		});
 
-		var x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 2;
+		x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 2;
 		});
 
 
@@ -1313,7 +1302,7 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 			datasets.push({
 				label: value[Object.keys(value)[label[0].fieldIndex]],
 				backgroundColor: getRandomColor(),
-				data: [value[Object.keys(value)[x[0].fieldIndex]]],
+				data: [value[Object.keys(value)[x[0].fieldIndex]]]
 			});
 		});
 
@@ -1332,7 +1321,7 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 					},
 					ticks: {
 						beginAtZero: true,
-						display: true,
+						display: true
 					}
 				}],
 				xAxes: [{
@@ -1342,9 +1331,9 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 					},
 					ticks: {
 						beginAtZero: true,
-						display: true,
+						display: true
 					}
-				}],
+				}]
 			},
 			title: {
 				display: true,
@@ -1352,21 +1341,21 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 			}
 		};
 	}
-	else if (type == 'line') {
-		var datasets = [];
+	else if (type === 'line') {
+		datasets = [];
 		var xAxis = [];
 		var labels = [];
 
-		var label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 1;
+		label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 1;
 		});
 
-		var x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 2;
+		x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 2;
 		});
 
 		var y = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 3;
+			return a.chartFieldType === 3;
 		});
 
 
@@ -1397,7 +1386,7 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 			var ds = [];
 			$.each(xAxis, function (index, xValue) {
 				var arr = $.grep(dataArray, function (a) {
-					return a[Object.keys(a)[label[0].fieldIndex]] == yValue && a[Object.keys(a)[x[0].fieldIndex]] == xValue;
+					return a[Object.keys(a)[label[0].fieldIndex]].toString() === yValue.toString() && a[Object.keys(a)[x[0].fieldIndex]].toString() === xValue.toString();
 				});
 				if (arr[0]) {
 					ds.push(arr[0][Object.keys(arr[0])[y[0].fieldIndex]]);
@@ -1442,9 +1431,9 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 					},
 					ticks: {
 						beginAtZero: true,
-						display: true,
+						display: true
 					}
-				}],
+				}]
 			},
 			title: {
 				display: true,
@@ -1452,14 +1441,14 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 			}
 		};
 	}
-	else if (type == 'doughnut') {
+	else if (type === 'doughnut') {
 
-		var label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 1;
+		label = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 1;
 		});
 
-		var x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
-			return a.chartFieldType == 2;
+		x = $.grep(chartDataSource.dynamicReportChartFields, function (a) {
+			return a.chartFieldType === 2;
 		});
 
 
@@ -1498,7 +1487,7 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 
 
 	//Change for colors
-	if (type == 'line') {
+	if (type === 'line') {
 		colorSets = [
 			'rgba(255, 99, 132, 0.2)',
 			'rgba(54, 162, 235, 0.2)',
@@ -1515,9 +1504,15 @@ function generateChart(type, dataArray, chartDataSource, chartBoxId) {
 	var canvas = document.getElementById("myChart" + type);
 	var ctx = canvas.getContext('2d');
 
-	new Chart(ctx, {
+	var c = new Chart(ctx, {
 		type: type,
 		data: chartData,
 		options: options
+	});
+
+	c.render({
+		duration: 500,
+		lazy: true,
+		easing: 'linear'
 	});
 }

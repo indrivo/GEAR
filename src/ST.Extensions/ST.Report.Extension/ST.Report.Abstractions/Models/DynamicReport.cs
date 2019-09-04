@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using ST.Core;
 using ST.Core.Extensions;
+using ST.Report.Abstractions.Models.Dto;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
@@ -20,16 +20,16 @@ namespace ST.Report.Abstractions.Models
         public string ReportData { get; set; }
 
         [NotMapped]
-        public DynamicReportDataModel ReportDataModel
+        public DynamicReportDto ReportDataModel
         {
             get
             {
-                DynamicReportDataModel result = new DynamicReportDataModel();
+                DynamicReportDto result = new DynamicReportDto();
                 if (!string.IsNullOrEmpty(ReportData))
                 {
                     try
                     {
-                        result = JsonConvert.DeserializeObject<DynamicReportDataModel>(ReportData);
+                        result = JsonConvert.DeserializeObject<DynamicReportDto>(ReportData);
                     }
                     catch (Exception ex)
                     {
@@ -47,15 +47,4 @@ namespace ST.Report.Abstractions.Models
             }
         }
     }
-
-
-    public class DynamicReportDataModel
-    {
-        public IEnumerable<string> Tables { get; set; } = new List<string>();
-        public IEnumerable<DynamicReportRelation> Relations { get; set; } = new List<DynamicReportRelation>();
-        public IEnumerable<DynamicReportField> FieldsList { get; set; } = new List<DynamicReportField>();
-        public IEnumerable<DynamicReportFilter> FiltersList { get; set; } = new List<DynamicReportFilter>();
-        public IEnumerable<DynamicReportChart> DynamicReportCharts { get; set; } = new List<DynamicReportChart>();
-    }
-
 }

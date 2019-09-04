@@ -1,4 +1,4 @@
-@model ST.Report.Dynamic.Razor.ViewModels.DynamicReportViewModel
+@model ST.Report.Abstractions.Models.ViewModels.DynamicReportViewModel
 @{
 	ViewData["Title"] = Model.Id == Guid.Empty ? "Create Dynamic Report" : $"Edit Dynamic Report \"{Model.Name}\"";
 }
@@ -151,7 +151,7 @@
 								<div class="row mt-2">
 									<label class="col-md-4"><span class="pull-right">Folder name</span></label>
 									<div class="col-md-1"></div>
-									<select id="folderSelector" asp-items="@(new SelectList(ViewBag.Folders, "Id", "Name", Model.DynamicReportFolderId))" class="form-control col-md-6 custom-select"></select>
+									<select id="folderSelector" asp-items="@(new SelectList(ViewBag.Folders, "Id", "Name", Model.DynamicReportFolder.Id))" class="form-control col-md-6 custom-select"></select>
 								</div>
 							</div>
 							<div class="modal-footer">

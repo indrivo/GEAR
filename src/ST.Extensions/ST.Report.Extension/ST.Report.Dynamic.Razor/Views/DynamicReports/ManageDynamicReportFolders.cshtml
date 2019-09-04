@@ -71,8 +71,8 @@
             var typeId = dataTypeId;
             $("#" + saveButton).click(function () {
                 var data = {
-                    id: typeId,
-                    name: $("#" + inputField).val()
+                    Id: typeId,
+                    Name: $("#" + inputField).val()
                 };
                 if (data.name === "") {
                     sweetAlert("Field Shouldn't Be Empty!!", "Please enter a new Name", "error");

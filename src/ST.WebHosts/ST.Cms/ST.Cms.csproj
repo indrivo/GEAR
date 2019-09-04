@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -95,10 +95,6 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="appsettings.Stage.json" />
-	<None Include="Views\DynamicReports\CreateFolder.cshtml" />
-	<None Include="Views\DynamicReports\Index.cshtml" />
-	<None Include="Views\DynamicReports\ManageDynamicReportFolders.cshtml" />
-	<None Include="Views\DynamicReports\Save.cshtml" />
 	<None Include="Views\Home\Contact.cshtml" />
   </ItemGroup>
   <ItemGroup>

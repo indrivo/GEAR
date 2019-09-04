@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.Helpers;
 using ST.Report.Abstractions;
 using ST.Report.Abstractions.Extensions;
-using ST.Report.Abstractions.Models;
+using ST.Report.Abstractions.Helpers;
+using ST.Report.Abstractions.Models.Dto;
 using ST.Report.Abstractions.Models.Enums;
-using ST.Report.Dynamic.Razor.ViewModels;
+using ST.Report.Abstractions.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,8 +55,22 @@ namespace ST.Report.Dynamic.Razor.Controllers
         public IActionResult CreateFolder(DynamicReportFolderViewModel folder)
         {
             if (!ModelState.IsValid) return View();
-            _service.CreateFolder(folder.Name);
-            return RedirectToAction("Index");
+
+            var result = _service.CreateFolder(folder.Name);
+
+            if (result.IsSuccess)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (result.Errors.Any())
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Message);
+                }
+            }
+            return View(folder);
         }
 
         [HttpGet]
@@ -65,37 +81,46 @@ namespace ST.Report.Dynamic.Razor.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditFolder(Guid id, string name)
+        public IActionResult EditFolder(DynamicReportFolderViewModel folderModel)
         {
-            if (string.IsNullOrEmpty(name)) return Json(new { success = false, message = "Folder name cannot be empty!" });
-            if (id == Guid.Empty) return Json(new { success = false, message = "This folder does not exist!" });
-            try
+            var result = _service.EditFolder(folderModel);
+
+            if (result.IsSuccess)
             {
-                var folder = _service.GetFolder(id);
-                if (folder == null) return Json(new { success = false, message = "This folder does not exist!" });
-                folder.Name = name;
-                _service.EditFolder(folder);
-                return Json(new { success = true, message = "Saved!" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.SaveSuccess)
+                });
             }
-            catch (Exception)
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error!" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : string.Empty
+            });
+
         }
 
         [HttpPost]
         public IActionResult DeleteReportFolder(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "This folder does not exist!" });
-            try
+            var result = _service.DeleteFolder(id);
+
+            if (result.IsSuccess)
             {
-                _service.DeleteFolder(id);
-                return Json(new { success = true, message = "Deleted" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.DeleteSuccess)
+                });
             }
-            catch (Exception)
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error!" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : string.Empty
+            });
         }
 
         #endregion
@@ -105,10 +130,10 @@ namespace ST.Report.Dynamic.Razor.Controllers
         [HttpGet]
         public IActionResult Save(Guid id)
         {
-            DynamicReport result = null;
+            DynamicReportViewModel result = null;
             if (id != Guid.Empty)
             {
-                result = _service.GetReport(id);
+                result = _service.GetReport(id).Result;
             }
             var model = result != null ?
             new DynamicReportViewModel()
@@ -116,7 +141,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 Id = result.Id,
                 Name = result.Name,
                 ReportDataModel = result.ReportDataModel,
-                DynamicReportFolderId = result.DynamicReportFolderId
+                DynamicReportFolder = new DynamicReportFolderViewModel(result.DynamicReportFolder.Id, result.DynamicReportFolder.Name)
             }
             : new DynamicReportViewModel();
 
@@ -125,55 +150,51 @@ namespace ST.Report.Dynamic.Razor.Controllers
         }
 
         [HttpPost]
-        public IActionResult Save(DynamicReportViewModel dto)
+        public IActionResult Save(DynamicReportViewModel model)
         {
-            if (dto.DynamicReportFolderId == Guid.Empty) return Json(new { success = false, message = "Report folder cannot be empty!" });
-            var reportDb = new DynamicReport()
-            {
-                Id = dto.Id,
-                Name = dto.Name,
-                ReportDataModel = dto.ReportDataModel,
-                DynamicReportFolderId = dto.DynamicReportFolderId
-            };
-            var result = _service.SaveReport(reportDb);
+            var result = model.Id != Guid.Empty ? _service.EditReport(model) : _service.CreateReport(model);
+
             if (result.IsSuccess)
             {
                 return Json(new
                 {
                     success = result.IsSuccess,
-                    message = "Data saving successfully"
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.SaveSuccess)
                 });
             }
-            else
-            {
-                return Json(new
-                {
-                    success = result.IsSuccess,
-                    message = result.Errors.Any() ? result.Errors.First().Message : ""
-                });
 
-            }
+            return Json(new
+            {
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : ""
+            });
         }
 
 
         [HttpPost]
         public IActionResult DeleteReport(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "This report does not exist!" });
-            try
+            var result = _service.DeleteReport(id);
+
+            if (result.IsSuccess)
             {
-                _service.DeleteReport(id);
-                return Json(new { success = true, message = "Deleted" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.DeleteSuccess)
+                });
             }
-            catch (Exception)
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error!" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : ""
+            });
         }
 
 
         [HttpPost]
-        public IActionResult GetReportData(DynamicReportDataModel dto)
+        public IActionResult GetReportData(DynamicReportDto dto)
         {
             return Json(new { charts = dto.DynamicReportCharts, data = _service.GetReportContent(dto) });
         }
@@ -181,9 +202,19 @@ namespace ST.Report.Dynamic.Razor.Controllers
         [HttpPost]
         public IActionResult GetReportDataById(Guid id)
         {
-            var report = _service.GetReport(id);
-            var data = _service.GetReportContent(report.ReportDataModel);
-            return Json(new { charts = report.ReportDataModel.DynamicReportCharts, data });
+            var result = _service.GetReport(id);
+
+            if (result.IsSuccess)
+            {
+                var data = _service.GetReportContent(result.Result.ReportDataModel);
+                return Json(new { charts = result.Result.ReportDataModel.DynamicReportCharts, data.Result });
+            }
+
+            return Json(new
+            {
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : ""
+            });
         }
 
         #endregion
@@ -227,26 +258,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
 
         public ActionResult GetChartFieldTypes(ChartType chartType)
         {
-            var resultDict = Enum<ChartFieldType>.ToDictionary().ToList();
-            switch (chartType)
-            {
-                case ChartType.Grid:
-                    resultDict = resultDict.Where(s => s.Key == ChartFieldType.Normal).ToList();
-                    break;
-                case ChartType.PivotGrid:
-                case ChartType.Line:
-                    resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis, ChartFieldType.YAxis }.Contains(s.Key)).ToList();
-                    break;
-                case ChartType.BarHorizontal:
-                case ChartType.BarVertical:
-                case ChartType.Pie:
-                case ChartType.Doughnut:
-                    resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis }.Contains(s.Key)).ToList();
-                    break;
-            }
-
-            var result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
-
+            var result = _service.GetChartFieldTypes(chartType);
             return Json(result);
         }
 
@@ -269,7 +281,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 });
                 return Json(result);
             }
-            return Json(new { success = false, message = "There is no data!" });
+            return Json(new { success = false, message = EnumHelper.GetEnumDescription(ResultMessagesEnum.EmptyResult) });
         }
 
         /// <summary>
