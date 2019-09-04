@@ -287,7 +287,7 @@ namespace ST.Report.Dynamic
 
             return new ResultModel<DynamicReportViewModel>
             {
-                IsSuccess = false,
+                IsSuccess = true,
                 Result = new DynamicReportViewModel
                 {
                     Id = report.Id,
@@ -375,14 +375,9 @@ namespace ST.Report.Dynamic
             var tenants = _organizationService.GetAllTenants().Select(s => new { s.Id, Name = s.MachineName }).ToList();
             if (userTenant.HasValue)
             {
-                if (tenants.Any(s => s.Id == userTenant.Value && s.Name == Settings.DEFAULT_ENTITY_SCHEMA))
-                {
-                    schemas = tenants.Select(s => s.Name).ToList();
-                }
-                else
-                {
-                    schemas = tenants.Where(s => s.Id == userTenant).Select(s => s.Name).ToList();
-                }
+                schemas = tenants.Any(s => s.Id == userTenant.Value && s.Name == Settings.DEFAULT_ENTITY_SCHEMA)
+                    ? tenants.Select(s => s.Name).ToList()
+                    : tenants.Where(s => s.Id == userTenant).Select(s => s.Name).ToList();
             }
             return schemas;
         }
@@ -442,7 +437,7 @@ namespace ST.Report.Dynamic
                     connection.Open();
                     using (var sqlCommand = connection.CreateCommand())
                     {
-                        StringBuilder queryBuilder = new StringBuilder();
+                        var queryBuilder = new StringBuilder();
                         queryBuilder.Append("SELECT ");
                         if (!reportModel.FieldsList.Any())
                         {
@@ -452,14 +447,9 @@ namespace ST.Report.Dynamic
                         {
                             foreach (var field in reportModel.FieldsList)
                             {
-                                if (field.AggregateType != AggregateType.None)
-                                {
-                                    queryBuilder.Append($" {field.AggregateType.GetDescription() }({field.FieldName}) {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
-                                }
-                                else
-                                {
-                                    queryBuilder.Append($" {field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
-                                }
+                                queryBuilder.Append(field.AggregateType != AggregateType.None
+                                    ? $" {field.AggregateType.GetDescription()}({field.FieldName}) {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}"
+                                    : $" {field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
 
                                 if (!field.Equals(reportModel.FieldsList.Last()))
                                 {
@@ -525,28 +515,18 @@ namespace ST.Report.Dynamic
 
                         foreach (var filter in filterFields)
                         {
-                            if (filter.Equals(filterFields.First()))
-                            {
-                                queryBuilder.Append($@" WHERE {filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
-                            }
-                            else
-                            {
-                                queryBuilder.Append($@" AND {filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
-                            }
+                            queryBuilder.Append(filter.Equals(filterFields.First())
+                                ? $@" WHERE {filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} "
+                                : $@" AND {filter.FieldName} {filter.FilterType.GetDisplayName()} {filter.Value} ");
                         }
 
                         var groupByFields = reportModel.FiltersList.Where(s => s.FilterType == FilterType.GroupBy).ToList();
 
                         foreach (var group in groupByFields)
                         {
-                            if (group.Equals(groupByFields.First()))
-                            {
-                                queryBuilder.Append($@" GROUP BY {group.FieldName} ");
-                            }
-                            else
-                            {
-                                queryBuilder.Append($@", {group.FieldName} ");
-                            }
+                            queryBuilder.Append(@group.Equals(groupByFields.First())
+                                ? $@" GROUP BY {@group.FieldName} "
+                                : $@", {@group.FieldName} ");
                         }
 
                         NpgsqlDataReader reader = null;
@@ -624,6 +604,8 @@ namespace ST.Report.Dynamic
                 case ChartType.Doughnut:
                     resultDict = resultDict.Where(s => new List<ChartFieldType> { ChartFieldType.Label, ChartFieldType.XAxis }.Contains(s.Key)).ToList();
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(chartType), chartType, null);
             }
 
             return resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();

@@ -194,9 +194,9 @@ namespace ST.Report.Dynamic.Razor.Controllers
 
 
         [HttpPost]
-        public IActionResult GetReportData(DynamicReportDto dto)
+        public IActionResult GetReportData(DynamicReportDto model)
         {
-            return Json(new { charts = dto.DynamicReportCharts, data = _service.GetReportContent(dto) });
+            return Json(new { charts = model.DynamicReportCharts, data = _service.GetReportContent(model) });
         }
 
         [HttpPost]
@@ -207,7 +207,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             if (result.IsSuccess)
             {
                 var data = _service.GetReportContent(result.Result.ReportDataModel);
-                return Json(new { charts = result.Result.ReportDataModel.DynamicReportCharts, data.Result });
+                return Json(new { charts = result.Result.ReportDataModel.DynamicReportCharts, data });
             }
 
             return Json(new
