@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using ST.Audit.Extensions;
-using ST.Audit.Interfaces;
-using ST.Audit.Models;
-using ST.Core;
+using ST.Audit.Abstractions;
+using ST.Audit.Abstractions.Helpers;
+using ST.Audit.Abstractions.Models;
 
 namespace ST.Audit.Contexts
 {
@@ -18,7 +17,7 @@ namespace ST.Audit.Contexts
         protected TrackerDbContext(DbContextOptions options) : base(options)
         {
             //Enable tracking
-            this.EnableTracking();
+            //this.EnableTracking();
         }
 
         /// <inheritdoc />
@@ -33,59 +32,25 @@ namespace ST.Audit.Contexts
         /// </summary>
         public virtual DbSet<TrackAuditDetails> TrackAuditDetails { get; set; }
 
-        /// <inheritdoc />
         /// <summary>
-        /// On model creating
+        /// Save changes
         /// </summary>
-        /// <param name="builder"></param>
-        protected override void OnModelCreating(ModelBuilder builder)
+        /// <returns></returns>
+        public override int SaveChanges()
         {
-            base.OnModelCreating(builder);
+            TrackerFactory.Track(this);
+            return base.SaveChanges();
         }
 
-        /// <inheritdoc />
         /// <summary>
-        /// On update object
+        /// Save changes
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override EntityEntry Update(object entity)
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            Entry(entity).State = EntityState.Modified;
-            return base.Update(entity);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// On update
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
-        {
-            if (!(entity is BaseModel trackable)) return base.Add(entity);
-            trackable.Changed = DateTime.Now;
-            trackable.Version = trackable.Version + 1;
-            return base.Update(entity);
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// On add
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
-        {
-            if (!(entity is BaseModel trackable)) return base.Add(entity);
-            trackable.Created = DateTime.Now;
-            trackable.Changed = DateTime.Now;
-            trackable.Version = 1;
-            //var audit = entity.GetTrackAuditFromObject(GetType().FullName, trackable.TenantId, entity.GetType(),
-            //    TrackEventType.Added);
-            return base.Add(entity);
+            TrackerFactory.Track(this);
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

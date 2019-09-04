@@ -1,0 +1,12 @@
+@model ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileTenantViewModel
+
+<p class="mb-4">@Model.Description</p>
+<p>
+	<span class="weight-400">@Localizer["iso_company_name"] : </span><span class="text-muted">@Model.Name</span>
+</p>
+<p>
+	<span class="weight-400">@Localizer["system_adress"] : </span><span class="text-muted">@Model.Address</span>
+</p>
+<p>
+	<span class="weight-400">@Localizer["iso_company_website"] : </span><span class="text-muted">@Model.SiteWeb</span>
+</p>

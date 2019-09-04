@@ -59,10 +59,8 @@ namespace ST.Core.Extensions
                 .Local
                 .FirstOrDefault(entry => entry.Id.Equals(entryId));
             if (!local.IsNull())
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
                 context.Entry(local).State = EntityState.Detached;
-            }
+
             context.Entry(t).State = EntityState.Modified;
         }
 
@@ -115,6 +113,7 @@ namespace ST.Core.Extensions
             catch (Exception e)
             {
                 rs.Errors.Add(new ErrorModel(nameof(Exception), e.Message));
+                rs.Errors.Add(new ErrorModel(nameof(Exception), e.InnerException?.Message));
             }
 
             return rs;
@@ -153,6 +152,7 @@ namespace ST.Core.Extensions
         {
             if (!typeof(TIContext).IsInterface)
                 throw new Exception($"{nameof(TIContext)} must be an interface in extension {nameof(AddScopedContextFactory)}");
+
             TIContext ContextFactory(IServiceProvider x)
             {
                 var context = x.GetService<TContext>();

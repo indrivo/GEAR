@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Identity;
-using ST.Audit.Attributes;
-using ST.Audit.Enums;
+using ST.Audit.Abstractions.Attributes;
+using ST.Audit.Abstractions.Enums;
 using ST.Core.Abstractions;
 
 namespace ST.Identity.Abstractions

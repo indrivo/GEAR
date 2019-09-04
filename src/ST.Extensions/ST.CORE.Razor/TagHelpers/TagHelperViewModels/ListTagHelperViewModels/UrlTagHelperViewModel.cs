@@ -38,6 +38,11 @@ namespace ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
         }
 
         /// <summary>
+        /// Bootstrap button
+        /// </summary>
+        public BootstrapButton BootstrapButton { get; set; } = BootstrapButton.Info;
+
+        /// <summary>
         /// Html attributes
         /// </summary>
         public ICollection<HtmlAttribute> HtmlAttributes { get; set; } = new List<HtmlAttribute>();

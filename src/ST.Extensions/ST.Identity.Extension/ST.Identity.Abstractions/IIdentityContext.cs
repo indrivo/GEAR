@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Core.Abstractions;
 using ST.Identity.Abstractions.Models;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Abstractions.Models.Permmisions;
 using ST.Identity.Abstractions.Models.UserProfiles;
@@ -17,5 +18,9 @@ namespace ST.Identity.Abstractions
         DbSet<Permission> Permissions { get; set; }
         DbSet<Profile> Profiles { get; set; }
         DbSet<RoleProfile> RoleProfiles { get; set; }
+        DbSet<Country> Countries { get; set; }
+        DbSet<StateOrProvince> StateOrProvinces { get; set; }
+        DbSet<Address> Addresses { get; set; }
+        DbSet<District> Districts { get; set; }
     }
 }

@@ -55,29 +55,29 @@
 					</div>
 					<hr />
 					<h3 class="card-title"> @Localizer["profiles"]</h3>
-					<hr />
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="FirstName" class="control-label"></label>
+                                <input class="form-control" asp-for="FirstName"/>
+                                <span asp-validation-for="FirstName" class="text-danger"></span><br/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LastName" class="control-label"></label>
+                                <input class="form-control" asp-for="LastName"/>
+                                <span asp-validation-for="LastName" class="text-danger"></span><br/>
+                            </div>
+                        </div>
+                    </div>
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
 								<label asp-for="SelectedGroupId"></label>
 								<select asp-for="SelectedGroupId" multiple asp-items="@(new MultiSelectList(Model.Groups, "Id", "Name" , null))" class="form-control"></select>
 								<span asp-validation-for="SelectedGroupId" class="text-danger"></span>
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label asp-for="Password" class="control-label"></label>
-								<input asp-for="Password" class="form-control" id="Password" />
-								<span asp-validation-for="Password" class="text-danger"></span>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label asp-for="RepeatPassword" class="control-label"></label>
-								<input asp-for="RepeatPassword" class="form-control" />
-								<span asp-validation-for="RepeatPassword" class="text-danger"></span>
 							</div>
 						</div>
 					</div>

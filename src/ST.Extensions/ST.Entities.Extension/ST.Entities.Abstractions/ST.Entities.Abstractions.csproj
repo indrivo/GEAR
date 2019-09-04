@@ -28,6 +28,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
+    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 
 </Project>

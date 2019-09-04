@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,7 +77,6 @@ namespace ST.Entities.Security
         /// <returns></returns>
         public virtual Dictionary<Guid, Dictionary<Guid, IEnumerable<string>>> GetAllForView()
         {
-            var te = _context.EntityPermissions.ToList();
             var all = _context.EntityPermissions
                 .Include(x => x.EntityPermissionAccesses)
                 .GroupBy(x => x.TableModelId)
@@ -228,7 +226,6 @@ namespace ST.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(ApplicationUser user, Guid entityId)
         {
-            var grant = new Collection<EntityAccessType>();
             IEnumerable<string> roles = new List<string> { Settings.ANONIMOUS_USER };
             if (user != null)
             {

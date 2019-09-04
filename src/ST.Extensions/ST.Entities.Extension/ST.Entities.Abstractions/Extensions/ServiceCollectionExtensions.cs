@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Abstractions.Extensions;
 using ST.Core.Events;
 using ST.Core.Events.EventArgs;
 using ST.Core.Helpers;
@@ -33,17 +34,6 @@ namespace ST.Entities.Abstractions.Extensions
                 { typeof(IEntityRepository), typeof(TEntityRepository) }
             });
 
-            SystemEvents.Application.OnApplicationStarted += delegate (object sender, ApplicationStartedEventArgs args)
-            {
-                var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
-                DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
-            };
-
-            SystemEvents.Application.OnApplicationStopped += delegate
-            {
-                DbConnectionFactory.Connection.Close();
-            };
-
             return services;
         }
 
@@ -56,6 +46,18 @@ namespace ST.Entities.Abstractions.Extensions
         {
             //Register entity events
             EntityEvents.RegisterEvents();
+
+            SystemEvents.Application.OnApplicationStarted += delegate (object sender, ApplicationStartedEventArgs args)
+            {
+                var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
+                DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
+            };
+
+            SystemEvents.Application.OnApplicationStopped += delegate
+            {
+                DbConnectionFactory.CloseAll();
+            };
+
             return services;
         }
 
@@ -86,6 +88,7 @@ namespace ST.Entities.Abstractions.Extensions
         public static IServiceCollection AddEntityModuleStorage<TEntityContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TEntityContext : DbContext, IEntityContext
         {
+            services.RegisterAuditFor<IEntityContext>("Entity module");
             services.AddDbContext<TEntityContext>(options, ServiceLifetime.Transient);
             return services;
         }

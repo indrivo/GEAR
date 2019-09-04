@@ -12,6 +12,7 @@ using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Email.Abstractions;
+using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 
@@ -42,6 +43,11 @@ namespace ST.Notifications.Services
         private readonly IEmailSender _emailSender;
 
         /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataService"></param>
@@ -49,13 +55,15 @@ namespace ST.Notifications.Services
         /// <param name="hub"></param>
         /// <param name="logger"></param>
         /// <param name="emailSender"></param>
-        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender)
+        /// <param name="userManager"></param>
+        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<ApplicationUser> userManager)
         {
             _dataService = dataService;
             _context = context;
             _hub = hub;
             _logger = logger;
             _emailSender = emailSender;
+            _userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -120,17 +128,16 @@ namespace ST.Notifications.Services
             var users = usersIds.ToList();
             _hub.SendNotification(users, notification);
             var emails = new HashSet<string>();
-            foreach (var user in users)
+            foreach (var userId in users)
             {
-                var u = _context.Users.FirstOrDefault(x => x.Id.ToGuid() == user);
-                if (u != null)
-                {
-                    emails.Add(u.Email);
-                }
+                var user = _userManager.UserManager.Users.FirstOrDefault(x => x.Id.ToGuid() == userId);
 
+                if (user == null) continue;
+                emails.Add(user.Email);
                 notification.Id = Guid.NewGuid();
-                notification.UserId = user;
-                var response = await _dataService.AddWithReflection(notification);
+                notification.UserId = userId;
+                var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
+                var response = await _dataService.Add<SystemNotifications>(_dataService.GetDictionary(notification), tenant.MachineName);
                 if (!response.IsSuccess)
                 {
                     _logger.LogError("Fail to add new notification in database");

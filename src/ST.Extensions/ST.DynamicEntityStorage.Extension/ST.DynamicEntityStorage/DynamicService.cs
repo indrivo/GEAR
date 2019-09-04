@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using ST.Audit.Enums;
-using ST.Audit.Extensions;
+using ST.Audit.Abstractions.Enums;
+using ST.Audit.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
@@ -184,20 +184,9 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null) where TEntity : BaseModel
         {
             var rq = await GetAllWithInclude<TEntity, TOutput>();
-            if (!rq.IsSuccess) return default;
-            try
-            {
-                var data = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
-                return new ResultModel<IEnumerable<TOutput>>
-                {
-                    IsSuccess = true,
-                    Result = data
-                };
-            }
-            catch
-            {
-                return default;
-            }
+            if (!rq.IsSuccess) return rq;
+            rq.Result = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
+            return rq;
         }
 
 
@@ -667,14 +656,16 @@ namespace ST.DynamicEntityStorage
             result.IsSuccess = true;
             return result;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Implement add new item
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
+        /// <param name="dbSchema"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model, string dbSchema = null) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
 
@@ -691,7 +682,7 @@ namespace ST.DynamicEntityStorage
                 result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
-            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
+            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(dbSchema ?? schema);
             var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
             model.SetDefaultValues(table);
