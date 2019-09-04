@@ -6,6 +6,7 @@ using ST.Cache.Abstractions;
 using ST.Cache.Exceptions;
 using ST.Cache.Services;
 using ST.Core;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 
 namespace ST.Cache.Extensions
@@ -20,7 +21,7 @@ namespace ST.Cache.Extensions
         /// <param name="configuration"></param>
         /// <param name="customSystemIdentifier"></param>
         /// <returns></returns>
-        public static IServiceCollection UseCustomCacheModule(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
+        public static IServiceCollection AddCacheModule(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
         {
             if (customSystemIdentifier == null)
             {
@@ -34,7 +35,7 @@ namespace ST.Cache.Extensions
             var redisSection = configuration.GetSection("RedisConnection");
             var redisConfig = redisSection.Get<RedisConnectionConfig>();
             if (redisConfig == null) throw new InvalidCacheConfigurationException();
-            services.Configure<RedisConnectionConfig>(configuration.GetSection("RedisConnection"));
+            services.ConfigureWritable<RedisConnectionConfig>(configuration.GetSection("RedisConnection"));
             services.AddDistributedRedisCache(opts =>
             {
                 opts.Configuration = redisConfig.Host;

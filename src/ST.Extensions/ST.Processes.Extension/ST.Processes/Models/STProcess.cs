@@ -1,13 +1,14 @@
-﻿using ST.Audit.Attributes;
-using ST.Audit.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using ST.Audit.Abstractions.Attributes;
+using ST.Audit.Abstractions.Enums;
 using ST.Core;
 
 namespace ST.Procesess.Models
 {
+    /// <inheritdoc />
     [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class STProcess : BaseModel
     {

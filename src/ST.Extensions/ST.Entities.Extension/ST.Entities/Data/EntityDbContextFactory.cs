@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using ST.Core.Helpers.DbContexts;
+using ST.Entities.Security.Data;
 
 namespace ST.Entities.Data
 {
@@ -17,7 +18,7 @@ namespace ST.Entities.Data
         /// <returns></returns>
         public EntitiesDbContext CreateDbContext(string[] args)
         {
-            return DbContextFactory<EntitiesDbContext, EntitiesDbContext>.CreateFactoryDbContext();
+            return DbContextFactory<EntitiesDbContext, EntitySecurityDbContext>.CreateFactoryDbContext();
         }
     }
 }

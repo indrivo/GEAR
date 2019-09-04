@@ -4,13 +4,17 @@
 @{
     ViewData["Title"] = Localizer["users_create_title"];
 }
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+}
 
 <div class="row">
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-header">
-                <h4 class="mb-0 text-white">@Localizer["add_user"]</h4>
+                <h4 class="mb-0 ">@Localizer["add_user"]</h4>
             </div>
             <div class="card-body">
                 <blockquote>
@@ -82,9 +86,49 @@
                     <hr />
                     <div class="row">
                         <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="FirstName" class="control-label"></label>
+                                <input class="form-control" asp-for="FirstName" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LastName" class="control-label"></label>
+                                <input class="form-control" asp-for="LastName" />
+                                <span asp-validation-for="LastName" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SelectedCountryId" class="control-label"></label>
+                                <select class="form-control" asp-for="SelectedCountryId" asp-items="Model.CountrySelectListItems"></select>
+                                <span asp-validation-for="SelectedCountryId" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SelectedCityId" class="control-label"></label>
+                                <select disabled="disabled" class="form-control" asp-for="SelectedCityId"></select>
+                                <span asp-validation-for="SelectedCityId" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="AboutMe" class="control-label"></label>
+                                <textarea asp-for="AboutMe" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="form-group" id="role_profile">
                                 <label asp-for="SelectedRoleId" class="control-label"></label>
-                                <select multiple asp-for="SelectedRoleId" asp-items="@(new SelectList(Model.Roles, "Id", "Name", null))" class="form-control"></select>
+                                <select multiple asp-for="SelectedRoleId" asp-items="Model.Roles" class="form-control"></select>
                                 <span asp-validation-for="SelectedRoleId" class="text-danger"></span><br />
                                 <small>@Localizer["role_info"]</small>
                             </div>
@@ -92,7 +136,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label asp-for="SelectedGroupId" class="control-label"></label>
-                                <select multiple asp-for="SelectedGroupId" asp-items="@(new MultiSelectList(Model.Groups, "Id", "Name", null))" class="form-control"></select>
+                                <select multiple asp-for="SelectedGroupId" asp-items="Model.Groups" class="form-control"></select>
                                 <span asp-validation-for="SelectedGroupId" class="text-danger"></span><br />
                                 <small>@Localizer["group_info"]</small>
                             </div>
@@ -101,10 +145,10 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label asp-for="TenantId" class="control-label"></label>
-                                <select asp-for="TenantId" asp-items="@(new MultiSelectList(Model.Tenants, "Id", "Name", null))" class="form-control"></select>
+                                <label asp-for="TenantId" class="control-label">Organization</label>
+                                <select asp-for="TenantId" asp-items="Model.Tenants" class="form-control"></select>
                                 <span asp-validation-for="TenantId" class="text-danger"></span><br />
-                                <small>Select user organization</small>
+                                <small>Select organization</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -147,24 +191,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
     <script type="text/javascript" language="javascript">
 		$(document).ready(function() {
-        $(".toggle-password").on("click", function(){
-            const target = $(this).closest(".input-group").find("input");
-            if (target.attr("type") === "password") {
-                target.attr("type", "text");
-                $(this).find("span").removeClass("fa-eye-slash").addClass("fa-eye");
-            } else {
-                target.attr("type", "password");
-                $(this).find("span").removeClass("fa-eye").addClass("fa-eye-slash");
-             }
-        });
+			$(".toggle-password").on("click",
+				function() {
+					const target = $(this).closest(".input-group").find("input");
+					if (target.attr("type") === "password") {
+						target.attr("type", "text");
+						$(this).find("span").removeClass("fa-eye-slash").addClass("fa-eye");
+					} else {
+						target.attr("type", "password");
+						$(this).find("span").removeClass("fa-eye").addClass("fa-eye-slash");
+					}
+				});
 			$('#SelectedGroupId').select2({
-				placeholder:"@Localizer["sel_group"]"
+				placeholder: "@Localizer["sel_group"]"
 			});
 			$('#SelectedRoleId').select2({
-				placeholder:"@Localizer["sel_role"]"
+				placeholder: "@Localizer["sel_role"]"
+			});
+			$("#SelectedCountryId").select2();
+			$("#SelectedCityId").select2({
+				placeholder: {
+					id: '',
+					text: "@Localizer["system_select_city"]"
+				}
 			});
 		});
 		$('.dropify').dropify();
     </script>
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+		const notification = new ToastNotifier();
+		$("#SelectedCountryId").change(function() {
+			const selectedValue = this.value;
+			const citySelect = $("#SelectedCityId");
+			if ($("#SelectedCountryId").prop('selectedIndex') > 0) {
+				$.ajax({
+					type: "GET",
+					url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
+				}).done((response) => {
+					if (response.is_success) {
+						citySelect.empty();
+						citySelect.prop("disabled", false);
+						for (let city of response.result) {
+							citySelect.append(new Option(city.text, city.value, false, city.selected));
+						}
+					} else {
+						notification.notifyErrorList(response.error_keys);
+					}
+				}).fail(() => {
+					notify({ heading: "Error", text: window.translate("system_internal_error") });
+				});
+			} else {
+				citySelect.prop("disabled", true);
+				citySelect.empty();
+			}
+		});
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

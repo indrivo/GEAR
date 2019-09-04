@@ -45,10 +45,8 @@ namespace ST.ECommerce.Razor.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAttribute(ProductViewModel model)
+        public IActionResult CreateAttribute(ProductViewModel model)
         {
-
-
             return RedirectToAction("Index");
         }
         public override JsonResult OrderedList(DTParameters param)

@@ -236,10 +236,12 @@ _Pvt_Extensions
 
 # Bower Libraries
 wwwroot/lib/
-*.min.css
-*.min.js
 
 # Builds 
 
 /obj
 /bin
+
+# Ignore directories
+
+!/wwwroot/assets/*

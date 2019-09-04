@@ -13,28 +13,38 @@ namespace ST.Identity.Services
 {
     public class IdentityUserManager : IUserManager<ApplicationUser>
     {
+        /// <inheritdoc />
         /// <summary>
         /// Inject user manager
         /// </summary>
         public UserManager<ApplicationUser> UserManager { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Inject role manager
         /// </summary>
         public RoleManager<ApplicationRole> RoleManager { get; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Identity context
+        /// </summary>
+        public IIdentityContext IdentityContext { get; }
 
         /// <summary>
         /// Inject context accessor
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IdentityUserManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<ApplicationRole> roleManager)
+        public IdentityUserManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<ApplicationRole> roleManager, IIdentityContext identityContext)
         {
             UserManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             RoleManager = roleManager;
+            IdentityContext = identityContext;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get current user
         /// </summary>
@@ -42,12 +52,14 @@ namespace ST.Identity.Services
         public async Task<ResultModel<ApplicationUser>> GetCurrentUserAsync()
         {
             var result = new ResultModel<ApplicationUser>();
+            if (_httpContextAccessor.HttpContext == null) return result;
             var user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             result.IsSuccess = user != null;
             result.Result = user;
             return result;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get roles from claims
         /// </summary>
@@ -60,6 +72,17 @@ namespace ST.Identity.Services
             return roles;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Get request ip address
+        /// </summary>
+        /// <returns></returns>
+        public string GetRequestIpAdress()
+        {
+            return _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress.ToString();
+        }
+
+        /// <inheritdoc />
         /// <summary>
         /// Tenant id
         /// </summary>

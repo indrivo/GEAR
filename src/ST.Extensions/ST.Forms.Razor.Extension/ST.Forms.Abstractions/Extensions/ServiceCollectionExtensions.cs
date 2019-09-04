@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Abstractions.Extensions;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 
 namespace ST.Forms.Abstractions.Extensions
@@ -15,14 +17,7 @@ namespace ST.Forms.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection AddFormModule<TFormContext>(this IServiceCollection services) where TFormContext : DbContext, IFormContext
         {
-            IFormContext ContextFactory(IServiceProvider x)
-            {
-                var context = x.GetService<TFormContext>();
-                IoC.RegisterScopedService<IFormContext, TFormContext>(context);
-                return context;
-            }
-
-            services.AddScoped(ContextFactory);
+            services.AddScopedContextFactory<IFormContext, TFormContext>();
             return services;
         }
 
@@ -38,6 +33,7 @@ namespace ST.Forms.Abstractions.Extensions
         {
             Arg.NotNull(options, nameof(AddFormModuleStorage));
             services.AddDbContext<TFormContext>(options);
+            services.RegisterAuditFor<IFormContext>("Form module");
             return services;
         }
     }

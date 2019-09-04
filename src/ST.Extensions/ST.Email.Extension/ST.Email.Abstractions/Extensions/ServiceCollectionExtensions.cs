@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Core.Extensions;
 using ST.Email.Abstractions.Models.EmailViewModels;
 
 namespace ST.Email.Abstractions.Extensions
@@ -26,7 +27,7 @@ namespace ST.Email.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection BindEmailSettings(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<EmailSettingsViewModel>(configuration.GetSection("EmailSettings"));
+            services.ConfigureWritable<EmailSettingsViewModel>(configuration.GetSection("EmailSettings"));
             return services;
         }
     }
