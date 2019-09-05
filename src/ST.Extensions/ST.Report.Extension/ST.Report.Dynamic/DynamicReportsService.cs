@@ -50,7 +50,7 @@ namespace ST.Report.Dynamic
 
         public ResultModel<bool> CreateFolder(string folderName)
         {
-            if (string.IsNullOrEmpty(folderName)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
+            if (string.IsNullOrWhiteSpace(folderName)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
 
             try
             {
@@ -101,7 +101,7 @@ namespace ST.Report.Dynamic
         {
             try
             {
-                if (string.IsNullOrEmpty(folderModel.Name)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
+                if (string.IsNullOrWhiteSpace(folderModel.Name)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
 
                 var entity = _context.DynamicReportsFolders.First(x => x.Id == folderModel.Id);
 
@@ -448,8 +448,8 @@ namespace ST.Report.Dynamic
                             foreach (var field in reportModel.FieldsList)
                             {
                                 queryBuilder.Append(field.AggregateType != AggregateType.None
-                                    ? $" {field.AggregateType.GetDescription()}({field.FieldName}) {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}"
-                                    : $" {field.FieldName} {(string.IsNullOrEmpty(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
+                                    ? $" {field.AggregateType.GetDescription()}({field.FieldName}) {(string.IsNullOrWhiteSpace(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}"
+                                    : $" {field.FieldName} {(string.IsNullOrWhiteSpace(field.FieldAlias) ? "" : $" AS \"{field.FieldAlias}\"")}");
 
                                 if (!field.Equals(reportModel.FieldsList.Last()))
                                 {

@@ -63,10 +63,6 @@
       "destination": "wwwroot/lib/tether/"
     },
     {
-      "library": "Chart.js@2.8.0",
-      "destination": "wwwroot/lib/Chart.js/"
-    },
-    {
       "library": "codemirror@5.46.0",
       "destination": "wwwroot/lib/codemirror/"
     },
@@ -146,10 +142,6 @@
         "popper.min.js",
         "popper.js"
       ]
-    },
-    {
-      "library": "Chart.js@2.8.0",
-      "destination": "wwwroot/lib/Chart.js/"
     }
   ]
 }

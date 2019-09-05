@@ -105,8 +105,8 @@
                                 });
                             }
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            ShowError(jqXHR.status);
+                        error: function (jqXhr) {
+                            window.ShowError(jqXhr.status);
                         }
                     });
                 }
@@ -154,8 +154,8 @@
                                 });
                             }
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            ShowError(jqXHR.status);
+                        error: function (jqXhr) {
+                            window.ShowError(jqXhr.status);
                         }
                     });
                 }

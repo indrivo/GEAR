@@ -4,7 +4,7 @@
 @section Styles
 {
 	<link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
-	<link rel="stylesheet" href="~/lib/dynamic-reports/report.css" />
+    <link rel="stylesheet" href="~/assets/ReportScripts/report.css" />
 	<style>
 		.dataTables_wrapper {
 			width: 99% !important;
@@ -76,7 +76,7 @@
 
 
 @section Scripts{
-	<script src="~/lib/dynamic-reports/report.js"></script>
+    <script src="~/assets/ReportScripts/report.js"></script>
 
 	<script type="text/javascript" language="javascript">
 		function getTokenAntiForgery() {
@@ -162,7 +162,7 @@
 							type: 'POST',
 							data: { id: id },
 							success: function (result) {
-								if (result.success == true) {
+								if (result.success === true) {
 									swal({
 										position: 'top-end',
 										type: 'success',
@@ -182,8 +182,8 @@
 									});
 								}
 							},
-							error: function (jqXHR, textStatus, errorThrown) {
-								ShowError(jqXHR.status);
+							error: function (jqXhr) {
+								window.ShowError(jqXhr.status);
 							}
 						});
 					}
