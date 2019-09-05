@@ -13,5 +13,10 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
         /// Task number
         /// </summary>
         public string TaskNumber { get; set; }
+
+        /// <summary>
+        /// Task items counted [completed/total]
+        /// </summary>
+        public int[] TaskItemsCount { get; set; }
     }
 }

@@ -44,7 +44,7 @@ namespace ST.Files.Box
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
 
             var encryptedFile = SaveFilePhysical(dto.File);
-            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+            if (encryptedFile == null) return ExceptionMessagesEnum.NullIFormFile.ToErrorModel<Guid>();
 
             var file = new FileBox
             {
@@ -64,10 +64,10 @@ namespace ST.Files.Box
 
         public override ResultModel<Guid> DeleteFile(Guid id)
         {
-            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<Guid>();
 
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             file.IsDeleted = true;
             _context.FilesBox.Update(file);
@@ -81,10 +81,10 @@ namespace ST.Files.Box
 
         public override ResultModel<Guid> RestoreFile(Guid id)
         {
-            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<Guid>();
 
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             file.IsDeleted = false;
             _context.FilesBox.Update(file);
@@ -99,10 +99,10 @@ namespace ST.Files.Box
 
         public override ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
-            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullParameter);
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<Guid>();
 
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, file.Path, file.Name);
             File.Delete(filePath);
@@ -117,10 +117,10 @@ namespace ST.Files.Box
 
         public override ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
-            if (id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.NullParameter);
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<DownloadFileViewModel>();
 
             var dbFileResult = _context.FilesBox.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
-            if (dbFileResult == null) return ExceptionHandler.ReturnErrorModel<DownloadFileViewModel>(ExceptionMessagesEnum.FileNotFound);
+            if (dbFileResult == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<DownloadFileViewModel>();
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, dbFileResult.Path);
             var dto = new DownloadFileViewModel();
@@ -162,11 +162,11 @@ namespace ST.Files.Box
         {
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == dto.Id);
             if (file == null)
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+                return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             DeleteFilePhysical(file.Path, file.Name);
             var encryptedFile = SaveFilePhysical(dto.File);
-            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+            if (encryptedFile == null) return ExceptionMessagesEnum.NullIFormFile.ToErrorModel<Guid>();
 
             file.FileExtension = encryptedFile.FileExtension;
             file.Path = encryptedFile.Path;

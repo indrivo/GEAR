@@ -60,7 +60,7 @@ namespace ST.TaskManager.Razor.Controllers
         public JsonResult GetTaskStatusList()
         {
             var directions = from TaskStatus d in Enum.GetValues(typeof(TaskStatus))
-                select new { ID = (int) d, Name = d.ToString()};
+                select new {ID = (int) d, Name = d.ToString()};
             return Json(new SelectList(directions, "ID", "Name", 0));
         }
 
@@ -78,7 +78,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<GetTaskViewModel>))]
         public async Task<JsonResult> GetTask(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = await _taskManager.GetTaskAsync(id);
             return Json(response);
@@ -109,7 +109,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<List<TaskItemViewModel>>))]
         public async Task<JsonResult> GetTaskItems(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = await _taskManager.GetTaskItemsAsync(id);
             return Json(response);
@@ -119,7 +119,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<CreateTaskViewModel>))]
         public async Task<JsonResult> CreateTask(CreateTaskViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
 
             var response = await _taskManager.CreateTaskAsync(model);
             return Json(response);
@@ -129,7 +129,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<UpdateTaskViewModel>))]
         public async Task<JsonResult> UpdateTask(UpdateTaskViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
 
             var response = await _taskManager.UpdateTaskAsync(model);
             return Json(response);
@@ -139,7 +139,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteTask(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = await _taskManager.DeleteTaskAsync(id);
             return Json(response);
@@ -149,7 +149,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteTaskPermanent(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = await _taskManager.DeletePermanentTaskAsync(id);
             return Json(response);
@@ -159,7 +159,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<TaskItemViewModel>))]
         public async Task<JsonResult> CreateTaskItem(TaskItemViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
 
             var response = await _taskManager.CreateTaskItemAsync(model);
             return Json(response);
@@ -169,7 +169,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<TaskItemViewModel>))]
         public async Task<JsonResult> UpdateTaskItem(TaskItemViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<CreateTaskViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
 
             var response = await _taskManager.UpdateTaskItemAsync(model);
             return Json(response);
@@ -179,7 +179,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteTaskItem(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = await _taskManager.DeleteTaskItemAsync(id);
             return Json(response);

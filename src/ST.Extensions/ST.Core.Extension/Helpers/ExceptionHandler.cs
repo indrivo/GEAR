@@ -15,7 +15,7 @@ namespace ST.Core.Helpers
         /// <typeparam name="T"></typeparam>
         /// <param name="exceptionMessageEnum"></param>
         /// <returns></returns>
-        public static ResultModel<T> ReturnErrorModel<T>(Enum exceptionMessageEnum)
+        public static ResultModel<T> ToErrorModel<T>(this Enum exceptionMessageEnum)
         {
             return new ResultModel<T>
             {
@@ -25,7 +25,7 @@ namespace ST.Core.Helpers
                     new ErrorModel
                     {
                         Key = string.Empty,
-                        Message = EnumHelper.GetEnumDescription(exceptionMessageEnum)
+                        Message = exceptionMessageEnum.GetEnumDescription()
                     },
                 }
             };
@@ -37,7 +37,7 @@ namespace ST.Core.Helpers
         /// <typeparam name="T"></typeparam>
         /// <param name="exceptionMessageEnum"></param>
         /// <returns></returns>
-        public static ResultModel ReturnErrorModel(Enum exceptionMessageEnum)
+        public static ResultModel ToErrorModel(this Enum exceptionMessageEnum)
         {
             return new ResultModel
             {
@@ -47,7 +47,7 @@ namespace ST.Core.Helpers
                     new ErrorModel
                     {
                         Key = string.Empty,
-                        Message = EnumHelper.GetEnumDescription(exceptionMessageEnum)
+                        Message = exceptionMessageEnum.GetEnumDescription()
                     },
                 }
             };
@@ -59,7 +59,7 @@ namespace ST.Core.Helpers
         /// <typeparam name="T"></typeparam>
         /// <param name="exceptionMessage"></param>
         /// <returns></returns>
-        public static ResultModel<T> ReturnErrorModel<T>(object exceptionMessage)
+        public static ResultModel<T> ToErrorModel<T>(object exceptionMessage)
         {
             return new ResultModel<T>
             {
@@ -81,7 +81,7 @@ namespace ST.Core.Helpers
         /// <typeparam name="T"></typeparam>
         /// <param name="modelStateErrors"></param>
         /// <returns></returns>
-        public static ResultModel<T> ReturnErrorModel<T>(ModelStateDictionary modelStateErrors)
+        public static ResultModel<T> ToErrorModel<T>(this ModelStateDictionary modelStateErrors)
         {
             return new ResultModel<T>
             {

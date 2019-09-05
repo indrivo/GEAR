@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace ST.Files.Abstraction.Extension
             services.AddScopedContextFactory<IFileContext, TFileContext>();
             services.AddDbContext<TFileContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<TFileContext>("Physic File module");
-            services.ConfigureWritable<FileSettingsViewModel>(configuration.GetSection("FileSettings"));
+            services.ConfigureWritable<List<FileSettingsViewModel>>(configuration.GetSection("FileSettings"));
             return services;
         }
     }

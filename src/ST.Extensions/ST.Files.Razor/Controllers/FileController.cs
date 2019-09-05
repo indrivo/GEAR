@@ -102,7 +102,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Delete(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.DeleteFile(id);
             return Json(response);
@@ -117,7 +117,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult Restore(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.RestoreFile(id);
             return Json(response);
@@ -132,7 +132,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public JsonResult DeletePermanent(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.DeleteFilePermanent(id);
             return Json(response);
@@ -141,9 +141,9 @@ namespace ST.Files.Razor.Controllers
 
         [HttpPost]
         [Produces("application/json", Type = typeof(ResultModel<FileSettingsViewModel>))]
-        public JsonResult CreateTask(FileBoxSettingsViewModel model)
+        public JsonResult ChangeSettings(FileSettingsViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ExceptionHandler.ReturnErrorModel<FileSettingsViewModel>(ModelState));
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<FileSettingsViewModel>());
 
             var response = _fileManager.ChangeSettings(model);
             return Json(response);

@@ -60,7 +60,8 @@ namespace ST.TaskManager.Helpers
                 Status = dbTaskResult.Status,
                 UserId = dbTaskResult.UserId,
                 TaskPriority = dbTaskResult.TaskPriority,
-                TaskNumber = dbTaskResult.TaskNumber
+                TaskNumber = dbTaskResult.TaskNumber,
+                TaskItemsCount = CountTaskItems(dbTaskResult)
             };
             return dto;
         }
@@ -87,6 +88,14 @@ namespace ST.TaskManager.Helpers
                 IsSuccess = true,
                 Result = taskList
             };
+        }
+
+        private static int[] CountTaskItems(Task dbTasksResult)
+        {
+            var total = dbTasksResult.TaskItems.Count;
+            var completed = dbTasksResult.TaskItems.Count(x => x.IsDone == true);
+
+            return new[] {completed, total};
         }
     }
 }

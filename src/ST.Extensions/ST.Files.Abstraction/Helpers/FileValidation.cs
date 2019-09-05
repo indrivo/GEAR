@@ -16,12 +16,12 @@ namespace ST.Files.Abstraction.Helpers
             var result = new ResultModel<Guid> {IsSuccess = true};
 
             if (file.Length <= 0)
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+                return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             if (settings?.Extensions.Contains(Path.GetExtension(file.FileName)) == false)
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.InvalidExtension);
+                return ExceptionMessagesEnum.InvalidExtension.ToErrorModel<Guid>();
 
-            return settings != null && file.Length < settings.MaxSize * 1024 ? ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.InvalidExtension) : result;
+            return settings != null && file.Length < settings.MaxSize * 1024 ? ExceptionMessagesEnum.InvalidExtension.ToErrorModel<Guid>() : result;
         }
     }
 }

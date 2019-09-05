@@ -30,11 +30,11 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel<GetTaskViewModel>> GetTaskAsync(Guid taskId)
         {
-            if (taskId == Guid.Empty) return ExceptionHandler.ReturnErrorModel<GetTaskViewModel>(ExceptionMessagesEnum.NullParameter);
+            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<GetTaskViewModel>();
 
             var dbTaskResult = await _context.Tasks.FirstOrDefaultAsync(x => (x.Id == taskId) & (x.IsDeleted == false));
             if (dbTaskResult == null)
-                return ExceptionHandler.ReturnErrorModel<GetTaskViewModel>(ExceptionMessagesEnum.TaskNotFound);
+                return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<GetTaskViewModel>();
 
             var dto = GetTaskMapper(dbTaskResult);
 
@@ -47,17 +47,17 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel<List<TaskItemViewModel>>> GetTaskItemsAsync(Guid taskId)
         {
-            if (taskId == Guid.Empty) return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.NullParameter);
+            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<TaskItemViewModel>>();
 
             var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == taskId);
-            if (task == null) return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskNotFound);
+            if (task == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<List<TaskItemViewModel>>();
 
             var dbTaskItemsResult = await _context.TaskItems.Where(x => x.Task == task).ToListAsync();
             var dto = new List<TaskItemViewModel>();
             if (dbTaskItemsResult.Any())
                 dto.AddRange(TaskItemsMapper(new Task {TaskItems = dbTaskItemsResult}));
             else
-                return ExceptionHandler.ReturnErrorModel<List<TaskItemViewModel>>(ExceptionMessagesEnum.TaskItemsNotFound);
+                return ExceptionMessagesEnum.TaskItemsNotFound.ToErrorModel<List<TaskItemViewModel>>();
 
             return new ResultModel<List<TaskItemViewModel>>
             {
@@ -68,7 +68,7 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName)
         {
-            if (string.IsNullOrEmpty(userName)) return ExceptionHandler.ReturnErrorModel<List<GetTaskViewModel>>(ExceptionMessagesEnum.NullParameter);
+            if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
             var dbTasksResult = await _context.Tasks.Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
@@ -76,7 +76,7 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId)
         {
-            if (userId == Guid.Empty) return ExceptionHandler.ReturnErrorModel<List<GetTaskViewModel>>(ExceptionMessagesEnum.NullParameter);
+            if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
             var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
@@ -106,7 +106,7 @@ namespace ST.TaskManager.Services
         {
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == task.Id) & (x.IsDeleted == false));
             if (dbTaskResult == null)
-                return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.TaskNotFound);
+                return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
 
             var taskModel = UpdateTaskMapper(task, dbTaskResult);
             _context.Tasks.Update(taskModel);
@@ -122,10 +122,10 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel> DeleteTaskAsync(Guid taskId)
         {
-            if (taskId == Guid.Empty) return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter);
+            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel();
 
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => x.Id == taskId);
-            if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.TaskNotFound);
+            if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
 
             dbTaskResult.IsDeleted = true;
             _context.Tasks.Update(dbTaskResult);
@@ -141,10 +141,10 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel> DeletePermanentTaskAsync(Guid taskId)
         {
-            if (taskId == Guid.Empty) return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter);
+            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel();
 
             var task = _context.Tasks.FirstOrDefault(x => x.Id == taskId);
-            if (task == null) return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.TaskNotFound);
+            if (task == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
 
             _context.Tasks.Remove(task);
 
@@ -164,7 +164,7 @@ namespace ST.TaskManager.Services
         public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel taskItem)
         {
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => x.Id == taskItem.TaskId);
-            if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
+            if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<Guid>();
 
             var taskModel = new TaskItem {Name = taskItem.Name, Task = dbTaskResult};
 
@@ -182,7 +182,7 @@ namespace ST.TaskManager.Services
         public async Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel taskItem)
         {
             var dbTaskResult = _context.TaskItems.FirstOrDefault(x => x.Id == taskItem.Id);
-            if (dbTaskResult == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.TaskNotFound);
+            if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<Guid>();
 
             dbTaskResult.Name = taskItem.Name;
             dbTaskResult.IsDone = taskItem.IsDone;
@@ -200,10 +200,10 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel> DeleteTaskItemAsync(Guid taskItemId)
         {
-            if (taskItemId == Guid.Empty) return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter);
+            if (taskItemId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel();
 
             var task = _context.TaskItems.FirstOrDefault(x => x.Id == taskItemId);
-            if (task == null) return ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.TaskNotFound);
+            if (task == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
 
             _context.TaskItems.Remove(task);
 
@@ -222,7 +222,7 @@ namespace ST.TaskManager.Services
             var task = await _context.Tasks.LastOrDefaultAsync();
             if (task != null)
             {
-                var lastNumber = int.Parse(task.TaskNumber);
+                var lastNumber = task.TaskNumber.IsNumeric() ? int.Parse(task.TaskNumber) : 99900;
                 return $"{++lastNumber:00000}";
             }
 

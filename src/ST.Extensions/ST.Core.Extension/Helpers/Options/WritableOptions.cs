@@ -51,8 +51,20 @@ namespace ST.Core.Helpers.Options
             var sectionObject = jObject.TryGetValue(_section, out JToken section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : (Value ?? new T());
 
             applyChanges(sectionObject);
+            if (!jObject.ContainsKey(_section))
+            {
+                jObject.Add(sectionObject.IsList()
+                    ? new JProperty(_section, new JArray(JArray.Parse(JsonConvert.SerializeObject(sectionObject))))
+                    : new JProperty(_section, new JObject(JObject.Parse(JsonConvert.SerializeObject(sectionObject)))));
+            }
+            else
+            {
+                if (sectionObject.IsList())
+                    jObject[_section] = JArray.Parse(JsonConvert.SerializeObject(sectionObject));
+                else
+                    jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
+            }
 
-            jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
             File.WriteAllText(physicalPath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
         }
     }

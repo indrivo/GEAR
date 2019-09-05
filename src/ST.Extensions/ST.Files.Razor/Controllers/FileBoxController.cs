@@ -93,7 +93,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult Delete(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.DeleteFile(id);
             return Json(response);
@@ -108,7 +108,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult Restore(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.RestoreFile(id);
             return Json(response);
@@ -123,7 +123,7 @@ namespace ST.Files.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public JsonResult DeletePermanent(Guid id)
         {
-            if (id == Guid.Empty) return Json(ExceptionHandler.ReturnErrorModel(ExceptionMessagesEnum.NullParameter));
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.DeleteFilePermanent(id);
             return Json(response);
