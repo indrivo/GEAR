@@ -1326,37 +1326,6 @@ if (typeof DataInjector !== "undefined") {
 	};
 }
 
-function getIdentifier(idt) {
-	switch (idt) {
-		case "en":
-			{
-				idt = "gb";
-			}
-			break;
-		case "ja":
-			{
-				idt = "jp";
-			}
-			break;
-		case "zh":
-			{
-				idt = "cn";
-			}
-			break;
-		case "uk":
-			{
-				idt = "ua";
-			}
-			break;
-		case "el":
-			{
-				idt = "gr";
-			}
-			break;
-	}
-	return idt;
-}
-
 function makeMenuActive(target) {
 	if (target) {
 		const last = target.closest("ul").closest("li");
@@ -1405,11 +1374,12 @@ $(document).ready(function () {
 		}
 	});
 
+	const localizer = new Localizer();
 
 	//Localization promise
 	const localizationPromise = new Promise((resolve, reject) => {
 		//Set localization config
-		let translateIcon = getIdentifier(settings.localization.current.identifier);
+		const translateIcon = localizer.adaptIdentifier(settings.localization.current.identifier);
 		$("#currentlanguage").addClass(`flag-icon flag-icon-${translateIcon}`);
 		const languageBlock = $("#languageRegion");
 		resolve(languageBlock);
@@ -1421,7 +1391,7 @@ $(document).ready(function () {
 				const language =
 					`<a href="/Localization/ChangeLanguage?identifier=${lang.identifier
 					}" class="dropdown-item language-event">
-							<i class="flag-icon flag-icon-${getIdentifier(lang.identifier)}"></i> ${lang.name}
+							<i class="flag-icon flag-icon-${localizer.adaptIdentifier(lang.identifier)}"></i> ${lang.name}
 						</a>`;
 				languageBlock.append(language);
 			});

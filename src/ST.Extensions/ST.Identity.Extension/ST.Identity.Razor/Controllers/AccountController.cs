@@ -8,7 +8,6 @@ using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +29,7 @@ using ST.MPass.Gov;
 using ST.Identity.Abstractions.Events;
 using ST.Identity.Abstractions.Events.EventArgs.Authorization;
 using ST.Identity.Abstractions.Events.EventArgs.Users;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Identity.Razor.Controllers
 {
@@ -424,7 +424,7 @@ namespace ST.Identity.Razor.Controllers
                         LastName = user.UserLastName
                     });
 
-                    var claim = new Claim("tenant", user.TenantId.ToString());
+                    var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
 
                     await _userManager.AddClaimAsync(user, claim);
                     return RedirectToLocal(returnUrl);

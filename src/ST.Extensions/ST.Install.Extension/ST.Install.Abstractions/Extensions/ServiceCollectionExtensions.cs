@@ -7,12 +7,10 @@ namespace ST.Install.Abstractions.Extensions
         /// <summary>
         /// Register install module
         /// </summary>
-        /// <typeparam name="TService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInstallerModule<TService>(this IServiceCollection services) where TService : class, ISyncInstaller
+        public static IServiceCollection AddInstallerModule(this IServiceCollection services)
         {
-            services.AddTransient<ISyncInstaller, TService>();
             return services;
         }
     }

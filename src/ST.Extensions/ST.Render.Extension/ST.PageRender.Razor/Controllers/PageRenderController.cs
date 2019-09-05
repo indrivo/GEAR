@@ -226,7 +226,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [AjaxOnly]
-        [Authorize(Roles = Settings.ADMINISTRATOR)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetJsonExampleOfEntity([Required] Guid viewModelId)
         {
             var entity = _pagesContext.ViewModels.Include(x => x.TableModel).FirstOrDefault(x => x.Id.Equals(viewModelId));
@@ -374,7 +374,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="menuId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = Settings.ADMINISTRATOR)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<JsonResult> GetMenuItemRoles([Required] Guid menuId)
         {
             if (menuId == Guid.Empty) return Json(new ResultModel());
@@ -411,7 +411,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="roles"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = Settings.ADMINISTRATOR)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<JsonResult> UpdateMenuItemRoleAccess([Required] Guid menuId, IList<string> roles)
         {
             return Json(await _menuService.UpdateMenuItemRoleAccess(menuId, roles));
@@ -496,7 +496,7 @@ namespace ST.PageRender.Razor.Controllers
 
             var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
                 param.Start,
-                param.Length, x => x.SortByUserRoleAccess(roles, Settings.ADMINISTRATOR), filters);
+                param.Length, x => x.SortByUserRoleAccess(roles, GlobalResources.Roles.ADMINISTRATOR), filters);
 
             var final = await LoadManyToManyReferences(data, viewModel);
 
@@ -524,7 +524,7 @@ namespace ST.PageRender.Razor.Controllers
         private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<object> data, ViewModel model)
         {
             Arg.NotNull(model, nameof(ViewModel));
-            if (data == null) return data;
+            if (data == null) return new List<dynamic>();
             var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
 
             try
@@ -785,7 +785,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.ADMINISTRATOR)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<JsonResult> RestoreItemFromDynamicEntity(Guid viewModelId, string id)
         {
             if (string.IsNullOrEmpty(id) || viewModelId == Guid.Empty)

@@ -33,7 +33,7 @@ namespace ST.Audit.Abstractions.Helpers
             {
                 if (ContextAccessor == null) return;
 
-                var currentUsername = ContextAccessor?.HttpContext?.User?.Identity?.Name ?? Settings.ANONIMOUS_USER;
+                var currentUsername = ContextAccessor?.HttpContext?.User?.Identity?.Name ?? GlobalResources.Roles.ANONIMOUS_USER;
                 var tenantId = ContextAccessor?.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == "tenant")?.Value.ToGuid();
 
                 var entities = context.ChangeTracker
@@ -56,7 +56,7 @@ namespace ST.Audit.Abstractions.Helpers
                             model.Created = DateTime.UtcNow;
                             model.Author = currentUsername;
                             model.ModifiedBy = currentUsername;
-                            model.TenantId = tenantId;
+                            model.TenantId = model.TenantId ?? tenantId;
                             model.Version = 1;
                             break;
                         case EntityState.Modified:

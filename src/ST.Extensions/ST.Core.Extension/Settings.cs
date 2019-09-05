@@ -15,16 +15,6 @@ namespace ST.Core
         public const string DEFAULT_LANGUAGE = "English";
 
         /// <summary>
-        /// Super admin role
-        /// </summary>
-        public const string ADMINISTRATOR = "Administrator";
-
-        /// <summary>
-        /// Anonimous User role
-        /// </summary>
-        public const string ANONIMOUS_USER = "Anonymous User";
-
-        /// <summary>
         /// Entity default schema
         /// </summary>
         public const string DEFAULT_ENTITY_SCHEMA = "system";

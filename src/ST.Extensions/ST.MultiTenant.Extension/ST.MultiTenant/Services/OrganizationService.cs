@@ -219,7 +219,7 @@ namespace ST.MultiTenant.Services
                     .Where(x => roles.Contains(x.Id))
                     .Select(x => x.Name)
                     .ToListAsync();
-                userRoles.Add(Settings.ANONIMOUS_USER);
+                userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
                 var userResult = await _userManager.UserManager.AddToRolesAsync(user, userRoles);
                 if (userResult.Succeeded)
                 {
@@ -284,8 +284,8 @@ namespace ST.MultiTenant.Services
         {
             var rolesToExclude = new HashSet<string>
             {
-                Settings.ADMINISTRATOR,
-                Settings.ANONIMOUS_USER
+                GlobalResources.Roles.ADMINISTRATOR,
+                GlobalResources.Roles.ANONIMOUS_USER
             };
 
             var roles = await _userManager.RoleManager.Roles

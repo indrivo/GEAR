@@ -11,7 +11,7 @@ using ST.Files.Abstraction.Models.ViewModels;
 
 namespace ST.Files.Razor.Controllers
 {
-    [Authorize(Roles = Settings.ADMINISTRATOR)]
+    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     [Route("api/[controller]/[action]")]
     public sealed class FileController : Controller
     {
