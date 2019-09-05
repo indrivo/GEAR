@@ -66,14 +66,13 @@ namespace ST.TaskManager.Helpers
             return dto;
         }
 
-        internal static IEnumerable<TaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
+        internal static IEnumerable<GetTaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
         {
-            return dbTaskResult.TaskItems.Select(item => new TaskItemViewModel
+            return dbTaskResult.TaskItems.Select(item => new GetTaskItemViewModel
             {
                 Id = item.Id,
                 IsDone = item.IsDone,
                 Name = item.Name,
-                TaskId = item.Task.Id
             }).AsEnumerable();
         }
 

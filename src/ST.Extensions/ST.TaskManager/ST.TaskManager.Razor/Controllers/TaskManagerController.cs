@@ -106,7 +106,7 @@ namespace ST.TaskManager.Razor.Controllers
 
 
         [HttpGet]
-        [Produces("application/json", Type = typeof(ResultModel<List<TaskItemViewModel>>))]
+        [Produces("application/json", Type = typeof(ResultModel<List<GetTaskItemViewModel>>))]
         public async Task<JsonResult> GetTaskItems(Guid id)
         {
             if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
@@ -129,7 +129,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<UpdateTaskViewModel>))]
         public async Task<JsonResult> UpdateTask(UpdateTaskViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<UpdateTaskViewModel>());
 
             var response = await _taskManager.UpdateTaskAsync(model);
             return Json(response);
@@ -156,20 +156,20 @@ namespace ST.TaskManager.Razor.Controllers
         }
 
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel<TaskItemViewModel>))]
-        public async Task<JsonResult> CreateTaskItem(TaskItemViewModel model)
+        [Produces("application/json", Type = typeof(ResultModel<CreateTaskItemViewModel>))]
+        public async Task<JsonResult> CreateTaskItem(CreateTaskItemViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskItemViewModel>());
 
             var response = await _taskManager.CreateTaskItemAsync(model);
             return Json(response);
         }
 
         [HttpPost]
-        [Produces("application/json", Type = typeof(ResultModel<TaskItemViewModel>))]
-        public async Task<JsonResult> UpdateTaskItem(TaskItemViewModel model)
+        [Produces("application/json", Type = typeof(ResultModel<UpdateTaskItemViewModel>))]
+        public async Task<JsonResult> UpdateTaskItem(UpdateTaskItemViewModel model)
         {
-            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<CreateTaskViewModel>());
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<UpdateTaskItemViewModel>());
 
             var response = await _taskManager.UpdateTaskItemAsync(model);
             return Json(response);

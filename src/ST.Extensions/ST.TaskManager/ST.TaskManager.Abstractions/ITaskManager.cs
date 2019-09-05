@@ -20,7 +20,7 @@ namespace ST.TaskManager.Abstractions
         /// </summary>
         /// <param name="taskId"></param>
         /// <returns></returns>
-        Task<ResultModel<List<TaskItemViewModel>>> GetTaskItemsAsync(Guid taskId);
+        Task<ResultModel<List<GetTaskItemViewModel>>> GetTaskItemsAsync(Guid taskId);
 
         /// <summary>
         /// Get tasks list by author user id
@@ -69,14 +69,14 @@ namespace ST.TaskManager.Abstractions
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel task);
+        Task<ResultModel<Guid>> CreateTaskItemAsync(CreateTaskItemViewModel task);
 
         /// <summary>
         /// Update task item
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel task);
+        Task<ResultModel<Guid>> UpdateTaskItemAsync(UpdateTaskItemViewModel task);
 
         /// <summary>
         /// Delete task item permanent

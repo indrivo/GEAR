@@ -45,21 +45,21 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel<List<TaskItemViewModel>>> GetTaskItemsAsync(Guid taskId)
+        public async Task<ResultModel<List<GetTaskItemViewModel>>> GetTaskItemsAsync(Guid taskId)
         {
-            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<TaskItemViewModel>>();
+            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskItemViewModel>>();
 
             var task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == taskId);
-            if (task == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<List<TaskItemViewModel>>();
+            if (task == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<List<GetTaskItemViewModel>>();
 
             var dbTaskItemsResult = await _context.TaskItems.Where(x => x.Task == task).ToListAsync();
-            var dto = new List<TaskItemViewModel>();
+            var dto = new List<GetTaskItemViewModel>();
             if (dbTaskItemsResult.Any())
                 dto.AddRange(TaskItemsMapper(new Task {TaskItems = dbTaskItemsResult}));
             else
-                return ExceptionMessagesEnum.TaskItemsNotFound.ToErrorModel<List<TaskItemViewModel>>();
+                return ExceptionMessagesEnum.TaskItemsNotFound.ToErrorModel<List<GetTaskItemViewModel>>();
 
-            return new ResultModel<List<TaskItemViewModel>>
+            return new ResultModel<List<GetTaskItemViewModel>>
             {
                 IsSuccess = true,
                 Result = dto
@@ -161,7 +161,7 @@ namespace ST.TaskManager.Services
 
         #region Task Items
 
-        public async Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel taskItem)
+        public async Task<ResultModel<Guid>> CreateTaskItemAsync(CreateTaskItemViewModel taskItem)
         {
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => x.Id == taskItem.TaskId);
             if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<Guid>();
@@ -179,7 +179,7 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel taskItem)
+        public async Task<ResultModel<Guid>> UpdateTaskItemAsync(UpdateTaskItemViewModel taskItem)
         {
             var dbTaskResult = _context.TaskItems.FirstOrDefault(x => x.Id == taskItem.Id);
             if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<Guid>();
