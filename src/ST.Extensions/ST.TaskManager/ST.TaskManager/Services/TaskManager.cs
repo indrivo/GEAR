@@ -32,7 +32,7 @@ namespace ST.TaskManager.Services
         {
             if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<GetTaskViewModel>();
 
-            var dbTaskResult = await _context.Tasks.FirstOrDefaultAsync(x => (x.Id == taskId) & (x.IsDeleted == false));
+            var dbTaskResult = await _context.Tasks.Include(x => x.TaskItems).FirstOrDefaultAsync(x => (x.Id == taskId) & (x.IsDeleted == false));
             if (dbTaskResult == null)
                 return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<GetTaskViewModel>();
 
@@ -70,7 +70,7 @@ namespace ST.TaskManager.Services
         {
             if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == false)).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 
@@ -78,7 +78,7 @@ namespace ST.TaskManager.Services
         {
             if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 

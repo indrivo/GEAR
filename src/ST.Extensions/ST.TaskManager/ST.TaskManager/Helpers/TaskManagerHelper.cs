@@ -91,7 +91,7 @@ namespace ST.TaskManager.Helpers
 
         private static int[] CountTaskItems(Task dbTasksResult)
         {
-            if (dbTasksResult == null || dbTasksResult.TaskItems.Count == 0) return new[] {0, 0};
+            if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] {0, 0};
             var total = dbTasksResult.TaskItems.Count;
             var completed = dbTasksResult.TaskItems.Count(x => x.IsDone == true);
 
