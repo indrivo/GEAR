@@ -8,6 +8,7 @@ using ST.Core.Helpers;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
 using ST.Files.Box.Abstraction;
+using ST.Identity.Abstractions;
 
 namespace ST.Files.Razor.Controllers
 {
@@ -20,9 +21,15 @@ namespace ST.Files.Razor.Controllers
         /// </summary>
         private readonly IFileBoxManager _fileManager;
 
-        public FileBoxController(IFileBoxManager fileManager)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        public FileBoxController(IFileBoxManager fileManager, IUserManager<ApplicationUser> userManager)
         {
             _fileManager = fileManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -61,9 +68,9 @@ namespace ST.Files.Razor.Controllers
             var file = new UploadFileViewModel
             {
                 File = Request.Form.Files.FirstOrDefault(),
-                Id = id
+                Id = id,
             };
-            var response = _fileManager.AddFile(file);
+            var response = _fileManager.AddFile(file, _userManager.CurrentUserTenantId ?? Guid.Empty);
             return Json(response);
         }
 
@@ -78,8 +85,8 @@ namespace ST.Files.Razor.Controllers
             var response = Request.Form.Files.Select(item => new UploadFileViewModel
             {
                 File = item,
-                Id = Guid.Empty
-            }).Select(file => _fileManager.AddFile(file)).ToList();
+                Id = Guid.Empty,
+            }).Select(file => _fileManager.AddFile(file, _userManager.CurrentUserTenantId ?? Guid.Empty)).ToList();
 
             return Json(response);
         }

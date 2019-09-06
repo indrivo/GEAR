@@ -199,6 +199,7 @@ namespace ST.Application
                 .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("translationSettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("fileSettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 

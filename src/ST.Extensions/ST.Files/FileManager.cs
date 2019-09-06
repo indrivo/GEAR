@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
+using ST.Core.Abstractions;
 using ST.Core.Helpers;
 using ST.Files.Abstraction;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.Extensions.Options;
-using ST.Core.Abstractions;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models;
 using ST.Files.Abstraction.Models.ViewModels;
 using ST.Files.Data;
 using ST.Files.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using ST.Core.Extensions;
 
 
 namespace ST.Files
@@ -32,15 +32,13 @@ namespace ST.Files
             _options = options;
         }
 
-        public override ResultModel<Guid> AddFile(UploadFileViewModel dto)
+        public override ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId)
         {
-            if (dto.Id != Guid.Empty) return UpdateFile(dto);
-
-
             var fileValidation =
-                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == dto.TenantId));
-
+                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == tenantId));
             if (!fileValidation.IsSuccess) return fileValidation;
+
+            if (dto.Id != Guid.Empty) return UpdateFile(dto, tenantId);
 
             var encryptedFile = EncryptFile(dto.File);
             if (encryptedFile == null) return ExceptionMessagesEnum.NullIFormFile.ToErrorModel<Guid>();
@@ -146,8 +144,7 @@ namespace ST.Files
             else
             {
                 var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
-                if (index >= 0)
-                    fileSettingsList[index] = newSettings;
+                fileSettingsList = fileSettingsList.Replace(index, newSettings).ToList();
             }
 
             _options.Update(x => x = fileSettingsList);
@@ -178,13 +175,13 @@ namespace ST.Files
             }
         }
 
-        private ResultModel<Guid> UpdateFile(UploadFileViewModel dto)
+        private ResultModel<Guid> UpdateFile(UploadFileViewModel dto, Guid tenantId)
         {
             var file = _context.Files.FirstOrDefault(x => x.Id == dto.Id);
             if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             var fileValidation =
-                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == dto.TenantId));
+                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == tenantId));
 
             if (!fileValidation.IsSuccess) return fileValidation;
 

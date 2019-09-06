@@ -39,9 +39,15 @@ namespace ST.Files.Box
             _options = options;
         }
 
-        public override ResultModel<Guid> AddFile(UploadFileViewModel dto)
+        public override ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId)
         {
+            var fileValidation =
+                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == tenantId));
+
+            if (!fileValidation.IsSuccess) return fileValidation;
+
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
+
 
             var encryptedFile = SaveFilePhysical(dto.File);
             if (encryptedFile == null) return ExceptionMessagesEnum.NullIFormFile.ToErrorModel<Guid>();
@@ -123,16 +129,38 @@ namespace ST.Files.Box
             if (dbFileResult == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<DownloadFileViewModel>();
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, dbFileResult.Path);
-            var dto = new DownloadFileViewModel();
-            dto.Path = filePath;
-            dto.FileExtension = dbFileResult.FileExtension;
-            dto.FileName = dbFileResult.Name;
+            var dto = new DownloadFileViewModel
+            {
+                Path = filePath, FileExtension = dbFileResult.FileExtension, FileName = dbFileResult.Name
+            };
 
             return new ResultModel<DownloadFileViewModel>
             {
                 IsSuccess = true,
                 Result = dto
             };
+        }
+
+        public override ResultModel ChangeSettings<TFileSettingsViewModel>(TFileSettingsViewModel newSettings)
+        {
+            var settings = newSettings.Adapt<FileBoxSettingsViewModel>();
+            var result = new ResultModel();
+            var fileSettingsList = _options.Value ?? new List<FileBoxSettingsViewModel>();
+            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
+            if (fileSettings == null)
+            {
+                fileSettingsList.Add(settings);
+            }
+            else
+            {
+                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
+                if (index >= 0)
+                    fileSettingsList[index] = settings;
+            }
+
+            _options.Update(x => x = fileSettingsList, _hostingEnvironment.WebRootPath + "fileSettings.json");
+            result.IsSuccess = true;
+            return result;
         }
 
         private FileBoxDto SaveFilePhysical(IFormFile file)
@@ -188,26 +216,5 @@ namespace ST.Files.Box
             File.Delete(filePath);
         }
 
-        public override ResultModel ChangeSettings<TFileSettingsViewModel>(TFileSettingsViewModel newSettings)
-        {
-            var settings = newSettings.Adapt<FileBoxSettingsViewModel>();
-            var result = new ResultModel();
-            var fileSettingsList = _options.Value ?? new List<FileBoxSettingsViewModel>();
-            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
-            if (fileSettings == null)
-            {
-                fileSettingsList.Add(settings);
-            }
-            else
-            {
-                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
-                if (index >= 0)
-                    fileSettingsList[index] = settings;
-            }
-
-            _options.Update(x => x = fileSettingsList);
-            result.IsSuccess = true;
-            return result;
-        }
     }
 }

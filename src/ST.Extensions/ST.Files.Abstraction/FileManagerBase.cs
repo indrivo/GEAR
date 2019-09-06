@@ -11,7 +11,7 @@ namespace ST.Files.Abstraction
         public abstract ResultModel<DownloadFileViewModel> GetFileById(Guid id);
 
 
-        public abstract ResultModel<Guid> AddFile(UploadFileViewModel dto);
+        public abstract ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId);
 
 
         public abstract ResultModel<Guid> DeleteFile(Guid id);

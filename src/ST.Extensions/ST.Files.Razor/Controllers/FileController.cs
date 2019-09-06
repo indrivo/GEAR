@@ -66,13 +66,13 @@ namespace ST.Files.Razor.Controllers
         [HttpPost]
         public JsonResult Upload(Guid id)
         {
+            var tenantId = _userManager.CurrentUserTenantId;
             var file = new UploadFileViewModel
             {
                 File = Request.Form.Files.FirstOrDefault(),
                 Id = id,
-                TenantId = _userManager.CurrentUserTenantId
             };
-            var response = _fileManager.AddFile(file);
+            var response = _fileManager.AddFile(file, tenantId ?? Guid.Empty);
             return Json(response);
         }
 
@@ -86,9 +86,8 @@ namespace ST.Files.Razor.Controllers
             var response = Request.Form.Files.Select(item => new UploadFileViewModel
             {
                 File = item,
-                Id = Guid.Empty,
-                TenantId = _userManager.CurrentUserTenantId
-            }).Select(file => _fileManager.AddFile(file)).ToList();
+                Id = Guid.Empty
+            }).Select(file => _fileManager.AddFile(file, _userManager.CurrentUserTenantId ?? Guid.Empty)).ToList();
 
             return Json(response);
         }
@@ -144,6 +143,9 @@ namespace ST.Files.Razor.Controllers
         public JsonResult ChangeSettings(FileSettingsViewModel model)
         {
             if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<FileSettingsViewModel>());
+
+            if (model.TenantId == Guid.Empty)
+                model.TenantId = _userManager.CurrentUserTenantId ?? Guid.Empty;
 
             var response = _fileManager.ChangeSettings(model);
             return Json(response);

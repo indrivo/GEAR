@@ -11,7 +11,7 @@ namespace ST.Files.Abstraction.Helpers
 {
     public static class FileValidation
     {
-        public static ResultModel<Guid> ValidateFile(IFormFile file, FileSettingsViewModel settings)
+        public static ResultModel<Guid> ValidateFile<TFileSettingsViewModel>(IFormFile file, TFileSettingsViewModel settings) where TFileSettingsViewModel : FileSettingsViewModel
         {
             var result = new ResultModel<Guid> {IsSuccess = true};
 

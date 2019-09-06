@@ -9,7 +9,7 @@ namespace ST.Files.Abstraction.Models.ViewModels
         /// <summary>
         /// Tenant Id
         /// </summary>
-        public Guid? TenantId { get; set; }
+        public Guid TenantId { get; set; }
 
         /// <summary>
         /// Max file size (mb)
@@ -20,6 +20,5 @@ namespace ST.Files.Abstraction.Models.ViewModels
         /// File extensions allowed
         /// </summary>
         public string[] Extensions { get; set; }
-
     }
 }

@@ -43,9 +43,11 @@ namespace ST.Core.Helpers.Options
         /// <param name="filePath"></param>
         public void Update(Action<T> applyChanges, string filePath = null)
         {
+            if (filePath != null) filePath = Path.Combine(_environment.ContentRootPath, filePath);
+
             var fileProvider = _environment.ContentRootFileProvider;
             var fileInfo = fileProvider.GetFileInfo(filePath ?? _file);
-            var physicalPath = fileInfo.PhysicalPath;
+            var physicalPath = fileInfo.PhysicalPath ?? fileInfo.Name;
 
             var jObject = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(physicalPath));
             var sectionObject = jObject.TryGetValue(_section, out JToken section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : (Value ?? new T());

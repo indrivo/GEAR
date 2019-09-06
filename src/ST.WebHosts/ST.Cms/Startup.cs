@@ -353,7 +353,7 @@ namespace ST.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				}, Configuration);
 			//------------------------------------Task Module-------------------------------------
 			services
 				.AddTaskModule<TaskManager.Services.TaskManager,TaskManagerNotificationService>()

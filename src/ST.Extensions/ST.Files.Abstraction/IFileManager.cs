@@ -18,7 +18,7 @@ namespace ST.Files.Abstraction
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        ResultModel<Guid> AddFile(UploadFileViewModel dto);
+        ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId);
 
         /// <summary>
         /// Remove file logical

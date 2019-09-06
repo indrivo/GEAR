@@ -2,7 +2,7 @@
 
 namespace ST.Files.Box.Abstraction.Models.ViewModels
 {
-    public class FileBoxSettingsViewModel : FileSettingsViewModel
+    public sealed class FileBoxSettingsViewModel : FileSettingsViewModel
     {
         /// <summary>
         /// Directory for saving files
