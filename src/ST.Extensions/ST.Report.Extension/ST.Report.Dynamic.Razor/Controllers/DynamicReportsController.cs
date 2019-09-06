@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using ST.Core;
 using ST.Core.Attributes;
+using ST.Core.Helpers;
 using ST.Report.Abstractions;
-using ST.Report.Abstractions.Models;
-using ST.Report.Dynamic.Razor.ViewModels;
+using ST.Report.Abstractions.Extensions;
+using ST.Report.Abstractions.Helpers;
+using ST.Report.Abstractions.Models.Dto;
+using ST.Report.Abstractions.Models.Enums;
+using ST.Report.Abstractions.Models.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ST.Report.Dynamic.Razor.Controllers
 {
@@ -35,7 +39,11 @@ namespace ST.Report.Dynamic.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public JsonResult LoadPageData(DTParameters param) => Json(_service.GetFilteredReports(param));
+        public JsonResult LoadPageData(DTParameters param)
+        {
+            var result = _service.GetFilteredReports(param);
+            return Json(result);
+        }
 
         [HttpGet]
         public IActionResult CreateFolder()
@@ -47,21 +55,25 @@ namespace ST.Report.Dynamic.Razor.Controllers
         public IActionResult CreateFolder(DynamicReportFolderViewModel folder)
         {
             if (!ModelState.IsValid) return View();
-            _service.CreateFolder(new DynamicReportFolder()
+
+            var result = _service.CreateFolder(folder.Name);
+
+            if (result.IsSuccess)
             {
-                Name = folder.Name,
-                Id = new Guid(),
-                IsDeleted = false,
-                ModifiedBy = User.Identity.Name,
-                Author = User.Identity.Name,
-                Changed = DateTime.Now,
-                Created = DateTime.Now
-            });
-            return RedirectToAction("CreateDynamic");
+                return RedirectToAction("Index");
+            }
+
+            if (result.Errors.Any())
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Message);
+                }
+            }
+            return View(folder);
         }
 
         [HttpGet]
-        [Route("manage-report-folders")]
         public IActionResult ManageDynamicReportFolders()
         {
             var model = _service.GetAllFolders();
@@ -69,35 +81,46 @@ namespace ST.Report.Dynamic.Razor.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditFolder(Guid id, string name)
+        public IActionResult EditFolder(DynamicReportFolderViewModel folderModel)
         {
-            if (name == "") return Json(new { success = false, message = "Name Empty!!!" });
-            try
+            var result = _service.EditFolder(folderModel);
+
+            if (result.IsSuccess)
             {
-                var folder = _service.GetFolder(id);
-                folder.Name = name;
-                _service.EditFolder(folder);
-                return Json(new { success = true, message = "Saved!" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.SaveSuccess)
+                });
             }
-            catch (Exception)
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error!!!" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : string.Empty
+            });
+
         }
 
         [HttpPost]
         public IActionResult DeleteReportFolder(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "Id Empty!!!" });
-            try
+            var result = _service.DeleteFolder(id);
+
+            if (result.IsSuccess)
             {
-                _service.DeleteFolder(id);
-                return Json(new { success = true, message = "Deleted" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.DeleteSuccess)
+                });
             }
-            catch (Exception)
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error!!!" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : string.Empty
+            });
         }
 
         #endregion
@@ -105,171 +128,140 @@ namespace ST.Report.Dynamic.Razor.Controllers
         #region DynamicReports
 
         [HttpGet]
-        public IActionResult CreateDynamic()
+        public IActionResult Save(Guid id)
         {
-            ViewBag.Folders = _service.GetAllFolders();
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult CreateDynamic(DynamicReportCreateRunViewModel dto)
-        {
-            _service.CreateReport(new DynamicReport()
+            DynamicReportViewModel result = null;
+            if (id != Guid.Empty)
             {
-                Id = new Guid(),
-                Name = dto.Name,
-                ChartType = dto.ChartDto.ChartType,
-                GraphType = dto.ChartDto.GraphType,
-                ColumnList = dto.ColumnList,
-                InitialTable = dto.TableName,
-                StartDateTime = dto.StartDateTime,
-                EndDateTime = dto.EndDateTime,
-                Filters = dto.FiltersList,
-                TimeFrameEnum = dto.ChartDto.TimeFrameEnum,
-                IsDeleted = false,
-                Author = User.Identity.Name,
-                ModifiedBy = User.Identity.Name,
-                Created = DateTime.Now,
-                Changed = DateTime.Now,
-                DynamicReportFolderId = dto.DynamicReportFolderId
-            });
-            return GetDynamicReportData(dto);
-        }
-
-        [HttpGet]
-        public IActionResult RunDynamic(Guid id)
-        {
-            @ViewBag.ReportId = id;
-            @ViewBag.StartDate = _service.ParseReport(id).StartDateTime;
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult RunDynamicById(Guid id)
-        {
-            var report = _service.ParseReport(id);
-            var model = new DynamicReportCreateRunViewModel()
+                result = _service.GetReport(id).Result;
+            }
+            var model = result != null ?
+            new DynamicReportViewModel()
             {
-                ChartDto = new DynamicReportChartDto()
-                {
-                    ChartType = report.ChartType,
-                    TimeFrameEnum = report.TimeFrameEnum,
-                    GraphType = report.GraphType
-                },
-                Name = report.Name,
-                FiltersList = report.Filters,
-                ColumnList = report.ColumnList,
-                TableName = report.InitialTable,
-                EndDateTime = report.EndDateTime,
-                StartDateTime = report.StartDateTime
-            };
-            return GetDynamicReportData(model);
-        }
+                Id = result.Id,
+                Name = result.Name,
+                ReportDataModel = result.ReportDataModel,
+                DynamicReportFolder = new DynamicReportFolderViewModel(result.DynamicReportFolder.Id, result.DynamicReportFolder.Name)
+            }
+            : new DynamicReportViewModel();
 
-        [HttpGet]
-        public IActionResult EditDynamic(Guid id)
-        {
-            var model = _service.ParseReport(id);
             ViewBag.Folders = _service.GetAllFolders();
-            ViewBag.Columns = _service.GetTableColumns(model.InitialTable);
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult EditDynamic(DynamicReportCreateRunViewModel model)
+        public IActionResult Save(DynamicReportViewModel model)
         {
-            //TODO: Check for auto mapper nested
-            var databaseReport = _service.ParseReport(model.Id);
-            databaseReport.Name = model.Name;
-            databaseReport.ChartType = model.ChartDto.ChartType;
-            databaseReport.ColumnList = model.ColumnList;
-            databaseReport.EndDateTime = model.EndDateTime;
-            databaseReport.StartDateTime = model.StartDateTime;
-            databaseReport.GraphType = model.ChartDto.GraphType;
-            databaseReport.DynamicReportFolderId = model.DynamicReportFolderId;
-            databaseReport.InitialTable = model.TableName;
-            databaseReport.TimeFrameEnum = model.ChartDto.TimeFrameEnum;
-            try
+            var result = model.Id != Guid.Empty ? _service.EditReport(model) : _service.CreateReport(model);
+
+            if (result.IsSuccess)
             {
-                _service.EditReport(databaseReport);
-                return Json(new { success = true, message = "Updated" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.SaveSuccess)
+                });
             }
-            catch
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : ""
+            });
         }
+
 
         [HttpPost]
         public IActionResult DeleteReport(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "Id Empty!!!" });
-            try
+            var result = _service.DeleteReport(id);
+
+            if (result.IsSuccess)
             {
-                _service.DeleteReport(id);
-                return Json(new { success = true, message = "Deleted" });
+                return Json(new
+                {
+                    success = result.IsSuccess,
+                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.DeleteSuccess)
+                });
             }
-            catch (Exception)
+
+            return Json(new
             {
-                return Json(new { success = false, message = "Server error!!!" });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : ""
+            });
+        }
+
+
+        [HttpPost]
+        public IActionResult GetReportData(DynamicReportDto model)
+        {
+            return Json(new { charts = model.DynamicReportCharts, data = _service.GetReportContent(model) });
         }
 
         [HttpPost]
-        public IActionResult GetDynamicReportData(DynamicReportCreateRunViewModel dto)
+        public IActionResult GetReportDataById(Guid id)
         {
-            if (dto.ChartDto.GraphType == GraphType.List || dto.ChartDto.GraphType == GraphType.Pie)
+            var result = _service.GetReport(id);
+
+            if (result.IsSuccess)
             {
-                return
-                    Json(new
-                    {
-                        success = true,
-                        message = "Data Gathered successfully",
-                        queryData = JsonConvert.SerializeObject(_service.GetContent(dto.TableName,
-                            dto.ColumnList, dto.StartDateTime,
-                            dto.EndDateTime, dto.FiltersList)),
-                        graphType = dto.ChartDto.GraphType.ToString()
-                    });
+                var data = _service.GetReportContent(result.Result.ReportDataModel);
+                return Json(new { charts = result.Result.ReportDataModel.DynamicReportCharts, data });
             }
 
-            switch (dto.ChartDto.TimeFrameEnum)
+            return Json(new
             {
-                case TimeFrameEnum.Day:
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Data Gathered successfully",
-                        queryData = JsonConvert.SerializeObject(_service.GetChartDataForTimeFrame(dto.TableName,
-                            dto.ColumnList, dto.StartDateTime,
-                            dto.EndDateTime, dto.FiltersList, dto.ChartDto, 1)),
-                        graphType = dto.ChartDto.GraphType.ToString()
-                    });
-                case TimeFrameEnum.Week:
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Data Gathered successfully",
-                        queryData = JsonConvert.SerializeObject(_service.GetChartDataForTimeFrame(dto.TableName,
-                            dto.ColumnList, dto.StartDateTime,
-                            dto.EndDateTime, dto.FiltersList, dto.ChartDto, 7)),
-                        graphType = dto.ChartDto.GraphType.ToString()
-                    });
-                default:
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Data Gathered successfully",
-                        queryData = JsonConvert.SerializeObject(_service.GetChartDataForTimeFrame(dto.TableName,
-                            dto.ColumnList, dto.StartDateTime,
-                            dto.EndDateTime, dto.FiltersList, dto.ChartDto, 30)),
-                        graphType = dto.ChartDto.GraphType.ToString()
-                    });
-            }
+                success = result.IsSuccess,
+                message = result.Errors.Any() ? result.Errors.First().Message : ""
+            });
         }
 
         #endregion
 
         #region Database Methods
+
+        public ActionResult GetAggregateTypes()
+        {
+            var result = new List<SelectOption>();
+            var resultDict = Enum<AggregateType>.ToDictionary();
+            if (resultDict != null)
+            {
+                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
+            }
+            return Json(result);
+        }
+
+        public ActionResult GetFilterTypes()
+        {
+            var result = new List<SelectOption>();
+            var resultDict = Enum<FilterType>.ToDictionary();
+            if (resultDict != null)
+            {
+                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
+            }
+            return Json(result);
+        }
+
+
+        public ActionResult GetChartTypes()
+        {
+            var result = new List<SelectOption>();
+            var resultDict = Enum<ChartType>.ToDictionary();
+            if (resultDict != null)
+            {
+                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
+            }
+            return Json(result);
+        }
+
+
+        public ActionResult GetChartFieldTypes(ChartType chartType)
+        {
+            var result = _service.GetChartFieldTypes(chartType);
+            return Json(result);
+        }
+
 
         /// <summary>
         /// Get the list of table in the database/Context/Schema
@@ -277,50 +269,19 @@ namespace ST.Report.Dynamic.Razor.Controllers
         /// <returns></returns>
         public ActionResult GetTablesAjax()
         {
-            var result = _service.GetTableNames();
-            return Json(result);
-        }
-
-        /// <summary>
-        /// Get the Column type for changing the input field
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnName"></param>
-        /// <returns></returns>
-        public ActionResult GetColumnTypeClient(string tableName, string columnName)
-        {
-            string result = _service.GetColumnType(tableName, columnName);
-            return Json(new { success = true, message = result });
-        }
-
-        /// <summary>
-        /// Get the select options for the foreign keys or enums on the client
-        /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="columnName"></param>
-        /// <returns></returns>
-        public ActionResult GetForeignColumnDataForSelection(string tableName, string columnName)
-        {
-            var response = _service.GetForeignKeySelectValues(tableName, columnName);
-            var result = new List<ResponseClass>();
-
-            if (response.GetType() == new List<DynamicReportQueryResultViewModel>().GetType())
+            var tables = _service.GetTableNames();
+            var schemas = _service.GetUserSchemas();
+            if (schemas != null && tables != null)
             {
-                foreach (var item in response)
+                var result = schemas.Select(s => new
                 {
-                    result.Add(new ResponseClass()
-                    { Name = item.Columns[1].Value.ToString(), Id = item.Columns[0].Value.ToString() });
-                }
+                    id = s,
+                    text = s,
+                    children = tables.Where(x => x.id == s).Select(x => new { id = x.id + "." + x.text, x.text }).ToList()
+                });
+                return Json(result);
             }
-            else
-            {
-                foreach (var item in response)
-                {
-                    result.Add(new ResponseClass() { Name = item.ToString(), Id = item.ToString() });
-                }
-            }
-
-            return Json(new { success = true, message = Json(result) });
+            return Json(new { success = false, message = EnumHelper.GetEnumDescription(ResultMessagesEnum.EmptyResult) });
         }
 
         /// <summary>
@@ -337,9 +298,4 @@ namespace ST.Report.Dynamic.Razor.Controllers
         #endregion
     }
 
-    public class ResponseClass
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
 }

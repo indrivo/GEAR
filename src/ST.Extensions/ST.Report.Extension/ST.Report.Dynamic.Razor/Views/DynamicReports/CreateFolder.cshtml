@@ -1,4 +1,4 @@
-﻿@model ST.Report.Abstractions.Models.DynamicReportFolder
+﻿@model ST.Report.Abstractions.Models.ViewModels.DynamicReportFolderViewModel
 
 @{
     ViewData["Title"] = "Create report folder";
@@ -14,12 +14,6 @@
                 <form asp-action="CreateFolder" class="form-horizontal">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input hidden asp-for="Id" />
-                    <input hidden asp-for="Changed" />
-                    <input hidden asp-for="Created" />
-                    <input hidden asp-for="ModifiedBy" />
-                    <input hidden asp-for="IsDeleted" />
-                    <input hidden asp-for="Reports" />
-                    <input hidden asp-for="Author" />
                     <div class="form-group">
                         <hr class="m-t-0 m-b-40">
                         <div class="row">

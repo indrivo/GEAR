@@ -1,4 +1,4 @@
-﻿namespace ST.Report.Abstractions.Models
+﻿namespace ST.Report.Abstractions.Models.Enums
 {
     public enum TimeFrameEnum
     {
