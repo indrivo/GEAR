@@ -553,7 +553,6 @@
   "select_operation": "Выберите операцию",
   "operation": "Операция",
   "remove_filter": "Удалить фильтр",
-  "сhart_type": "Тип диаграммы ",
   "chart_title": "Заголовок диаграммы ",
   "remove_chart": "Удалить график",
   "chart_type": "Тип графика"
