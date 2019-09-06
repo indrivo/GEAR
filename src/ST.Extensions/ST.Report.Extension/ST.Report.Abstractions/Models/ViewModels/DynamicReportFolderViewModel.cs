@@ -4,6 +4,11 @@ namespace ST.Report.Abstractions.Models.ViewModels
 {
     public class DynamicReportFolderViewModel
     {
+        public DynamicReportFolderViewModel()
+        {
+
+        }
+
         public DynamicReportFolderViewModel(Guid id, string name)
         {
             Id = id;

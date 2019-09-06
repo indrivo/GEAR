@@ -130,11 +130,16 @@ namespace ST.Report.Dynamic
 
         public ResultModel<bool> DeleteFolder(Guid folderId)
         {
-            var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == folderId);
+            var reportFolder = _context.DynamicReportsFolders.Include(s => s.Reports).First(x => x.Id == folderId);
 
             if (reportFolder == null)
             {
                 return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+            }
+
+            if (reportFolder.Reports.Any())
+            {
+                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotEmpty);
             }
 
             try
@@ -143,7 +148,7 @@ namespace ST.Report.Dynamic
                 _context.SaveChanges();
                 return new ResultModel<bool>
                 {
-                    IsSuccess = false,
+                    IsSuccess = true,
                     KeyEntity = folderId
                 };
             }
@@ -266,7 +271,7 @@ namespace ST.Report.Dynamic
                 _context.SaveChanges();
                 return new ResultModel<bool>
                 {
-                    IsSuccess = false,
+                    IsSuccess = true,
                     KeyEntity = report.Id
                 };
             }

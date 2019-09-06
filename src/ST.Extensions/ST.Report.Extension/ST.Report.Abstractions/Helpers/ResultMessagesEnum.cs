@@ -13,6 +13,8 @@ namespace ST.Report.Abstractions.Helpers
 
         [Description("Folder Not Found")] FolderNotFound,
 
+        [Description("Folder is not empty")] FolderNotEmpty,
+
         [Description("Folder name cannot be empty")] FolderNameNullOrEmpty,
 
         [Description("There was a error on saving folder")] FolderNotSaved,
