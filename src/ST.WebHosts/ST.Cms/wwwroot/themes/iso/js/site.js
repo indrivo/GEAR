@@ -1710,12 +1710,12 @@ $(document).ready(function () {
 		}
 	});
 
-	const localizer = new Localizer();
+	const locHelper = new Localizer();
 
 	//Localization promise
 	const localizationPromise = new Promise((resolve, reject) => {
 		//Set localization config
-		const translateIcon = localizer.adaptIdentifier(settings.localization.current.identifier);
+		const translateIcon = locHelper.adaptIdentifier(settings.localization.current.identifier);
 		$("#currentlanguage").addClass(`flag-icon flag-icon-${translateIcon}`);
 		const languageBlock = $("#languageRegion");
 		resolve(languageBlock);
@@ -1727,7 +1727,7 @@ $(document).ready(function () {
 				const language =
 					`<a href="/Localization/ChangeLanguage?identifier=${lang.identifier
 					}" class="dropdown-item language-event">
-							<i class="flag-icon flag-icon-${localizer.adaptIdentifier(lang.identifier)}"></i> ${lang.name}
+							<i class="flag-icon flag-icon-${locHelper.adaptIdentifier(lang.identifier)}"></i> ${lang.name}
 						</a>`;
 				languageBlock.append(language);
 			});

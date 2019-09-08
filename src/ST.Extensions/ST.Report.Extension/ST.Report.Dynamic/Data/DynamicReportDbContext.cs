@@ -21,7 +21,7 @@ namespace ST.Report.Dynamic.Data
         /// <summary>
         /// Dynamic reports
         /// </summary>
-        public DbSet<DynamicReportDbModel> DynamicReports { get; set; }
+        public DbSet<DynamicReport> DynamicReports { get; set; }
 
         /// <summary>
         /// Dynamic report folders

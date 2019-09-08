@@ -369,6 +369,15 @@ Localizer.prototype.adaptIdentifier = function (idt) {
 	return idt;
 };
 
+
+/**
+ * Translate key
+ * @param {any} key
+ */
+Localizer.prototype.translate = function (key) {
+	return window.translate(key);
+};
+
 //------------------------------------------------------------------------------------//
 //								External Connections
 //------------------------------------------------------------------------------------//

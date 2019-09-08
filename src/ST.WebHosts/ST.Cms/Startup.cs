@@ -89,6 +89,7 @@ using TreeIsoService = ST.Cms.Services.TreeIsoService;
 using ST.MultiTenant.Abstractions.Extensions;
 using ST.MultiTenant.Razor.Extensions;
 using ST.MultiTenant.Services;
+using ST.Report.Dynamic.Razor.Extensions;
 using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
 using ST.TaskManager.Razor.Extensions;
@@ -388,7 +389,8 @@ namespace ST.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddReportUIModule();
 
 
 			services.AddInstallerModule();
