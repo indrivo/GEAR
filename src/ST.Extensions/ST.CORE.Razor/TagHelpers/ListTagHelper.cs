@@ -137,6 +137,7 @@ namespace ST.Core.Razor.TagHelpers
             var renderColumns = new StringBuilder();
             foreach (var renderItem in AspFor.RenderColumns)
             {
+                //TODO: Inject template
                 if (renderItem.HasTemplate)
                 {
                     renderColumns.AppendLine($"{{ data : \"{renderItem.ApiIdentifier}\"}},");

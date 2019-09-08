@@ -518,5 +518,8 @@
   "system_and": "i",
   "system_subscriptions_agreement": "Umowa Subskrypcji ",
   "system_privacy_policies": "Polityka Prywatności ",
-  "system_register": "Rejestracja"
+  "system_register": "Rejestracja",
+  "system_confirm": "Potwierdzić",
+  "system_email_sent": "List został wysłany",
+  "system_email_confirmed": "E-mail potwierdzony"
 }

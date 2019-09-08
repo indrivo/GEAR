@@ -324,6 +324,7 @@ namespace ST.MultiTenant.Services
                 EmailConfirmed = false,
                 Created = DateTime.Now,
                 Author = _httpContextAccessor.HttpContext.User.Identity.Name,
+                IsEditable = true
             };
 
             var tenant = await GetTenantByCurrentUserAsync();
@@ -477,7 +478,8 @@ namespace ST.MultiTenant.Services
             var filtered = _context.Filter<ApplicationUser>(param.Search.Value, param.SortOrder,
                 param.Start,
                 param.Length,
-                out var totalCount, x => !x.IsDeleted && x.TenantId == currentUser.TenantId).ToList();
+                out var totalCount,
+                x => !x.IsDeleted && x.TenantId == currentUser.TenantId && x.Id != currentUser.Id).ToList();
 
             var rs = filtered.Select(async x =>
             {

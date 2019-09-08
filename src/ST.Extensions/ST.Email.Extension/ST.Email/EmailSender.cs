@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using ST.Core.Abstractions;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Email.Abstractions;
 using ST.Email.Abstractions.Models.EmailViewModels;
 
 namespace ST.Email
 {
-    // This class is used by the application to send email for account confirmation and password reset.
-    // For more details see https://go.microsoft.com/fwlink/?LinkID=532713
     public class EmailSender : IEmailSender
     {
         /// <summary>
@@ -77,6 +77,7 @@ namespace ST.Email
 
                     foreach (var emailTo in emails)
                     {
+                        if (!emailTo.IsValidEmail()) continue;
                         mailMessage.To.Add(emailTo);
                     }
 
@@ -85,7 +86,7 @@ namespace ST.Email
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
         }
 

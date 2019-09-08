@@ -75,7 +75,7 @@
   "next_step": "Urmatorul pas",
   "taskStatuses": "Situatia Task-urilor",
   "signin_key": "Logare",
-  "email": "Mesagerie",
+  "email": "Posta electronica",
   "_classfiers_projectcategories_create": "Nou tip de proiect",
   "_classfiers_projectcategories": "Categorii de proiecte",
   "_classfiers_taskstatuses": "Tipuri de Statuturi",
@@ -518,5 +518,8 @@
   "system_and": "și",
   "system_subscriptions_agreement": "Contractul de abonament",
   "system_privacy_policies": "Politicile De Confidențialitate",
-  "system_register": "Inregistreaza-te"
+  "system_register": "Inregistreaza-te",
+  "system_confirm": "Confirma",
+  "system_email_sent": "E-mailul a fost trimis",
+  "system_email_confirmed": "E-mail confirmat"
 }

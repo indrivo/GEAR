@@ -518,5 +518,8 @@
   "system_and": "і",
   "system_subscriptions_agreement": "Угода Про Підписку ",
   "system_privacy_policies": "Політика Конфіденційності ",
-  "system_register": "Реєстрація"
+  "system_register": "Реєстрація",
+  "system_confirm": "Підтвердити",
+  "system_email_sent": "Лист було відправлено",
+  "system_email_confirmed": "Електронної пошти підтверджено"
 }

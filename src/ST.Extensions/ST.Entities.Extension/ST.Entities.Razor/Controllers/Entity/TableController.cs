@@ -166,7 +166,7 @@ namespace ST.Entities.Razor.Controllers.Entity
         {
             var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount);
+                out var totalCount, x => x.IsPartOfDbContext || x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
 
             var orderList = filtered.Select(o => new TableModel
             {

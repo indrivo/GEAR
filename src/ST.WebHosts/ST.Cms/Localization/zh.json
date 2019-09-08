@@ -518,5 +518,8 @@
   "system_and": "和",
   "system_subscriptions_agreement": "订购协议",
   "system_privacy_policies": "隐私的政策",
-  "system_register": "注册"
+  "system_register": "注册",
+  "system_confirm": "确认",
+  "system_email_sent": "电子邮件发送",
+  "system_email_confirmed": "电子邮件确认"
 }

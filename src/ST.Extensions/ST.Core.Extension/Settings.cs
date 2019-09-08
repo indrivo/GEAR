@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable InconsistentNaming
 
 namespace ST.Core
 {
@@ -29,9 +30,9 @@ namespace ST.Core
             public const string CustomTable = "CustomTableName";
         }
 
-        public static class Date
+        public struct Date
         {
-            public static string DateFormat = "dd'.'MM'.'yyyy";
+            public const string DateFormat = "dd'.'MM'.'yyyy";
         }
     }
 

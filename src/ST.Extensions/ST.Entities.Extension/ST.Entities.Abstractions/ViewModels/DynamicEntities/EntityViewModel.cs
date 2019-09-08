@@ -10,7 +10,7 @@ namespace ST.Entities.Abstractions.ViewModels.DynamicEntities
         public string TableName { get; set; }
 
         /// <summary>
-        /// SChema of the table
+        /// Schema of the table
         /// </summary>
         public string TableSchema { get; set; }
 
@@ -21,7 +21,7 @@ namespace ST.Entities.Abstractions.ViewModels.DynamicEntities
 	    public bool HasConfig { get; set; }
 
 		/// <summary>
-		/// Chema of the table
+		/// Schema of the table
 		/// </summary>
 		public List<EntityFieldsViewModel> Fields { get; set; }
 

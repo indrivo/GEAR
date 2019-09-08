@@ -37,7 +37,9 @@ namespace ST.MultiTenant.Razor.Helpers
                 {
                     new ListRenderColumn(_localizer["name"], "userName"),
                     new ListRenderColumn(_localizer["roles"], "roles"),
+                    new ListRenderColumn(_localizer["email"], "email"),
                     new ListRenderColumn(_localizer["created"], "created"),
+                    new ListRenderColumn(_localizer["system_email_confirmed"], "emailConfirmed"),
                     new ListRenderColumn(_localizer["author"], "author")
                 },
                 HeadButtons = new List<UrlTagHelperViewModel>
@@ -58,13 +60,6 @@ namespace ST.MultiTenant.Razor.Helpers
                 HasActions = true,
                 ListActions = new List<ListActionViewModel>
                 {
-                    new ListActionViewModel
-                    {
-                        HasIcon = false,
-                        Name = _localizer["edit"],
-                        Url = "/CompanyManage/LoadPageItems",
-                        ButtonType = BootstrapButton.Primary
-                    },
                     new ListActionViewModel
                     {
                         HasIcon = false,

@@ -518,5 +518,8 @@
   "system_and": "y",
   "system_subscriptions_agreement": "Acuerdo De Suscripción De",
   "system_privacy_policies": "Políticas De Privacidad",
-  "system_register": "Regístrate"
+  "system_register": "Regístrate",
+  "system_confirm": "Confirmar",
+  "system_email_sent": "Correo electrónico fue enviado",
+  "system_email_confirmed": "Correo electrónico confirmado"
 }

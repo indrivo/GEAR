@@ -518,5 +518,8 @@
   "system_and": "や",
   "system_subscriptions_agreement": "契約合意",
   "system_privacy_policies": "個人情報保護方針",
-  "system_register": "登録"
+  "system_register": "登録",
+  "system_confirm": "確認",
+  "system_email_sent": "メールが送信された",
+  "system_email_confirmed": "メール確認"
 }

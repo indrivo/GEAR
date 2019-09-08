@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4;
+using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -861,6 +862,11 @@ namespace ST.Identity.Razor.Controllers
                 return NotFound();
             }
 
+            if (!_httpContextAccesor.HttpContext.User.IsAuthenticated())
+            {
+                await _httpContextAccesor.HttpContext.SignOutAsync();
+            }
+
             var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
             if (currentUser == null)
             {
@@ -888,32 +894,32 @@ namespace ST.Identity.Razor.Controllers
         public async Task<IActionResult> ConfirmEmail(ConfirmEmailViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
-            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.UserId));
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.UserId));
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             if (resetToken == null)
             {
                 ModelState.AddModelError(string.Empty, _localizer["system_error_on_generate_reset_token"]);
                 return View(model);
             }
 
-            var result = await _userManager.ResetPasswordAsync(currentUser, resetToken, model.Password);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, model.Password);
             if (result.Succeeded)
             {
-                var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(currentUser);
+                var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 if (confirmEmailToken == null)
                 {
                     ModelState.AddModelError(string.Empty, _localizer["system_error_on_generate_token"]);
                     return View(model);
                 }
 
-                var confirmEmailResult = await _userManager.ConfirmEmailAsync(currentUser, confirmEmailToken);
+                var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, confirmEmailToken);
                 if (!confirmEmailResult.Succeeded)
                 {
                     AddErrors(confirmEmailResult);
                     return View(model);
                 }
 
-                await _signInManager.PasswordSignInAsync(currentUser, model.Password, true, false);
+                await _signInManager.PasswordSignInAsync(user, model.Password, true, false);
                 return RedirectToAction("Index", "Home");
             }
 

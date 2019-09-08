@@ -518,5 +518,8 @@
   "system_and": "en",
   "system_subscriptions_agreement": "Abonnement Overeenkomst",
   "system_privacy_policies": "Privacy Beleid",
-  "system_register": "Aanmelden"
+  "system_register": "Aanmelden",
+  "system_confirm": "Bevestigen",
+  "system_email_sent": "E-mail is verzonden",
+  "system_email_confirmed": "E-mail bevestigd"
 }

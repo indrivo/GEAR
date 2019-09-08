@@ -518,5 +518,8 @@
   "system_and": "και",
   "system_subscriptions_agreement": "Προεγγραφής",
   "system_privacy_policies": "Πολιτικές Προστασίας Προσωπικών Δεδομένων",
-  "system_register": "Εγγραφείτε"
+  "system_register": "Εγγραφείτε",
+  "system_confirm": "Επιβεβαίωση",
+  "system_email_sent": "Το μήνυμα εστάλη",
+  "system_email_confirmed": "Email επιβεβαίωσε"
 }

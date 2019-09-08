@@ -469,13 +469,6 @@ if (typeof jQuery === 'undefined') {
 	throw new Error('Events requires jQuery');
 }
 
-$(document).ready(function () {
-	$(".sa-logout").on("click",
-		function () {
-			localStorage.removeItem("current_user");
-		});
-});
-
 
 function Notificator() {
 	this.user = null;
@@ -951,6 +944,7 @@ ST.prototype.registerLocalLogout = function (selector) {
 					success: function (data) {
 						if (data.is_success) {
 							swal("Success!", data.message, "success");
+							localStorage.clear();
 							window.location.href = "/Account/Login";
 						} else {
 							swal("Fail!", data.error_keys[0].message, "error");
@@ -975,4 +969,15 @@ String.prototype.toUpperFirstLetter = function () {
 	const first = this[0].toUpperCase();
 	const res = `${first}${this.slice(1, this.length)}`;
 	return res;
+}
+
+
+class Validator {
+	/**
+	 * Validate email
+	 * @param {any} email
+	 */
+	isValidEmail(email) {
+		return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email);
+	}
 }

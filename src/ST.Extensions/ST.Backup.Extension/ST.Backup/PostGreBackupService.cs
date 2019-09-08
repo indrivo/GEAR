@@ -1,27 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Options;
 using ST.Backup.Abstractions;
 
 namespace ST.Backup.PostGresSql
 {
     public class PostGreBackupService : IBackupService<PostGreSqlBackupSettings>
     {
+        #region Injectable
+
+        /// <summary>
+        /// Inject options
+        /// </summary>
+        private readonly IOptions<PostGreSqlBackupSettings> _options;
+
+        #endregion
+
+        public PostGreBackupService(IOptions<PostGreSqlBackupSettings> options)
+        {
+            _options = options;
+        }
+
         /// <summary>
         /// Start backup database
         /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="directoryPath"></param>
-        public void Backup(PostGreSqlBackupSettings settings, string directoryPath)
+        public virtual void Backup()
         {
+            var directoryPath = GetDirectoryPath();
             var currentDate = DateTime.Now;
             var outputFile = Path.Combine(directoryPath,
-                $"backup {currentDate.Day}.{currentDate.Month}.{currentDate.Year} {currentDate.Hour}.{currentDate.Minute}.{settings.FileExtension}");
-            var dumpCommand = "\"" + settings.PgDumpPath + "\"" + " -Fc" + " -h " + settings.Host + " -p " +
-                              settings.Port + " -d " + settings.Database + " -U " + settings.User + "";
-            var passFileContent = "" + settings.Host + ":" + settings.Port + ":" + settings.Database + ":" +
-                                  settings.User + ":" + settings.Password + "";
+                $"backup {currentDate.Day}.{currentDate.Month}.{currentDate.Year} {currentDate.Hour}.{currentDate.Minute}.{_options.Value.FileExtension}");
+            var dumpCommand = "\"" + _options.Value.PgDumpPath + "\"" + " -Fc" + " -h " + _options.Value.Host + " -p " +
+                              _options.Value.Port + " -d " + _options.Value.Database + " -U " + _options.Value.User + "";
+            var passFileContent = "" + _options.Value.Host + ":" + _options.Value.Port + ":" + _options.Value.Database + ":" +
+                                  _options.Value.User + ":" + _options.Value.Password + "";
 
             var batFilePath = Path.Combine(
                 Path.GetTempPath(),
@@ -73,9 +89,39 @@ namespace ST.Backup.PostGresSql
             }
         }
 
-        public string GetProviderName()
+        /// <summary>
+        /// Get provider name
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetProviderName()
         {
             return nameof(PostGreBackupService);
+        }
+
+        /// <summary>
+        /// Get backups
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<string> GetBackups()
+        {
+            var files = Directory.GetFiles(GetDirectoryPath()).ToList();
+            return files;
+        }
+
+        /// <summary>
+        /// Get directory path
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string GetDirectoryPath()
+        {
+            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var directoryPath = Path.Combine(userProfilePath, $"backup\\{_options.Value.BackupFolder}");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            return directoryPath;
         }
     }
 }

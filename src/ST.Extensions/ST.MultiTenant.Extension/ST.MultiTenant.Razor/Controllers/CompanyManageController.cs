@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Mapster;
@@ -26,7 +25,6 @@ using ST.MultiTenant.Abstractions.Helpers;
 using ST.MultiTenant.Abstractions.ViewModels;
 using ST.MultiTenant.Razor.Helpers;
 using ST.Notifications.Abstractions;
-using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.MultiTenant.Razor.Controllers
 {
@@ -62,11 +60,6 @@ namespace ST.MultiTenant.Razor.Controllers
         /// </summary>
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        /// <summary>
-        /// Inject notifier
-        /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
-
         #endregion
 
         public CompanyManageController(UserManager<ApplicationUser> userManager,
@@ -75,7 +68,6 @@ namespace ST.MultiTenant.Razor.Controllers
             IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<ApplicationUser> userManager1, SignInManager<ApplicationUser> signInManager) :
             base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
         {
-            _notify = notify;
             _organizationService = organizationService;
             _service = service;
             _userManager = userManager1;
@@ -202,7 +194,8 @@ namespace ST.MultiTenant.Razor.Controllers
                     UserLastName = data.LastName,
                     AuthenticationType = AuthenticationType.Local,
                     EmailConfirmed = false,
-                    TenantId = reqTenant.Result.Id
+                    TenantId = reqTenant.Result.Id,
+                    IsEditable = true
                 };
 
                 var usrReq = await _userManager.UserManager.CreateAsync(newCompanyOwner, data.Password);

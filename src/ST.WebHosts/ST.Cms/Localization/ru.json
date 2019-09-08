@@ -518,5 +518,8 @@
   "system_and": "и",
   "system_subscriptions_agreement": "Соглашение o Подписке ",
   "system_privacy_policies": "Политика Конфиденциальности ",
-  "system_register": "Регистрация"
+  "system_register": "Регистрация",
+  "system_confirm": "Подтвердить",
+  "system_email_sent": "Письмо было отправлено",
+  "system_email_confirmed": "Электронной почты подтвержден"
 }
