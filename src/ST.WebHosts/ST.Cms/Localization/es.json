@@ -558,5 +558,7 @@
   "remove_filter": "Quitar filtro",
   "chart_title": "Título del gráfico",
   "remove_chart": "Quitar gráfico",
-  "chart_type": "Tipo de gráfico"
+  "chart_type": "Tipo de gráfico",
+  "system_email_not_confirmed": "Correo electrónico no confirmado",
+  "system_email_confirm_state": "El estado del correo electrónico"
 }

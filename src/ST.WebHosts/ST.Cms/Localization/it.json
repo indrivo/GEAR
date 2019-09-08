@@ -559,4 +559,6 @@
   "chart_title": "Titolo del grafico",
   "remove_chart": "Rimuovere grafico",
   "chart_type": "Tipo di grafico",
+  "system_email_not_confirmed": "E-mail non confermato",
+  "system_email_confirm_state": "Lo stato dell'e-mail"
 }

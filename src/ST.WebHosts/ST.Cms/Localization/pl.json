@@ -558,5 +558,7 @@
   "remove_filter": "Usuń filtr",
   "chart_title": "Tytuł wykresu ",
   "remove_chart": "Usunąć harmonogram",
-  "chart_type": "Typ wykresu "
+  "chart_type": "Typ wykresu ",
+  "system_email_not_confirmed": "E-mail nie został potwierdzony",
+  "system_email_confirm_state": "Stan \" na email"
 }

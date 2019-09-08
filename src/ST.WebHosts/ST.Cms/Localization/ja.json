@@ -558,5 +558,7 @@
   "remove_filter": "除去フィルター",
   "chart_title": "図表タイトル",
   "remove_chart": "削除した図表",
-  "chart_type": "インタラクティブなプロトタイプ"
+  "chart_type": "インタラクティブなプロトタイプ",
+  "system_email_not_confirmed": "メールを確認していな",
+  "system_email_confirm_state": "の状況をメールで"
 }

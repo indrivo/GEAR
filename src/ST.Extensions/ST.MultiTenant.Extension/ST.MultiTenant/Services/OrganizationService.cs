@@ -103,6 +103,7 @@ namespace ST.MultiTenant.Services
         public virtual IEnumerable<Tenant> GetAllTenants()
             => _context.Tenants.ToList();
 
+        /// <inheritdoc />
         /// <summary>
         /// Get disabled users
         /// </summary>
@@ -183,6 +184,7 @@ namespace ST.MultiTenant.Services
                 .FirstOrDefault(x => x.Id.Equals(user.TenantId));
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get Tenant by current user 
         /// </summary>
@@ -202,6 +204,7 @@ namespace ST.MultiTenant.Services
             return resultModel;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create new Organization User
         /// </summary>
@@ -242,7 +245,21 @@ namespace ST.MultiTenant.Services
         {
             Arg.NotNull(user, nameof(SendInviteToEmailAsync));
             var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Account", new { userId = user.Id, confirmToken = code },
+            var callbackUrl = _urlHelper.Action("ConfirmInvitedUserByEmail", "Company", new { userId = user.Id, confirmToken = code },
+                _httpContextAccessor.HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
+        }
+
+        /// <summary>
+        /// Send confirm email
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task SendConfirmEmailRequest(ApplicationUser user)
+        {
+            Arg.NotNull(user, nameof(SendConfirmEmailRequest));
+            var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Company", new { userId = user.Id, confirmToken = code },
                 _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
                 $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");

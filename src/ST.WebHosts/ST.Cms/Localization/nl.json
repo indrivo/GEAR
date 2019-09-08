@@ -558,5 +558,7 @@
   "remove_filter": "Verwijder filter",
   "chart_title": "Grafiek titel",
   "remove_chart": "Diagram verwijderen",
-  "chart_type": "Diagram type"
+  "chart_type": "Diagram type",
+  "system_email_not_confirmed": "E-mail niet wordt bevestigd",
+  "system_email_confirm_state": "De status van de e-mail"
 }

@@ -558,5 +558,7 @@
   "remove_filter": "Eliminare filtrul",
   "chart_title": "Titlu grafic",
   "remove_chart": "Eliminare grafic",
-  "chart_type": "Tip grafic"
+  "chart_type": "Tip grafic",
+  "system_email_not_confirmed": "E-mail nu a confirmat",
+  "system_email_confirm_state": "Starea la email"
 }

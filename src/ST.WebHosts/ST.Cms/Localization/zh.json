@@ -558,5 +558,7 @@
   "remove_filter": "删除过滤器",
   "chart_title": "图表标题",
   "remove_chart": "除去程图",
-  "chart_type": "图表的类型"
+  "chart_type": "图表的类型",
+  "system_email_not_confirmed": "电子邮件没有得到证实",
+  "system_email_confirm_state": "状态的电子邮件"
 }

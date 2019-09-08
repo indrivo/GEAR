@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ST.Identity.Razor.ViewModels.AccountViewModels
+namespace ST.MultiTenant.Razor.ViewModels
 {
     public class ConfirmEmailViewModel
     {

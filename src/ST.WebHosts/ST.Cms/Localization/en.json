@@ -558,5 +558,7 @@
   "remove_filter": "Remove filter",
   "chart_title": "Chart title",
   "remove_chart": "Remove chart",
-  "chart_type": "Chart type"
+  "chart_type": "Chart type",
+  "system_email_not_confirmed": "Email not confirmed",
+  "system_email_confirm_state": "The status of the email"
 }

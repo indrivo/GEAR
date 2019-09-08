@@ -558,5 +558,7 @@
   "remove_filter": "Вилучити фільтр",
   "chart_title": "Заголовок діаграми ",
   "remove_chart": "Видалити графік",
-  "chart_type": "Тип діаграми "
+  "chart_type": "Тип діаграми ",
+  "system_email_not_confirmed": "Електронної пошти не підтверджений",
+  "system_email_confirm_state": "Стан \" на email"
 }

@@ -143,5 +143,12 @@ namespace ST.MultiTenant.Abstractions
         /// <param name="data"></param>
         /// <returns></returns>
         Task<ResultModel<CreateTenantViewModel>> CreateOrganizationAsync(CreateTenantViewModel data);
+
+        /// <summary>
+        /// Send user confirm email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task SendConfirmEmailRequest(ApplicationUser user);
     }
 }

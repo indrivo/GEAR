@@ -558,5 +558,7 @@
   "remove_filter": "Αφαιρέστε το φίλτρο",
   "chart_title": "Διάγραμμα τίτλο",
   "remove_chart": "Αφαιρέστε το διάγραμμα",
-  "chart_type": "Τύπος γραφήματος"
+  "chart_type": "Τύπος γραφήματος",
+  "system_email_not_confirmed": "E-mail δεν έχει επιβεβαιωθεί",
+  "system_email_confirm_state": "Η κατάσταση του ηλεκτρονικού ταχυδρομείου"
 }
