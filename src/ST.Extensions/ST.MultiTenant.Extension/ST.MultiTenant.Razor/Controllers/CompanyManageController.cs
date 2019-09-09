@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using ST.Identity.Abstractions;
 using ST.MultiTenant.Abstractions;
@@ -198,8 +200,8 @@ namespace ST.MultiTenant.Razor.Controllers
                     IsEditable = true
                 };
 
+                //create new user
                 var usrReq = await _userManager.UserManager.CreateAsync(newCompanyOwner, data.Password);
-
                 if (!usrReq.Succeeded)
                 {
                     ModelState.AddModelError(string.Empty, "Fail to create user!");
@@ -215,6 +217,9 @@ namespace ST.MultiTenant.Razor.Controllers
                     UserEmail = newCompanyOwner.Email
                 });
 
+                //send confirm email request
+                await _organizationService.SendConfirmEmailRequest(newCompanyOwner);
+
                 var roleReq = await _userManager.AddToRolesAsync(newCompanyOwner, new List<string> { Resources.Roles.COMPANY_ADMINISTRATOR });
 
                 if (!roleReq.IsSuccess)
@@ -227,6 +232,7 @@ namespace ST.MultiTenant.Razor.Controllers
 
                 await _userManager.UserManager.AddClaimAsync(newCompanyOwner, claim);
 
+                //sing in new created
                 var signResult =
                     await _signInManager.PasswordSignInAsync(data.UserName, data.Password, true, false);
 
@@ -243,6 +249,29 @@ namespace ST.MultiTenant.Razor.Controllers
             ModelState.AppendResultModelErrors(reqTenant.Errors);
 
             return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
+        }
+
+        /// <summary>
+        /// Delete user from company
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> DeleteUser(Guid? userId)
+        {
+            if (userId == null) return NotFound();
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            var tenantId = _userManager.CurrentUserTenantId;
+            if (user == null) return NotFound();
+            if (tenantId != user.TenantId) return BadRequest();
+
+            var serviceResult = await _userManager.UserManager.DeleteAsync(user);
+            if (serviceResult.Succeeded)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return BadRequest();
         }
     }
 }

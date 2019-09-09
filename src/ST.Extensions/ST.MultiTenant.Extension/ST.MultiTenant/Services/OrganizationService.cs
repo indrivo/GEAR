@@ -23,6 +23,7 @@ using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Abstractions;
 using ST.MultiTenant.Abstractions.Helpers;
 using ST.MultiTenant.Abstractions.ViewModels;
+using ST.Notifications.Abstractions;
 using Resources = ST.MultiTenant.Abstractions.Helpers.Resources;
 
 namespace ST.MultiTenant.Services
@@ -61,6 +62,11 @@ namespace ST.MultiTenant.Services
         /// </summary>
         private readonly IUrlHelper _urlHelper;
 
+        /// <summary>
+        /// Inject hub
+        /// </summary>
+        private readonly INotificationHub _hub;
+
         #endregion
 
         /// <summary>
@@ -73,7 +79,7 @@ namespace ST.MultiTenant.Services
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
         public OrganizationService(ApplicationDbContext context, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer)
+            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, INotificationHub hub)
         {
             _context = context;
             _userManager = userManager;
@@ -81,6 +87,7 @@ namespace ST.MultiTenant.Services
             _emailSender = emailSender;
             _urlHelper = urlHelper;
             _localizer = localizer;
+            _hub = hub;
         }
 
         /// <inheritdoc />
@@ -502,6 +509,7 @@ namespace ST.MultiTenant.Services
             {
                 var u = x.Adapt<CompanyUsersViewModel>();
                 u.Roles = await _userManager.UserManager.GetRolesAsync(x);
+                u.IsOnline = _hub.IsUserOnline(x.Id.ToGuid());
                 return u;
             }).Select(x => x.Result);
 

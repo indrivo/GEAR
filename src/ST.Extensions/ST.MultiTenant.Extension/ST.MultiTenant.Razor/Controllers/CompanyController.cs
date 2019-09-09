@@ -78,7 +78,7 @@ namespace ST.MultiTenant.Razor.Controllers
             var confirmEmailResult = await _userManager.UserManager.ConfirmEmailAsync(currentUser, confirmToken);
             if (!confirmEmailResult.Succeeded)
             {
-
+                return BadRequest();
             }
 
             await _signInManager.SignInAsync(currentUser, true);

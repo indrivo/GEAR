@@ -1,6 +1,8 @@
 ﻿$(document).ready(() => {
     const validator = new Validator();
-    $('#roleSelect').select2();
+    $('#roleSelect').select2({
+        theme: 'bootstrap'
+    });
     $("#inviteBtn").click(() => {
         swal.fire(
             {
@@ -19,6 +21,7 @@
 					</div>`,
                 onOpen: () => {
                     $('#roleSelect').select2({
+                        theme: 'bootstrap',
                         dropdownCssClass: "increased-z-index",
                         data: load("/CompanyManage/GetRoles").map(roles => ({ id: roles.id, text: roles.name }))
                     });

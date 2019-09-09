@@ -560,5 +560,13 @@
   "remove_chart": "Retirez graphique",
   "chart_type": "Type de graphique",
   "system_email_not_confirmed": "Le courriel n'est pas confirmé",
-  "system_email_confirm_state": "Le statut de l'e-mail"
+  "system_email_confirm_state": "Le statut de l'e-mail",
+  "iso_matrix_impact": "L'Impact",
+  "iso_matrix_set_points": "Les points de consigne",
+  "iso_matrix_edit_cell_value": "Modifier les valeurs des cellules",
+  "iso_matrix_save_conf_message": "Nouvelle configuration sauvegardée",
+  "system_multi_tenant_manage_company_users": "Gestion des utilisateurs connectés à votre organisation",
+  "system_multi_tenant_company_users_doc": "Ici, vous pouvez gérer les utilisateurs, qui ont été invités dans votre organisation, vous avez les fonctions activées, tels que: supprimer, activer, arrêter, modifier le mot de passe et des informations générales",
+  "iso_matrix_is_active": "Est Active",
+  "system_user_online": "En ligne"
 }

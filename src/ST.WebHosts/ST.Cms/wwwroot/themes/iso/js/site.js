@@ -905,7 +905,6 @@ if (typeof TableInlineEdit !== "undefined") {
 	TableInlineEdit.prototype.getReferenceEditCell = function (conf) {
 		const gScope = this;
 		const div = document.createElement("div");
-		//div.setAttribute("class", "");
 		const dropdown = document.createElement("select");
 		dropdown.setAttribute("class", "inline-update-event data-input form-control");
 		dropdown.setAttribute("data-prop-id", conf.propId);
@@ -936,8 +935,20 @@ if (typeof TableInlineEdit !== "undefined") {
 		grSpan.appendChild(icon);
 		decorator.appendChild(grSpan);
 		container.appendChild(decorator);
+		gScope.populateColumnDropdown(conf, dropdown, div, el);
+		div.appendChild(dropdown);
+		div.appendChild(container);
+		return div;
+	};
+
+	/**
+	 * Populate column dropdown
+	 * @param {any} conf
+	 */
+	TableInlineEdit.prototype.populateColumnDropdown = function (conf, dropdown, div, el) {
+		const gScope = this;
 		//Populate dropdown
-		loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
+		return loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
 			if (data) {
 				if (data.is_success) {
 					const entityName = data.result.entityName;
@@ -955,129 +966,133 @@ if (typeof TableInlineEdit !== "undefined") {
 							value: x.name
 						};
 					});
-					$($(div).find(".fire-reference-component")).on("click",
-						function (event) {
-							if (event.originalEvent.detail > 1) return;
-							const cellCtx = this;
-							const item = $.Iso.dynamicFilter("list",
-								event.target,
-								items,
-								{
-									create: function (value) {
-										return new Promise((resolve, reject) => {
-											gScope.db.addAsync(entityName, { name: value }).then(response => {
-												if (response.is_success) {
-													dropdown.options[dropdown.options.length] =
-														new Option(value, response.result);
-													const successMessage =
-														`${window.translate("system_record")} ${value} ${window
-															.translate("system_record_added_into")} ${entityName}`;
-													gScope.toast.notify({ heading: successMessage, icon: "success" });
-													resolve(response.result);
-												} else {
-													reject();
-													gScope.toast.notifyErrorList(response.error_keys);
-												}
-											});
-										});
-									},
-									update: function (obj) {
-										return new Promise((resolve, reject) => {
-											gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
-												if (x.is_success) {
-													const newObj = x.result;
-													newObj.name = obj.value;
-													gScope.db.updateAsync(entityName, newObj).then(y => {
-														if (y.is_success) {
-															gScope.toast.notify({
-																heading: window.translate("system_entry_updaded"),
-																icon: "success"
-															});
-															resolve();
-														} else {
-															gScope.toast.notifyErrorList(y.error_keys);
-															reject();
-														}
-													}).catch(err => {
-														reject(err);
-													});
-												} else {
-													gScope.toast.notify({
-														heading: window.translate("system_data_no_item_found")
-													});
-												}
-											}).catch(err => {
-												reject(err);
-											});
-										});
-									},
-									delete: function (obj) {
-										return new Promise((resolve, reject) => {
-											const params = [{ parameter: "Id", value: obj.id }];
-											gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
-												if (x.is_success) {
-													gScope.toast.notify({
-														heading: window.translate("system_data_record_deleted"),
-														icon: "success"
-													});
-													resolve();
-												} else {
-													gScope.toast.notifyErrorList(x.error_keys);
-													reject();
-												}
-											}).catch(err => {
-												reject(err);
-											});
-										});
-									}
-								},
-								{
-									entity: entityName,
-									ctx: cellCtx,
-									items: items,
-									searchBarPlaceholder: window.translate("system_search_add"),
-									addButtonLabel: window.translate("add")
-								},
-								{ placement: "bottom-auto" });
-
-							$(item.container).on("selectValueChange",
-								(event, arg) => {
-									const { ctx, entity, items } = arg.options;
-									//const exist = items.find(x => x.id === arg.value);
-									$(dropdown).val(arg.value);
-									$(dropdown).trigger("change");
-									gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
-										if (x.is_success) {
-											const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
-											//if (conf.addMode) {
-											//	const template = conf.viewModel
-											//		.tableModelFields.tableFieldConfigValues
-											//		.find(z => z.tableFieldConfigId === tId).value;
-
-											//	console.log(template);
-											//} else {
-
-											//}
-											let param = "name";
-											if (entity == "Users") {
-												param = "userName";
-											}
-
-											$(ctx).find(".virtual-el-reference").val(x.result[param]);
-										} else {
-											gScope.toast.notifyErrorList(x.error_keys);
-										}
-									});
-								});
-						});
+					gScope.attachEventsToSelect(div, items, entityName, dropdown);
 				}
 				dropdown.value = conf.value;
 			}
 		});
+	};
 
-		div.appendChild(dropdown);
-		div.appendChild(container);
-		return div;
+	/**
+	 * Attach events
+	 */
+	TableInlineEdit.prototype.attachEventsToSelect = function (div, items, entityName, dropdown) {
+		const gScope = this;
+		$($(div).find(".fire-reference-component")).on("click",
+			function (event) {
+				if (event.originalEvent.detail > 1) return;
+				const cellCtx = this;
+				const item = $.Iso.dynamicFilter("list",
+					event.target,
+					items,
+					{
+						create: function (value) {
+							return new Promise((resolve, reject) => {
+								gScope.db.addAsync(entityName, { name: value }).then(response => {
+									if (response.is_success) {
+										dropdown.options[dropdown.options.length] =
+											new Option(value, response.result);
+										const successMessage =
+											`${window.translate("system_record")} ${value} ${window
+												.translate("system_record_added_into")} ${entityName}`;
+										gScope.toast.notify({ heading: successMessage, icon: "success" });
+										resolve(response.result);
+									} else {
+										reject();
+										gScope.toast.notifyErrorList(response.error_keys);
+									}
+								});
+							});
+						},
+						update: function (obj) {
+							return new Promise((resolve, reject) => {
+								gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
+									if (x.is_success) {
+										const newObj = x.result;
+										newObj.name = obj.value;
+										gScope.db.updateAsync(entityName, newObj).then(y => {
+											if (y.is_success) {
+												gScope.toast.notify({
+													heading: window.translate("system_entry_updaded"),
+													icon: "success"
+												});
+												resolve();
+											} else {
+												gScope.toast.notifyErrorList(y.error_keys);
+												reject();
+											}
+										}).catch(err => {
+											reject(err);
+										});
+									} else {
+										gScope.toast.notify({
+											heading: window.translate("system_data_no_item_found")
+										});
+									}
+								}).catch(err => {
+									reject(err);
+								});
+							});
+						},
+						delete: function (obj) {
+							return new Promise((resolve, reject) => {
+								const params = [{ parameter: "Id", value: obj.id }];
+								gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
+									if (x.is_success) {
+										gScope.toast.notify({
+											heading: window.translate("system_data_record_deleted"),
+											icon: "success"
+										});
+										resolve();
+									} else {
+										gScope.toast.notifyErrorList(x.error_keys);
+										reject();
+									}
+								}).catch(err => {
+									reject(err);
+								});
+							});
+						}
+					},
+					{
+						entity: entityName,
+						ctx: cellCtx,
+						items: items,
+						searchBarPlaceholder: window.translate("system_search_add"),
+						addButtonLabel: window.translate("add")
+					},
+					{ placement: "bottom-auto" });
+
+				$(item.container).on("selectValueChange",
+					(event, arg) => {
+						const { ctx, entity, items } = arg.options;
+						//const exist = items.find(x => x.id === arg.value);
+						$(dropdown).val(arg.value);
+						$(dropdown).trigger("change");
+						gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
+							if (x.is_success) {
+								const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
+								//if (conf.addMode) {
+								//	const template = conf.viewModel
+								//		.tableModelFields.tableFieldConfigValues
+								//		.find(z => z.tableFieldConfigId === tId).value;
+
+								//	console.log(template);
+								//} else {
+
+								//}
+								let param = "name";
+								if (entity == "Users") {
+									param = "userName";
+								}
+
+								$(ctx).find(".virtual-el-reference").val(x.result[param]);
+							} else {
+								gScope.toast.notifyErrorList(x.error_keys);
+							}
+						});
+					});
+			});
 	};
 
 	/**

@@ -1,24 +1,45 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ST.Identity.Abstractions.Helpers;
 
 namespace ST.MultiTenant.Razor.ViewModels
 {
     public class ConfirmEmailViewModel
     {
+        /// <summary>
+        /// User id
+        /// </summary>
         public string UserId { get; set; }
+
+        /// <summary>
+        /// User name
+        /// </summary>
         [Display(Name = "User Name")] public string UserName { get; set; }
+
+        /// <summary>
+        /// Email
+        /// </summary>
         [Display(Name = "Email")] public string Email { get; set; }
 
-        [Required]
+        /// <summary>
+        /// Password
+        /// </summary>
         [Display(Name = "Password")]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
-             MinimumLength = 6), DataType(DataType.Password)]
+        [Required]
+        [StringLength(100, ErrorMessage = Resources.ValidationMessages.PASSWORD_STRING_LENGTH, MinimumLength = 6), DataType(DataType.Password)]
+        [RegularExpression(Resources.RegularExpressions.PASSWORD, ErrorMessage = Resources.ValidationMessages.PASSWORD_COMPLEXITY_MESSAGE)]
         public string Password { get; set; }
 
+        /// <summary>
+        /// Repeat password
+        /// </summary>
         [Required]
         [Display(Name = "Repeat Password")]
         [DataType(DataType.Password), Compare(nameof(Password), ErrorMessage = "Passwords should match")]
         public string RepeatPassword { get; set; }
 
+        /// <summary>
+        /// Email token
+        /// </summary>
         public string Token { get; set; }
     }
 }

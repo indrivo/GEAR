@@ -560,5 +560,13 @@
   "remove_chart": "Αφαιρέστε το διάγραμμα",
   "chart_type": "Τύπος γραφήματος",
   "system_email_not_confirmed": "E-mail δεν έχει επιβεβαιωθεί",
-  "system_email_confirm_state": "Η κατάσταση του ηλεκτρονικού ταχυδρομείου"
+  "system_email_confirm_state": "Η κατάσταση του ηλεκτρονικού ταχυδρομείου",
+  "iso_matrix_impact": "Ο Αντίκτυπος",
+  "iso_matrix_set_points": "Σημεία",
+  "iso_matrix_edit_cell_value": "Επεξεργαστείτε τις τιμές των κελιών",
+  "iso_matrix_save_conf_message": "Νέα ρύθμιση αποθηκεύεται",
+  "system_multi_tenant_manage_company_users": "Διαχείριση χρηστών, συνδέονται με τον οργανισμό",
+  "system_multi_tenant_company_users_doc": "Εδώ μπορείτε να διαχειριστείτε τους χρήστες που έχουν προσκληθεί στην οργάνωσή σας, έχετε τις εξής ενεργοποιημένες λειτουργίες, όπως: διαγραφή, ενεργοποίηση, να σταματήσει, να αλλάξετε τον κωδικό πρόσβασης και κάποιες γενικές πληροφορίες",
+  "iso_matrix_is_active": "Είναι Ενεργό",
+  "system_user_online": "Σε απευθείας σύνδεση"
 }

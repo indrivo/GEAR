@@ -44,14 +44,14 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <JTranslateLabel asp-for="CountryId" class="control-label"></JTranslateLabel>
                     <select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
                     <span asp-validation-for="CountryId" class="text-danger"></span><br />
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <JTranslateLabel asp-for="CityId" class="control-label"></JTranslateLabel>
                     <select disabled="disabled" class="form-control" asp-for="CityId"></select>

@@ -560,5 +560,13 @@
   "remove_chart": "Entfernen chart",
   "chart_type": "Chart-Typ",
   "system_email_not_confirmed": "E-Mail nicht bestätigt",
-  "system_email_confirm_state": "Der status der E-Mail"
+  "system_email_confirm_state": "Der status der E-Mail",
+  "iso_matrix_impact": "Die Auswirkungen",
+  "iso_matrix_set_points": "Set Punkte",
+  "iso_matrix_edit_cell_value": "Bearbeiten Sie die Zelle Werte",
+  "iso_matrix_save_conf_message": "Neue Konfiguration gespeichert",
+  "system_multi_tenant_manage_company_users": "Verwalten von Benutzern, die an Ihre Organisation",
+  "system_multi_tenant_company_users_doc": "Hier können Sie Benutzer verwalten, die eingeladen wurden, in Ihrer Organisation, haben Sie die folgenden aktivierten Funktionen wie: löschen, aktivieren, stoppen, ändern Sie Ihr Passwort und einige Allgemeine Informationen",
+  "iso_matrix_is_active": "Aktiv Ist",
+  "system_user_online": "Online"
 }
