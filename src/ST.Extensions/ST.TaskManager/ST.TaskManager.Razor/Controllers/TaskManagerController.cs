@@ -60,7 +60,7 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<SelectList>))]
         public JsonResult GetTaskStatusList()
         {
-            var directions = from TaskStatus d in Enum.GetValues(typeof(TaskStatus))
+            var directions = from Abstractions.Enums.TaskStatus d in Enum.GetValues(typeof(TaskStatus))
                 select new {ID = (int) d, Name = d.ToString()};
             return Json(new SelectList(directions, "ID", "Name", 0));
         }
