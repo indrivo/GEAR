@@ -66,11 +66,11 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName)
+        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted)
         {
             if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == false)).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == deleted)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 
@@ -157,6 +157,24 @@ namespace ST.TaskManager.Services
             };
         }
 
+        public async Task<ResultModel> RestoreTaskAsync(Guid taskId)
+        {
+            if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel();
+
+            var dbTaskResult = _context.Tasks.FirstOrDefault(x => x.Id == taskId);
+            if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
+
+            dbTaskResult.IsDeleted = false;
+            _context.Tasks.Update(dbTaskResult);
+            var result = await _context.SaveDependenceAsync();
+
+            if (result.IsSuccess) await _notify.DeleteTaskNotificationAsync(dbTaskResult);
+            return new ResultModel
+            {
+                IsSuccess = result.IsSuccess,
+                Errors = result.Errors
+            };
+        }
         #endregion
 
         #region Task Items

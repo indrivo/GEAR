@@ -158,7 +158,7 @@ namespace ST.Files.Box
                     fileSettingsList[index] = settings;
             }
 
-            _options.Update(x => x = fileSettingsList, _hostingEnvironment.WebRootPath + "fileSettings.json");
+            _options.Update(x => x = fileSettingsList, "fileSettings.json");
             result.IsSuccess = true;
             return result;
         }

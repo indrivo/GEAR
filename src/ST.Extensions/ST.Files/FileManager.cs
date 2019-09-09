@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mapster;
 using ST.Core.Extensions;
 
 
@@ -134,20 +135,22 @@ namespace ST.Files
 
         public override ResultModel ChangeSettings<TFileSettingsViewModel>(TFileSettingsViewModel newSettings)
         {
+            var settings = newSettings.Adapt<FileSettingsViewModel>();
             var result = new ResultModel();
             var fileSettingsList = _options.Value ?? new List<FileSettingsViewModel>();
             var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
             if (fileSettings == null)
             {
-                fileSettingsList.Add(newSettings);
+                fileSettingsList.Add(settings);
             }
             else
             {
                 var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
-                fileSettingsList = fileSettingsList.Replace(index, newSettings).ToList();
+                if (index >= 0)
+                    fileSettingsList[index] = settings;
             }
 
-            _options.Update(x => x = fileSettingsList);
+            _options.Update(x => x = fileSettingsList, "fileSettings.json");
             result.IsSuccess = true;
             return result;
         }

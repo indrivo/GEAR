@@ -8,6 +8,7 @@ using ST.Core.Helpers;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
 using ST.Files.Box.Abstraction;
+using ST.Files.Box.Abstraction.Models.ViewModels;
 using ST.Identity.Abstractions;
 
 namespace ST.Files.Razor.Controllers
@@ -133,6 +134,19 @@ namespace ST.Files.Razor.Controllers
             if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = _fileManager.DeleteFilePermanent(id);
+            return Json(response);
+        }
+
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel<FileBoxSettingsViewModel>))]
+        public JsonResult ChangeSettings(FileBoxSettingsViewModel model)
+        {
+            if (!ModelState.IsValid) return Json(ModelState.ToErrorModel<FileBoxSettingsViewModel>());
+
+            if (model.TenantId == Guid.Empty)
+                model.TenantId = _userManager.CurrentUserTenantId ?? Guid.Empty;
+
+            var response = _fileManager.ChangeSettings(model);
             return Json(response);
         }
     }

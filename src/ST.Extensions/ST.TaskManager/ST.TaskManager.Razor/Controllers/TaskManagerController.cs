@@ -86,11 +86,11 @@ namespace ST.TaskManager.Razor.Controllers
 
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
-        public async Task<JsonResult> GetUserTasks()
+        public async Task<JsonResult> GetUserTasks(bool deleted)
         {
             var userName = HttpContext.User.Identity.Name;
 
-            var response = await _taskManager.GetUserTasksAsync(userName);
+            var response = await _taskManager.GetUserTasksAsync(userName, deleted);
             return Json(response);
         }
 
@@ -152,6 +152,16 @@ namespace ST.TaskManager.Razor.Controllers
             if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
 
             var response = await _taskManager.DeletePermanentTaskAsync(id);
+            return Json(response);
+        }
+
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RestoreTask(Guid id)
+        {
+            if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());
+
+            var response = await _taskManager.RestoreTaskAsync(id);
             return Json(response);
         }
 

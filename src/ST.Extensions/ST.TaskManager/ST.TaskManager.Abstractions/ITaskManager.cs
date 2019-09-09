@@ -26,8 +26,9 @@ namespace ST.TaskManager.Abstractions
         /// Get tasks list by author user id
         /// </summary>
         /// <param name="userName"></param>
+        /// <param name="deleted"></param>
         /// <returns></returns>
-        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName);
+        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted);
 
         /// <summary>
         /// Get tasks list by assigner id
@@ -63,6 +64,13 @@ namespace ST.TaskManager.Abstractions
         /// <param name="taskId"></param>
         /// <returns></returns>
         Task<ResultModel> DeletePermanentTaskAsync(Guid taskId);
+
+        /// <summary>
+        /// Restore task from deleted status
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RestoreTaskAsync(Guid taskId);
 
         /// <summary>
         /// Add task item to an existing task
