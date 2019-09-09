@@ -66,19 +66,19 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted)
+        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int total, int pageSize)
         {
             if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == deleted)).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == deleted)).Skip(total).Take(pageSize).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId)
+        public async Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int total, int pageSize)
         {
             if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false) & (x.Author != userName)).Skip(total).Take(pageSize).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 

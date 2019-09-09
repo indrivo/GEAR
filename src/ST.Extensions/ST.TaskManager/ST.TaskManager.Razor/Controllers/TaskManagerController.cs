@@ -87,23 +87,23 @@ namespace ST.TaskManager.Razor.Controllers
 
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
-        public async Task<JsonResult> GetUserTasks(bool deleted)
+        public async Task<JsonResult> GetUserTasks(bool deleted, int total, int pageSize)
         {
             var userName = HttpContext.User.Identity.Name;
 
-            var response = await _taskManager.GetUserTasksAsync(userName, deleted);
+            var response = await _taskManager.GetUserTasksAsync(userName, deleted, total, pageSize);
             return Json(response);
         }
 
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
-        public async Task<JsonResult> GetAssignedTasks()
+        public async Task<JsonResult> GetAssignedTasks(int total, int pageSize)
         {
             var user = await _userManager.GetCurrentUserAsync();
 
             if (user.Result == null) return Json(ExceptionMessagesEnum.UserNotFound.ToErrorModel());
 
-            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id.ToGuid());
+            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id.ToGuid(), user.Result.UserName, total, pageSize);
             return Json(response);
         }
 
