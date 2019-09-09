@@ -69,7 +69,7 @@ namespace ST.Files.Razor.Controllers
             var file = new UploadFileViewModel
             {
                 File = Request.Form.Files.FirstOrDefault(),
-                Id = id,
+                Id = id
             };
             var response = _fileManager.AddFile(file, _userManager.CurrentUserTenantId ?? Guid.Empty);
             return Json(response);
@@ -86,7 +86,7 @@ namespace ST.Files.Razor.Controllers
             var response = Request.Form.Files.Select(item => new UploadFileViewModel
             {
                 File = item,
-                Id = Guid.Empty,
+                Id = Guid.Empty
             }).Select(file => _fileManager.AddFile(file, _userManager.CurrentUserTenantId ?? Guid.Empty)).ToList();
 
             return Json(response);

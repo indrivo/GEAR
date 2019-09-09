@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ST.Core.Extensions;
 using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
 using ST.TaskManager.Abstractions.Enums;
@@ -98,9 +99,11 @@ namespace ST.TaskManager.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
         public async Task<JsonResult> GetAssignedTasks()
         {
-            var userId = _userManager.CurrentUserTenantId;
+            var user = await _userManager.GetCurrentUserAsync();
 
-            var response = await _taskManager.GetAssignedTasksAsync(userId ?? Guid.Empty);
+            if (user.Result == null) return Json(ExceptionMessagesEnum.UserNotFound.ToErrorModel());
+
+            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id.ToGuid());
             return Json(response);
         }
 

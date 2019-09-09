@@ -78,7 +78,7 @@ namespace ST.TaskManager.Services
         {
             if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false)).ToListAsync();
             return GetTasksAsync(dbTasksResult);
         }
 

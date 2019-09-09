@@ -17,5 +17,8 @@ namespace ST.TaskManager.Abstractions.Helpers
         TaskNotSaved,
 
         [Description("Task Items Not Found")] TaskItemsNotFound,
+
+        [Description("Current User Not Found")]
+        UserNotFound,
     }
 }
