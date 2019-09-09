@@ -30,6 +30,7 @@ namespace ST.Report.Dynamic
         private readonly IConfiguration _configuration;
         private readonly IUserManager<ApplicationUser> _userManager;
         private readonly ResultModel<ApplicationUser> _user;
+
         /// <summary>
         /// Inject organization service
         /// </summary>
@@ -43,14 +44,13 @@ namespace ST.Report.Dynamic
             _organizationService = organizationService;
             _user = _userManager.GetCurrentUserAsync().GetAwaiter().GetResult();
             if (_context == null) throw new ArgumentNullException(nameof(_context));
-
         }
 
         #region Report Folders
 
         public ResultModel<bool> CreateFolder(string folderName)
         {
-            if (string.IsNullOrWhiteSpace(folderName)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
+            if (string.IsNullOrWhiteSpace(folderName)) return ResultMessagesEnum.FolderNameNullOrEmpty.ToErrorModel<bool>();
 
             try
             {
@@ -72,20 +72,20 @@ namespace ST.Report.Dynamic
             }
             catch
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotSaved);
+                return ResultMessagesEnum.FolderNotSaved.ToErrorModel<bool>();
             }
         }
 
 
         public ResultModel<DynamicReportFolderViewModel> GetFolder(Guid folderId)
         {
-            if (folderId == Guid.Empty) return ExceptionHandler.ReturnErrorModel<DynamicReportFolderViewModel>(ResultMessagesEnum.FolderNotFound);
+            if (folderId == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<DynamicReportFolderViewModel>();
 
             var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == folderId);
 
             if (reportFolder == null)
             {
-                return ExceptionHandler.ReturnErrorModel<DynamicReportFolderViewModel>(ResultMessagesEnum.FolderNotFound);
+                return ResultMessagesEnum.FolderNotFound.ToErrorModel<DynamicReportFolderViewModel>();
             }
 
             return new ResultModel<DynamicReportFolderViewModel>
@@ -101,13 +101,13 @@ namespace ST.Report.Dynamic
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(folderModel.Name)) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNameNullOrEmpty);
+                if (string.IsNullOrWhiteSpace(folderModel.Name)) return ResultMessagesEnum.FolderNameNullOrEmpty.ToErrorModel<bool>();
 
                 var entity = _context.DynamicReportsFolders.First(x => x.Id == folderModel.Id);
 
                 if (entity == null)
                 {
-                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
                 }
 
                 entity.Name = folderModel.Name;
@@ -123,7 +123,7 @@ namespace ST.Report.Dynamic
             }
             catch
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotSaved);
+                return ResultMessagesEnum.FolderNotSaved.ToErrorModel<bool>();
             }
         }
 
@@ -134,12 +134,12 @@ namespace ST.Report.Dynamic
 
             if (reportFolder == null)
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
             }
 
             if (reportFolder.Reports.Any())
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotEmpty);
+                return ResultMessagesEnum.FolderNotEmpty.ToErrorModel<bool>();
             }
 
             try
@@ -154,7 +154,7 @@ namespace ST.Report.Dynamic
             }
             catch
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotDeleted);
+                return ResultMessagesEnum.FolderNotDeleted.ToErrorModel<bool>();
             }
         }
 
@@ -167,16 +167,15 @@ namespace ST.Report.Dynamic
 
         #region Reports
 
-
         public DTResult<DynamicReportViewModel> GetFilteredReports(DTParameters param)
         {
             var filtered = _context.Filter<DynamicReport>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount).Select(x =>
-                {
-                    x.DynamicReportFolder = _context.DynamicReportsFolders.FirstOrDefault(y => y.Id == x.DynamicReportFolderId);
-                    return x;
-                }).ToList();
+            {
+                x.DynamicReportFolder = _context.DynamicReportsFolders.FirstOrDefault(y => y.Id == x.DynamicReportFolderId);
+                return x;
+            }).ToList();
 
             var finalResult = new DTResult<DynamicReportViewModel>
             {
@@ -192,7 +191,6 @@ namespace ST.Report.Dynamic
                     Created = x.Created,
                     Changed = x.Changed,
                     IsDeleted = x.IsDeleted
-
                 }).ToList(),
                 RecordsFiltered = totalCount,
                 RecordsTotal = filtered.Count
@@ -204,13 +202,13 @@ namespace ST.Report.Dynamic
         {
             try
             {
-                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
 
                 var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == reportModel.DynamicReportFolder.Id);
 
                 if (reportFolder == null)
                 {
-                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
                 }
 
                 var reportDb = new DynamicReport()
@@ -233,10 +231,11 @@ namespace ST.Report.Dynamic
             }
             catch
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotSaved);
+                return ResultMessagesEnum.ReportNotSaved.ToErrorModel<bool>();
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create Report
         /// </summary>
@@ -245,20 +244,20 @@ namespace ST.Report.Dynamic
         {
             try
             {
-                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                if (reportModel.DynamicReportFolder == null || reportModel.DynamicReportFolder.Id == Guid.Empty) return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
 
                 var reportFolder = _context.DynamicReportsFolders.First(x => x.Id == reportModel.DynamicReportFolder.Id);
 
                 if (reportFolder == null)
                 {
-                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.FolderNotFound);
+                    return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
                 }
 
                 var report = _context.DynamicReports.First(x => x.Id == reportModel.Id);
 
                 if (report == null)
                 {
-                    return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotFound);
+                    return ResultMessagesEnum.ReportNotFound.ToErrorModel<bool>();
                 }
 
                 report.Name = reportModel.Name;
@@ -277,7 +276,7 @@ namespace ST.Report.Dynamic
             }
             catch
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotSaved);
+                return ResultMessagesEnum.ReportNotSaved.ToErrorModel<bool>();
             }
         }
 
@@ -287,7 +286,7 @@ namespace ST.Report.Dynamic
 
             if (report == null)
             {
-                return ExceptionHandler.ReturnErrorModel<DynamicReportViewModel>(ResultMessagesEnum.ReportNotFound);
+                return ResultMessagesEnum.ReportNotFound.ToErrorModel<DynamicReportViewModel>();
             }
 
             return new ResultModel<DynamicReportViewModel>
@@ -310,7 +309,7 @@ namespace ST.Report.Dynamic
 
             if (report == null)
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotFound);
+                return ResultMessagesEnum.ReportNotFound.ToErrorModel<bool>();
             }
 
             try
@@ -325,7 +324,7 @@ namespace ST.Report.Dynamic
             }
             catch
             {
-                return ExceptionHandler.ReturnErrorModel<bool>(ResultMessagesEnum.ReportNotDeleted);
+                return ResultMessagesEnum.ReportNotDeleted.ToErrorModel<bool>();
             }
         }
 
@@ -359,12 +358,9 @@ namespace ST.Report.Dynamic
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
-                        {
                             while (reader.Read())
-                            {
                                 yield return SqlDataReaderToExpando(reader);
-                            }
-                        }
+
                         reader.Close();
                     }
                 }
@@ -379,11 +375,9 @@ namespace ST.Report.Dynamic
             var schemas = new List<string>();
             var tenants = _organizationService.GetAllTenants().Select(s => new { s.Id, Name = s.MachineName }).ToList();
             if (userTenant.HasValue)
-            {
                 schemas = tenants.Any(s => s.Id == userTenant.Value && s.Name == Settings.DEFAULT_ENTITY_SCHEMA)
                     ? tenants.Select(s => s.Name).ToList()
                     : tenants.Where(s => s.Id == userTenant).Select(s => s.Name).ToList();
-            }
             return schemas;
         }
 
@@ -414,15 +408,13 @@ namespace ST.Report.Dynamic
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
-                        {
                             while (reader.Read())
-                            {
                                 yield return (reader.GetString(0));
-                            }
-                        }
+
                         reader.Close();
                     }
                 }
+
                 connection.Close();
             }
         }

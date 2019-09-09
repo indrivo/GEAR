@@ -70,6 +70,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                     ModelState.AddModelError(error.Key, error.Message);
                 }
             }
+
             return View(folder);
         }
 
@@ -90,7 +91,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 return Json(new
                 {
                     success = result.IsSuccess,
-                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.SaveSuccess)
+                    message = ResultMessagesEnum.SaveSuccess.GetEnumDescription()
                 });
             }
 
@@ -99,7 +100,6 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 success = result.IsSuccess,
                 message = result.Errors.Any() ? result.Errors.First().Message : string.Empty
             });
-
         }
 
         [HttpPost]
@@ -112,7 +112,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 return Json(new
                 {
                     success = result.IsSuccess,
-                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.DeleteSuccess)
+                    message = ResultMessagesEnum.DeleteSuccess.GetEnumDescription()
                 });
             }
 
@@ -135,15 +135,14 @@ namespace ST.Report.Dynamic.Razor.Controllers
             {
                 result = _service.GetReport(id).Result;
             }
-            var model = result != null ?
-            new DynamicReportViewModel()
-            {
-                Id = result.Id,
-                Name = result.Name,
-                ReportDataModel = result.ReportDataModel,
-                DynamicReportFolder = new DynamicReportFolderViewModel(result.DynamicReportFolder.Id, result.DynamicReportFolder.Name)
-            }
-            : new DynamicReportViewModel();
+            var model = result != null ? new DynamicReportViewModel()
+                {
+                    Id = result.Id,
+                    Name = result.Name,
+                    ReportDataModel = result.ReportDataModel,
+                    DynamicReportFolder = new DynamicReportFolderViewModel(result.DynamicReportFolder.Id, result.DynamicReportFolder.Name)
+                }
+                : new DynamicReportViewModel();
 
             ViewBag.Folders = _service.GetAllFolders();
             return View(model);
@@ -159,7 +158,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 return Json(new
                 {
                     success = result.IsSuccess,
-                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.SaveSuccess)
+                    message = ResultMessagesEnum.SaveSuccess.GetEnumDescription()
                 });
             }
 
@@ -181,7 +180,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 return Json(new
                 {
                     success = result.IsSuccess,
-                    message = EnumHelper.GetEnumDescription(ResultMessagesEnum.DeleteSuccess)
+                    message = ResultMessagesEnum.DeleteSuccess.GetEnumDescription()
                 });
             }
 
@@ -229,6 +228,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             {
                 result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
             }
+
             return Json(result);
         }
 
@@ -240,6 +240,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
             {
                 result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
             }
+
             return Json(result);
         }
 
@@ -248,10 +249,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
         {
             var result = new List<SelectOption>();
             var resultDict = Enum<ChartType>.ToDictionary();
-            if (resultDict != null)
-            {
-                result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
-            }
+            if (resultDict != null) result = resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
             return Json(result);
         }
 
@@ -277,11 +275,12 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 {
                     id = s,
                     text = s,
-                    children = tables.Where(x => x.id == s).Select(x => new { id = x.id + "." + x.text, x.text }).ToList()
+                    children = tables.Where(x => x.id == s).Select(x => new {id = x.id + "." + x.text, x.text }).ToList()
                 });
                 return Json(result);
             }
-            return Json(new { success = false, message = EnumHelper.GetEnumDescription(ResultMessagesEnum.EmptyResult) });
+
+            return Json(new { success = false, message = ResultMessagesEnum.EmptyResult.GetEnumDescription() });
         }
 
         /// <summary>
