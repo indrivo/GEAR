@@ -1,38 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore.Query;
 using ST.Core;
+using ST.Core.Helpers;
 using ST.Report.Abstractions.Models;
+using ST.Report.Abstractions.Models.Dto;
+using ST.Report.Abstractions.Models.ViewModels;
+using System;
+using System.Collections.Generic;
+using ST.Report.Abstractions.Models.Enums;
 
 namespace ST.Report.Abstractions
 {
     public interface IDynamicReportsService
     {
-        DTResult<DynamicReportDbModel> GetFilteredReports(DTParameters param);
-        void CreateFolder(DynamicReportFolder name);
-        DynamicReportFolder GetFolder(Guid id);
-        void EditFolder(DynamicReportFolder newFolder);
-        void DeleteFolder(Guid id);
-        IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReportDbModel>> GetAllFolders();
-        void CreateReport(DynamicReport reportModel);
-        DynamicReport CloneReport(Guid id);
-        DynamicReport ParseReport(Guid id);
-        void EditReport(DynamicReport reportModel);
-        void DeleteReport(Guid id);
-        IEnumerable<string> GetTableNames();
-        string GetTableSchema(string tableName);
-        IEnumerable<string> GetTableColumns(string tableName);
-        dynamic GetColumnType(string tableName, string columnName);
-        string GetConnectionString();
-        string GetPrimaryTableName(string columnName);
-        dynamic GetForeignKeySelectValues(string tableName, string columnName);
+        /// <summary>
+        /// Get reports
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DTResult<DynamicReportViewModel> GetFilteredReports(DTParameters param);
 
-        List<DynamicReportQueryResultViewModel> GetContent(string tableName,
-            IEnumerable<DynamicReportColumnDataModel> columnNames, DateTime startDateTime, DateTime endDateTime,
-            List<DynamicReportFilter> filtersList);
+        /// <summary>
+        /// Create Folder
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <returns></returns>
+        ResultModel<bool> CreateFolder(string folderName);
 
-        List<decimal> GetChartDataForTimeFrame(string tableName, List<DynamicReportColumnDataModel> columnList,
-            DateTime startDateTime, DateTime endDateTime, List<DynamicReportFilter> filters,
-            DynamicReportChartDto chartDto, int timeFrame);
+        /// <summary>
+        /// Get folder by id
+        /// </summary>
+        /// <param name="folderId"></param>
+        /// <returns></returns>
+        ResultModel<DynamicReportFolderViewModel> GetFolder(Guid folderId);
+
+        /// <summary>
+        /// Edit report folder
+        /// </summary>
+        /// <param name="folderModel"></param>
+        /// <returns></returns>
+        ResultModel<bool> EditFolder(DynamicReportFolderViewModel folderModel);
+
+        /// <summary>
+        /// Delete folder by id
+        /// </summary>
+        /// <param name="folderId"></param>
+        /// <returns></returns>
+        ResultModel<bool> DeleteFolder(Guid folderId);
+
+        /// <summary>
+        /// Get report folders
+        /// </summary>
+        IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders();
+
+        /// <summary>
+        /// Create Report
+        /// </summary>
+        /// <param name="reportModel"></param>
+        /// <returns></returns>
+        ResultModel<bool> CreateReport(DynamicReportViewModel reportModel);
+
+        /// <summary>
+        /// Edit Report
+        /// </summary>
+        /// <param name="reportModel"></param>
+        /// <returns></returns>
+        ResultModel<bool> EditReport(DynamicReportViewModel reportModel);
+
+        /// <summary>
+        /// Get report by id
+        /// </summary>
+        /// <param name="reportId"></param>
+        /// <returns></returns>
+        ResultModel<DynamicReportViewModel> GetReport(Guid reportId);
+
+        /// <summary>
+        /// Delete Report
+        /// </summary>
+        /// <param name="reportId"></param>
+        ResultModel<bool> DeleteReport(Guid reportId);
+
+        /// <summary>
+        /// Get all table names from DB
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<dynamic> GetTableNames();
+
+        /// <summary>
+        /// Get a list of user schemas
+        /// </summary>
+        IEnumerable<string> GetUserSchemas();
+
+        /// <summary>
+        /// Get a list of column names from a specific table
+        /// </summary>
+        /// <param name="tableFullName"></param>
+        /// <returns></returns>
+        IEnumerable<string> GetTableColumns(string tableFullName);
+
+        /// <summary>
+        /// Get the report execution query dynamic result by report model
+        /// </summary>
+        /// <param name="reportModel"></param>
+        /// <returns></returns>
+        ResultModel<IEnumerable<dynamic>> GetReportContent(DynamicReportDto reportModel);
+
+        /// <summary>
+        /// Get a list of chart field types by chart type
+        /// </summary>
+        /// <param name="chartType"></param>
+        /// <returns></returns>
+        IEnumerable<SelectOption> GetChartFieldTypes(ChartType chartType);
     }
 }
