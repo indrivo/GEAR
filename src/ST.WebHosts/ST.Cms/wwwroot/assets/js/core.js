@@ -265,15 +265,17 @@ window.translations = function () {
 window.translate = function (key) {
 	if (window.localTranslations) {
 		if (!window.localTranslations.hasOwnProperty(key)) {
-			$.toast({
-				heading: `Key: ${key} is not translated!`,
-				text: "",
-				position: 'top-right',
-				loaderBg: '#ff6849',
-				icon: 'error',
-				hideAfter: 3500,
-				stack: 6
-			});
+			const message = `Key: ${key} is not translated!`;
+			console.warn(message);
+			//$.toast({
+			//	heading: message,
+			//	text: "",
+			//	position: 'top-right',
+			//	loaderBg: '#ff6849',
+			//	icon: 'error',
+			//	hideAfter: 3500,
+			//	stack: 6
+			//});
 			localStorage.removeItem("hasLoadedTranslations");
 		}
 		return window.localTranslations[key];
@@ -309,15 +311,17 @@ window.forceTranslate = function (selector = null) {
 							$(item).text(translation);
 							$(item).attr("translated", "");
 						} else {
-							$.toast({
-								heading: `Key: ${key} is not translated!`,
-								text: "",
-								position: 'top-right',
-								loaderBg: '#ff6849',
-								icon: 'error',
-								hideAfter: 3500,
-								stack: 6
-							});
+							const message = `Key: ${key} is not translated!`;
+							console.warn(message);
+							//$.toast({
+							//	heading: message,
+							//	text: "",
+							//	position: 'top-right',
+							//	loaderBg: '#ff6849',
+							//	icon: 'error',
+							//	hideAfter: 3500,
+							//	stack: 6
+							//});
 							localStorage.removeItem("hasLoadedTranslations");
 						}
 					}

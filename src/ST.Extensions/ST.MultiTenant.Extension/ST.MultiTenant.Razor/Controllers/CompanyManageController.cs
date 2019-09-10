@@ -181,13 +181,6 @@ namespace ST.MultiTenant.Razor.Controllers
 
             if (reqTenant.IsSuccess)
             {
-                var generateResult = await _service.GenerateTablesForTenantAsync(reqTenant.Result);
-                if (!generateResult.IsSuccess)
-                {
-                    ModelState.AppendResultModelErrors(generateResult.Errors);
-                    return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
-                }
-
                 var newCompanyOwner = new ApplicationUser
                 {
                     Email = data.Email,
@@ -205,6 +198,17 @@ namespace ST.MultiTenant.Razor.Controllers
                 if (!usrReq.Succeeded)
                 {
                     ModelState.AddModelError(string.Empty, "Fail to create user!");
+                    return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
+                }
+
+                var claim = new Claim(nameof(Tenant).ToLowerInvariant(), newCompanyOwner.TenantId.ToString());
+
+                await _userManager.UserManager.AddClaimAsync(newCompanyOwner, claim);
+
+                var generateResult = await _service.GenerateTablesForTenantAsync(reqTenant.Result);
+                if (!generateResult.IsSuccess)
+                {
+                    ModelState.AppendResultModelErrors(generateResult.Errors);
                     return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
                 }
 
@@ -227,10 +231,6 @@ namespace ST.MultiTenant.Razor.Controllers
                     ModelState.AppendResultModelErrors(roleReq.Errors);
                     return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
                 }
-
-                var claim = new Claim(nameof(Tenant).ToLowerInvariant(), newCompanyOwner.TenantId.ToString());
-
-                await _userManager.UserManager.AddClaimAsync(newCompanyOwner, claim);
 
                 //sing in new created
                 var signResult =
