@@ -551,8 +551,8 @@ namespace ST.Report.Dynamic
                                 yield return SqlDataReaderToExpando(reader);
                             }
                         }
-
                     }
+
                     connection.Close();
                 }
             }
@@ -579,6 +579,7 @@ namespace ST.Report.Dynamic
                     expandoObject.Add(reader.GetName(i), reader[i]);
                 }
             }
+
             return expandoObject;
         }
 
@@ -607,7 +608,6 @@ namespace ST.Report.Dynamic
 
             return resultDict.Select(s => new SelectOption { Id = (int)s.Key, Text = s.Value }).ToList();
         }
-
 
         #endregion
     }

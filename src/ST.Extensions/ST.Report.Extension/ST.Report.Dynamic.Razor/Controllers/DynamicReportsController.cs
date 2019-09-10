@@ -174,7 +174,6 @@ namespace ST.Report.Dynamic.Razor.Controllers
         public IActionResult DeleteReport(Guid id)
         {
             var result = _service.DeleteReport(id);
-
             if (result.IsSuccess)
             {
                 return Json(new

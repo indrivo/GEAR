@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Mapster;
-using ST.Core.Extensions;
 
 
 namespace ST.Files
