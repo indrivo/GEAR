@@ -168,7 +168,7 @@ namespace ST.MultiTenant.Razor.Controllers
 
             //check if exist
             var userNameExist = await _userManager.UserManager.FindByNameAsync(data.UserName);
-            var userEmailExist = await _userManager.UserManager.FindByNameAsync(data.Email);
+            var userEmailExist = await _userManager.UserManager.FindByEmailAsync(data.Email);
 
             if (userEmailExist != null || userNameExist != null)
             {
