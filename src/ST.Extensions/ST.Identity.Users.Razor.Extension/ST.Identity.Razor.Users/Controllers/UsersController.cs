@@ -1096,6 +1096,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     ContactName = address.ContactName,
                     District = address.District.Name,
                     Country = address.Country.Name,
+                    City = address.StateOrProvince.Name,
                     IsPrimary = address.IsDefault,
                     ZipCode = address.ZipCode,
                 })
