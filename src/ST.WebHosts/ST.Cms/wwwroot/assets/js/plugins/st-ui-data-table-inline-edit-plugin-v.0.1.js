@@ -120,7 +120,7 @@ TableInlineEdit.prototype.toast = new ToastNotifier();
 /**
  * Default container on unknown column type 
  */
-TableInlineEdit.prototype.defaultNotEditFieldContainer = "-";
+TableInlineEdit.prototype.defaultNotEditFieldContainer = "";
 
 /**
  * Register inline edit events to JQ dt

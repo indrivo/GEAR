@@ -443,9 +443,6 @@ namespace ST.Entities.Data
             {
                 cmd.CommandText = sql;
 
-                if (dbContext.Database.CurrentTransaction != null)
-                    cmd.Transaction =
-                        ((RelationalTransaction)dbContext.Database.CurrentTransaction).GetDbTransaction();
                 try
                 {
                     foreach (var param in parameters)
@@ -466,6 +463,7 @@ namespace ST.Entities.Data
                             var dataRow = GetDataRow(dataReader);
                             result.Add(dataRow);
                         }
+                        dataReader.Close();
                     }
                 }
                 catch (Exception e)

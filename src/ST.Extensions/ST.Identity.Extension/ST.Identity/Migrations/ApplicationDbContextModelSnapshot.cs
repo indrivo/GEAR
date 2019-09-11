@@ -107,7 +107,7 @@ namespace ST.Identity.Migrations
                     b.ToTable("UserTokens");
                 });
 
-            modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
+            modelBuilder.Entity("ST.Audit.Abstractions.Models.TrackAudit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -141,7 +141,7 @@ namespace ST.Identity.Migrations
                     b.ToTable("TrackAudits");
                 });
 
-            modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
+            modelBuilder.Entity("ST.Audit.Abstractions.Models.TrackAuditDetails", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -5014,9 +5014,9 @@ namespace ST.Identity.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
+            modelBuilder.Entity("ST.Audit.Abstractions.Models.TrackAuditDetails", b =>
                 {
-                    b.HasOne("ST.Audit.Models.TrackAudit")
+                    b.HasOne("ST.Audit.Abstractions.Models.TrackAudit")
                         .WithMany("AuditDetailses")
                         .HasForeignKey("TrackAuditId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -5026,7 +5026,8 @@ namespace ST.Identity.Migrations
                 {
                     b.HasOne("ST.Identity.Abstractions.ApplicationUser", "ApplicationUser")
                         .WithMany("Addresses")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("ST.Identity.Abstractions.Models.AddressModels.Country", "Country")
                         .WithMany()

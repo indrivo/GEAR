@@ -52,7 +52,6 @@ using ST.Identity.Permissions;
 using ST.Identity.Permissions.Abstractions.Extensions;
 using ST.Identity.Services;
 using ST.Identity.Versioning;
-using ST.Install;
 using ST.Install.Abstractions.Extensions;
 using ST.InternalCalendar.Razor.Extensions;
 using ST.Localization;
@@ -394,7 +393,7 @@ namespace ST.Cms
 				.AddReportUIModule();
 
 
-			services.AddInstallerModule<SyncInstaller>();
+			services.AddInstallerModule();
 
 			//----------------------------------------Email Module-------------------------------------
 			services.AddEmailModule<EmailSender>()

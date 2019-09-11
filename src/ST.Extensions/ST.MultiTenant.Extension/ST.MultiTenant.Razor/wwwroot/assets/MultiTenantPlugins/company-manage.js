@@ -2,8 +2,11 @@
 const citySelect = $("#CityId");
 $(document).ready(() => {
     $('.dropify').dropify();
-    $("#CountryId").select2();
+    $("#CountryId").select2({
+        theme: 'bootstrap'
+    });
     citySelect.select2({
+        theme: 'bootstrap',
         placeholder: {
             id: '',
             text: window.translate("system_select_city")

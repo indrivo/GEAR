@@ -1,4 +1,4 @@
-@model ST.Identity.Razor.ViewModels.AccountViewModels.ConfirmEmailViewModel
+@model ST.MultiTenant.Razor.ViewModels.ConfirmEmailViewModel
 @{
 	ViewData["Title"] = "Confirm Email";
 	Layout = null;
@@ -12,7 +12,7 @@
 			<div class="card mb-4">
 				<div class="card-header">Set new password</div>
                 <div class="card-body">
-                    <form asp-controller="Account" asp-action="ConfirmEmail" role="form" method="post">
+                    <form asp-controller="Company" asp-action="ConfirmInvitedUserByEmail" role="form" method="post">
                         <input asp-for="UserId" type="hidden"/>
                         <input asp-for="Token" type="hidden"/>
                         <div class="form-group">

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using ST.Core.Helpers;
 
 namespace ST.Identity.Abstractions.Extensions
@@ -19,6 +20,22 @@ namespace ST.Identity.Abstractions.Extensions
                 result.Errors.Add(new ErrorModel(e.Code, e.Description));
             }
             return result;
+        }
+
+        /// <summary>
+        /// Append identity result errors to model state
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static ModelStateDictionary AppendIdentityResult(this ModelStateDictionary binder, IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                binder.AddModelError(string.Empty, error.Description);
+            }
+
+            return binder;
         }
     }
 }

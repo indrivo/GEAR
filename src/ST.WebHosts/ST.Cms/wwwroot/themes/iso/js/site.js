@@ -1,4 +1,340 @@
-"use strict";
+var PreLoader;
+
+$(window).on("load",
+	function () {
+		$(".loader-wrapper").not(".incomponent").fadeOut(400,
+			function () {
+				PreLoader = $(this).detach();
+			});
+	});
+
+
+/* Dom Ready */
+(function ($) {
+
+	const $body = $("body");
+
+	/* Initialize Tooltip */
+	$('[data-toggle="tooltip"]').tooltip();
+
+
+	/* Initialize Popover */
+	$('[data-toggle="popover"]').popover();
+
+
+	/* Initialize Lightbox */
+	$body.delegate('[data-toggle="lightbox"]',
+		"click",
+		function (event) {
+			event.preventDefault();
+			$(this).ekkoLightbox();
+		});
+
+
+	/************************************************
+	 Append Preloader (use in ajax call)
+	 ************************************************/
+	$body.delegate(".append-preloader",
+		"click",
+		function () {
+
+			$(PreLoader).show();
+			$body.append(PreLoader);
+			setTimeout(function () {
+
+				$(".loader-wrapper").fadeOut(200,
+					function () {
+						PreLoader = $(this).detach();
+					});
+
+			},
+				1000);
+		});
+
+	$(".logo-holder").click(function () {
+		location.href = "/Home";
+	});
+
+
+	/************************************************
+	 Toggle Preloader in card or box
+	 ************************************************/
+	$body.delegate('[data-toggle="loader"]',
+		"click",
+		function () {
+
+			var target = $(this).attr("data-target");
+			$("#" + target).show();
+		});
+
+
+	/************************************************
+	 Toggle Sidebar Nav
+	 ************************************************/
+	$body.delegate(".toggle-sidebar",
+		"click",
+		function () {
+			$(".sidebar").toggleClass("collapsed");
+
+			if (localStorage.getItem("asideMode") === "collapsed") {
+				localStorage.setItem("asideMode", "expanded")
+			} else {
+				localStorage.setItem("asideMode", "collapsed")
+			}
+			return false;
+		});
+
+	var p;
+	$body.delegate(".hide-sidebar",
+		"click",
+		function () {
+			if (p) {
+				p.prependTo(".wrapper");
+				p = null;
+			} else {
+				p = $(".sidebar").detach();
+			}
+		});
+
+	$.fn.setAsideMode = function () {
+		if (localStorage.getItem("asideMode") === null) {
+			//
+		} else if (localStorage.getItem("asideMode") === "collapsed") {
+			$(".sidebar").addClass("collapsed");
+		} else {
+			$(".sidebar").removeClass("collapsed");
+		}
+	};
+	if ($(window).width() > 768) {
+		$.fn.setAsideMode();
+	}
+
+
+	/************************************************
+	 Sidebar Nav Accordion
+	 ************************************************/
+	$body.on("click",
+		".navigation li:has(.sub-nav) > a",
+		function () {
+			/*$('.navigation li').removeClass('open');*/
+			$(this).siblings(".sub-nav").slideToggle();
+			$(this).parent().toggleClass("open");
+			return false;
+		});
+
+
+	/************************************************
+	 Sidebar Colapsed state submenu position
+	 ************************************************/
+	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover",
+		function () {
+			if ($(".sidebar").hasClass("collapsed")) {
+				const $menuItem = $(this),
+					$submenuWrapper = $("> .sub-nav", $menuItem);
+				// grab the menu item's position relative to its positioned parent
+				const menuItemPos = $menuItem.position();
+
+				// place the submenu in the correct position relevant to the menu item
+				$submenuWrapper.css({
+					top: menuItemPos.top,
+					left: menuItemPos.left + $menuItem.outerWidth()
+				});
+			}
+		});
+
+	/************************************************
+	 Toggle Controls on small devices
+	 ************************************************/
+	$body.delegate(".toggle-controls",
+		"click",
+		function () {
+			$(".controls-wrapper").toggle().toggleClass("d-none");
+		});
+
+
+	/************************************************
+	 Toast Messages
+	 ************************************************/
+	$body.delegate('[data-toggle="toast"]',
+		"click",
+		function () {
+
+			var dataAlignment = $(this).attr("data-alignment");
+			var dataPlacement = $(this).attr("data-placement");
+			var dataContent = $(this).attr("data-content");
+			var dataStyle = $(this).attr("data-style");
+
+
+			if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
+				$(".toast." + dataAlignment + "-" + dataPlacement).append(
+					'<div class="alert alert-dismissible fade show alert-' +
+					dataStyle +
+					' "> ' +
+					dataContent +
+					'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
+			} else {
+				$body.append('<div class="toast ' +
+					dataAlignment +
+					"-" +
+					dataPlacement +
+					'"> <div class="alert alert-dismissible fade show alert-' +
+					dataStyle +
+					' "> ' +
+					dataContent +
+					'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
+			}
+
+		});
+
+
+	/**************************************
+	 Chosen Form Control
+	 **************************************/
+	$(".form-control-chosen").chosen({
+		allow_single_deselect: true,
+		width: "100%"
+	});
+	$(".form-control-chosen-required").chosen({
+		allow_single_deselect: false,
+		width: "100%"
+	});
+	$(".form-control-chosen-search-threshold-100").chosen({
+		allow_single_deselect: true,
+		disable_search_threshold: 100,
+		width: "100%"
+	});
+	$(".form-control-chosen-optgroup").chosen({
+		width: "100%"
+	});
+	$(function () {
+		$('[title="clickable_optgroup"]').addClass("chosen-container-optgroup-clickable");
+	});
+	$(document).delegate('[title="clickable_optgroup"] .group-result',
+		"click",
+		function () {
+			var unselected = $(this).nextUntil(".group-result").not(".result-selected");
+			if (unselected.length) {
+				unselected.trigger("mouseup");
+			} else {
+				$(this).nextUntil(".group-result").each(function () {
+					$('a.search-choice-close[data-option-array-index="' + $(this).data("option-array-index") + '"]')
+						.trigger("click");
+				});
+			}
+		});
+
+
+	/*****************************************
+	 Themer Changer with local storage
+	 *****************************************/
+
+	$.fn.removeClassStartingWith = function (filter) {
+		$(this).removeClass(function (index, className) {
+			return (className.match(new RegExp("\\S*" + filter + "\\S*", "g")) || []).join(" ")
+		});
+		return this;
+	};
+
+
+	$body.delegate(".theme-changer",
+		"click",
+		function () {
+			var primaryColor = $(this).attr("primary-color");
+			var sidebarBg = $(this).attr("sidebar-bg");
+			var logoBg = $(this).attr("logo-bg");
+			var headerBg = $(this).attr("header-bg");
+
+			localStorage.setItem("primaryColor", primaryColor);
+			localStorage.setItem("sidebarBg", sidebarBg);
+			localStorage.setItem("logoBg", logoBg);
+			localStorage.setItem("headerBg", headerBg);
+
+			$.fn.setThemeTone(primaryColor);
+		});
+
+
+	$.fn.setThemeTone = function (primaryColor) {
+
+		if (localStorage.getItem("primaryColor") === null) {
+
+		} else {
+
+			/* SIDEBAR */
+			if (localStorage.getItem("sidebarBg") === "light") {
+				$(".sidebar ").addClass("sidebar-light");
+			} else {
+				$(".sidebar").removeClass("sidebar-light");
+			}
+
+
+			/* PRIMARY COLOR */
+			if (localStorage.getItem("primaryColor") === "primary") {
+				document.documentElement.style.setProperty("--theme-colors-primary", "#4B89FC");
+			} else {
+				var colorCode = getComputedStyle(document.body)
+					.getPropertyValue("--theme-colors-" + localStorage.getItem("primaryColor"));
+				document.documentElement.style.setProperty("--theme-colors-primary", colorCode);
+			}
+
+
+			/* LOGO */
+			if (localStorage.getItem("logoBg") === "white" || localStorage.getItem("logoBg") === "light") {
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
+					.addClass("navbar-light bg-" + localStorage.getItem("logoBg"));
+			} else {
+				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
+					.addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
+			}
+
+
+			/* HEADER */
+			if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
+					.addClass("navbar-light bg-" + localStorage.getItem("headerBg"));
+			} else {
+				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
+					.addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
+			}
+
+		}
+
+
+	};
+
+
+	$.fn.setThemeTone();
+
+
+})(jQuery);
+
+
+/*****************************************
+ Full Screen Toggle
+ *****************************************/
+function toggleFullScreen() {
+	if ((document.fullScreenElement && document.fullScreenElement !== null) ||
+		(!document.mozFullScreen && !document.webkitIsFullScreen)) {
+		if (document.documentElement.requestFullScreen) {
+			document.documentElement.requestFullScreen();
+		} else if (document.documentElement.mozRequestFullScreen) {
+			document.documentElement.mozRequestFullScreen();
+		} else if (document.documentElement.webkitRequestFullScreen) {
+			document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+		}
+	} else {
+		if (document.cancelFullScreen) {
+			document.cancelFullScreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.webkitCancelFullScreen) {
+			document.webkitCancelFullScreen();
+		}
+	}
+}
+
+
+
+
 
 /************************************************
 			Customize system theme js
@@ -569,7 +905,6 @@ if (typeof TableInlineEdit !== "undefined") {
 	TableInlineEdit.prototype.getReferenceEditCell = function (conf) {
 		const gScope = this;
 		const div = document.createElement("div");
-		//div.setAttribute("class", "");
 		const dropdown = document.createElement("select");
 		dropdown.setAttribute("class", "inline-update-event data-input form-control");
 		dropdown.setAttribute("data-prop-id", conf.propId);
@@ -600,8 +935,20 @@ if (typeof TableInlineEdit !== "undefined") {
 		grSpan.appendChild(icon);
 		decorator.appendChild(grSpan);
 		container.appendChild(decorator);
+		gScope.populateColumnDropdown(conf, dropdown, div, el);
+		div.appendChild(dropdown);
+		div.appendChild(container);
+		return div;
+	};
+
+	/**
+	 * Populate column dropdown
+	 * @param {any} conf
+	 */
+	TableInlineEdit.prototype.populateColumnDropdown = function (conf, dropdown, div, el) {
+		const gScope = this;
 		//Populate dropdown
-		loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
+		return loadAsync(`/InlineEdit/GetRowReferences?entityId=${conf.tableId}&propertyId=${conf.propId}`).then(data => {
 			if (data) {
 				if (data.is_success) {
 					const entityName = data.result.entityName;
@@ -619,129 +966,133 @@ if (typeof TableInlineEdit !== "undefined") {
 							value: x.name
 						};
 					});
-					$($(div).find(".fire-reference-component")).on("click",
-						function (event) {
-							if (event.originalEvent.detail > 1) return;
-							const cellCtx = this;
-							const item = $.Iso.dynamicFilter("list",
-								event.target,
-								items,
-								{
-									create: function (value) {
-										return new Promise((resolve, reject) => {
-											gScope.db.addAsync(entityName, { name: value }).then(response => {
-												if (response.is_success) {
-													dropdown.options[dropdown.options.length] =
-														new Option(value, response.result);
-													const successMessage =
-														`${window.translate("system_record")} ${value} ${window
-															.translate("system_record_added_into")} ${entityName}`;
-													gScope.toast.notify({ heading: successMessage, icon: "success" });
-													resolve(response.result);
-												} else {
-													reject();
-													gScope.toast.notifyErrorList(response.error_keys);
-												}
-											});
-										});
-									},
-									update: function (obj) {
-										return new Promise((resolve, reject) => {
-											gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
-												if (x.is_success) {
-													const newObj = x.result;
-													newObj.name = obj.value;
-													gScope.db.updateAsync(entityName, newObj).then(y => {
-														if (y.is_success) {
-															gScope.toast.notify({
-																heading: window.translate("system_entry_updaded"),
-																icon: "success"
-															});
-															resolve();
-														} else {
-															gScope.toast.notifyErrorList(y.error_keys);
-															reject();
-														}
-													}).catch(err => {
-														reject(err);
-													});
-												} else {
-													gScope.toast.notify({
-														heading: window.translate("system_data_no_item_found")
-													});
-												}
-											}).catch(err => {
-												reject(err);
-											});
-										});
-									},
-									delete: function (obj) {
-										return new Promise((resolve, reject) => {
-											const params = [{ parameter: "Id", value: obj.id }];
-											gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
-												if (x.is_success) {
-													gScope.toast.notify({
-														heading: window.translate("system_data_record_deleted"),
-														icon: "success"
-													});
-													resolve();
-												} else {
-													gScope.toast.notifyErrorList(x.error_keys);
-													reject();
-												}
-											}).catch(err => {
-												reject(err);
-											});
-										});
-									}
-								},
-								{
-									entity: entityName,
-									ctx: cellCtx,
-									items: items,
-									searchBarPlaceholder: window.translate("system_search_add"),
-									addButtonLabel: window.translate("add")
-								},
-								{ placement: "bottom-auto" });
-
-							$(item.container).on("selectValueChange",
-								(event, arg) => {
-									const { ctx, entity, items } = arg.options;
-									//const exist = items.find(x => x.id === arg.value);
-									$(dropdown).val(arg.value);
-									$(dropdown).trigger("change");
-									gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
-										if (x.is_success) {
-											const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
-											//if (conf.addMode) {
-											//	const template = conf.viewModel
-											//		.tableModelFields.tableFieldConfigValues
-											//		.find(z => z.tableFieldConfigId === tId).value;
-
-											//	console.log(template);
-											//} else {
-
-											//}
-											let param = "name";
-											if (entity == "Users") {
-												param = "userName";
-											}
-
-											$(ctx).find(".virtual-el-reference").val(x.result[param]);
-										} else {
-											gScope.toast.notifyErrorList(x.error_keys);
-										}
-									});
-								});
-						});
+					gScope.attachEventsToSelect(div, items, entityName, dropdown);
 				}
 				dropdown.value = conf.value;
 			}
 		});
+	};
 
-		div.appendChild(dropdown);
-		div.appendChild(container);
-		return div;
+	/**
+	 * Attach events
+	 */
+	TableInlineEdit.prototype.attachEventsToSelect = function (div, items, entityName, dropdown) {
+		const gScope = this;
+		$($(div).find(".fire-reference-component")).on("click",
+			function (event) {
+				if (event.originalEvent.detail > 1) return;
+				const cellCtx = this;
+				const item = $.Iso.dynamicFilter("list",
+					event.target,
+					items,
+					{
+						create: function (value) {
+							return new Promise((resolve, reject) => {
+								gScope.db.addAsync(entityName, { name: value }).then(response => {
+									if (response.is_success) {
+										dropdown.options[dropdown.options.length] =
+											new Option(value, response.result);
+										const successMessage =
+											`${window.translate("system_record")} ${value} ${window
+												.translate("system_record_added_into")} ${entityName}`;
+										gScope.toast.notify({ heading: successMessage, icon: "success" });
+										resolve(response.result);
+									} else {
+										reject();
+										gScope.toast.notifyErrorList(response.error_keys);
+									}
+								});
+							});
+						},
+						update: function (obj) {
+							return new Promise((resolve, reject) => {
+								gScope.db.getByIdWithIncludesAsync(entityName, obj.id).then(x => {
+									if (x.is_success) {
+										const newObj = x.result;
+										newObj.name = obj.value;
+										gScope.db.updateAsync(entityName, newObj).then(y => {
+											if (y.is_success) {
+												gScope.toast.notify({
+													heading: window.translate("system_entry_updaded"),
+													icon: "success"
+												});
+												resolve();
+											} else {
+												gScope.toast.notifyErrorList(y.error_keys);
+												reject();
+											}
+										}).catch(err => {
+											reject(err);
+										});
+									} else {
+										gScope.toast.notify({
+											heading: window.translate("system_data_no_item_found")
+										});
+									}
+								}).catch(err => {
+									reject(err);
+								});
+							});
+						},
+						delete: function (obj) {
+							return new Promise((resolve, reject) => {
+								const params = [{ parameter: "Id", value: obj.id }];
+								gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
+									if (x.is_success) {
+										gScope.toast.notify({
+											heading: window.translate("system_data_record_deleted"),
+											icon: "success"
+										});
+										resolve();
+									} else {
+										gScope.toast.notifyErrorList(x.error_keys);
+										reject();
+									}
+								}).catch(err => {
+									reject(err);
+								});
+							});
+						}
+					},
+					{
+						entity: entityName,
+						ctx: cellCtx,
+						items: items,
+						searchBarPlaceholder: window.translate("system_search_add"),
+						addButtonLabel: window.translate("add")
+					},
+					{ placement: "bottom-auto" });
+
+				$(item.container).on("selectValueChange",
+					(event, arg) => {
+						const { ctx, entity, items } = arg.options;
+						//const exist = items.find(x => x.id === arg.value);
+						$(dropdown).val(arg.value);
+						$(dropdown).trigger("change");
+						gScope.db.getByIdWithIncludesAsync(entity, arg.value).then(x => {
+							if (x.is_success) {
+								const tId = "7fbfb4c3-4da1-498f-ab4e-678ecd08d81e";
+								//if (conf.addMode) {
+								//	const template = conf.viewModel
+								//		.tableModelFields.tableFieldConfigValues
+								//		.find(z => z.tableFieldConfigId === tId).value;
+
+								//	console.log(template);
+								//} else {
+
+								//}
+								let param = "name";
+								if (entity == "Users") {
+									param = "userName";
+								}
+
+								$(ctx).find(".virtual-el-reference").val(x.result[param]);
+							} else {
+								gScope.toast.notifyErrorList(x.error_keys);
+							}
+						});
+					});
+			});
 	};
 
 	/**
@@ -1326,37 +1677,6 @@ if (typeof DataInjector !== "undefined") {
 	};
 }
 
-function getIdentifier(idt) {
-	switch (idt) {
-		case "en":
-			{
-				idt = "gb";
-			}
-			break;
-		case "ja":
-			{
-				idt = "jp";
-			}
-			break;
-		case "zh":
-			{
-				idt = "cn";
-			}
-			break;
-		case "uk":
-			{
-				idt = "ua";
-			}
-			break;
-		case "el":
-			{
-				idt = "gr";
-			}
-			break;
-	}
-	return idt;
-}
-
 function makeMenuActive(target) {
 	if (target) {
 		const last = target.closest("ul").closest("li");
@@ -1405,11 +1725,12 @@ $(document).ready(function () {
 		}
 	});
 
+	const locHelper = new Localizer();
 
 	//Localization promise
 	const localizationPromise = new Promise((resolve, reject) => {
 		//Set localization config
-		let translateIcon = getIdentifier(settings.localization.current.identifier);
+		const translateIcon = locHelper.adaptIdentifier(settings.localization.current.identifier);
 		$("#currentlanguage").addClass(`flag-icon flag-icon-${translateIcon}`);
 		const languageBlock = $("#languageRegion");
 		resolve(languageBlock);
@@ -1421,7 +1742,7 @@ $(document).ready(function () {
 				const language =
 					`<a href="/Localization/ChangeLanguage?identifier=${lang.identifier
 					}" class="dropdown-item language-event">
-							<i class="flag-icon flag-icon-${getIdentifier(lang.identifier)}"></i> ${lang.name}
+							<i class="flag-icon flag-icon-${locHelper.adaptIdentifier(lang.identifier)}"></i> ${lang.name}
 						</a>`;
 				languageBlock.append(language);
 			});
@@ -1443,338 +1764,3 @@ $(document).ready(function () {
 /************************************************
 					End Custom js
 ************************************************/
-
-var PreLoader;
-
-$(window).on("load",
-	function () {
-		$(".loader-wrapper").not(".incomponent").fadeOut(1000,
-			function () {
-				PreLoader = $(this).detach();
-			});
-	});
-
-
-/* Dom Ready */
-(function ($) {
-
-	const $body = $("body");
-
-	/* Initialize Tooltip */
-	$('[data-toggle="tooltip"]').tooltip();
-
-
-	/* Initialize Popover */
-	$('[data-toggle="popover"]').popover();
-
-
-	/* Initialize Lightbox */
-	$body.delegate('[data-toggle="lightbox"]',
-		"click",
-		function (event) {
-			event.preventDefault();
-			$(this).ekkoLightbox();
-		});
-
-
-	/************************************************
-	 Append Preloader (use in ajax call)
-	 ************************************************/
-	$body.delegate(".append-preloader",
-		"click",
-		function () {
-
-			$(PreLoader).show();
-			$body.append(PreLoader);
-			setTimeout(function () {
-
-				$(".loader-wrapper").fadeOut(1000,
-					function () {
-						PreLoader = $(this).detach();
-					});
-
-			},
-				3000);
-		});
-
-	$(".logo-holder").click(function () {
-		location.href = "/Home";
-	});
-
-
-	/************************************************
-	 Toggle Preloader in card or box
-	 ************************************************/
-	$body.delegate('[data-toggle="loader"]',
-		"click",
-		function () {
-
-			var target = $(this).attr("data-target");
-			$("#" + target).show();
-
-		});
-
-
-	/************************************************
-	 Toggle Sidebar Nav
-	 ************************************************/
-	$body.delegate(".toggle-sidebar",
-		"click",
-		function () {
-			$(".sidebar").toggleClass("collapsed");
-
-			if (localStorage.getItem("asideMode") === "collapsed") {
-				localStorage.setItem("asideMode", "expanded")
-			} else {
-				localStorage.setItem("asideMode", "collapsed")
-			}
-			return false;
-		});
-
-	var p;
-	$body.delegate(".hide-sidebar",
-		"click",
-		function () {
-			if (p) {
-				p.prependTo(".wrapper");
-				p = null;
-			} else {
-				p = $(".sidebar").detach();
-			}
-		});
-
-	$.fn.setAsideMode = function () {
-		if (localStorage.getItem("asideMode") === null) {
-			//
-		} else if (localStorage.getItem("asideMode") === "collapsed") {
-			$(".sidebar").addClass("collapsed");
-		} else {
-			$(".sidebar").removeClass("collapsed");
-		}
-	};
-	if ($(window).width() > 768) {
-		$.fn.setAsideMode();
-	}
-
-
-	/************************************************
-	 Sidebar Nav Accordion
-	 ************************************************/
-	$body.on("click",
-		".navigation li:has(.sub-nav) > a",
-		function () {
-			/*$('.navigation li').removeClass('open');*/
-			$(this).siblings(".sub-nav").slideToggle();
-			$(this).parent().toggleClass("open");
-			return false;
-		});
-
-
-	/************************************************
-	 Sidebar Colapsed state submenu position
-	 ************************************************/
-	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover",
-		function () {
-			if ($(".sidebar").hasClass("collapsed")) {
-				const $menuItem = $(this),
-					$submenuWrapper = $("> .sub-nav", $menuItem);
-				// grab the menu item's position relative to its positioned parent
-				const menuItemPos = $menuItem.position();
-
-				// place the submenu in the correct position relevant to the menu item
-				$submenuWrapper.css({
-					top: menuItemPos.top,
-					left: menuItemPos.left + $menuItem.outerWidth()
-				});
-			}
-		});
-
-	/************************************************
-	 Toggle Controls on small devices
-	 ************************************************/
-	$body.delegate(".toggle-controls",
-		"click",
-		function () {
-			$(".controls-wrapper").toggle().toggleClass("d-none");
-		});
-
-
-	/************************************************
-	 Toast Messages
-	 ************************************************/
-	$body.delegate('[data-toggle="toast"]',
-		"click",
-		function () {
-
-			var dataAlignment = $(this).attr("data-alignment");
-			var dataPlacement = $(this).attr("data-placement");
-			var dataContent = $(this).attr("data-content");
-			var dataStyle = $(this).attr("data-style");
-
-
-			if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
-				$(".toast." + dataAlignment + "-" + dataPlacement).append(
-					'<div class="alert alert-dismissible fade show alert-' +
-					dataStyle +
-					' "> ' +
-					dataContent +
-					'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
-			} else {
-				$body.append('<div class="toast ' +
-					dataAlignment +
-					"-" +
-					dataPlacement +
-					'"> <div class="alert alert-dismissible fade show alert-' +
-					dataStyle +
-					' "> ' +
-					dataContent +
-					'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div> </div>');
-			}
-
-		});
-
-
-	/**************************************
-	 Chosen Form Control
-	 **************************************/
-	$(".form-control-chosen").chosen({
-		allow_single_deselect: true,
-		width: "100%"
-	});
-	$(".form-control-chosen-required").chosen({
-		allow_single_deselect: false,
-		width: "100%"
-	});
-	$(".form-control-chosen-search-threshold-100").chosen({
-		allow_single_deselect: true,
-		disable_search_threshold: 100,
-		width: "100%"
-	});
-	$(".form-control-chosen-optgroup").chosen({
-		width: "100%"
-	});
-	$(function () {
-		$('[title="clickable_optgroup"]').addClass("chosen-container-optgroup-clickable");
-	});
-	$(document).delegate('[title="clickable_optgroup"] .group-result',
-		"click",
-		function () {
-			var unselected = $(this).nextUntil(".group-result").not(".result-selected");
-			if (unselected.length) {
-				unselected.trigger("mouseup");
-			} else {
-				$(this).nextUntil(".group-result").each(function () {
-					$('a.search-choice-close[data-option-array-index="' + $(this).data("option-array-index") + '"]')
-						.trigger("click");
-				});
-			}
-		});
-
-
-	/*****************************************
-	 Themer Changer with local storage
-	 *****************************************/
-
-	$.fn.removeClassStartingWith = function (filter) {
-		$(this).removeClass(function (index, className) {
-			return (className.match(new RegExp("\\S*" + filter + "\\S*", "g")) || []).join(" ")
-		});
-		return this;
-	};
-
-
-	$body.delegate(".theme-changer",
-		"click",
-		function () {
-			var primaryColor = $(this).attr("primary-color");
-			var sidebarBg = $(this).attr("sidebar-bg");
-			var logoBg = $(this).attr("logo-bg");
-			var headerBg = $(this).attr("header-bg");
-
-			localStorage.setItem("primaryColor", primaryColor);
-			localStorage.setItem("sidebarBg", sidebarBg);
-			localStorage.setItem("logoBg", logoBg);
-			localStorage.setItem("headerBg", headerBg);
-
-			$.fn.setThemeTone(primaryColor);
-		});
-
-
-	$.fn.setThemeTone = function (primaryColor) {
-
-		if (localStorage.getItem("primaryColor") === null) {
-
-		} else {
-
-			/* SIDEBAR */
-			if (localStorage.getItem("sidebarBg") === "light") {
-				$(".sidebar ").addClass("sidebar-light");
-			} else {
-				$(".sidebar").removeClass("sidebar-light");
-			}
-
-
-			/* PRIMARY COLOR */
-			if (localStorage.getItem("primaryColor") === "primary") {
-				document.documentElement.style.setProperty("--theme-colors-primary", "#4B89FC");
-			} else {
-				var colorCode = getComputedStyle(document.body)
-					.getPropertyValue("--theme-colors-" + localStorage.getItem("primaryColor"));
-				document.documentElement.style.setProperty("--theme-colors-primary", colorCode);
-			}
-
-
-			/* LOGO */
-			if (localStorage.getItem("logoBg") === "white" || localStorage.getItem("logoBg") === "light") {
-				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
-					.addClass("navbar-light bg-" + localStorage.getItem("logoBg"));
-			} else {
-				$(".sidebar .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
-					.addClass("navbar-dark bg-" + localStorage.getItem("logoBg"));
-			}
-
-
-			/* HEADER */
-			if (localStorage.getItem("headerBg") === "light" || localStorage.getItem("headerBg") === "white") {
-				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-dark")
-					.addClass("navbar-light bg-" + localStorage.getItem("headerBg"));
-			} else {
-				$(".header .navbar").removeClassStartingWith("bg").removeClassStartingWith("navbar-light")
-					.addClass("navbar-dark bg-" + localStorage.getItem("headerBg"));
-			}
-
-		}
-
-
-	};
-
-
-	$.fn.setThemeTone();
-
-
-})(jQuery);
-
-
-/*****************************************
- Full Screen Toggle
- *****************************************/
-function toggleFullScreen() {
-	if ((document.fullScreenElement && document.fullScreenElement !== null) ||
-		(!document.mozFullScreen && !document.webkitIsFullScreen)) {
-		if (document.documentElement.requestFullScreen) {
-			document.documentElement.requestFullScreen();
-		} else if (document.documentElement.mozRequestFullScreen) {
-			document.documentElement.mozRequestFullScreen();
-		} else if (document.documentElement.webkitRequestFullScreen) {
-			document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-		}
-	} else {
-		if (document.cancelFullScreen) {
-			document.cancelFullScreen();
-		} else if (document.mozCancelFullScreen) {
-			document.mozCancelFullScreen();
-		} else if (document.webkitCancelFullScreen) {
-			document.webkitCancelFullScreen();
-		}
-	}
-}

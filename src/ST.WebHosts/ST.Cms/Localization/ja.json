@@ -519,6 +519,9 @@
   "system_subscriptions_agreement": "契約合意",
   "system_privacy_policies": "個人情報保護方針",
   "system_register": "登録",
+  "system_confirm": "確認",
+  "system_email_sent": "メールが送信された",
+  "system_email_confirmed": "メール確認",
   "add_report": "新規追加報告",
   "add_report_description": "追加された新しい報告書",
   "report_folder": "フォルダに報告",
@@ -555,5 +558,15 @@
   "remove_filter": "除去フィルター",
   "chart_title": "図表タイトル",
   "remove_chart": "削除した図表",
-  "chart_type": "インタラクティブなプロトタイプ"
+  "chart_type": "インタラクティブなプロトタイプ",
+  "system_email_not_confirmed": "メールを確認していな",
+  "system_email_confirm_state": "の状況をメールで",
+  "iso_matrix_impact": "の影響",
+  "iso_matrix_set_points": "セットポイント",
+  "iso_matrix_edit_cell_value": "編集セル値",
+  "iso_matrix_save_conf_message": "新しい設定を保存",
+  "system_multi_tenant_manage_company_users": "ユーザーの管理に接続されている組織",
+  "system_multi_tenant_company_users_doc": "こちらで管理することができ、ユーザーへと招待され、組織、あるいは，以下のように活性化機能など、削除、起動、停止、変更、パスワードおよび一般情報",
+  "iso_matrix_is_active": "活動",
+  "system_user_online": "オンライン"
 }

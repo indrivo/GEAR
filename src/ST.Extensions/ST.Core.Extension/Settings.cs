@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable InconsistentNaming
 
 namespace ST.Core
 {
@@ -15,16 +16,6 @@ namespace ST.Core
         public const string DEFAULT_LANGUAGE = "English";
 
         /// <summary>
-        /// Super admin role
-        /// </summary>
-        public const string ADMINISTRATOR = "Administrator";
-
-        /// <summary>
-        /// Anonimous User role
-        /// </summary>
-        public const string ANONIMOUS_USER = "Anonymous User";
-
-        /// <summary>
         /// Entity default schema
         /// </summary>
         public const string DEFAULT_ENTITY_SCHEMA = "system";
@@ -39,9 +30,9 @@ namespace ST.Core
             public const string CustomTable = "CustomTableName";
         }
 
-        public static class Date
+        public struct Date
         {
-            public static string DateFormat = "dd'.'MM'.'yyyy";
+            public const string DateFormat = "dd'.'MM'.'yyyy";
         }
     }
 

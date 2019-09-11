@@ -635,7 +635,7 @@ namespace ST.Identity.Roles.Razor.Controllers
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
         [HttpGet]
-        [Authorize(Roles = Settings.ADMINISTRATOR)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<IActionResult> RefreshCachedPermissionsForEachRole()
         {
             await _permissionService.RefreshCache();

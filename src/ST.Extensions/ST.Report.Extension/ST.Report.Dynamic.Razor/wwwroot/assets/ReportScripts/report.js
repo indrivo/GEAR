@@ -5,29 +5,15 @@ var chartId = 0;
 var items = [];
 var tables = [];
 var allFields = [];
-var Localizer = [];
 var LoadFinished = false;
-
-function AddLocalizer(key, value) {
-    Localizer.push({ key: key, value: value });
-}
-
-function GetLocalizer(key) {
-    var val = $.grep(Localizer, function (e) { return e.key === key; });
-    if (val && val.length > 0) {
-        return val[0].value;
-    }
-    else {
-        return key;
-    }
-}
+const localizer = new Localizer();
 
 function LoadReportData(data) {
     var dfd = $.Deferred();
     var callback = function (tData) {
         tables = $.merge([], tData);
         $('#tableSelect').select2({
-            placeholder: " - " + GetLocalizer('select_tables') + " - ",
+            placeholder: " - " + localizer.translate('select_tables') + " - ",
             multiple: true,
             data: tData
         }).change(function () {
@@ -221,34 +207,34 @@ function AddRelationship() {
 		<div class="row">
 			<div class="col-3">
 				<div class="form-group">
-					<label for="primaryKeyTableSelect`+ relationId + `">` + GetLocalizer('primary_key_table') + `:</label>
+					<label for="primaryKeyTableSelect`+ relationId + `">` + localizer.translate('primary_key_table') + `:</label>
 					<select class="form-control primaryKeyTableSelect" id="primaryKeyTableSelect`+ relationId + `"><option></option></select>
 				</div>
 			</div>
 			<div class="col-3">
 				<div class="form-group">
-					<label for="foreignKeyTableSelect`+ relationId + `">` + GetLocalizer('foreign_key_table') + `:</label>
+					<label for="foreignKeyTableSelect`+ relationId + `">` + localizer.translate('foreign_key_table') + `:</label>
 					<select class="form-control foreignKeyTableSelect" id="foreignKeyTableSelect`+ relationId + `"><option></option></select>
 				</div>
 			</div>
 			<div class="col-3">
 				<div class="form-group">
-					<label for="foreignKeySelect`+ relationId + `">` + GetLocalizer('foreign_key') + `:</label>
+					<label for="foreignKeySelect`+ relationId + `">` + localizer.translate('foreign_key') + `:</label>
 					<select class="form-control foreignKeySelect" id="foreignKeySelect`+ relationId + `"><option></option></select>
 				</div>
 			</div>
 			<div class="col-1">
 				<label>&nbsp;</label>
-				<button class="btn btn-danger removeRelationship">`+ GetLocalizer('remove_relationship') + `</button>
+				<button class="btn btn-danger removeRelationship">`+ localizer.translate('remove_relationship') + `</button>
 			</div>
 		</div>`;
     $("#pnlRelationships").append(currentHtml);
     $('#primaryKeyTableSelect' + relationId).select2({
-        placeholder: " - " + GetLocalizer('select_table') + " - ",
+        placeholder: " - " + localizer.translate('select_table') + " - ",
         multiple: false
     });
     $('#foreignKeyTableSelect' + relationId).select2({
-        placeholder: " - " + GetLocalizer('select_table') + " - ",
+        placeholder: " - " + localizer.translate('select_table') + " - ",
         multiple: false
     }).change(function () {
         if (LoadFinished) {
@@ -257,7 +243,7 @@ function AddRelationship() {
         }
     });
     $('#foreignKeySelect' + relationId).select2({
-        placeholder: " - " + GetLocalizer('select_key') + " - ",
+        placeholder: " - " + localizer.translate('select_key') + " - ",
         multiple: false
     });
     if (LoadFinished) {
@@ -273,34 +259,34 @@ function AddField() {
 			<div class="col-12 row m-t-20">
 				<div class="col-md-4">
 					<div class="form-group">
-						<label>` + GetLocalizer('field') + `:</label>
+						<label>` + localizer.translate('field') + `:</label>
 						<select class="form-control fieldSelector" id="fieldSelector`+ fieldId + `">
 						</select>
 					</div>
 				</div>
 				<div class="col-4">
 					<div class="form-group">
-						<label>` + GetLocalizer('aggregates') + `:</label>
+						<label>` + localizer.translate('aggregates') + `:</label>
 						<select class="form-control fieldOperationSelector" id="fieldOperationSelector`+ fieldId + `">
 						</select>
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class="form-group">
-						<label>` + GetLocalizer('caption') + `:</label>
+						<label>` + localizer.translate('caption') + `:</label>
 						<input class="form-control filterValueSelector" type="text" id="fieldCaptionSelector`+ fieldId + `">
 							</div>
 					</div>
 					<div class="col-1">
 						<label>&nbsp;</label>
-						<button class="btn btn-danger removeField">` + GetLocalizer('remove_field') + `</button>
+						<button class="btn btn-danger removeField">` + localizer.translate('remove_field') + `</button>
 					</div>
 				</div>
 			</div>`;
     $("#pnlFields").append(currentHtml);
 
     $('#fieldSelector' + fieldId).select2({
-        placeholder: " - " + GetLocalizer('select_field') + " - ",
+        placeholder: " - " + localizer.translate('select_field') + " - ",
         multiple: false
     }).change(function () {
         if (LoadFinished) {
@@ -316,7 +302,7 @@ function AddField() {
         }
     });
     $('#fieldOperationSelector' + fieldId).select2({
-        placeholder: " - " + GetLocalizer('select_operation') + " - ",
+        placeholder: " - " + localizer.translate('select_operation') + " - ",
         multiple: false
     });
 
@@ -334,37 +320,37 @@ function AddFilter() {
 				<div class="col-12 row m-t-20 changedRow">
 					<div class="col-md-4">
 						<div class="form-group">
-							<label>` + GetLocalizer('field') + `:</label>
+							<label>` + localizer.translate('field') + `:</label>
 							<select class="form-control filterFieldSelector" id="filterFieldSelector`+ filterId + `">
 							</select>
 						</div>
 					</div>
 					<div class="col-4">
 						<div class="form-group">
-							<label>` + GetLocalizer('operation') + `:</label>
+							<label>` + localizer.translate('operation') + `:</label>
 							<select class="form-control filterOperationSelector" id="filterOperationSelector`+ filterId + `">
 							</select>
 						</div>
 					</div>
 					<div class="col-md-3">
 						<div class="form-group">
-							<label>` + GetLocalizer('iso_active_value') + `:</label>
+							<label>` + localizer.translate('iso_active_value') + `:</label>
 							<input class="form-control filterValueSelector" type="text" id="filterValueSelector`+ filterId + `">
 							</div>
 						</div>
 						<div class="col-1">
 							<label>&nbsp;</label>
-							<button class="btn btn-danger removeFilter">` + GetLocalizer('remove_filter') + `</button>
+							<button class="btn btn-danger removeFilter">` + localizer.translate('remove_filter') + `</button>
 						</div>
 					</div>
 				</div>`;
     $("#pnlFilters").append(currentHtml);
     $('#filterFieldSelector' + filterId).select2({
-        placeholder: " - " + GetLocalizer('select_field') + " - ",
+        placeholder: " - " + localizer.translate('select_field') + " - ",
         multiple: false
     });
     $('#filterOperationSelector' + filterId).select2({
-        placeholder: " - " + GetLocalizer('select_operation') + " - ",
+        placeholder: " - " + localizer.translate('select_operation') + " - ",
         multiple: false
     });
     if (LoadFinished) {
@@ -387,7 +373,7 @@ function AddChart(chartType) {
                         <input name="chartIndex" type="hidden" value="` + index + `" />
 						<div class="col-md-1">
 							<div class="form-group">
-								<label>` + GetLocalizer('chart_type') + `:</label>
+								<label>` + localizer.translate('chart_type') + `:</label>
 								<div class="font-weight-bold">
 									` + chartTypeData.text + `
 										</div>
@@ -395,7 +381,7 @@ function AddChart(chartType) {
 						</div>
 						<div class="col-md-2">
 							<div class="form-group">
-								<label>` + GetLocalizer('chart_title') + `:</label>
+								<label>` + localizer.translate('chart_title') + `:</label>
 								<input class="form-control chartTitle" name="chartTitle" type="text" id="chartTitle`+ chartId + `">
 									</div>
 							</div>
@@ -414,7 +400,7 @@ function AddChart(chartType) {
         });
         currentHtml += `<div class="col-1">
 								<label>&nbsp;</label>
-								<button class="btn btn-danger removeChart">` + GetLocalizer('remove_chart') + `</button>
+								<button class="btn btn-danger removeChart">` + localizer.translate('remove_chart') + `</button>
 							</div>
 						</div>
 					</div>`;
@@ -431,7 +417,7 @@ function AddChart(chartType) {
                 }
                 var chartField = $(this);
                 chartField.select2({
-                    placeholder: " - " + GetLocalizer('select_field') + " - ",
+                    placeholder: " - " + localizer.translate('select_field') + " - ",
                     multiple: isMultiselect
                 });
             });
@@ -646,7 +632,7 @@ function LoadNew() {
     var callback = function (data) {
         tables = $.merge([], data);
         $('#tableSelect').select2({
-            placeholder: " - " + GetLocalizer('select_tables') + " - ",
+            placeholder: " - " + localizer.translate('select_tables') + " - ",
             multiple: true,
             data: data
         }).change(function () {

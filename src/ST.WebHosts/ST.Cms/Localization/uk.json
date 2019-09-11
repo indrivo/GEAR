@@ -519,6 +519,9 @@
   "system_subscriptions_agreement": "Угода Про Підписку ",
   "system_privacy_policies": "Політика Конфіденційності ",
   "system_register": "Реєстрація",
+  "system_confirm": "Підтвердити",
+  "system_email_sent": "Лист було відправлено",
+  "system_email_confirmed": "Електронної пошти підтверджено",
   "add_report": "Додати новий звіт",
   "add_report_description": "Буде доданий новий звіт",
   "report_folder": "Папки звітів ",
@@ -555,5 +558,15 @@
   "remove_filter": "Вилучити фільтр",
   "chart_title": "Заголовок діаграми ",
   "remove_chart": "Видалити графік",
-  "chart_type": "Тип діаграми "
+  "chart_type": "Тип діаграми ",
+  "system_email_not_confirmed": "Електронної пошти не підтверджений",
+  "system_email_confirm_state": "Стан \" на email",
+  "iso_matrix_impact": "Вплив",
+  "iso_matrix_set_points": "Набір очок",
+  "iso_matrix_edit_cell_value": "Редагування значень комірок",
+  "iso_matrix_save_conf_message": "Нова конфігурація зберігається",
+  "system_multi_tenant_manage_company_users": "Управління користувачами, підключеними до вашої організації",
+  "system_multi_tenant_company_users_doc": "Тут ви можете керувати користувачами, які були запрошені в вашу організацію, у вас є такі активовані функції, такі як: видалити, активувати, зупинити, змінити пароль і деяку загальну інформацію",
+  "iso_matrix_is_active": "Активна",
+  "system_user_online": "Онлайн"
 }

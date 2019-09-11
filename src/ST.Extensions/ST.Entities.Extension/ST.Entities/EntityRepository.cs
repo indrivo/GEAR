@@ -109,7 +109,9 @@ namespace ST.Entities
         public virtual async Task<ResultModel<CreateTableFieldViewModel>> GetAddFieldCreateViewModel(Guid id, string type)
         {
             var rs = new ResultModel<CreateTableFieldViewModel>();
-            var entitiesList = await _context.Table.ToListAsync();
+            var entitiesList = await _context.Table
+                .Where(x => x.IsPartOfDbContext || x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA))
+                .ToListAsync();
             if (!entitiesList.Any(x => x.Id.Equals(id)))
             {
                 rs.Errors.Add(new ErrorModel("error", "Entity not found!"));

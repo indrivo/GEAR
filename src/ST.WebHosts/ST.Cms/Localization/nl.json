@@ -519,6 +519,9 @@
   "system_subscriptions_agreement": "Abonnement Overeenkomst",
   "system_privacy_policies": "Privacy Beleid",
   "system_register": "Aanmelden",
+  "system_confirm": "Bevestigen",
+  "system_email_sent": "E-mail is verzonden",
+  "system_email_confirmed": "E-mail bevestigd",
   "add_report": "Nieuw rapport toevoegen",
   "add_report_description": "Zal worden toegevoegd een nieuw rapport",
   "report_folder": "Verslag map",
@@ -555,5 +558,15 @@
   "remove_filter": "Verwijder filter",
   "chart_title": "Grafiek titel",
   "remove_chart": "Diagram verwijderen",
-  "chart_type": "Diagram type"
+  "chart_type": "Diagram type",
+  "system_email_not_confirmed": "E-mail niet wordt bevestigd",
+  "system_email_confirm_state": "De status van de e-mail",
+  "iso_matrix_impact": "De Impact",
+  "iso_matrix_set_points": "Punten",
+  "iso_matrix_edit_cell_value": "Bewerken cel waarden",
+  "iso_matrix_save_conf_message": "Nieuwe configuratie hebt opgeslagen",
+  "system_multi_tenant_manage_company_users": "Het beheren van gebruikers aangesloten op uw organisatie",
+  "system_multi_tenant_company_users_doc": "Hier kunt u de gebruikers die zijn uitgenodigd in uw organisatie, u hebt de volgende geactiveerde functies, zoals het verwijderen, activeren, stop, het wachtwoord wijzigen en een aantal Algemene informatie",
+  "iso_matrix_is_active": "Actief",
+  "system_user_online": "Online"
 }

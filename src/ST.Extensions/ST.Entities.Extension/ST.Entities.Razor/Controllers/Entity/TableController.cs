@@ -166,7 +166,7 @@ namespace ST.Entities.Razor.Controllers.Entity
         {
             var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount);
+                out var totalCount, x => x.IsPartOfDbContext || x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
 
             var orderList = filtered.Select(o => new TableModel
             {
@@ -206,9 +206,6 @@ namespace ST.Entities.Razor.Controllers.Entity
             if (table == null) return NotFound();
             var model = table.Adapt<UpdateTableViewModel>();
             model.TableFields = await Context.TableFields.AsNoTracking().Where(x => x.TableId == table.Id).ToListAsync();
-            if (model.ModifiedBy != null)
-                model.ModifiedBy = ApplicationDbContext.Users.AsNoTracking()
-                .SingleOrDefaultAsync(m => m.Id == model.ModifiedBy).Result.NormalizedUserName.ToLower();
             model.Groups = await Context.TableFieldGroups.AsNoTracking().Include(s => s.TableFieldTypes).ToListAsync();
             model.TabName = tab;
             return View(model);

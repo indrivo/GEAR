@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace ST.Core.Extensions
@@ -13,7 +14,7 @@ namespace ST.Core.Extensions
         public static bool IsGuid(this string str)
         {
             if (string.IsNullOrEmpty(str)) return false;
-            var guidRegEx = new Regex(@"^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$");
+            var guidRegEx = new Regex(GlobalResources.RegularExpressions.GUID);
             return guidRegEx.IsMatch(str);
         }
         /// <summary>
@@ -30,10 +31,11 @@ namespace ST.Core.Extensions
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
             return Guid.Empty;
         }
+
         /// <summary>
         /// Parse string to Guid
         /// </summary>
@@ -48,7 +50,7 @@ namespace ST.Core.Extensions
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Debug.WriteLine(e);
             }
 
             return null;

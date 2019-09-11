@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
+using ST.Cache.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Permissions.Abstractions;
 using ST.Identity.Permissions.Abstractions.Models;
 
 namespace ST.Identity.Permissions
 {
-    public class PermissionService<TContext> : IPermissionService where TContext: IIdentityContext
+    public class PermissionService<TContext> : IPermissionService where TContext : IIdentityContext
     {
         /// <summary>
         /// Inject sign in manager
@@ -24,7 +23,7 @@ namespace ST.Identity.Permissions
         /// <summary>
         /// Inject distributed cache
         /// </summary>
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cache;
 
         /// <summary>
         /// Inject context
@@ -37,7 +36,7 @@ namespace ST.Identity.Permissions
         /// <param name="signInManager"></param>
         /// <param name="cache"></param>
         /// <param name="context"></param>
-        public PermissionService(SignInManager<ApplicationUser> signInManager, IDistributedCache cache,
+        public PermissionService(SignInManager<ApplicationUser> signInManager, ICacheService cache,
             TContext context)
         {
             _signInManager = signInManager;
@@ -100,56 +99,6 @@ namespace ST.Identity.Permissions
 
         /// <inheritdoc />
         /// <summary>
-        /// Set object async
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public async Task SetObjectAsync<T>(string key, T obj)
-        {
-            if (!string.IsNullOrEmpty(key))
-            {
-                try
-                {
-                    var data = JsonConvert.SerializeObject(obj);
-                    if (!string.IsNullOrEmpty(data))
-                    {
-                        await _cache.SetStringAsync(key, data);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Get object async
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public async Task<T> GetObjectAsync<T>(string key)
-        {
-            if (string.IsNullOrEmpty(key)) return default;
-            try
-            {
-                var data = await _cache.GetStringAsync(key);
-                return string.IsNullOrEmpty(data) ? default : JsonConvert.DeserializeObject<T>(data);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return default;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
         /// Get roles permissions
         /// </summary>
         /// <returns></returns>
@@ -179,7 +128,7 @@ namespace ST.Identity.Permissions
         {
             var roles = await RolesPermissionsAsync();
             var store = roles.ToDictionary(role => role.Name, role => role.Permissions.Select(x => x.PermissionKey));
-            await SetObjectAsync(CacheKeyName, store);
+            await _cache.Set(CacheKeyName, store);
         }
 
 
@@ -192,7 +141,7 @@ namespace ST.Identity.Permissions
         /// <returns></returns>
         public async Task RefreshCacheByRole(string roleName, bool delete = false)
         {
-            var storeDictionary = await GetObjectAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
+            var storeDictionary = await _cache.Get<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
             if (delete)
             {
                 if (storeDictionary.ContainsKey(roleName))
@@ -227,7 +176,7 @@ namespace ST.Identity.Permissions
                 storeDictionary.Add(data.Name, data.Permissions.Select(x => x.PermissionKey));
             }
 
-            await SetObjectAsync(CacheKeyName, storeDictionary);
+            await _cache.Set(CacheKeyName, storeDictionary);
         }
 
         /// <inheritdoc />
@@ -241,7 +190,7 @@ namespace ST.Identity.Permissions
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
-            var data = await GetObjectAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
+            var data = await _cache.Get<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
 
             try
             {

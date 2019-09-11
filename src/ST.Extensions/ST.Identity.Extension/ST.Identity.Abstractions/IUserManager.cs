@@ -43,5 +43,13 @@ namespace ST.Identity.Abstractions
         /// </summary>
         /// <returns></returns>
         string GetRequestIpAdress();
+
+        /// <summary>
+        /// Add roles to user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddToRolesAsync(ApplicationUser user, ICollection<string> roles);
     }
 }

@@ -54,14 +54,6 @@
                 </div>
 
                 <hr class="my-4 dashed">
-
-                <p>
-                    <span class="weight-400">@Localizer["system_phone"] : </span><span class="text-muted">@user.PhoneNumber</span>
-                </p>
-                <p>
-                    <span class="weight-400">@Localizer["email"] : </span><span class="text-muted">@user.Email</span>
-                </p>
-
             </div>
         </div>
     </div>
@@ -80,7 +72,7 @@
             <div class="card-body">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" view-data="@ViewData"/>
+                        <partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" view-data="@ViewData" />
                     </div>
                     <div class="tab-pane fade show" id="users" role="tabpanel" aria-labelledby="users-tab">
                         <JList asp-for="@ViewBag.UsersListSettings"></JList>
@@ -100,7 +92,7 @@
     {
         <script>
         loadCitiesByCountryId("@tenantEditModel.CountryId", "@tenantEditModel.CityId");
-    </script>
+        </script>
     }
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
