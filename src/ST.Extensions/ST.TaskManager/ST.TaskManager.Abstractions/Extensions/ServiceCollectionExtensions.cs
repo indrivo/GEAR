@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.TaskManager.Abstractions.BackgroundServices;
 
 namespace ST.TaskManager.Abstractions.Extensions
 {
@@ -12,13 +13,16 @@ namespace ST.TaskManager.Abstractions.Extensions
         /// Register task module
         /// </summary>
         /// <typeparam name="TTaskService"></typeparam>
+        /// <typeparam name="TTaskManagerNotificationService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddTaskModule<TTaskService>(this IServiceCollection services)
-            where TTaskService : class, ITaskManager
+        public static IServiceCollection AddTaskModule<TTaskService, TTaskManagerNotificationService>(this IServiceCollection services)
+            where TTaskService : class, ITaskManager where TTaskManagerNotificationService : class, ITaskManagerNotificationService
         {
             services.AddTransient<ITaskManager, TTaskService>();
             IoC.RegisterService<ITaskManager, TTaskService>();
+            services.AddTransient<ITaskManagerNotificationService, TTaskManagerNotificationService>();
+            services.AddHostedService<TaskManagerBackgroundService>();
             return services;
         }
 

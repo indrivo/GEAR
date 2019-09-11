@@ -18,7 +18,7 @@ namespace ST.Files.Abstraction
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        ResultModel<Guid> AddFile(UploadFileViewModel dto);
+        ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId);
 
         /// <summary>
         /// Remove file logical
@@ -40,5 +40,12 @@ namespace ST.Files.Abstraction
         /// <param name="id"></param>
         /// <returns></returns>
         ResultModel<Guid> RestoreFile(Guid id);
+
+        /// <summary>
+        /// Update file settings
+        /// </summary>
+        /// <param name="newSettings"></param>
+        /// <returns></returns>
+        ResultModel ChangeSettings<TSettingsViewModel>(TSettingsViewModel newSettings) where TSettingsViewModel : FileSettingsViewModel;
     }
 }

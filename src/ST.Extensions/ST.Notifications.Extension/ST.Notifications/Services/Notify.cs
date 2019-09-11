@@ -163,7 +163,7 @@ namespace ST.Notifications.Services
                 foreach (var userRole in userRoles)
                 {
                     var receivers = await _context.Users.Where(x => x.Id.Equals(userRole.UserId))
-                         .Select(x => Guid.Parse(x.Id)).ToListAsync();
+                        .Select(x => Guid.Parse(x.Id)).ToListAsync();
                     receivers.ForEach(x =>
                     {
                         if (!users.Contains(x)) users.Add(x);

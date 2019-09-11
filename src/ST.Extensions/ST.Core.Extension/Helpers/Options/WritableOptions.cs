@@ -35,23 +35,37 @@ namespace ST.Core.Helpers.Options
         public T Value => _options.CurrentValue;
         public T Get(string name) => _options.Get(name);
 
+        /// <inheritdoc />
         /// <summary>
         /// Update options in json
         /// </summary>
         /// <param name="applyChanges"></param>
-        public void Update(Action<T> applyChanges)
+        /// <param name="filePath"></param>
+        public void Update(Action<T> applyChanges, string filePath = null)
         {
+            if (filePath != null) filePath = Path.Combine(_environment.ContentRootPath, filePath);
+
             var fileProvider = _environment.ContentRootFileProvider;
-            var fileInfo = fileProvider.GetFileInfo(_file);
-            var physicalPath = fileInfo.PhysicalPath;
+            var fileInfo = fileProvider.GetFileInfo(filePath ?? _file);
+            var physicalPath = fileInfo.PhysicalPath ?? fileInfo.Name;
 
             var jObject = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(physicalPath));
-            var sectionObject = jObject.TryGetValue(_section, out JToken section) ?
-                JsonConvert.DeserializeObject<T>(section.ToString()) : (Value ?? new T());
-
+            var sectionObject = jObject.TryGetValue(_section, out var section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : (Value ?? new T());
             applyChanges(sectionObject);
+            if (!jObject.ContainsKey(_section))
+            {
+                jObject.Add(sectionObject.IsList()
+                    ? new JProperty(_section, new JArray(JArray.Parse(JsonConvert.SerializeObject(sectionObject))))
+                    : new JProperty(_section, new JObject(JObject.Parse(JsonConvert.SerializeObject(sectionObject)))));
+            }
+            else
+            {
+                if (sectionObject.IsList())
+                    jObject[_section] = JArray.Parse(JsonConvert.SerializeObject(sectionObject));
+                else
+                    jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
+            }
 
-            jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
             File.WriteAllText(physicalPath, JsonConvert.SerializeObject(jObject, Formatting.Indented));
         }
     }

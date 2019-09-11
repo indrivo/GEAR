@@ -4,11 +4,11 @@ using ST.Core.Helpers;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 
-namespace ST.TaskManager
+namespace ST.TaskManager.Helpers
 {
     public class TaskManagerHelper
     {
-        internal static Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel,Task dbTaskResult)
+        internal static Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel, Task dbTaskResult)
         {
             if (dbTaskResult == null) return null;
 
@@ -33,16 +33,17 @@ namespace ST.TaskManager
                 EndDate = taskViewModel.EndDate,
                 Status = taskViewModel.Status,
                 UserId = taskViewModel.UserId,
-                TaskPriority = taskViewModel.TaskPriority,
+                TaskPriority = taskViewModel.TaskPriority
             };
             if (taskViewModel.TaskItems == null) return dto;
 
-            foreach (var item in taskViewModel.TaskItems) dto.TaskItems.Add(
-                new TaskItem
-                {
-                    IsDone = false,
-                    Name = item.Name
-                });
+            foreach (var item in taskViewModel.TaskItems)
+                dto.TaskItems.Add(
+                    new TaskItem
+                    {
+                        IsDone = false,
+                        Name = item.Name
+                    });
 
             return dto;
         }
@@ -58,19 +59,20 @@ namespace ST.TaskManager
                 EndDate = dbTaskResult.EndDate,
                 Status = dbTaskResult.Status,
                 UserId = dbTaskResult.UserId,
-                TaskPriority = dbTaskResult.TaskPriority
+                TaskPriority = dbTaskResult.TaskPriority,
+                TaskNumber = dbTaskResult.TaskNumber,
+                TaskItemsCount = CountTaskItems(dbTaskResult)
             };
             return dto;
         }
 
-        internal static IEnumerable<TaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
+        internal static IEnumerable<GetTaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
         {
-            return dbTaskResult.TaskItems.Select(item => new TaskItemViewModel
+            return dbTaskResult.TaskItems.Select(item => new GetTaskItemViewModel
             {
                 Id = item.Id,
                 IsDone = item.IsDone,
                 Name = item.Name,
-                TaskId = item.Task.Id
             }).AsEnumerable();
         }
 
@@ -85,6 +87,15 @@ namespace ST.TaskManager
                 IsSuccess = true,
                 Result = taskList
             };
+        }
+
+        private static int[] CountTaskItems(Task dbTasksResult)
+        {
+            if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] {0, 0};
+            var total = dbTasksResult.TaskItems.Count;
+            var completed = dbTasksResult.TaskItems.Count(x => x.IsDone == true);
+
+            return new[] {completed, total};
         }
     }
 }

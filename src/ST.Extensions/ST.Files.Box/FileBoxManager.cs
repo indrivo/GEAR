@@ -1,21 +1,27 @@
 ﻿using Microsoft.AspNetCore.Http;
 using ST.Core.Helpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mapster;
 using Microsoft.AspNetCore.Hosting;
+using ST.Core.Abstractions;
+using ST.Files.Abstraction;
 using ST.Files.Abstraction.Helpers;
 using ST.Files.Abstraction.Models.ViewModels;
 using ST.Files.Box.Abstraction;
 using ST.Files.Box.Abstraction.Models;
+using ST.Files.Box.Abstraction.Models.ViewModels;
 using ST.Files.Box.Data;
 using ST.Files.Box.Models;
 
 
 namespace ST.Files.Box
 {
-    public class FileBoxManager<TContext> : IFileBoxManager where TContext : FileBoxDbContext, IFileBoxContext
+    public class FileBoxManager<TContext> : FileManagerBase, IFileBoxManager where TContext : FileBoxDbContext, IFileBoxContext
     {
+        private readonly IWritableOptions<List<FileBoxSettingsViewModel>> _options;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly TContext _context;
         private const string FileRootPath = "FileBox";
@@ -25,18 +31,26 @@ namespace ST.Files.Box
         /// </summary>
         /// <param name="context"></param>
         /// <param name="hostingEnvironment"></param>
-        public FileBoxManager(TContext context, IHostingEnvironment hostingEnvironment)
+        /// <param name="options"></param>
+        public FileBoxManager(TContext context, IHostingEnvironment hostingEnvironment, IWritableOptions<List<FileBoxSettingsViewModel>> options)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _options = options;
         }
 
-        public virtual ResultModel<Guid> AddFile(UploadFileViewModel dto)
+        public override ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId)
         {
+            var fileValidation =
+                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == tenantId));
+
+            if (!fileValidation.IsSuccess) return fileValidation;
+
             if (dto.Id != Guid.Empty) return UpdateFile(dto);
 
+
             var encryptedFile = SaveFilePhysical(dto.File);
-            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+            if (encryptedFile == null) return ExceptionMessagesEnum.NullIFormFile.ToErrorModel<Guid>();
 
             var file = new FileBox
             {
@@ -54,10 +68,12 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<Guid> DeleteFile(Guid id)
+        public override ResultModel<Guid> DeleteFile(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<Guid>();
+
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             file.IsDeleted = true;
             _context.FilesBox.Update(file);
@@ -69,10 +85,12 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<Guid> RestoreFile(Guid id)
+        public override ResultModel<Guid> RestoreFile(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<Guid>();
+
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             file.IsDeleted = false;
             _context.FilesBox.Update(file);
@@ -85,10 +103,12 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<Guid> DeleteFilePermanent(Guid id)
+        public override ResultModel<Guid> DeleteFilePermanent(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<Guid>();
+
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == id);
-            if (file != null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+            if (file == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, file.Path, file.Name);
             File.Delete(filePath);
@@ -101,27 +121,46 @@ namespace ST.Files.Box
             };
         }
 
-        public virtual ResultModel<DownloadFileViewModel> GetFileById(Guid id)
+        public override ResultModel<DownloadFileViewModel> GetFileById(Guid id)
         {
+            if (id == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<DownloadFileViewModel>();
+
             var dbFileResult = _context.FilesBox.FirstOrDefault(x => (x.Id == id) & (x.IsDeleted == false));
-            var dto = new DownloadFileViewModel();
-            if (dbFileResult == null)
-                return new ResultModel<DownloadFileViewModel>
-                {
-                    IsSuccess = false,
-                    Result = dto
-                };
+            if (dbFileResult == null) return ExceptionMessagesEnum.FileNotFound.ToErrorModel<DownloadFileViewModel>();
 
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, dbFileResult.Path);
-            dto.Path = filePath;
-            dto.FileExtension = dbFileResult.FileExtension;
-            dto.FileName = dbFileResult.Name;
+            var dto = new DownloadFileViewModel
+            {
+                Path = filePath, FileExtension = dbFileResult.FileExtension, FileName = dbFileResult.Name
+            };
 
             return new ResultModel<DownloadFileViewModel>
             {
                 IsSuccess = true,
                 Result = dto
             };
+        }
+
+        public override ResultModel ChangeSettings<TFileSettingsViewModel>(TFileSettingsViewModel newSettings)
+        {
+            var settings = newSettings.Adapt<FileBoxSettingsViewModel>();
+            var result = new ResultModel();
+            var fileSettingsList = _options.Value ?? new List<FileBoxSettingsViewModel>();
+            var fileSettings = _options?.Value?.Find(x => x.TenantId == newSettings.TenantId);
+            if (fileSettings == null)
+            {
+                fileSettingsList.Add(settings);
+            }
+            else
+            {
+                var index = fileSettingsList.FindIndex(m => m.TenantId == newSettings.TenantId);
+                if (index >= 0)
+                    fileSettingsList[index] = settings;
+            }
+
+            _options.Update(x => x = fileSettingsList, "fileSettings.json");
+            result.IsSuccess = true;
+            return result;
         }
 
         private FileBoxDto SaveFilePhysical(IFormFile file)
@@ -151,11 +190,11 @@ namespace ST.Files.Box
         {
             var file = _context.FilesBox.FirstOrDefault(x => x.Id == dto.Id);
             if (file == null)
-                return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.FileNotFound);
+                return ExceptionMessagesEnum.FileNotFound.ToErrorModel<Guid>();
 
             DeleteFilePhysical(file.Path, file.Name);
             var encryptedFile = SaveFilePhysical(dto.File);
-            if (encryptedFile == null) return ExceptionHandler.ReturnErrorModel<Guid>(ExceptionMessagesEnum.NullIFormFile);
+            if (encryptedFile == null) return ExceptionMessagesEnum.NullIFormFile.ToErrorModel<Guid>();
 
             file.FileExtension = encryptedFile.FileExtension;
             file.Path = encryptedFile.Path;
@@ -176,5 +215,6 @@ namespace ST.Files.Box
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, FileRootPath, path, fileName);
             File.Delete(filePath);
         }
+
     }
 }

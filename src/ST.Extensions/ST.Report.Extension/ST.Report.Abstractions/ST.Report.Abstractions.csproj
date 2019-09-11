@@ -8,4 +8,12 @@
     <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+    <Folder Include="Models\Constants\" />
+    <Folder Include="Models\Dto\" />
+    <Folder Include="Models\Enums\" />
+    <Folder Include="Models\ViewModels\" />
+  </ItemGroup>
+
 </Project>

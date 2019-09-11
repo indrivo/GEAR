@@ -20,21 +20,27 @@ namespace ST.TaskManager.Abstractions
         /// </summary>
         /// <param name="taskId"></param>
         /// <returns></returns>
-        Task<ResultModel<List<TaskItemViewModel>>> GetTaskItemsAsync(Guid taskId);
+        Task<ResultModel<List<GetTaskItemViewModel>>> GetTaskItemsAsync(Guid taskId);
 
         /// <summary>
         /// Get tasks list by author user id
         /// </summary>
         /// <param name="userName"></param>
+        /// <param name="deleted"></param>
+        /// <param name="total"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName);
+        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int total, int pageSize);
 
         /// <summary>
         /// Get tasks list by assigner id
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="userName"></param>
+        /// <param name="total"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
-        Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId);
+        Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int total, int pageSize);
 
         /// <summary>
         /// Create task with task items
@@ -65,18 +71,25 @@ namespace ST.TaskManager.Abstractions
         Task<ResultModel> DeletePermanentTaskAsync(Guid taskId);
 
         /// <summary>
+        /// Restore task from deleted status
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RestoreTaskAsync(Guid taskId);
+
+        /// <summary>
         /// Add task item to an existing task
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateTaskItemAsync(TaskItemViewModel task);
+        Task<ResultModel<Guid>> CreateTaskItemAsync(CreateTaskItemViewModel task);
 
         /// <summary>
         /// Update task item
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> UpdateTaskItemAsync(TaskItemViewModel task);
+        Task<ResultModel<Guid>> UpdateTaskItemAsync(UpdateTaskItemViewModel task);
 
         /// <summary>
         /// Delete task item permanent
