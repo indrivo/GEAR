@@ -519,6 +519,9 @@
   "system_subscriptions_agreement": "订购协议",
   "system_privacy_policies": "隐私的政策",
   "system_register": "注册",
+  "system_confirm": "确认",
+  "system_email_sent": "电子邮件发送",
+  "system_email_confirmed": "电子邮件确认",
   "add_report": "添加新的报告",
   "add_report_description": "将增加一个新的报告",
   "report_folder": "报告的文件夹",
@@ -555,5 +558,15 @@
   "remove_filter": "删除过滤器",
   "chart_title": "图表标题",
   "remove_chart": "除去程图",
-  "chart_type": "图表的类型"
+  "chart_type": "图表的类型",
+  "system_email_not_confirmed": "电子邮件没有得到证实",
+  "system_email_confirm_state": "状态的电子邮件",
+  "iso_matrix_impact": "产生的影响",
+  "iso_matrix_set_points": "集点",
+  "iso_matrix_edit_cell_value": "编辑元值",
+  "iso_matrix_save_conf_message": "新配置保存的",
+  "system_multi_tenant_manage_company_users": "管理用户连接到你的组织",
+  "system_multi_tenant_company_users_doc": "在这里你可以管理的用户已被邀请进入组织，有下列活功能，例如删除，激活、停止改变密码和一些一般信息",
+  "iso_matrix_is_active": "是活",
+  "system_user_online": "在线"
 }

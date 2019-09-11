@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
+using ST.Identity.Abstractions.Extensions;
 
 namespace ST.Identity.Services
 {
@@ -102,6 +104,52 @@ namespace ST.Identity.Services
 
                 return val;
             }
+        }
+
+
+        /// <summary>
+        /// Add roles to user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddToRolesAsync(ApplicationUser user, ICollection<string> roles)
+        {
+            var result = new ResultModel();
+            var defaultRoles = new Collection<string> { GlobalResources.Roles.USER, GlobalResources.Roles.ANONIMOUS_USER };
+
+            if (user == null || roles == null)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, "Bad parameters"));
+                return result;
+            }
+
+            var exist = await UserManager.FindByEmailAsync(user.Email);
+            if (exist == null)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, "User not found"));
+                return result;
+            }
+
+            foreach (var defaultRole in defaultRoles)
+            {
+                if (roles.Contains(defaultRole)) continue;
+                roles.Add(defaultRole);
+            }
+
+            var existentRoles = await UserManager.GetRolesAsync(exist);
+
+            var newRoles = roles.Where(x => !existentRoles.Contains(x)).ToList();
+
+            var serviceResult = await UserManager.AddToRolesAsync(exist, newRoles);
+
+            if (serviceResult.Succeeded)
+            {
+                result.IsSuccess = true;
+            }
+            else result.AppendIdentityErrors(serviceResult.Errors);
+
+            return result;
         }
     }
 }

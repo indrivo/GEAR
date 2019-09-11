@@ -8,13 +8,11 @@ using IdentityServer4;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Core.Helpers;
@@ -30,6 +28,8 @@ using ST.MPass.Gov;
 using ST.Identity.Abstractions.Events;
 using ST.Identity.Abstractions.Events.EventArgs.Authorization;
 using ST.Identity.Abstractions.Events.EventArgs.Users;
+using ST.Identity.Abstractions.Extensions;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Identity.Razor.Controllers
 {
@@ -64,8 +64,6 @@ namespace ST.Identity.Razor.Controllers
         /// Inject M pass options
         /// </summary>
         private readonly IOptions<MPassOptions> _mpassOptions;
-
-        private readonly IStringLocalizer _localizer;
 
         /// <summary>
         /// Inject M pass dataService
@@ -109,14 +107,12 @@ namespace ST.Identity.Razor.Controllers
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
             IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor,
-            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext,
-            IStringLocalizer localizer)
+            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
             _ldapUserManager = ldapUserManager;
             _applicationDbContext = applicationDbContext;
-            _localizer = localizer;
             _manager = manager;
             _mpassOptions = mpassOptions;
             _mpassSigningCredentialStore = mpassSigningCredentialStore;
@@ -227,7 +223,7 @@ namespace ST.Identity.Razor.Controllers
                     }
                 }
 
-                AddErrors(result);
+                ModelState.AppendIdentityResult(result);
             }
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -424,7 +420,7 @@ namespace ST.Identity.Razor.Controllers
                         LastName = user.UserLastName
                     });
 
-                    var claim = new Claim("tenant", user.TenantId.ToString());
+                    var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
 
                     await _userManager.AddClaimAsync(user, claim);
                     return RedirectToLocal(returnUrl);
@@ -639,8 +635,6 @@ namespace ST.Identity.Razor.Controllers
             {
                 _logger.LogInformation("User created a new account with password.");
 
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
                 await _signInManager.SignInAsync(user, false);
                 _logger.LogInformation("User created a new account with password.");
                 return RedirectToLocal(returnUrl);
@@ -846,81 +840,6 @@ namespace ST.Identity.Razor.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        /// <summary>
-        /// Get view for confirmation new user
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="confirmToken"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(Guid? userId, string confirmToken)
-        {
-            if (!userId.HasValue || string.IsNullOrEmpty(confirmToken))
-            {
-                return NotFound();
-            }
-
-            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId.ToString()));
-            if (currentUser == null)
-            {
-                return NotFound();
-            }
-
-            var model = new ConfirmEmailViewModel
-            {
-                UserId = currentUser.Id,
-                UserName = currentUser.UserName,
-                Email = currentUser.Email,
-                Token = confirmToken
-            };
-            return View(model);
-        }
-
-        /// <summary>
-        /// Save password for new user
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmEmail(ConfirmEmailViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-            var currentUser = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.UserId));
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(currentUser);
-            if (resetToken == null)
-            {
-                ModelState.AddModelError(string.Empty, _localizer["system_error_on_generate_reset_token"]);
-                return View(model);
-            }
-
-            var result = await _userManager.ResetPasswordAsync(currentUser, resetToken, model.Password);
-            if (result.Succeeded)
-            {
-                var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(currentUser);
-                if (confirmEmailToken == null)
-                {
-                    ModelState.AddModelError(string.Empty, _localizer["system_error_on_generate_token"]);
-                    return View(model);
-                }
-
-                var confirmEmailResult = await _userManager.ConfirmEmailAsync(currentUser, confirmEmailToken);
-                if (!confirmEmailResult.Succeeded)
-                {
-                    AddErrors(confirmEmailResult);
-                    return View(model);
-                }
-
-                await _signInManager.PasswordSignInAsync(currentUser, model.Password, true, false);
-                return RedirectToAction("Index", "Home");
-            }
-
-            AddErrors(result);
-            return View(model);
-        }
-
         #region Helpers
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -928,14 +847,6 @@ namespace ST.Identity.Razor.Controllers
             if (Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
             return RedirectToAction("Index", "Home");
-        }
-
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
         }
 
         #endregion Helpers

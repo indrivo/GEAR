@@ -13,7 +13,7 @@ using ST.Identity.Abstractions;
 
 namespace ST.Files.Razor.Controllers
 {
-    [Authorize(Roles = Settings.ADMINISTRATOR)]
+    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     [Route("api/[controller]/[action]")]
     public sealed class FileBoxController : Controller
     {

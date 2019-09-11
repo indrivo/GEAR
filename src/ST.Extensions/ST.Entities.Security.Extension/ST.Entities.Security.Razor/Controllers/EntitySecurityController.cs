@@ -9,7 +9,7 @@ using ST.Entities.Security.Razor.ViewModels;
 
 namespace ST.Entities.Security.Razor.Controllers
 {
-    [Authorize(Roles = Settings.ADMINISTRATOR)]
+    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     public class EntitySecurityController : Controller
     {
         /// <summary>

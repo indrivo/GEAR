@@ -37,21 +37,6 @@ namespace ST.Identity.Permissions.Abstractions
         /// <returns></returns>
         Task<IEnumerable<Claim>> GetUserClaims(Guid userId);
         /// <summary>
-        /// Set object value in cache
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        Task SetObjectAsync<T>(string key, T obj);
-        /// <summary>
-        /// Get object from cache
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task<T> GetObjectAsync<T>(string key);
-        /// <summary>
         /// Get roles permissions
         /// </summary>
         /// <returns></returns>

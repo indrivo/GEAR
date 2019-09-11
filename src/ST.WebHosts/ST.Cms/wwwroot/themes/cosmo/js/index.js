@@ -1,3 +1,5 @@
+const localizer = new Localizer();
+
 $("#headerContainer").replaceWith($(".headContainer"));
 
 const menuBlock = $("#navbarNavAltMarkup div:first-child");
@@ -30,9 +32,11 @@ $(document).ready(function () {
 	const languagesBlock = $("#languages");
 	window.loadAsync("/Localization/GetLanguagesAsJson").then(langs => {
 		if (!langs) return;
+		const currentLanguage = window.getCookie("language");
+		const currentIdentifier = localizer.adaptIdentifier(langs.find(x => x.name === currentLanguage).identifier);
 		const b = $(`<li class="navbar-nav nav-link px-3 dropdown">
 			 <a href="javascript:void(0)" class=" nav-link px-3 dropdown-toggle" data-toggle="dropdown" style="color:white;">
-            ${window.getCookie("language")}
+				<i class="flag-icon flag-icon-${currentIdentifier}"></i> ${currentLanguage}
             <span class="caret"></span>
         </a>
 		<ul class="dropdown-menu lang-selector">
@@ -40,10 +44,9 @@ $(document).ready(function () {
 		</li>`);
 		$.each(langs, function (index, lang) {
 			const language = `<a href="/Localization/ChangeLanguage?identifier=${lang.identifier}" class="dropdown-item language-event">
-							<i class="flag-icon flag-icon-${lang.identifier}"></i> ${lang.name}
+							<i class="flag-icon flag-icon-${localizer.adaptIdentifier(lang.identifier)}"></i> ${lang.name}
 						</a>`;
 			b.find(".lang-selector").append(language);
-
 		});
 		languagesBlock.append(b);
 		$(".language-event").on("click", function () {

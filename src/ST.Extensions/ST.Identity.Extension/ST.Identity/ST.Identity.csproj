@@ -24,6 +24,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190822104546_ApplicationDbContext_AddCountries.cs" />
     <Compile Remove="Migrations\20190822104546_ApplicationDbContext_AddCountries.Designer.cs" />
+    <Compile Remove="Migrations\20190904223609_test.cs" />
+    <Compile Remove="Migrations\20190904223609_test.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

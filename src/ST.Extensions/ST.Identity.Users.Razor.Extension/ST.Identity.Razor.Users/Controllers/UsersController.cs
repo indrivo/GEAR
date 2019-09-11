@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +18,6 @@ using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
 using ST.Notifications.Abstractions;
-using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.BaseControllers;
@@ -301,27 +299,6 @@ namespace ST.Identity.Razor.Users.Controllers
         }
 
         /// <summary>
-        /// Delete user by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
-            if (applicationUser == null)
-            {
-                return NotFound();
-            }
-
-            return View(applicationUser);
-        }
-
-        /// <summary>
         /// Delete user form DB
         /// </summary>
         /// <param name="id"></param>
@@ -357,11 +334,11 @@ namespace ST.Identity.Razor.Users.Controllers
             {
                 await UserManager.UpdateSecurityStampAsync(applicationUser);
                 await UserManager.DeleteAsync(applicationUser);
-                await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+                IdentityEvents.Users.UserDelete(new UserDeleteEventArgs
                 {
-                    Content = $"{applicationUser.UserName} was deleted by {User.Identity.Name}",
-                    Subject = "Info",
-                    NotificationTypeId = NotificationType.Info
+                    Email = applicationUser.Email,
+                    UserName = applicationUser.UserName,
+                    UserId = applicationUser.Id
                 });
                 return Json(new { success = true, message = "Delete success" });
             }
@@ -373,7 +350,7 @@ namespace ST.Identity.Razor.Users.Controllers
         }
 
         /// <summary>
-        ///     Edit user
+        ///  Edit user
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -1119,6 +1096,7 @@ namespace ST.Identity.Razor.Users.Controllers
                     ContactName = address.ContactName,
                     District = address.District.Name,
                     Country = address.Country.Name,
+                    City = address.StateOrProvince.Name,
                     IsPrimary = address.IsDefault,
                     ZipCode = address.ZipCode,
                 })

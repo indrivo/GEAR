@@ -133,7 +133,8 @@ namespace ST.Notifications.Services
                 var user = _userManager.UserManager.Users.FirstOrDefault(x => x.Id.ToGuid() == userId);
 
                 if (user == null) continue;
-                emails.Add(user.Email);
+                //send email only if email was confirmed
+                if (user.EmailConfirmed) emails.Add(user.Email);
                 notification.Id = Guid.NewGuid();
                 notification.UserId = userId;
                 var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
@@ -145,6 +146,7 @@ namespace ST.Notifications.Services
             }
             await _emailSender.SendEmailAsync(emails, notification.Subject, notification.Content);
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Send notification to system admins
@@ -181,12 +183,7 @@ namespace ST.Notifications.Services
         {
             var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, new List<Filter>
             {
-                new Filter
-                {
-                    Criteria = Criteria.Equals,
-                    Parameter = "UserId",
-                    Value = userId
-                }
+                new Filter("UserId", userId)
             });
             if (notifications.IsSuccess)
             {
@@ -195,6 +192,7 @@ namespace ST.Notifications.Services
             return notifications;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get notification by id
         /// </summary>
@@ -222,6 +220,7 @@ namespace ST.Notifications.Services
             var response = await _dataService.DeletePermanent<SystemNotifications>(notificationId);
             return response;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Check if user is online

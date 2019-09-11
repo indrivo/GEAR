@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ST.Core.Extensions
 {
@@ -11,11 +12,10 @@ namespace ST.Core.Extensions
         /// <param name="str"></param>
         /// <param name="delimiter"></param>
         /// <returns></returns>
-        public static string[] Split(this string str, string delimiter)
-        {
-            if (string.IsNullOrEmpty(str)) return new[] { str };
-            return str.Split(new[] { delimiter }, StringSplitOptions.None);
-        }
+        public static string[] Split(this string str, string delimiter) =>
+            string.IsNullOrEmpty(str)
+                ? new[] { str }
+                : str.Split(new[] { delimiter }, StringSplitOptions.None);
 
         /// <summary>
         /// First char to upper
@@ -24,7 +24,7 @@ namespace ST.Core.Extensions
         /// <returns></returns>
         public static string FirstCharToUpper(this string input)
         {
-            if (string.IsNullOrEmpty(input)) return input;
+            if (string.IsNullOrEmpty(input) || input.Length < 2) return input;
             return input.First().ToString().ToUpper() + input.Substring(1);
         }
 
@@ -34,5 +34,12 @@ namespace ST.Core.Extensions
         /// <param name="str"></param>
         /// <returns></returns>
         public static bool IsNullOrEmpty(this string str) => string.IsNullOrEmpty(str);
+
+        /// <summary>
+        /// Is valid email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public static bool IsValidEmail(this string email) => !email.IsNullOrEmpty() && Regex.IsMatch(email, GlobalResources.RegularExpressions.EMAIL);
     }
 }
