@@ -103,7 +103,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.MultiTenant.Abstractions
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.Calendar.Extension", "ST.Calendar.Extension", "{643195A2-88A6-4274-9444-2D7B68C63925}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.InternalCalendar.Razor", "src\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.InternalCalendar.Razor.csproj", "{8BAA9782-A10C-4869-B7C0-BAAD92963067}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar.Razor", "src\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.Calendar.Razor.csproj", "{8BAA9782-A10C-4869-B7C0-BAAD92963067}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.Report.Extension", "ST.Report.Extension", "{55BE1992-9394-4026-A742-6BDED6490C2E}"
 EndProject
@@ -212,6 +212,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.TaskManager.Razor", "src\ST.Extensions\ST.TaskManager\ST.TaskManager.Razor\ST.TaskManager.Razor.csproj", "{1845F3F6-9606-4F2C-978F-396C54A9EF92}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Audit.Abstractions", "src\ST.Extensions\ST.Audit.Extension\ST.Audit.Abstractions\ST.Audit.Abstractions.csproj", "{A4BA9604-A474-4DF8-8C9C-60A276E4B721}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar.Abstractions", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj", "{7EF953F8-D906-4420-A484-2BCE10CBB18C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar\ST.Calendar.csproj", "{92AC9ACC-052B-438B-8128-44F5AF02EA20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -670,6 +674,18 @@ Global
 		{A4BA9604-A474-4DF8-8C9C-60A276E4B721}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4BA9604-A474-4DF8-8C9C-60A276E4B721}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4BA9604-A474-4DF8-8C9C-60A276E4B721}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -778,6 +794,8 @@ Global
 		{82AD0DDF-AC91-4896-91C9-727A74A9C6D2} = {8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}
 		{1845F3F6-9606-4F2C-978F-396C54A9EF92} = {8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}
 		{A4BA9604-A474-4DF8-8C9C-60A276E4B721} = {8EC756D3-F787-4048-B1D9-88A9A5F4FB2D}
+		{7EF953F8-D906-4420-A484-2BCE10CBB18C} = {643195A2-88A6-4274-9444-2D7B68C63925}
+		{92AC9ACC-052B-438B-8128-44F5AF02EA20} = {643195A2-88A6-4274-9444-2D7B68C63925}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

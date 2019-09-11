@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using ST.Core.StaticFiles;
 
-namespace ST.InternalCalendar.Razor.Helpers
+namespace ST.Calendar.Razor.Helpers
 {
     public class InternalCalendarFileConfiguration : StaticFileConfiguration
     {

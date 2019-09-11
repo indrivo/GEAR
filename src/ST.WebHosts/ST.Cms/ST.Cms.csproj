@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -86,7 +86,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Audit.Extension\ST.Audit.Razor\ST.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Backup.Extension\ST.Backup.Razor\ST.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.InternalCalendar.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar\ST.Calendar.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.BaseImplementations\ST.ECommerce.BaseImplementations.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Razor\ST.ECommerce.Razor.csproj" />
