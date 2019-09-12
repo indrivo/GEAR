@@ -108,8 +108,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Identity.LdapExtension\ST.Identity.LdapAuth\ST.Identity.LdapAuth.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Install.Extension\ST.Install.Razor\ST.Install.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Install.Extension\ST.Install\ST.Install.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Razor.Extension\ST.Localization\ST.Localization.Services.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Extension\ST.Localization.Razor\ST.Localization.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Localization.Extension\ST.Localization\ST.Localization.Services.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications.Razor\ST.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Notifications.Extension\ST.Notifications\ST.Notifications.csproj" />

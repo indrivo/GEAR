@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ST.Audit.Extension\ST.Audit\ST.Audit.csproj" />
-    <ProjectReference Include="..\ST.Core.Extension\ST.Core.csproj" />
     <ProjectReference Include="..\ST.Files.Abstraction\ST.Files.Abstraction.csproj" />
   </ItemGroup>
 
