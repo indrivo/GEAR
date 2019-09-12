@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using ST.Configuration.ViewModels.Performance;
+using ST.Core.Benchmark.Models.Performance;
+using ST.Core.Extensions;
 
-namespace ST.Configuration.Services
+namespace ST.Core.Benchmark
 {
 	public static class PerformanceServer
 	{
@@ -58,7 +59,7 @@ namespace ST.Configuration.Services
 					var res = CmdExecute($"wmic cpu get {prop.Name.ToLower()}");
 					if (string.IsNullOrEmpty(res)) continue;
 					var values = res.Split("\n");
-					typeof(CpuInfo).GetProperty(prop.Name).SetValue(obj, values[1].Trim());
+					typeof(CpuInfo).GetProperty(prop.Name)?.SetValue(obj, values[1].Trim());
 				}
 				result.Add(obj);
 			}

@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore.Design;
 using ST.Audit.Contexts;
 using ST.Core.Helpers.DbContexts;
 using ST.Procesess.Models;
+using ST.Processes.Abstractions;
 
 namespace ST.Procesess.Data
 {
-    public class ProcessesDbContext : TrackerDbContext
+    public class ProcessesDbContext : TrackerDbContext, IProcessesDbContext
     {
         private const string ProcessSchema = "Processes";
 

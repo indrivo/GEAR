@@ -30,7 +30,7 @@ using ST.Notifications.Abstractions;
 using ST.Notifications.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
-namespace ST.Configuration.Extensions
+namespace ST.Application.Middleware.Extensions
 {
     public static class ServiceCollectionExtensions
     {
