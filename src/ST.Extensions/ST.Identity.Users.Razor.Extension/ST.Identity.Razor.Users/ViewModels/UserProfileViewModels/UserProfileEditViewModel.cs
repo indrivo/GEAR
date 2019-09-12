@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using ST.Core;
 
 namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels
 {
@@ -16,7 +17,7 @@ namespace ST.Identity.Razor.Users.ViewModels.UserProfileViewModels
         public string UserLastName { get; set; }
 
         [MaxLength(20)]
-        [Display(Name = "PHONE number", Description = "phone number ", Prompt = "0123456789")]
+        [Display(Name = "Phone number", Description = "phone number ", Prompt = "0123456789")]
         [DataType(DataType.PhoneNumber)]
         public string UserPhoneNumber { get; set; }
 

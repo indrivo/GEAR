@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Events\EventArgs\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 

@@ -116,6 +116,8 @@ class RiskMatrixBuilder {
 	 */
 	getMatrix() {
 		const n = this.n;
+		const parentContainer = document.createElement("div");
+		parentContainer.setAttribute("class", "risk-matrix-template");
 		const container = document.createElement("div");
 		const matrixTable = document.createElement("table");
 		matrixTable.setAttribute("class", "risk-matrix");
@@ -154,7 +156,7 @@ class RiskMatrixBuilder {
 								impactNameEl.innerText = exist.name;
 								cell.style.background = exist.color;
 							} else
-								impactNameEl.innerText = "Valoare";
+								impactNameEl.innerText = window.translate("iso_active_value");
 							cell.appendChild(impactNameEl);
 							const scope = this;
 							if (this.isEditable)
@@ -168,7 +170,7 @@ class RiskMatrixBuilder {
 							if (exist) {
 								span.innerText = exist.description;
 							} else
-								span.innerText = "Valoare";
+								span.innerText = window.translate("iso_active_value");
 							cell.appendChild(span);
 							if (this.isEditable)
 								this.bindEventsToDescriptionCell(cell);
@@ -207,7 +209,7 @@ class RiskMatrixBuilder {
 								const xValue = j - 3 + 1;
 								const prod = xValue * yValue;
 								cellPoints.innerText = `${prod}`;
-								cellName.innerText = "Valoare";
+								cellName.innerText = window.translate("iso_active_value");
 							} else {
 								cell.setAttribute("data-id", findValue.id);
 								cellPoints.innerText = findValue.riskPoints;
@@ -236,7 +238,7 @@ class RiskMatrixBuilder {
 								impactNameEl.innerText = exist.name;
 								cell.style.background = exist.color;
 							} else
-								impactNameEl.innerText = "Valoare";
+								impactNameEl.innerText = window.translate("iso_active_value");
 							cell.appendChild(impactNameEl);
 							const scope = this;
 							if (this.isEditable)
@@ -251,7 +253,7 @@ class RiskMatrixBuilder {
 							if (exist) {
 								span.innerText = exist.description;
 							} else
-								span.innerText = "Valoare";
+								span.innerText = window.translate("iso_active_value");
 							cell.appendChild(span);
 							if (this.isEditable)
 								this.bindEventsToDescriptionCell(cell);
@@ -272,14 +274,20 @@ class RiskMatrixBuilder {
 			matrixTable.appendChild(row);
 		}
 		const impactName = document.createElement("h2");
-		impactName.innerText = "Impact";
+		impactName.innerText = window.translate("iso_matrix_impact");
 		container.appendChild(impactName);
-		container.appendChild(matrixTable);
+		const groupContainer = document.createElement("div");
+		groupContainer.setAttribute("class", "matrix-group");
+
+		groupContainer.appendChild(matrixTable);
 
 		const probabilityName = document.createElement("h2");
-		probabilityName.innerText = "Probability";
-		container.appendChild(probabilityName);
-		return container;
+		probabilityName.innerText = window.translate("iso_risk_probability");
+		groupContainer.appendChild(probabilityName);
+
+		container.append(groupContainer);
+		parentContainer.appendChild(container);
+		return parentContainer;
 	}
 
 	/**
@@ -364,7 +372,7 @@ class RiskMatrixBuilder {
 			const c = document.createElement("div");
 			const textarea = scope.getInput({
 				type: "number",
-				label: "Points",
+				label: window.translate("iso_risk_show_param_points"),
 				tagName: "input",
 				valueProp: "value"
 			});
@@ -372,7 +380,7 @@ class RiskMatrixBuilder {
 			c.appendChild(textarea);
 			const modalSettings = {
 				id: modalId,
-				title: "Set points",
+				title: window.translate("iso_matrix_set_points"),
 				content: c.outerHTML,
 				style: {
 					maxWidth: "40%"
@@ -404,7 +412,7 @@ class RiskMatrixBuilder {
 		const c = document.createElement("div");
 		const pointsBox = this.getInput({
 			type: "number",
-			label: "Points",
+			label: window.translate("iso_risk_show_param_points"),
 			tagName: "input",
 			valueProp: "value"
 		});
@@ -428,7 +436,7 @@ class RiskMatrixBuilder {
 		const modalId = "headCellModal";
 		const modalSettings = {
 			id: modalId,
-			title: "Edit cell values",
+			title: window.translate("iso_matrix_edit_cell_value"),
 			content: c.outerHTML,
 			style: {
 				maxWidth: "40%"
@@ -533,7 +541,7 @@ class RiskMatrixBuilder {
 
 		const modalSettings = {
 			id: "headCellModal",
-			title: "Edit cell values",
+			title: window.translate("iso_matrix_edit_cell_value"),
 			content: c.outerHTML,
 			style: {
 				maxWidth: "40%"
@@ -667,7 +675,7 @@ class RiskMatrixBuilder {
 			this.addNewRecordForImpactProbability(o).then(x => {
 				if (x.is_success) {
 					$(ctx).attr("data-id", x.result);
-					this.toast.notify({ heading: "New configuration saved", icon: "success" });
+					this.toast.notify({ heading: window.translate("iso_matrix_save_conf_message"), icon: "success" });
 				} else {
 					this.toast.notifyErrorList(x.error_keys);
 				}
@@ -708,7 +716,7 @@ class RiskMatrixBuilder {
 					const o = Object.assign(h.result, conf.data);
 					this.dbContext.updateAsync(this.entities.impactDefinitionEntity, o).then(u => {
 						if (u.is_success) {
-							this.toast.notify({ heading: "Data was updated", icon: "success" });
+							this.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
 							resolve(u);
 						} else {
 							reject(u.error_keys);

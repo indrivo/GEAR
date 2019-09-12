@@ -23,6 +23,7 @@ using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Abstractions;
 using ST.MultiTenant.Abstractions.Helpers;
 using ST.MultiTenant.Abstractions.ViewModels;
+using ST.Notifications.Abstractions;
 using Resources = ST.MultiTenant.Abstractions.Helpers.Resources;
 
 namespace ST.MultiTenant.Services
@@ -61,6 +62,11 @@ namespace ST.MultiTenant.Services
         /// </summary>
         private readonly IUrlHelper _urlHelper;
 
+        /// <summary>
+        /// Inject hub
+        /// </summary>
+        private readonly INotificationHub _hub;
+
         #endregion
 
         /// <summary>
@@ -73,7 +79,7 @@ namespace ST.MultiTenant.Services
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
         public OrganizationService(ApplicationDbContext context, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
-            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer)
+            IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, INotificationHub hub)
         {
             _context = context;
             _userManager = userManager;
@@ -81,6 +87,7 @@ namespace ST.MultiTenant.Services
             _emailSender = emailSender;
             _urlHelper = urlHelper;
             _localizer = localizer;
+            _hub = hub;
         }
 
         /// <inheritdoc />
@@ -103,6 +110,7 @@ namespace ST.MultiTenant.Services
         public virtual IEnumerable<Tenant> GetAllTenants()
             => _context.Tenants.ToList();
 
+        /// <inheritdoc />
         /// <summary>
         /// Get disabled users
         /// </summary>
@@ -183,6 +191,7 @@ namespace ST.MultiTenant.Services
                 .FirstOrDefault(x => x.Id.Equals(user.TenantId));
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get Tenant by current user 
         /// </summary>
@@ -202,6 +211,7 @@ namespace ST.MultiTenant.Services
             return resultModel;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create new Organization User
         /// </summary>
@@ -219,7 +229,7 @@ namespace ST.MultiTenant.Services
                     .Where(x => roles.Contains(x.Id))
                     .Select(x => x.Name)
                     .ToListAsync();
-                userRoles.Add(Settings.ANONIMOUS_USER);
+                userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
                 var userResult = await _userManager.UserManager.AddToRolesAsync(user, userRoles);
                 if (userResult.Succeeded)
                 {
@@ -242,7 +252,21 @@ namespace ST.MultiTenant.Services
         {
             Arg.NotNull(user, nameof(SendInviteToEmailAsync));
             var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Account", new { userId = user.Id, confirmToken = code },
+            var callbackUrl = _urlHelper.Action("ConfirmInvitedUserByEmail", "Company", new { userId = user.Id, confirmToken = code },
+                _httpContextAccessor.HttpContext.Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
+                $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
+        }
+
+        /// <summary>
+        /// Send confirm email
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task SendConfirmEmailRequest(ApplicationUser user)
+        {
+            Arg.NotNull(user, nameof(SendConfirmEmailRequest));
+            var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = _urlHelper.Action("ConfirmEmail", "Company", new { userId = user.Id, confirmToken = code },
                 _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
                 $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
@@ -284,8 +308,8 @@ namespace ST.MultiTenant.Services
         {
             var rolesToExclude = new HashSet<string>
             {
-                Settings.ADMINISTRATOR,
-                Settings.ANONIMOUS_USER
+                GlobalResources.Roles.ADMINISTRATOR,
+                GlobalResources.Roles.ANONIMOUS_USER
             };
 
             var roles = await _userManager.RoleManager.Roles
@@ -324,6 +348,7 @@ namespace ST.MultiTenant.Services
                 EmailConfirmed = false,
                 Created = DateTime.Now,
                 Author = _httpContextAccessor.HttpContext.User.Identity.Name,
+                IsEditable = true
             };
 
             var tenant = await GetTenantByCurrentUserAsync();
@@ -477,12 +502,14 @@ namespace ST.MultiTenant.Services
             var filtered = _context.Filter<ApplicationUser>(param.Search.Value, param.SortOrder,
                 param.Start,
                 param.Length,
-                out var totalCount, x => !x.IsDeleted && x.TenantId == currentUser.TenantId).ToList();
+                out var totalCount,
+                x => !x.IsDeleted && x.TenantId == currentUser.TenantId && x.Id != currentUser.Id).ToList();
 
             var rs = filtered.Select(async x =>
             {
                 var u = x.Adapt<CompanyUsersViewModel>();
                 u.Roles = await _userManager.UserManager.GetRolesAsync(x);
+                u.IsOnline = _hub.IsUserOnline(x.Id.ToGuid());
                 return u;
             }).Select(x => x.Result);
 

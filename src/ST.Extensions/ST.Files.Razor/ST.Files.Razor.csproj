@@ -11,5 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ST.Files.Abstraction\ST.Files.Abstraction.csproj" />
     <ProjectReference Include="..\ST.Files.Box.Abstraction\ST.Files.Box.Abstraction.csproj" />
+    <ProjectReference Include="..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Identity.Extension\ST.Identity\ST.Identity.csproj" />
   </ItemGroup>
 </Project>

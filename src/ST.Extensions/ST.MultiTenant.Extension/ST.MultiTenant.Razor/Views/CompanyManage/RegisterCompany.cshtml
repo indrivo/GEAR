@@ -1,4 +1,4 @@
-﻿@model ST.MultiTenant.Abstractions.ViewModels.CreateTenantViewModel
+﻿@model ST.MultiTenant.Abstractions.ViewModels.RegisterCompanyViewModel
 @{
     ViewData["Title"] = Localizer["system_multitenant_register_new"];
     ViewData["layoutId"] = Guid.Parse("a7c635ff-4b54-487f-b409-77754d68704a");
@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
     <style>
         .headContainer {
-            top: 1em;
+            margin-top: 1em;
         }
     </style>
 }
@@ -26,6 +26,64 @@
                         <div class="form-body">
                             <div asp-validation-summary="All" class="text-danger"></div>
                             <div class="row p-t-20">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <JTranslateLabel class="control-label" asp-for="UserName"></JTranslateLabel>
+                                        <input class="form-control" type="text" asp-for="UserName" />
+                                        <span asp-validation-for="UserName" class="text-danger"></span><br />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Password" class="control-label"></label>
+                                        <div class="input-group">
+                                            <input asp-for="Password" class="form-control" />
+                                            <div class="input-group-append">
+                                                <a href="javascript:void(0)" class="toggle-password btn btn-primary">
+                                                    <span class="fa fa-eye-slash icon"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="Password" class="text-danger"></span><br />
+                                        <small>@Localizer["pass_info1"]</small><br />
+                                        <small>@Localizer["pass_info2"]</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="RepeatPassword" class="control-label"></label>
+                                        <div class="input-group">
+                                            <input asp-for="RepeatPassword" class="form-control" />
+                                            <div class="input-group-append">
+                                                <a href="javascript:void(0)" class="toggle-password btn btn-primary">
+                                                    <span class="fa fa-eye-slash icon"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <span asp-validation-for="RepeatPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <JTranslateLabel class="control-label" asp-for="Email"></JTranslateLabel>
+                                        <input class="form-control" type="text" asp-for="Email" />
+                                        <span asp-validation-for="Email" class="text-danger"></span><br />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <JTranslateLabel class="control-label" asp-for="FirstName"></JTranslateLabel>
+                                        <input class="form-control" type="text" asp-for="FirstName" />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span><br />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <JTranslateLabel class="control-label" asp-for="LastName"></JTranslateLabel>
+                                        <input class="form-control" type="text" asp-for="LastName" />
+                                        <span asp-validation-for="LastName" class="text-danger"></span><br />
+                                    </div>
+                                </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <JTranslateLabel asp-for="OrganizationLogoFormFile" class="control-label"></JTranslateLabel>
@@ -66,14 +124,14 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <JTranslateLabel asp-for="CountryId" class="control-label"></JTranslateLabel>
                                         <select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
                                         <span asp-validation-for="CountryId" class="text-danger"></span><br />
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <JTranslateLabel asp-for="CityId" class="control-label"></JTranslateLabel>
                                         <select disabled="disabled" class="form-control" asp-for="CityId"></select>
@@ -105,5 +163,18 @@
 {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
     <script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
+    <script>
+        $(".toggle-password").on("click",
+            function () {
+                const target = $(this).closest(".input-group").find("input");
+                if (target.attr("type") === "password") {
+                    target.attr("type", "text");
+                    $(this).find("span").removeClass("fa-eye-slash").addClass("fa-eye");
+                } else {
+                    target.attr("type", "password");
+                    $(this).find("span").removeClass("fa-eye").addClass("fa-eye-slash");
+                }
+            });
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

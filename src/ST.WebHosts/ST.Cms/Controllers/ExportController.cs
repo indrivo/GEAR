@@ -8,7 +8,7 @@ using ST.Core;
 
 namespace ST.Cms.Controllers
 {
-	[Authorize(Roles = Settings.ADMINISTRATOR)]
+	[Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
 	public class DataController : Controller
 	{
 		/// <summary>

@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.6.6" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.4" />
+    <PackageReference Include="NLog" Version="4.6.7" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.5" />
     <PackageReference Include="Sentry.AspNetCore" Version="1.2.0" />
     <PackageReference Include="Sentry.NLog" Version="1.2.0" />
     <PackageReference Include="ST.AspNetCore.WebHost.Customization" Version="1.0.0" />
@@ -19,7 +19,7 @@
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.IdentityServer4\ST.Identity.IdentityServer4.csproj" />
-    <ProjectReference Include="..\..\ST.Localization.Razor.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Localization.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Notifications.Extension\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />
     <ProjectReference Include="..\..\ST.Render.Extension\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />

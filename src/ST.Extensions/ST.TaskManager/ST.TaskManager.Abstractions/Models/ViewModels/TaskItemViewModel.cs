@@ -4,17 +4,30 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ST.TaskManager.Abstractions.Models.ViewModels
 {
-    public sealed class TaskItemViewModel
+    public class TaskItemViewModel
     {
-        public Guid? Id { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
 
         public bool IsDone { get; set; }
+    }
 
+    public class CreateTaskItemViewModel : TaskItemViewModel
+    {
         [Required]
         public Guid TaskId { get; set; }
     }
+
+    public class UpdateTaskItemViewModel : TaskItemViewModel
+    {
+        [Required]
+        public Guid Id { get; set; }
+    }
+
+    public sealed class GetTaskItemViewModel : UpdateTaskItemViewModel
+    {
+
+    }
+
 }

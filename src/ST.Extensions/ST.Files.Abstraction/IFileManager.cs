@@ -17,8 +17,9 @@ namespace ST.Files.Abstraction
         /// Add or update file into a repository
         /// </summary>
         /// <param name="dto"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
-        ResultModel<Guid> AddFile(UploadFileViewModel dto);
+        ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId);
 
         /// <summary>
         /// Remove file logical
@@ -40,5 +41,12 @@ namespace ST.Files.Abstraction
         /// <param name="id"></param>
         /// <returns></returns>
         ResultModel<Guid> RestoreFile(Guid id);
+
+        /// <summary>
+        /// Update file settings
+        /// </summary>
+        /// <param name="newSettings"></param>
+        /// <returns></returns>
+        ResultModel ChangeSettings<TSettingsViewModel>(TSettingsViewModel newSettings) where TSettingsViewModel : FileSettingsViewModel;
     }
 }

@@ -187,7 +187,7 @@ namespace ST.Entities.Security
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(Guid entityId)
         {
             var user = await _userManager.GetCurrentUserAsync();
-            IEnumerable<string> roles = new List<string> { Settings.ANONIMOUS_USER };
+            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
             if (user.IsSuccess)
             {
                 roles = _userManager.GetRolesFromClaims();
@@ -209,7 +209,7 @@ namespace ST.Entities.Security
                 x.Name.Equals(entityName));
             if (table == null) return defResult;
             var user = await _userManager.GetCurrentUserAsync();
-            IEnumerable<string> roles = new List<string> { Settings.ANONIMOUS_USER };
+            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
             if (user.IsSuccess)
             {
                 roles = _userManager.GetRolesFromClaims();
@@ -226,7 +226,7 @@ namespace ST.Entities.Security
         /// <returns></returns>
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(ApplicationUser user, Guid entityId)
         {
-            IEnumerable<string> roles = new List<string> { Settings.ANONIMOUS_USER };
+            IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
             if (user != null)
             {
                 roles = _userManager.GetRolesFromClaims();
@@ -246,7 +246,7 @@ namespace ST.Entities.Security
         {
             var result = new List<EntityAccessType>();
             var roles = _identityContext.Set<ApplicationRole>().Where(x => userRoles.Contains(x.Name)).ToList();
-            if (roles.Select(x => x.Name).Contains(Settings.ADMINISTRATOR))
+            if (roles.Select(x => x.Name).Contains(GlobalResources.Roles.ADMINISTRATOR))
             {
                 result.Add(EntityAccessType.FullControl);
                 return result;

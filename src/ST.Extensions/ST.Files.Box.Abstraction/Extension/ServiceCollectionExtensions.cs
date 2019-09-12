@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Audit.Abstractions.Extensions;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Files.Box.Abstraction.Models.ViewModels;
 
 namespace ST.Files.Box.Abstraction.Extension
 {
@@ -17,12 +20,13 @@ namespace ST.Files.Box.Abstraction.Extension
             return services;
         }
 
-        public static IServiceCollection AddFileBoxModuleStorage<TFileBoxContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
+        public static IServiceCollection AddFileBoxModuleStorage<TFileBoxContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options, IConfiguration configuration)
             where TFileBoxContext : DbContext, IFileBoxContext
         {
             services.AddScopedContextFactory<IFileBoxContext, TFileBoxContext>();
             services.AddDbContext<TFileBoxContext>(options, ServiceLifetime.Transient);
             services.RegisterAuditFor<IFileBoxContext>("File box module");
+            services.ConfigureWritable<List<FileBoxSettingsViewModel>>(configuration.GetSection("FileBoxSettings"));
             return services;
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace ST.MultiTenant.Abstractions.Helpers
+﻿using System.Text.RegularExpressions;
+
+namespace ST.MultiTenant.Abstractions.Helpers
 {
     public static class TenantUtils
     {
@@ -10,10 +12,8 @@
         public static string GetTenantMachineName(string organizationName)
         {
             if (string.IsNullOrEmpty(organizationName)) return string.Empty;
-           
-            organizationName = organizationName.ToLower();
-            organizationName = organizationName.Replace(" ", "");
-            return organizationName;
+            var regEx = new Regex(Resources.RegularExpressions.TENANT_MACHINE_NAME);
+            return $"tenant_schema_{regEx.Replace(organizationName, string.Empty).ToLowerInvariant()}";
         }
     }
 }

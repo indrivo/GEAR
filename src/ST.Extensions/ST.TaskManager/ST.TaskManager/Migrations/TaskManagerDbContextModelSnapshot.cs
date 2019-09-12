@@ -115,6 +115,9 @@ namespace ST.TaskManager.Migrations
 
                     b.Property<int>("Status");
 
+                    b.Property<string>("TaskNumber")
+                        .IsRequired();
+
                     b.Property<int>("TaskPriority");
 
                     b.Property<Guid?>("TenantId");
@@ -124,6 +127,8 @@ namespace ST.TaskManager.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EndDate");
 
                     b.HasIndex("UserId");
 

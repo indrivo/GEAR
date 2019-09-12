@@ -92,32 +92,35 @@
 	});
 </script>
 <script type="text/javascript">
-	$("#SelectedCountryId").change(function() {
-		const selectedValue = this.value;
-		const citySelect = $("#SelectedStateOrProvinceId");
-		if ($("#SelectedCountryId").prop('selectedIndex') > 0) {
-			$.ajax({
-				type: "GET",
-				url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
-			}).done((response) => {
-				if (response.is_success) {
-					citySelect.empty();
-					citySelect.prop("disabled", false);
-					for (let city of response.result) {
-						citySelect.append(new Option(city.text, city.value, false, city.selected));
-					}
-				} else {
-					notification.notifyErrorList(response.error_keys);
-				}
-			}).fail(() => {
-				notify({ heading: "Error", text: window.translate("system_internal_error") });
-			});
-		} else {
-			citySelect.prop("disabled", true);
-			citySelect.empty();
-		}
-	});
+    $("#SelectedCountryId").change(function() {
+        const selectedValue = this.value;
+        const citySelect = $("#SelectedStateOrProvinceId");
+        if ($("#SelectedCountryId").prop('selectedIndex') > 0) {
+            $.ajax({
+                type: "GET",
+                url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
+            }).done((response) => {
+                if (response.is_success) {
+                    citySelect.empty();
+                    citySelect.prop("disabled", false);
+                    for (let city of response.result) {
+                        citySelect.append(new Option(city.text, city.value, false, city.selected));
+                    }
+                } else {
+                    notification.notifyErrorList(response.error_keys);
+                }
+            }).fail(() => {
+                notify({ heading: "Error", text: window.translate("system_internal_error") });
+            });
+        } else {
+            citySelect.prop("disabled", true);
+            citySelect.empty();
+        }
+    });
 </script>
+
 <script type="text/javascript">
-	$('select').select2();
+    $('select').select2({
+        theme: 'bootstrap'
+    });
 </script>

@@ -54,6 +54,13 @@ namespace ST.TaskManager.Abstractions.Models
         public virtual TaskStatus Status { get; set; }
 
         /// <summary>
+        /// Task Status
+        /// </summary>
+        [Required]
+        public virtual string TaskNumber { get; set; }
+
+
+        /// <summary>
         /// Task items(sub tasks)
         /// </summary>
         public virtual ICollection<TaskItem> TaskItems { get; set; }

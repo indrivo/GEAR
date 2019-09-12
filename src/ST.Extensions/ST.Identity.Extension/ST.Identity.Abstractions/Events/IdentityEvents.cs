@@ -44,6 +44,7 @@ namespace ST.Identity.Abstractions.Events
         {
             #region Events
             public static event EventHandler<UserCreatedEventArgs> OnUserCreated;
+            public static event EventHandler<UserDeleteEventArgs> OnUserDeleted;
             public static event EventHandler<UserUpdatedEventArgs> OnUserUpdated;
             public static event EventHandler<UserChangePasswordEventArgs> OnUserPasswordChange;
             public static event EventHandler<UserForgotPasswordEventArgs> OnUserForgotPassword;
@@ -54,6 +55,7 @@ namespace ST.Identity.Abstractions.Events
             #region Triggers
             public static void UserCreated(UserCreatedEventArgs e) => SystemEvents.InvokeEvent(null, OnUserCreated, e, nameof(OnUserCreated));
             public static void UserUpdated(UserUpdatedEventArgs e) => SystemEvents.InvokeEvent(null, OnUserUpdated, e, nameof(OnUserUpdated));
+            public static void UserDelete(UserDeleteEventArgs e) => SystemEvents.InvokeEvent(null, OnUserDeleted, e, nameof(OnUserDeleted));
             public static void UserPasswordChange(UserChangePasswordEventArgs e) => SystemEvents.InvokeEvent(null, OnUserPasswordChange, e, nameof(OnUserPasswordChange));
             public static void UserForgotPassword(UserForgotPasswordEventArgs e) => SystemEvents.InvokeEvent(null, OnUserForgotPassword, e, nameof(OnUserForgotPassword));
             public static void UserEnabling(UserEnablingEventArgs e) => SystemEvents.InvokeEvent(null, OnUserEnabling, e, nameof(OnUserEnabling));

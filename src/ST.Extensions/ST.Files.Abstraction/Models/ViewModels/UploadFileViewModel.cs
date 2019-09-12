@@ -14,7 +14,5 @@ namespace ST.Files.Abstraction.Models.ViewModels
         /// Hash
         /// </summary>
         public IFormFile File { get; set; }
-
-
     }
 }

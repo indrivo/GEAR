@@ -22,7 +22,6 @@ namespace ST.TaskManager.Data
         public TaskManagerDbContext(DbContextOptions<TaskManagerDbContext> options)
             : base(options)
         {
-
         }
 
         /// <inheritdoc />
@@ -51,11 +50,13 @@ namespace ST.TaskManager.Data
             builder.Entity<Task>()
                 .HasIndex(p => p.UserId);
             builder.Entity<Task>()
-                .HasIndex(p => new { p.UserId, p.IsDeleted });
+                .HasIndex(p => new {p.UserId, p.IsDeleted});
             builder.Entity<Task>()
-                .HasIndex(p => new { p.Id, p.IsDeleted });
+                .HasIndex(p => new {p.Id, p.IsDeleted});
+            builder.Entity<Task>()
+                .HasIndex(p => new {p.EndDate});
             builder.Entity<TaskItem>()
-                .HasKey(x => new { x.Id });
+                .HasKey(x => new {x.Id});
             builder.Entity<TaskItem>()
                 .HasOne(p => p.Task).WithMany(x => x.TaskItems)
                 .OnDelete(DeleteBehavior.Cascade);

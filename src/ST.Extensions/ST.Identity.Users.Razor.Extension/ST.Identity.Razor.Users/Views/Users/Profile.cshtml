@@ -1,118 +1,138 @@
 @using ST.Core.Extensions
+@using ST.Identity.Abstractions
 @model ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel
+@inject IUserManager<ApplicationUser> UserManager
 
 @{
-	ViewData["Title"] = Localizer["profile"];
-	var img = Url.RouteUrl(new {controller = "Users", action = "GetImage", id = Model.UserId});
+    ViewData["Title"] = Localizer["profile"];
+    var img = Url.RouteUrl(new { controller = "Users", action = "GetImage", id = Model.UserId });
+    var user = (await UserManager.GetCurrentUserAsync()).Result;
 }
 
 @section Styles
 {
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css" />
 }
 
 <div class="row">
-	<input type="hidden" asp-for="UserId" name="userId" id="userId"/>
-	<div class="col-lg-3 mb-2">
-		<div class="card h-100">
-			<div class="card-body">
-				<div class="d-flex justify-content-center">
-					<label class="label" title="Change your avatar">
-						<img src="@img" id="avatar" class="img-thumbnail img-fluid rounded-circle" alt="@Model.UserName">
-						<input type="file" class="sr-only" id="input" name="image" accept="image/*">
-					</label>
-				</div>
-				<div class="text-center">
-					<h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @Model.UserName</h5>
-					<p class="text-muted">@string.Join(", ", Model.Roles)</p>
-				</div>
-				<hr class="my-4 dashed">
-				<p>
-					<label class="weight-400">@Localizer["email"]</label> : <span class="text-muted">@Model.Email</span>
-				</p>
-			</div>
-		</div>
-	</div>
-	<div class="col-lg-9">
-		<div class="card mb-4">
-			<div class="card-header p-0">
-				<ul class="nav nav-tabs active-thik nav-primary border-0" role="tablist">
-					<li class="nav-item" role="presentation">
-						<a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["profile"]</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a asp-controller="Users" asp-action="UserOrganizationPartial" asp-route-tenantId="@Model.TenantId" class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" role="tab" aria-controls="organization" data-target="#organization" aria-selected="false">@Localizer["organization"]</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a asp-controller="Users" asp-action="ChangeUserPasswordPartial" class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" role="tab" aria-controls="changePassword" aria-selected="false" data-target="#changePassword">@Localizer["system_user_change_password"]</a>
-					</li>
-					<li class="nav-item" role="presentation">
-						<a asp-controller="Users" asp-action="UserAddressPartial" asp-route-userId="@Model.UserId" class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" role="tab" aria-controls="addresList" aria-selected="false" data-target="#addresList">@Localizer["user_address_list"]</a>
-					</li>
-				</ul>
-			</div>
-			<div class="card-body">
-				<div class="tab-content" id="myTabContent">
-					<div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-						<p>
-							<span class="weight-400">@Localizer["system_first_name"] : </span><span class="text-muted">@Model.UserFirstName</span>
-						</p>
-						<p>
-							<span class="weight-400">@Localizer["system_last_name"] : </span><span class="text-muted">@Model.UserLastName</span>
-						</p>
-						<p>
-							<span class="weight-400">@Localizer["system_birthday"] : </span><span class="text-muted">@Model.Birthday.ToShortDateString()</span>
-						</p>
-						<p>
-							<span class="weight-400">@Localizer["system_phone"] : </span><span class="text-muted">@Model.UserPhoneNumber</span>
-						</p>
-						<p>
-							<span class="weight-400">@Localizer["description"] : </span><span class="text-muted">@Model.AboutMe</span>
-						</p>
-						<a asp-controller="Users" asp-action="EditProfile" asp-route-userId="@Model.UserId" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white mt-4">@Localizer["profile_edit"]</a>
-					</div>
-					<div class="tab-pane fade " id="organization" role="tabpanel"></div>
-					<div class="tab-pane fade " id="changePassword" role="tabpanel"></div>
-					<div class="tab-pane fade " id="addresList" role="tabpanel"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <input type="hidden" asp-for="UserId" name="userId" id="userId" />
+    <div class="col-lg-3 mb-2">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-center">
+                    <label class="label" title="Change your avatar">
+                        <img src="@img" id="avatar" class="img-thumbnail img-fluid rounded-circle" alt="@Model.UserName">
+                        <input type="file" class="sr-only" id="input" name="image" accept="image/*">
+                    </label>
+                </div>
+                <div class="text-center">
+                    <h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @Model.UserName</h5>
+                    <p class="text-muted">@string.Join(", ", Model.Roles)</p>
+                </div>
+                <hr class="my-4 dashed">
+                <p>
+                    <label class="weight-400">@Localizer["email"]</label> : <span class="text-muted">@Model.Email</span>
+                </p>
+                <p>
+                    <div class="row">
+                        <div class="col-md">
+                            <span class="weight-400">@Localizer["system_email_confirm_state"]</span> :
+                        </div>
+                        <div class="col-md">
+                            @if (user.EmailConfirmed)
+                            {
+                                <div class="alert alert-success" role="alert">@Localizer["system_email_confirmed"]</div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-danger" role="alert">@Localizer["system_email_not_confirmed"]</div>
+                            }
+                        </div>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
+        <div class="card mb-4">
+            <div class="card-header p-0">
+                <ul class="nav nav-tabs active-thik nav-primary border-0" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["profile"]</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a asp-controller="Users" asp-action="UserOrganizationPartial" asp-route-tenantId="@Model.TenantId" class="nav-link px-4 py-3 rounded-0" id="organization-tab" data-toggle="tab" role="tab" aria-controls="organization" data-target="#organization" aria-selected="false">@Localizer["organization"]</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a asp-controller="Users" asp-action="ChangeUserPasswordPartial" class="nav-link px-4 py-3 rounded-0" id="changePassword-tab" data-toggle="tab" role="tab" aria-controls="changePassword" aria-selected="false" data-target="#changePassword">@Localizer["system_user_change_password"]</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a asp-controller="Users" asp-action="UserAddressPartial" asp-route-userId="@Model.UserId" class="nav-link px-4 py-3 rounded-0" id="addresList-tab" data-toggle="tab" role="tab" aria-controls="addresList" aria-selected="false" data-target="#addresList">@Localizer["user_address_list"]</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <p>
+                            <span class="weight-400">@Localizer["system_first_name"] : </span><span class="text-muted">@Model.UserFirstName</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">@Localizer["system_last_name"] : </span><span class="text-muted">@Model.UserLastName</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">@Localizer["system_birthday"] : </span><span class="text-muted">@Model.Birthday.ToShortDateString()</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">@Localizer["system_phone"] : </span><span class="text-muted">@Model.UserPhoneNumber</span>
+                        </p>
+                        <p>
+                            <span class="weight-400">@Localizer["description"] : </span><span class="text-muted">@Model.AboutMe</span>
+                        </p>
+                        <a asp-controller="Users" asp-action="EditProfile" asp-route-userId="@Model.UserId" data-target="#modal-container" data-toggle="modal" class="btn btn-success text-white mt-4">@Localizer["profile_edit"]</a>
+                    </div>
+                    <div class="tab-pane fade " id="organization" role="tabpanel"></div>
+                    <div class="tab-pane fade " id="changePassword" role="tabpanel"></div>
+                    <div class="tab-pane fade " id="addresList" role="tabpanel"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div id="modal-container" class="modal fade" tabindex="-1" aria-labelledby="modal-container" role="dialog" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
 
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="modalLabel">@Localizer["iso_crop_the_image"]</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<div class="img-container">
-					<img id="image" src="@img" alt="@Model.UserName">
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["cancel"]</button>
-				<button type="button" class="btn btn-primary" id="crop">@Localizer["save"]</button>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">@Localizer["iso_crop_the_image"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="image" src="@img" alt="@Model.UserName">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["cancel"]</button>
+                <button type="button" class="btn btn-primary" id="crop">@Localizer["save"]</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts
 {
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
-	<script type="text/javascript">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js"></script>
+    <script type="text/javascript">
 		window.addEventListener('DOMContentLoaded',
 			function() {
 				var avatar = document.getElementById('avatar');
@@ -234,31 +254,31 @@
 						}
 					});
 			});
-	</script>
-	<script type="text/javascript">
-		$(function() {
+    </script>
+    <script type="text/javascript">
+		$(function () {
 			const modalContainer = $("#modal-container");
 			$(modalContainer).on("show.bs.modal",
-				function(event) {
+				function (event) {
 					const button = $(event.relatedTarget);
 					const url = button.attr("href");
 					const modal = $(this);
 					modal.find(".modal-content").load(url);
 				});
 			$(modalContainer).on("hidden.bs.modal",
-				function() {
+				function () {
 					$(this).removeData("bs.modal");
 					$("#modal-container .modal-content").empty();
 				});
 		});
 
-	</script>
-	<script type="text/javascript">
-		(function($) {
+    </script>
+    <script type="text/javascript">
+		(function ($) {
 			var contentResult;
 			$("#jq").text($.fn.jquery);
 			$("a[data-toggle='tab']").on("show.bs.tab",
-				function(e) {
+				function (e) {
 					if (e.relatedTarget) {
 						$($(e.relatedTarget).data("target")).empty();
 					}
@@ -282,6 +302,6 @@
 				});
 
 		})(jQuery);
-	</script>
-	<partial name="_ValidationScriptsPartial"/>
+    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -14,6 +14,12 @@
             public const string IS_DEFAULT = "system_is_default";
         }
 
+        public static class ValidationMessages
+        {
+            public const string PASSWORD_STRING_LENGTH = "The {0} must be at least {2} and at max {1} characters long.";
+            public const string PASSWORD_COMPLEXITY_MESSAGE = "Passwords must be at least 8 characters and contain at 3 of 4 of the following: upper case (A-Z), lower case (a-z), number (0-9) and special character (e.g. !@#$%^&*)";
+        }
+
         public static class RegularExpressions
         {
             /// <summary>

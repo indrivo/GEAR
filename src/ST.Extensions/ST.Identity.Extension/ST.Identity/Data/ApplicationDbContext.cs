@@ -20,10 +20,6 @@ namespace ST.Identity.Data
         /// Do not remove this
         /// </summary>
         public const string Schema = "Identity";
-        /// <summary>
-        /// Options
-        /// </summary>
-        private DbContextOptions<ApplicationDbContext> Options { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -33,7 +29,7 @@ namespace ST.Identity.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            Options = options;
+
         }
 
         #region Permissions Store
@@ -94,7 +90,12 @@ namespace ST.Identity.Data
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);
+            builder.Entity<ApplicationUser>()
+                .HasMany(x => x.Addresses)
+                .WithOne(x => x.ApplicationUser)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            //seed countries
             var countries = ApplicationDbContextSeeder.GetCountriesFromJsonFile();
             foreach (var country in countries)
             {

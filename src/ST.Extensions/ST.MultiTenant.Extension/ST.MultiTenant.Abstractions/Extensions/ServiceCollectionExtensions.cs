@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Identity.Abstractions.Models.MultiTenants;
+using ST.MultiTenant.Abstractions.Events;
 
 namespace ST.MultiTenant.Abstractions.Extensions
 {
@@ -26,6 +27,7 @@ namespace ST.MultiTenant.Abstractions.Extensions
                     .ActionContext;
                 return new UrlHelper(actionContext);
             });
+            TenantEvents.RegisterEvents();
             return services;
         }
     }
