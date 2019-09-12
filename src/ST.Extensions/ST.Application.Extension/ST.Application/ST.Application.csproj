@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Backup.Extension\ST.Backup.Abstractions\ST.Backup.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Cache.Extension\ST.Cache\ST.Cache.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />

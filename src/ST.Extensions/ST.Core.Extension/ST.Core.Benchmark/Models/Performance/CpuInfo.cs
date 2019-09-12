@@ -1,5 +1,5 @@
 
-namespace ST.Configuration.ViewModels.Performance
+namespace ST.Core.Benchmark.Models.Performance
 {
 	public class CpuInfo
 	{

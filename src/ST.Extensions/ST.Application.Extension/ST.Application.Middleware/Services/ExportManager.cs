@@ -17,7 +17,7 @@ using ST.Forms.Abstractions;
 using ST.Identity.Data;
 using ST.PageRender.Abstractions;
 
-namespace ST.Configuration.Services
+namespace ST.Application.Middleware.Services
 {
     public static class ExportManager
     {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ST.Cache.Abstractions;
 using ST.Identity.CacheModels;
 
-namespace ST.Configuration.Server
+namespace ST.Application.Middleware.Server
 {
     public class TenantRouteConstraint : IRouteConstraint
     {
