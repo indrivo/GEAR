@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using PostSharp.Aspects;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
@@ -31,7 +30,7 @@ namespace ST.Entities.Security.Abstractions.Attributes
     }
 
     [Serializable]
-    public class AuthorizeEntityPermissionAttributeExecutor : OnMethodBoundaryAspect, IAsyncResourceFilter
+    public class AuthorizeEntityPermissionAttributeExecutor : IAsyncResourceFilter //OnMethodBoundaryAspect
     {
         /// <summary>
         /// Permissions
@@ -55,17 +54,17 @@ namespace ST.Entities.Security.Abstractions.Attributes
             _authorizationRequirement = authorizationRequirement;
         }
 
-        public override bool CompileTimeValidate(System.Reflection.MethodBase method)
-        {
-            var type = method.DeclaringType;
-            if (type != typeof(Task<JsonResult>) && type != typeof(JsonResult))
-            {
-                throw new Exception(
-                    $"{nameof(AuthorizeEntityAttribute)} can only be used with {nameof(JsonResult)} methods");
-            }
+        //public override bool CompileTimeValidate(System.Reflection.MethodBase method)
+        //{
+        //    var type = method.DeclaringType;
+        //    if (type != typeof(Task<JsonResult>) && type != typeof(JsonResult))
+        //    {
+        //        throw new Exception(
+        //            $"{nameof(AuthorizeEntityAttribute)} can only be used with {nameof(JsonResult)} methods");
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
         /// <summary>
         /// On executing context
