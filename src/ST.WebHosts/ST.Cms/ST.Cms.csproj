@@ -40,9 +40,6 @@
 	<Content Include="Certificates\samplempass.pfx">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
-	<EmbeddedResource Include="bpmConfig.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Configuration\CustomEntities.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
@@ -82,12 +79,12 @@
 	<None Include="Views\Home\Contact.cshtml" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\..\ST.Extensions\ST.Application.Extension\ST.Application.Middleware\ST.Application.Middleware.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Application.Extension\ST.Application\ST.Application.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Audit.Extension\ST.Audit.Razor\ST.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Backup.Extension\ST.Backup.Razor\ST.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.InternalCalendar.Razor.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.BaseImplementations\ST.ECommerce.BaseImplementations.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Razor\ST.ECommerce.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email.Razor.csproj" />

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Builder;
@@ -12,14 +10,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ST.Core;
-using ST.Core.Extensions;
 using ST.Identity.Abstractions;
-using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Data;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
 
-namespace ST.Configuration.Server
+namespace ST.Application.Middleware.Server
 {
     public static class UrlRewrite
     {
@@ -28,7 +24,7 @@ namespace ST.Configuration.Server
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="next"></param>
-        private static async Task OnNonConfiguredSystem(this HttpContext ctx, Func<Task> next)
+        private static async Task NonConfiguredSystem(this HttpContext ctx, Func<Task> next)
         {
             if (ctx.Request.Cookies.Count >= 2) ctx.DeleteCookies();
             if (ctx.Request.Path.Value != "/"
@@ -50,7 +46,7 @@ namespace ST.Configuration.Server
         /// <param name="ctx"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        private static async Task OnConfiguredSystem(this HttpContext ctx, Func<Task> next)
+        private static async Task ConfiguredSystem(this HttpContext ctx, Func<Task> next)
         {
             CheckLanguage(ref ctx);
             await next();
@@ -63,33 +59,6 @@ namespace ST.Configuration.Server
                 ctx.Items["originalPath"] = originalPath;
                 ctx.Request.Path = "/Handler/NotFound";
                 await next();
-            }
-        }
-
-        /// <summary>
-        /// Check tenant
-        /// </summary>
-        /// <param name="ctx"></param>
-        /// <returns></returns>
-        private static async Task CheckTenant(this HttpContext ctx)
-        {
-            var tenantId = ctx.User?.Claims?.FirstOrDefault(x => x.Type == nameof(Tenant).ToLowerInvariant())?.Value?.ToGuid();
-            if (tenantId == Guid.Empty || tenantId == null)
-            {
-                try
-                {
-                    var userManager = ctx.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-                    var user = await userManager.GetUserAsync(ctx.User);
-                    if (user != null)
-                    {
-                        var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
-                        await userManager.AddClaimAsync(user, claim);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e);
-                }
             }
         }
 
@@ -124,8 +93,8 @@ namespace ST.Configuration.Server
                 var env = ctx.RequestServices.GetRequiredService<IConfiguration>();
                 var isConfigured = env.GetValue<bool>("IsConfigured");
                 if (isConfigured)
-                    await ctx.OnConfiguredSystem(next);
-                else await ctx.OnNonConfiguredSystem(next);
+                    await ctx.ConfiguredSystem(next);
+                else await ctx.NonConfiguredSystem(next);
             });
         }
 

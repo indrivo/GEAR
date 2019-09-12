@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Application;
 using ST.Backup.Abstractions.BackgroundServices;
@@ -14,8 +13,6 @@ using ST.Backup.Abstractions.Extensions;
 using ST.Backup.PostGresSql;
 using ST.Cache.Extensions;
 using ST.Cms.Services.Abstractions;
-using ST.Configuration.Extensions;
-using ST.Configuration.Server;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Razor.Extensions;
@@ -78,6 +75,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using ST.Application.Middleware.Extensions;
+using ST.Application.Middleware.Server;
 using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
 using ST.Email.Razor.Extensions;
@@ -92,7 +91,6 @@ using ST.MultiTenant.Services;
 using ST.Report.Dynamic.Razor.Extensions;
 using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
-using ST.TaskManager.Helpers;
 using ST.TaskManager.Razor.Extensions;
 using ST.TaskManager.Services;
 
@@ -191,7 +189,7 @@ namespace ST.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() => { CoreApp.OnApplicationStarted(app); });
+			lifetime.ApplicationStarted.Register(() => { CoreApp.ApplicationStarted(app); });
 
 			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace ST.Configuration.Services
+namespace ST.Application.Middleware.Services
 {
     public static class ExportDataIo
     {
@@ -20,15 +20,15 @@ namespace ST.Configuration.Services
             var zipStream = new MemoryStream();
             using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
             {
-                foreach (var (key, value) in files)
+                foreach (var o in files)
                 {
                     try
                     {
-                        var pageEntry = zip.CreateEntry(key);
+                        var pageEntry = zip.CreateEntry(o.Key);
 
                         using (var entryStream = pageEntry.Open())
                         {
-                            value.CopyTo(entryStream);
+                            o.Value.CopyTo(entryStream);
                         }
                     }
                     catch (Exception e)
