@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace ST.TaskManager.Abstractions.Helpers.PagedResult
+namespace ST.Core
 {
     public class PagedResultBase
     {

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ST.Core;
 
-namespace ST.TaskManager.Abstractions.Helpers.PagedResult
+namespace ST.Core.Extensions
 {
-    public static class PagingQuery
+    public static class QueryExtensions
     {
         public static async Task<PagedResult<T>> GetPagedAsync<T>(this IQueryable<T> query,
             int page, int pageSize) where T : class
@@ -35,6 +36,24 @@ namespace ST.TaskManager.Abstractions.Helpers.PagedResult
             result.Results = query.Skip(skip).Take(pageSize).ToList();
 
             return result;
+        }
+
+        public static IOrderedEnumerable<TSource> OrderByWithDirection<TSource, TKey>
+        (this IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            bool descending)
+        {
+            return descending ? source.OrderByDescending(keySelector)
+                : source.OrderBy(keySelector);
+        }
+
+        public static IOrderedQueryable<TSource> OrderByWithDirection<TSource, TKey>
+        (this IQueryable<TSource> source,
+            Expression<Func<TSource, TKey>> keySelector,
+            bool descending)
+        {
+            return descending ? source.OrderByDescending(keySelector)
+                : source.OrderBy(keySelector);
         }
     }
 }

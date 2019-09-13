@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Query.Internal;
+using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
+using ST.Core.Helpers.Pagination;
 using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
-using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Helpers;
-using ST.TaskManager.Abstractions.Helpers.PagedResult;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 using ST.TaskManager.Helpers;
@@ -70,22 +68,27 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int page, int pageSize)
+        public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetUserTasksAsync(string userName, PageRequest request)
         {
             if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(
-                x => (x.Author == userName.Trim())
-                     & (x.IsDeleted == deleted)).GetPagedAsync(page, pageSize);
+            var dbTasksResult = await _context.Tasks
+                .Include(x => x.TaskItems)
+                .Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == request.Deleted))
+                .OrderByWithDirection(x => TypeHelper.GetPropertyValue(x, request.Attribute), request.Descending)
+                .GetPagedAsync(request.Page, request.PageSize);
             return GetTasksAsync(dbTasksResult);
         }
 
-        public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int page, int pageSize)
+        public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, PageRequest request)
         {
             if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false) & (x.Author != userName)).GetPagedAsync(page, pageSize);
-            
+            var dbTasksResult = await _context.Tasks
+                .Where(x => (x.UserId == userId) & (x.IsDeleted == false) & (x.Author != userName))
+                .OrderByWithDirection(x => TypeHelper.GetPropertyValue(x, request.Attribute), request.Descending)
+                .GetPagedAsync(request.Page, request.PageSize);
+
             return GetTasksAsync(dbTasksResult);
         }
 
