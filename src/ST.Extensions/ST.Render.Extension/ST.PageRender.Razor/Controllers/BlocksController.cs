@@ -23,7 +23,7 @@ using ST.PageRender.Abstractions.Models.Pages;
 
 namespace ST.PageRender.Razor.Controllers
 {
-	[Authorize(Roles = Settings.SuperAdmin)]
+	[Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
 	public class BlocksController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         private readonly IDynamicPagesContext _pagesContext;

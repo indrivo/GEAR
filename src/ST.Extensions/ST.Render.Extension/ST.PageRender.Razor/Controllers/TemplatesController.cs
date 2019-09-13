@@ -40,7 +40,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
 		public JsonResult LoadPages(DTParameters param)
 		{
 			var filtered = _pagesContext.FilterAbstractContext<Template>(param.Search.Value, param.SortOrder, param.Start,
@@ -60,7 +60,7 @@ namespace ST.PageRender.Razor.Controllers
         /// Index view
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public IActionResult Index()
 		{
 			return View();
@@ -71,7 +71,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public IActionResult Create()
 		{
 			return View();
@@ -83,7 +83,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<IActionResult> Create([Required]Template model)
 		{
 			if (_pagesContext.Templates.Any(x => x.Name == model.Name))
@@ -119,7 +119,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public IActionResult Edit(Guid id)
 		{
 			if (id.Equals(Guid.Empty)) return NotFound();
@@ -135,7 +135,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// <param name="model"></param>
 		/// <returns></returns>
 		[HttpPost]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<IActionResult> Edit(Template model)
 		{
 			if (model == null) return NotFound();
@@ -175,7 +175,7 @@ namespace ST.PageRender.Razor.Controllers
 		/// <returns></returns>
 		[Route("api/[controller]/[action]")]
 		[ValidateAntiForgeryToken]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
 		public async Task<JsonResult> Delete(string id)
 		{

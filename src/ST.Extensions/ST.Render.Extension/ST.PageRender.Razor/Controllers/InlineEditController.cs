@@ -16,7 +16,6 @@ using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
-using ST.Core.Razor.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
@@ -259,9 +258,9 @@ namespace ST.PageRender.Razor.Controllers
             if (refProp == null)
             {
                 response.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("fail", "Property reference not found")
-                };
+                    {
+                        new ErrorModel("fail", "Property reference not found")
+                    };
                 return Json(response);
             }
 
@@ -270,18 +269,18 @@ namespace ST.PageRender.Razor.Controllers
             if (entityRefName == null)
             {
                 response.Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("fail", "Property reference not found")
-                };
+                    {
+                        new ErrorModel("fail", "Property reference not found")
+                    };
                 return Json(response);
             }
 
             var displayFormat = refProp.TableFieldConfigValues
                 .FirstOrDefault(x => x.TableFieldConfig.Code == TableFieldConfigCode.Reference.DisplayFormat);
             var filters = new List<Filter>
-            {
-                new Filter( nameof(BaseModel.IsDeleted), false)
-            };
+                {
+                    new Filter( nameof(BaseModel.IsDeleted), false)
+                };
 
             if (entityRefName.Value == "Users")
             {
@@ -312,7 +311,14 @@ namespace ST.PageRender.Razor.Controllers
                     }
                 }
 
-                res.Result = res.Result.OrderBy(x => x.ContainsKey("Name") ? x["Name"] : x);
+                try
+                {
+                    res.Result = res.Result.OrderBy(x => x.ContainsKey("Name") ? x["Name"] : x);
+                }
+                catch
+                {
+                    //Ignore
+                }
             }
 
             response.IsSuccess = res.IsSuccess;
@@ -323,6 +329,7 @@ namespace ST.PageRender.Razor.Controllers
             };
 
             return Json(response, _jsonSerializerSettings);
+
         }
 
         /// <summary>
@@ -333,7 +340,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<JsonResult> DeleteItemFromDynamicEntity(Guid viewModelId, string id)
         {
             var result = new ResultModel();
@@ -358,7 +365,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         [AjaxOnly]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<JsonResult> DeleteItemForeverFromDynamicEntity(Guid viewModelId, string id)
         {
             var result = new ResultModel();

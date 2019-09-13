@@ -13,6 +13,7 @@ using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.Table;
 using ST.Entities.Data;
+using ST.Identity.Abstractions.Models.MultiTenants;
 
 namespace ST.Entities
 {
@@ -81,9 +82,21 @@ namespace ST.Entities
             if (field.Parameter != FieldType.EntityReference) return rs;
             {
                 var foreignSchema = fieldTypeConfig.FirstOrDefault(x => x.ConfigCode == TableFieldConfigCode.Reference.ForeingSchemaTable);
-                var foreignTable = await _context.Table.AsNoTracking().FirstOrDefaultAsync(x => x.Name == field.Configurations.FirstOrDefault(y => y.Name == FieldConfig.ForeingTable).Value);
+                var foreignTable = await _context.Table
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Name == field.Configurations
+                                                  .FirstOrDefault(y => y.Name == FieldConfig.ForeingTable)
+                                                  .Value);
                 if (foreignSchema == null) return rs;
-                if (foreignTable != null) foreignSchema.Value = foreignTable.EntityType;
+                if (foreignTable != null)
+                {
+                    if (foreignTable.IsPartOfDbContext)
+                        foreignSchema.Value = foreignTable.EntityType;
+                    else if (foreignTable.EntityType != Settings.DEFAULT_ENTITY_SCHEMA)
+                    {
+                        foreignSchema.Value = Settings.DEFAULT_ENTITY_SCHEMA;
+                    }
+                }
                 var exist = data.FirstOrDefault(x =>
                     x.Name == nameof(TableFieldConfigCode.Reference.ForeingSchemaTable));
                 if (exist == null)
@@ -108,7 +121,9 @@ namespace ST.Entities
         public virtual async Task<ResultModel<CreateTableFieldViewModel>> GetAddFieldCreateViewModel(Guid id, string type)
         {
             var rs = new ResultModel<CreateTableFieldViewModel>();
-            var entitiesList = await _context.Table.ToListAsync();
+            var entitiesList = await _context.Table
+                .Where(x => x.IsPartOfDbContext || x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA))
+                .ToListAsync();
             if (!entitiesList.Any(x => x.Id.Equals(id)))
             {
                 rs.Errors.Add(new ErrorModel("error", "Entity not found!"));
@@ -187,7 +202,7 @@ namespace ST.Entities
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
-                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(Settings.DefaultEntitySchema))
+                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA))
                 .ToListAsync();
             var syncModels = new List<SynchronizeTableViewModel>();
             foreach (var item in entities)
@@ -282,7 +297,7 @@ namespace ST.Entities
                     if (tableName != null)
                     {
                         var table = _context.Table.FirstOrDefault(x =>
-                            x.Name.Equals(tableName.Value) && x.EntityType == Settings.DefaultEntitySchema);
+                            x.Name.Equals(tableName.Value) && x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
                         if (table != null && !table.IsPartOfDbContext && !table.IsSystem && !table.IsCommon)
                         {
                             config.Value = schema;
@@ -365,6 +380,39 @@ namespace ST.Entities
                     }
                 });
             });
+        }
+
+        /// <summary>
+        /// Generate tables
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> GenerateTablesForTenantAsync(Tenant model)
+        {
+            Arg.NotNull(model, nameof(GenerateTablesForTenantAsync));
+            var response = new ResultModel();
+            if (_context.EntityTypes.Any(x => x.MachineName == model.MachineName))
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Schema is used, try to use another"));
+                return response;
+            }
+
+            _context.EntityTypes.Add(new EntityType
+            {
+                MachineName = model.MachineName,
+                Author = "System",
+                Created = DateTime.Now,
+                Changed = DateTime.Now,
+                Name = model.MachineName,
+                Description = $"Generated schema on created {model.Name} tenant"
+            });
+            var dbResult = await _context.SaveAsync();
+            if (!dbResult.IsSuccess) return dbResult;
+
+
+            await CreateDynamicTablesByReplicateSchema(model.Id, model.MachineName);
+            response.IsSuccess = true;
+            return response;
         }
 
 

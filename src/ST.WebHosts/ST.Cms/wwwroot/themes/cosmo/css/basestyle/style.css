@@ -12,6 +12,11 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /* line 1, ../../scss/bootstrap/_root.scss */
+
+
+@import url(../../../../lib/font-awesome/css/font-awesome.min.css);
+@import url(../../../../lib/flag-icon-css/css/flag-icon.min.css);
+
 :root {
   --colors-blue: #007bff;
   --colors-indigo: #6610f2;

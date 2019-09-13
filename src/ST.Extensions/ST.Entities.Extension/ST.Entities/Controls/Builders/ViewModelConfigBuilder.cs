@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using ST.Core;
+using ST.Core.Extensions;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Entities.Data;
 
@@ -16,9 +19,14 @@ namespace ST.Entities.Controls.Builders
         public static List<EntityFieldsViewModel> ViewModelConfig(this EntitiesDbContext dbContext, string entityName)
         {
             var model = new List<EntityFieldsViewModel>();
-            var entity = dbContext.Table.FirstOrDefault(d => d.Name == entityName.Trim());
-            var fields = dbContext.TableFields.Where(d => d.TableId == entity.Id).ToList();
-            foreach (var item in fields)
+            if (entityName.IsNullOrEmpty()) return model;
+            var entity = dbContext.Table
+                .Include(x => x.TableFields)
+                .FirstOrDefault(d => d.Name == entityName.Trim() && d.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA)
+                || d.Name == entityName.Trim() && d.IsPartOfDbContext);
+
+            if (entity == null) return model;
+            foreach (var item in entity.TableFields)
             {
                 var field = new EntityFieldsViewModel
                 {

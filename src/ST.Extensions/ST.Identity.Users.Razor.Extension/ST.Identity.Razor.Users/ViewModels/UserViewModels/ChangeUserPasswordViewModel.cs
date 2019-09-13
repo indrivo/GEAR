@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Helpers;
 
 namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
 {
@@ -21,9 +22,9 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         /// <summary>
         /// New password
         /// </summary>
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
-             MinimumLength = 6), DataType(DataType.Password)]
         [Required]
+        [StringLength(100, ErrorMessage = Resources.ValidationMessages.PASSWORD_STRING_LENGTH, MinimumLength = 6), DataType(DataType.Password)]
+        [RegularExpression(Resources.RegularExpressions.PASSWORD, ErrorMessage = Resources.ValidationMessages.PASSWORD_COMPLEXITY_MESSAGE)]
         public string Password { get; set; }
 
         /// <summary>
@@ -39,6 +40,6 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         /// </summary>
         public AuthenticationType AuthenticationType { get; set; }
 
-        public  string CallBackUrl { get; set; }
+        public string CallBackUrl { get; set; }
     }
 }

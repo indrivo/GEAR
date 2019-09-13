@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ST.Audit.Enums;
-using ST.Audit.Extensions;
+using ST.Audit.Abstractions.Enums;
+using ST.Audit.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
@@ -25,7 +23,8 @@ using ST.Entities.Abstractions;
 using ST.Entities.Abstractions.Constants;
 using ST.Entities.Abstractions.Models.Tables;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
-using ST.Entities.Abstractions.ViewModels.Table;
+using ST.Entities.Security.Abstractions;
+using ST.Entities.Security.Abstractions.Enums;
 using ST.Identity.Abstractions;
 
 namespace ST.DynamicEntityStorage
@@ -39,18 +38,32 @@ namespace ST.DynamicEntityStorage
         private readonly TContext _context;
 
         /// <summary>
-        /// Inject http context
+        /// Inject accessor
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        /// <summary>
+        /// Inject entity access manager
+        /// </summary>
+        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="entityRoleAccessManager"></param>
+        /// <param name="userManager"></param>
         /// <param name="httpContextAccessor"></param>
-        public DynamicService(TContext context, IHttpContextAccessor httpContextAccessor)
+        public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _entityRoleAccessManager = entityRoleAccessManager;
+            _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -76,7 +89,7 @@ namespace ST.DynamicEntityStorage
         protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema(string entity)
         {
             var table = _context.Table
-                .FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId
+                .FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId
                                      || x.Name.Equals(entity) && x.IsCommon
                                      || x.IsPartOfDbContext && x.Name.Equals(entity));
             if (table == null)
@@ -93,32 +106,11 @@ namespace ST.DynamicEntityStorage
         // ReSharper disable once UnusedTupleComponentInReturnValue
         protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync(string entity)
         {
-            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
+            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
             if (table == null)
                 return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
 
             return (table.EntityType, true, null, table);
-        }
-
-        /// <summary>
-        /// Tenant id
-        /// </summary>
-        protected virtual Guid? CurrentUserTenantId
-        {
-            get
-            {
-                Guid? val = _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
-                              ?.ToGuid() ?? Settings.TenantId;
-                var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
-                if (val != Guid.Empty) return val;
-                var user = userManager.GetUserAsync(_httpContextAccessor?.HttpContext?.User).GetAwaiter()
-                    .GetResult();
-                if (user == null) return null;
-                var userClaims = userManager.GetClaimsAsync(user).GetAwaiter().GetResult();
-                val = userClaims?.FirstOrDefault(x => x.Type == "tenant" && !string.IsNullOrEmpty(x.Value))?.Value?.ToGuid();
-
-                return val;
-            }
         }
 
         /// <inheritdoc />
@@ -137,7 +129,7 @@ namespace ST.DynamicEntityStorage
             if (model == null) return result;
             foreach (var item in model)
             {
-                item.TenantId = CurrentUserTenantId;
+                item.TenantId = _userManager.CurrentUserTenantId;
             }
 
             model = (await IncludeReferencesOnList(model)).ToList();
@@ -192,21 +184,9 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<IEnumerable<TOutput>>> GetAll<TEntity, TOutput>(Func<TOutput, bool> predicate = null) where TEntity : BaseModel
         {
             var rq = await GetAllWithInclude<TEntity, TOutput>();
-            if (!rq.IsSuccess) return default;
-            try
-            {
-                var data = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
-                return new ResultModel<IEnumerable<TOutput>>
-                {
-
-                    IsSuccess = true,
-                    Result = data
-                };
-            }
-            catch
-            {
-                return default;
-            }
+            if (!rq.IsSuccess) return rq;
+            rq.Result = predicate == null ? rq.Result.ToList() : rq.Result.Where(predicate).ToList();
+            return rq;
         }
 
 
@@ -308,12 +288,19 @@ namespace ST.DynamicEntityStorage
             //    var translator = new QueryTranslator();
             //    var wherePredicate = translator.Translate(expression);
             //}
-            var (schema, state, errorModel, _) = GetEntityInfoSchema<TEntity>();
+            var (schema, state, errorModel, table) = GetEntityInfoSchema<TEntity>();
             if (!state)
             {
                 result.Errors.Add(errorModel);
                 return result;
             }
+
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                return result;
+            }
+
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             model.Values = GetFilters(filters);
@@ -336,10 +323,15 @@ namespace ST.DynamicEntityStorage
             var result = new ResultModel<IEnumerable<Dictionary<string, object>>>();
 
             if (string.IsNullOrEmpty(entity)) return result;
-            var (schema, state, errorModel, _) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
             if (!state)
             {
                 result.Errors.Add(errorModel);
+                return result;
+            }
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             result.IsSuccess = true;
@@ -458,10 +450,15 @@ namespace ST.DynamicEntityStorage
         {
             var result = new ResultModel<Dictionary<string, object>>();
             if (string.IsNullOrEmpty(entity)) return result;
-            var (schema, state, errorModel, _) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
             if (!state)
             {
                 result.Errors.Add(errorModel);
+                return result;
+            }
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
@@ -524,7 +521,7 @@ namespace ST.DynamicEntityStorage
             if (!req.IsSuccess) return result;
             var obj = GetObject<TEntity>(req.Result);
             if (obj == null) return result;
-            obj.TenantId = CurrentUserTenantId;
+            obj.TenantId = _userManager.CurrentUserTenantId;
             var adapt = obj.Adapt<TOutput>();
             result.IsSuccess = true;
             result.Result = adapt;
@@ -578,7 +575,7 @@ namespace ST.DynamicEntityStorage
 
             if (string.IsNullOrEmpty(entity)) return result;
 
-            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == CurrentUserTenantId);
+            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId);
             if (table == null) return result;
             table.TableFields = _context.TableFields.Where(x => x.TableId.Equals(table.Id)).ToList();
 
@@ -619,10 +616,15 @@ namespace ST.DynamicEntityStorage
             };
             var entity = typeof(TEntity).Name;
             if (string.IsNullOrEmpty(entity)) return result;
-            var (schema, state, errorModel, _) = GetEntityInfoSchema<TEntity>();
+            var (schema, state, errorModel, table) = GetEntityInfoSchema<TEntity>();
             if (!state)
             {
                 result.Errors.Add(errorModel);
+                return result;
+            }
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
@@ -654,26 +656,33 @@ namespace ST.DynamicEntityStorage
             result.IsSuccess = true;
             return result;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Implement add new item
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="model"></param>
+        /// <param name="dbSchema"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model) where TEntity : BaseModel
+        public virtual async Task<ResultModel<Guid>> Add<TEntity>(Dictionary<string, object> model, string dbSchema = null) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
 
             var entity = typeof(TEntity);
             if (string.IsNullOrEmpty(entity.Name)) return result;
-            var (schema, state, errorModel, _) = GetEntityInfoSchema(entity.Name);
+            var (schema, state, errorModel, dto) = GetEntityInfoSchema(entity.Name);
             if (!state)
             {
                 result.Errors.Add(errorModel);
                 return result;
             }
-            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
+            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Write))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                return result;
+            }
+            var table = await CreateEntityDefinition<TEntity, EntityViewModel>(dbSchema ?? schema);
             var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
             model.SetDefaultValues(table);
@@ -682,7 +691,7 @@ namespace ST.DynamicEntityStorage
             model["Author"] = author;
             model["ModifiedBy"] = author;
 
-            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
+            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, _userManager.CurrentUserTenantId,
                         entity, TrackEventType.Added);
             if (model.ContainsKey("Version"))
             {
@@ -782,10 +791,15 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<Guid>> Update(string entity, Dictionary<string, object> model)
         {
             var result = new ResultModel<Guid>();
-            var (schema, state, errorModel, _) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, dto) = GetEntityInfoSchema(entity);
             if (!state)
             {
                 result.Errors.Add(errorModel);
+                return result;
+            }
+            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Update))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var table = await CreateEntityDefinition<EntityViewModel>(entity, schema);
@@ -805,7 +819,7 @@ namespace ST.DynamicEntityStorage
             if (!req.IsSuccess || !req.Result) return result;
             result.IsSuccess = true;
             result.Result = Guid.Parse(model["Id"].ToString());
-            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, CurrentUserTenantId,
+            var audit = model.GetTrackAuditFromDictionary(typeof(EntitiesDbContext).FullName, _userManager.CurrentUserTenantId,
                 null, TrackEventType.Updated);
 
             audit.RecordId = result.Result;
@@ -836,21 +850,21 @@ namespace ST.DynamicEntityStorage
         public virtual async Task<ResultModel<Guid>> DeletePermanent<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var (schema, state, errorModel, _) = GetEntityInfoSchema<TEntity>();
+            var (schema, state, errorModel, dto) = GetEntityInfoSchema<TEntity>();
             if (!state)
             {
                 result.Errors.Add(errorModel);
                 return result;
             }
+            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.DeletePermanent))
+            {
+                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                return result;
+            }
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             table.Values = new List<Dictionary<string, object>>
             {
-                new Dictionary<string, object>
-                {
-                    {
-                        "Id", id
-                    }
-                }
+                new Dictionary<string, object> {{nameof(BaseModel.Id), id}}
             };
             var res = _context.DeleteById(table, true);
             if (!res.Result)
@@ -877,13 +891,12 @@ namespace ST.DynamicEntityStorage
             var item = await GetById<TEntity>(id);
             if (!item.IsSuccess) return result;
             var model = item.Result;
-            model["IsDeleted"] = true;
-            model["Changed"] = DateTime.Now;
-            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+            model[nameof(BaseModel.IsDeleted)] = true;
+            model[nameof(BaseModel.Changed)] = DateTime.Now;
+            model[nameof(BaseModel.ModifiedBy)] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             result = await Update<TEntity>(model);
             return result;
         }
-
 
         /// <inheritdoc />
         /// <summary>
@@ -898,9 +911,9 @@ namespace ST.DynamicEntityStorage
             var item = await GetById<TEntity>(id);
             if (!item.IsSuccess) return result;
             var model = item.Result;
-            model["IsDeleted"] = false;
-            model["Changed"] = DateTime.Now;
-            model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
+            model[nameof(BaseModel.IsDeleted)] = false;
+            model[nameof(BaseModel.Changed)] = DateTime.Now;
+            model[nameof(BaseModel.ModifiedBy)] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             result = await Update<TEntity>(model);
             return result;
         }
@@ -1126,7 +1139,7 @@ namespace ST.DynamicEntityStorage
             => new DynamicObject
             {
                 Type = typeof(TEntity),
-                Service = new DynamicService<TContext>(_context, _httpContextAccessor)
+                Service = IoC.Resolve<IDynamicService>()
             };
 
         /// <inheritdoc />

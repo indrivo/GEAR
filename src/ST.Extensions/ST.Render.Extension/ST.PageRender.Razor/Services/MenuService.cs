@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using ST.Cache.Abstractions;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Models.Pages;
@@ -29,6 +29,8 @@ namespace ST.PageRender.Razor.Services
 
     public class MenuService<TService> : IMenuService where TService : IDynamicService
     {
+        #region Injectable
+
         /// <summary>
         /// Inject Data Service
         /// </summary>
@@ -39,6 +41,7 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         private readonly ICacheService _cacheService;
 
+        #endregion
         /// <summary>
         /// Constructor
         /// </summary>
@@ -50,6 +53,21 @@ namespace ST.PageRender.Razor.Services
             _cacheService = cacheService;
         }
 
+        /// <summary>
+        /// Get menus
+        /// </summary>
+        /// <param name="menuBlockId"></param>
+        /// <param name="menuId"></param>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<MenuItem>> GetSourceAsync(Guid menuBlockId, Guid menuId)
+        {
+            var cache = await _cacheService.Get<List<MenuItem>>(MenuHelper.GetCacheKey(menuId.ToString()));
+            if (cache != null && cache.Any()) return cache;
+            var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(menuBlockId));
+            await _cacheService.Set(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
+            return search.Result.ToList();
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Get menus
@@ -59,35 +77,22 @@ namespace ST.PageRender.Razor.Services
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<MenuViewModel>>> GetMenus(Guid? menuId, IList<string> roles)
         {
-            if (!menuId.HasValue) return default;
+            var result = new ResultModel<IEnumerable<MenuViewModel>>();
+            if (!menuId.HasValue) return result;
             var navbar = await _service.GetByIdWithReflection<Menu, Menu>(menuId.Value);
-            if (!navbar.IsSuccess) return default;
-            List<MenuItem> menus;
-            var cache = await _cacheService.Get<List<MenuItem>>(MenuHelper.GetCacheKey(menuId.ToString()));
-            if (cache == null || cache.Count == 0)
+            if (!navbar.IsSuccess) return result;
+            var menus = (await GetSourceAsync(navbar.Result.Id, menuId.Value))
+                .Where(x => HaveAccess(roles, x.AllowedRoles))
+                .ToList();
+            if (!menus.Any())
             {
-                var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(navbar.Result.Id));
-                menus = search.Result.ToList();
-                await _cacheService.Set(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
-            }
-            else
-            {
-                menus = cache;
+                result.Errors.Add(new ErrorModel(nameof(EmptyResult), "No menu are available for you!"));
+                return result;
             }
 
-            if (!menus.Any()) return new ResultModel<IEnumerable<MenuViewModel>>
-            {
-                Errors = new List<IErrorModel>
-                {
-                    new ErrorModel("Null", "No menu are available for you!")
-                }
-            };
-            menus = menus.Where(x => HaveAccess(roles, x.AllowedRoles)).ToList();
-            return new ResultModel<IEnumerable<MenuViewModel>>
-            {
-                IsSuccess = true,
-                Result = GetMenu(menus, roles).OrderBy(x => x.Order).ToList()
-            };
+            result.IsSuccess = true;
+            result.Result = GetMenu(menus, roles).OrderBy(x => x.Order).ToList();
+            return result;
         }
 
         /// <summary>
@@ -120,12 +125,7 @@ namespace ST.PageRender.Razor.Services
         {
             var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
             {
-                new Filter
-                {
-                    Value = menuId,
-                    Criteria = Criteria.Equals,
-                    Parameter = "Id"
-                }
+                new Filter(nameof(BaseModel.Id), menuId)
             });
             var menu = match.Result?.FirstOrDefault();
             if (menu == null) return default;
@@ -145,9 +145,9 @@ namespace ST.PageRender.Razor.Services
         public virtual bool HaveAccess(IList<string> userRoles, string menuItemAllowedRoles)
         {
             if (string.IsNullOrEmpty(menuItemAllowedRoles)) return false;
-            if (!userRoles.Any() || !userRoles.Contains(Settings.AnonimousUser))
+            if (!userRoles.Any() || !userRoles.Contains(GlobalResources.Roles.ANONIMOUS_USER))
             {
-                userRoles.Add(Settings.AnonimousUser);
+                userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
             }
 
             try
@@ -173,11 +173,11 @@ namespace ST.PageRender.Razor.Services
         {
             var match = await _service.GetAllWithInclude<MenuItem, MenuItem>(null, new List<Filter>
             {
-                new Filter("Id", menuId)
+                new Filter(nameof(BaseModel.Id), menuId)
             });
             var menu = match.Result?.FirstOrDefault();
             if (!match.IsSuccess || menu == null) return new ResultModel<Guid>();
-            if (!roles.Contains(Settings.SuperAdmin)) roles.Add(Settings.SuperAdmin);
+            if (!roles.Contains(GlobalResources.Roles.ADMINISTRATOR)) roles.Add(GlobalResources.Roles.ADMINISTRATOR);
             menu.AllowedRoles = string.Join("#", roles);
             await _cacheService.RemoveAsync(MenuHelper.GetCacheKey(menu.MenuId.ToString()));
             return await _service.UpdateWithReflection(menu);

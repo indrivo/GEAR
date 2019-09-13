@@ -1,12 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using ST.Audit.Contexts;
 using ST.Core.Abstractions;
-using ST.Core.Helpers.DbContexts;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Abstractions.Models.Permmisions;
 using ST.Identity.Abstractions.Models.UserProfiles;
@@ -21,10 +20,6 @@ namespace ST.Identity.Data
         /// Do not remove this
         /// </summary>
         public const string Schema = "Identity";
-        /// <summary>
-        /// Options
-        /// </summary>
-        private DbContextOptions<ApplicationDbContext> Options { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -34,7 +29,7 @@ namespace ST.Identity.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            Options = options;
+
         }
 
         #region Permissions Store
@@ -48,6 +43,14 @@ namespace ST.Identity.Data
         public virtual DbSet<RoleProfile> RoleProfiles { get; set; }
 
         #endregion Permissions Store
+
+        #region Address
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<StateOrProvince> StateOrProvinces { get; set; }
+        public virtual DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<District> Districts { get; set; }
+
+        #endregion
 
         /// <summary>
         /// On model creating
@@ -85,25 +88,29 @@ namespace ST.Identity.Data
             builder.Entity<ApplicationUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
             builder.Entity<ApplicationRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
+            builder.Entity<Country>().HasKey(k => k.Id);
+            builder.Entity<StateOrProvince>().HasKey(k => k.Id);
+            builder.Entity<ApplicationUser>()
+                .HasMany(x => x.Addresses)
+                .WithOne(x => x.ApplicationUser)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //seed countries
+            var countries = ApplicationDbContextSeeder.GetCountriesFromJsonFile();
+            foreach (var country in countries)
+            {
+                var cities = country.StatesOrProvinces;
+                country.StatesOrProvinces = null;
+                builder.Entity<Country>().HasData(country);
+                builder.Entity<StateOrProvince>().HasData(cities);
+            }
+
             builder.RegisterIndexes();
         }
 
         public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel
         {
-            return this.Set<T>();
-        }
-    }
-    public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
-    {
-        /// <inheritdoc />
-        /// <summary>
-        /// For creating migrations
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public ApplicationDbContext CreateDbContext(string[] args)
-        {
-            return DbContextFactory<ApplicationDbContext, ApplicationDbContext>.CreateFactoryDbContext();
+            return Set<T>();
         }
     }
 }

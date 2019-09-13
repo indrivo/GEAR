@@ -1,41 +1,59 @@
-﻿@using ST.Identity.Abstractions
+﻿@using ST.Core.Extensions
+@using ST.Identity.Abstractions
+@using ST.Identity.Abstractions.Models.MultiTenants
+@using ST.MultiTenant.Abstractions.ViewModels
+
 @{
-    ViewData["Title"] = "My company";
+    ViewData["Title"] = Localizer["system_my_company"];
     ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
-    var user = (ApplicationUser) ViewBag.User;
-    var roles = (string) ViewBag.UserRoles;
+    var user = (ApplicationUser)ViewBag.User;
+    var roles = (string)ViewBag.UserRoles;
+    var organization = (Tenant)ViewBag.Organization;
+    ViewData["TenantCallBackUrl"] = "/CompanyManage";
+    var tenantEditModel = new EditTenantViewModel(organization)
+    {
+        CountrySelectListItems = (IEnumerable<SelectListItem>)ViewBag.Countries
+    };
 }
 
 @section Styles
 {
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
     <style type="text/css">
-        .table td { white-space: normal !important; }
+        .table td {
+            white-space: normal !important;
+        }
 
-        .select2-dropdown.increased-z-index { z-index: 999999; }
+        .select2-dropdown.increased-z-index {
+            z-index: 999999;
+        }
     </style>
 }
 
 <div class="row">
     <div class="col-lg-2 mb-2">
-        <div class="card h-100">
+        <div class="card h-400">
             <div class="card-body">
-                <div class="mx-5 my-4 px-4">
-                    <img src="/Users/GetImage?id=@user.Id" class="img-thumbnail img-fluid rounded-circle" alt="@user.Name">
+                <div class="mx-3 my-2 px-2">
+                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.Name">
                 </div>
                 <div class="text-center">
-                    <h5 class="weight-400">Hello, @user.UserName</h5>
-                    <p class=" text-muted"> @roles</p>
+                    <h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @user.UserName</h5>
+                    <p>
+                        <span class="weight-400">@Localizer["iso_company_name"] : </span><span class="text-muted">@organization.Name</span>
+                    </p>
+                    <p>
+                        <span class="weight-400">@Localizer["system_adress"] : </span><span class="text-muted">@organization.Address</span>
+                    </p>
+                    <p>
+                        <span class="weight-400">@Localizer["iso_company_website"] : </span><span class="text-muted">@organization.SiteWeb</span>
+                    </p>
+                    <p>
+                        <span class="weight-400">@Localizer["roles"] : </span><span class="text-muted">@roles</span>
+                    </p>
                 </div>
 
                 <hr class="my-4 dashed">
-
-                <p>
-                    <span class="weight-400">Mobile : </span><span class="text-muted">@user.PhoneNumber</span>
-                </p>
-                <p>
-                    <span class="weight-400">Email Address : </span><span class="text-muted">@user.Email</span>
-                </p>
-
             </div>
         </div>
     </div>
@@ -44,42 +62,20 @@
             <div class="card-header p-0">
                 <ul class="nav nav-tabs active-thik nav-primary border-0" id="myTab" role="tablist">
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                        <a class="nav-link px-4 py-3 active rounded-0" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">@Localizer["iso_menu_company_settings"]</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-4 py-3 rounded-0" id="messages-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">Users</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link px-4 py-3 rounded-0" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+                        <a class="nav-link px-4 py-3 rounded-0" id="messages-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">@Localizer["users"]</a>
                     </li>
                 </ul>
             </div>
             <div class="card-body">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                        <h5 class="weight-400">Summary</h5>
-                        <p>No data</p>
+                        <partial name="Partial/_EditTenantDataPartialView" model="@tenantEditModel" view-data="@ViewData" />
                     </div>
                     <div class="tab-pane fade show" id="users" role="tabpanel" aria-labelledby="users-tab">
                         <JList asp-for="@ViewBag.UsersListSettings"></JList>
-                    </div>
-                    <div class="tab-pane fade " id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                        <p class="mb-4">Nulla mattis pharetra enim, at sodales augue facilisis et. Maecenas vehicula vehicula est sed elementum. Sed sed mi vitae mi molestie commodo. Phasellus in leo ut leo ultricies mattis sit amet sed arcu. Vivamus vehicula dignissim lorem sit amet vulputate. Aenean in elit odio. Aliquam erat volutpat. </p>
-                        <div class="form-row">
-                            <div class="col-md-6 mb-3">
-                                <label for="validationCustom01">First name</label>
-                                <input type="text" class="form-control" id="validationCustom01" placeholder="First name">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="validationCustom02">Last name</label>
-                                <input type="text" class="form-control" id="validationCustom02" placeholder="Last name">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="exampleFormControlTextarea1">Message</label>
-                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"></textarea>
-                        </div>
-                        <button class="btn btn-success text-white mt-4">Send Message</button>
                     </div>
                 </div>
             </div>
@@ -89,70 +85,14 @@
 
 @section Scripts
 {
-    <script type="text/javascript">
-        $("#inviteBtn").click(() => {
-            swal.fire(
-                {
-                    title: "Invite new user",
-                    animation: true,
-                    showCancelButton: true,
-                    showLoaderOnConfirm: true,
-                    confirmButtonText: "Confirm",
-                    html: `<div class="form-group">
-						<label class="form-control-label" for="userEmail">Email</label>
-						<input type="email" id="userEmail" class="form-control" placeholder="e-mail">
-					</div>
-					<div class="form-group">
-						<label class="form-control-label" for="roleSelect">Role</label>
-						<select id="roleSelect" class="swal2-select form-control" multiple="multiple"></select>
-					</div>`,
-                    onOpen: () => {
-                        $('#roleSelect').select2({
-                            dropdownCssClass: "increased-z-index",
-                            data: load("@Url.Action("GetRoles")").map(roles => ({ id: roles.id, text: roles.name }))
-                        });
-                    },
-                    preConfirm: () => {
-                        const email = document.getElementById('userEmail').value;
-                        const selectedRoles = $('#roleSelect').select2('data').map(roleId => roleId.id);
-                        console.log(email);
-                        console.log(selectedRoles);
-                        const info = {
-                            'email': email,
-                            'roles': selectedRoles
-                        }
-                        return new Promise((resolve, reject) => {
-                            $.ajax({
-                                url: "@Url.Action("InviteNewUserAsync", "CompanyManage")",
-                                method: "POST",
-                                contentType: "application/json; charset=utf-8",
-                                data: JSON.stringify(info),
-                                success: function(data) {
-                                    resolve(data);
-                                },
-                                error: function(error) {
-                                    reject(error);
-                                }
-                            });
-                        }).then(result => {
-                            if (!result.is_success) {
-                                Swal.showValidationMessage(
-                                    `Request failed: ${result.error_keys.map(responseMessage => responseMessage.message)
-                                    .join(',')}`
-                                );
-                            }
-                        });
-                    },
-                    allowOutsideClick: () => !Swal.isLoading()
-                }).then((result) => {
-                if (result.value) {
-                    Swal.fire('Email was sanded');
-                }
-            });
-        })
-    </script>
-
-    <script type="text/javascript">
-        $('#roleSelect').select2();
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
+    <script src="~/assets/MultiTenantPlugins/company-manage-invite.js"></script>
+    @if (!string.IsNullOrEmpty(tenantEditModel.CountryId))
+    {
+        <script>
+        loadCitiesByCountryId("@tenantEditModel.CountryId", "@tenantEditModel.CityId");
+        </script>
+    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

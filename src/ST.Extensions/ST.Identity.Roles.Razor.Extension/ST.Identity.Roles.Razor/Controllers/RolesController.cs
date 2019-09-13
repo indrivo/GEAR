@@ -18,10 +18,10 @@ using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Abstractions.Models.UserProfiles;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Permissions.Abstractions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
@@ -635,7 +635,7 @@ namespace ST.Identity.Roles.Razor.Controllers
         /// <returns></returns>
         [Route("api/[controller]/[action]")]
         [HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public async Task<IActionResult> RefreshCachedPermissionsForEachRole()
         {
             await _permissionService.RefreshCache();

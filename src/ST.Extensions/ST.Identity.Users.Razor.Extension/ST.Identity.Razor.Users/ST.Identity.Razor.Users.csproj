@@ -11,7 +11,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Cache.Extension\ST.Cache.Abstractions\ST.Cache.Abstractions.csproj" />
-    <ProjectReference Include="..\..\ST.CORE.Razor\ST.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.Razor\ST.Core.Razor.csproj" />
     <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant\ST.MultiTenant.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Users\Create.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Users\Partial\_EditProfilePartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Users\Profile.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 </Project>

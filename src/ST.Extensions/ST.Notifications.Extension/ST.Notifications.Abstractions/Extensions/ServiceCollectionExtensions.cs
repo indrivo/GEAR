@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using RazorLight;
+using ST.Audit.Abstractions.Extensions;
 using ST.Core.Events;
 using ST.Core.Events.EventArgs;
 using ST.Core.Extensions;
@@ -41,6 +41,7 @@ namespace ST.Notifications.Abstractions.Extensions
             Arg.NotNull(services, nameof(AddNotificationSubscriptionModuleStorage));
             services.Services.AddDbContext<TContext>(options);
             services.Services.AddScopedContextFactory<INotificationDbContext, TContext>();
+            services.Services.RegisterAuditFor<INotificationDbContext>("Notification module");
             return services;
         }
 
@@ -53,35 +54,49 @@ namespace ST.Notifications.Abstractions.Extensions
         {
             SystemEvents.Application.OnEvent += async delegate (object sender, ApplicationEventEventArgs ev)
             {
-                if (string.IsNullOrEmpty(ev.EventName)) return;
-                var service = IoC.Resolve<INotificationSubscriptionRepository>();
-                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
-                var subscribedRoles = await service.GetRolesSubscribedToEventAsync(ev.EventName);
-                if (!subscribedRoles.IsSuccess) return;
-                var template = await service.GetEventTemplateAsync(ev.EventName);
-                if (!template.IsSuccess) return;
-                var templateWithParams = template.Result.Value?.Inject(ev.EventArgs);
-                //var engine = new RazorLightEngineBuilder()
-                //    .UseMemoryCachingProvider()
-                //    .Build();
-
-                //var templateWithParams = await engine.CompileRenderAsync($"template_{ev.EventName}", template.Result.Value, ev.EventArgs);
-
-                var notification = new SystemNotifications
+                try
                 {
-                    Subject = template.Result.Subject,
-                    Content = templateWithParams,
-                    NotificationTypeId = NotificationType.Info
-                };
+                    if (string.IsNullOrEmpty(ev.EventName)) return;
+                    var service = IoC.Resolve<INotificationSubscriptionRepository>();
+                    var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                    var subscribedRoles = await service.GetRolesSubscribedToEventAsync(ev.EventName);
+                    if (!subscribedRoles.IsSuccess) return;
+                    var template = await service.GetEventTemplateAsync(ev.EventName);
+                    if (!template.IsSuccess) return;
+                    var templateWithParams = template.Result.Value?.Inject(ev.EventArgs);
+                    //var engine = new RazorLightEngineBuilder()
+                    //    .UseMemoryCachingProvider()
+                    //    .Build();
 
-                await notifier.SendNotificationAsync(subscribedRoles.Result, notification);
+                    //var templateWithParams = await engine.CompileRenderAsync($"template_{ev.EventName}", template.Result.Value, ev.EventArgs);
+
+                    var notification = new SystemNotifications
+                    {
+                        Subject = template.Result.Subject,
+                        Content = templateWithParams,
+                        NotificationTypeId = NotificationType.Info
+                    };
+
+                    await notifier.SendNotificationAsync(subscribedRoles.Result, notification);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             };
 
             //seed events
             SystemEvents.Application.OnApplicationStarted += async delegate
             {
-                var service = IoC.Resolve<INotificationSubscriptionRepository>();
-                await service.SeedEventsAsync();
+                try
+                {
+                    var service = IoC.Resolve<INotificationSubscriptionRepository>();
+                    await service.SeedEventsAsync();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             };
 
             return services;

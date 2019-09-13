@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using ST.Audit.Attributes;
-using ST.Audit.Enums;
+using ST.Audit.Abstractions.Attributes;
+using ST.Audit.Abstractions.Enums;
 
 namespace ST.Entities.Abstractions.Models.Tables
 {

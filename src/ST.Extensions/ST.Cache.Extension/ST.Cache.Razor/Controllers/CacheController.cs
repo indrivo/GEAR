@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ST.Cache.Abstractions;
+using ST.Core;
+using ST.Core.Abstractions;
 using ST.Core.Helpers;
 
 namespace ST.Cache.Razor.Controllers
 {
-    [Authorize(Roles = Core.Settings.SuperAdmin)]
+    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     public class CacheController : Controller
     {
         /// <summary>
@@ -16,12 +18,19 @@ namespace ST.Cache.Razor.Controllers
         private readonly ICacheService _cacheService;
 
         /// <summary>
+        /// Cache options
+        /// </summary>
+        private readonly IWritableOptions<RedisConnectionConfig> _writableOptions;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="cacheService"></param>
-        public CacheController(ICacheService cacheService)
+        /// <param name="writableOptions"></param>
+        public CacheController(ICacheService cacheService, IWritableOptions<RedisConnectionConfig> writableOptions)
         {
             _cacheService = cacheService;
+            _writableOptions = writableOptions;
         }
 
         /// <summary>
@@ -61,6 +70,31 @@ namespace ST.Cache.Razor.Controllers
             {
                 IsSuccess = true
             });
+        }
+
+        /// <summary>
+        /// Settings
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Settings()
+        {
+            return View(_writableOptions.Value);
+        }
+
+        /// <summary>
+        /// Settings
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult Settings(RedisConnectionConfig model)
+        {
+            _writableOptions.Update(opt =>
+            {
+                opt.Host = model.Host;
+                opt.Port = model.Port;
+            });
+            return View();
         }
     }
 }

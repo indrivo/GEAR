@@ -22,6 +22,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190822104546_ApplicationDbContext_AddCountries.cs" />
+    <Compile Remove="Migrations\20190822104546_ApplicationDbContext_AddCountries.Designer.cs" />
+    <Compile Remove="Migrations\20190904223609_test.cs" />
+    <Compile Remove="Migrations\20190904223609_test.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="countries.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="countries.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />

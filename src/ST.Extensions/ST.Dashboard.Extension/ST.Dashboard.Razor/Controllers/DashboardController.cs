@@ -5,7 +5,7 @@ using ST.Dashboard.Abstractions;
 
 namespace ST.Dashboard.Razor.Controllers
 {
-    [Authorize(Roles = Settings.SuperAdmin)]
+    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     public class DashboardController : Controller
     {
         /// <summary>

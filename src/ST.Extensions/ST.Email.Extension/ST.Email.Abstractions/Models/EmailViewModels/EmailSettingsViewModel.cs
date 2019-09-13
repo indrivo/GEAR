@@ -1,4 +1,6 @@
-﻿namespace ST.Email.Abstractions.Models.EmailViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ST.Email.Abstractions.Models.EmailViewModels
 {
     public sealed class EmailSettingsViewModel
     {
@@ -10,11 +12,14 @@
         /// <summary>
         /// Host
         /// </summary>
+        /// 
+        [Required]
         public string Host { get; set; }
 
         /// <summary>
         /// Port 
         /// </summary>
+        [Required]
         public int Port { get; set; }
 
         /// <summary>
@@ -38,11 +43,14 @@
         /// <summary>
         /// Email
         /// </summary>
+        [Required]
         public string Email { get; set; }
 
         /// <summary>
         /// Password
         /// </summary>
+        [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }

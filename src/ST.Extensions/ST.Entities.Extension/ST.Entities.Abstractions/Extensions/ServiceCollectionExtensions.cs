@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Audit.Abstractions.Extensions;
+using ST.Core.Events;
+using ST.Core.Events.EventArgs;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Events;
+using ST.Entities.Abstractions.Helpers;
 using ST.Entities.Abstractions.Query;
 
 namespace ST.Entities.Abstractions.Extensions
@@ -29,6 +33,7 @@ namespace ST.Entities.Abstractions.Extensions
                 { typeof(IEntityContext), typeof(TEntityContext) },
                 { typeof(IEntityRepository), typeof(TEntityRepository) }
             });
+
             return services;
         }
 
@@ -41,6 +46,18 @@ namespace ST.Entities.Abstractions.Extensions
         {
             //Register entity events
             EntityEvents.RegisterEvents();
+
+            SystemEvents.Application.OnApplicationStarted += delegate (object sender, ApplicationStartedEventArgs args)
+            {
+                var scopeContextFactory = (DbContext)args.Services.GetRequiredService<IEntityContext>();
+                DbConnectionFactory.Connection.SetConnection(scopeContextFactory.Database.GetDbConnection());
+            };
+
+            SystemEvents.Application.OnApplicationStopped += delegate
+            {
+                DbConnectionFactory.CloseAll();
+            };
+
             return services;
         }
 
@@ -71,6 +88,7 @@ namespace ST.Entities.Abstractions.Extensions
         public static IServiceCollection AddEntityModuleStorage<TEntityContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TEntityContext : DbContext, IEntityContext
         {
+            services.RegisterAuditFor<IEntityContext>("Entity module");
             services.AddDbContext<TEntityContext>(options, ServiceLifetime.Transient);
             return services;
         }

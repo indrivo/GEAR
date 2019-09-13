@@ -60,15 +60,8 @@ namespace ST.Backup.Abstractions.BackgroundServices
         private void Execute(object state)
         {
             if (!_settings.Enabled) return;
-            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var directoryPath = Path.Combine(userProfilePath, $"backup\\{_settings.BackupFolder}");
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
-
             _logger.LogInformation($"Backup Background Service run for {_backupService.GetProviderName()}");
-            _backupService.Backup(_settings, directoryPath);
+            _backupService.Backup();
         }
 
         /// <inheritdoc />

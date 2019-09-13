@@ -1,46 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using ST.Core;
+using ST.Core.Extensions;
+using ST.Report.Abstractions.Models.Dto;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace ST.Report.Abstractions.Models
 {
     /// <inheritdoc />
     /// <summary>
-    /// Model created after parsing the DbModel
-    /// Easier for outside use
+    /// Model to save in database
     /// </summary>
-    [Serializable]
     public class DynamicReport : BaseModel
     {
         public string Name { get; set; }
-        public List<DynamicReportFilter> Filters { get; set; }
-        public string InitialTable { get; set; }
-        public List<DynamicReportColumnDataModel> ColumnList { get; set; }
-        public GraphType GraphType { get; set; }
-        public ChartType ChartType { get; set; }
-        public TimeFrameEnum TimeFrameEnum { get; set; }
-        public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
-        public Guid DynamicReportFolderId { get; set; }
-    }
-
-    /// <inheritdoc />
-    /// <summary>
-    /// Model to save in database
-    /// </summary>
-    public class DynamicReportDbModel : BaseModel
-    {
-        public string Name { get; set; }
-        public string TableName { get; set; }
-        public string ColumnNames { get; set; }
-        public DateTime StartDateTime { get; set; }
-        public DateTime EndDateTime { get; set; }
-        public string FiltersList { get; set; }
-        public GraphType GraphType { get; set; }
-        public ChartType ChartType { get; set; }
-        public TimeFrameEnum TimeFrameEnum { get; set; }
         public Guid DynamicReportFolderId { get; set; }
         public DynamicReportFolder DynamicReportFolder { get; set; }
-    }
+        public string ReportData { get; set; }
 
+        [NotMapped]
+        public DynamicReportDto ReportDataModel
+        {
+            get
+            {
+                DynamicReportDto result = new DynamicReportDto();
+                if (!string.IsNullOrEmpty(ReportData))
+                {
+                    try
+                    {
+                        result = JsonConvert.DeserializeObject<DynamicReportDto>(ReportData);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new SerializationException(ex.Message);
+                    }
+                }
+                return result;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    ReportData = value.Serialize();
+                }
+            }
+        }
+    }
 }

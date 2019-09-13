@@ -16,7 +16,6 @@ using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Abstractions.Models;
 using ST.Forms.Razor.ViewModels.FormsViewModels;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Notifications.Abstractions;
@@ -31,7 +30,7 @@ using ST.Forms.Abstractions.Models.FormModels;
 using ST.Forms.Abstractions.ViewModels.FormViewModels;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
-using Settings = ST.Core.Settings;
+using ST.Identity.Permissions.Abstractions.Attributes;
 
 namespace ST.Forms.Razor.Controllers
 {
@@ -290,7 +289,7 @@ namespace ST.Forms.Razor.Controllers
         /// <param name="tableId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetEntityFields(Guid tableId)
         {
             return FormService.GetEntityFields(tableId);
@@ -303,7 +302,7 @@ namespace ST.Forms.Razor.Controllers
         /// <param name="entitySchema"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetEntityReferenceFields(string entityName, string entitySchema)
         {
             return FormService.GetEntityReferenceFields(entityName, entitySchema);
@@ -316,7 +315,7 @@ namespace ST.Forms.Razor.Controllers
         /// <param name="entityFieldId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult GetReferenceFields(Guid? entityId, Guid? entityFieldId)
         {
             return FormService.GetReferenceFields(entityId, entityFieldId);
@@ -538,7 +537,7 @@ namespace ST.Forms.Razor.Controllers
         [Route("api/[controller]/[action]")]
         [ValidateAntiForgeryToken]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public JsonResult Delete(string id)
         {
             if (string.IsNullOrEmpty(id)) return Json(new { message = "Fail to delete form!", success = false });

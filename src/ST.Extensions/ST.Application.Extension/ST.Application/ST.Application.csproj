@@ -1,23 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.6.6" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.4" />
+    <PackageReference Include="NLog" Version="4.6.7" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.5" />
+    <PackageReference Include="Sentry.AspNetCore" Version="1.2.0" />
+    <PackageReference Include="Sentry.NLog" Version="1.2.0" />
     <PackageReference Include="ST.AspNetCore.WebHost.Customization" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Backup.Extension\ST.Backup.Abstractions\ST.Backup.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Cache.Extension\ST.Cache\ST.Cache.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.IdentityServer4\ST.Identity.IdentityServer4.csproj" />
-    <ProjectReference Include="..\..\ST.Localization.Razor.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Localization.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Notifications.Extension\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />
     <ProjectReference Include="..\..\ST.Render.Extension\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />

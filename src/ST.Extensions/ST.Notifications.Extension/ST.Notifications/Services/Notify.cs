@@ -12,6 +12,7 @@ using ST.DynamicEntityStorage.Abstractions;
 using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Email.Abstractions;
+using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Notifications;
 
@@ -42,6 +43,11 @@ namespace ST.Notifications.Services
         private readonly IEmailSender _emailSender;
 
         /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="dataService"></param>
@@ -49,13 +55,15 @@ namespace ST.Notifications.Services
         /// <param name="hub"></param>
         /// <param name="logger"></param>
         /// <param name="emailSender"></param>
-        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender)
+        /// <param name="userManager"></param>
+        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<ApplicationUser> userManager)
         {
             _dataService = dataService;
             _context = context;
             _hub = hub;
             _logger = logger;
             _emailSender = emailSender;
+            _userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -120,17 +128,17 @@ namespace ST.Notifications.Services
             var users = usersIds.ToList();
             _hub.SendNotification(users, notification);
             var emails = new HashSet<string>();
-            foreach (var user in users)
+            foreach (var userId in users)
             {
-                var u = _context.Users.FirstOrDefault(x => x.Id.ToGuid() == user);
-                if (u != null)
-                {
-                    emails.Add(u.Email);
-                }
+                var user = _userManager.UserManager.Users.FirstOrDefault(x => x.Id.ToGuid() == userId);
 
+                if (user == null) continue;
+                //send email only if email was confirmed
+                if (user.EmailConfirmed) emails.Add(user.Email);
                 notification.Id = Guid.NewGuid();
-                notification.UserId = user;
-                var response = await _dataService.AddWithReflection(notification);
+                notification.UserId = userId;
+                var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
+                var response = await _dataService.Add<SystemNotifications>(_dataService.GetDictionary(notification), tenant.MachineName);
                 if (!response.IsSuccess)
                 {
                     _logger.LogError("Fail to add new notification in database");
@@ -138,6 +146,7 @@ namespace ST.Notifications.Services
             }
             await _emailSender.SendEmailAsync(emails, notification.Subject, notification.Content);
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Send notification to system admins
@@ -154,7 +163,7 @@ namespace ST.Notifications.Services
                 foreach (var userRole in userRoles)
                 {
                     var receivers = await _context.Users.Where(x => x.Id.Equals(userRole.UserId))
-                         .Select(x => Guid.Parse(x.Id)).ToListAsync();
+                        .Select(x => Guid.Parse(x.Id)).ToListAsync();
                     receivers.ForEach(x =>
                     {
                         if (!users.Contains(x)) users.Add(x);
@@ -174,12 +183,7 @@ namespace ST.Notifications.Services
         {
             var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, new List<Filter>
             {
-                new Filter
-                {
-                    Criteria = Criteria.Equals,
-                    Parameter = "UserId",
-                    Value = userId
-                }
+                new Filter("UserId", userId)
             });
             if (notifications.IsSuccess)
             {
@@ -188,6 +192,7 @@ namespace ST.Notifications.Services
             return notifications;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get notification by id
         /// </summary>
@@ -215,6 +220,7 @@ namespace ST.Notifications.Services
             var response = await _dataService.DeletePermanent<SystemNotifications>(notificationId);
             return response;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Check if user is online

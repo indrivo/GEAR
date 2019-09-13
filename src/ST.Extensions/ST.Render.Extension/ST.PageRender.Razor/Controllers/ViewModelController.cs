@@ -17,7 +17,6 @@ using ST.Entities.Abstractions.Constants;
 using ST.PageRender.Abstractions;
 using ST.PageRender.Abstractions.Configurations;
 using ST.PageRender.Abstractions.Models.ViewModels;
-using ST.PageRender.Razor.ViewModels.TableColumnsViewModels;
 
 namespace ST.PageRender.Razor.Controllers
 {
@@ -376,7 +375,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="fieldId"></param>
         /// <param name="translatedKey"></param>
         /// <returns></returns>
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         [Route("api/[controller]/[action]")]
         [HttpPost, Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> ChangeViewModelFieldTranslateText([Required] Guid fieldId,
@@ -414,7 +413,7 @@ namespace ST.PageRender.Razor.Controllers
         /// <param name="fieldId"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         public virtual async Task<JsonResult> SaveManyToManyConfigurations(Guid? referenceEntity, Guid? storageEntity, Guid? fieldId)
         {
             var rs = new ResultModel();
@@ -437,7 +436,6 @@ namespace ST.PageRender.Razor.Controllers
                 return Json(rs);
             }
 
-            var vieModel = field.ViewModel;
             var viewModelTable = field.ViewModel?.TableModel;
             if (field.TableModelFields != null)
             {

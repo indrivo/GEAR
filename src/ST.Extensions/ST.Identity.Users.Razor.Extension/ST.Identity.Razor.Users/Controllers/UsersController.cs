@@ -4,41 +4,54 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using ST.Cache.Abstractions;
 using ST.Entities.Data;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
 using ST.Identity.Razor.Users.ViewModels.UserViewModels;
 using ST.Notifications.Abstractions;
-using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Attributes;
 using ST.Core.BaseControllers;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
-using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Enums;
+using ST.Identity.Abstractions.Events;
+using ST.Identity.Abstractions.Events.EventArgs.Users;
+using ST.Identity.Abstractions.Models.AddressModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.LdapAuth.Abstractions;
+using ST.Identity.Permissions.Abstractions.Attributes;
+using ST.Identity.Razor.Users.ViewModels.UserProfileViewModels;
+using ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress;
+using UserProfileViewModel = ST.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel;
 
 namespace ST.Identity.Razor.Users.Controllers
 {
-    public class UsersController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class UsersController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser,
+        ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injections
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager, ILogger<UsersController> logger) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
+            ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context,
+            INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager,
+            ILogger<UsersController> logger, IStringLocalizer localizer) : base(userManager, roleManager, cacheService,
+            applicationDbContext,
+            context, notify)
         {
             _ldapUserManager = ldapUserManager;
             Logger = logger;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -51,6 +64,8 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         private readonly BaseLdapUserManager<ApplicationUser> _ldapUserManager;
 
+        private readonly IStringLocalizer _localizer;
+
         #endregion
 
 
@@ -60,7 +75,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserRead)]
-        public virtual IActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
@@ -70,13 +85,14 @@ namespace ST.Identity.Razor.Users.Controllers
         /// </summary>
         /// <returns></returns>
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserCreate)]
-        public virtual IActionResult Create()
+        public virtual async Task<IActionResult> Create()
         {
             var model = new CreateUserViewModel
             {
-                Roles = RoleManager.Roles.AsEnumerable(),
-                Groups = ApplicationDbContext.AuthGroups.AsEnumerable(),
-                Tenants = ApplicationDbContext.Tenants.AsEnumerable()
+                Roles = await GetRoleSelectListItemAsync(),
+                Groups = await GetAuthGroupSelectListItemAsync(),
+                Tenants = await GetTenantsSelectListItemAsync(),
+                CountrySelectListItems = await GetCountrySelectList()
             };
             return View(model);
         }
@@ -89,142 +105,127 @@ namespace ST.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserCreate)]
-        public virtual async Task<IActionResult> Create(CreateUserViewModel model)
+        public async Task<IActionResult> Create(CreateUserViewModel model)
         {
-            model.Roles = RoleManager.Roles.AsEnumerable();
-            model.Groups = await ApplicationDbContext.AuthGroups.ToListAsync();
-            model.Profiles = new List<EntityViewModel>();
-            model.Tenants = ApplicationDbContext.Tenants.AsEnumerable();
-
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(model);
-            }
-
-            var user = new ApplicationUser
-            {
-                UserName = model.UserName,
-                Email = model.Email,
-                Created = DateTime.Now,
-                Changed = DateTime.Now,
-                IsDeleted = model.IsDeleted,
-                Author = User.Identity.Name,
-                AuthenticationType = model.AuthenticationType,
-                IsEditable = true,
-                TenantId = model.TenantId,
-                LastPasswordChanged = DateTime.Now
-            };
-
-            if (model.UserPhoto != null)
-            {
-                using (var _ = new MemoryStream())
+                var user = new ApplicationUser
                 {
-                    await model.UserPhoto.CopyToAsync(_);
-                    user.UserPhoto = _.ToArray();
-                }
-            }
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    Created = DateTime.Now,
+                    Changed = DateTime.Now,
+                    IsDeleted = model.IsDeleted,
+                    Author = User.Identity.Name,
+                    AuthenticationType = model.AuthenticationType,
+                    IsEditable = true,
+                    TenantId = model.TenantId,
+                    LastPasswordChanged = DateTime.Now,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Birthday = model.Birthday ?? DateTime.MinValue,
+                    AboutMe = model.AboutMe,
+                };
 
-            var hasher = new PasswordHasher<ApplicationUser>();
-            var hashedPassword = hasher.HashPassword(user, model.Password);
-            user.PasswordHash = hashedPassword;
-            var result = await UserManager.CreateAsync(user);
-            if (!result.Succeeded)
-            {
-                foreach (var _ in result.Errors)
+                if (model.UserPhoto != null)
                 {
-                    ModelState.AddModelError(string.Empty, _.Description);
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await model.UserPhoto.CopyToAsync(memoryStream);
+                        user.UserPhoto = memoryStream.ToArray();
+                    }
                 }
 
-                return View(model);
-            }
-
-            Logger.LogInformation("User {0} created successfully", user.UserName);
-            var roleNameList = new List<string>();
-            foreach (var _ in model.SelectedRoleId)
-            {
-                var role = await RoleManager.FindByIdAsync(_);
-                if (role == null)
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (!result.Succeeded)
                 {
-                    Logger.LogWarning(
-                        "The user has sent an invalid roleId which is bizarre since the role is selected from the html select tag, possible attack");
-                    ModelState.AddModelError(string.Empty, "The role you've selected does not exist");
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    model.Roles = await GetRoleSelectListItemAsync();
+                    model.Groups = await GetAuthGroupSelectListItemAsync();
+                    model.Tenants = await GetTenantsSelectListItemAsync();
+                    model.CountrySelectListItems = await GetCountrySelectList();
                     return View(model);
                 }
 
-                roleNameList.Add(role.Name);
-            }
+                Logger.LogInformation("User {0} created successfully", user.UserName);
 
-            var roleAddResult = await UserManager.AddToRolesAsync(user, roleNameList);
-            if (!roleAddResult.Succeeded)
-            {
-                foreach (var _ in roleAddResult.Errors)
+                if (model.SelectedRoleId != null && model.SelectedRoleId.Any())
                 {
-                    ModelState.AddModelError(string.Empty, _.Description);
-                }
-
-                return View(model);
-            }
-
-            if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
-            {
-                var userGroupList = new List<UserGroup>();
-                foreach (var _ in model.SelectedGroupId)
-                {
-                    userGroupList.Add(new UserGroup
+                    var rolesNameList = await RoleManager.Roles.Where(x => model.SelectedRoleId.Contains(x.Id))
+                        .Select(x => x.Name).ToListAsync();
+                    var roleAddResult = await UserManager.AddToRolesAsync(user, rolesNameList);
+                    if (!roleAddResult.Succeeded)
                     {
-                        AuthGroupId = Guid.Parse(_),
-                        UserId = user.Id
-                    });
+                        foreach (var error in roleAddResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        model.Roles = await GetRoleSelectListItemAsync();
+                        model.Groups = await GetAuthGroupSelectListItemAsync();
+                        model.Tenants = await GetTenantsSelectListItemAsync();
+                        model.CountrySelectListItems = await GetCountrySelectList();
+                        return View(model);
+                    }
                 }
 
-                await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
-                await Context.SaveChangesAsync();
-            }
-            //ToDO: Modify letter !!!
-            else
-            {
-                var groupId = await ApplicationDbContext.AuthGroups.FirstOrDefaultAsync();
-                if (groupId != null)
+                if (model.SelectedGroupId != null && model.SelectedGroupId.Any())
                 {
-                    ApplicationDbContext.UserGroups.Add(new UserGroup
+                    var userGroupList = model.SelectedGroupId
+                        .Select(_ => new UserGroup { AuthGroupId = Guid.Parse(_), UserId = user.Id }).ToList();
+
+                    await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
+                }
+                else
+                {
+                    var groupId = await ApplicationDbContext.AuthGroups.FirstOrDefaultAsync();
+                    if (groupId != null)
                     {
-                        AuthGroupId = groupId.Id,
-                        UserId = user.Id
-                    });
+                        ApplicationDbContext.UserGroups.Add(new UserGroup
+                        {
+                            AuthGroupId = groupId.Id,
+                            UserId = user.Id
+                        });
+                    }
                 }
 
-                await Context.SaveChangesAsync();
-            }
-
-
-            try
-            {
-                await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+                var dbResult = await ApplicationDbContext.SaveAsync();
+                if (!dbResult.IsSuccess)
                 {
-                    Content = $"{user.UserName} was created by {User.Identity.Name}",
-                    Subject = "Info",
-                    NotificationTypeId = NotificationType.Info
+                    ModelState.AppendResultModelErrors(dbResult.Errors);
+                    model.Roles = await GetRoleSelectListItemAsync();
+                    model.Groups = await GetAuthGroupSelectListItemAsync();
+                    model.Tenants = await GetTenantsSelectListItemAsync();
+                    model.CountrySelectListItems = await GetCountrySelectList();
+                    return View(model);
+                }
+
+                IdentityEvents.Users.UserCreated(new UserCreatedEventArgs
+                {
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    UserId = user.Id
                 });
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e.Message);
-                ModelState.AddModelError(string.Empty, "Error on save User Groups!");
-                return View(model);
             }
 
             return RedirectToAction(nameof(Index), "Users");
         }
+
         /// <summary>
         /// Get Ad users
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [AjaxOnly]
-        public virtual JsonResult GetAdUsers()
+        public JsonResult GetAdUsers()
         {
             var result = new ResultModel<IEnumerable<ApplicationUser>>();
-            var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad)).ToList();
+            var addedUsers = ApplicationDbContext.Users.Where(x => x.AuthenticationType.Equals(AuthenticationType.Ad))
+                .ToList();
             var users = _ldapUserManager.Users;
             if (addedUsers.Any())
             {
@@ -243,7 +244,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public virtual async Task<JsonResult> AddAdUser([Required]string userName)
+        public virtual async Task<JsonResult> AddAdUser([Required] string userName)
         {
             var result = new ResultModel<Guid>();
             if (string.IsNullOrEmpty(userName))
@@ -258,6 +259,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 result.Errors.Add(new ErrorModel(string.Empty, $"UserName {userName} exists!"));
                 return Json(result);
             }
+
             var user = new ApplicationUser();
 
             var ldapUser = await _ldapUserManager.FindByNameAsync(userName);
@@ -266,6 +268,7 @@ namespace ST.Identity.Razor.Users.Controllers
                 result.Errors.Add(new ErrorModel(string.Empty, $"There is no AD user with this username : {userName}"));
                 return Json(result);
             }
+
             user.Id = Guid.NewGuid().ToString();
             user.UserName = ldapUser.SamAccountName;
             user.Email = ldapUser.EmailAddress;
@@ -274,11 +277,8 @@ namespace ST.Identity.Razor.Users.Controllers
             user.Author = User.Identity.Name;
             user.Changed = DateTime.Now;
             user.TenantId = CurrentUserTenantId;
-            var hasher = new PasswordHasher<ApplicationUser>();
-            var hashedPassword = hasher.HashPassword(user, "ldap_default_password");
-            user.PasswordHash = hashedPassword;
             result.IsSuccess = true;
-            var req = await UserManager.CreateAsync(user);
+            var req = await UserManager.CreateAsync(user, "ldap_default_password");
             if (!req.Succeeded)
             {
                 result.Errors.Add(new ErrorModel(string.Empty, $"Fail to add user : {userName}"));
@@ -286,31 +286,16 @@ namespace ST.Identity.Razor.Users.Controllers
             }
             else
             {
+                IdentityEvents.Users.UserCreated(new UserCreatedEventArgs
+                {
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    UserId = user.Id
+                });
                 result.Result = Guid.Parse(user.Id);
             }
 
             return Json(result);
-        }
-
-        /// <summary>
-        /// Delete user by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public virtual async Task<IActionResult> Delete(string id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var applicationUser = await ApplicationDbContext.Users.SingleOrDefaultAsync(m => m.Id == id);
-            if (applicationUser == null)
-            {
-                return NotFound();
-            }
-
-            return View(applicationUser);
         }
 
         /// <summary>
@@ -322,7 +307,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserDelete)]
-        public virtual async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (id.IsNullOrEmpty())
             {
@@ -349,11 +334,11 @@ namespace ST.Identity.Razor.Users.Controllers
             {
                 await UserManager.UpdateSecurityStampAsync(applicationUser);
                 await UserManager.DeleteAsync(applicationUser);
-                await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+                IdentityEvents.Users.UserDelete(new UserDeleteEventArgs
                 {
-                    Content = $"{applicationUser.UserName} was deleted by {User.Identity.Name}",
-                    Subject = "Info",
-                    NotificationTypeId = NotificationType.Info
+                    Email = applicationUser.Email,
+                    UserName = applicationUser.UserName,
+                    UserId = applicationUser.Id
                 });
                 return Json(new { success = true, message = "Delete success" });
             }
@@ -365,15 +350,15 @@ namespace ST.Identity.Razor.Users.Controllers
         }
 
         /// <summary>
-        ///     Edit user
+        ///  Edit user
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public virtual async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -408,7 +393,9 @@ namespace ST.Identity.Razor.Users.Controllers
                 UserPhoto = applicationUser.UserPhoto,
                 AuthenticationType = applicationUser.AuthenticationType,
                 TenantId = applicationUser.TenantId,
-                Tenants = ApplicationDbContext.Tenants.Where(x => !x.IsDeleted).ToList()
+                Tenants = ApplicationDbContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
+                FirstName = applicationUser.FirstName,
+                LastName = applicationUser.LastName
             };
             return View(model);
         }
@@ -423,8 +410,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AuthorizePermission(PermissionsConstants.CorePermissions.BpmUserUpdate)]
-        public virtual async Task<IActionResult> Edit(string id,
-            UpdateUserViewModel model)
+        public virtual async Task<IActionResult> Edit(string id, UpdateUserViewModel model)
         {
             if (Guid.Parse(id) != model.Id)
             {
@@ -449,12 +435,9 @@ namespace ST.Identity.Razor.Users.Controllers
             if (!ModelState.IsValid)
             {
                 model.SelectedRoleId = userRoleList;
-                foreach (var _ in ViewData.ModelState.Values)
+                foreach (var error in ViewData.ModelState.Values.SelectMany(stateValue => stateValue.Errors))
                 {
-                    foreach (var error in _.Errors)
-                    {
-                        ModelState.AddModelError("", error.ErrorMessage);
-                    }
+                    ModelState.AddModelError(string.Empty, error.ErrorMessage);
                 }
 
                 return View(model);
@@ -487,13 +470,15 @@ namespace ST.Identity.Razor.Users.Controllers
             user.ModifiedBy = User.Identity.Name;
             user.UserName = model.UserName;
             user.TenantId = model.TenantId;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
 
             if (model.UserPhotoUpdateFile != null)
             {
-                using (var _ = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
-                    await model.UserPhotoUpdateFile.CopyToAsync(_);
-                    user.UserPhoto = _.ToArray();
+                    await model.UserPhotoUpdateFile.CopyToAsync(memoryStream);
+                    user.UserPhoto = memoryStream.ToArray();
                 }
             }
 
@@ -532,7 +517,8 @@ namespace ST.Identity.Razor.Users.Controllers
             if (model.Groups != null && model.Groups.Any())
             {
                 //Refresh groups
-                var currentGroupsList = await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
+                var currentGroupsList =
+                    await ApplicationDbContext.UserGroups.Where(x => x.UserId == user.Id).ToListAsync();
                 ApplicationDbContext.UserGroups.RemoveRange(currentGroupsList);
 
 
@@ -541,34 +527,168 @@ namespace ST.Identity.Razor.Users.Controllers
                 await ApplicationDbContext.UserGroups.AddRangeAsync(userGroupList);
             }
 
-            try
-            {
-                Context.SaveChanges();
-                await UserManager.UpdateSecurityStampAsync(user);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            await UserManager.UpdateSecurityStampAsync(user);
 
             //Refresh user claims for this user
             //await user.RefreshClaims(Context, signInManager);
-            await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+            IdentityEvents.Users.UserUpdated(new UserUpdatedEventArgs
             {
-                Content = $"{user.UserName} was edited by {User.Identity.Name}",
-                Subject = "Info",
-                NotificationTypeId = NotificationType.Info
+                Email = user.Email,
+                UserName = user.UserName,
+                UserId = user.Id
             });
             return RedirectToAction(nameof(Index));
+        }
+
+
+        /// <summary>
+        /// Return list of State Or Provinces by country id
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public virtual JsonResult GetCityByCountryId([Required] string countryId)
+        {
+            var resultModel = new ResultModel<IEnumerable<SelectListItem>>();
+            if (string.IsNullOrEmpty(countryId))
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Country id is null"));
+                return Json(resultModel);
+            }
+
+            var citySelectList = ApplicationDbContext.StateOrProvinces
+                .AsNoTracking()
+                .Where(x => x.CountryId.Equals(countryId))
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList();
+            citySelectList.Insert(0, new SelectListItem("Select city", string.Empty));
+
+            resultModel.Result = citySelectList;
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
+        /// <summary>
+        /// User profile info
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public virtual async Task<IActionResult> Profile()
+        {
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileViewModel
+            {
+                UserId = currentUser.Id.ToGuid(),
+                TenantId = currentUser.TenantId ?? Guid.Empty,
+                UserName = currentUser.UserName,
+                UserFirstName = currentUser.UserFirstName,
+                UserLastName = currentUser.UserLastName,
+                UserPhoneNumber = currentUser.PhoneNumber,
+                AboutMe = currentUser.AboutMe,
+                Birthday = currentUser.Birthday,
+                Email = currentUser.Email,
+                Roles = await UserManager.GetRolesAsync(currentUser),
+                Groups = await ApplicationDbContext.UserGroups
+                    .Include(x => x.AuthGroup)
+                    .Where(x => x.UserId.Equals(currentUser.Id))
+                    .Select(x => x.AuthGroup.Name)
+                    .ToListAsync()
+            };
+            return View(model);
+        }
+
+
+        /// <summary>
+        /// Get view for edit profile info
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public virtual async Task<IActionResult> EditProfile(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return NotFound();
+            }
+
+            var currentUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileEditViewModel
+            {
+                Id = currentUser.Id,
+                UserFirstName = currentUser.UserFirstName,
+                UserLastName = currentUser.UserLastName,
+                Birthday = currentUser.Birthday,
+                AboutMe = currentUser.AboutMe,
+                UserPhoneNumber = currentUser.PhoneNumber,
+            };
+            return PartialView("Partial/_EditProfilePartial", model);
+        }
+
+        /// <summary>
+        /// Update user profile info
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> EditProfile(UserProfileEditViewModel model)
+        {
+            var resultModel = new ResultModel();
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
+
+            var currentUser = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            if (currentUser == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found!"));
+                return Json(resultModel);
+            }
+
+            currentUser.UserLastName = model.UserFirstName;
+            currentUser.UserLastName = model.UserLastName;
+            currentUser.Birthday = model.Birthday;
+            currentUser.AboutMe = model.AboutMe;
+            currentUser.PhoneNumber = model.UserPhoneNumber;
+
+            var result = await UserManager.UpdateAsync(currentUser);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                return Json(resultModel);
+            }
+
+            foreach (var identityError in result.Errors)
+            {
+                resultModel.Errors.Add(new ErrorModel(identityError.Code, identityError.Description));
+            }
+
+            return Json(resultModel);
         }
 
         /// <summary>
         /// Get view for change user password
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="callBackUrl"></param>
         /// <returns></returns>
         [HttpGet]
-        public virtual async Task<IActionResult> ChangeUserPassword([Required] Guid? userId, string callBackUrl)
+        public async Task<IActionResult> ChangeUserPassword([Required] Guid? userId, string callBackUrl)
         {
             if (userId == null) return NotFound();
             var user = await UserManager.FindByIdAsync(userId.Value.ToString());
@@ -589,7 +709,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public virtual async Task<IActionResult> ChangeUserPassword([Required]ChangeUserPasswordViewModel model)
+        public virtual async Task<IActionResult> ChangeUserPassword([Required] ChangeUserPasswordViewModel model)
         {
             if (model.AuthenticationType.Equals(AuthenticationType.Ad))
             {
@@ -617,14 +737,16 @@ namespace ST.Identity.Razor.Users.Controllers
             var result = await UserManager.UpdateAsync(user);
             if (result.Succeeded)
             {
-                await Notify.SendNotificationAsync(new List<Guid> { user.Id.ToGuid() }, new SystemNotifications
+                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
                 {
-                    Content = $"Your password was changed to : {model.Password}",
-                    Subject = "Password changed",
-                    NotificationTypeId = NotificationType.Info
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    UserId = user.Id,
+                    Password = model.Password
                 });
                 return Redirect(model.CallBackUrl);
             }
+
             foreach (var _ in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, _.Description);
@@ -641,7 +763,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public virtual JsonResult LoadUsers([FromServices] INotificationHub hub, DTParameters param)
+        public JsonResult LoadUsers([FromServices] INotificationHub hub, DTParameters param)
         {
             var filtered = GetUsersFiltered(param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
@@ -688,7 +810,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="totalCount"></param>
         /// <returns></returns>
         [NonAction]
-        protected virtual List<ApplicationUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
+        private List<ApplicationUser> GetUsersFiltered(string search, string sortOrder, int start, int length,
             out int totalCount)
         {
             var result = ApplicationDbContext.Users.AsNoTracking()
@@ -748,7 +870,7 @@ namespace ST.Identity.Razor.Users.Controllers
         [Route("api/[controller]/[action]")]
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public virtual JsonResult GetUserById([Required] Guid userId)
+        public JsonResult GetUserById([Required] Guid userId)
         {
             var user = ApplicationDbContext.Users.FirstOrDefault(x => x.Id == userId.ToString());
             return Json(new ResultModel
@@ -758,24 +880,15 @@ namespace ST.Identity.Razor.Users.Controllers
             });
         }
 
+
         /// <summary>
         /// Check if is current user
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        protected virtual bool IsCurrentUser(string id)
+        private bool IsCurrentUser(string id)
         {
             return id.Equals(User.Identity.Name);
-        }
-
-        /// <summary>
-        /// User profile info
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public virtual IActionResult Profile()
-        {
-            return View();
         }
 
         /// <summary>
@@ -784,7 +897,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        public virtual IActionResult GetImage(string id)
+        public IActionResult GetImage(string id)
         {
             if (id.IsNullOrEmpty())
             {
@@ -803,6 +916,7 @@ namespace ST.Identity.Razor.Users.Controllers
             {
                 Console.WriteLine(e);
             }
+
             return NotFound();
         }
 
@@ -810,7 +924,7 @@ namespace ST.Identity.Razor.Users.Controllers
         /// Get default user image
         /// </summary>
         /// <returns></returns>
-        protected virtual byte[] GetDefaultImage()
+        private static byte[] GetDefaultImage()
         {
             var path = Path.Combine(AppContext.BaseDirectory, "Static/Embedded Resources/user.jpg");
             if (!System.IO.File.Exists(path))
@@ -840,19 +954,434 @@ namespace ST.Identity.Razor.Users.Controllers
         /// <param name="userNameOld"></param>
         /// <returns></returns>
         [AcceptVerbs("Get", "Post")]
-        public virtual async Task<IActionResult> VerifyName(string userName, string userNameOld)
+        public async Task<IActionResult> VerifyName(string userName, string userNameOld)
         {
             if (userNameOld != null && userName.ToLower().Equals(userNameOld.ToLower()))
             {
                 return Json(true);
             }
 
-            if (await ApplicationDbContext.Users.AsNoTracking().AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
+            if (await ApplicationDbContext.Users
+                .AsNoTracking()
+                .AnyAsync(x => x.UserName.ToLower().Equals(userName.ToLower())))
             {
                 return Json($"User name {userName} is already in use.");
             }
 
             return Json(true);
+        }
+
+        [HttpPost]
+        public virtual async Task<JsonResult> DeleteUserAddress(Guid? id)
+        {
+            var resultModel = new ResultModel();
+            if (!id.HasValue)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Null id"));
+                return Json(resultModel);
+            }
+
+            var currentAddress = await ApplicationDbContext.Addresses.FindAsync(id.Value);
+            if (currentAddress == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
+                return Json(resultModel);
+            }
+
+            currentAddress.IsDeleted = true;
+            var result = await ApplicationDbContext.SaveAsync();
+            if (!result.IsSuccess)
+            {
+                foreach (var error in result.Errors)
+                {
+                    resultModel.Errors.Add(new ErrorModel(error.Key, error.Message));
+                }
+
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
+        [HttpGet]
+        public virtual PartialViewResult UserPasswordChange()
+        {
+            return PartialView("Partial/_ChangePassword");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> UserPasswordChange(ChangePasswordViewModel model)
+        {
+            var resultModel = new ResultModel();
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Invalid model" });
+                return Json(resultModel);
+            }
+
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                return Json(resultModel);
+            }
+
+            var result = await UserManager.ChangePasswordAsync(currentUser, model.CurrentPassword, model.Password);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                IdentityEvents.Users.UserPasswordChange(new UserChangePasswordEventArgs
+                {
+                    Email = currentUser.Email,
+                    UserName = currentUser.UserName,
+                    UserId = currentUser.Id,
+                    Password = model.Password
+                });
+                return Json(resultModel);
+            }
+
+            resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Error on change password" });
+            return Json(resultModel);
+        }
+
+        #region Partial Views
+
+        [HttpGet]
+        public virtual async Task<IActionResult> UserOrganizationPartial(Guid? tenantId)
+        {
+            if (!tenantId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var tenant = await ApplicationDbContext.Tenants.FindAsync(tenantId);
+            if (tenant == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserProfileTenantViewModel
+            {
+                Name = tenant.Name,
+                TenantId = tenant.TenantId,
+                Description = tenant.Description,
+                Address = tenant.Address,
+                SiteWeb = tenant.SiteWeb
+            };
+            return PartialView("Partial/_OrganizationPartial", model);
+        }
+
+        [HttpGet]
+        public virtual IActionResult UserAddressPartial(Guid? userId)
+        {
+            if (!userId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var addressList = ApplicationDbContext.Addresses
+                .AsNoTracking()
+                .Where(x => x.ApplicationUserId.Equals(userId.Value.ToString()) && x.IsDeleted == false)
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince)
+                .Include(x => x.District)
+                .Select(address => new UserProfileAddressViewModel
+                {
+                    Id = address.Id,
+                    AddressLine1 = address.AddressLine1,
+                    AddressLine2 = address.AddressLine2,
+                    Phone = address.Phone,
+                    ContactName = address.ContactName,
+                    District = address.District.Name,
+                    Country = address.Country.Name,
+                    City = address.StateOrProvince.Name,
+                    IsPrimary = address.IsDefault,
+                    ZipCode = address.ZipCode,
+                })
+                .ToList();
+
+            return PartialView("Partial/_AddressListPartial", addressList);
+        }
+
+        [HttpGet]
+        public virtual PartialViewResult ChangeUserPasswordPartial()
+        {
+            return PartialView("Partial/_ChangePasswordPartial");
+        }
+
+        [HttpGet]
+        public virtual async Task<IActionResult> AddUserProfileAddress()
+        {
+            var model = new AddUserProfileAddressViewModel
+            {
+                CountrySelectListItems = await GetCountrySelectList()
+            };
+            return PartialView("Partial/_AddUserProfileAddress", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> AddUserProfileAddress(AddUserProfileAddressViewModel model)
+        {
+            var resultModel = new ResultModel();
+
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
+
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
+                return Json(resultModel);
+            }
+
+            var address = new Address
+            {
+                AddressLine1 = model.AddressLine1,
+                AddressLine2 = model.AddressLine2,
+                Created = DateTime.Now,
+                ContactName = model.ContactName,
+                ZipCode = model.ZipCode,
+                Phone = model.Phone,
+                CountryId = model.SelectedCountryId,
+                StateOrProvinceId = model.SelectedStateOrProvinceId,
+                ApplicationUser = currentUser,
+                IsDefault = model.IsDefault
+            };
+
+            if (model.IsDefault)
+            {
+                ApplicationDbContext.Addresses
+                    .Where(x => x.ApplicationUserId.Equals(currentUser.Id))
+                    .ToList().ForEach(b => b.IsDefault = false);
+            }
+
+            await ApplicationDbContext.AddAsync(address);
+            var result = await ApplicationDbContext.SaveAsync();
+            if (!result.IsSuccess)
+            {
+                foreach (var resultError in result.Errors)
+                {
+                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
+                }
+
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
+
+        [HttpGet]
+        public virtual async Task<IActionResult> EditUserProfileAddress(Guid? addressId)
+        {
+            if (!addressId.HasValue)
+            {
+                return NotFound();
+            }
+
+            var currentAddress = await ApplicationDbContext.Addresses
+                .FirstOrDefaultAsync(x => x.Id.Equals(addressId.Value));
+            var cityBySelectedCountry = await ApplicationDbContext.StateOrProvinces
+                .AsNoTracking()
+                .Where(x => x.CountryId.Equals(currentAddress.CountryId))
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToListAsync();
+            if (currentAddress == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserProfileAddressViewModel
+            {
+                Id = currentAddress.Id,
+                CountrySelectListItems = await GetCountrySelectList(),
+                AddressLine1 = currentAddress.AddressLine1,
+                AddressLine2 = currentAddress.AddressLine2,
+                Phone = currentAddress.Phone,
+                ContactName = currentAddress.ContactName,
+                ZipCode = currentAddress.ZipCode,
+                SelectedCountryId = currentAddress.CountryId,
+                SelectedStateOrProvinceId = currentAddress.StateOrProvinceId,
+                SelectedStateOrProvinceSelectListItems = cityBySelectedCountry,
+                IsDefault = currentAddress.IsDefault
+            };
+            return PartialView("Partial/_EditUserProfileAddress", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual async Task<JsonResult> EditUserProfileAddress(EditUserProfileAddressViewModel model)
+        {
+            var resultModel = new ResultModel();
+
+            if (!ModelState.IsValid)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
+                return Json(resultModel);
+            }
+
+            var currentAddress = await ApplicationDbContext.Addresses.FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+            if (currentAddress == null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
+                return Json(resultModel);
+            }
+
+            if (model.IsDefault)
+            {
+                ApplicationDbContext.Addresses
+                    .Where(x => x.ApplicationUserId.Equals(currentAddress.ApplicationUserId))
+                    .ToList().ForEach(b => b.IsDefault = false);
+            }
+
+            currentAddress.CountryId = model.SelectedCountryId;
+            currentAddress.StateOrProvinceId = model.SelectedStateOrProvinceId;
+            currentAddress.AddressLine1 = model.AddressLine1;
+            currentAddress.AddressLine2 = model.AddressLine2;
+            currentAddress.ContactName = model.ContactName;
+            currentAddress.Phone = model.Phone;
+            currentAddress.ZipCode = model.ZipCode;
+            currentAddress.IsDefault = model.IsDefault;
+            currentAddress.Changed = DateTime.Now;
+
+
+            ApplicationDbContext.Update(currentAddress);
+            var result = await ApplicationDbContext.SaveAsync();
+            if (!result.IsSuccess)
+            {
+                foreach (var resultError in result.Errors)
+                {
+                    resultModel.Errors.Add(new ErrorModel(resultError.Key, resultError.Message));
+                }
+
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = true;
+            return Json(resultModel);
+        }
+
+        #endregion
+
+        [HttpPost]
+        public virtual async Task<JsonResult> UploadUserPhoto(IFormFile file)
+        {
+            var resultModel = new ResultModel();
+            if (file == null || file.Length == 0)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "Image not found" });
+                return Json(resultModel);
+            }
+
+            var currentUser = await GetCurrentUserAsync();
+            if (currentUser == null)
+            {
+                resultModel.IsSuccess = false;
+                resultModel.Errors.Add(new ErrorModel { Key = string.Empty, Message = "User not found" });
+                return Json(resultModel);
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                currentUser.UserPhoto = memoryStream.ToArray();
+            }
+
+            var result = await UserManager.UpdateAsync(currentUser);
+            if (result.Succeeded)
+            {
+                resultModel.IsSuccess = true;
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = false;
+            foreach (var error in result.Errors)
+            {
+                resultModel.Errors.Add(new ErrorModel { Key = error.Code, Message = error.Description });
+            }
+
+            return Json(resultModel);
+        }
+
+        protected virtual async Task<IEnumerable<SelectListItem>> GetCountrySelectList()
+        {
+            var countrySelectList = await ApplicationDbContext.Countries
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id
+                }).ToListAsync();
+
+            countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
+
+            return countrySelectList;
+        }
+
+        /// <summary>
+        /// Return roles select list items
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetRoleSelectListItemAsync()
+        {
+            var roles = await RoleManager.Roles
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id,
+                    Text = x.Name
+                }).ToListAsync();
+            roles.Insert(0, new SelectListItem(_localizer["sel_role"], string.Empty));
+
+            return roles;
+        }
+
+        /// <summary>
+        /// Return Auth Group select list items
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetAuthGroupSelectListItemAsync()
+        {
+            var authGroups = await ApplicationDbContext.AuthGroups
+                .AsNoTracking()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToListAsync();
+            authGroups.Insert(0, new SelectListItem(_localizer["sel_group"], string.Empty));
+
+            return authGroups;
+        }
+
+        /// <summary>
+        /// Return tenants select list items
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<SelectListItem>> GetTenantsSelectListItemAsync()
+        {
+            var tenants = await ApplicationDbContext.Tenants
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToListAsync();
+            tenants.Insert(0, new SelectListItem("Select tenant", string.Empty));
+
+            return tenants;
         }
     }
 }

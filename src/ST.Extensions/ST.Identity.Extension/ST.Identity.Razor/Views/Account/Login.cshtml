@@ -12,12 +12,14 @@
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>@Localizer["system_log_in"]</title>
+
     <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/colors/green.css" />
 </head>
 <body>
@@ -32,11 +34,13 @@
     <!-- ============================================================== -->
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
-    <section id="wrapper" class="login-register login-sidebar" style="background-image:url(../images/background/login-register.jpg);">
+    <section id="wrapper" class="login-register login-sidebar" style="background-image: url(../images/background/login-register.jpg);">
         <div class="login-box card">
             <div class="card-body">
                 <form class="form-horizontal form-material" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                    <a href="javascript:void(0)" class="text-center db"><img src="~/images/logo-icon.png" alt="Home" /><br />@(await AppProvider.GetAppName("core"))</a>
+                    <a href="javascript:void(0)" class="text-center db">
+                        <img src="~/images/logo-icon.png" alt="Home" /><br />@(await AppProvider.GetAppName("core"))
+                    </a>
 
                     <div class="form-group mt-4">
                         <div class="col-xs-12">
@@ -57,7 +61,11 @@
                                 <input id="checkbox-signup" asp-for="RememberMe">
                                 <label for="checkbox-signup"> @Localizer["system_auth_remenber_me"]</label>
                             </div>
-                            <br />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <button type="button" data-toggle="modal" data-target="#forgotPassword" class="btn btn-link">Forgot password ?</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -131,6 +139,30 @@
             </div>
         </div>
     </section>
+
+
+    <div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <form class="modal-content" method="post" asp-controller="Account" asp-action="ForgotPassword" name="forgotPasswordForm" id="forgotPasswordForm">
+                <div class="modal-header">
+                    <div class="modal-title" id="exampleModalLabel">Forgot Your Password ?</div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input required="required" type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- ============================================================== -->
     <!-- End Wrapper -->
     <!-- ============================================================== -->
@@ -140,47 +172,85 @@
     <script src="~/lib/twitter-bootstrap/js/bootstrap.min.js"></script>
     <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
-    <script src="~/assets/js/site.js"></script>
     <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
     <script src="~/themes/admin/js/admin-theme-script.js"></script>
+    <script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+    <script src="~/assets/js/site.js" asp-append-version="true"></script>
     <script>
         function getIdentifier(idt) {
             switch (idt) {
-                case "en": {
-                    idt = "gb";
-                } break;
-                case "ja": {
-                    idt = "jp";
-                } break;
-                case "zh": {
-                    idt = "cn";
-                } break;
-                case "uk": {
-                    idt = "ua";
-                } break;
-                case "el": {
-                    idt = "gr";
-                } break;
+                case "en":
+                    {
+                        idt = "gb";
+                    }
+                    break;
+                case "ja":
+                    {
+                        idt = "jp";
+                    }
+                    break;
+                case "zh":
+                    {
+                        idt = "cn";
+                    }
+                    break;
+                case "uk":
+                    {
+                        idt = "ua";
+                    }
+                    break;
+                case "el":
+                    {
+                        idt = "gr";
+                    }
+                    break;
             }
             return idt;
         }
+
         $(document).ready(() => {
             window.loadAsync("/Localization/GetLanguagesAsJson").then(x => {
                 var langBlock = $("#languages");
-                $.each(x, function (index, item) {
-                    langBlock.append(`<li style="list-style-type: none;">
-                            <i class="flag-icon flag-icon-${getIdentifier(item.identifier)}"></i>
-                            <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
-                        </li>`);
-                });
-                langBlock.find("li a").on("click", function () {
-                    localStorage.removeItem("hasLoadedTranslations");
-                });
+                $.each(x,
+                    function (index, item) {
+                        langBlock.append(`<li style="list-style-type: none;">
+                                <i class="flag-icon flag-icon-${getIdentifier(item.identifier)}"></i>
+                                <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
+                            </li>`);
+                    });
+                langBlock.find("li a").on("click",
+                    function () {
+                        localStorage.removeItem("hasLoadedTranslations");
+                    });
             });
         });
     </script>
 
-    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script type="text/javascript">
+        const notification = new ToastNotifier();
+        $("form[name='forgotPasswordForm']").submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize()
+            }).done((data) => {
+                if (data.is_success) {
+                    notification.notify({ icon: "success", heading: window.translate("email_check_email") });
+                    $('#forgotPassword').modal('hide');
+                    document.getElementById("forgotPasswordForm").reset();
+                } else {
+                    notification.notifyErrorList(data.error_keys);
+                }
+
+            }).fail(() => {
+                notify({ heading: "Error", text: window.translate("system_internal_error") });
+            });
+        });
+
+    </script>
+    <partial name="_ValidationScriptsPartial" />
 </body>
 </html>
-

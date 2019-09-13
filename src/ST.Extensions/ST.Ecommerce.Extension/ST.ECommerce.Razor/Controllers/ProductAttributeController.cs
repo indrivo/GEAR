@@ -9,14 +9,10 @@ using ST.ECommerce.Abstractions;
 using ST.ECommerce.Abstractions.Models;
 using ST.ECommerce.Razor.Helpers.BaseControllers;
 using ST.ECommerce.Razor.ViewModels;
-using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ST.Core.Extensions;
-using ST.ECommerce.Abstractions.Extensions;
-using ST.ECommerce.Abstractions.Helpers;
 
 namespace ST.ECommerce.Razor.Controllers
 {

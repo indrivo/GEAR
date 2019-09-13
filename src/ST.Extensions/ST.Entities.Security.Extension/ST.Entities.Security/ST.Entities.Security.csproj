@@ -5,9 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
-    <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities.Abstractions\ST.Entities.Abstractions.csproj" />
-    <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Entities.Security.Abstractions\ST.Entities.Security.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

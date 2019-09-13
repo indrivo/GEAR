@@ -340,11 +340,11 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <param name="menuBlockId"></param>
         /// <returns></returns>
-        [Authorize(Roles = Settings.SuperAdmin)]
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         [HttpPost]
         public async Task<JsonResult> GetMenuTreeByMenuBlockId([Required]Guid menuBlockId)
         {
-            var tree = await _menuService.GetMenus(menuBlockId, new List<string> { Settings.SuperAdmin });
+            var tree = await _menuService.GetMenus(menuBlockId, new List<string> { GlobalResources.Roles.ADMINISTRATOR });
             return Json(tree);
         }
 

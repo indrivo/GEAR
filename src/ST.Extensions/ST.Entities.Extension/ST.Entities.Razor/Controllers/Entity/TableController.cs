@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +27,9 @@ using ST.Entities.Data;
 using ST.Forms.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
-using ST.Identity.Attributes;
 using ST.Identity.Data;
 using ST.Identity.Data.Permissions;
+using ST.Identity.Permissions.Abstractions.Attributes;
 using ST.MultiTenant.Abstractions;
 using ST.Notifications.Abstractions;
 
@@ -78,7 +77,7 @@ namespace ST.Entities.Razor.Controllers.Entity
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IHostingEnvironment env, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
         {
             _logger = logger;
             Queue = queue;
@@ -167,7 +166,7 @@ namespace ST.Entities.Razor.Controllers.Entity
         {
             var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount);
+                out var totalCount, x => x.IsPartOfDbContext || x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
 
             var orderList = filtered.Select(o => new TableModel
             {
@@ -207,9 +206,6 @@ namespace ST.Entities.Razor.Controllers.Entity
             if (table == null) return NotFound();
             var model = table.Adapt<UpdateTableViewModel>();
             model.TableFields = await Context.TableFields.AsNoTracking().Where(x => x.TableId == table.Id).ToListAsync();
-            if (model.ModifiedBy != null)
-                model.ModifiedBy = ApplicationDbContext.Users.AsNoTracking()
-                .SingleOrDefaultAsync(m => m.Id == model.ModifiedBy).Result.NormalizedUserName.ToLower();
             model.Groups = await Context.TableFieldGroups.AsNoTracking().Include(s => s.TableFieldTypes).ToListAsync();
             model.TabName = tab;
             return View(model);
@@ -292,9 +288,38 @@ namespace ST.Entities.Razor.Controllers.Entity
 
             if (!table.IsCommon)
             {
-                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                var isDynamic = true;
+                var isReference = false;
+                var referenceIsCommon = true;
+                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
+                if (field.Parameter == FieldType.EntityReference)
+                {
+                    isReference = true;
+                    var referenceTableName = field.Configurations
+                        .FirstOrDefault(x => x.Name == nameof(TableFieldConfigCode.Reference.ForeingTable))?.Value;
+
+                    if (!referenceTableName.IsNullOrEmpty())
+                    {
+                        var refTable = await Context.Table.FirstOrDefaultAsync(x =>
+                            x.Name.Equals(referenceTableName) && x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA));
+                        if (refTable.IsPartOfDbContext) isDynamic = false;
+                        else if (!refTable.IsCommon) referenceIsCommon = false;
+                    }
+                }
+
                 foreach (var tenant in tenants)
                 {
+                    if (isDynamic && isReference && !referenceIsCommon)
+                    {
+                        var schemaConf = field.Configurations?.FirstOrDefault(x =>
+                            x.ConfigCode.Equals(TableFieldConfigCode.Reference.ForeingSchemaTable));
+                        if (schemaConf != null)
+                        {
+                            var index = field.Configurations.IndexOf(schemaConf);
+                            schemaConf.Value = tenant.MachineName;
+                            field.Configurations = field.Configurations.Replace(index, schemaConf).ToList();
+                        }
+                    }
                     _tablesService.AddFieldSql(field, tableName, ConnectionString, true, tenant.MachineName);
                 }
             }
@@ -325,6 +350,7 @@ namespace ST.Entities.Razor.Controllers.Entity
                 RefreshRuntimeTypes();
                 return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
             }
+
             ModelState.AppendResultModelErrors(result.Errors);
 
             return View(field);
@@ -354,11 +380,13 @@ namespace ST.Entities.Razor.Controllers.Entity
         [HttpGet]
         public async Task<IActionResult> EditField(Guid fieldId, Guid type)
         {
-            var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
-            var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+            if (type == Guid.Empty || fieldId == Guid.Empty) return NotFound();
             var field = await Context.TableFields
                 .Include(x => x.TableFieldConfigValues)
                 .FirstOrDefaultAsync(x => x.Id == fieldId);
+            if (field == null) return NotFound();
+            var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
+            var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
             var configFields = field.TableFieldConfigValues
                 .Select(y =>
                 {
@@ -530,7 +558,7 @@ namespace ST.Entities.Razor.Controllers.Entity
             }
 
             var tenants = _organizationService.GetAllTenants()
-                .Where(x => x.MachineName != Settings.DefaultEntitySchema).ToList();
+                .Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
 
             if (field.TableFieldTypeId == fieldType.Id)
             {

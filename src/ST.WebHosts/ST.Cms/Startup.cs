@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,30 +6,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ST.Application;
 using ST.Backup.Abstractions.BackgroundServices;
 using ST.Backup.Abstractions.Extensions;
 using ST.Backup.PostGresSql;
 using ST.Cache.Extensions;
-using ST.Configuration.Extensions;
-using ST.Configuration.Server;
-using ST.DynamicEntityStorage.Extensions;
-using ST.Entities.Data;
-using ST.Identity.Abstractions;
-using ST.Identity.Data;
-using ST.Identity.Versioning;
-using ST.Localization;
-using ST.MPass.Gov;
-using ST.Notifications.Extensions;
-using ST.PageRender.Razor.Extensions;
-using ST.Procesess.Data;
-using ST.Process.Razor.Extensions;
 using ST.Cms.Services.Abstractions;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Razor.Extensions;
+using ST.DynamicEntityStorage.Extensions;
 using ST.ECommerce.Abstractions.Extensions;
 using ST.ECommerce.Abstractions.Models;
 using ST.ECommerce.BaseImplementations.Data;
@@ -42,40 +24,75 @@ using ST.ECommerce.BaseImplementations.Repositories;
 using ST.Email;
 using ST.Email.Abstractions.Extensions;
 using ST.Entities;
-using ST.InternalCalendar.Razor.Extensions;
-using ST.Report.Dynamic.Data;
 using ST.Entities.Abstractions.Extensions;
+using ST.Entities.Data;
 using ST.Entities.EntityBuilder.Postgres;
 using ST.Entities.EntityBuilder.Postgres.Controls.Query;
-using ST.Entities.Security.Extensions;
+using ST.Entities.Razor.Extensions;
+using ST.Entities.Security;
+using ST.Entities.Security.Abstractions.Extensions;
+using ST.Entities.Security.Data;
+using ST.Files;
+using ST.Files.Abstraction.Extension;
+using ST.Files.Data;
 using ST.Forms.Abstractions.Extensions;
 using ST.Forms.Data;
 using ST.Forms.Razor.Extensions;
+using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Extensions;
+using ST.Identity.Data;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.IdentityServer4.Extensions;
 using ST.Identity.LdapAuth;
 using ST.Identity.LdapAuth.Abstractions.Extensions;
+using ST.Identity.Permissions;
+using ST.Identity.Permissions.Abstractions.Extensions;
 using ST.Identity.Services;
-using ST.Install;
+using ST.Identity.Versioning;
 using ST.Install.Abstractions.Extensions;
+using ST.InternalCalendar.Razor.Extensions;
+using ST.Localization;
 using ST.Localization.Abstractions;
 using ST.Localization.Abstractions.Extensions;
 using ST.Localization.Abstractions.Models;
 using ST.Localization.Services;
-using ST.PageRender.Abstractions.Extensions;
-using ST.PageRender.Data;
-using ST.Report.Abstractions.Extensions;
-using ST.Report.Dynamic;
-using TreeIsoService = ST.Cms.Services.TreeIsoService;
-using ST.Identity.Permissions.Abstractions.Extensions;
-using ST.Identity.Permissions;
-using ST.MultiTenant.Abstractions.Extensions;
-using ST.MultiTenant.Services;
+using ST.MPass.Gov;
 using ST.Notifications;
 using ST.Notifications.Abstractions.Extensions;
 using ST.Notifications.Data;
+using ST.Notifications.Extensions;
 using ST.Notifications.Razor.Extensions;
+using ST.PageRender.Abstractions.Extensions;
+using ST.PageRender.Data;
+using ST.PageRender.Razor.Extensions;
+using ST.Procesess.Data;
+using ST.Process.Razor.Extensions;
+using ST.Report.Abstractions.Extensions;
+using ST.Report.Dynamic;
+using ST.Report.Dynamic.Data;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using ST.Application.Middleware.Extensions;
+using ST.Application.Middleware.Server;
+using ST.Audit;
+using ST.Audit.Abstractions.Extensions;
+using ST.Email.Razor.Extensions;
+using ST.Entities.Security.Razor.Extensions;
+using ST.Files.Box;
+using ST.Files.Box.Abstraction.Extension;
+using ST.Files.Box.Data;
+using TreeIsoService = ST.Cms.Services.TreeIsoService;
+using ST.MultiTenant.Abstractions.Extensions;
+using ST.MultiTenant.Razor.Extensions;
+using ST.MultiTenant.Services;
+using ST.Report.Dynamic.Razor.Extensions;
+using ST.TaskManager.Abstractions.Extensions;
+using ST.TaskManager.Data;
+using ST.TaskManager.Razor.Extensions;
+using ST.TaskManager.Services;
 
 namespace ST.Cms
 {
@@ -113,10 +130,9 @@ namespace ST.Cms
 		/// </summary>
 		/// <param name="app"></param>
 		/// <param name="env"></param>
-		/// <param name="loggerFactory"></param>
 		/// <param name="languages"></param>
 		/// <param name="lifetime"></param>
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
 			if (CoreApp.IsHostedOnLinux())
@@ -173,9 +189,9 @@ namespace ST.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() => { CoreApp.OnApplicationStarted(app); });
+			lifetime.ApplicationStarted.Register(() => { CoreApp.ApplicationStarted(app); });
 
-			lifetime.RegisterAppEvents(nameof(MigrationsAssembly));
+			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 
 			if (env.IsProduction())
 			{
@@ -194,7 +210,7 @@ namespace ST.Cms
 			}
 
 			//Register system config
-			services.RegisterCore(Configuration);
+			services.RegisterSystemConfig(Configuration);
 
 			services.Configure<SecurityStampValidatorOptions>(options =>
 			{
@@ -203,11 +219,10 @@ namespace ST.Cms
 			});
 
 			//---------------------------------Custom cache Module-------------------------------------
-			services.UseCustomCacheModule(HostingEnvironment, Configuration);
+			services.AddCacheModule(HostingEnvironment, Configuration);
 
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
-
 			services.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration);
@@ -215,12 +230,13 @@ namespace ST.Cms
 			});
 
 			//------------------------------Identity Module-------------------------------------
-			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly,
-					HostingEnvironment)
+			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+				.AddIdentityUserManager<IdentityUserManager, ApplicationUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
+				.AddIdentityModuleEvents()
 				.AddMvc()
 				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
 
@@ -262,10 +278,23 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddEntityModuleEvents()
-				.AddEntityAcl<EntitiesDbContext, ApplicationDbContext>();
+				.AddEntityRazorUIModule();
 
-			//---------------------------Multi Tenant Module-------------------------------------
-			services.AddTenantModule<OrganizationService, Tenant>();
+			//------------------------------Entity Security Module-------------------------------------
+			services.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
+				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddEntitySecurityRazorUIModule();
+
+			//---------------------------------Multi Tenant Module-------------------------------------
+			services.AddTenantModule<OrganizationService, Tenant>()
+				.AddMultiTenantRazorUIModule();
+
+			//----------------------------------------Audit Module-------------------------------------
+			services.AddAuditModule<AuditManager>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
@@ -281,7 +310,7 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddNotificationUiModule();
+				.AddNotificationRazorUIModule();
 
 			//---------------------------Background services ------------------------------------------
 			//services.AddHostedService<HostedTimeService>();
@@ -307,6 +336,31 @@ namespace ST.Cms
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
 
+			//------------------------------------File Module-------------------------------------
+			services
+				.AddFileModule<FileManager<FileDbContext>>()
+				.AddFileModuleStorage<FileDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			}, Configuration);
+
+			services
+				.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()
+				.AddFileBoxModuleStorage<FileBoxDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				}, Configuration);
+			//------------------------------------Task Module-------------------------------------
+			services
+				.AddTaskModule<TaskManager.Services.TaskManager,TaskManagerNotificationService>()
+				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddTaskManagerRazorUIModule();
 			//----------------------------Internal calendar Module-------------------------------------
 			services.AddInternalCalendarModule();
 
@@ -320,7 +374,7 @@ namespace ST.Cms
 				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------
-			services.AddPageModule<DynamicPagesDbContext>()
+			services.AddPageModule()
 				.AddPageModuleStorage<DynamicPagesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -334,13 +388,15 @@ namespace ST.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddReportUIModule();
 
 
-			services.AddInstallerModule<SyncInstaller>();
+			services.AddInstallerModule();
 
 			//----------------------------------------Email Module-------------------------------------
 			services.AddEmailModule<EmailSender>()
+				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
 			if (CoreApp.IsHostedOnLinux())
