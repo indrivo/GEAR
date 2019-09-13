@@ -9,4 +9,8 @@
     <ProjectReference Include="..\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataSourceServices\" />
+  </ItemGroup>
+
 </Project>

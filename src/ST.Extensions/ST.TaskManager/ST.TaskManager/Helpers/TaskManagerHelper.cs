@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Mapster;
 using ST.Core.Helpers;
+using ST.TaskManager.Abstractions.Helpers.PagedResult;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 
@@ -8,7 +10,7 @@ namespace ST.TaskManager.Helpers
 {
     public class TaskManagerHelper
     {
-        internal static Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel, Task dbTaskResult)
+        internal static Task TaskMapper(UpdateTaskViewModel taskViewModel, Task dbTaskResult)
         {
             if (dbTaskResult == null) return null;
 
@@ -23,18 +25,9 @@ namespace ST.TaskManager.Helpers
             return dbTaskResult;
         }
 
-        internal static Task CreateTaskMapper(CreateTaskViewModel taskViewModel)
+        internal static Task TaskMapper(CreateTaskViewModel taskViewModel)
         {
-            var dto = new Task
-            {
-                Name = taskViewModel.Name,
-                Description = taskViewModel.Description,
-                StartDate = taskViewModel.StartDate,
-                EndDate = taskViewModel.EndDate,
-                Status = taskViewModel.Status,
-                UserId = taskViewModel.UserId,
-                TaskPriority = taskViewModel.TaskPriority
-            };
+            var dto = taskViewModel.Adapt<Task>();
             if (taskViewModel.TaskItems == null) return dto;
 
             foreach (var item in taskViewModel.TaskItems)
@@ -50,19 +43,8 @@ namespace ST.TaskManager.Helpers
 
         internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
         {
-            var dto = new GetTaskViewModel
-            {
-                Id = dbTaskResult.Id,
-                Name = dbTaskResult.Name,
-                Description = dbTaskResult.Description,
-                StartDate = dbTaskResult.StartDate,
-                EndDate = dbTaskResult.EndDate,
-                Status = dbTaskResult.Status,
-                UserId = dbTaskResult.UserId,
-                TaskPriority = dbTaskResult.TaskPriority,
-                TaskNumber = dbTaskResult.TaskNumber,
-                TaskItemsCount = CountTaskItems(dbTaskResult)
-            };
+            var dto = dbTaskResult.Adapt<GetTaskViewModel>();
+            dto.TaskItemsCount = CountTaskItems(dbTaskResult);
             return dto;
         }
 
@@ -76,22 +58,34 @@ namespace ST.TaskManager.Helpers
             }).AsEnumerable();
         }
 
-        internal static ResultModel<List<GetTaskViewModel>> GetTasksAsync(IReadOnlyCollection<Task> dbTasksResult)
+        internal static ResultModel<PagedResult<GetTaskViewModel>> GetTasksAsync(PagedResult<Task> dbTasksResult)
         {
-            var taskList = new List<GetTaskViewModel>();
-            if (dbTasksResult.Count > 0)
-                taskList.AddRange(dbTasksResult.Select(GetTaskMapper));
+            var taskPage = new PagedResult<GetTaskViewModel>
+            {
+                CurrentPage = dbTasksResult.CurrentPage,
+                PageCount = dbTasksResult.PageCount,
+                RowCount = dbTasksResult.RowCount,
+                PageSize = dbTasksResult.PageSize
+            };
 
-            return new ResultModel<List<GetTaskViewModel>>
+            if (dbTasksResult.Results.Count > 0)
+                for (var index = 0; index < dbTasksResult.Results.Count; index++)
+                {
+                    var item = dbTasksResult.Results[index];
+                    taskPage.Results.Add(GetTaskMapper(item));
+                }
+
+            return new ResultModel<PagedResult<GetTaskViewModel>>
             {
                 IsSuccess = true,
-                Result = taskList
+                Result = taskPage
             };
         }
 
         private static int[] CountTaskItems(Task dbTasksResult)
         {
             if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] {0, 0};
+
             var total = dbTasksResult.TaskItems.Count;
             var completed = dbTasksResult.TaskItems.Count(x => x.IsDone == true);
 

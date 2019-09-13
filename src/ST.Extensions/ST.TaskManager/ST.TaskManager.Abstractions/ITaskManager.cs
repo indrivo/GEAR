@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ST.Core.Helpers;
+using ST.TaskManager.Abstractions.Helpers.PagedResult;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 
 namespace ST.TaskManager.Abstractions
@@ -27,20 +28,20 @@ namespace ST.TaskManager.Abstractions
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="deleted"></param>
-        /// <param name="total"></param>
+        /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int total, int pageSize);
+        Task<ResultModel<PagedResult<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int page, int pageSize);
 
         /// <summary>
         /// Get tasks list by assigner id
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="userName"></param>
-        /// <param name="total"></param>
+        /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int total, int pageSize);
+        Task<ResultModel<PagedResult<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int page, int pageSize);
 
         /// <summary>
         /// Create task with task items

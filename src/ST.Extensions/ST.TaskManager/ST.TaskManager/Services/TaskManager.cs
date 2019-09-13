@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
+using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Helpers;
+using ST.TaskManager.Abstractions.Helpers.PagedResult;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 using ST.TaskManager.Helpers;
@@ -66,19 +70,22 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int total, int pageSize)
+        public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetUserTasksAsync(string userName, bool deleted, int page, int pageSize)
         {
-            if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
+            if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == deleted)).Skip(total).Take(pageSize).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Include(x => x.TaskItems).Where(
+                x => (x.Author == userName.Trim())
+                     & (x.IsDeleted == deleted)).GetPagedAsync(page, pageSize);
             return GetTasksAsync(dbTasksResult);
         }
 
-        public async Task<ResultModel<List<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int total, int pageSize)
+        public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, int page, int pageSize)
         {
-            if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<List<GetTaskViewModel>>();
+            if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
-            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false) & (x.Author != userName)).Skip(total).Take(pageSize).ToListAsync();
+            var dbTasksResult = await _context.Tasks.Where(x => (x.UserId == userId) & (x.IsDeleted == false) & (x.Author != userName)).GetPagedAsync(page, pageSize);
+            
             return GetTasksAsync(dbTasksResult);
         }
 
@@ -88,7 +95,7 @@ namespace ST.TaskManager.Services
 
         public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
-            var taskModel = CreateTaskMapper(task);
+            var taskModel = TaskMapper(task);
             taskModel.TaskNumber = await GenerateTaskNumberAsync();
             _context.Tasks.Add(taskModel);
             var result = await _context.SaveDependenceAsync();
@@ -108,7 +115,7 @@ namespace ST.TaskManager.Services
             if (dbTaskResult == null)
                 return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
 
-            var taskModel = UpdateTaskMapper(task, dbTaskResult);
+            var taskModel = TaskMapper(task, dbTaskResult);
             _context.Tasks.Update(taskModel);
             var result = await _context.SaveDependenceAsync();
 
