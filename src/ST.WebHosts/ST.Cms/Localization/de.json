@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Verwalten von Benutzern, die an Ihre Organisation",
   "system_multi_tenant_company_users_doc": "Hier können Sie Benutzer verwalten, die eingeladen wurden, in Ihrer Organisation, haben Sie die folgenden aktivierten Funktionen wie: löschen, aktivieren, stoppen, ändern Sie Ihr Passwort und einige Allgemeine Informationen",
   "iso_matrix_is_active": "Aktiv Ist",
-  "system_user_online": "Online"
+  "system_user_online": "Online",
+  "system_commerce": "Commerce",
+  "system_commerce_catalog": "Katalog",
+  "system_commerce_sales": "Vertrieb",
+  "system_commerce_products": "Produkte",
+  "system_commerce_brands": "Marken",
+  "system_commerce_category": "Produkt-Kategorien",
+  "system_commerce_attribute_group": "Attribut-Gruppen",
+  "system_commerce_attributes": "Produkt-Attribute",
+  "system_commerce_product_types": "Produkt-Typen",
+  "system_commerce_percentage": "Prozentsatz"
 }

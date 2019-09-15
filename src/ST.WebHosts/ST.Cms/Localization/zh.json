@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "管理用户连接到你的组织",
   "system_multi_tenant_company_users_doc": "在这里你可以管理的用户已被邀请进入组织，有下列活功能，例如删除，激活、停止改变密码和一些一般信息",
   "iso_matrix_is_active": "是活",
-  "system_user_online": "在线"
+  "system_user_online": "在线",
+  "system_commerce": "商务",
+  "system_commerce_catalog": "目录",
+  "system_commerce_sales": "销售",
+  "system_commerce_products": "产品",
+  "system_commerce_brands": "品牌",
+  "system_commerce_category": "产品类别",
+  "system_commerce_attribute_group": "属性团体",
+  "system_commerce_attributes": "产品属性",
+  "system_commerce_product_types": "产品类型",
+  "system_commerce_percentage": "百分比"
 }

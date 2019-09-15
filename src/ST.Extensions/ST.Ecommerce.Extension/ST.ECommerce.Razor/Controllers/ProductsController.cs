@@ -78,9 +78,17 @@ namespace ST.ECommerce.Razor.Controllers
             }
 
             await Context.Products.AddAsync(model);
+            await Context.ProductPrices.AddAsync(new ProductPrice
+            {
+                Product = model,
+                Price = model.Price
+            });
             var dbResult = await Context.SaveDependenceAsync();
 
-            if (dbResult.IsSuccess) return RedirectToAction(nameof(Index));
+            if (dbResult.IsSuccess)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             ModelState.AppendResultModelErrors(dbResult.Errors);
 
@@ -98,6 +106,7 @@ namespace ST.ECommerce.Razor.Controllers
         {
             if (id == null) return NotFound();
             var model = await Context.Products
+                .Include(x => x.ProductPrices)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (model == null) return NotFound();
 
@@ -107,6 +116,7 @@ namespace ST.ECommerce.Razor.Controllers
             result.ProductAttributesList = new Dictionary<string, IEnumerable<SelectListItem>>();
             result.ProductCategoryList = new List<ProductCategoryDto>();
             result.ProductTypeList = new List<SelectListItem>();
+            result.Price = result.CurrentPrice;
 
             return View(GetDropdownItems(result));
         }
@@ -127,6 +137,7 @@ namespace ST.ECommerce.Razor.Controllers
             }
 
             var dbModel = await Context.Products
+                .Include(x => x.ProductPrices)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
 
@@ -151,6 +162,15 @@ namespace ST.ECommerce.Razor.Controllers
                     Image = x,
                     ProductId = model.Id
                 }).ToList();
+            }
+
+            if (model.Price.AreEqual(dbModel.CurrentPrice).Negate())
+            {
+                Context.ProductPrices.Add(new ProductPrice
+                {
+                    Price = model.Price,
+                    ProductId = model.Id
+                });
             }
 
             Context.Products.Update(dbModel);
@@ -228,20 +248,17 @@ namespace ST.ECommerce.Razor.Controllers
 
 
         [HttpGet]
-        public JsonResult GetProductAttributes(string productId)
-        {
-            return Json(Context.ProductAttributes
-                .Include(x => x.ProductAttribute)
-                .Where(x => x.ProductId == productId.ToGuid())
-                .Select(x => new
-                {
-                    Value = x.ProductAttributeId,
-                    Label = x.ProductAttribute.Name,
-                    InputValue = x.Value,
-                    IsAvailable = x.IsAvailable,
-                    IsPublished = x.IsPublished
-                }));
-        }
+        public JsonResult GetProductAttributes(string productId) => Json(Context.ProductAttributes
+            .Include(x => x.ProductAttribute)
+            .Where(x => x.ProductId == productId.ToGuid())
+            .Select(x => new
+            {
+                AttributeId = x.ProductAttributeId,
+                Label = x.ProductAttribute.Name,
+                x.Value,
+                x.IsAvailable,
+                x.IsPublished
+            }));
 
         /// <summary>
         /// Remove attribute

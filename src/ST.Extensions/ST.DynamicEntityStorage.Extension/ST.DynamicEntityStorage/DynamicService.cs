@@ -155,8 +155,10 @@ namespace ST.DynamicEntityStorage
             var model = GetObject<TEntity>(data.Result)?.ToList();
             if (model == null) return result;
             result.IsSuccess = true;
-            var adapt = model.Adapt<IEnumerable<TOutput>>();
-            result.Result = adapt.ToList();
+            result.Result = predicate != null 
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>)?.ToList() 
+                : model.Adapt<IEnumerable<TOutput>>().ToList();
             return result;
         }
 

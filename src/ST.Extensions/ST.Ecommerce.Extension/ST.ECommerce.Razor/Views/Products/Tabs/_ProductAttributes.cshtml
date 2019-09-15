@@ -79,18 +79,27 @@
         });
 
         $("#addAttributeBtn").on('click',function() {
-            var elm = $("#ProductAttributeId")[0].selectedOptions[0];
-            appendTable(elm);
+			var elm = $("#ProductAttributeId")[0].selectedOptions[0];
+			const conf = {
+				label: $(elm).attr("label"),
+				attributeId: $(elm).attr("value"),
+				value: "",
+				isAvailable: false,
+				isPublished: false
+			};
+			console.log(elm);
+            appendTable(conf);
         });
 
         $("#saveAttributeBtn").on("click", function () {
             var model = [];
             $($('#tableBody')[0].children).each(function (index, element) {
-                var attributeId = element.id.substring(3);
+				var attributeId = element.id.substring(3);
+				console.log(attributeId);
                 model.push({
                     productAttributeId: attributeId,
                     productId: '@Model.Id',
-                    value: $(`#${element.id}input`).val(),
+                    value: $(`#attr_val_${attributeId}`).val(),
                     isPublished: $(`#chkP_${attributeId}`)[0].checked,
                     isAllowed: $(`#chkA_${attributeId}`)[0].checked
                 });
@@ -139,35 +148,32 @@
         });
     }
 
-    function appendTable(element) {
-        if (element.value === "") {
-                return;
-        }
-        
-        $("#tableBody").append(`<tr id='tr_${element.value}'> 
+
+	function appendTable(element) {
+        $("#tableBody").append(`<tr id='tr_${element.attributeId}'>
             <td>${element.label}</td>
             <td>
-                <input type='text' class='form-control' value='${(element.inputValue === undefined ? '' : element.inputValue)}'/>
+                <input type='text' id="attr_val_${element.attributeId}" class='form-control' value='${element.value}'/>
             </td>
             <td>
-                <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'> 
-                    <input type='checkbox' ${(element.isPublished ? 'checked' : '')} id='chkP_${element.value}' class='custom-control-input'/> 
-                    <label class='custom-control-label' for='chkP_${element.value}'></label> 
+                <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'>
+                    <input type='checkbox' ${(element.isPublished ? 'checked' : '')} id='chkP_${element.attributeId}' class='custom-control-input'/>
+                    <label class='custom-control-label' for='chkP_${element.attributeId}'></label>
                 </div>
             </td>
             <td>
-               <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'> 
-                    <input type='checkbox' ${(element.isAvailable ? 'checked' : '')} id='chkA_${element.value}' class='custom-control-input'/> 
-                    <label class='custom-control-label' for='chkA_${element.value}'></label> 
-                </div> 
+               <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'>
+                    <input type='checkbox' ${(element.isAvailable ? 'checked' : '')} id='chkA_${element.attributeId}' class='custom-control-input'/>
+                    <label class='custom-control-label' for='chkA_${element.attributeId}'></label>
+                </div>
             </td>
             <td>
-                <a href='#' data-targetAttribute='${element.value}' class='btn btn-secondary' onclick='RemoveAttribute("${element.value}")'> 
-                <i class='mdi mdi-close'></i></a> 
+                <a href='#' data-targetAttribute='${element.attributeId}' class='btn btn-secondary' onclick='RemoveAttribute("${element.attributeId}")'>
+                <i class='mdi mdi-close'></i></a>
             </td>`
         );
 
-        var optGroupElm = $("#ProductAttributeId option[value=" + element.value + "]").attr("hidden", "hidden")[0].parentElement;
+        var optGroupElm = $("#ProductAttributeId option[value=" + element.attributeId + "]").attr("hidden", "hidden")[0].parentElement;
 
         $("#ProductAttributeId").val($("#ProductAttributeId option:first").val());
 

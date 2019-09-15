@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Manage users connected to your organization",
   "system_multi_tenant_company_users_doc": "Here you can manage the users who have been invited into your organization, you have the following activated functions, such as delete, activate, stop, change the password and some General information",
   "iso_matrix_is_active": "Is Active",
-  "system_user_online": "Online"
+  "system_user_online": "Online",
+  "system_commerce": "Commerce",
+  "system_commerce_catalog": "Catalog",
+  "system_commerce_sales": "Sales",
+  "system_commerce_products": "Products",
+  "system_commerce_brands": "Brands",
+  "system_commerce_category": "Product categories",
+  "system_commerce_attribute_group": "Attribute groups",
+  "system_commerce_attributes": "Product attributes",
+  "system_commerce_product_types": "Product types",
+  "system_commerce_percentage": "Percentage"
 }

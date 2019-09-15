@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Управління користувачами, підключеними до вашої організації",
   "system_multi_tenant_company_users_doc": "Тут ви можете керувати користувачами, які були запрошені в вашу організацію, у вас є такі активовані функції, такі як: видалити, активувати, зупинити, змінити пароль і деяку загальну інформацію",
   "iso_matrix_is_active": "Активна",
-  "system_user_online": "Онлайн"
+  "system_user_online": "Онлайн",
+  "system_commerce": "Комерція",
+  "system_commerce_catalog": "Каталог",
+  "system_commerce_sales": "Продажу",
+  "system_commerce_products": "Продукти",
+  "system_commerce_brands": "Бренди",
+  "system_commerce_category": "Категорії товарів ",
+  "system_commerce_attribute_group": "Групи атрибутів ",
+  "system_commerce_attributes": "Атрибути продукту ",
+  "system_commerce_product_types": "Види продукції ",
+  "system_commerce_percentage": "Відсоток"
 }

@@ -69,6 +69,29 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label asp-for="Sku"></label>
+                                    <input asp-for="Sku" class="form-control" />
+                                    <span asp-validation-for="Sku" class="text-danger"></span>
+                                    <a href="https://en.wikipedia.org/wiki/Stock_keeping_unit">Docs</a>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Gtin"></label>
+                                    <input asp-for="Gtin" class="form-control" />
+                                    <span asp-validation-for="Gtin" class="text-danger"></span>
+                                    <a href="https://en.wikipedia.org/wiki/Global_Trade_Item_Number">Docs</a>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Price"></label>
+                                    <input asp-for="Price" class="form-control" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
                                     <label asp-for="ProductImagesList"></label>
                                     <input type="file" asp-for="ProductImagesList" asp-items="Model.Brands" class="dropify" data-allowed-file-extensions="png jpg jpeg" multiple />
                                 </div>

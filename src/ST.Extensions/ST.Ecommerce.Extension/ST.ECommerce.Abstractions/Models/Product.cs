@@ -79,6 +79,16 @@ namespace ST.ECommerce.Abstractions.Models
         /// <summary>
         /// Publish state of product
         /// </summary>
-        public bool IsPublished { get; set; }
+        public virtual bool IsPublished { get; set; }
+
+        /// <summary>
+        /// Sku
+        /// </summary>
+        public virtual string Sku { get; set; }
+
+        /// <summary>
+        /// Gtin
+        /// </summary>
+        public virtual string Gtin { get; set; }
     }
 }

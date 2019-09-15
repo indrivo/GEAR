@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Gestión de usuarios conectados a su organización",
   "system_multi_tenant_company_users_doc": "Aquí usted puede administrar a los usuarios, que fueron invitados en su organización, tiene la siguiente función activada, tales como: eliminar, activar, detener, cambiar la contraseña y alguna información general",
   "iso_matrix_is_active": "Es Activo",
-  "system_user_online": "En línea"
+  "system_user_online": "En línea",
+  "system_commerce": "Comercio",
+  "system_commerce_catalog": "Catálogo",
+  "system_commerce_sales": "Ventas",
+  "system_commerce_products": "Productos",
+  "system_commerce_brands": "Marcas",
+  "system_commerce_category": "Categorías de productos",
+  "system_commerce_attribute_group": "Los grupos de atributos",
+  "system_commerce_attributes": "Los atributos del producto",
+  "system_commerce_product_types": "Tipos de producto",
+  "system_commerce_percentage": "Porcentaje"
 }
