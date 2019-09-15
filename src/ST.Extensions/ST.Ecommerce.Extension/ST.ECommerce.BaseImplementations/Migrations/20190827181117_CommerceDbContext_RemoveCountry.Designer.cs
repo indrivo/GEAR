@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.ECommerce.BaseImplementations.Data;
@@ -9,9 +10,10 @@ using ST.ECommerce.BaseImplementations.Data;
 namespace ST.ECommerce.BaseImplementations.Migrations
 {
     [DbContext(typeof(CommerceDbContext))]
-    partial class CommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190827181117_CommerceDbContext_RemoveCountry")]
+    partial class CommerceDbContext_RemoveCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,10 +364,6 @@ namespace ST.ECommerce.BaseImplementations.Migrations
                     b.Property<Guid>("ProductAttributeId");
 
                     b.Property<Guid>("ProductId");
-
-                    b.Property<bool>("IsAvailable");
-
-                    b.Property<bool>("IsPublished");
 
                     b.Property<string>("Value");
 

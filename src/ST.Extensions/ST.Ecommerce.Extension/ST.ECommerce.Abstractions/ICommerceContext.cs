@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Core.Abstractions;
 using ST.ECommerce.Abstractions.Models;
-using ST.ECommerce.Abstractions.Models.Address;
 
 namespace ST.ECommerce.Abstractions
 {
@@ -73,19 +72,18 @@ namespace ST.ECommerce.Abstractions
         DbSet<ShipmentAddress> ShipmentAddresses { get; set; }
 
         /// <summary>
-        /// Countries
+        /// Product attributes
         /// </summary>
-        DbSet<Country> Countries { get; set; }
-
-        /// <summary>
-        /// States Or Provinces
-        /// </summary>
-        DbSet<StatesOrProvinces> StatesOrProvinces { get; set; }
-
         DbSet<ProductAttribute> ProductAttribute { get; set; }
 
+        /// <summary>
+        /// Attribute groups
+        /// </summary>
         DbSet<AttributeGroup> AttributeGroups { get; set; }
 
+        /// <summary>
+        /// Product attributes
+        /// </summary>
         DbSet<ProductAttributes> ProductAttributes { get; set; }
     }
 }

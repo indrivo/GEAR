@@ -1,60 +1,177 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ST.Core;
 using ST.Core.Abstractions;
+using ST.Core.Extensions;
+using ST.Core.Helpers;
 using ST.ECommerce.Abstractions;
+using ST.ECommerce.Abstractions.Extensions;
+using ST.ECommerce.Abstractions.Helpers;
 using ST.ECommerce.Abstractions.Models;
 using ST.ECommerce.Razor.Helpers.BaseControllers;
 using ST.ECommerce.Razor.ViewModels;
 
 namespace ST.ECommerce.Razor.Controllers
 {
-    //[Route("commerce/[controller]")]
     public class ProductsController : CommerceBaseController<Product, ProductViewModel>
     {
         public ProductsController(ICommerceContext context, IDataFilter dataFilter) : base(context, dataFilter)
         {
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public override IActionResult Index()
         {
             return View();
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Create new product
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public override IActionResult Create()
         {
-            var result = new ProductViewModel
+            var result = new ProductViewModel();
+            return View(GetDropdownItems(result));
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Create new product
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public override async Task<IActionResult> Create(ProductViewModel model)
+        {
+            if (!ModelState.IsValid)
             {
-                Brands = new List<SelectListItem>(),
-                ProductAttributesList = new Dictionary<string, IEnumerable<SelectListItem>>()
+                ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
+                return View(model);
+            }
 
-            };
+            if (model.ProductImagesList != null && model.ProductImagesList.Any())
+            {
+                model.ProductImages = model.ProductImagesList.Select(async x =>
+                {
+                    var stream = new MemoryStream();
+                    await x.CopyToAsync(stream);
+                    return stream;
+                }).Select(x => x.Result).Select(x => x.ToArray()).Select(x => new ProductImage
+                {
+                    Image = x,
+                    ProductId = model.Id
+                }).ToList();
+            }
 
-            return View(AddDropdownItems(result));
+            await Context.Products.AddAsync(model);
+            var dbResult = await Context.SaveDependenceAsync();
 
+            if (dbResult.IsSuccess) return RedirectToAction(nameof(Index));
+
+            ModelState.AppendResultModelErrors(dbResult.Errors);
+
+            return View(model);
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Edit product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public override async Task<IActionResult> Edit(Guid? id)
+        {
+            if (id == null) return NotFound();
+            var model = await Context.Products
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (model == null) return NotFound();
+
+            var result = model.Adapt<ProductViewModel>();
+
+            result.Brands = new List<SelectListItem>();
+            result.ProductAttributesList = new Dictionary<string, IEnumerable<SelectListItem>>();
+            result.ProductCategoryList = new List<ProductCategoryDto>();
+            result.ProductTypeList = new List<SelectListItem>();
+
+            return View(GetDropdownItems(result));
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Update product
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
-        public override Task<IActionResult> Create(ProductViewModel model)
+        public override async Task<IActionResult> Edit(ProductViewModel model)
         {
-            return base.Create(model);
+            if (!ModelState.IsValid || model.Id.Equals(Guid.Empty))
+            {
+                ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
+                return View(model);
+            }
+
+            var dbModel = await Context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(model.Id));
+
+            dbModel.Name = model.Name;
+            dbModel.DisplayName = model.DisplayName;
+            dbModel.Description = model.Description;
+            dbModel.IsPublished = model.IsPublished;
+            dbModel.ShortDescription = model.ShortDescription;
+            dbModel.Specification = model.Specification;
+            dbModel.BrandId = model.BrandId;
+            dbModel.ProductTypeId = model.ProductTypeId;
+
+            if (model.ProductAttributesList != null && model.ProductImagesList.Any())
+            {
+                dbModel.ProductImages = model.ProductImagesList.Select(async x =>
+                {
+                    var stream = new MemoryStream();
+                    await x.CopyToAsync(stream);
+                    return stream;
+                }).Select(x => x.Result).Select(x => x.ToArray()).Select(x => new ProductImage
+                {
+                    Image = x,
+                    ProductId = model.Id
+                }).ToList();
+            }
+
+            Context.Products.Update(dbModel);
+            var dbResult = await Context.SaveDependenceAsync();
+
+            if (dbResult.IsSuccess)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AppendResultModelErrors(dbResult.Errors);
+
+            return View(model);
         }
 
-        [HttpPost]
-        public IActionResult CreateAttribute(ProductViewModel model)
-        {
-            return RedirectToAction("Index");
-        }
-        public override JsonResult OrderedList(DTParameters param)
-        {
-
-            return default;
-        }
-        public ProductViewModel AddDropdownItems(ProductViewModel model)
+        /// <summary>
+        /// Load dropdown items
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public ProductViewModel GetDropdownItems(ProductViewModel model)
         {
             model.Brands.AddRange(Context.Brands.Where(x => x.IsDeleted == false).Select(x => new SelectListItem
             {
@@ -62,14 +179,124 @@ namespace ST.ECommerce.Razor.Controllers
                 Value = x.Id.ToString()
             }));
 
-            model.ProductAttributesList = Context.ProductAttribute.Include(x => x.AttributeGroup).GroupBy(x => x.AttributeGroup.Name)
+            model.ProductAttributesList = Context.ProductAttribute.Include(x => x.AttributeGroup)
+                .GroupBy(x => x.AttributeGroup.Name)
                 .ToDictionary(grouping => grouping.Key, x => x.ToList().Select(w => new SelectListItem
-                    {
-                        Text = w.Name,
-                        Value = w.Id.ToString()
-                    }));
+                {
+                    Text = w.Name,
+                    Value = w.Id.ToString()
+                }));
 
+            model.ProductCategoryList = Context.Categories.Select(x => new ProductCategoryDto
+            {
+                Name = x.Name,
+                CategoryId = x.Id,
+                IsChecked = Context.ProductCategories.Any(
+                    w => w.ProductId.Equals(model.Id) && w.CategoryId.Equals(x.Id))
+            }).ToList();
+
+            model.ProductTypeList.AddRange(Context.ProductTypes.Where(x => x.IsDeleted == false).Select(x =>
+                new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = x.Id.ToString()
+                }));
             return model;
+        }
+
+
+        [HttpPost]
+        public async Task<JsonResult> EditProductAttributes([FromBody] IEnumerable<ProductAttributesViewModel> model)
+        {
+            foreach (var item in model)
+            {
+                var attribute = Context.ProductAttributes
+                    .FirstOrDefault(x =>
+                        x.ProductAttributeId == item.ProductAttributeId && x.ProductId == item.ProductId);
+
+                if (attribute != null)
+                {
+                    Context.ProductAttributes.Remove(attribute);
+                }
+
+                Context.ProductAttributes.Add(item);
+            }
+
+            var dbResult = await Context.SaveDependenceAsync();
+            return Json(dbResult);
+        }
+
+
+        [HttpGet]
+        public JsonResult GetProductAttributes(string productId)
+        {
+            return Json(Context.ProductAttributes
+                .Include(x => x.ProductAttribute)
+                .Where(x => x.ProductId == productId.ToGuid())
+                .Select(x => new
+                {
+                    Value = x.ProductAttributeId,
+                    Label = x.ProductAttribute.Name,
+                    InputValue = x.Value,
+                    IsAvailable = x.IsAvailable,
+                    IsPublished = x.IsPublished
+                }));
+        }
+
+        /// <summary>
+        /// Remove attribute
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="attributeId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> RemoveAttribute(Guid productId, Guid attributeId)
+        {
+            var resultModel = new ResultModel();
+            var result = Context.ProductAttributes
+                .FirstOrDefault(x => x.ProductAttributeId == attributeId && x.ProductId == productId);
+
+            if (result == null) return Json(resultModel);
+            Context.ProductAttributes.Remove(result);
+            var dbResult = await Context.SaveDependenceAsync();
+            return Json(dbResult);
+        }
+
+        /// <summary>
+        /// Edit map product categories
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> EditProductCategories([FromBody] IEnumerable<ProductCategoriesViewModel> model)
+        {
+            foreach (var item in model)
+            {
+                if (Context.ProductCategories.Any(x =>
+                    x.CategoryId == item.CategoryId && x.ProductId == item.ProductId))
+                {
+                    if (!item.Checked)
+                    {
+                        Context.ProductCategories.Remove(item);
+                    }
+                }
+                else
+                {
+                    if (item.Checked)
+                    {
+                        Context.ProductCategories.Add(item);
+                    }
+                }
+            }
+
+            var dbResult = await Context.SaveDependenceAsync();
+            return Json(dbResult);
+        }
+
+        [HttpGet]
+        public JsonResult GetProductCategories(Guid productId)
+        {
+            return Json(Context.ProductCategories.Where(x => x.ProductId == productId));
         }
     }
 }

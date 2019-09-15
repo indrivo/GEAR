@@ -1,17 +1,95 @@
 ﻿@model ST.ECommerce.Razor.ViewModels.ProductViewModel
 
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+}
 
-<ul class="nav nav-tabs" role="tablist">
-    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#generalInformation" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">General Information</span></a> </li>
-    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#productVariations" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Product Variations</span></a> </li>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-header">
+                <h4 class="m-b-0 text-white">General Information</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" role="form" enctype="multipart/form-data">
+                    <div class="form-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row p-t-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Name"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="DisplayName"></label>
+                                    <input asp-for="DisplayName" class="form-control" />
+                                    <span asp-validation-for="DisplayName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ShortDescription"></label>
+                                    <textarea asp-for="ShortDescription" class="form-control ckeditor"></textarea>
+                                    <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Description"></label>
+                                    <textarea asp-for="Description" class="form-control ckeditor"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Specification"></label>
+                                    <textarea asp-for="Specification" class="form-control ckeditor"></textarea>
+                                    <span asp-validation-for="Specification" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Brand"></label>
+                                    <select asp-for="BrandId" asp-items="Model.Brands" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ProductTypeList"></label>
+                                    <select asp-for="ProductTypeId" asp-items="Model.ProductTypeList" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ProductImagesList"></label>
+                                    <input type="file" asp-for="ProductImagesList" asp-items="Model.Brands" class="dropify" data-allowed-file-extensions="png jpg jpeg" multiple />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row button-group">
+                        <div class="col-lg-2 col-md-3">
+                            <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-</ul>
-<div class="tab-content">
-    <div class="tab-pane active" id="generalInformation">
-        @await Html.PartialAsync("Tabs/_GeneralInformation", Model)
-    </div>
-    <div class="tab-pane" id="productVariations">
-        @await Html.PartialAsync("Tabs/_ProductAttributes", Model)
+        </div>
     </div>
 </div>
 
@@ -19,4 +97,9 @@
 @section Scripts
 {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/ckeditor/ckeditor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script type="text/javascript" language="javascript">
+        $(".dropify").dropify();
+    </script>
 }

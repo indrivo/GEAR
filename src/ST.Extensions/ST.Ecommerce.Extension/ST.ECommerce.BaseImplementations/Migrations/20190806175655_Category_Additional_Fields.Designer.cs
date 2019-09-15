@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.ECommerce.BaseImplementations.Data;
@@ -9,9 +10,10 @@ using ST.ECommerce.BaseImplementations.Data;
 namespace ST.ECommerce.BaseImplementations.Migrations
 {
     [DbContext(typeof(CommerceDbContext))]
-    partial class CommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190806175655_Category_Additional_Fields")]
+    partial class Category_Additional_Fields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,6 +86,51 @@ namespace ST.ECommerce.BaseImplementations.Migrations
                     b.HasIndex("TrackAuditId");
 
                     b.ToTable("TrackAuditDetails");
+                });
+
+            modelBuilder.Entity("ST.ECommerce.Abstractions.Models.Address.Country", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code3")
+                        .IsRequired();
+
+                    b.Property<bool>("IsBillingEnabled");
+
+                    b.Property<bool>("IsCityEnabled");
+
+                    b.Property<bool>("IsDistrictEnabled");
+
+                    b.Property<bool>("IsShippingEnabled");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("ST.ECommerce.Abstractions.Models.Address.StatesOrProvinces", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .IsRequired();
+
+                    b.Property<string>("CountryId")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.ToTable("StatesOrProvinces");
                 });
 
             modelBuilder.Entity("ST.ECommerce.Abstractions.Models.AttributeGroup", b =>
@@ -363,12 +410,6 @@ namespace ST.ECommerce.BaseImplementations.Migrations
 
                     b.Property<Guid>("ProductId");
 
-                    b.Property<bool>("IsAvailable");
-
-                    b.Property<bool>("IsPublished");
-
-                    b.Property<string>("Value");
-
                     b.HasKey("ProductAttributeId", "ProductId");
 
                     b.HasIndex("ProductId");
@@ -567,6 +608,8 @@ namespace ST.ECommerce.BaseImplementations.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CountryId");
+
                     b.ToTable("ShipmentAddresses");
                 });
 
@@ -575,6 +618,14 @@ namespace ST.ECommerce.BaseImplementations.Migrations
                     b.HasOne("ST.Audit.Models.TrackAudit")
                         .WithMany("AuditDetailses")
                         .HasForeignKey("TrackAuditId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.ECommerce.Abstractions.Models.Address.StatesOrProvinces", b =>
+                {
+                    b.HasOne("ST.ECommerce.Abstractions.Models.Address.Country", "Country")
+                        .WithMany("StatesOrProvinces")
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -690,6 +741,14 @@ namespace ST.ECommerce.BaseImplementations.Migrations
                     b.HasOne("ST.ECommerce.Abstractions.Models.Product", "Product")
                         .WithMany("ProductPrices")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.ECommerce.Abstractions.Models.ShipmentAddress", b =>
+                {
+                    b.HasOne("ST.ECommerce.Abstractions.Models.Address.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
