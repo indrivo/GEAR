@@ -23,7 +23,7 @@ namespace ST.Dashboard.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Builder()
         {
             return View();
         }
