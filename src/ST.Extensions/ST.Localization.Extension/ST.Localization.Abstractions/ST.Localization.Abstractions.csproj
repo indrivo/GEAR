@@ -9,9 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="translationSettings.json">
+    <EmbeddedResource Include="translationSettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

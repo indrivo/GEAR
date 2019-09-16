@@ -79,6 +79,8 @@ using ST.Application.Middleware.Extensions;
 using ST.Application.Middleware.Server;
 using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
+using ST.Dashboard;
+using ST.Dashboard.Abstractions.Extensions;
 using ST.Email.Razor.Extensions;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
@@ -298,6 +300,9 @@ namespace ST.Cms
 
 			//---------------------------Dynamic repository Module-------------------------------------
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
+
+			//------------------------------------Dashboard Module-------------------------------------
+			services.AddDashboardModule<DashboardManager>();
 
 			//--------------------------------------SignalR Module-------------------------------------
 			services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();

@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Διαχείριση χρηστών, συνδέονται με τον οργανισμό",
   "system_multi_tenant_company_users_doc": "Εδώ μπορείτε να διαχειριστείτε τους χρήστες που έχουν προσκληθεί στην οργάνωσή σας, έχετε τις εξής ενεργοποιημένες λειτουργίες, όπως: διαγραφή, ενεργοποίηση, να σταματήσει, να αλλάξετε τον κωδικό πρόσβασης και κάποιες γενικές πληροφορίες",
   "iso_matrix_is_active": "Είναι Ενεργό",
-  "system_user_online": "Σε απευθείας σύνδεση"
+  "system_user_online": "Σε απευθείας σύνδεση",
+  "system_commerce": "Εμπόριο",
+  "system_commerce_catalog": "Κατάλογος",
+  "system_commerce_sales": "Πωλήσεις",
+  "system_commerce_products": "Προϊόντα",
+  "system_commerce_brands": "Μάρκες",
+  "system_commerce_category": "Κατηγορίες προϊόντων",
+  "system_commerce_attribute_group": "Χαρακτηριστικό ομάδες",
+  "system_commerce_attributes": "Χαρακτηριστικά του προϊόντος",
+  "system_commerce_product_types": "Τύποι προϊόντων",
+  "system_commerce_percentage": "Ποσοστό"
 }

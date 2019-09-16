@@ -1,0 +1,120 @@
+@{
+	ViewData["Title"] = "Dashboard builder";
+}
+
+@section Styles{
+	<style>
+		.left-canvas {
+			min-height: 30em;
+		}
+
+		.draggable-row-injected {
+			min-height: 5em;
+			border-style: dashed;
+			margin: 0.2em;
+			border-color: lightgray;
+		}
+
+		.draggable-widget-injected {
+			min-height: 5em;
+			border-style: dashed;
+			margin: 0.2em;
+			border-color: lightgray;
+		}
+	</style>
+}
+
+
+
+@section Scripts{
+	<script>
+		$(function () {
+			const manager = new DashboardManager();
+		});
+
+		class DashboardManager {
+			constructor() {
+				this.init();
+			}
+
+			//init
+			init() {
+				const scope = this;
+				$(".draggable-row, .draggable-widget").draggable({
+					revert: "invalid",
+					helper: "clone",
+					cursor: "move"
+				});
+
+				//drag rows
+				$(".droppable-row").droppable({
+					accept: ".draggable-row",
+					drop: function (event, ui) {
+						const row = $(`<div class="row draggable-row droppable-widget draggable-row-injected"></div>`)
+						$(this).append(row);
+						scope.initDraggableWidgets();
+					}
+				});
+
+				this.initDraggableWidgets();
+			}
+
+			//init draggable events for widgets
+			initDraggableWidgets() {
+				//drag widgets
+				$(".droppable-widget").droppable({
+					accept: ".draggable-widget",
+					drop: function (event, ui) {
+						const source = $(ui.draggable);
+						const widget = $(`<div class="col-md draggable-widget-injected">${source.text()}</div>`)
+						$(this).append(widget);
+					}
+				});
+			}
+
+			registerDroppableWidgets() {
+				$(".draggable-widget-injected").draggable({
+					revert: "invalid",
+					helper: "clone",
+					cursor: "move"
+				});
+			}
+		}
+
+		class DashboardDisplay {
+
+		}
+	</script>
+}
+
+
+<div class="card">
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-9">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Canvas</h5>
+						<div class="left-canvas droppable-row">
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-title">Widgets</h5>
+						<ul class="list-group">
+							<li class="list-group-item draggable-row" data-type="row">Row</li>
+							@for (var i = 1; i < 9; i++)
+							{
+								<li class="list-group-item draggable-widget">Widget @i</li>
+							}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

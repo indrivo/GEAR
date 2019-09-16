@@ -3,7 +3,6 @@ using ST.Audit.Contexts;
 using ST.Core.Abstractions;
 using ST.ECommerce.Abstractions;
 using ST.ECommerce.Abstractions.Models;
-using ST.ECommerce.Abstractions.Models.Address;
 using ST.ECommerce.BaseImplementations.Extensions;
 
 namespace ST.ECommerce.BaseImplementations.Data
@@ -39,8 +38,6 @@ namespace ST.ECommerce.BaseImplementations.Data
         public virtual DbSet<ProductOrder> ProductOrders { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<ShipmentAddress> ShipmentAddresses { get; set; }
-        public virtual DbSet<Country> Countries { get; set; }
-        public virtual DbSet<StatesOrProvinces> StatesOrProvinces { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
         public virtual DbSet<AttributeGroup> AttributeGroups { get; set; }
         public virtual DbSet<ProductAttributes> ProductAttributes { get; set; }

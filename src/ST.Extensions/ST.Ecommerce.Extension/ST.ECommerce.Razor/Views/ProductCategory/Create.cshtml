@@ -1,4 +1,4 @@
-﻿@model ST.ECommerce.Abstractions.Models.Category
+﻿@model ST.ECommerce.Razor.ViewModels.ProductCategoryViewModel
 
 <div class="row">
     <div class="col-lg-12">
@@ -23,6 +23,35 @@
                                     <label asp-for="DisplayName"></label>
                                     <input asp-for="DisplayName" class="form-control" />
                                     <span asp-validation-for="DisplayName"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Description"></label>
+                                    <input asp-for="Description" class="form-control" />
+                                    <span asp-validation-for="Description"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="DisplayOrder"></label>
+                                    <input asp-for="DisplayOrder" class="form-control" />
+                                    <span asp-validation-for="DisplayOrder"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="ParentCategoryId"></label>
+                                    <select asp-for="ParentCategoryId" asp-items="Model.ParentCategoryList" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input asp-for="IsPublished"  type="checkbox" />
+                                    <label class="form-check-label" asp-for="IsPublished"></label>
+                                    <span asp-validation-for="IsPublished"></span>
                                 </div>
                             </div>
                         </div>

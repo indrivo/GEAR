@@ -85,6 +85,8 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Backup.Extension\ST.Backup.Razor\ST.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.InternalCalendar.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Dashboard.Extension\ST.Dashboard.Razor\ST.Dashboard.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Dashboard.Extension\ST.Dashboard\ST.Dashboard.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.BaseImplementations\ST.ECommerce.BaseImplementations.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Razor\ST.ECommerce.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Email.Extension\ST.Email.Razor\ST.Email.Razor.csproj" />
@@ -124,6 +126,9 @@
 	</Content>
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+	<Content Update="Views\Dashboard\Builder.cshtml">
+	  <Pack>false</Pack>
 	</Content>
   </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">

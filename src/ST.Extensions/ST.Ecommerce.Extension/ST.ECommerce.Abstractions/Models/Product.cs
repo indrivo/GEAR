@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using ST.Core;
+using ST.Core.Attributes;
 
 namespace ST.ECommerce.Abstractions.Models
 {
@@ -12,6 +13,7 @@ namespace ST.ECommerce.Abstractions.Models
         /// Product name
         /// </summary>
         [Required]
+        [DisplayTranslate(Key = "name")]
         public virtual string Name { get; set; }
         /// <summary>
         /// Display name
@@ -25,6 +27,7 @@ namespace ST.ECommerce.Abstractions.Models
         /// <summary>
         /// Product Description
         /// </summary>
+        [DisplayTranslate(Key = "description")]
         public virtual string Description { get; set; }
         /// <summary>
         /// Product Specification
@@ -76,6 +79,16 @@ namespace ST.ECommerce.Abstractions.Models
         /// <summary>
         /// Publish state of product
         /// </summary>
-        public bool IsPublished { get; set; }
+        public virtual bool IsPublished { get; set; }
+
+        /// <summary>
+        /// Sku
+        /// </summary>
+        public virtual string Sku { get; set; }
+
+        /// <summary>
+        /// Gtin
+        /// </summary>
+        public virtual string Gtin { get; set; }
     }
 }

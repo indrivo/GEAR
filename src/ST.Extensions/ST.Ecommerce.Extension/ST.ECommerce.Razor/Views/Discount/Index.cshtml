@@ -1,4 +1,5 @@
 ﻿@{
+    ViewData["Title"] = "Discounts";
     var conf = new ListTagHelperModel
     {
         Title = "Discounts",
@@ -9,15 +10,15 @@
             Url = Url.Action("OrderedList", "Discount")
         },
         RenderColumns = new List<ListRenderColumn>
-        {
-            new ListRenderColumn(Localizer["percentage"], "percentages"),
+{
+            new ListRenderColumn(Localizer["system_commerce_percentage"], "percentage"),
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
             new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
         },
         HeadButtons = new List<UrlTagHelperViewModel>
-        {
+{
             new UrlTagHelperViewModel
             {
                 AspAction = "Create",
@@ -28,7 +29,7 @@
         },
         HasActions = true,
         ListActions = new List<ListActionViewModel>
-        {
+{
             new ListActionViewModel
             {
                 HasIcon = false,
@@ -36,7 +37,7 @@
                 Url = Url.Action("Edit", "Discount"),
                 ButtonType = BootstrapButton.Info,
                 ActionParameters = new List<ActionParameter>
-                {
+        {
                     new ActionParameter("id", "id")
                 }
             },

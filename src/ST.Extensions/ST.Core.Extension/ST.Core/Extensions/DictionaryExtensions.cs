@@ -42,17 +42,5 @@ namespace ST.Core.Extensions
             }
             return dict;
         }
-
-        /// <summary>
-        /// Check if KeyValue is null
-        /// </summary>
-        /// <typeparam name="TK"></typeparam>
-        /// <typeparam name="TV"></typeparam>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static bool IsNull<TK, TV>(this KeyValuePair<TK, TV> source)
-        {
-            return source.Equals(default(KeyValuePair<TK, TV>));
-        }
     }
 }
