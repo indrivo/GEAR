@@ -1635,7 +1635,7 @@ if (typeof DataInjector !== "undefined") {
 							format = format.replace(/{Year}/g, d.getFullYear());
 							format = format.replace(/{Month}/g, d.getMonth() < 10 ? `0${d.getMonth()}` : d.getMonth());
 							format = format.replace(/{Day}/g, d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
-							this.countAsync(entityName).then(g => {
+							this.countAllAsync(entityName).then(g => {
 								if (g.is_success) {
 									format = format.replace(/{NextIndex}/g, g.result + 1);
 									object[search.propName] = format;

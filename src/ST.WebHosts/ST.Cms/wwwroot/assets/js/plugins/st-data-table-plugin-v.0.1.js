@@ -693,6 +693,7 @@ TableBuilder.prototype.init = function (table) {
 	this.configurations.tableJqInstance = listRef;
 	this.configurations.tableId = listId;
 	this.configurations.viewmodelId = viewmodelId;
+	const scope = this;
 	return new Promise((resolve, reject) => {
 		loadAsync(`/PageRender/GetViewModelById?viewModelId=${viewmodelId}`).then(viewmodelData => {
 			this.configurations.table = viewmodelData.result.tableModel;
@@ -713,6 +714,12 @@ TableBuilder.prototype.init = function (table) {
 		}).catch(err => console.warn(err));
 	}).then(dataX => {
 		this.configureTableBody(dataX);
+
+		$(".dynamic-table thead th:not(.no-sort)").on("click", function () {
+			const select = $(this).closest("thead").find("th.no-sort").find("input[type='checkbox']");
+			const state = select.is(":checked");
+			if (select && state) select.get(0).checked = false;
+		});
 	});
 };
 

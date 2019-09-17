@@ -336,3 +336,31 @@ DataInjector.prototype.countAsync = function (entityName, filters = []) {
         });
     });
 };
+
+
+/**
+ * Get count by filters
+ * @param {any} entityName
+ * @param {any} filters
+ */
+DataInjector.prototype.countAllAsync = function (entityName, filters = []) {
+    return new Promise((resolve, reject) => {
+        const dataParams = JSON.stringify({
+            entityName: entityName,
+            filters: filters
+        });
+        $.ajax({
+            url: "/api/DataInjector/countAllAsync",
+            data: dataParams,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            method: "post",
+            success: function (data) {
+                resolve(data);
+            },
+            error: function (error) {
+                reject(error);
+            }
+        });
+    });
+};
