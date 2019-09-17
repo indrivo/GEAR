@@ -14,9 +14,6 @@ using ST.TaskManager.Abstractions;
 using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Helpers;
 using ST.TaskManager.Abstractions.Models.ViewModels;
-using StackExchange.Redis;
-using TaskStatus = System.Threading.Tasks.TaskStatus;
-
 
 namespace ST.TaskManager.Razor.Controllers
 {

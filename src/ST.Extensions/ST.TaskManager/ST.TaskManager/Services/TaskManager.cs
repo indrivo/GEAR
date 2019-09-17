@@ -85,7 +85,7 @@ namespace ST.TaskManager.Services
             if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
             var dbTasksResult = await _context.Tasks
-                .Where(x => (x.UserId == userId) & (x.IsDeleted == false) & (x.Author != userName))
+                .Where(x => (x.UserId == userId) & (x.IsDeleted == request.Deleted) & (x.Author != userName))
                 .OrderByWithDirection(x => TypeHelper.GetPropertyValue(x, request.Attribute), request.Descending)
                 .GetPagedAsync(request.Page, request.PageSize);
 
