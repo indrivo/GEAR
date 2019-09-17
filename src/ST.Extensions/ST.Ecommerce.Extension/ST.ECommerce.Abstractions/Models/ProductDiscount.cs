@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace ST.ECommerce.Abstractions.Models
 {
@@ -9,12 +8,14 @@ namespace ST.ECommerce.Abstractions.Models
         /// Product discount
         /// </summary>
         public virtual Product Product { get; set; }
+
         public virtual Guid ProductId { get; set; }
 
         /// <summary>
         /// Discount
         /// </summary>
         public Discount Discount { get; set; }
+
         public virtual Guid DiscountId { get; set; }
     }
 }

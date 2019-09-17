@@ -15,36 +15,42 @@ namespace ST.ECommerce.Abstractions.Models
         [Required]
         [DisplayTranslate(Key = "name")]
         public virtual string Name { get; set; }
+
         /// <summary>
         /// Display name
         /// </summary>
         [Required]
         public virtual string DisplayName { get; set; }
+
         /// <summary>
         /// Short Description
         /// </summary>
         public virtual string ShortDescription { get; set; }
+
         /// <summary>
         /// Product Description
         /// </summary>
         [DisplayTranslate(Key = "description")]
         public virtual string Description { get; set; }
+
         /// <summary>
         /// Product Specification
         /// </summary>
         public string Specification { get; set; }
+
         /// <summary>
         /// Reference to brand
         /// </summary>
         public virtual Brand Brand { get; set; }
+
         public virtual Guid BrandId { get; set; }
 
         /// <summary>
         /// Reference to product type
         /// </summary>
         public virtual ProductType ProductType { get; set; }
-        [Required]
-        public virtual Guid ProductTypeId { get; set; }
+
+        [Required] public virtual Guid ProductTypeId { get; set; }
 
         /// <summary>
         /// Icon image

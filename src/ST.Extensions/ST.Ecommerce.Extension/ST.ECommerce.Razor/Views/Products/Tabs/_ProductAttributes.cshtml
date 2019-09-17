@@ -13,7 +13,7 @@
                                     <label asp-for="ProductAttributeId" class="col-md-12"></label>
                                     <select asp-for="ProductAttributeId" class="form-control" aria-describedby="addAttributeBtn">
                                         <option value=""></option>
-                                        @foreach (var item in @Model.ProductAttributesList)
+                                        @foreach (var item in Model.ProductAttributesList)
                                         {
                                             <optgroup label="@item.Key" id="opt_@item.Key">
                                                 @foreach (var attribute in item.Value)
@@ -32,13 +32,13 @@
                         <div class="row">
                             <table class="table">
                                 <thead>
-                                    <tr>
-                                        <th scope="col">Attribute</th>
-                                        <th scope="col">Value</th>
-                                        <th scope="col">Is Published</th>
-                                        <th scope="col">Is Available</th>
-                                        <th scope="col">Actions</th>
-                                    </tr>
+                                <tr>
+                                    <th scope="col">Attribute</th>
+                                    <th scope="col">Value</th>
+                                    <th scope="col">Is Published</th>
+                                    <th scope="col">Is Available</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
                                 </thead>
                                 <tbody id="tableBody"></tbody>
                             </table>
@@ -60,7 +60,7 @@
 
 <script type="text/javascript">
     const toast = new ToastNotifier();
-    $(document).ready(function () {
+    $(document).ready(function() {
         $.ajax({
             url: '@Url.Action("GetProductAttributes")',
             method: 'get',
@@ -68,65 +68,71 @@
             data: {
                 productId: '@Model.Id'
             },
-                success: function (data) {
-                    $(data).each(function (index, element) {
-                        appendTable(element);
+            success: function(data) {
+                $(data).each(function(index, element) {
+                    appendTable(element);
+                });
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+        $("#addAttributeBtn").on('click',
+            function() {
+                const elm = $("#ProductAttributeId")[0].selectedOptions[0];
+                const conf = {
+                    label: $(elm).attr("label"),
+                    attributeId: $(elm).attr("value"),
+                    value: "",
+                    isAvailable: false,
+                    isPublished: false
+                };
+                console.log(elm);
+                appendTable(conf);
+            });
+
+        $("#saveAttributeBtn").on("click",
+            function() {
+                var model = [];
+                $($('#tableBody')[0].children).each(function(index, element) {
+                    const attributeId = element.id.substring(3);
+                    console.log(attributeId);
+                    model.push({
+                        productAttributeId: attributeId,
+                        productId: '@Model.Id',
+                        value: $(`#attr_val_${attributeId}`).val(),
+                        isPublished: $(`#chkP_${attributeId}`)[0].checked,
+                        isAllowed: $(`#chkA_${attributeId}`)[0].checked
                     });
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-        });
+                });
 
-        $("#addAttributeBtn").on('click',function() {
-			var elm = $("#ProductAttributeId")[0].selectedOptions[0];
-			const conf = {
-				label: $(elm).attr("label"),
-				attributeId: $(elm).attr("value"),
-				value: "",
-				isAvailable: false,
-				isPublished: false
-			};
-			console.log(elm);
-            appendTable(conf);
-        });
-
-        $("#saveAttributeBtn").on("click", function () {
-            var model = [];
-            $($('#tableBody')[0].children).each(function (index, element) {
-				var attributeId = element.id.substring(3);
-				console.log(attributeId);
-                model.push({
-                    productAttributeId: attributeId,
-                    productId: '@Model.Id',
-                    value: $(`#attr_val_${attributeId}`).val(),
-                    isPublished: $(`#chkP_${attributeId}`)[0].checked,
-                    isAllowed: $(`#chkA_${attributeId}`)[0].checked
+                $.ajax({
+                    url: '@Url.Action("EditProductAttributes")',
+                    method: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(model),
+                    success: function(data) {
+                        if (data.is_success) {
+                            toast.notify({
+                                heading: "Info",
+                                text: window.translate("system_inline_saved"),
+                                icon: "success"
+                            });
+                        } else {
+                            toast.notifyErrorList(data.error_keys);
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
                 });
             });
-
-            $.ajax({
-                url: '@Url.Action("EditProductAttributes")',
-                method: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(model),
-                success: function (data) {
-                    if (data.is_success) {
-                        toast.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
-                    } else {
-                         toast.notifyErrorList(data.error_keys);
-                    }
-                },
-                error: function (error) {
-                    console.log(error);
-                }
-            });
-        });
     });
 
     function RemoveAttribute(id) {
-        $("#tr_" + id).remove();
-        $($("#ProductAttributeId option[value=" + id + "]").removeAttr("hidden")[0].parentElement).removeAttr("hidden");
+        $(`#tr_${id}`).remove();
+        $($(`#ProductAttributeId option[value=${id}]`).removeAttr("hidden")[0].parentElement).removeAttr("hidden");
 
         $.ajax({
             url: '@Url.Action("RemoveAttribute")',
@@ -135,21 +141,21 @@
                 productId: '@Model.Id',
                 attributeId: id
             },
-            success: function (data) {
+            success: function(data) {
                 if (data.is_success) {
                     toast.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
                 } else {
                     toast.notifyErrorList(data.error_keys);
                 }
             },
-            error: function (error) {
+            error: function(error) {
                 console.warn(error);
             }
         });
     }
 
 
-	function appendTable(element) {
+    function appendTable(element) {
         $("#tableBody").append(`<tr id='tr_${element.attributeId}'>
             <td>${element.label}</td>
             <td>
@@ -157,27 +163,31 @@
             </td>
             <td>
                 <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'>
-                    <input type='checkbox' ${(element.isPublished ? 'checked' : '')} id='chkP_${element.attributeId}' class='custom-control-input'/>
+                    <input type='checkbox' ${(element.isPublished ? 'checked' : '')} id='chkP_${element.attributeId
+            }' class='custom-control-input'/>
                     <label class='custom-control-label' for='chkP_${element.attributeId}'></label>
                 </div>
             </td>
             <td>
                <div style='margin-bottom: 1em;' class='custom-control custom-checkbox'>
-                    <input type='checkbox' ${(element.isAvailable ? 'checked' : '')} id='chkA_${element.attributeId}' class='custom-control-input'/>
+                    <input type='checkbox' ${(element.isAvailable ? 'checked' : '')} id='chkA_${element.attributeId
+            }' class='custom-control-input'/>
                     <label class='custom-control-label' for='chkA_${element.attributeId}'></label>
                 </div>
             </td>
             <td>
-                <a href='#' data-targetAttribute='${element.attributeId}' class='btn btn-secondary' onclick='RemoveAttribute("${element.attributeId}")'>
+                <a href='#' data-targetAttribute='${element.attributeId
+            }' class='btn btn-secondary' onclick='RemoveAttribute("${element.attributeId}")'>
                 <i class='mdi mdi-close'></i></a>
             </td>`
         );
 
-        var optGroupElm = $("#ProductAttributeId option[value=" + element.attributeId + "]").attr("hidden", "hidden")[0].parentElement;
+        const optGroupElm = $(`#ProductAttributeId option[value=${element.attributeId}]`).attr("hidden", "hidden")[0]
+            .parentElement;
 
         $("#ProductAttributeId").val($("#ProductAttributeId option:first").val());
 
-        if (optGroupElm.childElementCount === $("#" + optGroupElm.id + " option[hidden=hidden]").addClass("").length) {
+        if (optGroupElm.childElementCount === $(`#${optGroupElm.id} option[hidden=hidden]`).addClass("").length) {
             $(optGroupElm).attr("hidden", "hidden");
         };
     }

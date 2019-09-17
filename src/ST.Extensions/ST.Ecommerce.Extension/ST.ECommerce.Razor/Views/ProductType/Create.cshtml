@@ -4,7 +4,7 @@
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-header">
-                <h4 class="m-b-0 text-white">Add Product Type</h4>
+                <h4 class="m-b-0">Add Product Type</h4>
             </div>
             <div class="card-body">
                 <form asp-action="Create" role="form">
@@ -14,14 +14,14 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="Name"></label>
-                                    <input asp-for="Name" class="form-control" />
+                                    <input asp-for="Name" class="form-control"/>
                                     <span asp-validation-for="Name"></span>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="DisplayName"></label>
-                                    <input asp-for="DisplayName" class="form-control" />
+                                    <input asp-for="DisplayName" class="form-control"/>
                                     <span asp-validation-for="DisplayName"></span>
                                 </div>
                             </div>
@@ -43,7 +43,8 @@
         </div>
     </div>
 </div>
+
 @section Scripts
 {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial"/>
 }

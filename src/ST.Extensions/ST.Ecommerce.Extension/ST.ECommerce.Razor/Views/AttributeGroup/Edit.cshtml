@@ -4,25 +4,25 @@
     <div class="col-lg-12">
         <div class="card card-outline-info">
             <div class="card-header">
-                <h4 class="m-b-0 text-white">Edit attribute group</h4>
+                <h4 class="m-b-0">Edit attribute group</h4>
             </div>
             <div class="card-body">
                 <form asp-action="Edit" role="form">
-                    @Html.HiddenFor(x => x.Id)
-                    @Html.HiddenFor(x => x.Author)
-                    @Html.HiddenFor(x => x.Changed)
-                    @Html.HiddenFor(x => x.Created)
-                    @Html.HiddenFor(x => x.IsDeleted)
-                    @Html.HiddenFor(x => x.Version)
-                    @Html.HiddenFor(x => x.TenantId)
-                    @Html.HiddenFor(x => x.ModifiedBy)
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="Author"/>
+                    <input type="hidden" asp-for="Changed"/>
+                    <input type="hidden" asp-for="Created"/>
+                    <input type="hidden" asp-for="IsDeleted"/>
+                    <input type="hidden" asp-for="Version"/>
+                    <input type="hidden" asp-for="TenantId"/>
+                    <input type="hidden" asp-for="ModifiedBy"/>
                     <div class="form-body">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="row p-t-20">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="Name"></label>
-                                    <input asp-for="Name" class="form-control" />
+                                    <input asp-for="Name" class="form-control"/>
                                     <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
                             </div>

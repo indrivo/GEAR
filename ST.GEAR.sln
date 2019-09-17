@@ -223,7 +223,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Application.Middleware",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Core.Benchmark", "src\ST.Extensions\ST.Core.Extension\ST.Core.Benchmark\ST.Core.Benchmark.csproj", "{44100038-4507-41A5-959F-84FDE99EE5C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Processes.Abstractions", "src\ST.Extensions\ST.Processes.Extension\ST.Processes.Abstractions\ST.Processes.Abstractions.csproj", "{2228A314-7F4E-4D53-BAF8-1929F0E684E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Processes.Abstractions", "src\ST.Extensions\ST.Processes.Extension\ST.Processes.Abstractions\ST.Processes.Abstractions.csproj", "{2228A314-7F4E-4D53-BAF8-1929F0E684E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.ECommerce.Payments.Extension", "ST.ECommerce.Payments.Extension", "{39B187CA-9F90-408A-95A8-2F799D076F16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.ECommerce.Orders.Extension", "ST.ECommerce.Orders.Extension", "{42D27180-C985-4434-8024-545547D48295}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.ECommerce.Payments.Abstractions", "src\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Payments.Extension\ST.ECommerce.Payments.Abstractions\ST.ECommerce.Payments.Abstractions.csproj", "{7495C3A4-690E-4E86-8C09-A344034AD4CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.ECommerce.Payments.Providers", "ST.ECommerce.Payments.Providers", "{B9BB15CC-54CB-440F-87F7-6DA76FA43856}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.ECommerce.Payments.Providers.Paypal", "ST.ECommerce.Payments.Providers.Paypal", "{020B691C-8431-452F-8642-A55F7304BD0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -712,6 +722,12 @@ Global
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -826,6 +842,11 @@ Global
 		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4} = {B595C1E9-D7E5-4A9D-8995-55720F89A815}
 		{44100038-4507-41A5-959F-84FDE99EE5C7} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9} = {7F596461-2B6C-43FD-AABF-4691B8732AEF}
+		{39B187CA-9F90-408A-95A8-2F799D076F16} = {4ADAD96E-E01B-47C5-9589-7C6DEF589D66}
+		{42D27180-C985-4434-8024-545547D48295} = {4ADAD96E-E01B-47C5-9589-7C6DEF589D66}
+		{7495C3A4-690E-4E86-8C09-A344034AD4CC} = {39B187CA-9F90-408A-95A8-2F799D076F16}
+		{B9BB15CC-54CB-440F-87F7-6DA76FA43856} = {39B187CA-9F90-408A-95A8-2F799D076F16}
+		{020B691C-8431-452F-8642-A55F7304BD0F} = {B9BB15CC-54CB-440F-87F7-6DA76FA43856}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

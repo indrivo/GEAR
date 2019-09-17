@@ -193,34 +193,40 @@ namespace ST.ECommerce.Razor.Controllers
         /// <returns></returns>
         public ProductViewModel GetDropdownItems(ProductViewModel model)
         {
-            model.Brands.AddRange(Context.Brands.Where(x => x.IsDeleted == false).Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }));
-
-            model.ProductAttributesList = Context.ProductAttribute.Include(x => x.AttributeGroup)
-                .GroupBy(x => x.AttributeGroup.Name)
-                .ToDictionary(grouping => grouping.Key, x => x.ToList().Select(w => new SelectListItem
-                {
-                    Text = w.Name,
-                    Value = w.Id.ToString()
-                }));
-
-            model.ProductCategoryList = Context.Categories.Select(x => new ProductCategoryDto
-            {
-                Name = x.Name,
-                CategoryId = x.Id,
-                IsChecked = Context.ProductCategories.Any(
-                    w => w.ProductId.Equals(model.Id) && w.CategoryId.Equals(x.Id))
-            }).ToList();
-
-            model.ProductTypeList.AddRange(Context.ProductTypes.Where(x => x.IsDeleted == false).Select(x =>
-                new SelectListItem
+            model.Brands.AddRange(Context.Brands.Where(x => x.IsDeleted == false)
+                .Select(x => new SelectListItem
                 {
                     Text = x.Name,
                     Value = x.Id.ToString()
                 }));
+
+            model.ProductAttributesList = Context.ProductAttribute
+                .Include(x => x.AttributeGroup)
+                .GroupBy(x => x.AttributeGroup.Name)
+                .ToDictionary(grouping => grouping.Key, x => x.ToList()
+                    .Select(w => new SelectListItem
+                    {
+                        Text = w.Name,
+                        Value = w.Id.ToString()
+                    }));
+
+            model.ProductCategoryList = Context.Categories
+                .Select(x => new ProductCategoryDto
+                {
+                    Name = x.Name,
+                    CategoryId = x.Id,
+                    IsChecked = Context.ProductCategories.Any(
+                        w => w.ProductId.Equals(model.Id) && w.CategoryId.Equals(x.Id))
+                }).ToList();
+
+            model.ProductTypeList
+                .AddRange(Context.ProductTypes.Where(x => x.IsDeleted == false)
+                    .Select(x =>
+                        new SelectListItem
+                        {
+                            Text = x.Name,
+                            Value = x.Id.ToString()
+                        }));
             return model;
         }
 

@@ -11,6 +11,7 @@ namespace ST.ECommerce.Abstractions.Models
         /// </summary>
         [Required]
         public virtual string Name { get; set; }
+
         /// <summary>
         /// Display name
         /// </summary>
@@ -21,6 +22,7 @@ namespace ST.ECommerce.Abstractions.Models
         /// Reference to group
         /// </summary>
         public virtual AttributeGroup AttributeGroup { get; set; }
+
         public virtual Guid? AttributeGroupId { get; set; }
     }
 }

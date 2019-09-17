@@ -2,7 +2,7 @@
 {
     public enum OrderState
     {
-        New, 
+        New,
         OnHold,
         PendingPayment,
         PaymentReceived,

@@ -8,42 +8,42 @@
             </div>
             <div class="card-body">
                 <form asp-action="Edit" role="form">
-                    @Html.HiddenFor(x => x.Id)
-                    @Html.HiddenFor(x => x.Author)
-                    @Html.HiddenFor(x => x.Changed)
-                    @Html.HiddenFor(x => x.Created)
-                    @Html.HiddenFor(x => x.IsDeleted)
-                    @Html.HiddenFor(x => x.Version)
-                    @Html.HiddenFor(x => x.TenantId)
-                    @Html.HiddenFor(x => x.ModifiedBy)
+                    <input type="hidden" asp-for="Id"/>
+                    <input type="hidden" asp-for="Author"/>
+                    <input type="hidden" asp-for="Changed"/>
+                    <input type="hidden" asp-for="Created"/>
+                    <input type="hidden" asp-for="IsDeleted"/>
+                    <input type="hidden" asp-for="Version"/>
+                    <input type="hidden" asp-for="TenantId"/>
+                    <input type="hidden" asp-for="ModifiedBy"/>
                     <div class="form-body">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="row p-t-20">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="Name"></label>
-                                    <input asp-for="Name" class="form-control" />
+                                    <input asp-for="Name" class="form-control"/>
                                     <span asp-validation-for="Name"></span>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="DisplayName"></label>
-                                    <input asp-for="DisplayName" class="form-control" />
+                                    <input asp-for="DisplayName" class="form-control"/>
                                     <span asp-validation-for="DisplayName"></span>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="Description"></label>
-                                    <input asp-for="Description" class="form-control" />
+                                    <input asp-for="Description" class="form-control"/>
                                     <span asp-validation-for="Description"></span>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="DisplayOrder"></label>
-                                    <input asp-for="DisplayOrder" class="form-control" />
+                                    <input asp-for="DisplayOrder" class="form-control"/>
                                     <span asp-validation-for="DisplayOrder"></span>
                                 </div>
                             </div>
@@ -57,7 +57,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input asp-for="IsPublished" type="checkbox" />
+                                    <input asp-for="IsPublished" type="checkbox"/>
                                     <label class="form-check-label" asp-for="IsPublished"></label>
                                     <span asp-validation-for="IsPublished"></span>
                                 </div>
@@ -80,7 +80,8 @@
         </div>
     </div>
 </div>
+
 @section Scripts
 {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial"/>
 }

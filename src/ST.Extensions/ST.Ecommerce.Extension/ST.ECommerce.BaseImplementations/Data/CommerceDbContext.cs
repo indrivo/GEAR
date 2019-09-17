@@ -15,12 +15,13 @@ namespace ST.ECommerce.BaseImplementations.Data
         /// </summary>
         // ReSharper disable once MemberCanBePrivate.Global
         public const string Schema = "Commerce";
+
         public CommerceDbContext(DbContextOptions<CommerceDbContext> options) : base(options)
         {
-
         }
 
         #region Entities
+
         /// <summary>
         /// Products
         /// </summary>
@@ -34,14 +35,13 @@ namespace ST.ECommerce.BaseImplementations.Data
         public virtual DbSet<ProductImage> ProductImages { get; set; }
         public virtual DbSet<ProductOptions> ProductOptions { get; set; }
         public virtual DbSet<ProductType> ProductTypes { get; set; }
-        public DbSet<ProductPrice> ProductPrices { get; set; }
+        public virtual DbSet<ProductPrice> ProductPrices { get; set; }
         public virtual DbSet<ProductOrder> ProductOrders { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<ShipmentAddress> ShipmentAddresses { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
         public virtual DbSet<AttributeGroup> AttributeGroups { get; set; }
         public virtual DbSet<ProductAttributes> ProductAttributes { get; set; }
-
 
         #endregion
 
@@ -54,10 +54,10 @@ namespace ST.ECommerce.BaseImplementations.Data
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
             builder.RegisterIndexes();
-            builder.Entity<ProductCategory>().HasKey(x => new { x.CategoryId, x.ProductId });
-            builder.Entity<ProductDiscount>().HasKey(x => new { x.DiscountId, x.ProductId });
-            builder.Entity<ProductOrder>().HasKey(x => new { x.OrderId, x.ProductId });
-            builder.Entity<ProductAttributes>().HasKey(x => new { x.ProductAttributeId, x.ProductId });
+            builder.Entity<ProductCategory>().HasKey(x => new {x.CategoryId, x.ProductId});
+            builder.Entity<ProductDiscount>().HasKey(x => new {x.DiscountId, x.ProductId});
+            builder.Entity<ProductOrder>().HasKey(x => new {x.OrderId, x.ProductId});
+            builder.Entity<ProductAttributes>().HasKey(x => new {x.ProductAttributeId, x.ProductId});
         }
 
         /// <inheritdoc />

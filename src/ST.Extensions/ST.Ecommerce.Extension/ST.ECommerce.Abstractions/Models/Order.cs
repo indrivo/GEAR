@@ -47,6 +47,7 @@ namespace ST.ECommerce.Abstractions.Models
         /// Order reference
         /// </summary>
         public virtual Order Order { get; set; }
+
         public virtual Guid OrderId { get; set; }
 
         /// <summary>

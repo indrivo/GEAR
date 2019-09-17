@@ -9,15 +9,14 @@ namespace ST.ECommerce.Abstractions.Models
         /// Reference to product
         /// </summary>
         public virtual Product Product { get; set; }
-        [Required]
-        public virtual Guid ProductId { get; set; }
+
+        [Required] public virtual Guid ProductId { get; set; }
 
         /// <summary>
         /// Reference to category
         /// </summary>
         public virtual Category Category { get; set; }
-        [Required]
-        public virtual Guid CategoryId { get; set; }
 
+        [Required] public virtual Guid CategoryId { get; set; }
     }
 }

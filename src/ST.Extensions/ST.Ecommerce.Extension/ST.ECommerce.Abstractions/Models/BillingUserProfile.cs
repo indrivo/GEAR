@@ -12,6 +12,5 @@ namespace ST.ECommerce.Abstractions.Models
         public virtual string PostalCode { get; set; }
         public virtual string City { get; set; }
         public virtual string Province { get; set; }
-
     }
 }
