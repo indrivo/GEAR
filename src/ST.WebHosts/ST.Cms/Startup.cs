@@ -81,6 +81,8 @@ using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions.Extensions;
+using ST.ECommerce.Paypal.Impl.Extensions;
+using ST.ECommerce.Paypal.Razor.Extensions;
 using ST.Email.Razor.Extensions;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
@@ -425,6 +427,8 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.RegisterPaypalProvider()
+				.RegisterPaypalRazorProvider()
 				.RegisterCommerceEvents();
 
 

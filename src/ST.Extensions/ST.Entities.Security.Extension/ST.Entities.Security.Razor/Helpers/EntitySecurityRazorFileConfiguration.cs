@@ -7,6 +7,7 @@ namespace ST.Entities.Security.Razor.Helpers
     {
         public EntitySecurityRazorFileConfiguration(IHostingEnvironment environment) : base(environment)
         {
+
         }
     }
 }

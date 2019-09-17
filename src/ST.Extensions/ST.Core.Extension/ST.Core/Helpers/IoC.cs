@@ -4,6 +4,7 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.MsDependencyInjection;
 using ST.Core.Exceptions;
+using ST.Core.Extensions;
 
 namespace ST.Core.Helpers
 {
@@ -51,6 +52,19 @@ namespace ST.Core.Helpers
             if (!IsServiceRegistered<TAbstraction>())
                 Container.Register(Component.For<TAbstraction>()
                 .ImplementedBy<TImplementation>());
+        }
+
+        /// <summary>
+        /// Register new service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        public static void RegisterService<TAbstraction>(string providerName, Type provider) where TAbstraction : class
+        {
+            if (providerName.IsNullOrEmpty()) throw new Exception("Provider name must be not null");
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>()
+                    .ImplementedBy(provider)
+                    .Named(providerName));
         }
 
         /// <summary>
