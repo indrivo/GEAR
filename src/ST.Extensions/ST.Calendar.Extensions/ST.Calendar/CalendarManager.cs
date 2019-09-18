@@ -49,7 +49,9 @@ namespace ST.Calendar
                 }
                 case CalendarTimeLineType.Week:
                 {
-                    tasks = await _taskManagerContext.Tasks.Where(x => x.StartDate.DayOfWeek == dateTime.DayOfWeek && x.UserId == userId).ToListAsync();
+                    var startOfWeek = dateTime.AddDays(-(int) dateTime.DayOfWeek);
+                    var endOfWeek = startOfWeek.AddDays(7);
+                    tasks = await _taskManagerContext.Tasks.Where(ob => startOfWeek <= ob.StartDate && ob.StartDate < endOfWeek && ob.UserId == userId).ToListAsync();
                     break;
                 }
                 case CalendarTimeLineType.Month:
