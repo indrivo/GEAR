@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Gestione utenti collegati alla vostra organizzazione",
   "system_multi_tenant_company_users_doc": "Qui è possibile gestire gli utenti, che sono stati invitati nella vostra organizzazione, di avere le seguenti funzioni attive, come ad esempio: rimuovere, attivare, fermare, cambiare la password e alcune informazioni generali",
   "iso_matrix_is_active": "È Attivo",
-  "system_user_online": "Online"
+  "system_user_online": "Online",
+  "system_commerce": "Commercio",
+  "system_commerce_catalog": "Catalogo",
+  "system_commerce_sales": "Vendita",
+  "system_commerce_products": "Prodotti",
+  "system_commerce_brands": "Marche",
+  "system_commerce_category": "Categorie di prodotto",
+  "system_commerce_attribute_group": "I gruppi di attributi",
+  "system_commerce_attributes": "Gli attributi di prodotto",
+  "system_commerce_product_types": "I tipi di prodotto",
+  "system_commerce_percentage": "Percentuale"
 }

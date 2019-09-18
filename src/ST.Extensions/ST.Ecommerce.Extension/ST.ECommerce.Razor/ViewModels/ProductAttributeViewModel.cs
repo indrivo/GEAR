@@ -8,8 +8,14 @@ namespace ST.ECommerce.Razor.ViewModels
 {
     public class ProductAttributeViewModel : ProductAttribute
     {
-        public List<SelectListItem> AttributeGroups { get; set; }
+        /// <summary>
+        /// Groups
+        /// </summary>
+        public List<SelectListItem> AttributeGroups { get; set; } = new List<SelectListItem>();
 
+        /// <summary>
+        /// Group
+        /// </summary>
         [Display(Name = "Attribute Group")]
         public override Guid? AttributeGroupId { get; set; }
     }

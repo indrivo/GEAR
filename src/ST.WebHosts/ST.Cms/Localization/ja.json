@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "ユーザーの管理に接続されている組織",
   "system_multi_tenant_company_users_doc": "こちらで管理することができ、ユーザーへと招待され、組織、あるいは，以下のように活性化機能など、削除、起動、停止、変更、パスワードおよび一般情報",
   "iso_matrix_is_active": "活動",
-  "system_user_online": "オンライン"
+  "system_user_online": "オンライン",
+  "system_commerce": "商業",
+  "system_commerce_catalog": "カタログ",
+  "system_commerce_sales": "売上高",
+  "system_commerce_products": "製品",
+  "system_commerce_brands": "ブランド",
+  "system_commerce_category": "製品カテゴリー",
+  "system_commerce_attribute_group": "属団体",
+  "system_commerce_attributes": "製品の属性",
+  "system_commerce_product_types": "製品の種類",
+  "system_commerce_percentage": "割合"
 }

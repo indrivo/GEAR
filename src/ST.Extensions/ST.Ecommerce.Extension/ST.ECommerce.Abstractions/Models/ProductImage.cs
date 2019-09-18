@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using ST.Core;
 
 namespace ST.ECommerce.Abstractions.Models

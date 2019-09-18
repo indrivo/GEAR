@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Sentry;
 using ST.Application.Extensions;
 using ST.Application.InstallerModels;
 using ST.Cache.Abstractions;
@@ -158,7 +157,7 @@ namespace ST.Application
         /// On application start
         /// </summary>
         /// <param name="app"></param>
-        public static async void OnApplicationStarted(IApplicationBuilder app)
+        public static async void ApplicationStarted(IApplicationBuilder app)
         {
             using (var serviceScope = app.ApplicationServices
                 .GetRequiredService<IServiceScopeFactory>()
@@ -198,7 +197,6 @@ namespace ST.Application
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("translationSettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("fileSettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
@@ -209,6 +207,11 @@ namespace ST.Application
                 .StartLogging()
                 .CaptureStartupErrors(true)
                 .UseStartup<TStartUp>()
+                .ConfigureAppConfiguration((hostingContext, conf) =>
+                {
+                    var path = Path.Combine(AppContext.BaseDirectory, "translationSettings.json");
+                    conf.AddJsonFile(path, optional: true, reloadOnChange: true);
+                })
                 .UseSentry()
                 .Build();
 

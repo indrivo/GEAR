@@ -9,8 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
-    <ProjectReference Include="..\..\ST.Core.Razor\ST.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.Razor\ST.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core\ST.Core.csproj" />
     <ProjectReference Include="..\ST.Audit.Abstractions\ST.Audit.Abstractions.csproj" />
   </ItemGroup>
 

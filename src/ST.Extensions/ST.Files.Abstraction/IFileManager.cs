@@ -17,6 +17,7 @@ namespace ST.Files.Abstraction
         /// Add or update file into a repository
         /// </summary>
         /// <param name="dto"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
         ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId);
 

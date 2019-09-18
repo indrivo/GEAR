@@ -568,5 +568,15 @@
   "system_multi_tenant_manage_company_users": "Het beheren van gebruikers aangesloten op uw organisatie",
   "system_multi_tenant_company_users_doc": "Hier kunt u de gebruikers die zijn uitgenodigd in uw organisatie, u hebt de volgende geactiveerde functies, zoals het verwijderen, activeren, stop, het wachtwoord wijzigen en een aantal Algemene informatie",
   "iso_matrix_is_active": "Actief",
-  "system_user_online": "Online"
+  "system_user_online": "Online",
+  "system_commerce": "Koophandel",
+  "system_commerce_catalog": "Catalogus",
+  "system_commerce_sales": "Verkoop",
+  "system_commerce_products": "Producten",
+  "system_commerce_brands": "Merken",
+  "system_commerce_category": "Product categorieën",
+  "system_commerce_attribute_group": "Kenmerk groepen",
+  "system_commerce_attributes": "Product kenmerken",
+  "system_commerce_product_types": "Product types",
+  "system_commerce_percentage": "Percentage"
 }

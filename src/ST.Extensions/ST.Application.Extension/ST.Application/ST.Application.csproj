@@ -14,12 +14,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Backup.Extension\ST.Backup.Abstractions\ST.Backup.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Cache.Extension\ST.Cache\ST.Cache.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Entities.Extension\ST.Entities\ST.Entities.csproj" />
     <ProjectReference Include="..\..\ST.Forms.Razor.Extension\ST.Forms\ST.Forms.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.IdentityServer4\ST.Identity.IdentityServer4.csproj" />
-    <ProjectReference Include="..\..\ST.Localization.Razor.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Localization.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Notifications.Extension\ST.Notifications.Abstractions\ST.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Processes.Extension\ST.Processes\ST.Procesess.csproj" />
     <ProjectReference Include="..\..\ST.Render.Extension\ST.PageRender.Abstractions\ST.PageRender.Abstractions.csproj" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Options;
 using ST.Backup.Abstractions;
@@ -30,6 +31,8 @@ namespace ST.Backup.PostGresSql
         /// </summary>
         public virtual void Backup()
         {
+            //TODO: Backup on mac os and linux envs
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return;
             var directoryPath = GetDirectoryPath();
             var currentDate = DateTime.Now;
             var outputFile = Path.Combine(directoryPath,

@@ -22,9 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.csproj" />
     <ProjectReference Include="..\..\ST.Identity.Extension\ST.Identity.Abstractions\ST.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core\ST.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

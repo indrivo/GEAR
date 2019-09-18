@@ -1,8 +1,8 @@
 ﻿@{
+    ViewData["Title"] = "Products";
     var conf = new ListTagHelperModel
     {
-        Title = Localizer["forms"],
-        SubTitle = "List of products",
+        Title = "Products",
         ListIdentifier = "products",
         Api = new ListApiConfigurationViewModel
         {
@@ -14,7 +14,7 @@
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
-            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+            new ListRenderColumn(Localizer["is_deleted"], "isDeleted")
         },
         HeadButtons = new List<UrlTagHelperViewModel>
         {
@@ -22,7 +22,7 @@
             {
                 AspAction = "Create",
                 AspController = "Products",
-                ButtonName = "Add",
+                ButtonName = "Add new product",
                 Description = "New product will be added"
             }
         },

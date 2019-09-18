@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ST.Configuration.Services;
+using ST.Application.Middleware.Services;
 using ST.Core;
 
 namespace ST.Cms.Controllers

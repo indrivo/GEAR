@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.CORE.Razor\ST.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.Razor\ST.Core.Razor.csproj" />
     <ProjectReference Include="..\..\ST.DynamicEntityStorage.Extension\ST.DynamicEntityStorage.Abstractions\ST.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.Email.Extension\ST.Email.Abstractions\ST.Email.Abstractions.csproj" />
     <ProjectReference Include="..\ST.MultiTenant\ST.MultiTenant.csproj" />
