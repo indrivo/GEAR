@@ -86,7 +86,6 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar\ST.Calendar.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.Calendar.Razor.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Configuration\ST.Configuration.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Dashboard.Extension\ST.Dashboard.Razor\ST.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Dashboard.Extension\ST.Dashboard\ST.Dashboard.csproj" />
