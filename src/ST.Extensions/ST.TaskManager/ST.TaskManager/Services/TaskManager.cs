@@ -34,7 +34,7 @@ namespace ST.TaskManager.Services
         {
             if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<GetTaskViewModel>();
 
-            var dbTaskResult = await _context.Tasks.Include(x => x.TaskItems).FirstOrDefaultAsync(x => (x.Id == taskId) & (x.IsDeleted == false));
+            var dbTaskResult = await _context.Tasks.Include(x => x.TaskItems).FirstOrDefaultAsync(x => x.Id == taskId);
             if (dbTaskResult == null)
                 return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<GetTaskViewModel>();
 
