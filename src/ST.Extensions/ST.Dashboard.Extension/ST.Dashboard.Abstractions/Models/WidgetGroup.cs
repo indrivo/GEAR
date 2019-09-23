@@ -10,5 +10,10 @@ namespace ST.Dashboard.Abstractions.Models
         /// </summary>
         [Required]
         public virtual string Name { get; set; }
+
+        /// <summary>
+        /// Order
+        /// </summary>
+        public virtual int Order { get; set; } = 1;
     }
 }

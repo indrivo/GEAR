@@ -101,7 +101,7 @@ namespace ST.TaskManager.Services
             var taskModel = TaskMapper(task);
             taskModel.TaskNumber = await GenerateTaskNumberAsync();
             _context.Tasks.Add(taskModel);
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             if (result.IsSuccess) await _notify.AddTaskNotificationAsync(taskModel);
             return new ResultModel<Guid>
@@ -120,7 +120,7 @@ namespace ST.TaskManager.Services
 
             var taskModel = TaskMapper(task, dbTaskResult);
             _context.Tasks.Update(taskModel);
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             if (result.IsSuccess) await _notify.UpdateTaskNotificationAsync(taskModel);
             return new ResultModel
@@ -139,7 +139,7 @@ namespace ST.TaskManager.Services
 
             dbTaskResult.IsDeleted = true;
             _context.Tasks.Update(dbTaskResult);
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             if (result.IsSuccess) await _notify.DeleteTaskNotificationAsync(dbTaskResult);
             return new ResultModel
@@ -158,7 +158,7 @@ namespace ST.TaskManager.Services
 
             _context.Tasks.Remove(task);
 
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             return new ResultModel
             {
@@ -176,7 +176,7 @@ namespace ST.TaskManager.Services
 
             dbTaskResult.IsDeleted = false;
             _context.Tasks.Update(dbTaskResult);
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             if (result.IsSuccess) await _notify.DeleteTaskNotificationAsync(dbTaskResult);
             return new ResultModel
@@ -198,7 +198,7 @@ namespace ST.TaskManager.Services
             var taskModel = new TaskItem {Name = taskItem.Name, Task = dbTaskResult};
 
             _context.TaskItems.Add(taskModel);
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             return new ResultModel<Guid>
             {
@@ -217,7 +217,7 @@ namespace ST.TaskManager.Services
             dbTaskResult.IsDone = taskItem.IsDone;
             _context.TaskItems.Update(dbTaskResult);
 
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             return new ResultModel<Guid>
             {
@@ -236,7 +236,7 @@ namespace ST.TaskManager.Services
 
             _context.TaskItems.Remove(task);
 
-            var result = await _context.SaveDependenceAsync();
+            var result = await _context.PushAsync();
 
             return new ResultModel
             {

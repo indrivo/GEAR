@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 using ST.Core;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Entities.Abstractions.Events;
 using ST.Entities.Abstractions.Events.EventArgs;
-using ST.Entities.Abstractions.Helpers;
 using ST.Entities.Abstractions.Query;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 
@@ -18,7 +19,23 @@ namespace ST.Entities.Data
 {
     public static class DbContextExtension
     {
+        /// <summary>
+        /// Query builder
+        /// </summary>
         private static IEntityQueryBuilder QueryBuilder => IoC.Resolve<IEntityQueryBuilder>();
+
+        /// <summary>
+        /// Get active connection
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private static DbConnection GetOpenConnection(this DbContext context)
+        {
+            var conn = (NpgsqlConnection)context.Database.GetDbConnection();
+            var export = conn.CloneWith(conn.ConnectionString);
+            if (export.State != ConnectionState.Open) export.Open();
+            return export;
+        }
 
         public static ResultModel<EntityViewModel> GetEntityByParams(this EntitiesDbContext dbContext,
             EntityViewModel viewModel)
@@ -110,6 +127,7 @@ namespace ST.Entities.Data
             {
                 IsSuccess = false
             };
+
             if (viewModel == null) return returnModel;
             try
             {
@@ -120,7 +138,7 @@ namespace ST.Entities.Data
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
 
-                    using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
+                    using (var cmd = dbContext.GetOpenConnection().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
 
@@ -186,7 +204,7 @@ namespace ST.Entities.Data
                     var sqlQuery = queryBuilder.UpdateQuery(viewModel);
 
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
-                    using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
+                    using (var cmd = dbContext.GetOpenConnection().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
 
@@ -321,7 +339,7 @@ namespace ST.Entities.Data
 
                     //var sqlQuery = EntityQueryBuilder.DeleteByIdQuery(viewModel.TableName, (Guid)value["Id"]);
                     if (string.IsNullOrEmpty(sqlQuery)) continue;
-                    using (var cmd = DbConnectionFactory.Connection.Get().CreateCommand())
+                    using (var cmd = dbContext.GetOpenConnection().CreateCommand())
                     {
                         cmd.CommandText = sqlQuery;
                         if (cmd.Connection.State != ConnectionState.Open)
@@ -437,7 +455,7 @@ namespace ST.Entities.Data
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
             var result = new List<Dictionary<string, object>>();
-            var connector = DbConnectionFactory.Connection.Get();
+            var connector = dbContext.GetOpenConnection();
 
             using (var cmd = connector.CreateCommand())
             {
@@ -470,14 +488,10 @@ namespace ST.Entities.Data
                 {
                     Console.WriteLine(e);
                 }
-
-                return result;
             }
+            connector.Close();
+            return result;
         }
-
-        //Denis
-        //To Delete 
-
 
         private static List<Dictionary<string, object>> GetRecursiveSingle(this EntitiesDbContext dbContext,
             EntityViewModel entityViewModel, List<Dictionary<string, object>> values)

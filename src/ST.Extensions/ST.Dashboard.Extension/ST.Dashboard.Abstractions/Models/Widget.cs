@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.Dashboard.Abstractions.Helpers.Enums;
 
 namespace ST.Dashboard.Abstractions.Models
 {
-    public class Widget : BaseModel
+    [NotMapped]
+    public abstract class Widget : BaseModel, IWidgetUISettings
     {
         /// <summary>
         /// Render service
@@ -30,7 +32,7 @@ namespace ST.Dashboard.Abstractions.Models
         /// <summary>
         /// Allow cache
         /// </summary>
-        public bool AllowCache { get; set; }
+        public bool AllowCache { get; set; } = false;
 
         /// <summary>
         /// Time to refresh
@@ -61,6 +63,7 @@ namespace ST.Dashboard.Abstractions.Models
         /// <summary>
         /// Row reference
         /// </summary>
+
         public virtual Row Row { get; set; }
         public virtual Guid RowId { get; set; }
 
@@ -69,13 +72,6 @@ namespace ST.Dashboard.Abstractions.Models
         /// </summary>
         public virtual WidgetGroup WidgetGroup { get; set; }
         public virtual Guid WidgetGroupId { get; set; }
-
-        #region Style
-        /// <summary>
-        /// Css class
-        /// </summary>
-        public virtual string ClassAttribute { get; set; }
-        #endregion
 
         #region Methods
 
@@ -95,5 +91,12 @@ namespace ST.Dashboard.Abstractions.Models
         public override string ToString() => Render();
 
         #endregion
+
+        public virtual string Width { get; set; }
+        public virtual string Height { get; set; }
+        public virtual string BackGroundColor { get; set; }
+        public virtual int BorderRadius { get; set; }
+        public virtual string BorderStyle { get; set; }
+        public string ClassAttribute { get; set; }
     }
 }
