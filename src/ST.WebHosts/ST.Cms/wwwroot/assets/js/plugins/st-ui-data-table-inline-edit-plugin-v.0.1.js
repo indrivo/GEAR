@@ -372,7 +372,8 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
 				{
 					const date = f.val();
 					const parsed = moment(date, "DD/MM/YYYY").format("DD.MM.YYYY");
-					obj[f.attr("data-prop-name")] = parsed;
+					if (parsed !== "Invalid date")
+						obj[f.attr("data-prop-name")] = parsed;
 				} break;
 			case "uniqueidentifier":
 				{
