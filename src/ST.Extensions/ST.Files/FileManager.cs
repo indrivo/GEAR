@@ -34,9 +34,10 @@ namespace ST.Files
 
         public override ResultModel<Guid> AddFile(UploadFileViewModel dto, Guid tenantId)
         {
-            var fileValidation =
-                FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == tenantId));
-            if (!fileValidation.IsSuccess) return fileValidation;
+            //TODO REMOVE COMMENT WHEN SETTINGS ISSUE WILL BE FIXED
+            //var fileValidation =
+            //    FileValidation.ValidateFile(dto.File, _options.Value.FirstOrDefault(x => x.TenantId == tenantId));
+            //if (!fileValidation.IsSuccess) return fileValidation;
 
             if (dto.Id != Guid.Empty) return UpdateFile(dto, tenantId);
 

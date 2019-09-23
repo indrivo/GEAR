@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ST.TaskManager.Abstractions.Enums;
 
 namespace ST.TaskManager.Abstractions.Models.ViewModels
@@ -9,6 +10,8 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public List<Guid> Files { get; set; }
 
         public DateTime StartDate { get; set; }
 

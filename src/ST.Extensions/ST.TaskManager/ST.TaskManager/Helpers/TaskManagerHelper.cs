@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mapster;
+using Newtonsoft.Json;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.TaskManager.Abstractions.Models;
@@ -21,6 +23,7 @@ namespace ST.TaskManager.Helpers
             dbTaskResult.Status = taskViewModel.Status;
             dbTaskResult.TaskPriority = taskViewModel.TaskPriority;
             dbTaskResult.UserId = taskViewModel.UserId;
+            dbTaskResult.Files = JsonConvert.SerializeObject(taskViewModel.Files);
 
             return dbTaskResult;
         }
@@ -28,6 +31,7 @@ namespace ST.TaskManager.Helpers
         internal static Task TaskMapper(CreateTaskViewModel taskViewModel)
         {
             var dto = taskViewModel.Adapt<Task>();
+            dto.Files = JsonConvert.SerializeObject(taskViewModel.Files);
             if (taskViewModel.TaskItems == null) return dto;
 
             foreach (var item in taskViewModel.TaskItems)
@@ -44,6 +48,7 @@ namespace ST.TaskManager.Helpers
         internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
         {
             var dto = dbTaskResult.Adapt<GetTaskViewModel>();
+            dto.Files = JsonConvert.DeserializeObject<List<Guid>>(dbTaskResult.Files);
             dto.TaskItemsCount = CountTaskItems(dbTaskResult);
             return dto;
         }
