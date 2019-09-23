@@ -2,30 +2,6 @@
 	ViewData["Title"] = "Dashboard builder";
 }
 
-@section Styles{
-	<style>
-		.left-canvas {
-			min-height: 30em;
-		}
-
-		.draggable-row-injected {
-			min-height: 5em;
-			border-style: dashed;
-			margin: 0.2em;
-			border-color: lightgray;
-		}
-
-		.draggable-widget-injected {
-			min-height: 5em;
-			border-style: dashed;
-			margin: 0.2em;
-			border-color: lightgray;
-		}
-	</style>
-}
-
-
-
 @section Scripts{
 	<script>
 		$(function () {
@@ -61,6 +37,7 @@
 
 			//init draggable events for widgets
 			initDraggableWidgets() {
+				const scope = this;
 				//drag widgets
 				$(".droppable-widget").droppable({
 					accept: ".draggable-widget",
@@ -68,16 +45,80 @@
 						const source = $(ui.draggable);
 						const widget = $(`<div class="col-md draggable-widget-injected">${source.text()}</div>`)
 						$(this).append(widget);
+						scope.registerDroppableWidgets();
 					}
 				});
 			}
 
 			registerDroppableWidgets() {
-				$(".draggable-widget-injected").draggable({
+				const scope = this;
+				const ctx = $(".draggable-widget-injected");
+				ctx.draggable({
 					revert: "invalid",
 					helper: "clone",
 					cursor: "move"
 				});
+
+				ctx.contextmenu(function (event) {
+					event.preventDefault();
+					$(".options-menu").remove();
+					const x = event.pageX;
+					const y = event.pageY;
+					const el = scope.getWidgetMenuConfiguration();
+					$(el).css("position", "absolute");
+					$(el).css("left", `${x}px`);
+					$(el).css("top", `${y}px`);
+					$(el).menu();
+					$("body").append(el);
+
+					$("*:not(.options-menu)").on("click", function () {
+						$(".options-menu").remove();
+						$(this).off("click");
+					});
+				});
+			}
+
+			getWidgetMenuConfiguration() {
+				//close menu context
+				function closeMenu(target) {
+					$(target).closest(".options-menu").remove();
+				}
+
+				const configurations = [
+					{
+						label: "Configuration",
+						events: ["click"],
+						eventHandlers: {
+							click: function () {
+								$("#widget-configuration-modal").modal("show");
+								closeMenu(this);
+							}
+						}
+					},
+					{
+						label: "Remove",
+						events: ["click"],
+						eventHandlers: {
+							click: function () {
+								closeMenu(this);
+							}
+						}
+					}
+				];
+
+				const menuBlock = document.createElement("ul");
+				menuBlock.setAttribute("class", "options-menu card");
+				for (let i = 0; i < configurations.length; i++) {
+					const item = document.createElement("li");
+					item.innerHTML = configurations[i].label;
+					for (let j = 0; j < configurations[i].events.length; j++) {
+						const evt = configurations[i].events[j];
+						item.addEventListener(evt, configurations[i].eventHandlers[evt]);
+					}
+					menuBlock.appendChild(item);
+				}
+
+				return menuBlock;
 			}
 		}
 
@@ -118,3 +159,61 @@
 		</div>
 	</div>
 </div>
+
+
+
+<div class="modal leftright-slide right-align fade" id="widget-configuration-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header px-4">
+				<h5 class="modal-title">Widget configuration</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span class="material-icons">close</span>
+				</button>
+			</div>
+			<div class="modal-body p-4">
+
+			</div>
+			<div class="modal-footer px-4">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" translate="close">Close</button>
+				<button type="button" class="btn btn-primary" translate="save">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@section Styles{
+	<style>
+		.left-canvas {
+			min-height: 30em;
+		}
+
+		.draggable-row-injected {
+			min-height: 5em;
+			border-style: dashed;
+			margin: 0.2em;
+			border-color: lightgray;
+		}
+
+		.draggable-widget-injected {
+			min-height: 5em;
+			border-style: dashed;
+			margin: 0.2em;
+			border-color: lightgray;
+		}
+
+		.options-menu {
+			padding: 0.5em;
+		}
+
+			.options-menu li {
+				list-style-type: none;
+			}
+
+				.options-menu li:hover {
+					cursor: pointer;
+				}
+	</style>
+}

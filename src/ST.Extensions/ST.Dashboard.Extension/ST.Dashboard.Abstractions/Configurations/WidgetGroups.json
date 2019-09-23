@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "Charts",
+    "Order": 1
+  },
+  {
+    "Name": "Reports",
+    "Order": 2
+  },
+  {
+    "Name": "Custom",
+    "Order": 3
+  },
+  {
+    "Name": "Samples",
+    "Order": 4
+  },
+  {
+    "Name": "Custom",
+    "Order": 5
+  }
+]

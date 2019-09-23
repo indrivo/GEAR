@@ -124,7 +124,7 @@ namespace ST.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<ResultModel> SaveDependenceAsync(this IDbContext context)
+        public static async Task<ResultModel> PushAsync(this IDbContext context)
         {
             return await ((DbContext)context).SaveAsync();
         }
@@ -134,7 +134,7 @@ namespace ST.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static ResultModel SaveDependence(this IDbContext context)
+        public static ResultModel Push(this IDbContext context)
         {
             return ((DbContext)context).Save();
         }

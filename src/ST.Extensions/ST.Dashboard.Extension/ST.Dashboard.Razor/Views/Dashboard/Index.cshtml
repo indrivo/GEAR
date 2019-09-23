@@ -1,0 +1,41 @@
+﻿@using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using ST.Core.Razor.TagHelpersStructures
+@{
+    ViewData["Title"] = "Dashboards";
+    var conf = new ListTagHelperModel
+    {
+        Title = "Dashboards",
+        SubTitle = "List of Dashboards",
+        ListIdentifier = "dashboards",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("OrderedList", "Dashboard")
+        },
+        RenderColumns = new List<ListRenderColumn>
+{
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+{
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "Brand",
+                ButtonName = "Add new brand",
+                Description = "New brand will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+        {
+
+        },
+        Documentation = "This tan allow to manage your dashboards"
+    };
+}
+
+<JList asp-for="@conf"></JList>
