@@ -8,36 +8,22 @@
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
-
-
-  <ItemGroup>
-    <None Remove="libman.json" />
-  </ItemGroup>
-
-
-
   <ItemGroup>
     <Content Include="libman.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 
-
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.76" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />
   </ItemGroup>
-
-
 
   <ItemGroup>
     <ProjectReference Include="..\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
   </ItemGroup>
-
-
 
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\**\*" />
@@ -50,17 +36,18 @@
 
 
   <ItemGroup>
+    <Compile Remove="ViewModels\**" />
+    <Content Remove="ViewModels\**" />
+    <EmbeddedResource Remove="ViewModels\**" />
+    <None Remove="ViewModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
     </Content>
     <Content Update="Views\_ViewStart.cshtml">
       <Pack>false</Pack>
     </Content>
-  </ItemGroup>
-
-
-
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 </Project>
