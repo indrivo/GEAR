@@ -19,10 +19,10 @@ namespace ST.Dashboard.Abstractions.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static IDashboardServiceCollection AddDashboardModule<TRepository>(this IServiceCollection services)
-            where TRepository : class, IDashboardManager
+            where TRepository : class, IDashboardService
         {
-            services.AddTransient<IDashboardManager, TRepository>();
-            IoC.RegisterService<IDashboardManager, TRepository>();
+            services.AddTransient<IDashboardService, TRepository>();
+            IoC.RegisterService<IDashboardService, TRepository>();
             return new DashboardServiceCollection(services);
         }
 

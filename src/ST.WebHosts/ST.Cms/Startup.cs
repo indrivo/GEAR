@@ -303,7 +303,7 @@ namespace ST.Cms
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
 
 			//------------------------------------Dashboard Module-------------------------------------
-			services.AddDashboardModule<DashboardManager>()
+			services.AddDashboardModule<DashboardService>()
 				.AddDashboardModuleStorage<DashBoardDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);

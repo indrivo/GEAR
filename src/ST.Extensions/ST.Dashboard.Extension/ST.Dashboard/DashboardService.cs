@@ -12,17 +12,80 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 
 namespace ST.Dashboard
 {
-    public class DashboardManager : IDashboardManager
+    public class DashboardService : IDashboardService
     {
         #region Injectable
         private readonly IDashboardDbContext _context;
         #endregion
 
-        public DashboardManager(IDashboardDbContext context)
+        public DashboardService(IDashboardDbContext context)
         {
             _context = context;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Dashboards
+        /// </summary>
+        public virtual IQueryable<DashBoard> DashBoards => _context.Dashboards;
+
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Add new dashboard
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> CreateDashBoardAsync(DashBoard model)
+        {
+            var result = new ResultModel();
+            if (model == null)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(ArgumentNullException)));
+                return result;
+            }
+
+            await _context.Dashboards.AddAsync(model);
+            var dbResult = await _context.PushAsync();
+            if (!dbResult.IsSuccess) return dbResult;
+            if (model.IsActive)
+            {
+                return await SetActiveDashBoardAsync(model.Id);
+            }
+
+            result.IsSuccess = true;
+            return result;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Update dashboard
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> UpdateDashBoardAsync(DashBoard model)
+        {
+            var result = new ResultModel();
+            if (model == null)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(ArgumentNullException)));
+                return result;
+            }
+            _context.Dashboards.Update(model);
+            var dbResult = await _context.PushAsync();
+            if (!dbResult.IsSuccess) return dbResult;
+            if (!model.IsActive)
+            {
+                var req = await SetActiveDashBoardAsync(model.Id);
+                if (!req.IsSuccess) return req;
+            }
+
+            result.IsSuccess = true;
+            return result;
+        }
+
+
+        /// <inheritdoc />
         /// <summary>
         /// Get dashboards
         /// </summary>
@@ -45,6 +108,7 @@ namespace ST.Dashboard
             return new JsonResult(result);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Set active dashboard
         /// </summary>

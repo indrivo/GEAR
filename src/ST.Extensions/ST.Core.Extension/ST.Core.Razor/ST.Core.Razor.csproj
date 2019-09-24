@@ -14,6 +14,7 @@
   <ItemGroup>
     <None Remove="Templates\ActionTagTemplate.html" />
     <None Remove="Templates\AddSectionHtmlTemplate.html" />
+    <None Remove="Templates\ListBooleanRenderJsTemplate.js" />
     <None Remove="Templates\ListDocumentationHtmlTemplate.html" />
     <None Remove="Templates\ListRenderJsTemplate.js" />
     <None Remove="Templates\ListTagHelperHtmlTemplate.html" />
@@ -26,6 +27,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListDocumentationHtmlTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\ListBooleanRenderJsTemplate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListRenderJsTemplate.js">
