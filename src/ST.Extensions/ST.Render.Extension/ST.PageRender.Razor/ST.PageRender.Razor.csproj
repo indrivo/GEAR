@@ -44,4 +44,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\grapesjs-preset-webpage\src\" />
+  </ItemGroup>
 </Project>

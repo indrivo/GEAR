@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "Attribut-Gruppen",
   "system_commerce_attributes": "Produkt-Attribute",
   "system_commerce_product_types": "Produkt-Typen",
-  "system_commerce_percentage": "Prozentsatz"
+  "system_commerce_percentage": "Prozentsatz",
+  "eCommerce_Paypal_Settings": "paypal-Einstellungen",
+  "eCommerce_Paypal_ClientId": "client-id",
+  "eCommerce_Paypal_ClientSecret": "client secret"
 }

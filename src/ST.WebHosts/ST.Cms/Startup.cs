@@ -224,7 +224,7 @@ namespace ST.Cms
 
 			//---------------------------------Custom cache Module-------------------------------------
 			services.AddCacheModule(HostingEnvironment, Configuration);
-
+			services.AddHttpClient();
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
 			services.AddDbContext<ProcessesDbContext>(options =>
@@ -428,7 +428,7 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.RegisterPaypalProvider()
-				.RegisterPaypalRazorProvider()
+				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterCommerceEvents();
 
 

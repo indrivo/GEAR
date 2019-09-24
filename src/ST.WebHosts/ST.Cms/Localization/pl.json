@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "Grupy atrybutów ",
   "system_commerce_attributes": "Atrybuty produktu ",
   "system_commerce_product_types": "Rodzaje produktów ",
-  "system_commerce_percentage": "Procent"
+  "system_commerce_percentage": "Procent",
+  "eCommerce_Paypal_Settings": "ustawienia systemu PayPal ",
+  "eCommerce_Paypal_ClientId": "identyfikator klienta ",
+  "eCommerce_Paypal_ClientSecret": "sekret klienta"
 }

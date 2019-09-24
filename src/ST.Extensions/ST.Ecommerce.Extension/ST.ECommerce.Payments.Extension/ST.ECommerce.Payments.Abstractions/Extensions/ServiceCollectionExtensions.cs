@@ -20,6 +20,7 @@ namespace ST.ECommerce.Payments.Abstractions.Extensions
             Arg.NotNull(config, nameof(RegisterPaymentProvider));
 
             IoC.RegisterService<IPaymentManager>(config.ProviderName, typeof(TProvider));
+
             return services;
         }
     }

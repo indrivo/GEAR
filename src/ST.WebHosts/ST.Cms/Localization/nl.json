@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "Kenmerk groepen",
   "system_commerce_attributes": "Product kenmerken",
   "system_commerce_product_types": "Product types",
-  "system_commerce_percentage": "Percentage"
+  "system_commerce_percentage": "Percentage",
+  "eCommerce_Paypal_Settings": "paypal-instellingen",
+  "eCommerce_Paypal_ClientId": "cliënt-id",
+  "eCommerce_Paypal_ClientSecret": "opdrachtgever geheim"
 }

@@ -235,9 +235,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.ECommerce.Payments.Provi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ST.ECommerce.Paypal", "ST.ECommerce.Paypal", "{22998B3C-DF27-4069-B5AB-9F07B92C045E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.ECommerce.Paypal.Impl", "src\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Payments.Extension\ST.ECommerce.Payments.Providers\ST.ECommerce.Paypal\ST.ECommerce.Paypal.Impl\ST.ECommerce.Paypal.Impl.csproj", "{D24A3996-3AE9-4B90-A84D-915C34B191CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.ECommerce.Paypal.Impl", "src\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Payments.Extension\ST.ECommerce.Payments.Providers\ST.ECommerce.Paypal\ST.ECommerce.Paypal.Impl\ST.ECommerce.Paypal.Impl.csproj", "{D24A3996-3AE9-4B90-A84D-915C34B191CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.ECommerce.Paypal.Razor", "src\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Payments.Extension\ST.ECommerce.Payments.Providers\ST.ECommerce.Paypal\ST.ECommerce.Paypal.Razor\ST.ECommerce.Paypal.Razor.csproj", "{BBB07F6C-69C9-4AD3-BBBD-C7074BC49A52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.ECommerce.Paypal.Razor", "src\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.Payments.Extension\ST.ECommerce.Payments.Providers\ST.ECommerce.Paypal\ST.ECommerce.Paypal.Razor\ST.ECommerce.Paypal.Razor.csproj", "{BBB07F6C-69C9-4AD3-BBBD-C7074BC49A52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

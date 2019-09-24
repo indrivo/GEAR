@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "Grupuri de atribute",
   "system_commerce_attributes": "Atributele produsului",
   "system_commerce_product_types": "Tipuri de produse",
-  "system_commerce_percentage": "Procent"
+  "system_commerce_percentage": "Procent",
+  "eCommerce_Paypal_Settings": "paypal setări",
+  "eCommerce_Paypal_ClientId": "id-ul de client",
+  "eCommerce_Paypal_ClientSecret": "clientul secret"
 }

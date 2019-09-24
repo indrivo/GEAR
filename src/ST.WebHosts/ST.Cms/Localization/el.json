@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "Χαρακτηριστικό ομάδες",
   "system_commerce_attributes": "Χαρακτηριστικά του προϊόντος",
   "system_commerce_product_types": "Τύποι προϊόντων",
-  "system_commerce_percentage": "Ποσοστό"
+  "system_commerce_percentage": "Ποσοστό",
+  "eCommerce_Paypal_Settings": "paypal ρυθμίσεις",
+  "eCommerce_Paypal_ClientId": "το αναγνωριστικό υπολογιστή-πελάτη",
+  "eCommerce_Paypal_ClientSecret": "ο πελάτης μυστικό"
 }

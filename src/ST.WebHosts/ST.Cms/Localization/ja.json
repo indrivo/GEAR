@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "属団体",
   "system_commerce_attributes": "製品の属性",
   "system_commerce_product_types": "製品の種類",
-  "system_commerce_percentage": "割合"
+  "system_commerce_percentage": "割合",
+  "eCommerce_Paypal_Settings": "paypalの設定",
+  "eCommerce_Paypal_ClientId": "クライアントid",
+  "eCommerce_Paypal_ClientSecret": "お客様の秘密"
 }

@@ -78,6 +78,7 @@ namespace ST.MultiTenant.Services
         /// <param name="emailSender"></param>
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
+        /// <param name="hub"></param>
         public OrganizationService(ApplicationDbContext context, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
             IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, INotificationHub hub)
         {

@@ -1,7 +1,4 @@
 ﻿using ST.Core.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ST.ECommerce.Payments.Abstractions
@@ -10,5 +7,6 @@ namespace ST.ECommerce.Payments.Abstractions
     {
         ResultModel Pay();
         Task<ResultModel> PayAsync();
+
     }
 }

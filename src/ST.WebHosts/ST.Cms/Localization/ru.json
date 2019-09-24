@@ -578,5 +578,8 @@
   "system_commerce_attribute_group": "Группы атрибутов ",
   "system_commerce_attributes": "Атрибуты продукта ",
   "system_commerce_product_types": "Виды продукции ",
-  "system_commerce_percentage": "Процент"
+  "system_commerce_percentage": "Процент",
+  "eCommerce_Paypal_Settings": "настройки системы PayPal ",
+  "eCommerce_Paypal_ClientId": "идентификатор клиента ",
+  "eCommerce_Paypal_ClientSecret": "секрет клиента"
 }
