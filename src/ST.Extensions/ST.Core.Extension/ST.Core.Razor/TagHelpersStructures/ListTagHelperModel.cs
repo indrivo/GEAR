@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ST.Core.Razor.Enums;
 using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 
 namespace ST.Core.Razor.TagHelpersStructures
@@ -74,11 +75,27 @@ namespace ST.Core.Razor.TagHelpersStructures
             ApiIdentifier = apiIdentifier;
         }
 
-        public bool HasTemplate { get; set; }
+        /// <summary>
+        /// Has custom template
+        /// </summary>
+        public virtual bool HasTemplate { get; set; }
+
+        /// <summary>
+        /// Column name
+        /// </summary>
         public string ColumnName { get; set; }
         public string ApiIdentifier { get; set; }
         public string Template { get; set; }
         public ICollection<InlineStyleAttribute> StyleAttributes { get; set; } = new List<InlineStyleAttribute>();
-        public ICollection<HtmlAttribute> HtmlAttributes { get; set; } = new List<HtmlAttribute>();
+
+        /// <summary>
+        /// Attributes
+        /// </summary>
+        public virtual ICollection<HtmlAttribute> HtmlAttributes { get; set; } = new List<HtmlAttribute>();
+
+        /// <summary>
+        /// Use a system template
+        /// </summary>
+        public virtual RenderCellBodySystemTemplate BodySystemTemplate { get; set; } = RenderCellBodySystemTemplate.Undefined;
     }
 }

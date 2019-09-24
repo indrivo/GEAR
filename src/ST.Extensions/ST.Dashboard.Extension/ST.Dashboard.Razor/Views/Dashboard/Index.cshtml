@@ -1,4 +1,5 @@
-﻿@using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+﻿@using ST.Core.Razor.Enums
+@using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 @using ST.Core.Razor.TagHelpersStructures
 @{
     ViewData["Title"] = "Dashboards";
@@ -15,24 +16,50 @@
 {
             new ListRenderColumn(Localizer["name"], "name"),
             new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn("IsActive", "isActive")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            },
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
             new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            }
         },
         HeadButtons = new List<UrlTagHelperViewModel>
 {
             new UrlTagHelperViewModel
             {
                 AspAction = "Create",
-                AspController = "Brand",
-                ButtonName = "Add new brand",
-                Description = "New brand will be added"
+                AspController = "Dashboard",
+                ButtonName = "Add new dashboard",
+                Description = "New dashboard will be added"
             }
         },
         HasActions = true,
         ListActions = new List<ListActionViewModel>
-        {
-
+{
+            new ListActionViewModel
+            {
+                Name = "Edit",
+                ButtonType = BootstrapButton.Warning,
+                Url = Url.Action("Edit", "Dashboard"),
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("dashboardId", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                Name = "Builder",
+                ButtonType = BootstrapButton.Success,
+                Url = Url.Action("Builder", "Dashboard"),
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("dashboardId", "id")
+                }
+            }
         },
         Documentation = "This tan allow to manage your dashboards"
     };
