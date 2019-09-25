@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Zadanie pomyślnie usunięty ",
   "system_taskmanager_close": "Zamknij",
   "system_taskmanager_upload_files": "Pobieranie plików",
-  "system_taskmanager_task_files": "Pliki"
+  "system_taskmanager_task_files": "Pliki",
+  "no": "Nie",
+  "system_taskmanager_file_deleted": "Plik usunięty"
 }

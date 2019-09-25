@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Sarcina șters cu succes",
   "system_taskmanager_close": "Închide",
   "system_taskmanager_upload_files": "Încărca fișiere",
-  "system_taskmanager_task_files": "Fișierele"
+  "system_taskmanager_task_files": "Fișierele",
+  "no": "Nu",
+  "system_taskmanager_file_deleted": "Fișier șters"
 }

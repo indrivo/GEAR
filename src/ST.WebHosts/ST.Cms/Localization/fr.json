@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Tâche supprimée avec succès",
   "system_taskmanager_close": "Fermer",
   "system_taskmanager_upload_files": "Télécharger des fichiers",
-  "system_taskmanager_task_files": "Fichiers"
+  "system_taskmanager_task_files": "Fichiers",
+  "no": "Pas de",
+  "system_taskmanager_file_deleted": "Fichier supprimé"
 }

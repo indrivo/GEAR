@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Στόχος διαγραφεί επιτυχώς",
   "system_taskmanager_close": "Κοντά",
   "system_taskmanager_upload_files": "Ανεβάστε τα αρχεία",
-  "system_taskmanager_task_files": "Αρχεία"
+  "system_taskmanager_task_files": "Αρχεία",
+  "no": "Όχι",
+  "system_taskmanager_file_deleted": "Το αρχείο διαγραφεί"
 }

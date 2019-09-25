@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Task erfolgreich gelöscht",
   "system_taskmanager_close": "In der Nähe",
   "system_taskmanager_upload_files": "Hochladen von Dateien",
-  "system_taskmanager_task_files": "Dateien"
+  "system_taskmanager_task_files": "Dateien",
+  "no": "Keine",
+  "system_taskmanager_file_deleted": "Datei gelöscht"
 }

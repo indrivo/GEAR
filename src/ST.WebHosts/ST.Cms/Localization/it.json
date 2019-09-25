@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Compito eliminato con successo",
   "system_taskmanager_close": "Chiudere",
   "system_taskmanager_upload_files": "Caricare i file",
-  "system_taskmanager_task_files": "File"
+  "system_taskmanager_task_files": "File",
+  "no": "No",
+  "system_taskmanager_file_deleted": "File eliminati"
 }

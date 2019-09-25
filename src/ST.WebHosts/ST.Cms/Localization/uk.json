@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Завдання успішно видалена ",
   "system_taskmanager_close": "Закрити",
   "system_taskmanager_upload_files": "Завантажувати файли",
-  "system_taskmanager_task_files": "Файли"
+  "system_taskmanager_task_files": "Файли",
+  "no": "Немає",
+  "system_taskmanager_file_deleted": "Файл видалено"
 }

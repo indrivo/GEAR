@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Task deleted successfully",
   "system_taskmanager_close": "Close",
   "system_taskmanager_upload_files": "Upload files",
-  "system_taskmanager_task_files": "Files"
+  "system_taskmanager_task_files": "Files",
+  "no": "No",
+  "system_taskmanager_file_deleted": "File deleted"
 }

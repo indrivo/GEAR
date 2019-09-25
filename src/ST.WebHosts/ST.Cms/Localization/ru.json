@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Задача успешно удалена ",
   "system_taskmanager_close": "Закрыть",
   "system_taskmanager_upload_files": "Загружать файлы",
-  "system_taskmanager_task_files": "Файлы"
+  "system_taskmanager_task_files": "Файлы",
+  "no": "Нет",
+  "system_taskmanager_file_deleted": "Файл удален"
 }

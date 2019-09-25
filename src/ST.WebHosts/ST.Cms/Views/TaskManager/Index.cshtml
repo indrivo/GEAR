@@ -316,7 +316,7 @@
 											<div class="file-list">
 											</div>
 										</div>
-										<input id="taskFiles" name="taskFiles" type="file" size="1" multiple />
+										<input class="task-files" name="taskFiles" type="file" size="1" multiple />
 									</div>
 								</div>
 							</form>
@@ -390,38 +390,8 @@
 				</div>
 				<div class="modal-body p-4">
 					<form id="edit-task">
-						<div class="form-group">
-							<div class="form-group">
-								<label for="edit-task-name">@Localizer["name"]</label>
-								<input type="text" class="form-control task-name" id="edit-task-name" placeholder="@Localizer["name"]" required>
-							</div>
-							<div class="form-group">
-								<label for="edit-task-description">@Localizer["description"]</label>
-								<textarea class="form-control task-description ckeditor" id="edit-task-description" type="text" rows="3" required></textarea>
-							</div>
-							<div class="form-group">
-								<label for="edit-task-start-date">@Localizer["system_taskmanager_start_date"]</label>
-								<input type="date" id="edit-task-start-date" class="form-control task-start-date" required>
-							</div>
-							<div class="form-group">
-								<label for="edit-task-end-date">@Localizer["system_taskmanager_end_date"]</label>
-								<input type="date" id="edit-task-end-date" class="form-control task-end-date" required>
-							</div>
-							<div class="form-group">
-								<label for="edit-task-users">@Localizer["user"]</label>
-								<select id="edit-task-users" class="form-control task-users" required>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="edit-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
-								<select id="edit-task-priority" class="form-control task-priority" required>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="edit-task-status">@Localizer["system_taskmanager_status"]</label>
-								<select id="add-task-status" class="form-control task-status" required>
-								</select>
-							</div>
+						<div class="edit-task-form-elements">
+							
 						</div>
 						<div class="pull-right">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_taskmanager_close"]</button>
@@ -539,6 +509,48 @@
 		</div>
 	</script>
 
+	<script id="taskEditTemplate" type="text/x-jsrender">
+		<div class="form-group">
+			<label for="edit-task-name">@Localizer["name"]</label>
+			<input type="text" class="form-control task-name" id="edit-task-name" placeholder="@Localizer["name"]" required value="{{:name}}">
+		</div>
+		<div class="form-group">
+			<label for="edit-task-description">@Localizer["description"]</label>
+			<textarea class="form-control task-description ckeditor" id="edit-task-description" type="text" rows="3" required>{{:description}}</textarea>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-start-date">@Localizer["system_taskmanager_start_date"]</label>
+			<input type="date" id="edit-task-start-date" class="form-control task-start-date" required value="{{:~startDateF}}">
+		</div>
+		<div class="form-group">
+			<label for="edit-task-end-date">@Localizer["system_taskmanager_end_date"]</label>
+			<input type="date" id="edit-task-end-date" class="form-control task-end-date" required value="{{:~endDateF}}">
+		</div>
+		<div class="form-group">
+			<label for="edit-task-users">@Localizer["user"]</label>
+			<select id="edit-task-users" class="form-control task-users" required>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
+			<select id="edit-task-priority" class="form-control task-priority" required>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-status">@Localizer["system_taskmanager_status"]</label>
+			<select id="add-task-status" class="form-control task-status" required>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-status">@Localizer["system_taskmanager_task_files"]</label>
+			<div class="add-task-uploaded-files mb-2">
+				<div class="file-list">
+				</div>
+			</div>
+			<input class="task-files" name="taskEditFiles" type="file" size="1"/>
+		</div>
+	</script>
+
 	<script id="taskDetailsTemplate" type="text/x-jsrender">
 		<div class="form-group">
 			<label class="font-weight-bold mr-2">@Localizer["name"]</label>
@@ -590,13 +602,16 @@
 			</span>
 		</div>
 		{{/if}}
+		{{if files}}
 		<div class="form-group">
 			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_files"]</label>
-			<span>
-				{{:files}}
-			</span>
+			<div class="view-task-files">
+			</div>
 		</div>
+		{{/if}}
 	</script>
+
+
 
 	<script src="~/assets/TaskManagerPlugins/task-manager.js" asp-append-version="true"></script>
 	<script src="~/assets/TaskManagerPlugins/task-manager-index.js" asp-append-version="true"></script>
@@ -812,6 +827,7 @@
 				DtartDate: "",
 				EndDate: "",
 				UserId: "",
+				Files: [],
 				TaskPriority: "",
 				Status: ""
 			}) {
@@ -1044,6 +1060,7 @@
 		const toast = new ToastNotifier();
 
 		const taskDetailsTemplate = $.templates("#taskDetailsTemplate");
+		const taskEditTemplate = $.templates("#taskEditTemplate");
 		const taskListTemplate = $.templates("#taskListTemplate");
 		const taskItemsTemplate = $.templates("#taskItemsTemplate");
 		const taskItemsAddTaskTemplate = $.templates("#taskItemsAddTaskTemplate");
@@ -1090,11 +1107,6 @@
 			});
 		});
 
-		$('#taskFiles').on('change', function () {
-			$('.add-task-uploaded-files .file-list').html('');
-			getFilesFromInput($('#taskFiles'));
-		});
-
 		$('#add-task').submit(function (e) {
 			e.preventDefault();
 
@@ -1105,7 +1117,7 @@
 
 			$.each($('#addTaskModal .file-list-item:not(.deleting)'), function () {
 				let fileId = $(this).find('.file-name').data('file-id');
-				let file = $('#taskFiles')[0].files[fileId];
+				let file = $('#addTaskModal .task-files')[0].files[fileId];
 				formData.append("files", file);
 			});
 			
@@ -1115,7 +1127,7 @@
 
 
 			uploadMultipleFiles(formData).then(result => {
-				filesToUpload.push(result);
+				filesToUpload = result;
 
 				task = {
 					taskItems: taskItemsForm,
@@ -1166,6 +1178,8 @@
 		$('.task-manager-add-new-task').off().on('click', function () {
 			$('.initial-tab-click').trigger('click');
 			$('.add-task-uploaded-files .file-list').html('');
+			$('.modal-add-task .file-list').html('');
+			addChangeFileInputEvent('add');
 		});
 
 		$('.task-manager .task-manager-task-types').off().on('change', function () {
@@ -1203,8 +1217,27 @@
 			});
 		});
 
+		function addChangeFileInputEvent(type) {
+			$('.task-files').off().on('change', function () {
+				const scope = this;
+				const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
+				const files = getFilesFromInput($(this));
+				if (type === 'add') {
+					for (let i = 0; i < files.length; i++) {
+						fileListAppend(files[i].name, wrapper, i);
+					}
+				}
+				else if (type === 'edit') {
+					let formData = new FormData();
+					formData.append("files", files[0]);
+					uploadFile(formData).then(fileId => {
+						fileListAppend(files[0].name, wrapper, fileId);
+					});
+				}
+			});
+		};
+
 		function loadTaskList(type, page, pageSize, descending, attribute) {
-			console.log(type, page, pageSize, descending, attribute);
 			if (type === 'active') {
 				return manager.getUserTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
 					$.each(result.results, function () {
@@ -1288,13 +1321,20 @@
 			const editModal = $('#editTaskModal');
 			editModal.find('#edit-task').attr('data-id', taskId);
 			return manager.getTask(taskId).then(result => {
-				editModal.find('.task-name').val(result.name);
-				editModal.find('.task-description').val(result.description);
-				editModal.find('.task-start-date').val(moment(result.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD'));
-				editModal.find('.task-end-date').val(moment(result.endDate, 'DD.MM.YYYY').format('YYYY-MM-DD'));
-				editModal.find('.task-users').val(result.userId);
-				editModal.find('.task-priority').val(result.taskPriority);
-				editModal.find('.task-status').val(result.status);
+				const htmlOutput = taskEditTemplate.render(result, {
+					startDateF: moment(result.startDate, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+					endDateF: moment(result.endDate, 'DD.MM.YYYY').format('YYYY-MM-DD')
+				});
+				$(".edit-task-form-elements").html(htmlOutput);
+				fillLoadedLists();
+				editModal.find('.task-user option[value="' + result.userId + '"]').attr('selected', 'selected');
+				editModal.find('.task-status option[value="' + result.status + '"]').attr('selected', 'selected');
+				editModal.find('.task-priority option[value="' + result.taskPriority + '"]').attr('selected', 'selected');
+				$.each(result.files, function () {
+					getFilename(this).then(filename => {
+						fileListAppend(filename, $('.modal-edit-task .add-task-uploaded-files .file-list'), this);
+					});
+				});
 				window.forceTranslate();
 			}).catch(e => {
 				toast.notifyErrorList(e);
@@ -1303,19 +1343,33 @@
 
 		function addTaskEditSubmitEvent() {
 			$('#edit-task').off().submit(function (e) {
-				$('.task-manager-loader').fadeIn();
 				e.preventDefault();
 				const scope = $(this);
+
+				let filesToUpload = [];
+
+				$.each($('.modal-edit-task .file-list-item:not(.deleting)'), function () {
+					let fileId = $(this).find('.file-name').data('file-id');
+					filesToUpload.push(fileId);
+				});
+
+				$.each($('.modal-edit-task .file-list-item.deleting'), function () {
+					let fileId = $(this).find('.file-name').data('file-id');
+					deleteFilePermanent(fileId);
+				});
+
 				let task = {
-					Id: scope.data('id'),
-					Name: scope.find('.task-name').val(),
-					Description: scope.find('.task-description').val(),
-					StartDate: scope.find('.task-start-date').val(),
-					EndDate: scope.find('.task-end-date').val(),
-					UserId: scope.find('.task-users').val(),
-					TaskPriority: scope.find('.task-priority').val(),
-					Status: scope.find('.task-status').val(),
+					id: scope.data('id'),
+					name: scope.find('.task-name').val(),
+					description: scope.find('.task-description').val(),
+					startDate: scope.find('.task-start-date').val(),
+					endDate: scope.find('.task-end-date').val(),
+					userId: scope.find('.task-users').val(),
+					taskPriority: scope.find('.task-priority').val(),
+					status: scope.find('.task-status').val(),
+					files: filesToUpload
 				};
+				$('.task-manager-loader').fadeIn();
 				updateTask(task).then(() => {
 					window.forceTranslate();
 					$('.task-manager-loader').fadeOut();
@@ -1352,6 +1406,7 @@
 				loadTaskEditModal(taskId).then(() => {
 					addTaskEditSubmitEvent();
 					window.forceTranslate();
+					addChangeFileInputEvent('edit');
 					$('#editTaskModal').modal('show');
 				}).catch(e => {
 					toast.notifyErrorList(e);
@@ -1423,8 +1478,17 @@
 					statusesList: statuses,
 					prioritiesList: priorities,
 				});
+
 				$('#detailsTaskModal .task-number').html('#' + result.taskNumber);
+
 				$('#details-tab').html(htmlOutput);
+				$('.view-task-files').html('');
+				$.each(result.files, function () {
+					const scope = this;
+					getFilename(scope).then(filename => {
+						$('.view-task-files').append('<div><a href="/api/File/GetFile?id=' + scope + '">' + filename + '</a></div>');
+					});
+				});
 				window.forceTranslate();
 				loadTaskItems(taskId).then(() => { });
 			}).catch(e => {
@@ -1530,6 +1594,7 @@
 
 			}).catch(e => {
 				toast.notifyErrorList(e);
+				console.log('here is the problem');
 			});
 		}
 
@@ -1552,7 +1617,7 @@
 		function updateTask(task) {
 			return manager.updateTask(task).then(result => {
 				toast.notify({ text: "@Localizer["system_taskmanager_update_success"]", icon: "success" });
-				refreshTask(task.Id).then(() => {
+				refreshTask(result.id).then(() => {
 				}).catch(e => {
 				});
 			}).catch(e => {
@@ -1602,10 +1667,7 @@
 
 		function getFilesFromInput(input) {
 			let files = input[0].files;
-			const wrapper = $('.add-task-uploaded-files .file-list');
-			for (let i = 0; i < files.length; i++) {
-				fileListAppend(files[i].name, wrapper, i);
-			}
+			return files;
 		}
 
 		function fileListAppend(fileName, wrapper, fileId) {
@@ -1659,9 +1721,77 @@
 			});
 		};
 
+		function uploadFile(formData){
+			return new Promise((resolve, reject) => {
+				$.ajax({
+					url: '/api/File/Upload',
+					data: formData,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					success: function (data) {
+						if (data.is_success) {
+							resolve(data.result);
+						}
+						else {
+							reject(data.error_keys);
+						}
+					},
+					error: (e) => {
+						reject(e);
+					}
+				});
+			});
+		}
+
 		function downloadFile(fileId) {
 			window.location.href = "/api/File/GetFile?id=" + fileId;
 		}
+
+		function getFilename(fileId) {
+			return new Promise((resolve, reject) => {
+				$.ajax({
+					url: `/api/File/GetFile?id=${fileId}`,
+					type: "GET",
+					success: function (data, textStatus, request) {
+						if (data) {
+							let filename = '';
+							let disposition = request.getResponseHeader('content-disposition');
+						    if (disposition && disposition.indexOf('attachment') !== -1) {
+								let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+								let matches = filenameRegex.exec(disposition);
+								if (matches != null && matches[1]) { 
+								  filename = matches[1].replace(/['"]/g, '');
+								}
+							}
+							resolve(filename);
+						} else {
+							reject(textStatus);
+						}
+					},
+					error: (e) => {
+						reject(e);
+					}
+				});
+			});
+		}
+
+		function deleteFilePermanent(fileId) {
+            var form = new FormData();
+            form.append("id", fileId);
+            $.ajax(
+                {
+                    url: '/api/File/DeletePermanent',
+                    data: form,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        toast.notify({ text: "@Localizer["system_taskmanager_file_deleted"]", icon: "success" });
+                    }
+                }
+            );
+        }
 
 	</script>
 }

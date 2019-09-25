@@ -615,5 +615,7 @@
   "system_taskmanager_delete_task_success": "Taak succesvol verwijderd",
   "system_taskmanager_close": "Sluiten",
   "system_taskmanager_upload_files": "Bestanden uploaden",
-  "system_taskmanager_task_files": "Bestanden"
+  "system_taskmanager_task_files": "Bestanden",
+  "no": "Geen",
+  "system_taskmanager_file_deleted": "Het bestand verwijderd"
 }
