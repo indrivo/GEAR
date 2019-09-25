@@ -47,7 +47,19 @@ namespace ST.TaskManager.Helpers
 
         internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
         {
-            var dto = dbTaskResult.Adapt<GetTaskViewModel>();
+            var dto = new GetTaskViewModel
+            {
+                Id = dbTaskResult.Id,
+                TaskNumber = dbTaskResult.TaskNumber,
+                StartDate = dbTaskResult.StartDate,
+                EndDate = dbTaskResult.EndDate,
+                Description = dbTaskResult.Description,
+                Name = dbTaskResult.Name,
+                Status = dbTaskResult.Status,
+                TaskPriority = dbTaskResult.TaskPriority,
+                UserId = dbTaskResult.UserId,
+            };
+
             if (!string.IsNullOrWhiteSpace(dbTaskResult.Files)) dto.Files = JsonConvert.DeserializeObject<List<Guid>>(dbTaskResult.Files);
             dto.TaskItemsCount = CountTaskItems(dbTaskResult);
             return dto;
