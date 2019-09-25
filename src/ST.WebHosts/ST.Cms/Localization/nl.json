@@ -556,7 +556,6 @@
   "chart_title": "Grafiek titel",
   "remove_chart": "Diagram verwijderen",
   "chart_type": "Diagram type",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "E-mail niet wordt bevestigd",
   "system_email_confirm_state": "De status van de e-mail",
   "iso_matrix_impact": "De Impact",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "Kenmerk groepen",
   "system_commerce_attributes": "Product kenmerken",
   "system_commerce_product_types": "Product types",
-  "system_commerce_percentage": "Percentage"
-=======
+  "system_commerce_percentage": "Percentage",
   "system_high": "Hoog",
   "system_taskmanager_add_task": "Een taak toe te voegen",
   "system_taskmanager_active": "Actief",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "Taak met succes bijgewerkt",
   "system_taskmanager_task": "Taak",
   "system_taskmanager_delete_task_success": "Taak succesvol verwijderd",
-  "system_taskmanager_close": "Sluiten"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "Sluiten",
+  "system_taskmanager_upload_files": "Bestanden uploaden",
+  "system_taskmanager_task_files": "Bestanden"
 }

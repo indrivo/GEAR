@@ -556,7 +556,6 @@
   "chart_title": "Tytuł wykresu ",
   "remove_chart": "Usunąć harmonogram",
   "chart_type": "Typ wykresu ",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "E-mail nie został potwierdzony",
   "system_email_confirm_state": "Stan \" na email",
   "iso_matrix_impact": "Wpływ",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "Grupy atrybutów ",
   "system_commerce_attributes": "Atrybuty produktu ",
   "system_commerce_product_types": "Rodzaje produktów ",
-  "system_commerce_percentage": "Procent"
-=======
+  "system_commerce_percentage": "Procent",
   "system_high": "Wysoka",
   "system_taskmanager_add_task": "Dodaj zadanie",
   "system_taskmanager_active": "Aktywny",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "Zadanie zostało pomyślnie zaktualizowane ",
   "system_taskmanager_task": "Zadanie",
   "system_taskmanager_delete_task_success": "Zadanie pomyślnie usunięty ",
-  "system_taskmanager_close": "Zamknij"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "Zamknij",
+  "system_taskmanager_upload_files": "Pobieranie plików",
+  "system_taskmanager_task_files": "Pliki"
 }

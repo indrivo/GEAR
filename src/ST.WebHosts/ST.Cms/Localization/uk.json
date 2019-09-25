@@ -556,7 +556,6 @@
   "chart_title": "Заголовок діаграми ",
   "remove_chart": "Видалити графік",
   "chart_type": "Тип діаграми ",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "Електронної пошти не підтверджений",
   "system_email_confirm_state": "Стан \" на email",
   "iso_matrix_impact": "Вплив",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "Групи атрибутів ",
   "system_commerce_attributes": "Атрибути продукту ",
   "system_commerce_product_types": "Види продукції ",
-  "system_commerce_percentage": "Відсоток"
-=======
+  "system_commerce_percentage": "Відсоток",
   "system_high": "Висока",
   "system_taskmanager_add_task": "Додати завдання",
   "system_taskmanager_active": "Активний",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "Завдання було успішно оновлено ",
   "system_taskmanager_task": "Завдання",
   "system_taskmanager_delete_task_success": "Завдання успішно видалена ",
-  "system_taskmanager_close": "Закрити"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "Закрити",
+  "system_taskmanager_upload_files": "Завантажувати файли",
+  "system_taskmanager_task_files": "Файли"
 }

@@ -26,10 +26,14 @@
 			display: inline-block;
 		}
 
-		.task-list table th,
-		.task-list table tbody td {
+		.task-manager-task-list table th,
+		.task-manager-task-list table tbody td {
 			padding: .75rem 2rem !important;
 		}
+
+			.task-manager-task-list table tbody td.task-actions {
+				width: 100px;
+			}
 
 		.task .status {
 			position: relative;
@@ -168,6 +172,10 @@
 			table th .sort.ascending:after {
 				opacity: 1;
 			}
+
+		.file-list-item.deleting label {
+			opacity: 0.6;
+		}
 	</style>
 
 }
@@ -189,7 +197,7 @@
 		</div>
 		<div class="col-md-2">
 			<div class="form-group row align-items-center ml-4">
-				<label class="m-0 task-manager-items-per-page-label" for="iems-per-page" translate="@Localizer["system_taskmanager_items_per_page"]">Items per page</label>
+				<label class="m-0 task-manager-items-per-page-label" for="iems-per-page">@Localizer["system_taskmanager_items_per_page"]</label>
 				<select class="task-manager-items-per-page-control form-control w-auto ml-2">
 					<option value="5">5</option>
 					<option value="10" selected>10</option>
@@ -201,8 +209,8 @@
 		<div class="col">
 			<button id="add-new-task" class="task-manager-add-new-task btn btn-primary pull-right d-flex align-items-center" data-toggle="modal" data-target="#addTaskModal">
 				<i class="material-icons d-block">add</i>
-				<span translate="@Localizer["system_taskmanager_add_task"]">
-					Add task
+				<span>
+					@Localizer["system_taskmanager_add_task"]
 				</span>
 			</button>
 		</div>
@@ -264,7 +272,7 @@
 				</div>
 				<div class="modal-body mx-4 mb-4 p-0">
 					<ul class="nav nav-tabs nav-primary">
-						<li><a class="nav-link active" data-toggle="tab" href="#add-task-tab">@Localizer["system_taskmanager_task_details"]</a></li>
+						<li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#add-task-tab">@Localizer["system_taskmanager_task_details"]</a></li>
 						<li><a class="nav-link" data-toggle="tab" href="#add-task-items-tab">@Localizer["system_taskmanager_task_items"]</a></li>
 					</ul>
 					<div class="tab-content">
@@ -302,6 +310,14 @@
 										<select id="add-task-status" class="form-control task-status" required>
 										</select>
 									</div>
+									<div class="form-group">
+										<label for="add-task-status">@Localizer["system_taskmanager_upload_files"]</label>
+										<div class="add-task-uploaded-files mb-2">
+											<div class="file-list">
+											</div>
+										</div>
+										<input id="taskFiles" name="taskFiles" type="file" size="1" multiple />
+									</div>
 								</div>
 							</form>
 						</div>
@@ -327,7 +343,7 @@
 		</div>
 	</div>
 
-	<div class="modal-task-details fade" id="detailsTaskModal" tabindex="-1" role="dialog" aria-labelledby="detailsTaskLabel" style="display: none;" aria-hidden="true">
+	<div class="modal modal-task-details fade" id="detailsTaskModal" tabindex="-1" role="dialog" aria-labelledby="detailsTaskLabel" style="display: none;" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header px-4">
@@ -338,7 +354,7 @@
 				</div>
 				<div class="modal-body mx-4 mb-4 p-0">
 					<ul class="nav nav-tabs nav-primary">
-						<li><a class="nav-link active" data-toggle="tab" href="#details-tab">@Localizer["system_taskmanager_task_details"]</a></li>
+						<li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#details-tab">@Localizer["system_taskmanager_task_details"]</a></li>
 						<li><a class="nav-link" data-toggle="tab" href="#task-items-tab">@Localizer["system_taskmanager_task_items"]</a></li>
 					</ul>
 					<div class="tab-content">
@@ -537,43 +553,49 @@
 			</span>
 		</div>
 		<div class="form-group">
-			<label class="font-weight-bold mr-2" for="add-task-start-date">@Localizer["system_taskmanager_start_date"]</label>
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_start_date"]</label>
 			<span>
 				{{:startDate}}
 			</span>
 		</div>
 		<div class="form-group">
-			<label class="font-weight-bold mr-2" for="add-task-end-date">@Localizer["system_taskmanager_end_date"]</label>
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_end_date"]</label>
 			<span>
 				{{:endDate}}
 			</span>
 		</div>
 		<div class="form-group">
-			<label class="font-weight-bold mr-2" for="add-task-users">@Localizer["user"]</label>
+			<label class="font-weight-bold mr-2">@Localizer["user"]</label>
 			<span>
 				{{:~user.text}}
 			</span>
 		</div>
 		<div class="form-group">
-			<label class="font-weight-bold mr-2" for="add-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_priority"]</label>
 			<span translate="{{:~prioritiesList[taskPriority].translateKey}}">
 				{{:~prioritiesList[taskPriority].text}}
 			</span>
 		</div>
 		{{if ~assigned}}
 		<div class="form-group">
-			<label class="font-weight-bold mr-2" for="edit-assigned-task-status">@Localizer["system_taskmanager_status"]</label>
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_status"]</label>
 			<select id="edit-assigned-task-status" class="form-control task-status" required>
 			</select>
 		</div>
 		{{else}}
 		<div class="form-group">
-			<label class="font-weight-bold mr-2" for="add-task-status">@Localizer["system_taskmanager_status"]</label>
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_status"]</label>
 			<span translate="{{:~statusesList[status].translateKey}}">
 				{{:~statusesList[status].text}}
 			</span>
 		</div>
 		{{/if}}
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_files"]</label>
+			<span>
+				{{:files}}
+			</span>
+		</div>
 	</script>
 
 	<script src="~/assets/TaskManagerPlugins/task-manager.js" asp-append-version="true"></script>
@@ -756,6 +778,7 @@
 				StartDate: "",
 				EndDate: "",
 				UserId: "",
+				Files: [],
 				TaskPriority: "",
 				Status: ""
 			}) {
@@ -791,7 +814,6 @@
 				UserId: "",
 				TaskPriority: "",
 				Status: ""
-
 			}) {
 				return new Promise((resolve, reject) => {
 					$.ajax({
@@ -1034,7 +1056,7 @@
 		let tablePage = 1;
 		let tablePageSize = 10;
 		let taskType = $('.task-manager .task-manager-task-types').val();
-		const sortableTableHeaders = $('.task-manager .task-list th.sortable');
+		const sortableTableHeaders = $('.task-manager .task-manager-task-list th.sortable');
 
 		Promise.all([manager.getStatusesList(), manager.getPrioritiesList(), manager.getUsersLoadedList()]).then(data => {
 			statuses = data[0];
@@ -1068,42 +1090,65 @@
 			});
 		});
 
+		$('#taskFiles').on('change', function () {
+			$('.add-task-uploaded-files .file-list').html('');
+			getFilesFromInput($('#taskFiles'));
+		});
+
 		$('#add-task').submit(function (e) {
 			e.preventDefault();
 
 			const scope = $(this);
 			let taskItemsForm = [];
+			let filesToUpload = [];
+			let formData = new FormData();
 
+			$.each($('#addTaskModal .file-list-item:not(.deleting)'), function () {
+				let fileId = $(this).find('.file-name').data('file-id');
+				let file = $('#taskFiles')[0].files[fileId];
+				formData.append("files", file);
+			});
+			
 			$.each($('#addTaskModal .task-item-name'), function () {
 				taskItemsForm.push({ Name: $(this).data('task-name') });
 			});
 
-			task = {
-				taskItems: taskItemsForm,
-				name: scope.find('#add-task-name').val(),
-				description: scope.find('#add-task-description').val(),
-				startDate: scope.find('#add-task-start-date').val(),
-				endDate: scope.find('#add-task-end-date').val(),
-				userId: scope.find('#add-task-users').val(),
-				taskPriority: scope.find('#add-task-priority').val(),
-				status : scope.find('#add-task-status').val()
-			};
 
-			if (moment(startDate).isBefore(endDate)) {
-				$('.task-manager-loader').fadeIn();
-				createTask(task).then(() => {
-					$('.task-manager-loader').fadeOut();
-				});
+			uploadMultipleFiles(formData).then(result => {
+				filesToUpload.push(result);
 
-				$('#addTaskModal').modal('hide');
-				formClean('#add-task');
-				formClean('#add-task-item-add-task');
+				task = {
+					taskItems: taskItemsForm,
+					name: scope.find('#add-task-name').val(),
+					description: scope.find('#add-task-description').val(),
+					startDate: scope.find('#add-task-start-date').val(),
+					endDate: scope.find('#add-task-end-date').val(),
+					userId: scope.find('#add-task-users').val(),
+					taskPriority: scope.find('#add-task-priority').val(),
+					status: scope.find('#add-task-status').val(),
+					files: filesToUpload
+				};
 
-				$('#add-task-items-tab .task-items-add-task').html('');
-			}
-			else {
-				toast.notify({ text: "@Localizer["system_taskmanager_error_date"]", icon: "error" });
-			}
+				if (moment(task.startDate).isBefore(task.endDate)) {
+					$('.task-manager-loader').fadeIn();
+					createTask(task).then(() => {
+						$('.task-manager-loader').fadeOut();
+					}).catch(e => {
+						console.warn(e);
+					});
+
+					$('#addTaskModal').modal('hide');
+					formClean('#add-task');
+					formClean('#add-task-item-add-task');
+
+					$('#add-task-items-tab .task-items-add-task').html('');
+				}
+				else {
+					toast.notify({ text: "@Localizer["system_taskmanager_error_date"]", icon: "error" });
+				}
+			}).catch(e => {
+				toast.notifyErrorList(e);
+			});
 		});
 
 		$('#add-task-item-add-task').submit(function (e) {
@@ -1118,7 +1163,12 @@
 			$(this).find('#new-task-item-name-add-task').val('');
 		});
 
-		$('.task-manager .task-manager-items-per-pasge-control').off().on('change', function () {
+		$('.task-manager-add-new-task').off().on('click', function () {
+			$('.initial-tab-click').trigger('click');
+			$('.add-task-uploaded-files .file-list').html('');
+		});
+
+		$('.task-manager .task-manager-task-types').off().on('change', function () {
 			taskType = $(this).val();
 			$('.task-manager-loader').fadeIn();
 			loadTaskList(taskType, tablePage, tablePageSize, false, 'StartDate').then(() => {
@@ -1154,6 +1204,7 @@
 		});
 
 		function loadTaskList(type, page, pageSize, descending, attribute) {
+			console.log(type, page, pageSize, descending, attribute);
 			if (type === 'active') {
 				return manager.getUserTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
 					$.each(result.results, function () {
@@ -1166,7 +1217,7 @@
 					});
 					addTablePager(result.pageCount, result.currentPage);
 					addTaskEvents();
-					//window.forceTranslate();
+					window.forceTranslate();
 				}).catch(e => {
 					console.log(e);
 					toast.notifyErrorList(e);
@@ -1184,7 +1235,7 @@
 					});
 					addTablePager(result.pageCount, result.CurrentPage);
 					addTaskEvents();
-					//window.forceTranslate();
+					window.forceTranslate();
 				}).catch(e => {
 					console.log(e);
 					toast.notifyErrorList(e);
@@ -1202,7 +1253,7 @@
 					});
 					addTablePager(result.pageCount, result.CurrentPage);
 					addTaskEvents();
-					//window.forceTranslate();
+					window.forceTranslate();
 				}).catch(e => {
 					toast.notifyErrorList(e);
 				});
@@ -1221,15 +1272,16 @@
 
 			$(".task-users").html('');
 			$.each(users, function () {
-				$(".task-users").append($(`<option value="${this.value}>${this.text}</option>`));
+				$(".task-users").append($(`<option value="${this.value}">${this.text}</option>`));
 			});
+
 
 			$(".task-status").html('');
 			$.each(statuses, function () {
-				$(".task-status").append($(`<option value="${this.value} translate="${this.translateKey}">${this.text}</option>`));
+				$(".task-status").append($(`<option value="${this.value}" translate="${this.translateKey}">${this.text}</option>`));
 			});
+			window.forceTranslate();
 
-			//window.forceTranslate();
 		}
 
 		function loadTaskEditModal(taskId) {
@@ -1243,7 +1295,7 @@
 				editModal.find('.task-users').val(result.userId);
 				editModal.find('.task-priority').val(result.taskPriority);
 				editModal.find('.task-status').val(result.status);
-				//window.forceTranslate();
+				window.forceTranslate();
 			}).catch(e => {
 				toast.notifyErrorList(e);
 			});
@@ -1265,7 +1317,7 @@
 					Status: scope.find('.task-status').val(),
 				};
 				updateTask(task).then(() => {
-					//window.forceTranslate();
+					window.forceTranslate();
 					$('.task-manager-loader').fadeOut();
 				}).catch(e => {
 					toast.notifyErrorList(e);
@@ -1322,19 +1374,16 @@
 				const scope = $(this);
 				const taskId = scope.data('id');
 				const assigned = scope.data('assigned');
-				$('.task-details .nav-tabs li:last-child a').removeClass('active show');
-				$('#task-items-tab').removeClass('in active show');
-				$('.task-details .nav-tabs li:first-child a').addClass('active show');
-				$('#details-tab').addClass('in active show');
-				console.log(taskId);
+				$('.initial-tab-click').trigger('click');
 				viewTask(taskId, assigned).then(() => {
 					if (assigned) {
 						loadStatusAssignedTask(taskId);
 					}
-					//window.forceTranslate();
+					window.forceTranslate();
 					$('#detailsTaskModal').modal('show');
 				}).catch(e => {
 					console.warn(e);
+					console.log('problem');
 				});
 			});
 		}
@@ -1342,7 +1391,7 @@
 		function loadStatusAssignedTask(taskId){
 			$("#edit-assigned-task-status").html('');
 			$.each(statuses, function () {
-				$("#edit-assigned-task-status").append($(`<option value="${this.value}" translate="${this.translateKey}"${this.text}</option>`));
+				$("#edit-assigned-task-status").append($(`<option value="${this.value}" translate="${this.translateKey}">${this.text}</option>`));
 			});
 			manager.getTask(taskId).then(result => {
 				$("#edit-assigned-task-status").val(result.status);
@@ -1360,6 +1409,7 @@
 					};
 					updateTask(task).then(() => { });
 				});
+				window.forceTranslate();
 			});
 		}
 
@@ -1385,16 +1435,6 @@
 
 		}
 
-		function createTask(task) {
-			return 	manager.createTask(task).then(result => {
-				toast.notify({ text: "@Localizer["system_taskmanager_add_task_success"]", icon: "success" });
-				loadTaskList('active', tablePage, tablePageSize, false, 'StartDate').then(() => { });
-				$('.task-manager-controls .task-manager-task-types').val('active');
-			}).catch(e => {
-				toast.notifyErrorList(e);
-			});
-		}
-
 		function loadTaskItems(taskId) {
 			return manager.getTaskItems(taskId).then(taskItems => {
 				$.each(taskItems, function () {
@@ -1402,10 +1442,21 @@
 					$("#task-items-tab .task-items").html(htmlOutput);
 				});
 				addTaskItemsEvents(taskId);
-				//window.forceTranslate();
 			}).catch(e => {
 				$("#task-items-tab .task-items").html('');
 				addTaskItemsEvents(taskId);
+			});
+		}
+
+		function createTask(task) {
+			console.log(task);
+			return 	manager.createTask(task).then(result => {
+				toast.notify({ text: "@Localizer["system_taskmanager_add_task_success"]", icon: "success" });
+				loadTaskList('active', tablePage, tablePageSize, false, 'StartDate').then(() => { });
+				$('.task-manager-controls .task-manager-task-types').val('active');
+				window.forceTranslate();
+			}).catch(e => {
+				toast.notifyErrorList(e);
 			});
 		}
 
@@ -1415,7 +1466,6 @@
 				const name = $(this).siblings('#new-task-item-name').val();
 				$(this).siblings('#new-task-item-name').val('');
 				addTaskItem(taskId, name);
-				//window.forceTranslate();
 			});
 			$('.delete-task-item').off().on('click', function () {
 				const scope = $(this);
@@ -1431,7 +1481,6 @@
 				const taskItemName = $(this).siblings('.custom-control-label').text();
 				const taskItemStatus = $(this).is(':checked');
 				updateTaskItem(taskId, taskItemId, taskItemName, taskItemStatus).then(() => { }).catch(e => {
-					//window.forceTranslate();
 				});
 			});
 		}
@@ -1442,7 +1491,7 @@
 				$("#task-items-tab .task-items").append(htmlOutput);
 				addTaskItemsEvents(taskId);
 				refreshTask(taskId).then(() => {
-					//window.forceTranslate();
+
 				});
 			}).catch(e => {
 				toast.notifyErrorList(e);
@@ -1478,7 +1527,7 @@
 				}
 				targetTask.find('.priority').html(`<span class="priority-${priorities[result.taskPriority].text}">${priorities[result.taskPriority].text}</span>`);
 				targetTask.removeClass('prioriry-High priority-Critical priority-Low priority-Medium').addClass('priority-' + priorities[result.taskPriority].text);
-				//window.forceTranslate();
+
 			}).catch(e => {
 				toast.notifyErrorList(e);
 			});
@@ -1549,6 +1598,69 @@
 			$.each($(formId + ' input[type="text"],' + formId + ' input[type="date"] , ' + formId + ' textarea'), function () {
 				$(this).val('');
 			});
+		}
+
+		function getFilesFromInput(input) {
+			let files = input[0].files;
+			const wrapper = $('.add-task-uploaded-files .file-list');
+			for (let i = 0; i < files.length; i++) {
+				fileListAppend(files[i].name, wrapper, i);
+			}
+		}
+
+		function fileListAppend(fileName, wrapper, fileId) {
+			const restoreBtn = '<button type="button" class="d-none file-list-restore btn btn-outline-warning p-0 ml-auto"><i class="material-icons d-block">restore</i></button>';
+			const deleteBtn = '<button type="button" class="file-list-delete btn btn-outline-danger p-0 ml-auto"><i class="material-icons d-block">close</i></button>';
+			const listElement = $('<div class="file-list-item d-flex mt-2"><label class="m-0 file-name" data-file-id="' + fileId + '">' + fileName + '</label>' + deleteBtn + restoreBtn +'</div>');
+			wrapper.append(listElement);
+			addFileListEvents();
+		}
+
+		function addFileListEvents(){
+			$.each($('.add-task-uploaded-files .file-list-item'), function () {
+				const scope = $(this);
+				scope.find('.file-list-delete').on('click', function () {
+					scope.addClass('deleting');
+					scope.find('.file-list-restore').removeClass('d-none');
+					scope.find('.file-list-delete').addClass('d-none');
+				});
+				scope.find('.file-list-restore').on('click', function () {
+					scope.removeClass('deleting');
+					scope.find('.file-list-delete').removeClass('d-none');
+					scope.find('.file-list-restore').addClass('d-none');
+				});
+			});
+		}
+
+		function uploadMultipleFiles(formData) {
+			return new Promise((resolve, reject) => {
+				$.ajax({
+					url: '/api/File/UploadMultiple',
+					data: formData,
+					processData: false,
+					contentType: false,
+					type: "POST",
+					success: function (data) {
+						let results = [];
+						$.each(data, function () {
+							if (this.is_success) {
+								results.push(this.result);
+								resolve(results);
+							}
+							else {
+								reject(this.error_keys);
+							}
+						});
+					},
+					error: (e) => {
+						reject(e);
+					}
+				});
+			});
+		};
+
+		function downloadFile(fileId) {
+			window.location.href = "/api/File/GetFile?id=" + fileId;
 		}
 
 	</script>

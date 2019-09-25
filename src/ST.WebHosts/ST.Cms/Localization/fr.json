@@ -556,7 +556,6 @@
   "chart_title": "Titre du graphique",
   "remove_chart": "Retirez graphique",
   "chart_type": "Type de graphique",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "Le courriel n'est pas confirmé",
   "system_email_confirm_state": "Le statut de l'e-mail",
   "iso_matrix_impact": "L'Impact",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "Les groupes d'attributs",
   "system_commerce_attributes": "Les attributs d'un produit",
   "system_commerce_product_types": "Types de produits",
-  "system_commerce_percentage": "Pourcentage"
-=======
+  "system_commerce_percentage": "Pourcentage",
   "system_high": "Haute",
   "system_taskmanager_add_task": "Ajouter une tâche",
   "system_taskmanager_active": "Active",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "La tâche de mise à jour avec succès",
   "system_taskmanager_task": "Tâche",
   "system_taskmanager_delete_task_success": "Tâche supprimée avec succès",
-  "system_taskmanager_close": "Fermer"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "Fermer",
+  "system_taskmanager_upload_files": "Télécharger des fichiers",
+  "system_taskmanager_task_files": "Fichiers"
 }

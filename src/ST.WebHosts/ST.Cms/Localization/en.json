@@ -556,7 +556,6 @@
   "chart_title": "Chart title",
   "remove_chart": "Remove chart",
   "chart_type": "Chart type",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "Email not confirmed",
   "system_email_confirm_state": "The status of the email",
   "iso_matrix_impact": "The Impact",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "Attribute groups",
   "system_commerce_attributes": "Product attributes",
   "system_commerce_product_types": "Product types",
-  "system_commerce_percentage": "Percentage"
-=======
+  "system_commerce_percentage": "Percentage",
   "system_high": "High",
   "system_taskmanager_add_task": "Add task",
   "system_taskmanager_active": "Active",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "Task updated successfully",
   "system_taskmanager_task": "Task",
   "system_taskmanager_delete_task_success": "Task deleted successfully",
-  "system_taskmanager_close": "Close"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "Close",
+  "system_taskmanager_upload_files": "Upload files",
+  "system_taskmanager_task_files": "Files"
 }

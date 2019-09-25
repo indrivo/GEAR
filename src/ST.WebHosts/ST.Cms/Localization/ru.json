@@ -556,7 +556,6 @@
   "chart_title": "Заголовок диаграммы ",
   "remove_chart": "Удалить график",
   "chart_type": "Тип графика",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "Электронной почты не подтвержден",
   "system_email_confirm_state": "Состояние \" на email",
   "iso_matrix_impact": "Влияние",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "Группы атрибутов ",
   "system_commerce_attributes": "Атрибуты продукта ",
   "system_commerce_product_types": "Виды продукции ",
-  "system_commerce_percentage": "Процент"
-=======
+  "system_commerce_percentage": "Процент",
   "system_high": "Высокая",
   "system_taskmanager_add_task": "Добавить задачу",
   "system_taskmanager_active": "Активный",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "Задача успешно обновлены ",
   "system_taskmanager_task": "Задача",
   "system_taskmanager_delete_task_success": "Задача успешно удалена ",
-  "system_taskmanager_close": "Закрыть"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "Закрыть",
+  "system_taskmanager_upload_files": "Загружать файлы",
+  "system_taskmanager_task_files": "Файлы"
 }

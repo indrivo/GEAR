@@ -556,7 +556,6 @@
   "chart_title": "図表タイトル",
   "remove_chart": "削除した図表",
   "chart_type": "インタラクティブなプロトタイプ",
-<<<<<<< Updated upstream
   "system_email_not_confirmed": "メールを確認していな",
   "system_email_confirm_state": "の状況をメールで",
   "iso_matrix_impact": "の影響",
@@ -576,8 +575,7 @@
   "system_commerce_attribute_group": "属団体",
   "system_commerce_attributes": "製品の属性",
   "system_commerce_product_types": "製品の種類",
-  "system_commerce_percentage": "割合"
-=======
+  "system_commerce_percentage": "割合",
   "system_high": "高",
   "system_taskmanager_add_task": "タスクの追加",
   "system_taskmanager_active": "活動",
@@ -615,6 +613,7 @@
   "system_taskmanager_update_success": "タスクに成功し",
   "system_taskmanager_task": "タスク",
   "system_taskmanager_delete_task_success": "タスクの削除に成功した",
-  "system_taskmanager_close": "近"
->>>>>>> Stashed changes
+  "system_taskmanager_close": "近",
+  "system_taskmanager_upload_files": "ファイルをアップロード",
+  "system_taskmanager_task_files": "ファイル"
 }
