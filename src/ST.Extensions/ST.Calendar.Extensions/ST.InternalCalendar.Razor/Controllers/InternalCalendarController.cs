@@ -13,7 +13,6 @@ using ST.Identity.Abstractions;
 namespace ST.Calendar.Razor.Controllers
 {
     [Authorize]
-    [Route("api/[controller]/[action]")]
     public class InternalCalendarController : Controller
     {
         /// <summary>
@@ -46,7 +45,7 @@ namespace ST.Calendar.Razor.Controllers
         /// Internal calendar
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("calendar")]
         public IActionResult Index()
         {
             return View();
