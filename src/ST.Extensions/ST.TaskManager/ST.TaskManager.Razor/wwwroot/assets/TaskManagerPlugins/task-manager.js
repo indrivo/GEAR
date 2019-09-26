@@ -92,8 +92,8 @@ $('#add-task').submit(function (e) {
             });
 
             $('#addTaskModal').modal('hide');
-            formClean('#add-task');
-            formClean('#add-task-item-add-task');
+            $('#add-task')[0].reset();
+            $('#add-task-item-add-task')[0].reset();
 
             $('#add-task-items-tab .task-items-add-task').html('');
         }
@@ -165,6 +165,7 @@ function addChangeFileInputEvent(type) {
         const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
         const files = getFilesFromInput($(this));
         if (type === 'add') {
+            wrapper.html('');
             for (let i = 0; i < files.length; i++) {
                 fileListAppend(files[i].name, wrapper, i);
             }
@@ -590,20 +591,26 @@ function addTablePager(pageCount, page) {
 }
 
 function findUserById(UId) {
-    return users.find(user => {
+    const result = users.find(user => {
         return user.value == UId;
     });
+    if (!result) {
+        return {
+            disabled: false,
+            group: null,
+            selected: false,
+            text: 'Unknown',
+            value: '00000000-0000-0000-0000-000000000000'
+        }
+    }
+    else {
+        return result;
+    }
 }
 
 function cleanTableSort() {
     $.each(sortableTableHeaders, function () {
         sortableTableHeaders.children('.sort').removeClass('ascending descending');
-    });
-}
-
-function formClean(formId) {
-    $.each($(formId + ' input[type="text"],' + formId + ' input[type="date"] , ' + formId + ' textarea'), function () {
-        $(this).val('');
     });
 }
 
