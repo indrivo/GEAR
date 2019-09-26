@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.ViewModels;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 
 namespace ST.Dashboard
@@ -30,13 +32,36 @@ namespace ST.Dashboard
         public virtual IQueryable<DashBoard> DashBoards => _context.Dashboards;
 
 
+        /// <summary>
+        /// Get dashboard for render in view
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Row>>> GetDashboardConfigurationForRenderAsync()
+        {
+            var response = new ResultModel<IEnumerable<Row>>();
+            var dashboard = await _context.Dashboards
+                .Include(x => x.Rows)
+                .FirstOrDefaultAsync(x => x.IsActive);
+
+            if (dashboard.IsNull())
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "No active dashboard present!"));
+                return response;
+            }
+
+            response.IsSuccess = true;
+            response.Result = dashboard.Rows.OrderBy(x => x.Order);
+            return response;
+        }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Add new dashboard
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> CreateDashBoardAsync(DashBoard model)
+        public virtual async Task<ResultModel> CreateDashBoardAsync(DashBoard model)
         {
             var result = new ResultModel();
             if (model == null)
@@ -63,7 +88,7 @@ namespace ST.Dashboard
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> UpdateDashBoardAsync(DashBoard model)
+        public virtual async Task<ResultModel> UpdateDashBoardAsync(DashBoard model)
         {
             var result = new ResultModel();
             if (model == null)
@@ -74,7 +99,7 @@ namespace ST.Dashboard
             _context.Dashboards.Update(model);
             var dbResult = await _context.PushAsync();
             if (!dbResult.IsSuccess) return dbResult;
-            if (!model.IsActive)
+            if (model.IsActive)
             {
                 var req = await SetActiveDashBoardAsync(model.Id);
                 if (!req.IsSuccess) return req;
@@ -108,6 +133,73 @@ namespace ST.Dashboard
             return new JsonResult(result);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<DashboardRowViewModel>>> AddOrUpdateDashboardConfigurationAsync(DashBoardConfigurationViewModel configuration)
+        {
+            var result = new ResultModel<IEnumerable<DashboardRowViewModel>>();
+            if (configuration == null || configuration.DashboardId.HasValue.Negate())
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(ArgumentNullException)));
+                return result;
+            }
+
+            var dashboard = await _context.Dashboards
+                .Include(x => x.Rows)
+                .FirstOrDefaultAsync(x => x.Id.Equals(configuration.DashboardId));
+            if (dashboard == null)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(NotFoundObjectResult)));
+                return result;
+            }
+
+            if (configuration.Rows.Any().Negate())
+            {
+                result.IsSuccess = true;
+                return result;
+            }
+
+            var rowsConf = new List<DashboardRowViewModel>();
+
+            foreach (var row in configuration.Rows)
+            {
+                var existentRow = dashboard.Rows.FirstOrDefault(x => x.Id.Equals(row.RowId));
+                if (row.RowId.HasValue && existentRow != null)
+                {
+                    existentRow.Order = row.Order;
+                    _context.Update(existentRow);
+                }
+                else
+                {
+                    var newRow = new Row
+                    {
+                        Order = row.Order,
+                        DashboardId = dashboard.Id
+                    };
+                    rowsConf.Add(new DashboardRowViewModel
+                    {
+                        RowId = newRow.Id,
+                        Order = newRow.Order
+                    });
+                    await _context.Rows.AddAsync(newRow);
+                }
+            }
+
+            var dbResult = await _context.PushAsync();
+            if (dbResult.IsSuccess.Negate())
+            {
+                result.Errors = dbResult.Errors;
+                return result;
+            }
+
+            result.Result = rowsConf;
+            result.IsSuccess = true;
+            return result;
+        }
+
+
         /// <inheritdoc />
         /// <summary>
         /// Set active dashboard
@@ -117,7 +209,7 @@ namespace ST.Dashboard
         public virtual async Task<ResultModel> SetActiveDashBoardAsync(Guid? dashboardId)
         {
             var result = new ResultModel();
-            if (!dashboardId.HasValue)
+            if (dashboardId.HasValue.Negate())
             {
                 result.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
                 return result;
@@ -129,16 +221,14 @@ namespace ST.Dashboard
                 return result;
             }
 
-            if (dashboard.IsActive)
+            if (dashboard.IsActive.Negate())
             {
-                result.IsSuccess = true;
-                return result;
+                dashboard.IsActive = true;
+                _context.Update(dashboard);
             }
 
-            dashboard.IsActive = true;
-
             var others = await _context.Dashboards.Where(x => x.Id != dashboardId).ToListAsync();
-            _context.Update(dashboard);
+
             foreach (var o in others)
             {
                 o.IsActive = false;

@@ -82,6 +82,7 @@ using ST.Audit.Abstractions.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions.Extensions;
 using ST.Dashboard.Data;
+using ST.Dashboard.Razor.Extensions;
 using ST.Email.Razor.Extensions;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
@@ -308,7 +309,8 @@ namespace ST.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddDashboardRazorUIModule();
 
 			//--------------------------------------SignalR Module-------------------------------------
 			services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();

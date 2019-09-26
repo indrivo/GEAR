@@ -1,19 +1,67 @@
+@using ST.Dashboard.Abstractions
 @{
 	ViewData["Title"] = "Dashboard builder";
 }
 
+@inject IDashboardDbContext Context
+
 @section Scripts{
 	<script>
-		$(function () {
+		$(function() {
+			const helper = new ST();
+			const toast = new ToastNotifier();
+			const dashboardId = helper.getParamFormUrl("dashboardId");
+			if (!dashboardId) {
+				location.href = "/dashboard";
+			}
 			const manager = new DashboardManager();
+			manager.set("dashboardId", dashboardId);
+			manager.init();
+			$("#saveConfiguration").on("click",
+				function() {
+					manager.saveAsync().then(response => {
+						toast.notify({
+							text: "Saved",
+							icon: "success"
+						});
+						console.log(response);
+					}).catch(e => {
+						toast.notify({
+							text: "Error"
+						});
+					});
+				});
 		});
 
-		class DashboardManager {
-			constructor() {
-				this.init();
+		class BaseClass {
+			get(parameterName = "") {
+				return this[parameterName];
 			}
 
-			//init
+			set(parameterName = "", value = "") {
+				this[parameterName] = value;
+			}
+		}
+
+		class DashboardManager extends BaseClass {
+			/**
+			 * Constructor
+			 */
+			constructor() {
+				super();
+				//Inject helper
+				this.helper = new ST();
+
+				$(".droppable-row").sortable({ axis: "y" });
+				$(".droppable-row").on("sortchange",
+					function(event, ui) {
+						console.log(ui);
+					});
+			}
+
+			/**
+			 * Init service
+			 */
 			init() {
 				const scope = this;
 				$(".draggable-row, .draggable-widget").draggable({
@@ -25,8 +73,8 @@
 				//drag rows
 				$(".droppable-row").droppable({
 					accept: ".draggable-row",
-					drop: function (event, ui) {
-						const row = $(`<div class="row draggable-row droppable-widget draggable-row-injected"></div>`)
+					drop: function(event, ui) {
+						const row = $(`<div data-id="" class="row droppable-widget draggable-row-injected"></div>`);
 						$(this).append(row);
 						scope.initDraggableWidgets();
 					}
@@ -41,9 +89,15 @@
 				//drag widgets
 				$(".droppable-widget").droppable({
 					accept: ".draggable-widget",
-					drop: function (event, ui) {
+					drop: function(event, ui) {
 						const source = $(ui.draggable);
-						const widget = $(`<div class="col-md draggable-widget-injected">${source.text()}</div>`)
+						const widgetIdentifier = scope.helper.newGuid();
+						const widget = $(`<div class="col-md draggable-widget-injected
+																				idf_${widgetIdentifier}" data-idf="${
+							widgetIdentifier}">${
+							source
+							.text()
+							}</div>`);
 						$(this).append(widget);
 						scope.registerDroppableWidgets();
 					}
@@ -59,7 +113,7 @@
 					cursor: "move"
 				});
 
-				ctx.contextmenu(function (event) {
+				ctx.contextmenu(function(event) {
 					event.preventDefault();
 					$(".options-menu").remove();
 					const x = event.pageX;
@@ -71,10 +125,11 @@
 					$(el).menu();
 					$("body").append(el);
 
-					$("*:not(.options-menu)").on("click", function () {
-						$(".options-menu").remove();
-						$(this).off("click");
-					});
+					$("*:not(.options-menu)").on("click",
+						function() {
+							$(".options-menu").remove();
+							$(this).off("click");
+						});
 				});
 			}
 
@@ -89,8 +144,17 @@
 						label: "Configuration",
 						events: ["click"],
 						eventHandlers: {
-							click: function () {
+							click: function() {
 								$("#widget-configuration-modal").modal("show");
+								closeMenu(this);
+							}
+						}
+					},
+					{
+						label: "Save",
+						events: ["click"],
+						eventHandlers: {
+							click: function() {
 								closeMenu(this);
 							}
 						}
@@ -99,7 +163,8 @@
 						label: "Remove",
 						events: ["click"],
 						eventHandlers: {
-							click: function () {
+							click: function() {
+								console.log($(this));
 								closeMenu(this);
 							}
 						}
@@ -120,14 +185,53 @@
 
 				return menuBlock;
 			}
-		}
 
-		class DashboardDisplay {
+			saveAsync() {
+				const conf = {
+					dashboardId: this.get("dashboardId"),
+					rows: []
+				};
+				const domRows = $(".droppable-row").find(".draggable-row-injected");
+				$.each(domRows,
+					(index, item) => {
+						const jItem = $(item);
+						conf.rows.push({
+							order: index,
+							id: jItem.attr("data-id"),
+							widgets: []
+						});
+					});
 
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: "/Dashboard/SaveDashboardConfiguration",
+						data: conf,
+						method: "post",
+						success: (data) => {
+							if (data.is_success) {
+								$.each(data.result, (i, item) => {
+									$(domRows[item.order]).attr("data-id", item.rowId);
+								});
+								resolve(data.result);
+							} else {
+								reject(data.error_keys);
+							}
+						},
+						error: (err) => {
+							reject(err);
+						}
+					});
+				});
+			}
 		}
 	</script>
 }
 
+<div class="row">
+	<div class="col-12">
+		<a id="saveConfiguration" href="#" class="btn btn-success float-right m-3">@Localizer["save"]</a>
+	</div>
+</div>
 
 <div class="card">
 	<div class="card-body">
@@ -136,7 +240,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">Canvas</h5>
-						<div class="left-canvas droppable-row">
+						<div class="left-canvas droppable-row" id="canvas">
 
 						</div>
 					</div>
@@ -145,14 +249,21 @@
 			<div class="col-md-3">
 				<div class="card">
 					<div class="card-body">
-						<h5 class="card-title">Widgets</h5>
+						<h5 class="card-title">Common</h5>
 						<ul class="list-group">
 							<li class="list-group-item draggable-row" data-type="row">Row</li>
-							@for (var i = 1; i < 9; i++)
-							{
-								<li class="list-group-item draggable-widget">Widget @i</li>
-							}
 						</ul>
+						@foreach (var group in Context.WidgetGroups.OrderBy(x => x.Order).ToList())
+						{
+							<h5 class="card-title mt-2">@group.Name</h5>
+							<ul class="list-group">
+								@for (var i = 1; i < 3; i++)
+								{
+									<li class="list-group-item draggable-widget">Widget @i  {@group.Name}</li>
+								}
+							</ul>
+						}
+
 					</div>
 				</div>
 			</div>
@@ -191,18 +302,34 @@
 		}
 
 		.draggable-row-injected {
-			min-height: 5em;
+			min-height: 8em;
 			border-style: dashed;
 			margin: 0.2em;
-			border-color: lightgray;
+			border-color: #2a4b65;
+			margin-bottom: 1em;
+			padding: 0.5em;
 		}
 
+			.draggable-row-injected:hover {
+				border-color: orange;
+				border-style: solid;
+			}
+
+			.draggable-row-injected:active {
+				cursor: move;
+			}
+
 		.draggable-widget-injected {
-			min-height: 5em;
+			min-height: 7em;
 			border-style: dashed;
 			margin: 0.2em;
-			border-color: lightgray;
+			border-color: #2a4b65;
 		}
+
+			.draggable-widget-injected:hover {
+				border-color: orange;
+				border-style: solid;
+			}
 
 		.options-menu {
 			padding: 0.5em;

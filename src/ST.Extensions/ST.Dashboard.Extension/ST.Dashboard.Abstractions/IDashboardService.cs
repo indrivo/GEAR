@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.ViewModels;
 
 namespace ST.Dashboard.Abstractions
 {
@@ -42,5 +44,18 @@ namespace ST.Dashboard.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> UpdateDashBoardAsync(DashBoard model);
+
+        /// <summary>
+        /// Add or update dashboard settings
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<DashboardRowViewModel>>> AddOrUpdateDashboardConfigurationAsync(DashBoardConfigurationViewModel configuration);
+
+        /// <summary>
+        /// Get dashboard for render in view
+        /// </summary>
+        /// <returns></returns>
+
+        Task<ResultModel<IEnumerable<Row>>> GetDashboardConfigurationForRenderAsync();
     }
 }
