@@ -50,7 +50,6 @@ using ST.Identity.Permissions.Abstractions.Extensions;
 using ST.Identity.Services;
 using ST.Identity.Versioning;
 using ST.Install.Abstractions.Extensions;
-using ST.InternalCalendar.Razor.Extensions;
 using ST.Localization;
 using ST.Localization.Abstractions;
 using ST.Localization.Abstractions.Extensions;
@@ -79,6 +78,9 @@ using ST.Application.Middleware.Extensions;
 using ST.Application.Middleware.Server;
 using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
+using ST.Calendar;
+using ST.Calendar.Abstractions.Extensions;
+using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions.Extensions;
 using ST.Email.Razor.Extensions;
@@ -340,6 +342,8 @@ namespace ST.Cms
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
+			//------------------------------------Calendar Module-------------------------------------
+			services.AddCalendarModule<CalendarManager>();
 
 			//------------------------------------File Module-------------------------------------
 			services

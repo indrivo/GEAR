@@ -1,5 +1,6 @@
 ﻿using ST.TaskManager.Abstractions.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ST.TaskManager.Abstractions.Models.ViewModels
@@ -22,6 +23,8 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
 
         [Required]
         public virtual Guid UserId { get; set; }
+
+        public virtual List<Guid> Files { get; set; }
 
         [Required]
         public virtual TaskPriority TaskPriority { get; set; }

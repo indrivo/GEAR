@@ -92,25 +92,16 @@ namespace ST.TaskManager.Services
         public async Task TaskExpirationNotificationAsync()
         {
             var notificationItems = await _context.Tasks.Where(x => x.EndDate.Date == DateTime.Now.Date.AddDays(0)).ToListAsync();
-
-            try
-            {
-                foreach (var item in notificationItems)
-                    await _notify.SendNotificationAsync(new List<Guid>
-                    {
-                        item.UserId
+            foreach (var item in notificationItems)
+                await _notify.SendNotificationAsync(new List<Guid>
+                {
+                    item.UserId
                     }, new SystemNotifications
                     {
                         Content = string.Format(TaskExpires, item.TaskNumber),
                         Subject = TaskTitle,
                         NotificationTypeId = NotificationType.Info
                     });
-            }
-            catch(Exception ex)
-            {
-
-            }
-
         }
     }
 }

@@ -2,6 +2,7 @@
 using ST.Core.Helpers;
 using ST.Files.Abstraction;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using ST.Core;
@@ -83,12 +84,11 @@ namespace ST.Files.Razor.Controllers
         [HttpPost]
         public JsonResult UploadMultiple()
         {
-            var response = Request.Form.Files.Select(item => new UploadFileViewModel
-            {
-                File = item,
-                Id = Guid.Empty
-            }).Select(file => _fileManager.AddFile(file, _userManager.CurrentUserTenantId ?? Guid.Empty)).ToList();
+            var response = new List<ResultModel<Guid>>();
 
+            var items = Request.Form.Files;
+
+            response.AddRange(items.Select(item => _fileManager.AddFile(new UploadFileViewModel{File = item, Id = Guid.Empty}, _userManager.CurrentUserTenantId ?? Guid.Empty)));
             return Json(response);
         }
 

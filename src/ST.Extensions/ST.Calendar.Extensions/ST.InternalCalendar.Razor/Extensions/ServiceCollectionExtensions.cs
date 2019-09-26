@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ST.InternalCalendar.Razor.Helpers;
+using ST.Calendar.Razor.Helpers;
 
-namespace ST.InternalCalendar.Razor.Extensions
+namespace ST.Calendar.Razor.Extensions
 {
     public static class ServiceCollectionExtensions
     {
