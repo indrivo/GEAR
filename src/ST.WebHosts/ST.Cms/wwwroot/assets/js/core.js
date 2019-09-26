@@ -267,15 +267,6 @@ window.translate = function (key) {
 		if (!window.localTranslations.hasOwnProperty(key)) {
 			const message = `Key: ${key} is not translated!`;
 			console.warn(message);
-			//$.toast({
-			//	heading: message,
-			//	text: "",
-			//	position: 'top-right',
-			//	loaderBg: '#ff6849',
-			//	icon: 'error',
-			//	hideAfter: 3500,
-			//	stack: 6
-			//});
 			localStorage.removeItem("hasLoadedTranslations");
 		}
 		return window.localTranslations[key];
@@ -313,15 +304,6 @@ window.forceTranslate = function (selector = null) {
 						} else {
 							const message = `Key: ${key} is not translated!`;
 							console.warn(message);
-							//$.toast({
-							//	heading: message,
-							//	text: "",
-							//	position: 'top-right',
-							//	loaderBg: '#ff6849',
-							//	icon: 'error',
-							//	hideAfter: 3500,
-							//	stack: 6
-							//});
 							localStorage.removeItem("hasLoadedTranslations");
 						}
 					}
@@ -916,7 +898,7 @@ ST.prototype.clearSelectedText = function () {
  * Rgb to hex
  * @param {any} color
  */
-ST.prototype.rgbToHex = function (color) {
+ST.prototype.rgbToHex = function(color) {
 	if (!color) return "";
 	var bg = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 
@@ -925,8 +907,13 @@ ST.prototype.rgbToHex = function (color) {
 	}
 
 	return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
-}
+};
 
+/**
+ * Get parameter from url
+ * @param {any} key
+ * @param {any} url
+ */
 ST.prototype.getParamFormUrl = function (key, url = window.location.href) {
 	const newUrl = new URL(url);
 	const searchParams = new URLSearchParams(newUrl.search);

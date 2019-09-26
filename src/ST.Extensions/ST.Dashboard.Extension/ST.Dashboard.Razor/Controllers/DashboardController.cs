@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using ST.Core;
 using ST.Core.Extensions;
 using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.ViewModels;
 
 namespace ST.Dashboard.Razor.Controllers
 {
@@ -110,6 +112,21 @@ namespace ST.Dashboard.Razor.Controllers
             var dashboard = await _dashboardService.DashBoards.FirstOrDefaultAsync(x => x.Id.Equals(dashboardId));
             if (dashboard == null) return NotFound();
             return View();
+        }
+
+
+        /// <summary>
+        /// Update dashboard configuration
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> SaveDashboardConfiguration([Required]DashBoardConfigurationViewModel configuration)
+        {
+            //make commit
+            var commit = await _dashboardService.AddOrUpdateDashboardConfigurationAsync(configuration);
+
+            //push commit
+            return Json(commit);
         }
     }
 }
