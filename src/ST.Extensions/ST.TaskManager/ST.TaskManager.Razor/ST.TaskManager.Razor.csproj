@@ -42,6 +42,20 @@
     <None Remove="ViewModels\**" />
   </ItemGroup>
 
+
+
+  <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\assets\TaskManagerPlugins\task-manager-templates.js" />
+    <EmbeddedResource Remove="wwwroot\assets\TaskManagerPlugins\task-manager.css" />
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <None Remove="wwwroot\assets\TaskManagerPlugins\task-manager-templates.js" />
+    <None Remove="wwwroot\assets\TaskManagerPlugins\task-manager.css" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
