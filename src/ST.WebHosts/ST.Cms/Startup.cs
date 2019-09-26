@@ -244,6 +244,7 @@ namespace ST.Cms
 				.AddAppProvider<AppProvider>()
 				.AddIdentityModuleEvents()
 				.AddMvc()
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
 				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)

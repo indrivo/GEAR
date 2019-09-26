@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Core;
 using ST.Core.Extensions;
+using ST.Core.Helpers;
 using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Models;
 using ST.Dashboard.Abstractions.Models.ViewModels;
@@ -120,12 +122,22 @@ namespace ST.Dashboard.Razor.Controllers
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel<IEnumerable<DashboardRowViewModel>>))]
         public async Task<IActionResult> SaveDashboardConfiguration([Required]DashBoardConfigurationViewModel configuration)
         {
-            //make commit
             var commit = await _dashboardService.AddOrUpdateDashboardConfigurationAsync(configuration);
+            return Json(commit);
+        }
 
-            //push commit
+        /// <summary>
+        /// Get dashboard rows
+        /// </summary>
+        /// <param name="dashboardId"></param>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel<IEnumerable<DashboardRowViewModel>>))]
+        public async Task<JsonResult> GetDashboardRows(Guid? dashboardId)
+        {
+            var commit = await _dashboardService.GetDashBoardConfigurationAsync(dashboardId);
             return Json(commit);
         }
     }

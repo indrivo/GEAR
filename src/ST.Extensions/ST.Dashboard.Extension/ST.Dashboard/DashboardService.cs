@@ -32,6 +32,7 @@ namespace ST.Dashboard
         public virtual IQueryable<DashBoard> DashBoards => _context.Dashboards;
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Get dashboard for render in view
         /// </summary>
@@ -52,6 +53,52 @@ namespace ST.Dashboard
             response.IsSuccess = true;
             response.Result = dashboard.Rows.OrderBy(x => x.Order);
             return response;
+        }
+
+        /// <summary>
+        /// Get widget groups
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> GetWidgetGroupsAsync()
+        {
+            var result = new ResultModel();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get dashboard configuration
+        /// </summary>
+        /// <param name="dashboardId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<DashboardRowViewModel>>> GetDashBoardConfigurationAsync(Guid? dashboardId)
+        {
+            var result = new ResultModel<IEnumerable<DashboardRowViewModel>>();
+            if (dashboardId.HasValue.Negate())
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(ArgumentNullException)));
+                return result;
+            }
+
+            var dashboard = await _context.Dashboards
+                .Include(x => x.Rows)
+                .FirstOrDefaultAsync(x => x.Id.Equals(dashboardId));
+
+            if (dashboard == null)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(NotFoundObjectResult)));
+                return result;
+            }
+
+            result.Result = dashboard.Rows.Select(x => new DashboardRowViewModel
+            {
+                Order = x.Order,
+                RowId = x.Id
+            });
+
+            result.IsSuccess = true;
+
+            return result;
         }
 
 
@@ -133,8 +180,9 @@ namespace ST.Dashboard
             return new JsonResult(result);
         }
 
+        /// <inheritdoc />
         /// <summary>
-        /// 
+        /// Add or update dashboard configuration
         /// </summary>
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<DashboardRowViewModel>>> AddOrUpdateDashboardConfigurationAsync(DashBoardConfigurationViewModel configuration)

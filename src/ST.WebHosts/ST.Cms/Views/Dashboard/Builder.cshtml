@@ -7,7 +7,7 @@
 
 @section Scripts{
 	<script>
-		$(function() {
+		$(function () {
 			const helper = new ST();
 			const toast = new ToastNotifier();
 			const dashboardId = helper.getParamFormUrl("dashboardId");
@@ -18,13 +18,12 @@
 			manager.set("dashboardId", dashboardId);
 			manager.init();
 			$("#saveConfiguration").on("click",
-				function() {
+				function () {
 					manager.saveAsync().then(response => {
 						toast.notify({
 							text: "Saved",
 							icon: "success"
 						});
-						console.log(response);
 					}).catch(e => {
 						toast.notify({
 							text: "Error"
@@ -54,7 +53,7 @@
 
 				$(".droppable-row").sortable({ axis: "y" });
 				$(".droppable-row").on("sortchange",
-					function(event, ui) {
+					function (event, ui) {
 						console.log(ui);
 					});
 			}
@@ -64,6 +63,8 @@
 			 */
 			init() {
 				const scope = this;
+				scope.setConfiguration();
+				scope.loadServerConfiguration();
 				$(".draggable-row, .draggable-widget").draggable({
 					revert: "invalid",
 					helper: "clone",
@@ -73,14 +74,119 @@
 				//drag rows
 				$(".droppable-row").droppable({
 					accept: ".draggable-row",
-					drop: function(event, ui) {
-						const row = $(`<div data-id="" class="row droppable-widget draggable-row-injected"></div>`);
-						$(this).append(row);
-						scope.initDraggableWidgets();
+					drop: function (event, ui) {
+						scope.addRow();
 					}
 				});
 
 				this.initDraggableWidgets();
+			}
+
+			setConfiguration() {
+				const scope = this;
+				this.set("widgetMenuConf", [
+					{
+						label: "Configuration",
+						events: ["click"],
+						eventHandlers: {
+							click: function () {
+								$("#widget-configuration-modal").modal("show");
+								$(this).closest(".options-menu").remove();
+							}
+						}
+					},
+					{
+						label: "Save",
+						events: ["click"],
+						eventHandlers: {
+							click: function () {
+								$(this).closest(".options-menu").remove();
+							}
+						}
+					},
+					{
+						label: "Remove",
+						events: ["click"],
+						eventHandlers: {
+							click: function () {
+								console.log($(this));
+								$(this).closest(".options-menu").remove();
+							}
+						}
+					}
+				]);
+
+				this.set("rowMenuConf", [
+					{
+						label: "Remove",
+						events: ["click"],
+						eventHandlers: {
+							click: function () {
+								const menu = $(this).closest(".options-menu");
+								const rowId = menu.attr("data-row-id");
+								scope.removeRow(rowId);
+								$(this).closest(".options-menu").remove();
+							}
+						}
+					}
+				]);
+			}
+
+			removeRow(rowId = "") {
+				if (rowId) {
+					const row = $(".droppable-row").find(`div[data-id='${rowId}']`);
+					row.remove();
+				} else {
+
+				}
+			}
+
+			addRow(id = "") {
+				const scope = this;
+				const row = $(`<div data-id="${id}" class="row droppable-widget draggable-row-injected"></div>`);
+				$(".droppable-row").append(row);
+				row.contextmenu(function (event) {
+					if ($(event.target).hasClass("draggable-widget-injected")) return;
+					event.preventDefault();
+					const rowId = $(this).attr("data-id");
+					$(".options-menu").remove();
+					const x = event.pageX;
+					const y = event.pageY;
+					const el = $(scope.getMenuConfiguration("rowMenuConf"));
+					el.css("position", "absolute");
+					el.css("left", `${x}px`);
+					el.css("top", `${y}px`);
+					el.menu();
+					el.attr("data-row-id", rowId);
+					$("body").append(el);
+
+					$("*:not(.options-menu)").on("click",
+						function () {
+							$(".options-menu").remove();
+							$(this).off("click");
+						});
+				});
+				this.initDraggableWidgets();
+			}
+
+			loadServerConfiguration() {
+				const scope = this;
+				$.ajax({
+					url: "/api/Dashboard/GetDashboardRows",
+					data: {
+						dashboardId: scope.get("dashboardId")
+					},
+					success: (data) => {
+						if (data.is_success) {
+							$.each(data.result, (i, item) => {
+								scope.addRow(item.rowId);
+							});
+						}
+					},
+					error: (e) => {
+
+					}
+				});
 			}
 
 			//init draggable events for widgets
@@ -89,14 +195,14 @@
 				//drag widgets
 				$(".droppable-widget").droppable({
 					accept: ".draggable-widget",
-					drop: function(event, ui) {
+					drop: function (event, ui) {
 						const source = $(ui.draggable);
 						const widgetIdentifier = scope.helper.newGuid();
 						const widget = $(`<div class="col-md draggable-widget-injected
-																				idf_${widgetIdentifier}" data-idf="${
+																																						idf_${widgetIdentifier}" data-idf="${
 							widgetIdentifier}">${
 							source
-							.text()
+								.text()
 							}</div>`);
 						$(this).append(widget);
 						scope.registerDroppableWidgets();
@@ -113,12 +219,12 @@
 					cursor: "move"
 				});
 
-				ctx.contextmenu(function(event) {
+				ctx.contextmenu(function (event) {
 					event.preventDefault();
 					$(".options-menu").remove();
 					const x = event.pageX;
 					const y = event.pageY;
-					const el = scope.getWidgetMenuConfiguration();
+					const el = scope.getMenuConfiguration("widgetMenuConf");
 					$(el).css("position", "absolute");
 					$(el).css("left", `${x}px`);
 					$(el).css("top", `${y}px`);
@@ -126,53 +232,18 @@
 					$("body").append(el);
 
 					$("*:not(.options-menu)").on("click",
-						function() {
+						function () {
 							$(".options-menu").remove();
 							$(this).off("click");
 						});
 				});
 			}
 
-			getWidgetMenuConfiguration() {
-				//close menu context
-				function closeMenu(target) {
-					$(target).closest(".options-menu").remove();
-				}
-
-				const configurations = [
-					{
-						label: "Configuration",
-						events: ["click"],
-						eventHandlers: {
-							click: function() {
-								$("#widget-configuration-modal").modal("show");
-								closeMenu(this);
-							}
-						}
-					},
-					{
-						label: "Save",
-						events: ["click"],
-						eventHandlers: {
-							click: function() {
-								closeMenu(this);
-							}
-						}
-					},
-					{
-						label: "Remove",
-						events: ["click"],
-						eventHandlers: {
-							click: function() {
-								console.log($(this));
-								closeMenu(this);
-							}
-						}
-					}
-				];
-
+			getMenuConfiguration(id = "") {
+				const scope = this;
 				const menuBlock = document.createElement("ul");
 				menuBlock.setAttribute("class", "options-menu card");
+				const configurations = scope.get(id);
 				for (let i = 0; i < configurations.length; i++) {
 					const item = document.createElement("li");
 					item.innerHTML = configurations[i].label;
@@ -197,14 +268,14 @@
 						const jItem = $(item);
 						conf.rows.push({
 							order: index,
-							id: jItem.attr("data-id"),
+							rowId: jItem.attr("data-id"),
 							widgets: []
 						});
 					});
 
 				return new Promise((resolve, reject) => {
 					$.ajax({
-						url: "/Dashboard/SaveDashboardConfiguration",
+						url: "/api/Dashboard/SaveDashboardConfiguration",
 						data: conf,
 						method: "post",
 						success: (data) => {

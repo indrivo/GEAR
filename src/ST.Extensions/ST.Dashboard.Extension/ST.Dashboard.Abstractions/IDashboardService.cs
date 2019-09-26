@@ -57,5 +57,12 @@ namespace ST.Dashboard.Abstractions
         /// <returns></returns>
 
         Task<ResultModel<IEnumerable<Row>>> GetDashboardConfigurationForRenderAsync();
+
+        /// <summary>
+        /// Get dashboard configuration
+        /// </summary>
+        /// <param name="dashboardId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<DashboardRowViewModel>>> GetDashBoardConfigurationAsync(Guid? dashboardId);
     }
 }
