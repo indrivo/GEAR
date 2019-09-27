@@ -1,0 +1,54 @@
+﻿@using ST.Core.Razor.Enums
+@using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using ST.Core.Razor.TagHelpersStructures
+@{
+    ViewData["Title"] = "Widget groups";
+    var conf = new ListTagHelperModel
+    {
+        Title = "Widget groups",
+        SubTitle = "List of widget groups",
+        ListIdentifier = "widgetGroups",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("OrderedList", "Dashboard")
+        },
+        RenderColumns = new List<ListRenderColumn>
+{
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            }
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+{
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "Dashboard",
+                ButtonName = "Add new widget group",
+                Description = "New widget group will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+{
+            new ListActionViewModel
+            {
+                Name = "Edit",
+                ButtonType = BootstrapButton.Warning,
+                Url = Url.Action("Edit", "Dashboard"),
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("id", "id")
+                }
+            }
+        },
+        Documentation = "This tan allow to manage your widget groups"
+    };
+}
+
+<JList asp-for="@conf"></JList>

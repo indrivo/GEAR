@@ -64,5 +64,12 @@ namespace ST.Dashboard.Abstractions
         /// <param name="dashboardId"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<DashboardRowViewModel>>> GetDashBoardConfigurationAsync(Guid? dashboardId);
+
+        /// <summary>
+        /// Delete row 
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteRowAsync(Guid? rowId);
     }
 }

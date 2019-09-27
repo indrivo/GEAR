@@ -140,5 +140,17 @@ namespace ST.Dashboard.Razor.Controllers
             var commit = await _dashboardService.GetDashBoardConfigurationAsync(dashboardId);
             return Json(commit);
         }
+
+        /// <summary>
+        /// Get dashboard rows
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        [HttpDelete, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> DeleteRow(Guid? rowId)
+        {
+            var commit = await _dashboardService.DeleteRowAsync(rowId);
+            return Json(commit);
+        }
     }
 }

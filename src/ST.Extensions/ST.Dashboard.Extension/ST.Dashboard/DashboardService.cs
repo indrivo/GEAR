@@ -285,5 +285,30 @@ namespace ST.Dashboard
 
             return await _context.PushAsync();
         }
+
+        /// <summary>
+        /// Delete row 
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> DeleteRowAsync(Guid? rowId)
+        {
+            var response = new ResultModel();
+            if (rowId.HasValue.Negate())
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, nameof(NullReferenceException)));
+                return response;
+            }
+
+            var row = await _context.Rows.FirstOrDefaultAsync(x => x.Id.Equals(rowId));
+            if (row.IsNull())
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, nameof(NotFoundObjectResult)));
+                return response;
+            }
+
+            _context.Rows.Remove(row);
+            return await _context.PushAsync();
+        }
     }
 }
