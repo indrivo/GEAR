@@ -1,6 +1,5 @@
 ﻿const manager = new TaskManager();
 const toast = new ToastNotifier();
-
 const taskDetailsTemplate = $.templates("#taskDetailsTemplate");
 const taskEditTemplate = $.templates("#taskEditTemplate");
 const taskListTemplate = $.templates("#taskListTemplate");
@@ -9,6 +8,7 @@ const taskItemsAddTaskTemplate = $.templates("#taskItemsAddTaskTemplate");
 
 const templateManager = new TemplateManager();
 
+const maxFileSize = 10240;
 let statuses = [];
 let priorities = [];
 let users = [];
@@ -92,8 +92,8 @@ $('#add-task').submit(function (e) {
             });
 
             $('#addTaskModal').modal('hide');
-            formClean('#add-task');
-            formClean('#add-task-item-add-task');
+            $('#add-task')[0].reset();
+            $('#add-task-item-add-task')[0].reset();
 
             $('#add-task-items-tab .task-items-add-task').html('');
         }
@@ -161,22 +161,34 @@ sortableTableHeaders.off().on('click', function () {
 
 function addChangeFileInputEvent(type) {
     $('.task-files').off().on('change', function () {
-        const scope = this;
-        const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
-        const files = getFilesFromInput($(this));
-        if (type === 'add') {
-            for (let i = 0; i < files.length; i++) {
+    const scope = this;
+    const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
+    const files = getFilesFromInput($(this));
+    if (type === 'add') {
+        wrapper.html('');
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].size > maxFileSize) {
+                alert("One of files is too big!(Max " + maxFileSize / 1024 +"MB allowed)");
+                scope.value = "";
+            } else {
                 fileListAppend(files[i].name, wrapper, i);
             }
         }
-        else if (type === 'edit') {
+    }
+    else if (type === 'edit') {
+        if (files[0].size > maxFileSize) {
+            alert("File is too big!(Max "+ maxFileSize/1024 +"MB allowed)");
+            scope.value = "";
+        }
+        else {
             let formData = new FormData();
             formData.append("files", files[0]);
             uploadFile(formData).then(fileId => {
                 fileListAppend(files[0].name, wrapper, fileId);
             });
         }
-    });
+    }
+});
 };
 
 function loadTaskList(type, page, pageSize, descending, attribute) {
@@ -590,20 +602,26 @@ function addTablePager(pageCount, page) {
 }
 
 function findUserById(UId) {
-    return users.find(user => {
+    const result = users.find(user => {
         return user.value == UId;
     });
+    if (!result) {
+        return {
+            disabled: false,
+            group: null,
+            selected: false,
+            text: 'Unknown',
+            value: '00000000-0000-0000-0000-000000000000'
+        }
+    }
+    else {
+        return result;
+    }
 }
 
 function cleanTableSort() {
     $.each(sortableTableHeaders, function () {
         sortableTableHeaders.children('.sort').removeClass('ascending descending');
-    });
-}
-
-function formClean(formId) {
-    $.each($(formId + ' input[type="text"],' + formId + ' input[type="date"] , ' + formId + ' textarea'), function () {
-        $(this).val('');
     });
 }
 

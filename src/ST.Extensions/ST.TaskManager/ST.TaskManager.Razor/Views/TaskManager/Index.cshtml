@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Task Manager";
 }
 @section Styles {
     <link rel="stylesheet" href="~/assets/task-manager.css" asp-append-version="true" />
@@ -142,7 +142,7 @@
                                             <div class="file-list">
                                             </div>
                                         </div>
-                                        <input class="task-files" name="taskFiles" type="file" size="1" multiple />
+                                        <input class="task-files" name="taskFiles" type="file" size="1" multiple accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt"/>
                                     </div>
                                 </div>
                             </form>
@@ -372,7 +372,7 @@
                 <div class="file-list">
                 </div>
             </div>
-            <input class="task-files" name="taskEditFiles" type="file" size="1" />
+            <input class="task-files" name="taskEditFiles" type="file" size="1" accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt"/>
         </div>
     </script>
 
