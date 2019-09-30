@@ -187,6 +187,7 @@ function addChangeFileInputEvent(type) {
 };
 
 function loadTaskList(type, page, pageSize, descending, attribute) {
+    $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
     if (type === 'active') {
         return manager.getUserTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
             $.each(result.results, function () {
