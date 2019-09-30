@@ -82,9 +82,13 @@ using ST.Calendar;
 using ST.Calendar.Abstractions.Extensions;
 using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
+using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Extensions;
+using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.WidgetTypes;
 using ST.Dashboard.Data;
 using ST.Dashboard.Razor.Extensions;
+using ST.Dashboard.Renders;
 using ST.Email.Razor.Extensions;
 using ST.Entities.Security.Razor.Extensions;
 using ST.Files.Box;
@@ -307,13 +311,20 @@ namespace ST.Cms
 			services.AddDynamicDataProviderModule<EntitiesDbContext>();
 
 			//------------------------------------Dashboard Module-------------------------------------
-			services.AddDashboardModule<DashboardService>()
+			services.AddDashboardModule<DashboardService, WidgetGroupRepository, WidgetService>()
 				.AddDashboardModuleStorage<DashBoardDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddDashboardRazorUIModule();
+				.RegisterDashboardEvents()
+				.AddDashboardRazorUIModule()
+				.AddDashboardRenderServices(new Dictionary<Type, Type>
+				{
+					{typeof(IWidgetRenderer<ReportWidget>), typeof(ReportWidgetRender)},
+					{typeof(IWidgetRenderer<CustomWidget>), typeof(CustomWidgetRender)},
+				})
+				.RegisterProgramAssembly(typeof(Program));
 
 			//--------------------------------------SignalR Module-------------------------------------
 			services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();

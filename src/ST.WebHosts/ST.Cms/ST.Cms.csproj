@@ -76,7 +76,6 @@
   </ItemGroup>
   <ItemGroup>
 	<None Include="appsettings.Stage.json" />
-	<None Include="Views\Home\Contact.cshtml" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\..\ST.Extensions\ST.Application.Extension\ST.Application.Middleware\ST.Application.Middleware.csproj" />

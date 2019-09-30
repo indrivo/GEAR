@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ST.Dashboard.Abstractions.Models.ViewModels
 {
-    public class DashBoardConfigurationViewModel
+    public sealed class DashBoardConfigurationViewModel
     {
         /// <summary>
         /// Dashboard identifier
@@ -16,16 +16,44 @@ namespace ST.Dashboard.Abstractions.Models.ViewModels
         public ICollection<DashboardRowViewModel> Rows { get; set; } = new List<DashboardRowViewModel>();
     }
 
-    public class DashboardRowViewModel
+    public sealed class DashboardRowViewModel
     {
         /// <summary>
         /// Row order
         /// </summary>
-        public int Order { get; set; }
+        public int Order { get; set; } = 1;
 
         /// <summary>
         /// Row id
         /// </summary>
         public Guid? RowId { get; set; }
+
+        /// <summary>
+        /// Widgets
+        /// </summary>
+        public ICollection<RowWidgetViewModel> Widgets { get; set; } = new List<RowWidgetViewModel>();
+    }
+
+    public sealed class RowWidgetViewModel
+    {
+        /// <summary>
+        /// Widget order
+        /// </summary>
+        public int Order { get; set; } = 1;
+
+        /// <summary>
+        /// Widget id
+        /// </summary>
+        public Guid? Id { get; set; }
+
+        /// <summary>
+        /// Widget group id
+        /// </summary>
+        public Guid? GroupId { get; set; }
+
+        /// <summary>
+        /// Widget name
+        /// </summary>
+        public string Name { get; set; }
     }
 }

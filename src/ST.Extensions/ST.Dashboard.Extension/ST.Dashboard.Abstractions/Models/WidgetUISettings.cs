@@ -1,34 +1,34 @@
 ﻿namespace ST.Dashboard.Abstractions.Models
 {
-    public interface IWidgetUISettings
+    public abstract class WidgetUISettings
     {
         /// <summary>
         /// Width
         /// </summary>
-        string Width { get; set; }
+        public virtual string Width { get; set; }
         /// <summary>
         /// Height
         /// </summary>
-        string Height { get; set; }
+        public virtual string Height { get; set; }
 
         /// <summary>
         /// Color
         /// </summary>
-        string BackGroundColor { get; set; }
+        public virtual string BackGroundColor { get; set; }
 
         /// <summary>
         /// Border radius
         /// </summary>
-        int BorderRadius { get; set; }
+        public virtual int BorderRadius { get; set; }
 
         /// <summary>
         /// Border style
         /// </summary>
-        string BorderStyle { get; set; }
+        public virtual string BorderStyle { get; set; }
 
         /// <summary>
         /// Css class
         /// </summary>
-        string ClassAttribute { get; set; }
+        public virtual string ClassAttribute { get; set; }
     }
 }

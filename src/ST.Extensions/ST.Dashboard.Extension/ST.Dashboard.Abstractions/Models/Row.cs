@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ST.Core;
-using ST.Dashboard.Abstractions.Models.WidgetTypes;
+using ST.Dashboard.Abstractions.Models.RowWidgets;
 
 namespace ST.Dashboard.Abstractions.Models
 {
@@ -21,28 +21,43 @@ namespace ST.Dashboard.Abstractions.Models
         public virtual Guid DashboardId { get; set; }
 
         /// <summary>
+        /// Get widget html bodies
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetWidgetBodies()
+        {
+            var widgets = new string[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
+            foreach (var widget in CustomWidgets)
+            {
+                widgets[widget.Order] = widget.CustomWidget.Render();
+            }
+
+            foreach (var widget in ChartWidgets)
+            {
+                widgets[widget.Order] = widget.ChartWidget.Render();
+            }
+
+            foreach (var widget in ReportWidgets)
+            {
+                widgets[widget.Order] = widget.ReportWidget.Render();
+            }
+
+            return widgets;
+        }
+
+        /// <summary>
         /// Sample Widgets
         /// </summary>
-        public virtual ICollection<Widget> Widgets { get; set; } = new List<Widget>();
+        public virtual ICollection<RowCustomWidget> CustomWidgets { get; set; } = new List<RowCustomWidget>();
 
         /// <summary>
         /// Chart Widgets
         /// </summary>
-        public virtual ICollection<ChartWidget> ChartWidgets { get; set; } = new List<ChartWidget>();
-
-        /// <summary>
-        /// List widgets
-        /// </summary>
-        public virtual ICollection<ListWidget> ListWidgets { get; set; } = new List<ListWidget>();
+        public virtual ICollection<RowChartWidget> ChartWidgets { get; set; } = new List<RowChartWidget>();
 
         /// <summary>
         /// Report widgets
         /// </summary>
-        public virtual ICollection<ReportWidget> ReportWidgets { get; set; } = new List<ReportWidget>();
-
-        /// <summary>
-        /// Tabbed widgets
-        /// </summary>
-        public virtual ICollection<TabbedWidget> TabbedWidgets { get; set; } = new List<TabbedWidget>();
+        public virtual ICollection<RowReportWidget> ReportWidgets { get; set; } = new List<RowReportWidget>();
     }
 }

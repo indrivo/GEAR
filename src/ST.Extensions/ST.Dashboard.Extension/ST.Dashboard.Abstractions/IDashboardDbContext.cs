@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ST.Core.Abstractions;
 using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.RowWidgets;
 using ST.Dashboard.Abstractions.Models.WidgetTypes;
 
 namespace ST.Dashboard.Abstractions
@@ -46,5 +47,20 @@ namespace ST.Dashboard.Abstractions
         /// Tabbed widgets
         /// </summary>
         DbSet<TabbedWidget> TabbedWidgets { get; set; }
+
+        /// <summary>
+        /// Widgets
+        /// </summary>
+        DbSet<RowChartWidget> RowChartWidgets { get; set; }
+
+        /// <summary>
+        /// Widgets
+        /// </summary>
+        DbSet<RowCustomWidget> RowCustomWidgets { get; set; }
+
+        /// <summary>
+        /// Widgets
+        /// </summary>
+        DbSet<RowReportWidget> RowReportWidgets { get; set; }
     }
 }

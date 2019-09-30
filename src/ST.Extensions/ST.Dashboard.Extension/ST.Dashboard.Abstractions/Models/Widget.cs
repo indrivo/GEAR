@@ -2,19 +2,23 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ST.Core;
+using ST.Core.Attributes.Documentation;
+using ST.Core.Exceptions;
 using ST.Core.Helpers;
 using ST.Dashboard.Abstractions.Helpers.Enums;
 
 namespace ST.Dashboard.Abstractions.Models
 {
     [NotMapped]
-    public abstract class Widget : BaseModel, IWidgetUISettings
+    [Author("Lupei Nicolae", 1.1)]
+    public abstract class Widget : BaseModel
     {
         /// <summary>
         /// Render service
         /// </summary>
         protected virtual IWidgetRenderer<TWidget> Service<TWidget>() where TWidget : Widget
         {
+            if (!IoC.IsServiceRegistered<IWidgetRenderer<TWidget>>()) throw new IoCNotRegisterServiceException();
             return IoC.Resolve<IWidgetRenderer<TWidget>>();
         }
 
@@ -32,40 +36,33 @@ namespace ST.Dashboard.Abstractions.Models
         /// <summary>
         /// Allow cache
         /// </summary>
-        public bool AllowCache { get; set; } = false;
+        public virtual bool AllowCache { get; set; } = false;
 
         /// <summary>
         /// Time to refresh
         /// </summary>
-        public TimeSpan CacheRefreshSpan { get; set; }
+        public virtual TimeSpan CacheRefreshSpan { get; set; }
 
         /// <summary>
         /// if is allowed allow cache
         /// </summary>
-        public DateTime? LastRefreshTime { get; set; }
-
-        /// <summary>
-        /// Order
-        /// </summary>
-        public virtual int Order { get; set; }
+        public virtual DateTime? LastRefreshTime { get; set; }
 
         /// <summary>
         /// Razor template
         /// </summary>
         [Required]
-        public string Template { get; set; }
+        public virtual string Template { get; set; }
+
+        /// <summary>
+        /// Get or set system security
+        /// </summary>
+        public virtual bool IsSystem { get; set; }
 
         /// <summary>
         /// Template type
         /// </summary>
-        public WidgetTemplateType WidgetTemplateType { get; set; } = WidgetTemplateType.Html;
-
-        /// <summary>
-        /// Row reference
-        /// </summary>
-
-        public virtual Row Row { get; set; }
-        public virtual Guid RowId { get; set; }
+        public virtual WidgetTemplateType WidgetTemplateType { get; set; } = WidgetTemplateType.Html;
 
         /// <summary>
         /// Reference to group 
@@ -91,12 +88,5 @@ namespace ST.Dashboard.Abstractions.Models
         public override string ToString() => Render();
 
         #endregion
-
-        public virtual string Width { get; set; }
-        public virtual string Height { get; set; }
-        public virtual string BackGroundColor { get; set; }
-        public virtual int BorderRadius { get; set; }
-        public virtual string BorderStyle { get; set; }
-        public string ClassAttribute { get; set; }
     }
 }

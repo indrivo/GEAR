@@ -40,7 +40,7 @@ namespace ST.ECommerce.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(services));
             services.AddTransient<IProductRepository<TProduct>, TProductRepository>();
-            IoC.RegisterService<IProductRepository<TProduct>, TProductRepository>();
+            IoC.RegisterTransientService<IProductRepository<TProduct>, TProductRepository>();
             return services;
         }
 

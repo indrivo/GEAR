@@ -3,11 +3,12 @@
 	ViewData["Title"] = "Dashboard builder";
 }
 
-@inject IDashboardDbContext Context
+@inject IWidgetGroupRepository WidgetGroupRepository
+@inject IDashboardService DashboardService
 
 @section Scripts{
 	<script>
-		$(function() {
+		$(function () {
 			const helper = new ST();
 			const toast = new ToastNotifier();
 			const dashboardId = helper.getParamFormUrl("dashboardId");
@@ -18,7 +19,7 @@
 			manager.set("dashboardId", dashboardId);
 			manager.init();
 			$("#saveConfiguration").on("click",
-				function() {
+				function () {
 					manager.saveAsync().then(response => {
 						toast.notify({
 							text: "Saved",
@@ -54,8 +55,8 @@
 
 				$(".droppable-row").sortable({ axis: "y" });
 				$(".droppable-row").on("sortchange",
-					function(event, ui) {
-						console.log(ui);
+					function (event, ui) {
+						//console.log(ui);
 					});
 			}
 
@@ -75,7 +76,7 @@
 				//drag rows
 				$(".droppable-row").droppable({
 					accept: ".draggable-row",
-					drop: function(event, ui) {
+					drop: function (event, ui) {
 						scope.addRow();
 					}
 				});
@@ -91,17 +92,8 @@
 							label: "Configuration",
 							events: ["click"],
 							eventHandlers: {
-								click: function() {
+								click: function () {
 									$("#widget-configuration-modal").modal("show");
-									$(this).closest(".options-menu").remove();
-								}
-							}
-						},
-						{
-							label: "Save",
-							events: ["click"],
-							eventHandlers: {
-								click: function() {
 									$(this).closest(".options-menu").remove();
 								}
 							}
@@ -110,7 +102,41 @@
 							label: "Remove",
 							events: ["click"],
 							eventHandlers: {
-								click: function() {
+								click: function () {
+									const menu = $(this).closest(".options-menu");
+									const widget = menu.data("extra");
+									const widgetId = widget.attr("data-id");
+									const row = widget.closest(".draggable-row-injected");
+									const rowId = row.attr("data-id");
+									$.ajax({
+										url: "/api/Dashboard/DeleteMappedWidget",
+										method: "delete",
+										data: {
+											widgetId: widgetId,
+											rowId: rowId
+										},
+										success: (sData) => {
+											if (sData.is_success) {
+												scope.toast.notify({ icon: "success", heading: "Info", text: "Widget deleted!" });
+												widget.remove();
+											} else {
+												widget.remove();
+											}
+										},
+										error: (e) => {
+											scope.toast.notify({ heading: "Server error" });
+										}
+									});
+
+									$(this).closest(".options-menu").remove();
+								}
+							}
+						},
+						{
+							label: "Exit",
+							events: ["click"],
+							eventHandlers: {
+								click: function () {
 									$(this).closest(".options-menu").remove();
 								}
 							}
@@ -123,7 +149,7 @@
 							label: "Remove",
 							events: ["click"],
 							eventHandlers: {
-								click: function() {
+								click: function () {
 									const menu = $(this).closest(".options-menu");
 									const row = menu.data("extra");
 									const rowId = row.attr("data-id");
@@ -136,6 +162,15 @@
 											icon: "success"
 										});
 									}
+									$(this).closest(".options-menu").remove();
+								}
+							}
+						},
+						{
+							label: "Exit",
+							events: ["click"],
+							eventHandlers: {
+								click: function () {
 									$(this).closest(".options-menu").remove();
 								}
 							}
@@ -173,11 +208,16 @@
 				});
 			}
 
-			addRow(id = "") {
+			addRow(id = "", widgets = []) {
 				const scope = this;
 				const row = $(`<div data-id="${id}" class="row droppable-widget draggable-row-injected"></div>`);
+				if (widgets.length > 0) {
+					$.each(widgets, (i, widget) => {
+						row.append(scope.getWidgetFromTemplate(widget.groupId, widget.id, widget.name));
+					});
+				}
 				$(".droppable-row").append(row);
-				row.contextmenu(function(event) {
+				row.contextmenu(function (event) {
 					if ($(event.target).hasClass("draggable-widget-injected")) return;
 					event.preventDefault();
 					$(".options-menu").remove();
@@ -192,7 +232,7 @@
 					$("body").append(el);
 
 					$("*:not(.options-menu)").on("click",
-						function() {
+						function () {
 							$(".options-menu").remove();
 							$(this).off("click");
 						});
@@ -211,12 +251,13 @@
 						if (data.is_success) {
 							$.each(data.result,
 								(i, item) => {
-									scope.addRow(item.rowId);
+									scope.addRow(item.rowId, item.widgets);
 								});
+							scope.registerDroppableWidgets();
 						}
 					},
 					error: (e) => {
-
+						alert(e);
 					}
 				});
 			}
@@ -227,20 +268,20 @@
 				//drag widgets
 				$(".droppable-widget").droppable({
 					accept: ".draggable-widget",
-					drop: function(event, ui) {
+					drop: function (event, ui) {
 						const source = $(ui.draggable);
-						const widgetIdentifier = scope.helper.newGuid();
-						const widget = $(`<div class="col-md draggable-widget-injected
-																																										idf_${
-							widgetIdentifier}" data-idf="${
-							widgetIdentifier}">${
-							source
-							.text()
-							}</div>`);
+						const widgetId = source.data("id");
+						const groupId = source.data("group-id");
+						const widget = scope.getWidgetFromTemplate(groupId, widgetId, source.text());
 						$(this).append(widget);
 						scope.registerDroppableWidgets();
 					}
 				});
+			}
+
+			getWidgetFromTemplate(groupId, widgetId, text) {
+				const widget = $(`<div class="col-md draggable-widget-injected" data-group-id="${groupId}" data-id="${widgetId}">${text}</div>`);
+				return widget;
 			}
 
 			registerDroppableWidgets() {
@@ -252,7 +293,7 @@
 					cursor: "move"
 				});
 
-				ctx.contextmenu(function(event) {
+				ctx.contextmenu(function (event) {
 					event.preventDefault();
 					$(".options-menu").remove();
 					const x = event.pageX;
@@ -261,14 +302,15 @@
 					$(el).css("position", "absolute");
 					$(el).css("left", `${x}px`);
 					$(el).css("top", `${y}px`);
+					$(el).data("extra", $(this));
 					$(el).menu();
 					$("body").append(el);
 
-					$("*:not(.options-menu)").on("click",
-						function() {
-							$(".options-menu").remove();
-							$(this).off("click");
-						});
+					//$("body:not(.options-menu)").on("click",
+					//	function () {
+					//		$(".options-menu").remove();
+					//		$("body:not(.options-menu)").off("click");
+					//	});
 				});
 			}
 
@@ -299,10 +341,20 @@
 				$.each(domRows,
 					(index, item) => {
 						const jItem = $(item);
+						const rowWidgets = jItem.find(".draggable-widget-injected");
+						const widgets = [];
+						$.each(rowWidgets, (i, widget) => {
+							const jWidget = $(widget);
+							widgets.push({
+								order: i,
+								id: jWidget.attr("data-id"),
+								groupId: jWidget.attr("data-group-id")
+							});
+						});
 						conf.rows.push({
 							order: index,
 							rowId: jItem.attr("data-id"),
-							widgets: []
+							widgets: widgets
 						});
 					});
 
@@ -358,13 +410,23 @@
 						<ul class="list-group">
 							<li class="list-group-item draggable-row" data-type="row">Row</li>
 						</ul>
-						@foreach (var group in Context.WidgetGroups.OrderBy(x => x.Order).ToList())
+						@foreach (var group in WidgetGroupRepository.WidgetGroups.OrderBy(x => x.Order).ToList())
 						{
 							<h5 class="card-title mt-2">@group.Name</h5>
 							<ul class="list-group">
-								@for (var i = 1; i < 3; i++)
+								@{
+									var widgets = (await DashboardService.GetWidgetGroupRowsAsync(group.Id)).ToList();
+								}
+								@if (widgets.Any())
 								{
-									<li class="list-group-item draggable-widget">Widget @i  {@group.Name}</li>
+									foreach (var w in widgets)
+									{
+										<li class="list-group-item draggable-widget" data-id="@w.Id" data-group-id="@group.Id">@w.Name</li>
+									}
+								}
+								else
+								{
+									<li class="list-group-item" style="color: red">No Widgets</li>
 								}
 							</ul>
 						}
@@ -388,7 +450,61 @@
 				</button>
 			</div>
 			<div class="modal-body p-4">
+				<form id="configuration">
+					<div class="row p-t-20">
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="WidgetWidth">Width</label>
+								<input id="WidgetWidth" type="number" placeholder="auto" class="form-control" />
+							</div>
+						</div>
 
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="WidgetHeight">Height</label>
+								<input id="WidgetHeight" type="number" placeholder="auto" class="form-control" />
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="WidgetColor">BackGround Color</label>
+								<input id="WidgetColor" type="color" class="form-control" style="height: 2em" />
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="WidgetBRadius">Border radius</label>
+								<input id="WidgetBRadius" placeholder="0" type="number" class="form-control" />
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="WidgetClasses">Classes</label>
+								<input id="WidgetClasses" type="text" class="form-control" />
+							</div>
+						</div>
+
+						<div class="col-md-12">
+							<div class="form-group">
+								<label for="WidgetBorderStyle">Border Style</label>
+								<select id="WidgetBorderStyle" type="text" class="form-control">
+									<option value="0">None</option>
+									<option value="1">Dotted</option>
+									<option value="2">Dashed</option>
+									<option value="3">Solid</option>
+									<option value="4">Double</option>
+									<option value="5">Groove</option>
+									<option value="6">Ridge</option>
+									<option value="7">Inset</option>
+									<option value="8">Outset</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</form>
 			</div>
 			<div class="modal-footer px-4">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal" translate="close">Close</button>
@@ -402,6 +518,10 @@
 
 @section Styles{
 	<style>
+		.ui-draggable:hover {
+			cursor: move;
+		}
+
 		.left-canvas {
 			min-height: 30em;
 		}

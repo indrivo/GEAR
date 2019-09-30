@@ -86,68 +86,6 @@ namespace ST.Dashboard.Migrations
                     b.ToTable("TrackAuditDetails");
                 });
 
-            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.CustomWidget", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("AllowCache");
-
-                    b.Property<string>("Author");
-
-                    b.Property<string>("BackGroundColor");
-
-                    b.Property<int>("BorderRadius");
-
-                    b.Property<string>("BorderStyle");
-
-                    b.Property<TimeSpan>("CacheRefreshSpan");
-
-                    b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassAttribute");
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Height");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<DateTime?>("LastRefreshTime");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int>("Order");
-
-                    b.Property<Guid>("RowId");
-
-                    b.Property<string>("Template")
-                        .IsRequired();
-
-                    b.Property<Guid?>("TenantId");
-
-                    b.Property<int>("Version");
-
-                    b.Property<Guid>("WidgetGroupId");
-
-                    b.Property<int>("WidgetTemplateType");
-
-                    b.Property<string>("Width");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RowId");
-
-                    b.HasIndex("WidgetGroupId");
-
-                    b.ToTable("CustomWidgets");
-                });
-
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.DashBoard", b =>
                 {
                     b.Property<Guid>("Id")
@@ -209,6 +147,87 @@ namespace ST.Dashboard.Migrations
                     b.ToTable("Rows");
                 });
 
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.RowWidgets.RowChartWidget", b =>
+                {
+                    b.Property<Guid>("ChartWidgetId");
+
+                    b.Property<Guid>("RowId");
+
+                    b.Property<string>("BackGroundColor");
+
+                    b.Property<int>("BorderRadius");
+
+                    b.Property<string>("BorderStyle");
+
+                    b.Property<string>("ClassAttribute");
+
+                    b.Property<string>("Height");
+
+                    b.Property<int>("Order");
+
+                    b.Property<string>("Width");
+
+                    b.HasKey("ChartWidgetId", "RowId");
+
+                    b.HasIndex("RowId");
+
+                    b.ToTable("RowChartWidgets");
+                });
+
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.RowWidgets.RowCustomWidget", b =>
+                {
+                    b.Property<Guid>("CustomWidgetId");
+
+                    b.Property<Guid>("RowId");
+
+                    b.Property<string>("BackGroundColor");
+
+                    b.Property<int>("BorderRadius");
+
+                    b.Property<string>("BorderStyle");
+
+                    b.Property<string>("ClassAttribute");
+
+                    b.Property<string>("Height");
+
+                    b.Property<int>("Order");
+
+                    b.Property<string>("Width");
+
+                    b.HasKey("CustomWidgetId", "RowId");
+
+                    b.HasIndex("RowId");
+
+                    b.ToTable("RowCustomWidgets");
+                });
+
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.RowWidgets.RowReportWidget", b =>
+                {
+                    b.Property<Guid>("ReportWidgetId");
+
+                    b.Property<Guid>("RowId");
+
+                    b.Property<string>("BackGroundColor");
+
+                    b.Property<int>("BorderRadius");
+
+                    b.Property<string>("BorderStyle");
+
+                    b.Property<string>("ClassAttribute");
+
+                    b.Property<string>("Height");
+
+                    b.Property<int>("Order");
+
+                    b.Property<string>("Width");
+
+                    b.HasKey("ReportWidgetId", "RowId");
+
+                    b.HasIndex("RowId");
+
+                    b.ToTable("RowReportWidgets");
+                });
+
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -221,6 +240,8 @@ namespace ST.Dashboard.Migrations
                     b.Property<DateTime>("Created");
 
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
 
                     b.Property<string>("ModifiedBy");
 
@@ -240,52 +261,35 @@ namespace ST.Dashboard.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("12e6ffae-7b23-474c-a190-6c374c6785fc"),
-                            Changed = new DateTime(2019, 9, 23, 9, 48, 50, 141, DateTimeKind.Utc).AddTicks(3942),
-                            Created = new DateTime(2019, 9, 23, 9, 48, 50, 141, DateTimeKind.Utc).AddTicks(3129),
+                            Id = new Guid("aced3174-744a-48e4-82b9-de80d8d76114"),
+                            Changed = new DateTime(2019, 9, 29, 20, 12, 6, 425, DateTimeKind.Utc).AddTicks(8413),
+                            Created = new DateTime(2019, 9, 29, 20, 12, 6, 425, DateTimeKind.Utc).AddTicks(7821),
                             IsDeleted = false,
+                            IsSystem = true,
                             Name = "Charts",
                             Order = 1,
                             Version = 0
                         },
                         new
                         {
-                            Id = new Guid("72a4e0d4-9e1e-40c5-8c41-fccc0c16b653"),
-                            Changed = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(3797),
-                            Created = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(3792),
+                            Id = new Guid("05490637-ba30-4bbb-9165-2cbeba51995a"),
+                            Changed = new DateTime(2019, 9, 29, 20, 12, 6, 456, DateTimeKind.Utc).AddTicks(518),
+                            Created = new DateTime(2019, 9, 29, 20, 12, 6, 456, DateTimeKind.Utc).AddTicks(510),
                             IsDeleted = false,
+                            IsSystem = true,
                             Name = "Reports",
                             Order = 2,
                             Version = 0
                         },
                         new
                         {
-                            Id = new Guid("ef761fae-ff74-4f35-9e4e-5a1e74dea628"),
-                            Changed = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(4109),
-                            Created = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(4108),
+                            Id = new Guid("c67f5e2f-507d-4ed2-aab3-c107384b1937"),
+                            Changed = new DateTime(2019, 9, 29, 20, 12, 6, 456, DateTimeKind.Utc).AddTicks(935),
+                            Created = new DateTime(2019, 9, 29, 20, 12, 6, 456, DateTimeKind.Utc).AddTicks(935),
                             IsDeleted = false,
+                            IsSystem = true,
                             Name = "Custom",
                             Order = 3,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("d72ff788-0ecd-41a0-962b-b350ef40b6fc"),
-                            Changed = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(4194),
-                            Created = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(4193),
-                            IsDeleted = false,
-                            Name = "Samples",
-                            Order = 4,
-                            Version = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("354baeff-f03b-448b-9f52-824d1fab4c7e"),
-                            Changed = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(4218),
-                            Created = new DateTime(2019, 9, 23, 9, 48, 50, 171, DateTimeKind.Utc).AddTicks(4218),
-                            IsDeleted = false,
-                            Name = "Custom",
-                            Order = 5,
                             Version = 0
                         });
                 });
@@ -299,25 +303,17 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Author");
 
-                    b.Property<string>("BackGroundColor");
-
-                    b.Property<int>("BorderRadius");
-
-                    b.Property<string>("BorderStyle");
-
                     b.Property<TimeSpan>("CacheRefreshSpan");
 
                     b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassAttribute");
 
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Height");
-
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
 
                     b.Property<DateTime?>("LastRefreshTime");
 
@@ -325,10 +321,6 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
-
-                    b.Property<int>("Order");
-
-                    b.Property<Guid>("RowId");
 
                     b.Property<string>("Template")
                         .IsRequired();
@@ -341,15 +333,57 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<int>("WidgetTemplateType");
 
-                    b.Property<string>("Width");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RowId");
 
                     b.HasIndex("WidgetGroupId");
 
                     b.ToTable("ChartWidgets");
+                });
+
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.CustomWidget", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("AllowCache");
+
+                    b.Property<string>("Author");
+
+                    b.Property<TimeSpan>("CacheRefreshSpan");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Description");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
+
+                    b.Property<DateTime?>("LastRefreshTime");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("Template")
+                        .IsRequired();
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.Property<Guid>("WidgetGroupId");
+
+                    b.Property<int>("WidgetTemplateType");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WidgetGroupId");
+
+                    b.ToTable("CustomWidgets");
                 });
 
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.ListWidget", b =>
@@ -361,25 +395,17 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Author");
 
-                    b.Property<string>("BackGroundColor");
-
-                    b.Property<int>("BorderRadius");
-
-                    b.Property<string>("BorderStyle");
-
                     b.Property<TimeSpan>("CacheRefreshSpan");
 
                     b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassAttribute");
 
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Height");
-
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
 
                     b.Property<DateTime?>("LastRefreshTime");
 
@@ -387,10 +413,6 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
-
-                    b.Property<int>("Order");
-
-                    b.Property<Guid>("RowId");
 
                     b.Property<string>("Template")
                         .IsRequired();
@@ -403,11 +425,7 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<int>("WidgetTemplateType");
 
-                    b.Property<string>("Width");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RowId");
 
                     b.HasIndex("WidgetGroupId");
 
@@ -423,25 +441,17 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Author");
 
-                    b.Property<string>("BackGroundColor");
-
-                    b.Property<int>("BorderRadius");
-
-                    b.Property<string>("BorderStyle");
-
                     b.Property<TimeSpan>("CacheRefreshSpan");
 
                     b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassAttribute");
 
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Height");
-
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
 
                     b.Property<DateTime?>("LastRefreshTime");
 
@@ -450,9 +460,7 @@ namespace ST.Dashboard.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int>("Order");
-
-                    b.Property<Guid>("RowId");
+                    b.Property<Guid>("ReportId");
 
                     b.Property<string>("Template")
                         .IsRequired();
@@ -465,11 +473,7 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<int>("WidgetTemplateType");
 
-                    b.Property<string>("Width");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RowId");
 
                     b.HasIndex("WidgetGroupId");
 
@@ -485,25 +489,17 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Author");
 
-                    b.Property<string>("BackGroundColor");
-
-                    b.Property<int>("BorderRadius");
-
-                    b.Property<string>("BorderStyle");
-
                     b.Property<TimeSpan>("CacheRefreshSpan");
 
                     b.Property<DateTime>("Changed");
-
-                    b.Property<string>("ClassAttribute");
 
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("Height");
-
                     b.Property<bool>("IsDeleted");
+
+                    b.Property<bool>("IsSystem");
 
                     b.Property<DateTime?>("LastRefreshTime");
 
@@ -511,10 +507,6 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
-
-                    b.Property<int>("Order");
-
-                    b.Property<Guid>("RowId");
 
                     b.Property<string>("Template")
                         .IsRequired();
@@ -527,11 +519,7 @@ namespace ST.Dashboard.Migrations
 
                     b.Property<int>("WidgetTemplateType");
 
-                    b.Property<string>("Width");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RowId");
 
                     b.HasIndex("WidgetGroupId");
 
@@ -546,19 +534,6 @@ namespace ST.Dashboard.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.CustomWidget", b =>
-                {
-                    b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
-                        .WithMany()
-                        .HasForeignKey("RowId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ST.Dashboard.Abstractions.Models.WidgetGroup", "WidgetGroup")
-                        .WithMany()
-                        .HasForeignKey("WidgetGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.Row", b =>
                 {
                     b.HasOne("ST.Dashboard.Abstractions.Models.DashBoard", "DashBoard")
@@ -567,13 +542,55 @@ namespace ST.Dashboard.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.ChartWidget", b =>
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.RowWidgets.RowChartWidget", b =>
                 {
+                    b.HasOne("ST.Dashboard.Abstractions.Models.WidgetTypes.ChartWidget", "ChartWidget")
+                        .WithMany("ChartWidgets")
+                        .HasForeignKey("ChartWidgetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
                         .WithMany("ChartWidgets")
                         .HasForeignKey("RowId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
 
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.RowWidgets.RowCustomWidget", b =>
+                {
+                    b.HasOne("ST.Dashboard.Abstractions.Models.WidgetTypes.CustomWidget", "CustomWidget")
+                        .WithMany("CustomWidgets")
+                        .HasForeignKey("CustomWidgetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
+                        .WithMany("CustomWidgets")
+                        .HasForeignKey("RowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.RowWidgets.RowReportWidget", b =>
+                {
+                    b.HasOne("ST.Dashboard.Abstractions.Models.WidgetTypes.ReportWidget", "ReportWidget")
+                        .WithMany("ReportWidgets")
+                        .HasForeignKey("ReportWidgetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
+                        .WithMany("ReportWidgets")
+                        .HasForeignKey("RowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.ChartWidget", b =>
+                {
+                    b.HasOne("ST.Dashboard.Abstractions.Models.WidgetGroup", "WidgetGroup")
+                        .WithMany()
+                        .HasForeignKey("WidgetGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.CustomWidget", b =>
+                {
                     b.HasOne("ST.Dashboard.Abstractions.Models.WidgetGroup", "WidgetGroup")
                         .WithMany()
                         .HasForeignKey("WidgetGroupId")
@@ -582,11 +599,6 @@ namespace ST.Dashboard.Migrations
 
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.ListWidget", b =>
                 {
-                    b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
-                        .WithMany("ListWidgets")
-                        .HasForeignKey("RowId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ST.Dashboard.Abstractions.Models.WidgetGroup", "WidgetGroup")
                         .WithMany()
                         .HasForeignKey("WidgetGroupId")
@@ -595,11 +607,6 @@ namespace ST.Dashboard.Migrations
 
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.ReportWidget", b =>
                 {
-                    b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
-                        .WithMany("ReportWidgets")
-                        .HasForeignKey("RowId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ST.Dashboard.Abstractions.Models.WidgetGroup", "WidgetGroup")
                         .WithMany()
                         .HasForeignKey("WidgetGroupId")
@@ -608,11 +615,6 @@ namespace ST.Dashboard.Migrations
 
             modelBuilder.Entity("ST.Dashboard.Abstractions.Models.WidgetTypes.TabbedWidget", b =>
                 {
-                    b.HasOne("ST.Dashboard.Abstractions.Models.Row", "Row")
-                        .WithMany("TabbedWidgets")
-                        .HasForeignKey("RowId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("ST.Dashboard.Abstractions.Models.WidgetGroup", "WidgetGroup")
                         .WithMany()
                         .HasForeignKey("WidgetGroupId")

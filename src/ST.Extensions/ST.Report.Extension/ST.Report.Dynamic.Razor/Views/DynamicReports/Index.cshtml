@@ -126,20 +126,8 @@
 				]
 			});
 			$("#reportTable").on("click", ".deleteReport", function () {
-								console.log(111);
-				const swalWithBootstrapButtons = Swal.mixin({
-					customClass: {
-						confirmButton: 'btn btn-success',
-						cancelButton: 'btn btn-danger'
-					},
-					buttonsStyling: false
-				});
-
 				var requestUrl = $(this).data('request-url');
 				var id = $(this).data('value');
-
-				console.log(requestUrl);
-				console.log(id);
 				Swal.fire({
 					title: 'Are you sure?',
 					text: "You won't be able to revert this!",

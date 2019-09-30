@@ -2,7 +2,7 @@
 
 namespace ST.Core.Exceptions
 {
-    internal class IoCNotRegisterServiceException : Exception
+    public class IoCNotRegisterServiceException : Exception
     {
         public IoCNotRegisterServiceException()
         {

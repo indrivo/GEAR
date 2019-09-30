@@ -1,4 +1,4 @@
-@using Microsoft.EntityFrameworkCore.Internal
+@using IdentityServer4.Extensions
 @using ST.Dashboard.Abstractions
 @using ST.Identity.Abstractions
 @inject UserManager<ApplicationUser> UserManager
@@ -6,31 +6,50 @@
 @inject IDashboardService DashboardService
 @{
 	ViewData["Title"] = Localizer["title_home"];
-	var user = await UserManager.GetUserAsync(User);
+	//var user = await UserManager.GetUserAsync(User);
 	var configuration = await DashboardService.GetDashboardConfigurationForRenderAsync();
 }
 
-@if (configuration.IsSuccess)
-{
-	@foreach (var row in configuration.Result)
-	{
-		<div class="row">
-			@for (var j = 0; j < new Random().Next(10); j++)
+<link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
+<link rel="stylesheet" href="~/assets/ReportScripts/report.css" />
+
+<div class="card">
+	<div class="card-body">
+		@if (configuration.IsSuccess)
+		{
+			foreach (var row in configuration.Result)
 			{
-				<div class="col-md">
-					<div class="card mb-sm-4 mb-3">
-						<div class="card-body p-0">
-							<div class="p-3 pl-4" style="height:@(new Random().Next(100, 400))px">
-								<h1>Widget</h1>
+				<div class="row">
+					@foreach (var widgetBody in row.GetWidgetBodies())
+					{
+						<div class="col-md">
+							<div class="card mb-sm-4 mb-3">
+								<div class="card-body p-0">
+									<div class="p-3 pl-4">
+										@if (!widgetBody.IsNullOrEmpty())
+										{
+											@Html.Raw(widgetBody)
+										}
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
+					}
 				</div>
 			}
-		</div>
-	}
+		}
+		else
+		{
+			<h1>@configuration.Errors.ElementAt(0)?.Message</h1>
+		}
+	</div>
+</div>
+
+@section PreScripts{
+	<script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+	<script src="~/lib/Chart.js/Chart.min.js"></script>
 }
-else
-{
-	<h1>@configuration.Errors.ElementAt(0)?.Message</h1>
+
+@section Scripts{
+	<script src="~/assets/ReportScripts/report.js"></script>
 }

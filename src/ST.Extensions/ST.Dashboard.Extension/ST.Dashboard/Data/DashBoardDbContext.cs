@@ -7,6 +7,7 @@ using ST.Core.Abstractions;
 using ST.Core.Helpers;
 using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.RowWidgets;
 using ST.Dashboard.Abstractions.Models.WidgetTypes;
 
 namespace ST.Dashboard.Data
@@ -29,6 +30,7 @@ namespace ST.Dashboard.Data
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// On model creating
         /// </summary>
@@ -40,6 +42,9 @@ namespace ST.Dashboard.Data
             var path = Path.Combine(AppContext.BaseDirectory, "Configurations\\WidgetGroups.json");
             var items = JsonParser.ReadArrayDataFromJsonFile<ICollection<WidgetGroup>>(path);
             builder.Entity<WidgetGroup>().HasData(items);
+            builder.Entity<RowReportWidget>().HasKey(x => new { x.ReportWidgetId, x.RowId });
+            builder.Entity<RowChartWidget>().HasKey(x => new { x.ChartWidgetId, x.RowId });
+            builder.Entity<RowCustomWidget>().HasKey(x => new { x.CustomWidgetId, x.RowId });
         }
 
         /// <inheritdoc />
@@ -48,18 +53,18 @@ namespace ST.Dashboard.Data
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel
-        {
-            return Set<T>();
-        }
+        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
 
         public virtual DbSet<WidgetGroup> WidgetGroups { get; set; }
-        public DbSet<DashBoard> Dashboards { get; set; }
+        public virtual DbSet<DashBoard> Dashboards { get; set; }
         public virtual DbSet<Row> Rows { get; set; }
         public virtual DbSet<CustomWidget> CustomWidgets { get; set; }
         public virtual DbSet<ChartWidget> ChartWidgets { get; set; }
         public virtual DbSet<ListWidget> ListWidgets { get; set; }
         public virtual DbSet<ReportWidget> ReportWidgets { get; set; }
         public virtual DbSet<TabbedWidget> TabbedWidgets { get; set; }
+        public virtual DbSet<RowChartWidget> RowChartWidgets { get; set; }
+        public virtual DbSet<RowCustomWidget> RowCustomWidgets { get; set; }
+        public virtual DbSet<RowReportWidget> RowReportWidgets { get; set; }
     }
 }

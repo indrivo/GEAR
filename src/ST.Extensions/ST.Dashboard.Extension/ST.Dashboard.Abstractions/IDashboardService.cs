@@ -71,5 +71,26 @@ namespace ST.Dashboard.Abstractions
         /// <param name="rowId"></param>
         /// <returns></returns>
         Task<ResultModel> DeleteRowAsync(Guid? rowId);
+
+        /// <summary>
+        /// Seed widgets async
+        /// </summary>
+        /// <returns></returns>
+        Task SeedWidgetsAsync();
+
+        /// <summary>
+        /// Get widgets by row group id
+        /// </summary>
+        /// <param name="widgetGroupId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Widget>> GetWidgetGroupRowsAsync(Guid? widgetGroupId);
+
+        /// <summary>
+        /// Delete ma
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <param name="widgetId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteMappedWidgetToRowAsync(Guid? rowId, Guid? widgetId);
     }
 }

@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Core.Extension\ST.Core.Razor\ST.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\ST.Report.Extension\ST.Report.Abstractions\ST.Report.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Dashboard.Abstractions\ST.Dashboard.Abstractions.csproj" />
   </ItemGroup>
 

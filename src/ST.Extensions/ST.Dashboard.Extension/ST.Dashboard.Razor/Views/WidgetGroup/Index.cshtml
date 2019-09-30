@@ -1,6 +1,7 @@
 ﻿@using ST.Core.Razor.Enums
 @using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 @using ST.Core.Razor.TagHelpersStructures
+
 @{
     ViewData["Title"] = "Widget groups";
     var conf = new ListTagHelperModel
@@ -10,7 +11,7 @@
         ListIdentifier = "widgetGroups",
         Api = new ListApiConfigurationViewModel
         {
-            Url = Url.Action("OrderedList", "Dashboard")
+            Url = Url.Action("GetWidgetGroups", "WidgetGroup")
         },
         RenderColumns = new List<ListRenderColumn>
 {
@@ -18,17 +19,18 @@
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["modified_by"], "modifiedBy"),
             new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
             {
                 BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
             }
         },
         HeadButtons = new List<UrlTagHelperViewModel>
-{
+        {
             new UrlTagHelperViewModel
             {
                 AspAction = "Create",
-                AspController = "Dashboard",
+                AspController = "WidgetGroup",
                 ButtonName = "Add new widget group",
                 Description = "New widget group will be added"
             }
@@ -40,7 +42,7 @@
             {
                 Name = "Edit",
                 ButtonType = BootstrapButton.Warning,
-                Url = Url.Action("Edit", "Dashboard"),
+                Url = Url.Action("Edit", "WidgetGroup"),
                 ActionParameters = new List<ActionParameter>
 {
                     new ActionParameter("id", "id")

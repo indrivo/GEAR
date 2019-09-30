@@ -5,18 +5,27 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ST.Core;
+using ST.Core.Attributes.Documentation;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Dashboard.Abstractions;
+using ST.Dashboard.Abstractions.Constants;
 using ST.Dashboard.Abstractions.Models;
+using ST.Dashboard.Abstractions.Models.RowWidgets;
 using ST.Dashboard.Abstractions.Models.ViewModels;
 using ST.DynamicEntityStorage.Abstractions.Extensions;
 
 namespace ST.Dashboard
 {
+    [Author("Lupei Nicolae", 1.1)]
+    [Documentation("This class provide services for manage dashboards and it's content")]
     public class DashboardService : IDashboardService
     {
         #region Injectable
+
+        /// <summary>
+        /// Inject db context
+        /// </summary>
         private readonly IDashboardDbContext _context;
         #endregion
 
@@ -42,6 +51,16 @@ namespace ST.Dashboard
             var response = new ResultModel<IEnumerable<Row>>();
             var dashboard = await _context.Dashboards
                 .Include(x => x.Rows)
+                    .ThenInclude(x => x.CustomWidgets)
+                        .ThenInclude(x => x.CustomWidget)
+
+                .Include(x => x.Rows)
+                    .ThenInclude(x => x.ReportWidgets)
+                        .ThenInclude(x => x.ReportWidget)
+
+                .Include(x => x.Rows)
+                    .ThenInclude(x => x.ChartWidgets)
+                        .ThenInclude(x => x.ChartWidget)
                 .FirstOrDefaultAsync(x => x.IsActive);
 
             if (dashboard.IsNull())
@@ -55,17 +74,7 @@ namespace ST.Dashboard
             return response;
         }
 
-        /// <summary>
-        /// Get widget groups
-        /// </summary>
-        /// <returns></returns>
-        public virtual async Task<ResultModel> GetWidgetGroupsAsync()
-        {
-            var result = new ResultModel();
-
-            return result;
-        }
-
+        /// <inheritdoc />
         /// <summary>
         /// Get dashboard configuration
         /// </summary>
@@ -82,6 +91,17 @@ namespace ST.Dashboard
 
             var dashboard = await _context.Dashboards
                 .Include(x => x.Rows)
+                .ThenInclude(x => x.CustomWidgets)
+                .ThenInclude(x => x.CustomWidget)
+
+                .Include(x => x.Rows)
+                .ThenInclude(x => x.ChartWidgets)
+                .ThenInclude(x => x.ChartWidget)
+
+                .Include(x => x.Rows)
+                .ThenInclude(x => x.ReportWidgets)
+                .ThenInclude(x => x.ReportWidget)
+
                 .FirstOrDefaultAsync(x => x.Id.Equals(dashboardId));
 
             if (dashboard == null)
@@ -90,13 +110,43 @@ namespace ST.Dashboard
                 return result;
             }
 
-            result.Result = dashboard.Rows.Select(x => new DashboardRowViewModel
+            var data = new List<DashboardRowViewModel>();
+
+            foreach (var row in dashboard.Rows.OrderBy(x => x.Order))
             {
-                Order = x.Order,
-                RowId = x.Id
-            });
+                var rWidgets = new List<RowWidgetViewModel>();
+                if (row.ReportWidgets.Any())
+                {
+                    rWidgets.AddRange(row.ReportWidgets.Select(x => new RowWidgetViewModel
+                    {
+                        Id = x.ReportWidgetId,
+                        GroupId = x.ReportWidget?.WidgetGroupId,
+                        Order = x.Order,
+                        Name = x.ReportWidget?.Name
+                    }));
+                }
+
+                if (row.CustomWidgets.Any())
+                {
+                    rWidgets.AddRange(row.CustomWidgets.Select(x => new RowWidgetViewModel
+                    {
+                        Id = x.CustomWidgetId,
+                        GroupId = x.CustomWidget?.WidgetGroupId,
+                        Order = x.Order,
+                        Name = x.CustomWidget?.Name
+                    }));
+                }
+
+                data.Add(new DashboardRowViewModel
+                {
+                    RowId = row.Id,
+                    Order = row.Order,
+                    Widgets = rWidgets.OrderBy(x => x.Order).ToList()
+                });
+            }
 
             result.IsSuccess = true;
+            result.Result = data;
 
             return result;
         }
@@ -226,12 +276,60 @@ namespace ST.Dashboard
                         Order = row.Order,
                         DashboardId = dashboard.Id
                     };
+
                     rowsConf.Add(new DashboardRowViewModel
                     {
                         RowId = newRow.Id,
                         Order = newRow.Order
                     });
                     await _context.Rows.AddAsync(newRow);
+
+                    if (row.Widgets.Any())
+                    {
+                        foreach (var widget in row.Widgets)
+                        {
+                            if (!widget.Id.HasValue || !widget.GroupId.HasValue) continue;
+                            if (widget.GroupId == WidgetType.REPORT)
+                            {
+                                var dbWidget = await _context.ReportWidgets
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
+                                if (dbWidget == null) continue;
+                                await _context.RowReportWidgets.AddAsync(new RowReportWidget
+                                {
+                                    RowId = newRow.Id,
+                                    ReportWidgetId = widget.Id.Value,
+                                    Order = widget.Order
+                                });
+                            }
+                            else if (widget.GroupId == WidgetType.CHARTS)
+                            {
+                                var dbWidget = await _context.ChartWidgets
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
+                                if (dbWidget == null) continue;
+                                await _context.RowChartWidgets.AddAsync(new RowChartWidget
+                                {
+                                    RowId = newRow.Id,
+                                    ChartWidgetId = widget.Id.Value,
+                                    Order = widget.Order
+                                });
+                            }
+                            else
+                            {
+                                var dbWidget = await _context.CustomWidgets
+                                    .AsNoTracking()
+                                    .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
+                                if (dbWidget == null) continue;
+                                await _context.RowCustomWidgets.AddAsync(new RowCustomWidget
+                                {
+                                    RowId = newRow.Id,
+                                    CustomWidgetId = widget.Id.Value,
+                                    Order = widget.Order
+                                });
+                            }
+                        }
+                    }
                 }
             }
 
@@ -286,6 +384,7 @@ namespace ST.Dashboard
             return await _context.PushAsync();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Delete row 
         /// </summary>
@@ -309,6 +408,92 @@ namespace ST.Dashboard
 
             _context.Rows.Remove(row);
             return await _context.PushAsync();
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get widgets
+        /// </summary>
+        /// <param name="widgetGroupId"></param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<Widget>> GetWidgetGroupRowsAsync(Guid? widgetGroupId)
+        {
+            var data = new List<Widget>();
+            if (widgetGroupId.HasValue.Negate()) return data;
+            var rWidgets = await _context.ReportWidgets.Where(x => x.WidgetGroupId.Equals(widgetGroupId)).ToListAsync();
+            if (rWidgets.Any()) data.AddRange(rWidgets);
+
+            var customWidgets = await _context.CustomWidgets.Where(x => x.WidgetGroupId.Equals(widgetGroupId)).ToListAsync();
+            if (customWidgets.Any()) data.AddRange(customWidgets);
+
+            var chartWidgets = await _context.ChartWidgets.Where(x => x.WidgetGroupId.Equals(widgetGroupId)).ToListAsync();
+            if (chartWidgets.Any()) data.AddRange(chartWidgets);
+            return data;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Delete map row
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <param name="widgetId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> DeleteMappedWidgetToRowAsync(Guid? rowId, Guid? widgetId)
+        {
+            var result = new ResultModel();
+            if (!rowId.HasValue || !widgetId.HasValue)
+            {
+                result.Errors.Add(new ErrorModel(string.Empty, nameof(NullReferenceException)));
+                return result;
+            }
+
+            var exist = false;
+            var customCheck =
+                await _context.RowCustomWidgets.FirstOrDefaultAsync(x =>
+                    x.CustomWidgetId.Equals(widgetId) && x.RowId.Equals(rowId));
+            if (customCheck != null)
+            {
+                _context.RowCustomWidgets.Remove(customCheck);
+                exist = true;
+            }
+            else
+            {
+                var reportCheck =
+                    await _context.RowReportWidgets.FirstOrDefaultAsync(x =>
+                        x.ReportWidgetId.Equals(widgetId) && x.RowId.Equals(rowId));
+
+                if (reportCheck != null)
+                {
+                    _context.RowReportWidgets.Remove(reportCheck);
+                    exist = true;
+                }
+                else
+                {
+                    var chartCheck =
+                        await _context.RowChartWidgets.FirstOrDefaultAsync(x =>
+                            x.ChartWidgetId.Equals(widgetId) && x.RowId.Equals(rowId));
+
+                    if (chartCheck != null)
+                    {
+                        _context.RowChartWidgets.Remove(chartCheck);
+                        exist = true;
+                    }
+                }
+            }
+
+            if (exist) return await _context.PushAsync();
+            return result;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Seed async
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task SeedWidgetsAsync()
+        {
+            return Task.CompletedTask;
+
         }
     }
 }

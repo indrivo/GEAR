@@ -152,5 +152,18 @@ namespace ST.Dashboard.Razor.Controllers
             var commit = await _dashboardService.DeleteRowAsync(rowId);
             return Json(commit);
         }
+
+        /// <summary>
+        /// Delete mapped widget to row
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <param name="widgetId"></param>
+        /// <returns></returns>
+        [HttpDelete, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> DeleteMappedWidget(Guid? rowId, Guid? widgetId)
+        {
+            var commit = await _dashboardService.DeleteMappedWidgetToRowAsync(rowId, widgetId);
+            return Json(commit);
+        }
     }
 }

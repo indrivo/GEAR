@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Core.Extensions;
 
 namespace ST.Report.Abstractions.Extensions
 {
@@ -31,6 +32,7 @@ namespace ST.Report.Abstractions.Extensions
             where TReportContext : DbContext, IReportContext
         {
             services.AddDbContext<TReportContext>(options);
+            services.AddScopedContextFactory<IReportContext, TReportContext>();
             return services;
         }
     }

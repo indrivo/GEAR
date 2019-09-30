@@ -15,5 +15,10 @@ namespace ST.Dashboard.Abstractions.Models
         /// Order
         /// </summary>
         public virtual int Order { get; set; } = 1;
+
+        /// <summary>
+        /// Is system
+        /// </summary>
+        public virtual bool IsSystem { get; set; }
     }
 }
