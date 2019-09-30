@@ -8,7 +8,7 @@ const taskItemsAddTaskTemplate = $.templates("#taskItemsAddTaskTemplate");
 
 const templateManager = new TemplateManager();
 
-const maxFileSize = 10240;
+const maxFileSize = 10485760;
 let statuses = [];
 let priorities = [];
 let users = [];
@@ -49,13 +49,25 @@ $('.task-manager .task-manager-items-per-page-control').off().on('change', funct
     });
 });
 
+$('.task-manager-add-new-task').off().on('click', function () {
+    $('.initial-tab-click').trigger('click');
+    $('.add-task-uploaded-files .file-list').html('');
+    $('.modal-add-task .file-list').html('');
+    addChangeFileInputEvent('add');
+    const d = new Date();
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const time = d.getFullYear() + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
+    $('#add-task-start-date, #add-task-end-date').val(time);
+});
+
 $('#add-task').submit(function (e) {
     e.preventDefault();
 
     const scope = $(this);
     let taskItemsForm = [];
-    let filesToUpload = [];
     let formData = new FormData();
+    let fileCount = 0;
 
     $.each($('#addTaskModal .file-list-item:not(.deleting)'), function () {
         let fileId = $(this).find('.file-name').data('file-id');
@@ -67,42 +79,32 @@ $('#add-task').submit(function (e) {
         taskItemsForm.push({ Name: $(this).data('task-name') });
     });
 
+    task = {
+        taskItems: taskItemsForm,
+        name: scope.find('#add-task-name').val(),
+        description: scope.find('#add-task-description').val(),
+        startDate: scope.find('#add-task-start-date').val(),
+        endDate: scope.find('#add-task-end-date').val(),
+        userId: scope.find('#add-task-users').val(),
+        taskPriority: scope.find('#add-task-priority').val(),
+        status: scope.find('#add-task-status').val(),
+    };
 
-    uploadMultipleFiles(formData).then(result => {
-        filesToUpload = result;
+    for (var pair of formData.entries()) {
+        fileCount++;
+    }
 
-        task = {
-            taskItems: taskItemsForm,
-            name: scope.find('#add-task-name').val(),
-            description: scope.find('#add-task-description').val(),
-            startDate: scope.find('#add-task-start-date').val(),
-            endDate: scope.find('#add-task-end-date').val(),
-            userId: scope.find('#add-task-users').val(),
-            taskPriority: scope.find('#add-task-priority').val(),
-            status: scope.find('#add-task-status').val(),
-            files: filesToUpload
-        };
-
-        if (moment(task.startDate).isBefore(task.endDate)) {
-            $('.task-manager-loader').fadeIn();
-            createTask(task).then(() => {
-                $('.task-manager-loader').fadeOut();
-            }).catch(e => {
-                console.warn(e);
-            });
-
-            $('#addTaskModal').modal('hide');
-            $('#add-task')[0].reset();
-            $('#add-task-item-add-task')[0].reset();
-
-            $('#add-task-items-tab .task-items-add-task').html('');
-        }
-        else {
-            toast.notify({ text: window.translate(""), icon: "error" });
-        }
-    }).catch(e => {
-        toast.notifyErrorList(e);
-    });
+    if (fileCount == 0) {
+        task.files = [];
+        sendAddTaskObject(task);
+    } else {
+        uploadMultipleFiles(formData).then(result => {
+            task.files = result;
+            sendAddTaskObject(task);
+        }).catch(e => {
+            toast.notifyErrorList(e);
+        });
+    }
 });
 
 $('#add-task-item-add-task').submit(function (e) {
@@ -115,13 +117,6 @@ $('#add-task-item-add-task').submit(function (e) {
         $(this).closest('.task-item').remove();
     });
     $(this).find('#new-task-item-name-add-task').val('');
-});
-
-$('.task-manager-add-new-task').off().on('click', function () {
-    $('.initial-tab-click').trigger('click');
-    $('.add-task-uploaded-files .file-list').html('');
-    $('.modal-add-task .file-list').html('');
-    addChangeFileInputEvent('add');
 });
 
 $('.task-manager .task-manager-task-types').off().on('change', function () {
@@ -161,37 +156,38 @@ sortableTableHeaders.off().on('click', function () {
 
 function addChangeFileInputEvent(type) {
     $('.task-files').off().on('change', function () {
-    const scope = this;
-    const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
-    const files = getFilesFromInput($(this));
-    if (type === 'add') {
-        wrapper.html('');
-        for (let i = 0; i < files.length; i++) {
-            if (files[i].size > maxFileSize) {
-                alert("One of files is too big!(Max " + maxFileSize / 1024 +"MB allowed)");
-                scope.value = "";
-            } else {
-                fileListAppend(files[i].name, wrapper, i);
+        const scope = this;
+        const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
+        const files = getFilesFromInput($(this));
+        if (type === 'add') {
+            wrapper.html('');
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > maxFileSize) {
+                    alert("One of files is too big!(Max " + maxFileSize / 1048576 + "MB allowed)");
+                    scope.value = "";
+                } else {
+                    fileListAppend(files[i].name, wrapper, i);
+                }
             }
         }
-    }
-    else if (type === 'edit') {
-        if (files[0].size > maxFileSize) {
-            alert("File is too big!(Max "+ maxFileSize/1024 +"MB allowed)");
-            scope.value = "";
+        else if (type === 'edit') {
+            if (files[0].size > maxFileSize) {
+                alert("File is too big!(Max " + maxFileSize / 1048576 + "MB allowed)");
+                scope.value = "";
+            }
+            else {
+                let formData = new FormData();
+                formData.append("files", files[0]);
+                uploadFile(formData).then(fileId => {
+                    fileListAppend(files[0].name, wrapper, fileId);
+                });
+            }
         }
-        else {
-            let formData = new FormData();
-            formData.append("files", files[0]);
-            uploadFile(formData).then(fileId => {
-                fileListAppend(files[0].name, wrapper, fileId);
-            });
-        }
-    }
-});
+    });
 };
 
 function loadTaskList(type, page, pageSize, descending, attribute) {
+    $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
     if (type === 'active') {
         return manager.getUserTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
             $.each(result.results, function () {
@@ -323,14 +319,19 @@ function addTaskEditSubmitEvent() {
             status: scope.find('.task-status').val(),
             files: filesToUpload
         };
-        $('.task-manager-loader').fadeIn();
-        updateTask(task).then(() => {
-            window.forceTranslate();
-            $('.task-manager-loader').fadeOut();
-        }).catch(e => {
-            toast.notifyErrorList(e);
-        });
-        $('#editTaskModal').modal('hide');
+        if (!moment(task.startDate).isAfter(task.endDate)) {
+            $('.task-manager-loader').fadeIn();
+            updateTask(task).then(() => {
+                window.forceTranslate();
+                $('.task-manager-loader').fadeOut();
+            }).catch(e => {
+                toast.notifyErrorList(e);
+            });
+            $('#editTaskModal').modal('hide');
+        }
+        else {
+            toast.notify({ text: window.translate("system_taskmanager_error_date"), icon: "error" });
+        }
     });
 }
 
@@ -445,6 +446,30 @@ function viewTask(taskId, assigned) {
         });
         window.forceTranslate();
         loadTaskItems(taskId).then(() => { });
+
+        let task = {
+            id: result.id,
+            name: result.name,
+            description: result.description,
+            startDate: result.startDate,
+            endDate: result.endDate,
+            userId: result.userId,
+            taskPriority: result.taskPriority,
+            status: result.status,
+            files: result.files
+        };
+
+        if (result.files == null) {
+            task.files = [];
+        }
+
+
+        $('#edit-assigned-task-status').off().on('change', function () {
+            task.status = $(this).val();
+            updateTask(task).then(() => { }).catch(e => {
+                toast.notifyErrorList(e);
+            });
+        });
     }).catch(e => {
         toast.notifyErrorList(e);
         $("#task-items-tab .task-items").html('');
@@ -466,8 +491,27 @@ function loadTaskItems(taskId) {
     });
 }
 
+function sendAddTaskObject(task) {
+    if (!moment(task.startDate).isAfter(task.endDate)) {
+        $('.task-manager-loader').fadeIn();
+        createTask(task).then(() => {
+            $('.task-manager-loader').fadeOut();
+        }).catch(e => {
+            console.warn(e);
+        });
+
+        $('#addTaskModal').modal('hide');
+        $('#add-task')[0].reset();
+        $('#add-task-item-add-task')[0].reset();
+
+        $('#add-task-items-tab .task-items-add-task').html('');
+    }
+    else {
+        toast.notify({ text: window.translate("system_taskmanager_error_date"), icon: "error" });
+    }
+}
+
 function createTask(task) {
-    console.log(task);
     return manager.createTask(task).then(result => {
         toast.notify({ text: window.translate("system_taskmanager_add_task_success"), icon: "success" });
         loadTaskList('active', tablePage, tablePageSize, false, 'StartDate').then(() => { });
@@ -485,7 +529,7 @@ function addTaskItemsEvents(taskId) {
         $(this).siblings('#new-task-item-name').val('');
         addTaskItem(taskId, name);
     });
-    $('.delete-task-item').off().on('click', function () {
+    $('.task-item-delete').off().on('click', function () {
         const scope = $(this);
         taskItemId = scope.data('id');
         deleteTaskItem(taskId, taskItemId).then(() => {
@@ -569,10 +613,11 @@ function updateTaskItem(taskId, taskItemId, name, isDone) {
 }
 
 function updateTask(task) {
-    return manager.updateTask(task).then(result => {
+    return manager.updateTask(task).then(() => {
         toast.notify({ text: window.translate("system_taskmanager_update_success"), icon: "success" });
-        refreshTask(result.id).then(() => {
+        refreshTask(task.id).then(() => {
         }).catch(e => {
+            toast.notifyErrorList(e);
         });
     }).catch(e => {
         toast.notifyErrorList(e);
