@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "Caricare i file",
   "system_taskmanager_task_files": "File",
   "no": "No",
-  "system_taskmanager_file_deleted": "File eliminati"
+  "system_taskmanager_file_deleted": "File eliminati",
+  "system_email_confirmed": "Confermato email",
+  "system_confirm": "Confermare",
+  "system_email_sent": "Il tuo messaggio è stato inviato"
 }

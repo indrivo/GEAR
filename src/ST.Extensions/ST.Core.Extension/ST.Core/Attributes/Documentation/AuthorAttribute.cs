@@ -2,7 +2,7 @@
 
 namespace ST.Core.Attributes.Documentation
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true)]
     public class AuthorAttribute : Attribute
     {
         /// <summary>
@@ -21,7 +21,8 @@ namespace ST.Core.Attributes.Documentation
         /// </summary>
         /// <param name="name"></param>
         /// <param name="version"></param>
-        public AuthorAttribute(string name, double version = 1.0)
+        /// <param name="changes"></param>
+        public AuthorAttribute(string name, double version = 1.0, string changes = null)
         {
             _name = name;
             _version = version;

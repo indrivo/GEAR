@@ -63,7 +63,6 @@
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                console.log(result);
                 if (result.value) {
                     Swal.fire(window.translate("system_email_sent"));
                 }
