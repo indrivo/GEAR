@@ -4,5 +4,7 @@
 @using Microsoft.Extensions.Options;
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper ST.Core.Razor.TagHelpers.ListTagHelper, ST.Core.Razor
+@addTagHelper ST.Core.Razor.TagHelpers.TranslateLabelTagHelper, ST.Core.Razor
 
 @inject IStringLocalizer Localizer

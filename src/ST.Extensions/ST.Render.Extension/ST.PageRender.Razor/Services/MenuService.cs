@@ -25,6 +25,16 @@ namespace ST.PageRender.Razor.Services
         {
             return $"_menu_{menuId}";
         }
+
+        /// <summary>
+        /// Cache key
+        /// </summary>
+        /// <param name="menuBlockId"></param>
+        /// <returns></returns>
+        public static string GetBlockCacheKey(string menuBlockId)
+        {
+            return $"_menu_block_{menuBlockId}";
+        }
     }
 
     public class MenuService<TService> : IMenuService where TService : IDynamicService
@@ -56,15 +66,17 @@ namespace ST.PageRender.Razor.Services
         /// <summary>
         /// Get menus
         /// </summary>
-        /// <param name="menuBlockId"></param>
         /// <param name="menuId"></param>
         /// <returns></returns>
-        protected virtual async Task<IEnumerable<MenuItem>> GetSourceAsync(Guid menuBlockId, Guid menuId)
+        protected virtual async Task<IEnumerable<MenuItem>> GetMenuBlockAsync(Guid menuId)
         {
             var cache = await _cacheService.Get<List<MenuItem>>(MenuHelper.GetCacheKey(menuId.ToString()));
             if (cache != null && cache.Any()) return cache;
-            var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(menuBlockId));
-            await _cacheService.Set(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
+            var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(menuId));
+            if (search.IsSuccess && search.Result.Any())
+            {
+                await _cacheService.Set(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
+            }
             return search.Result.ToList();
         }
 
@@ -79,9 +91,16 @@ namespace ST.PageRender.Razor.Services
         {
             var result = new ResultModel<IEnumerable<MenuViewModel>>();
             if (!menuId.HasValue) return result;
-            var navbar = await _service.GetByIdWithReflection<Menu, Menu>(menuId.Value);
-            if (!navbar.IsSuccess) return result;
-            var menus = (await GetSourceAsync(navbar.Result.Id, menuId.Value))
+            //var navbar = await _cacheService.Get<Menu>(MenuHelper.GetBlockCacheKey(menuId.ToString()));
+            //if (navbar == null)
+            //{
+            //    var dbNavbar = await _service.GetByIdWithReflection<Menu, Menu>(menuId.Value);
+            //    if (!dbNavbar.IsSuccess) return result;
+            //    navbar = dbNavbar.Result;
+            //    await _cacheService.Set(MenuHelper.GetBlockCacheKey(menuId.ToString()), navbar);
+            //}
+
+            var menus = (await GetMenuBlockAsync(menuId.Value))
                 .Where(x => HaveAccess(roles, x.AllowedRoles))
                 .ToList();
             if (!menus.Any())

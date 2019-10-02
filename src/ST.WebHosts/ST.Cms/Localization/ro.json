@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "Încărca fișiere",
   "system_taskmanager_task_files": "Fișierele",
   "no": "Nu",
-  "system_taskmanager_file_deleted": "Fișier șters"
+  "system_taskmanager_file_deleted": "Fișier șters",
+  "system_email_confirmed": "Confirmat de e-mail",
+  "system_confirm": "Confirma",
+  "system_email_sent": "Email a fost expediat"
 }

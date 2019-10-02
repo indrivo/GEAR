@@ -95,7 +95,7 @@ namespace ST.Identity.Abstractions.Extensions
             where TAppProvider : class, IAppProvider
         {
             services.AddTransient<IAppProvider, TAppProvider>();
-            IoC.RegisterService<IAppProvider, TAppProvider>();
+            IoC.RegisterTransientService<IAppProvider, TAppProvider>();
             return services;
         }
 

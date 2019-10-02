@@ -20,7 +20,7 @@ namespace ST.Entities.Security.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(services));
             services.AddTransient<IEntityRoleAccessManager, TRepository>();
-            IoC.RegisterService<IEntityRoleAccessManager, TRepository>();
+            IoC.RegisterTransientService<IEntityRoleAccessManager, TRepository>();
             return new EntitySecurityServiceCollection(services);
         }
 

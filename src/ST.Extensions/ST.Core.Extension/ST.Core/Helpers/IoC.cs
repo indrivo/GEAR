@@ -46,11 +46,24 @@ namespace ST.Core.Helpers
         /// </summary>
         /// <typeparam name="TAbstraction"></typeparam>
         /// <typeparam name="TImplementation"></typeparam>
-        public static void RegisterService<TAbstraction, TImplementation>() where TImplementation : class, TAbstraction where TAbstraction : class
+        public static void RegisterTransientService<TAbstraction, TImplementation>() where TImplementation : class, TAbstraction where TAbstraction : class
         {
             if (!IsServiceRegistered<TAbstraction>())
                 Container.Register(Component.For<TAbstraction>()
-                .ImplementedBy<TImplementation>());
+                .ImplementedBy<TImplementation>().LifestyleTransient());
+        }
+
+        /// <summary>
+        /// Register singleton service
+        /// </summary>
+        /// <typeparam name="TAbstraction"></typeparam>
+        /// <typeparam name="TImplementation"></typeparam>
+        public static void RegisterSingletonService<TAbstraction, TImplementation>() where TImplementation : class, TAbstraction where TAbstraction : class
+        {
+            if (!IsServiceRegistered<TAbstraction>())
+                Container.Register(Component.For<TAbstraction>()
+                    .ImplementedBy<TImplementation>()
+                    .LifestyleSingleton());
         }
 
         /// <summary>
@@ -88,7 +101,7 @@ namespace ST.Core.Helpers
         {
             if (!IsServiceRegistered<TAbstraction>())
                 Container.Register(Component.For<TAbstraction>()
-                    .LifestyleCustom<MsScopedLifestyleManager>());
+                    .LifestyleCustom<MsScopedLifestyleManager>().ImplementedBy(typeof(TImplementation)));
         }
 
         /// <summary>

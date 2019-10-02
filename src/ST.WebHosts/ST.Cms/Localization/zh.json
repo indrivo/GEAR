@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "将文件上传",
   "system_taskmanager_task_files": "文件",
   "no": "没有",
-  "system_taskmanager_file_deleted": "文件删除"
+  "system_taskmanager_file_deleted": "文件删除",
+  "system_email_confirmed": "确认的电子邮件",
+  "system_confirm": "确认",
+  "system_email_sent": "你的电子邮件已发送"
 }

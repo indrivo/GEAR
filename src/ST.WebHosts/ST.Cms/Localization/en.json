@@ -172,7 +172,7 @@
   "layouts_add_info": "New layout will be added.",
   "add_layout": "Add layout",
   "confirm_logout": "Yes, log out!",
-  "log_out_message": "You are going to log out?",
+  "log_out_message": "Are you going to log out?",
   "confirm_log_out_question": "Are you sure?",
   "cancel": "Cancel",
   "delete_no_selected_items": "You have not selected any row",
@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "Upload files",
   "system_taskmanager_task_files": "Files",
   "no": "No",
-  "system_taskmanager_file_deleted": "File deleted"
+  "system_taskmanager_file_deleted": "File deleted",
+  "system_email_confirmed": "Confirmed email",
+  "system_confirm": "Confirm",
+  "system_email_sent": "Your Email has been sent"
 }

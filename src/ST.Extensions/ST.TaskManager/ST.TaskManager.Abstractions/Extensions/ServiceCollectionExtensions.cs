@@ -20,7 +20,7 @@ namespace ST.TaskManager.Abstractions.Extensions
             where TTaskService : class, ITaskManager where TTaskManagerNotificationService : class, ITaskManagerNotificationService
         {
             services.AddTransient<ITaskManager, TTaskService>();
-            IoC.RegisterService<ITaskManager, TTaskService>();
+            IoC.RegisterTransientService<ITaskManager, TTaskService>();
             services.AddTransient<ITaskManagerNotificationService, TTaskManagerNotificationService>();
             services.AddHostedService<TaskManagerBackgroundService>();
             return services;

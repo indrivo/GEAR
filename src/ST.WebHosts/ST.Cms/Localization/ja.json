@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "ファイルをアップロード",
   "system_taskmanager_task_files": "ファイル",
   "no": "No",
-  "system_taskmanager_file_deleted": "ファイルを削除"
+  "system_taskmanager_file_deleted": "ファイルを削除",
+  "system_email_confirmed": "確認メール",
+  "system_confirm": "確認",
+  "system_email_sent": "メール送信"
 }

@@ -16,7 +16,7 @@ namespace ST.Files.Box.Abstraction.Extension
             where TFileService : class, IFileBoxManager
         {
             services.AddTransient<IFileBoxManager, TFileService>();
-            IoC.RegisterService<IFileBoxManager, TFileService>();
+            IoC.RegisterTransientService<IFileBoxManager, TFileService>();
             return services;
         }
 

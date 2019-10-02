@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "Pobieranie plików",
   "system_taskmanager_task_files": "Pliki",
   "no": "Nie",
-  "system_taskmanager_file_deleted": "Plik usunięty"
+  "system_taskmanager_file_deleted": "Plik usunięty",
+  "system_email_confirmed": "Potwierdzone przez e-mail",
+  "system_confirm": "Potwierdzić",
+  "system_email_sent": "List został wysłany"
 }

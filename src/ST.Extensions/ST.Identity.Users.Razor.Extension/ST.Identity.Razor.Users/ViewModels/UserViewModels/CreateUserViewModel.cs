@@ -4,13 +4,16 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ST.Core.Attributes.Documentation;
 using ST.Entities.Abstractions.ViewModels.DynamicEntities;
 using ST.Identity.Abstractions.Enums;
 using ST.Identity.Abstractions.Helpers;
-using ST.Identity.Abstractions.Models.AddressModels;
 
 namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
 {
+    [Author("Lupei Nicolae", 1.1)]
+    [Author("Nirca Cristian", 1.2, "Add country and city, address")]
+    [Author("Lupei Nicolae", 1.3, "Fix non used address field, what cause exception on user create")]
     public class CreateUserViewModel
     {
         public CreateUserViewModel()
@@ -22,7 +25,6 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
             SelectedGroupId = new HashSet<string>();
             Profiles = new HashSet<EntityViewModel>();
             CountrySelectListItems = new HashSet<SelectListItem>();
-            Address = new Address();
         }
 
         [Display(Name = "First Name", Prompt = "first name")]
@@ -89,8 +91,6 @@ namespace ST.Identity.Razor.Users.ViewModels.UserViewModels
         public IEnumerable<SelectListItem> CountrySelectListItems { get; set; }
 
         [Display(Name = "Select city")] public int? SelectedCityId { get; set; }
-
-        public Address Address { get; set; }
 
         /// <summary>
         /// User organization

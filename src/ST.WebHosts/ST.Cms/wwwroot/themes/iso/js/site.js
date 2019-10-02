@@ -450,27 +450,30 @@ function riskMatrixCreate() {
 						db.addAsync("CompanyRiskMatrix", matrix).then(h => {
 							if (h.is_success) {
 								const promises = [];
+
 								promises.push(new Promise((resolve, reject) => {
 									const filters = [{ parameter: "TemplateId", value: template.value }];
 									db.getAllWhereNoIncludesAsync("MatrixImpactDefinition", filters).then(y => {
 										if (y.is_success) {
-											if (y.result.length < parseInt(common.result.impactUnitScale))
-												reject(
-													"All the details in the template can not be added because the template has not been completely set up");
-											else
+											if (y.result.length < parseInt(common.result.impactUnitScale)) {
+												//reject("All the details in the template can not be added because the template has not been completely set up");
 												resolve(y);
+											}
+											else resolve(y);
 										} else {
 											reject("Configuration error, try contact administrator");
 										}
 									});
 								}));
+
 								promises.push(new Promise((resolve, reject) => {
 									const filters = [{ parameter: "MatrixId", value: template.value }];
 									db.getAllWhereNoIncludesAsync("MatrixCellValues", filters).then(y => {
 										if (y.is_success) {
-											if (y.result.length < parseInt(common.result.impactUnitScale))
-												reject(
-													"All the details in the template can not be added because the template has not been completely set up");
+											if (y.result.length < parseInt(common.result.impactUnitScale)) {
+												//reject("All the details in the template can not be added because the template has not been completely set up");
+												resolve(y);
+											}
 											else
 												resolve(y);
 										} else {
@@ -485,11 +488,10 @@ function riskMatrixCreate() {
 										const data = res[0].result;
 										for (let i = 0; i < data.length; i++) {
 											data[i].templateId = matrix.id;
+											data[i].id = helper.newGuid();
 										}
 										db.addRangeAsync("CompanyMatrixImpactDefinition", data).then(r => {
-											if (r.result.length > 0) {
-												resolve();
-											}
+											resolve();
 										});
 									}));
 
@@ -497,11 +499,10 @@ function riskMatrixCreate() {
 										const data = res[1].result;
 										for (let i = 0; i < data.length; i++) {
 											data[i].matrixId = matrix.id;
+											data[i].id = helper.newGuid();
 										}
 										db.addRangeAsync("CompanyMatrixCellValues", data).then(r => {
-											if (r.result.length > 0) {
-												resolve();
-											}
+											resolve();
 										});
 									}));
 
@@ -1329,6 +1330,7 @@ if (typeof TableInlineEdit !== "undefined") {
 		let row = targetCtx.closest("tr");
 		const index = table.row(row).index();
 		let obj = table.row(index).data();
+		console.log(obj);
 		targetCtx.off("click", completeEditInlineHandler);
 		const columns = targetCtx.parent().parent().parent().find(".data-cell");
 		let viewModelId = htTable.attr("db-viewmodel");
@@ -1635,7 +1637,7 @@ if (typeof DataInjector !== "undefined") {
 							format = format.replace(/{Year}/g, d.getFullYear());
 							format = format.replace(/{Month}/g, d.getMonth() < 10 ? `0${d.getMonth()}` : d.getMonth());
 							format = format.replace(/{Day}/g, d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
-							this.countAsync(entityName).then(g => {
+							this.countAllAsync(entityName).then(g => {
 								if (g.is_success) {
 									format = format.replace(/{NextIndex}/g, g.result + 1);
 									object[search.propName] = format;

@@ -617,5 +617,8 @@
   "system_taskmanager_upload_files": "Ανεβάστε τα αρχεία",
   "system_taskmanager_task_files": "Αρχεία",
   "no": "Όχι",
-  "system_taskmanager_file_deleted": "Το αρχείο διαγραφεί"
+  "system_taskmanager_file_deleted": "Το αρχείο διαγραφεί",
+  "system_email_confirmed": "Επιβεβαίωσε email",
+  "system_confirm": "Επιβεβαίωση",
+  "system_email_sent": "Το Email σας έχει σταλεί"
 }

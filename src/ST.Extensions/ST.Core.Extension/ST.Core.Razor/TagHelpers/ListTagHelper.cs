@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -137,9 +138,29 @@ namespace ST.Core.Razor.TagHelpers
             var renderColumns = new StringBuilder();
             foreach (var renderItem in AspFor.RenderColumns)
             {
-                renderColumns.AppendLine(renderItem.HasTemplate
-                    ? renderItem.Template
-                    : $"{{ data : \"{renderItem.ApiIdentifier}\"}},");
+                if (renderItem.BodySystemTemplate != RenderCellBodySystemTemplate.Undefined)
+                {
+                    switch (renderItem.BodySystemTemplate)
+                    {
+                        case RenderCellBodySystemTemplate.Boolean:
+                            var boolTemplate = TemplateManager.GetTagHelperTemplate(Templates.ListBooleanRenderJsTemplate, TemplateType.Js);
+                            if (boolTemplate.IsSuccess)
+                            {
+                                renderColumns.AppendLine(boolTemplate.Result.Inject(new Dictionary<string, string>
+                                {
+                                    { nameof(renderItem.ColumnName), renderItem.ApiIdentifier},
+                                    { nameof(renderItem.ApiIdentifier), renderItem.ApiIdentifier }
+                                }));
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    renderColumns.AppendLine(renderItem.HasTemplate
+                        ? renderItem.Template
+                        : $"{{ data : \"{renderItem.ApiIdentifier}\"}},");
+                }
             }
 
             if (AspFor.Api.Parameters.Any())

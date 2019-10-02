@@ -182,10 +182,12 @@ namespace ST.PageRender.Razor.Controllers
                 model.AllowedRoles = "Administrator#";
                 var data = await _service.GetAllWhitOutInclude<MenuItem, MenuItem>(x =>
                     x.ParentMenuItemId == model.ParentMenuItemId);
-                if (data.IsSuccess)
+                if (data.IsSuccess && data.Result.Any())
                 {
                     model.Order = data.Result?.Max(x => x.Order) + 1 ?? 1;
                 }
+                else model.Order = 1;
+
                 var req = await _service.AddWithReflection(model);
                 if (req.IsSuccess)
                 {

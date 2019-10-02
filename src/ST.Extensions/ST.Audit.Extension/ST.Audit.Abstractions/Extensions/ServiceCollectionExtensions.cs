@@ -16,7 +16,7 @@ namespace ST.Audit.Abstractions.Extensions
         public static IServiceCollection AddAuditModule<TManager>(this IServiceCollection services)
             where TManager : class, IAuditManager
         {
-            IoC.RegisterService<IAuditManager, TManager>();
+            IoC.RegisterTransientService<IAuditManager, TManager>();
             return services;
         }
 

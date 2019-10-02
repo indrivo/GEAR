@@ -533,7 +533,7 @@ namespace ST.PageRender.Razor.Controllers
             };
 
             _pagesContext.ViewModelFields.Update(field);
-            var rdb = await _pagesContext.SaveDependenceAsync();
+            var rdb = await _pagesContext.PushAsync();
             if (rdb.IsSuccess)
             {
                 rs.IsSuccess = true;

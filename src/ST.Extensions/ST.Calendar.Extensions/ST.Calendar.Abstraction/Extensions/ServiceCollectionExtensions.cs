@@ -16,7 +16,7 @@ namespace ST.Calendar.Abstractions.Extensions
             where TCalendarService : class, ICalendarManager
         {
             services.AddTransient<ICalendarManager, TCalendarService>();
-            IoC.RegisterService<ICalendarManager, TCalendarService>();
+            IoC.RegisterTransientService<ICalendarManager, TCalendarService>();
             return services;
         }
     }
