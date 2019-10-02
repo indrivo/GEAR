@@ -26,6 +26,11 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
 
         public virtual List<Guid> Files { get; set; }
 
+        /// <summary>
+        /// Assigned users
+        /// </summary>
+        public virtual IEnumerable<Guid> UserTeam { get; set; } = new List<Guid>();
+
         [Required]
         public virtual TaskPriority TaskPriority { get; set; }
 

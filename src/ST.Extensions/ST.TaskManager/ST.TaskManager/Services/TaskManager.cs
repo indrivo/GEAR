@@ -19,12 +19,34 @@ namespace ST.TaskManager.Services
 {
     public class TaskManager : TaskManagerHelper, ITaskManager
     {
+        #region Injectable
+        /// <summary>
+        /// Inject db context
+        /// </summary>
         private readonly ITaskManagerContext _context;
+
+        /// <summary>
+        /// Inject notification service
+        /// </summary>
         private readonly TaskManagerNotificationService _notify;
 
-        public TaskManager(ITaskManagerContext context, IUserManager<ApplicationUser> identity)
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+        #endregion
+
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="identity"></param>
+        /// <param name="userManager"></param>
+        public TaskManager(ITaskManagerContext context, IUserManager<ApplicationUser> identity, IUserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
             _notify = new TaskManagerNotificationService(identity);
         }
 
@@ -34,11 +56,14 @@ namespace ST.TaskManager.Services
         {
             if (taskId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<GetTaskViewModel>();
 
-            var dbTaskResult = await _context.Tasks.Include(x => x.TaskItems).FirstOrDefaultAsync(x => x.Id == taskId);
+            var dbTaskResult = await _context.Tasks
+                .Include(x => x.AssignedUsers)
+                .Include(x => x.TaskItems)
+                .FirstOrDefaultAsync(x => x.Id == taskId);
             if (dbTaskResult == null)
                 return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<GetTaskViewModel>();
-
-            var dto = GetTaskMapper(dbTaskResult);
+            var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id.ToGuid();
+            var dto = GetTaskMapper(dbTaskResult, currentUser);
 
             return new ResultModel<GetTaskViewModel>
             {
@@ -57,7 +82,7 @@ namespace ST.TaskManager.Services
             var dbTaskItemsResult = await _context.TaskItems.Where(x => x.Task == task).ToListAsync();
             var dto = new List<GetTaskItemViewModel>();
             if (dbTaskItemsResult.Any())
-                dto.AddRange(TaskItemsMapper(new Task {TaskItems = dbTaskItemsResult}));
+                dto.AddRange(TaskItemsMapper(new Task { TaskItems = dbTaskItemsResult }));
             else
                 return ExceptionMessagesEnum.TaskItemsNotFound.ToErrorModel<List<GetTaskItemViewModel>>();
 
@@ -73,6 +98,7 @@ namespace ST.TaskManager.Services
             if (string.IsNullOrEmpty(userName)) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
             var dbTasksResult = await _context.Tasks
+                .Include(x => x.AssignedUsers)
                 .Include(x => x.TaskItems)
                 .Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == request.Deleted))
                 .OrderByWithDirection(x => TypeHelper.GetPropertyValue(x, request.Attribute), request.Descending)
@@ -85,21 +111,36 @@ namespace ST.TaskManager.Services
             if (userId == Guid.Empty) return ExceptionMessagesEnum.NullParameter.ToErrorModel<PagedResult<GetTaskViewModel>>();
 
             var dbTasksResult = await _context.Tasks
-                .Where(x => (x.UserId == userId) & (x.IsDeleted == request.Deleted) & (x.Author != userName))
+                .Include(x => x.AssignedUsers)
+                .Where(x => (x.UserId == userId || x.AssignedUsers.Any(c => c.UserId.Equals(userId)))
+                            & (x.IsDeleted == request.Deleted)
+                            & (x.Author != userName))
                 .OrderByWithDirection(x => TypeHelper.GetPropertyValue(x, request.Attribute), request.Descending)
                 .GetPagedAsync(request.Page, request.PageSize);
 
-            return GetTasksAsync(dbTasksResult);
+            return GetTasksAsync(dbTasksResult, userId);
         }
 
         #endregion
 
         #region Task
 
-        public async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
+        public virtual async Task<ResultModel<Guid>> CreateTaskAsync(CreateTaskViewModel task)
         {
             var taskModel = TaskMapper(task);
             taskModel.TaskNumber = await GenerateTaskNumberAsync();
+            foreach (var user in task.UserTeam)
+            {
+                var checkUser = await _userManager
+                        .UserManager
+                        .Users
+                        .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id.ToGuid().Equals(user));
+                if (checkUser == null) continue;
+                taskModel.AssignedUsers.Add(new TaskAssignedUser
+                {
+                    UserId = user
+                });
+            }
             _context.Tasks.Add(taskModel);
             var result = await _context.PushAsync();
 
@@ -112,9 +153,13 @@ namespace ST.TaskManager.Services
             };
         }
 
-        public async Task<ResultModel> UpdateTaskAsync(UpdateTaskViewModel task)
+        public virtual async Task<ResultModel> UpdateTaskAsync(UpdateTaskViewModel task)
         {
-            var dbTaskResult = _context.Tasks.FirstOrDefault(x => (x.Id == task.Id) & (x.IsDeleted == false));
+            var dbTaskResult = _context.Tasks
+                .Include(x => x.AssignedUsers)
+                .FirstOrDefault(x => (x.Id == task.Id) & (x.IsDeleted == false));
+
+
             if (dbTaskResult == null)
                 return ExceptionMessagesEnum.TaskNotFound.ToErrorModel();
 
@@ -122,12 +167,45 @@ namespace ST.TaskManager.Services
             _context.Tasks.Update(taskModel);
             var result = await _context.PushAsync();
 
-            if (result.IsSuccess) await _notify.UpdateTaskNotificationAsync(taskModel);
+            if (result.IsSuccess)
+            {
+                await AddOrUpdateUsersToTaskGroupAsync(dbTaskResult, task.UserTeam);
+                await _notify.UpdateTaskNotificationAsync(taskModel);
+            }
+
             return new ResultModel
             {
                 IsSuccess = result.IsSuccess,
                 Errors = result.Errors
             };
+        }
+
+        /// <summary>
+        /// Add or remove user to task team
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddOrUpdateUsersToTaskGroupAsync(Task task, IEnumerable<Guid> users)
+        {
+            var response = new ResultModel();
+            if (task == null)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, nameof(NullReferenceException)));
+                return response;
+            }
+
+            var current = task.AssignedUsers?.ToList() ?? new List<TaskAssignedUser>();
+            _context.TaskAssignedUsers.RemoveRange(current);
+            var newUsers = users.Select(x => new TaskAssignedUser
+            {
+                UserId = x,
+                TaskId = task.Id
+            });
+
+            await _context.TaskAssignedUsers.AddRangeAsync(newUsers);
+
+            return await _context.PushAsync();
         }
 
         public async Task<ResultModel> DeleteTaskAsync(Guid taskId)
@@ -195,7 +273,7 @@ namespace ST.TaskManager.Services
             var dbTaskResult = _context.Tasks.FirstOrDefault(x => x.Id == taskItem.TaskId);
             if (dbTaskResult == null) return ExceptionMessagesEnum.TaskNotFound.ToErrorModel<Guid>();
 
-            var taskModel = new TaskItem {Name = taskItem.Name, Task = dbTaskResult};
+            var taskModel = new TaskItem { Name = taskItem.Name, Task = dbTaskResult };
 
             _context.TaskItems.Add(taskModel);
             var result = await _context.PushAsync();
