@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -130,6 +130,9 @@
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
 	<Content Update="Views\Dashboard\Builder.cshtml">
+	  <Pack>false</Pack>
+	</Content>
+	<Content Update="Views\NewFolder\Index.cshtml">
 	  <Pack>false</Pack>
 	</Content>
   </ItemGroup>
