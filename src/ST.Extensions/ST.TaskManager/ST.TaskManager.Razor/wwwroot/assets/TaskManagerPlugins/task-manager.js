@@ -43,7 +43,7 @@ Promise.all([manager.getStatusesList(), manager.getPrioritiesList(), manager.get
 
 $('.task-manager .task-manager-items-per-page-control').off().on('change', function () {
     tablePageSize = $(this).val();
-    $('.task-manager-loader').fadeIn();
+    $('.task-manager-loader').fadeIn('fast');
     loadTaskList(taskType, tablePage, tablePageSize, false, 'StartDate').then(() => {
         $('.task-manager-loader').fadeOut();
     });
@@ -53,6 +53,7 @@ $('.task-manager-add-new-task').off().on('click', function () {
     $('.initial-tab-click').trigger('click');
     $('.add-task-uploaded-files .file-list').html('');
     $('.modal-add-task .file-list').html('');
+    $('#add-task')[0].reset();
     addChangeFileInputEvent('add');
     const d = new Date();
     const month = d.getMonth() + 1;
@@ -187,7 +188,6 @@ function addChangeFileInputEvent(type) {
 };
 
 function loadTaskList(type, page, pageSize, descending, attribute) {
-    $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
     if (type === 'active') {
         return manager.getUserTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
             $.each(result.results, function () {
@@ -196,6 +196,7 @@ function loadTaskList(type, page, pageSize, descending, attribute) {
                     statusesList: statuses,
                     prioritiesList: priorities,
                 });
+                $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
                 $("#task-list-table").html(htmlOutput);
             });
             addTablePager(result.pageCount, result.currentPage);
@@ -214,6 +215,7 @@ function loadTaskList(type, page, pageSize, descending, attribute) {
                     statusesList: statuses,
                     prioritiesList: priorities,
                 });
+                $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
                 $("#task-list-table").html(htmlOutput);
             });
             addTablePager(result.pageCount, result.CurrentPage);
@@ -232,6 +234,7 @@ function loadTaskList(type, page, pageSize, descending, attribute) {
                     statusesList: statuses,
                     prioritiesList: priorities,
                 });
+                $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
                 $("#task-list-table").html(htmlOutput);
             });
             addTablePager(result.pageCount, result.CurrentPage);
