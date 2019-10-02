@@ -69,6 +69,5 @@ namespace ST.TaskManager.Abstractions.Models
         /// Files
         /// </summary>
         public virtual string Files { get; set; }
-
     }
 }
