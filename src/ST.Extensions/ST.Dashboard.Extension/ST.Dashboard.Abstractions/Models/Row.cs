@@ -24,22 +24,22 @@ namespace ST.Dashboard.Abstractions.Models
         /// Get widget html bodies
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetWidgetBodies()
+        public IEnumerable<(Widget, string)> GetWidgetBodies()
         {
-            var widgets = new string[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
+            var widgets = new (Widget, string)[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
             foreach (var widget in CustomWidgets)
             {
-                widgets[widget.Order] = widget.CustomWidget.Render();
+                widgets[widget.Order] = (widget.CustomWidget, widget.CustomWidget.Render());
             }
 
             foreach (var widget in ChartWidgets)
             {
-                widgets[widget.Order] = widget.ChartWidget.Render();
+                widgets[widget.Order] = (widget.ChartWidget, widget.ChartWidget.Render());
             }
 
             foreach (var widget in ReportWidgets)
             {
-                widgets[widget.Order] = widget.ReportWidget.Render();
+                widgets[widget.Order] = (widget.ReportWidget, widget.ReportWidget.Render());
             }
 
             return widgets;

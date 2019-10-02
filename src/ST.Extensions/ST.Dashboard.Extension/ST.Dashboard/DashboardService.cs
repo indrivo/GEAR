@@ -232,6 +232,25 @@ namespace ST.Dashboard
 
         /// <inheritdoc />
         /// <summary>
+        /// Get active dashboard
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<DashBoard>> GetActiveDashboardAsync()
+        {
+            var response = new ResultModel<DashBoard>();
+            var dashboard = await _context.Dashboards.FirstOrDefaultAsync(x => x.IsActive);
+            if (dashboard == null)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "No active dashboard present"));
+            }
+
+            response.IsSuccess = true;
+            response.Result = dashboard;
+            return response;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
         /// Add or update dashboard configuration
         /// </summary>
         /// <returns></returns>

@@ -11,6 +11,7 @@ using ST.Report.Abstractions.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ST.Report.Dynamic.Razor.Controllers
 {
@@ -102,25 +103,17 @@ namespace ST.Report.Dynamic.Razor.Controllers
             });
         }
 
-        [HttpPost]
-        public IActionResult DeleteReportFolder(Guid id)
+
+        /// <summary>
+        /// Delete report
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReportFolder(Guid? id)
         {
-            var result = _service.DeleteFolder(id);
-
-            if (result.IsSuccess)
-            {
-                return Json(new
-                {
-                    success = result.IsSuccess,
-                    message = ResultMessagesEnum.DeleteSuccess.GetEnumDescription()
-                });
-            }
-
-            return Json(new
-            {
-                success = result.IsSuccess,
-                message = result.Errors.Any() ? result.Errors.First().Message : string.Empty
-            });
+            var result = await _service.DeleteFolderAsync(id);
+            return Json(result);
         }
 
         #endregion
@@ -136,12 +129,12 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 result = _service.GetReport(id).Result;
             }
             var model = result != null ? new DynamicReportViewModel()
-                {
-                    Id = result.Id,
-                    Name = result.Name,
-                    ReportDataModel = result.ReportDataModel,
-                    DynamicReportFolder = new DynamicReportFolderViewModel(result.DynamicReportFolder.Id, result.DynamicReportFolder.Name)
-                }
+            {
+                Id = result.Id,
+                Name = result.Name,
+                ReportDataModel = result.ReportDataModel,
+                DynamicReportFolder = new DynamicReportFolderViewModel(result.DynamicReportFolder.Id, result.DynamicReportFolder.Name)
+            }
                 : new DynamicReportViewModel();
 
             ViewBag.Folders = _service.GetAllFolders();
@@ -169,25 +162,17 @@ namespace ST.Report.Dynamic.Razor.Controllers
             });
         }
 
-
-        [HttpPost]
-        public IActionResult DeleteReport(Guid id)
+        /// <summary>
+        /// Delete report
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReport(Guid? id)
         {
-            var result = _service.DeleteReport(id);
-            if (result.IsSuccess)
-            {
-                return Json(new
-                {
-                    success = result.IsSuccess,
-                    message = ResultMessagesEnum.DeleteSuccess.GetEnumDescription()
-                });
-            }
-
-            return Json(new
-            {
-                success = result.IsSuccess,
-                message = result.Errors.Any() ? result.Errors.First().Message : ""
-            });
+            var result = await _service.DeleteReportAsync(id);
+            result.Result = ResultMessagesEnum.DeleteSuccess.GetEnumDescription();
+            return Json(result);
         }
 
 
@@ -274,7 +259,7 @@ namespace ST.Report.Dynamic.Razor.Controllers
                 {
                     id = s,
                     text = s,
-                    children = tables.Where(x => x.id == s).Select(x => new {id = x.id + "." + x.text, x.text }).ToList()
+                    children = tables.Where(x => x.id == s).Select(x => new { id = x.id + "." + x.text, x.text }).ToList()
                 });
                 return Json(result);
             }

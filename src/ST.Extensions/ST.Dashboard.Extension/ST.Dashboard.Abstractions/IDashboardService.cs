@@ -25,6 +25,12 @@ namespace ST.Dashboard.Abstractions
         JsonResult GetDashboards(DTParameters param);
 
         /// <summary>
+        /// Get active dashboard
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<DashBoard>> GetActiveDashboardAsync();
+
+        /// <summary>
         /// Set active dashboard
         /// </summary>
         /// <param name="dashboardId"></param>
