@@ -277,6 +277,17 @@ namespace ST.Entities.Razor.Controllers.Entity
                 field.Configurations = configurationsRq.Result.ToList();
             }
 
+            if (field.Parameter == FieldType.EntityReference)
+            {
+                var foreignSchema = field.Configurations.FirstOrDefault(x => x.Name == nameof(TableFieldConfigCode.Reference.ForeingSchemaTable));
+                if (foreignSchema != null)
+                {
+                    var index = field.Configurations.IndexOf(foreignSchema);
+                    foreignSchema.Value = "system";
+                    field.Configurations = field.Configurations.Replace(index, foreignSchema).ToList();
+                }
+            }
+
             field = field.CreateSqlField();
             var insertField = _tablesService.AddFieldSql(field, tableName, ConnectionString, true, schema);
             // Save field model in the dataBase
@@ -288,9 +299,38 @@ namespace ST.Entities.Razor.Controllers.Entity
 
             if (!table.IsCommon)
             {
+                var isDynamic = true;
+                var isReference = false;
+                var referenceIsCommon = true;
                 var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
+                if (field.Parameter == FieldType.EntityReference)
+                {
+                    isReference = true;
+                    var referenceTableName = field.Configurations
+                        .FirstOrDefault(x => x.Name == nameof(TableFieldConfigCode.Reference.ForeingTable))?.Value;
+
+                    if (!referenceTableName.IsNullOrEmpty())
+                    {
+                        var refTable = await Context.Table.FirstOrDefaultAsync(x =>
+                            x.Name.Equals(referenceTableName) && x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA));
+                        if (refTable.IsPartOfDbContext) isDynamic = false;
+                        else if (!refTable.IsCommon) referenceIsCommon = false;
+                    }
+                }
+
                 foreach (var tenant in tenants)
                 {
+                    if (isDynamic && isReference && !referenceIsCommon)
+                    {
+                        var schemaConf = field.Configurations?.FirstOrDefault(x =>
+                            x.ConfigCode.Equals(TableFieldConfigCode.Reference.ForeingSchemaTable));
+                        if (schemaConf != null)
+                        {
+                            var index = field.Configurations.IndexOf(schemaConf);
+                            schemaConf.Value = tenant.MachineName;
+                            field.Configurations = field.Configurations.Replace(index, schemaConf).ToList();
+                        }
+                    }
                     _tablesService.AddFieldSql(field, tableName, ConnectionString, true, tenant.MachineName);
                 }
             }
@@ -321,6 +361,7 @@ namespace ST.Entities.Razor.Controllers.Entity
                 RefreshRuntimeTypes();
                 return RedirectToAction("Edit", "Table", new { id = field.TableId, tab = "two" });
             }
+
             ModelState.AppendResultModelErrors(result.Errors);
 
             return View(field);
@@ -350,11 +391,13 @@ namespace ST.Entities.Razor.Controllers.Entity
         [HttpGet]
         public async Task<IActionResult> EditField(Guid fieldId, Guid type)
         {
-            var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
-            var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
+            if (type == Guid.Empty || fieldId == Guid.Empty) return NotFound();
             var field = await Context.TableFields
                 .Include(x => x.TableFieldConfigValues)
                 .FirstOrDefaultAsync(x => x.Id == fieldId);
+            if (field == null) return NotFound();
+            var fieldType = await Context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == type);
+            var fieldTypeConfig = Context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
             var configFields = field.TableFieldConfigValues
                 .Select(y =>
                 {

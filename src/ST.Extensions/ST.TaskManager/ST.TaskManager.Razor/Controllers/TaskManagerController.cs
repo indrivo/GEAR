@@ -6,14 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ST.Core;
 using ST.Core.Extensions;
+using ST.Core.Helpers.Pagination;
 using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions;
 using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Helpers;
 using ST.TaskManager.Abstractions.Models.ViewModels;
-using TaskStatus = System.Threading.Tasks.TaskStatus;
-
 
 namespace ST.TaskManager.Razor.Controllers
 {
@@ -87,29 +87,29 @@ namespace ST.TaskManager.Razor.Controllers
 
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
-        public async Task<JsonResult> GetUserTasks(bool deleted, int total, int pageSize)
+        public async Task<JsonResult> GetUserTasks(PageRequest request)
         {
             var userName = HttpContext.User.Identity.Name;
 
-            var response = await _taskManager.GetUserTasksAsync(userName, deleted, total, pageSize);
+            var response = await _taskManager.GetUserTasksAsync(userName, request);
             return Json(response);
         }
 
         [HttpGet]
-        [Produces("application/json", Type = typeof(ResultModel<List<GetTaskViewModel>>))]
-        public async Task<JsonResult> GetAssignedTasks(int total, int pageSize)
+        [Produces("application/json", Type = typeof(ResultModel<PagedResult<GetTaskViewModel>>))]
+        public async Task<JsonResult> GetAssignedTasks(PageRequest request)
         {
             var user = await _userManager.GetCurrentUserAsync();
 
             if (user.Result == null) return Json(ExceptionMessagesEnum.UserNotFound.ToErrorModel());
 
-            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id.ToGuid(), user.Result.UserName, total, pageSize);
+            var response = await _taskManager.GetAssignedTasksAsync(user.Result.Id.ToGuid(), user.Result.UserName, request);
             return Json(response);
         }
 
 
         [HttpGet]
-        [Produces("application/json", Type = typeof(ResultModel<List<GetTaskItemViewModel>>))]
+        [Produces("application/json", Type = typeof(ResultModel<PagedResult<GetTaskItemViewModel>>))]
         public async Task<JsonResult> GetTaskItems(Guid id)
         {
             if (id == Guid.Empty) return Json(ExceptionMessagesEnum.NullParameter.ToErrorModel());

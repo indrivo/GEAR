@@ -82,9 +82,21 @@ namespace ST.Entities
             if (field.Parameter != FieldType.EntityReference) return rs;
             {
                 var foreignSchema = fieldTypeConfig.FirstOrDefault(x => x.ConfigCode == TableFieldConfigCode.Reference.ForeingSchemaTable);
-                var foreignTable = await _context.Table.AsNoTracking().FirstOrDefaultAsync(x => x.Name == field.Configurations.FirstOrDefault(y => y.Name == FieldConfig.ForeingTable).Value);
+                var foreignTable = await _context.Table
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Name == field.Configurations
+                                                  .FirstOrDefault(y => y.Name == FieldConfig.ForeingTable)
+                                                  .Value);
                 if (foreignSchema == null) return rs;
-                if (foreignTable != null) foreignSchema.Value = foreignTable.EntityType;
+                if (foreignTable != null)
+                {
+                    if (foreignTable.IsPartOfDbContext)
+                        foreignSchema.Value = foreignTable.EntityType;
+                    else if (foreignTable.EntityType != Settings.DEFAULT_ENTITY_SCHEMA)
+                    {
+                        foreignSchema.Value = Settings.DEFAULT_ENTITY_SCHEMA;
+                    }
+                }
                 var exist = data.FirstOrDefault(x =>
                     x.Name == nameof(TableFieldConfigCode.Reference.ForeingSchemaTable));
                 if (exist == null)

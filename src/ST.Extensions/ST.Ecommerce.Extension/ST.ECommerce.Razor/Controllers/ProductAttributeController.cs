@@ -22,11 +22,16 @@ namespace ST.ECommerce.Razor.Controllers
         {
         }
 
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
         public override IActionResult Index()
         {
             return View();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create view
         /// </summary>
@@ -42,20 +47,28 @@ namespace ST.ECommerce.Razor.Controllers
             return View(AddDropdownItems(result));
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Edit attribute
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         public override async Task<IActionResult> Edit([Required]Guid? id)
         {
             if (id == null) return NotFound();
-            var model = await Context.SetEntity<ProductAttribute>().FirstOrDefaultAsync(x => x.Id == id);
+            var model = await Context.ProductAttribute.FirstOrDefaultAsync(x => x.Id == id);
             if (model == null) return NotFound();
-
             var result = model.Adapt<ProductAttributeViewModel>();
-
-            result.AttributeGroups = new List<SelectListItem>();
-
             return View(AddDropdownItems(result));
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// List
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public override JsonResult OrderedList(DTParameters param)
         {
             var filtered = DataFilter.FilterAbstractEntity<ProductAttribute, ICommerceContext>(Context, param.Search.Value,
@@ -79,8 +92,14 @@ namespace ST.ECommerce.Razor.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// Load data
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public ProductAttributeViewModel AddDropdownItems(ProductAttributeViewModel model)
         {
+            if (model == null) model = new ProductAttributeViewModel();
             model.AttributeGroups.AddRange(Context.AttributeGroups.Where(x => x.IsDeleted == false).Select(x => new SelectListItem
             {
                 Text = x.Name,

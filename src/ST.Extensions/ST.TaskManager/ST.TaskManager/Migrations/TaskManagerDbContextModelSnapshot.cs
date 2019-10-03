@@ -20,7 +20,7 @@ namespace ST.TaskManager.Migrations
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("ST.Audit.Models.TrackAudit", b =>
+            modelBuilder.Entity("ST.Audit.Abstractions.Models.TrackAudit", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -54,7 +54,7 @@ namespace ST.TaskManager.Migrations
                     b.ToTable("TrackAudits");
                 });
 
-            modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
+            modelBuilder.Entity("ST.Audit.Abstractions.Models.TrackAuditDetails", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -103,6 +103,8 @@ namespace ST.TaskManager.Migrations
 
                     b.Property<DateTime>("EndDate");
 
+                    b.Property<string>("Files");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
@@ -139,6 +141,17 @@ namespace ST.TaskManager.Migrations
                     b.ToTable("Tasks");
                 });
 
+            modelBuilder.Entity("ST.TaskManager.Abstractions.Models.TaskAssignedUser", b =>
+                {
+                    b.Property<Guid>("TaskId");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("TaskId", "UserId");
+
+                    b.ToTable("TaskAssignedUsers");
+                });
+
             modelBuilder.Entity("ST.TaskManager.Abstractions.Models.TaskItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -159,11 +172,19 @@ namespace ST.TaskManager.Migrations
                     b.ToTable("TaskItems");
                 });
 
-            modelBuilder.Entity("ST.Audit.Models.TrackAuditDetails", b =>
+            modelBuilder.Entity("ST.Audit.Abstractions.Models.TrackAuditDetails", b =>
                 {
-                    b.HasOne("ST.Audit.Models.TrackAudit")
+                    b.HasOne("ST.Audit.Abstractions.Models.TrackAudit")
                         .WithMany("AuditDetailses")
                         .HasForeignKey("TrackAuditId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.TaskManager.Abstractions.Models.TaskAssignedUser", b =>
+                {
+                    b.HasOne("ST.TaskManager.Abstractions.Models.Task", "Task")
+                        .WithMany("AssignedUsers")
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

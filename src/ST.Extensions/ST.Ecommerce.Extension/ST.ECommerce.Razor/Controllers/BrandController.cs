@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ST.Core.Abstractions;
 using ST.ECommerce.Abstractions;
 using ST.ECommerce.Abstractions.Models;
@@ -13,6 +12,11 @@ namespace ST.ECommerce.Razor.Controllers
         {
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
         public override IActionResult Index()
         {
             return View();

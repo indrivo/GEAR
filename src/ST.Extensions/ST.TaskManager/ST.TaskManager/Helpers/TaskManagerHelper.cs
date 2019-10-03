@@ -1,6 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
+using Mapster;
+using Newtonsoft.Json;
+using ST.Core;
 using ST.Core.Helpers;
+using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
 
@@ -8,7 +14,7 @@ namespace ST.TaskManager.Helpers
 {
     public class TaskManagerHelper
     {
-        internal static Task UpdateTaskMapper(UpdateTaskViewModel taskViewModel, Task dbTaskResult)
+        internal static Task TaskMapper(UpdateTaskViewModel taskViewModel, Task dbTaskResult)
         {
             if (dbTaskResult == null) return null;
 
@@ -19,22 +25,15 @@ namespace ST.TaskManager.Helpers
             dbTaskResult.Status = taskViewModel.Status;
             dbTaskResult.TaskPriority = taskViewModel.TaskPriority;
             dbTaskResult.UserId = taskViewModel.UserId;
+            if (!string.IsNullOrWhiteSpace(dbTaskResult.Files)) dbTaskResult.Files = JsonConvert.SerializeObject(taskViewModel.Files);
 
             return dbTaskResult;
         }
 
-        internal static Task CreateTaskMapper(CreateTaskViewModel taskViewModel)
+        internal static Task TaskMapper(CreateTaskViewModel taskViewModel)
         {
-            var dto = new Task
-            {
-                Name = taskViewModel.Name,
-                Description = taskViewModel.Description,
-                StartDate = taskViewModel.StartDate,
-                EndDate = taskViewModel.EndDate,
-                Status = taskViewModel.Status,
-                UserId = taskViewModel.UserId,
-                TaskPriority = taskViewModel.TaskPriority
-            };
+            var dto = taskViewModel.Adapt<Task>();
+            if (!string.IsNullOrWhiteSpace(dto.Files)) dto.Files = JsonConvert.SerializeObject(taskViewModel.Files);
             if (taskViewModel.TaskItems == null) return dto;
 
             foreach (var item in taskViewModel.TaskItems)
@@ -48,21 +47,33 @@ namespace ST.TaskManager.Helpers
             return dto;
         }
 
-        internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
+        internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult, Guid? currentUserId = null)
         {
             var dto = new GetTaskViewModel
             {
                 Id = dbTaskResult.Id,
-                Name = dbTaskResult.Name,
-                Description = dbTaskResult.Description,
+                TaskNumber = dbTaskResult.TaskNumber,
                 StartDate = dbTaskResult.StartDate,
                 EndDate = dbTaskResult.EndDate,
+                Description = dbTaskResult.Description,
+                Name = dbTaskResult.Name,
                 Status = dbTaskResult.Status,
-                UserId = dbTaskResult.UserId,
                 TaskPriority = dbTaskResult.TaskPriority,
-                TaskNumber = dbTaskResult.TaskNumber,
-                TaskItemsCount = CountTaskItems(dbTaskResult)
+                UserId = dbTaskResult.UserId,
+                Author = dbTaskResult.Author,
+                ModifiedBy = dbTaskResult.ModifiedBy.IsNullOrEmpty()
+                    ? dbTaskResult.Author
+                    : dbTaskResult.ModifiedBy,
+                UserTeam = dbTaskResult.AssignedUsers?.Select(x => x.UserId),
+                AccessLevel = currentUserId == null ? TaskAccess.Undefined.ToString()
+                    : dbTaskResult.UserId.Equals(currentUserId) ? TaskAccess.Owner.ToString()
+                    : dbTaskResult.AssignedUsers?.FirstOrDefault(x => x.UserId.Equals(currentUserId)) != null
+                        ? TaskAccess.PartOfTeam.ToString()
+                    : TaskAccess.Undefined.ToString()
             };
+
+            if (!string.IsNullOrWhiteSpace(dbTaskResult.Files)) dto.Files = JsonConvert.DeserializeObject<List<Guid>>(dbTaskResult.Files);
+            dto.TaskItemsCount = CountTaskItems(dbTaskResult);
             return dto;
         }
 
@@ -76,26 +87,38 @@ namespace ST.TaskManager.Helpers
             }).AsEnumerable();
         }
 
-        internal static ResultModel<List<GetTaskViewModel>> GetTasksAsync(IReadOnlyCollection<Task> dbTasksResult)
+        internal static ResultModel<PagedResult<GetTaskViewModel>> GetTasksAsync(PagedResult<Task> dbTasksResult, Guid? currentUserId = null)
         {
-            var taskList = new List<GetTaskViewModel>();
-            if (dbTasksResult.Count > 0)
-                taskList.AddRange(dbTasksResult.Select(GetTaskMapper));
+            var taskPage = new PagedResult<GetTaskViewModel>
+            {
+                CurrentPage = dbTasksResult.CurrentPage,
+                PageCount = dbTasksResult.PageCount,
+                RowCount = dbTasksResult.RowCount,
+                PageSize = dbTasksResult.PageSize
+            };
 
-            return new ResultModel<List<GetTaskViewModel>>
+            if (dbTasksResult.Results.Count > 0)
+                for (var index = 0; index < dbTasksResult.Results.Count; index++)
+                {
+                    var item = dbTasksResult.Results[index];
+                    taskPage.Results.Add(GetTaskMapper(item, currentUserId));
+                }
+
+            return new ResultModel<PagedResult<GetTaskViewModel>>
             {
                 IsSuccess = true,
-                Result = taskList
+                Result = taskPage
             };
         }
 
         private static int[] CountTaskItems(Task dbTasksResult)
         {
-            if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] {0, 0};
-            var total = dbTasksResult.TaskItems.Count;
-            var completed = dbTasksResult.TaskItems.Count(x => x.IsDone == true);
+            if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] { 0, 0 };
 
-            return new[] {completed, total};
+            var total = dbTasksResult.TaskItems.Count;
+            var completed = dbTasksResult.TaskItems.Count(x => x.IsDone);
+
+            return new[] { completed, total };
         }
     }
 }

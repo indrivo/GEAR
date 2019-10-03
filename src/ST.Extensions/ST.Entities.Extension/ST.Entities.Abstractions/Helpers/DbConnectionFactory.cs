@@ -19,9 +19,6 @@ namespace ST.Entities.Abstractions.Helpers
         /// <returns></returns>
         private static DbConnection GetConnection()
         {
-            var connection = Connections.FirstOrDefault(x =>
-                x.State != ConnectionState.Executing || x.State != ConnectionState.Fetching);
-
             var unusedConnections =
                 Connections.Where(x => x.State == ConnectionState.Broken || x.State == ConnectionState.Closed).ToList();
 
@@ -33,6 +30,9 @@ namespace ST.Entities.Abstractions.Helpers
                     Connections.Remove(unusedConnection);
                 }
             }
+
+            var connection = Connections.FirstOrDefault(x =>
+                x.State != ConnectionState.Executing || x.State != ConnectionState.Fetching);
 
             if (connection != null) return connection;
             var first = Connections.FirstOrDefault();

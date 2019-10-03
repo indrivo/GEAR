@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using ST.Core.Helpers;
+using ST.Core.Razor.Enums;
 using ST.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 using ST.Core.Razor.TagHelpersStructures;
 
@@ -47,7 +48,10 @@ namespace ST.MultiTenant.Razor.Helpers
                             }
                         },"
                     },
-                    new ListRenderColumn(_localizer["is_deleted"], "isDeleted"),
+                    new ListRenderColumn(_localizer["is_deleted"], "isDeleted")
+                    {
+                        BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+                    },
                     new ListRenderColumn(_localizer["roles"], "roles"),
                     new ListRenderColumn(_localizer["email"], "email"),
                     new ListRenderColumn(_localizer["system_email_confirmed"], "emailConfirmed")

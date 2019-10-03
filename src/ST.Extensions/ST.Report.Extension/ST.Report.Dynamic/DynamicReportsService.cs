@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using ST.Core.Extensions;
 
 namespace ST.Report.Dynamic
 {
@@ -128,41 +130,38 @@ namespace ST.Report.Dynamic
         }
 
 
-        public ResultModel<bool> DeleteFolder(Guid folderId)
+        /// <inheritdoc />
+        /// <summary>
+        /// Delete folder
+        /// </summary>
+        /// <param name="folderId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> DeleteFolderAsync(Guid? folderId)
         {
-            var reportFolder = _context.DynamicReportsFolders.Include(s => s.Reports).First(x => x.Id == folderId);
+            if (!folderId.HasValue) return ResultMessagesEnum.FolderNotFound.ToErrorModel();
+            var reportFolder = await _context.DynamicReportsFolders
+                .Include(s => s.Reports).FirstOrDefaultAsync(x => x.Id == folderId);
 
             if (reportFolder == null)
             {
-                return ResultMessagesEnum.FolderNotFound.ToErrorModel<bool>();
+                return ResultMessagesEnum.FolderNotFound.ToErrorModel();
             }
 
             if (reportFolder.Reports.Any())
             {
-                return ResultMessagesEnum.FolderNotEmpty.ToErrorModel<bool>();
+                return ResultMessagesEnum.FolderNotEmpty.ToErrorModel();
             }
 
-            try
-            {
-                _context.DynamicReportsFolders.Remove(reportFolder);
-                _context.SaveChanges();
-                return new ResultModel<bool>
-                {
-                    IsSuccess = true,
-                    KeyEntity = folderId
-                };
-            }
-            catch
-            {
-                return ResultMessagesEnum.FolderNotDeleted.ToErrorModel<bool>();
-            }
+            _context.DynamicReportsFolders.Remove(reportFolder);
+            var dbResult = await _context.SaveAsync();
+
+            if (dbResult.IsSuccess.Negate()) return ResultMessagesEnum.FolderNotDeleted.ToErrorModel();
+            dbResult.KeyEntity = folderId;
+            return dbResult;
         }
 
-        public IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders()
-        {
-            return _context.DynamicReportsFolders.Include(x => x.Reports);
-        }
 
+        public IIncludableQueryable<DynamicReportFolder, IEnumerable<DynamicReport>> GetAllFolders() => _context.DynamicReportsFolders.Include(x => x.Reports);
         #endregion
 
         #region Reports
@@ -302,30 +301,26 @@ namespace ST.Report.Dynamic
             };
         }
 
-
-        public ResultModel<bool> DeleteReport(Guid reportId)
+        /// <inheritdoc />
+        /// <summary>
+        /// Delete report
+        /// </summary>
+        /// <param name="reportId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> DeleteReportAsync(Guid? reportId)
         {
-            var report = _context.DynamicReports.First(x => x.Id == reportId);
+            if (!reportId.HasValue) return ResultMessagesEnum.ReportNotFound.ToErrorModel();
+            var report = await _context.DynamicReports.FirstOrDefaultAsync(x => x.Id == reportId);
 
             if (report == null)
             {
-                return ResultMessagesEnum.ReportNotFound.ToErrorModel<bool>();
+                return ResultMessagesEnum.ReportNotFound.ToErrorModel();
             }
 
-            try
-            {
-                _context.DynamicReports.Remove(report);
-                _context.SaveChanges();
-                return new ResultModel<bool>
-                {
-                    KeyEntity = reportId,
-                    IsSuccess = false
-                };
-            }
-            catch
-            {
-                return ResultMessagesEnum.ReportNotDeleted.ToErrorModel<bool>();
-            }
+            _context.DynamicReports.Remove(report);
+
+            var dbResult = await _context.SaveAsync();
+            return !dbResult.IsSuccess ? ResultMessagesEnum.ReportNotDeleted.ToErrorModel() : dbResult;
         }
 
         #endregion

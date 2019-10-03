@@ -93,7 +93,7 @@ namespace ST.Notifications
             var dbEvents = await _notificationDbContext.NotificationEvents.ToListAsync();
             var nonSeeded = events.Where(x => !dbEvents.Select(v => v.EventId).Contains(x.EventId));
             await _notificationDbContext.NotificationEvents.AddRangeAsync(nonSeeded);
-            await _notificationDbContext.SaveDependenceAsync();
+            await _notificationDbContext.PushAsync();
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace ST.Notifications
                 _notificationDbContext.Update(notificationTemplate);
             }
 
-            await _notificationDbContext.SaveDependenceAsync();
+            await _notificationDbContext.PushAsync();
 
             var subscriptions =
                 await _notificationDbContext.NotificationSubscriptions.Where(x =>
@@ -168,7 +168,7 @@ namespace ST.Notifications
                 await _notificationDbContext.NotificationSubscriptions.AddRangeAsync(newSubscriptions);
             }
 
-            return await _notificationDbContext.SaveDependenceAsync();
+            return await _notificationDbContext.PushAsync();
         }
     }
 }

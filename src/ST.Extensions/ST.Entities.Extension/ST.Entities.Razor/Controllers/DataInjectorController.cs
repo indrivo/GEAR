@@ -246,6 +246,23 @@ namespace ST.Entities.Razor.Controllers
         }
 
         /// <summary>
+        /// Count
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AuthorizeEntity(EntityAccessType.Read)]
+        public async Task<JsonResult> CountAllAsync([Required][FromBody] RequestData data)
+        {
+            if (data == null) return RequestData.InvalidRequest;
+            var serial = JsonConvert.SerializeObject(data.Filters);
+            var filters = ParseFilters(serial).ToList();
+            var f = filters.ToDictionary(x => x.Parameter, y => y.Value);
+            var rq = await _dynamicService.Table(data.EntityName).Count(f);
+            return Json(rq);
+        }
+
+        /// <summary>
         /// Get all with includes
         /// </summary>
         /// <returns></returns>

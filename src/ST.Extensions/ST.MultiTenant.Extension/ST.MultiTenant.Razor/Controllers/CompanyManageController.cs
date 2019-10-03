@@ -77,6 +77,7 @@ namespace ST.MultiTenant.Razor.Controllers
             _listSettings = new MultiTenantListSettings();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Index view
         /// </summary>

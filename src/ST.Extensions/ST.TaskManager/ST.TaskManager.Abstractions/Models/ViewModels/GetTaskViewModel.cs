@@ -1,4 +1,5 @@
 ﻿using System;
+using ST.TaskManager.Abstractions.Enums;
 
 namespace ST.TaskManager.Abstractions.Models.ViewModels
 {
@@ -18,5 +19,20 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
         /// Task items counted [completed/total]
         /// </summary>
         public int[] TaskItemsCount { get; set; }
+
+        /// <summary>
+        /// Author
+        /// </summary>
+        public string Author { get; set; } = "Undefined";
+
+        /// <summary>
+        /// Modified by
+        /// </summary>
+        public string ModifiedBy { get; set; }
+
+        /// <summary>
+        /// Access level
+        /// </summary>
+        public string AccessLevel { get; set; } = TaskAccess.Undefined.ToString();
     }
 }

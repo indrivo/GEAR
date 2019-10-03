@@ -75,7 +75,7 @@ namespace ST.ECommerce.Razor.Helpers.BaseControllers
             }
 
             await Context.SetEntity<TEntity>().AddAsync(model);
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
             if (dbResult.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
@@ -115,7 +115,7 @@ namespace ST.ECommerce.Razor.Helpers.BaseControllers
             }
 
             Context.Update<TEntity>(model);
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
             if (dbResult.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));

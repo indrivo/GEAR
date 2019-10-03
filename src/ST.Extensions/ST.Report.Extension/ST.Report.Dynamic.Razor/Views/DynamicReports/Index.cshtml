@@ -126,20 +126,8 @@
 				]
 			});
 			$("#reportTable").on("click", ".deleteReport", function () {
-								console.log(111);
-				const swalWithBootstrapButtons = Swal.mixin({
-					customClass: {
-						confirmButton: 'btn btn-success',
-						cancelButton: 'btn btn-danger'
-					},
-					buttonsStyling: false
-				});
-
 				var requestUrl = $(this).data('request-url');
 				var id = $(this).data('value');
-
-				console.log(requestUrl);
-				console.log(id);
 				Swal.fire({
 					title: 'Are you sure?',
 					text: "You won't be able to revert this!",
@@ -150,32 +138,27 @@
 					confirmButtonText: 'Yes, delete it!'
 				}).then((result) => {
 					if (result.value) {
-						Swal.fire(
-							'Deleted!',
-							'Your file has been deleted.',
-							'success'
-						);
 						$.ajax({
 							url: requestUrl,
 							content: "application/json; charset=utf-8",
-							type: 'POST',
+							type: 'DELETE',
 							data: { id: id },
 							success: function (result) {
-								if (result.success === true) {
+								if (result.is_success) {
 									swal({
 										position: 'top-end',
 										type: 'success',
-										title: result.message,
+										title: result.result,
 										showConfirmButton: false,
 										timer: 1500
-									}).then((result) => {
+									}).then(() => {
 										$('#reportTable').DataTable().ajax.reload();
 									});
 								} else {
 									swal({
 										position: 'top-end',
 										type: 'error',
-										title: result.message,
+										title: result.error_keys[0].message,
 										showConfirmButton: false,
 										timer: 1500
 									});

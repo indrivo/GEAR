@@ -400,7 +400,7 @@ namespace ST.PageRender.Razor.Controllers
                 settings.Title = model.Title;
                 settings.TitleTranslateKey = model.TitleTranslateKey;
 
-                var dbResult = await _pagesContext.SaveDependenceAsync();
+                var dbResult = await _pagesContext.PushAsync();
                 if (dbResult.IsSuccess)
                 {
                     _pagesContext.PageSettings.Update(settings);
@@ -514,7 +514,7 @@ namespace ST.PageRender.Razor.Controllers
             if (page.IsSystem) return Json(new { message = "Fail to delete system page!", success = false });
             _pagesContext.Pages.Remove(page);
 
-            var dbResult = await _pagesContext.SaveDependenceAsync();
+            var dbResult = await _pagesContext.PushAsync();
             if (!dbResult.IsSuccess) return Json(new {message = "Fail to delete form!", success = false});
             DynamicUiEvents.Pages.PageDeleted(new PageCreatedEventArgs
             {

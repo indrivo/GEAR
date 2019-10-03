@@ -64,5 +64,15 @@ namespace ST.TaskManager.Abstractions.Models
         /// Task items(sub tasks)
         /// </summary>
         public virtual ICollection<TaskItem> TaskItems { get; set; }
+
+        /// <summary>
+        /// Assigned users
+        /// </summary>
+        public virtual ICollection<TaskAssignedUser> AssignedUsers { get; set; } = new List<TaskAssignedUser>();
+
+        /// <summary>
+        /// Files
+        /// </summary>
+        public virtual string Files { get; set; }
     }
 }

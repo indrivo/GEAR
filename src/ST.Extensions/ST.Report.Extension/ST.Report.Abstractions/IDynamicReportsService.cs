@@ -6,6 +6,7 @@ using ST.Report.Abstractions.Models.Dto;
 using ST.Report.Abstractions.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ST.Report.Abstractions.Models.Enums;
 
 namespace ST.Report.Abstractions
@@ -45,7 +46,7 @@ namespace ST.Report.Abstractions
         /// </summary>
         /// <param name="folderId"></param>
         /// <returns></returns>
-        ResultModel<bool> DeleteFolder(Guid folderId);
+        Task<ResultModel> DeleteFolderAsync(Guid? folderId);
 
         /// <summary>
         /// Get report folders
@@ -74,10 +75,10 @@ namespace ST.Report.Abstractions
         ResultModel<DynamicReportViewModel> GetReport(Guid reportId);
 
         /// <summary>
-        /// Delete Report
+        /// Delete report
         /// </summary>
         /// <param name="reportId"></param>
-        ResultModel<bool> DeleteReport(Guid reportId);
+        Task<ResultModel> DeleteReportAsync(Guid? reportId);
 
         /// <summary>
         /// Get all table names from DB

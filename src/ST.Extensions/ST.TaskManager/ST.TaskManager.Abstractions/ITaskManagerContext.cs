@@ -15,5 +15,10 @@ namespace ST.TaskManager.Abstractions
         /// Task items
         /// </summary>
         DbSet<TaskItem> TaskItems { get; set; }
+
+        /// <summary>
+        /// Task assigned users
+        /// </summary>
+        DbSet<TaskAssignedUser> TaskAssignedUsers { get; set; }
     }
 }
