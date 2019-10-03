@@ -125,6 +125,11 @@
                                         <label for="add-task-users">@Localizer["user"]</label>
                                         <select id="add-task-users" class="form-control task-users" required>
                                         </select>
+                                    </div>                                    
+                                    <div class="form-group">
+                                        <label for="add-task-team">@Localizer["system_taskmanager_task_team"]</label>
+                                        <select id="add-task-team" class="form-control task-team" multiple>
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="add-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
@@ -357,13 +362,18 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="edit-task-team">@Localizer["system_taskmanager_task_team"]</label>
+            <select id="edit-task-team" class="form-control task-team" required>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="edit-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
             <select id="edit-task-priority" class="form-control task-priority" required>
             </select>
         </div>
         <div class="form-group">
             <label for="edit-task-status">@Localizer["system_taskmanager_status"]</label>
-            <select id="add-task-status" class="form-control task-status" required>
+            <select id="add-task-status" class="form-control task-status" multiple>
             </select>
         </div>
         <div class="form-group">
@@ -405,6 +415,12 @@
             <label class="font-weight-bold mr-2">@Localizer["user"]</label>
             <span>
                 {{:~user.text}}
+            </span>
+        </div>        
+        <div class="form-group">
+            <label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_team"]</label>
+            <span>
+                @*{{:~team.text}}*@
             </span>
         </div>
         <div class="form-group">
