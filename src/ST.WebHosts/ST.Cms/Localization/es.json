@@ -620,5 +620,6 @@
   "system_taskmanager_file_deleted": "Archivo borrado",
   "system_email_confirmed": "Confirmado por email",
   "system_confirm": "Confirmar",
-  "system_email_sent": "Su Correo ha sido enviado"
+  "system_email_sent": "Su Correo ha sido enviado",
+  "system_taskmanager_task_team": "Equipo"
 }

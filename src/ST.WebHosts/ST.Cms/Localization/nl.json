@@ -620,5 +620,6 @@
   "system_taskmanager_file_deleted": "Het bestand verwijderd",
   "system_email_confirmed": "E-mail bevestigd",
   "system_confirm": "Bevestigen",
-  "system_email_sent": "Uw e-Mail is verzonden"
+  "system_email_sent": "Uw e-Mail is verzonden",
+  "system_taskmanager_task_team": "Team"
 }

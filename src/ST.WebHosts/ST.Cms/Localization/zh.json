@@ -620,5 +620,6 @@
   "system_taskmanager_file_deleted": "文件删除",
   "system_email_confirmed": "确认的电子邮件",
   "system_confirm": "确认",
-  "system_email_sent": "你的电子邮件已发送"
+  "system_email_sent": "你的电子邮件已发送",
+  "system_taskmanager_task_team": "团队"
 }

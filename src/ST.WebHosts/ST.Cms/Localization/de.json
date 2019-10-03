@@ -620,5 +620,6 @@
   "system_taskmanager_file_deleted": "Datei gelöscht",
   "system_email_confirmed": "Bestätigte E-Mail -",
   "system_confirm": "Bestätigen",
-  "system_email_sent": "Ihre E-Mail wurde gesendet"
+  "system_email_sent": "Ihre E-Mail wurde gesendet",
+  "system_taskmanager_task_team": "Team"
 }

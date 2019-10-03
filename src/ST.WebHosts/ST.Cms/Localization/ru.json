@@ -620,5 +620,6 @@
   "system_taskmanager_file_deleted": "Файл удален",
   "system_email_confirmed": "Подтвердил по электронной почте",
   "system_confirm": "Подтвердить",
-  "system_email_sent": "Письмо было отправлено"
+  "system_email_sent": "Письмо было отправлено",
+  "system_taskmanager_task_team": "Команда"
 }

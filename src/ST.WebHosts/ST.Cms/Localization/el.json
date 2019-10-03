@@ -620,5 +620,6 @@
   "system_taskmanager_file_deleted": "Το αρχείο διαγραφεί",
   "system_email_confirmed": "Επιβεβαίωσε email",
   "system_confirm": "Επιβεβαίωση",
-  "system_email_sent": "Το Email σας έχει σταλεί"
+  "system_email_sent": "Το Email σας έχει σταλεί",
+  "system_taskmanager_task_team": "Ομάδα"
 }
