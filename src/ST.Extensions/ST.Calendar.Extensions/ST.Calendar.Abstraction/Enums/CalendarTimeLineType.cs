@@ -4,7 +4,6 @@
     {
         Day,
         Week,
-        Month,
-        Year
+        Month
     }
 }

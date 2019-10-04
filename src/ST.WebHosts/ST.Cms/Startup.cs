@@ -80,11 +80,11 @@ using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
 using ST.Calendar;
 using ST.Calendar.Abstractions.Extensions;
+using ST.Calendar.Data;
 using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Extensions;
-using ST.Dashboard.Abstractions.Models;
 using ST.Dashboard.Abstractions.Models.WidgetTypes;
 using ST.Dashboard.Data;
 using ST.Dashboard.Razor.Extensions;
@@ -362,8 +362,15 @@ namespace ST.Cms
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
+
 			//------------------------------------Calendar Module-------------------------------------
-			services.AddCalendarModule<CalendarManager>();
+			services.AddCalendarModule<CalendarManager>()
+				.AddCalendarModuleStorage<CalendarDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddCalendarRazorUIModule();
 
 			//------------------------------------File Module-------------------------------------
 			services
@@ -390,8 +397,6 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddTaskManagerRazorUIModule();
-			//----------------------------Internal calendar Module-------------------------------------
-			services.AddInternalCalendarModule();
 
 			//-----------------------------------------Form Module-------------------------------------
 			services.AddFormModule<FormDbContext>()

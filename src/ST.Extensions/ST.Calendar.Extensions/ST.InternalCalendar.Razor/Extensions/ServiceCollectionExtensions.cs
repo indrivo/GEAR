@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Calendar.Razor.Helpers;
 
 namespace ST.Calendar.Razor.Extensions
@@ -10,9 +11,9 @@ namespace ST.Calendar.Razor.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInternalCalendarModule(this IServiceCollection services)
+        public static CalendarServiceCollection AddCalendarRazorUIModule(this CalendarServiceCollection services)
         {
-            services.ConfigureOptions(typeof(InternalCalendarFileConfiguration));
+            services.Services.ConfigureOptions(typeof(InternalCalendarFileConfiguration));
             return services;
         }
     }
