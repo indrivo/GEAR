@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
 using Mapster;
 using Newtonsoft.Json;
 using ST.Core;
 using ST.Core.Helpers;
+using ST.Identity.Abstractions;
+using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
+using ST.Core.Extensions;
 
 namespace ST.TaskManager.Helpers
 {
@@ -45,7 +49,7 @@ namespace ST.TaskManager.Helpers
             return dto;
         }
 
-        internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult)
+        internal static GetTaskViewModel GetTaskMapper(Task dbTaskResult, Guid? currentUserId = null)
         {
             var dto = new GetTaskViewModel
             {
@@ -58,11 +62,38 @@ namespace ST.TaskManager.Helpers
                 Status = dbTaskResult.Status,
                 TaskPriority = dbTaskResult.TaskPriority,
                 UserId = dbTaskResult.UserId,
+                Author = dbTaskResult.Author,
+                ModifiedBy = dbTaskResult.ModifiedBy.IsNullOrEmpty()
+                    ? dbTaskResult.Author
+                    : dbTaskResult.ModifiedBy,
+                UserTeam = dbTaskResult.AssignedUsers?.Select(x => x.UserId),
+                AccessLevel = GetTaskAccessLevel(dbTaskResult, currentUserId).ToString()
             };
 
             if (!string.IsNullOrWhiteSpace(dbTaskResult.Files)) dto.Files = JsonConvert.DeserializeObject<List<Guid>>(dbTaskResult.Files);
             dto.TaskItemsCount = CountTaskItems(dbTaskResult);
             return dto;
+        }
+
+        /// <summary>
+        /// Get task permission
+        /// </summary>
+        /// <param name="dbTaskResult"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        private static TaskAccess GetTaskAccessLevel(Task dbTaskResult, Guid? currentUserId)
+        {
+            if (dbTaskResult == null) return TaskAccess.Undefined;
+            var userManager = IoC.Resolve<IUserManager<ApplicationUser>>();
+            if (currentUserId == null) return TaskAccess.Undefined;
+            var taskAuthor = userManager.UserManager.Users.FirstOrDefault(x => x.UserName.Equals(dbTaskResult.Author.Trim()));
+            if (taskAuthor != null && taskAuthor.Id.ToGuid().Equals(currentUserId.Value)) return TaskAccess.Author;
+
+            return dbTaskResult.UserId.Equals(currentUserId)
+                    ? TaskAccess.Owner
+                    : dbTaskResult.AssignedUsers?.FirstOrDefault(x => x.UserId.Equals(currentUserId)) != null
+                        ? TaskAccess.PartOfTeam
+                        : TaskAccess.Undefined;
         }
 
         internal static IEnumerable<GetTaskItemViewModel> TaskItemsMapper(Task dbTaskResult)
@@ -75,7 +106,7 @@ namespace ST.TaskManager.Helpers
             }).AsEnumerable();
         }
 
-        internal static ResultModel<PagedResult<GetTaskViewModel>> GetTasksAsync(PagedResult<Task> dbTasksResult)
+        internal static ResultModel<PagedResult<GetTaskViewModel>> GetTasksAsync(PagedResult<Task> dbTasksResult, Guid? currentUserId = null)
         {
             var taskPage = new PagedResult<GetTaskViewModel>
             {
@@ -89,7 +120,7 @@ namespace ST.TaskManager.Helpers
                 for (var index = 0; index < dbTasksResult.Results.Count; index++)
                 {
                     var item = dbTasksResult.Results[index];
-                    taskPage.Results.Add(GetTaskMapper(item));
+                    taskPage.Results.Add(GetTaskMapper(item, currentUserId));
                 }
 
             return new ResultModel<PagedResult<GetTaskViewModel>>
@@ -101,12 +132,12 @@ namespace ST.TaskManager.Helpers
 
         private static int[] CountTaskItems(Task dbTasksResult)
         {
-            if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] {0, 0};
+            if (dbTasksResult.TaskItems == null || dbTasksResult.TaskItems.Count == 0) return new[] { 0, 0 };
 
             var total = dbTasksResult.TaskItems.Count;
-            var completed = dbTasksResult.TaskItems.Count(x => x.IsDone == true);
+            var completed = dbTasksResult.TaskItems.Count(x => x.IsDone);
 
-            return new[] {completed, total};
+            return new[] { completed, total };
         }
     }
 }

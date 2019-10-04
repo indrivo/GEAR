@@ -13,7 +13,7 @@ using ST.Identity.Abstractions;
 namespace ST.Calendar.Razor.Controllers
 {
     [Authorize]
-    public class InternalCalendarController : Controller
+    public class CalendarController : Controller
     {
         /// <summary>
         /// Inject Task service
@@ -25,7 +25,7 @@ namespace ST.Calendar.Razor.Controllers
         /// </summary>
         private readonly IUserManager<ApplicationUser> _userManager;
 
-        public InternalCalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager)
+        public CalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager)
         {
             _calendarManager = calendarManager;
             _userManager = userManager;

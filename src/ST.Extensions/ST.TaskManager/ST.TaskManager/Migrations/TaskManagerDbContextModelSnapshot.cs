@@ -141,6 +141,17 @@ namespace ST.TaskManager.Migrations
                     b.ToTable("Tasks");
                 });
 
+            modelBuilder.Entity("ST.TaskManager.Abstractions.Models.TaskAssignedUser", b =>
+                {
+                    b.Property<Guid>("TaskId");
+
+                    b.Property<Guid>("UserId");
+
+                    b.HasKey("TaskId", "UserId");
+
+                    b.ToTable("TaskAssignedUsers");
+                });
+
             modelBuilder.Entity("ST.TaskManager.Abstractions.Models.TaskItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -166,6 +177,14 @@ namespace ST.TaskManager.Migrations
                     b.HasOne("ST.Audit.Abstractions.Models.TrackAudit")
                         .WithMany("AuditDetailses")
                         .HasForeignKey("TrackAuditId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ST.TaskManager.Abstractions.Models.TaskAssignedUser", b =>
+                {
+                    b.HasOne("ST.TaskManager.Abstractions.Models.Task", "Task")
+                        .WithMany("AssignedUsers")
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -43,8 +43,8 @@ namespace ST.Cache.Extensions
             });
             services.AddTransient<ICacheService, CacheService>();
             services.AddTransient<IRedisConnection, RedisConnection>();
-            IoC.RegisterService<ICacheService, CacheService>();
-            IoC.RegisterService<IRedisConnection, RedisConnection>();
+            IoC.RegisterTransientService<ICacheService, CacheService>();
+            IoC.RegisterTransientService<IRedisConnection, RedisConnection>();
             return services;
         }
     }

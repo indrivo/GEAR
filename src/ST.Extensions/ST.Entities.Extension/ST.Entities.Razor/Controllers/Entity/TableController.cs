@@ -277,6 +277,17 @@ namespace ST.Entities.Razor.Controllers.Entity
                 field.Configurations = configurationsRq.Result.ToList();
             }
 
+            if (field.Parameter == FieldType.EntityReference)
+            {
+                var foreignSchema = field.Configurations.FirstOrDefault(x => x.Name == nameof(TableFieldConfigCode.Reference.ForeingSchemaTable));
+                if (foreignSchema != null)
+                {
+                    var index = field.Configurations.IndexOf(foreignSchema);
+                    foreignSchema.Value = "system";
+                    field.Configurations = field.Configurations.Replace(index, foreignSchema).ToList();
+                }
+            }
+
             field = field.CreateSqlField();
             var insertField = _tablesService.AddFieldSql(field, tableName, ConnectionString, true, schema);
             // Save field model in the dataBase

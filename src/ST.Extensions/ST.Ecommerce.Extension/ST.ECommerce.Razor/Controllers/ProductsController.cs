@@ -83,7 +83,7 @@ namespace ST.ECommerce.Razor.Controllers
                 Product = model,
                 Price = model.Price
             });
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
 
             if (dbResult.IsSuccess)
             {
@@ -174,7 +174,7 @@ namespace ST.ECommerce.Razor.Controllers
             }
 
             Context.Products.Update(dbModel);
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
 
             if (dbResult.IsSuccess)
             {
@@ -242,7 +242,7 @@ namespace ST.ECommerce.Razor.Controllers
                 Context.ProductAttributes.Add(item);
             }
 
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
             return Json(dbResult);
         }
 
@@ -275,7 +275,7 @@ namespace ST.ECommerce.Razor.Controllers
 
             if (result == null) return Json(resultModel);
             Context.ProductAttributes.Remove(result);
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
             return Json(dbResult);
         }
 
@@ -306,7 +306,7 @@ namespace ST.ECommerce.Razor.Controllers
                 }
             }
 
-            var dbResult = await Context.SaveDependenceAsync();
+            var dbResult = await Context.PushAsync();
             return Json(dbResult);
         }
 

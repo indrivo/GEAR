@@ -418,7 +418,9 @@ namespace ST.MultiTenant.Services
                 {
                     Text = x.Name,
                     Value = x.Id
-                }).ToListAsync();
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
 
             countrySelectList.Insert(0, new SelectListItem(_localizer["system_select_country"], string.Empty));
 

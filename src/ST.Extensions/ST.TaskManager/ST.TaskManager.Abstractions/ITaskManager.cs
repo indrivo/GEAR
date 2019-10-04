@@ -96,5 +96,13 @@ namespace ST.TaskManager.Abstractions
         /// <param name="taskItemId"></param>
         /// <returns></returns>
         Task<ResultModel> DeleteTaskItemAsync(Guid taskItemId);
+
+        /// <summary>
+        /// Add or update user team to existent task
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddOrUpdateUsersToTaskGroupAsync(Models.Task task, IEnumerable<Guid> users);
     }
 }

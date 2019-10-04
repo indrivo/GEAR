@@ -22,5 +22,10 @@ namespace ST.TaskManager.Abstractions.Models.ViewModels
         public TaskPriority TaskPriority { get; set; } = TaskPriority.Low;
 
         public TaskStatus Status { get; set; } = TaskStatus.NotStarted;
+
+        /// <summary>
+        /// User team
+        /// </summary>
+        public virtual ICollection<Guid> UserTeam { get; set; } = new List<Guid>();
     }
 }

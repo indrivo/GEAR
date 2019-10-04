@@ -1,103 +1,66 @@
+@using IdentityServer4.Extensions
+@using ST.Dashboard.Abstractions
 @using ST.Identity.Abstractions
 @inject UserManager<ApplicationUser> UserManager
 @inject IStringLocalizer Localizer
+@inject IDashboardService DashboardService
 @{
 	ViewData["Title"] = Localizer["title_home"];
-	var user = await UserManager.GetUserAsync(User);
-	//ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
+	//var user = await UserManager.GetUserAsync(User);
+	var activeDashboard = await DashboardService.GetActiveDashboardAsync();
 }
 
-<link rel="stylesheet" type="text/css" href="~/lib/chartist/chartist.min.css"/>
+<link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
+<link rel="stylesheet" href="~/assets/ReportScripts/report.css" />
 
-<div class="row">
-	<h1>Incoming ...</h1>
-
-	@*<!-- Column -->
-	<div class="col-md-6 col-lg-3 col-xlg-3">
-		<div class="card card-inverse card-info">
-			<div class="box bg-info text-center">
-				<h1 class="font-light text-white">@ViewBag.TotalSessions</h1>
-				<h6 class="text-white">Sessions</h6>
-			</div>
-		</div>
-	</div>
-	<!-- Column -->
-	<div class="col-md-6 col-lg-3 col-xlg-3">
-		<div class="card card-primary card-inverse">
-			<div class="box text-center">
-				<h1 class="font-light text-white">@ViewBag.TotalUsers</h1>
-				<h6 class="text-white">Users</h6>
-			</div>
-		</div>
-	</div>
-	<!-- Column -->
-	<div class="col-md-6 col-lg-3 col-xlg-3">
-		<div class="card card-inverse card-success">
-			<div class="box text-center">
-				<h1 class="font-light text-white">0</h1>
-				<h6 class="text-white">Page Views</h6>
-			</div>
-		</div>
-	</div>
-	<!-- Column -->
-	<div class="col-md-6 col-lg-3 col-xlg-3">
-		<div class="card card-inverse card-warning">
-			<div class="box text-center">
-				<h1 class="font-light text-white">0%</h1>
-				<h6 class="text-white">Bounce Rate</h6>
-			</div>
-		</div>
-	</div>
-</div>
-<!-- Row -->
-<div class="row">
-	<!-- Column -->
-	<div class="col-12">
-		<div class="card">
-			<div class="row">
-				<div class="col-lg-4">
-					<div class="p-3">
-						<h2 class="font-medium text-inverse">Welcome @user?.UserName</h2>
-						<h6 class="card-subtitle">you have 4 new messages</h6>
-						<div class="message-box m-t-30">
-							<div class="message-widget">
-
+@if (activeDashboard.IsSuccess)
+{
+	var configuration = await DashboardService.GetDashboardConfigurationForRenderAsync();
+	<div class="card">
+		<div class="card-body">
+			<h5>@activeDashboard.Result.Name</h5>
+			@if (configuration.IsSuccess)
+			{
+				foreach (var row in configuration.Result)
+				{
+					<div class="row">
+						@foreach (var (widget, widgetBody) in row.GetWidgetBodies())
+						{
+							<div class="col-md">
+								<div class="card mb-sm-4 mb-3">
+									<div class="card-body p-0">
+										<div class="p-3 pl-4">
+											<h5>@widget.Name</h5>
+											@if (!widgetBody.IsNullOrEmpty())
+											{
+												@Html.Raw(widgetBody)
+											}
+										</div>
+									</div>
+								</div>
 							</div>
-						</div>
+						}
 					</div>
-				</div>
-				<div class="col-lg-8 border-left">
-					<div class="card-body">
-						<div class="d-flex no-block align-items-center">
-							<h4 class="font-medium text-inverse">Product Calculation</h4>
-							<div class="ml-auto">
-								<ul class="list-inline">
-									<li class="p-l-0">
-										<h6 class="text-muted"><i class="fa fa-circle mr-2 text-success"></i>2016</h6>
-									</li>
-									<li>
-										<h6 class="text-muted"><i class="fa fa-circle mr-2 text-info"></i>2017</h6>
-									</li>
-								</ul>
-							</div>
-						</div>
-
-						<div class="total-revenue4" style="height: 350px;"></div>
-					</div>
-				</div>
-			</div>
+				}
+			}
+			else
+			{
+				<h1>@configuration.Errors.ElementAt(0)?.Message</h1>
+			}
 		</div>
 	</div>
-	<!-- Column -->*@
-</div>
 
+}
+else
+{
+	<h1>@activeDashboard.Errors.ElementAt(0)?.Message</h1>
+}
+
+@section PreScripts{
+	<script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+	<script src="~/lib/Chart.js/Chart.min.js"></script>
+}
 
 @section Scripts{
-
-	<script src="~/lib/chartist/chartist.min.js"></script>
-
-	<script src="~/lib/Chart.js/Chart.min.js"></script>
-
-
-
+	<script src="~/assets/ReportScripts/report.js"></script>
 }

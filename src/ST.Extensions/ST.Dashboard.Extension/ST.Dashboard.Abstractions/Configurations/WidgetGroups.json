@@ -1,0 +1,20 @@
+[
+  {
+    "Id": "aced3174-744a-48e4-82b9-de80d8d76114",
+    "Name": "Charts",
+    "Order": 1,
+    "IsSystem": true
+  },
+  {
+    "Id": "05490637-ba30-4bbb-9165-2cbeba51995a",
+    "Name": "Reports",
+    "Order": 2,
+    "IsSystem": true
+  },
+  {
+    "Id": "c67f5e2f-507d-4ed2-aab3-c107384b1937",
+    "Name": "Custom",
+    "Order": 3,
+    "IsSystem": true
+  }
+]
