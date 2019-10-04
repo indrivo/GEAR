@@ -621,5 +621,8 @@
   "system_email_confirmed": "确认的电子邮件",
   "system_confirm": "确认",
   "system_email_sent": "你的电子邮件已发送",
-  "system_taskmanager_task_team": "团队"
+  "system_taskmanager_task_team": "团队",
+  "system_taskmanager_author": "作者",
+  "system_taskmanager_assigne": "分配给",
+  "system_taskmanager_modofiedby": "修改过的"
 }

@@ -1,4 +1,5 @@
-﻿$(function () {
+﻿/* eslint-disable no-undef */
+$(function () {
     const manager = new TaskManager();
     const toast = new ToastNotifier();
     const taskDetailsTemplate = $.templates("#taskDetailsTemplate");
@@ -7,24 +8,33 @@
     const taskItemsTemplate = $.templates("#taskItemsTemplate");
     const taskItemsAddTaskTemplate = $.templates("#taskItemsAddTaskTemplate");
 
-    const templateManager = new TemplateManager();
-
     const maxFileSize = 10485760;
     let statuses = [];
     let priorities = [];
     let users = [];
-    let tablePage = 1;
-    let tablePageSize = 10;
-    let taskType = $('.task-manager .task-manager-task-types').val();
     const sortableTableHeaders = $('.task-manager .task-manager-task-list th.sortable');
 
-    Promise.all([manager.getStatusesList(), manager.getPrioritiesList(), manager.getUsersLoadedList()]).then(data => {
+    let tableProperties = {
+        type: 'active',
+        page: 1,
+        pageSize: 10,
+        descending: false,
+        attribute: 'StartDate'
+    }
+
+    const promises = [
+        manager.getStatusesList(),
+        manager.getPrioritiesList(),
+        manager.getUsersLoadedList()
+    ];
+
+    Promise.all(promises).then(data => {
         statuses = data[0];
         priorities = data[1];
         users = data[2];
 
-        statuses[0].translateKey = 'system_taskmanager_notstarted';
-        statuses[1].translateKey = 'system_taskmanager_inprogress';
+        statuses[0].translateKey = "system_taskmanager_notstarted";
+        statuses[1].translateKey = "system_taskmanager_inprogress";
         statuses[2].translateKey = 'system_taskmanager_review';
         statuses[3].translateKey = 'system_taskmanager_completed';
 
@@ -35,22 +45,15 @@
 
         fillLoadedLists();
 
-        $('.task-manager-loader').fadeIn();
-
-        loadTaskList(taskType, tablePage, tablePageSize, false, 'StartDate').then(() => {
-            $('.task-manager-loader').fadeOut();
-        });
+        loadTaskList(tableProperties);
     });
 
-    $('.task-manager .task-manager-items-per-page-control').off().on('change', function () {
-        tablePageSize = $(this).val();
-        $('.task-manager-loader').fadeIn();
-        loadTaskList(taskType, tablePage, tablePageSize, false, 'StartDate').then(() => {
-            $('.task-manager-loader').fadeOut();
-        });
+    $('.task-manager .task-manager-items-per-page-control').on('change', function () {
+        tableProperties.pageSize = $(this).val();
+        loadTaskList(tableProperties);
     });
 
-    $('.task-manager-add-new-task').off().on('click', function () {
+    $('.task-manager-add-new-task').on('click', function () {
         $('.initial-tab-click').trigger('click');
         $('.add-task-uploaded-files .file-list').html('');
         $('.modal-add-task .file-list').html('');
@@ -80,22 +83,23 @@
             taskItemsForm.push({ Name: $(this).data('task-name') });
         });
 
-        task = {
+        let task = {
             taskItems: taskItemsForm,
             name: scope.find('#add-task-name').val(),
             description: scope.find('#add-task-description').val(),
             startDate: scope.find('#add-task-start-date').val(),
             endDate: scope.find('#add-task-end-date').val(),
             userId: scope.find('#add-task-users').val(),
+            userTeam: scope.find('#add-task-team').val(),
             taskPriority: scope.find('#add-task-priority').val(),
-            status: scope.find('#add-task-status').val(),
+            status: scope.find('#add-task-status').val()
         };
 
-        for (var pair of formData.entries()) {
+        for (let pair of formData.entries()) {
             fileCount++;
         }
 
-        if (fileCount == 0) {
+        if (fileCount === 0) {
             task.files = [];
             sendAddTaskObject(task);
         } else {
@@ -120,15 +124,12 @@
         $(this).find('#new-task-item-name-add-task').val('');
     });
 
-    $('.task-manager .task-manager-task-types').off().on('change', function () {
-        taskType = $(this).val();
-        $('.task-manager-loader').fadeIn();
-        loadTaskList(taskType, tablePage, tablePageSize, false, 'StartDate').then(() => {
-            $('.task-manager-loader').fadeOut();
-        });
+    $('.task-manager .task-manager-task-types').on('change', function () {
+        tableProperties.type = $(this).val();
+        loadTaskList(tableProperties);
     });
 
-    sortableTableHeaders.off().on('click', function () {
+    sortableTableHeaders.on('click', function () {
         let descendingVal = false;
         const attributeVal = $(this).data('attribute');
         cleanTableSort();
@@ -149,10 +150,10 @@
             descendingVal = false;
         }
 
-        $('.task-manager-loader').fadeIn();
-        loadTaskList(taskType, tablePage, tablePageSize, descendingVal, attributeVal).then(() => {
-            $('.task-manager-loader').fadeOut();
-        });
+        let tablePropertiesLocal = tableProperties;
+        tablePropertiesLocal.descending = descendingVal;
+        tablePropertiesLocal.attribute = attributeVal;
+        loadTaskList(tablePropertiesLocal);
     });
 
     function addChangeFileInputEvent(type) {
@@ -170,8 +171,7 @@
                         fileListAppend(files[i].name, wrapper, i);
                     }
                 }
-            }
-            else if (type === 'edit') {
+            } else if (type === 'edit') {
                 if (files[0].size > maxFileSize) {
                     alert("File is too big!(Max " + maxFileSize / 1048576 + "MB allowed)");
                     scope.value = "";
@@ -185,62 +185,52 @@
                 }
             }
         });
-    };
+    }
 
-    function loadTaskList(type, page, pageSize, descending, attribute) {
-        $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
-        if (type === 'active') {
-            return manager.getUserTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
-                $.each(result.results, function () {
-                    const htmlOutput = taskListTemplate.render(result.results, {
-                        deleted: false,
-                        statusesList: statuses,
-                        prioritiesList: priorities,
-                    });
-                    $("#task-list-table").html(htmlOutput);
-                });
-                addTablePager(result.pageCount, result.currentPage);
-                addTaskEvents();
-                window.forceTranslate();
-            }).catch(e => {
-                console.log(e);
-                toast.notifyErrorList(e);
+    function loadEachType(promise, objectConf) {
+        $('.task-manager-loader').fadeIn();
+        return promise.then(result => {
+            $("#task-list-table").html(window.translate('system_taskmanager_no_tasks'));
+            $.each(result.results, function () {
+                objectConf.user = findUserById(this.userId);
+                const htmlOutput = taskListTemplate.render(result.results, objectConf);
+                $("#task-list-table").html(htmlOutput);
             });
+            addTablePager(result.pageCount, result.currentPage);
+            addTaskEvents();
+            window.forceTranslate();
+            $('.task-manager-loader').fadeOut();
+        }).catch(e => {
+            console.log(e);
+            toast.notifyErrorList(e);
+        });
+    }
+
+    function loadTaskList(tablePropertiesLocal) {
+        tablePropertiesLocal.deleted = false;
+        let promise = null;
+        let configuration = {
+            deleted: false,
+            statusesList: statuses,
+            prioritiesList: priorities
         }
-        else if (type === 'deleted') {
-            return manager.getUserTasks({ deleted: true, page, pageSize, descending, attribute }).then(result => {
-                $.each(result.results, function () {
-                    const htmlOutput = taskListTemplate.render(result.results, {
-                        deleted: true,
-                        statusesList: statuses,
-                        prioritiesList: priorities,
-                    });
-                    $("#task-list-table").html(htmlOutput);
-                });
-                addTablePager(result.pageCount, result.CurrentPage);
-                addTaskEvents();
-                window.forceTranslate();
-            }).catch(e => {
-                console.log(e);
-                toast.notifyErrorList(e);
-            });
+        switch (tablePropertiesLocal.type) {
+            case 'active':
+                promise = manager.getUserTasks(tablePropertiesLocal);
+                break;
+            case 'deleted':
+                configuration.deleted = true;
+                promise = manager.getUserTasks(tablePropertiesLocal);
+                break;
+            case 'assigned':
+                promise = manager.getAssignedTasks(tablePropertiesLocal);
+                configuration.assigned = true;
+                break;
+            default:
+                toast.notifyErrorList("An error occured(such type of tasks doesn't exist)");
         }
-        else if (type === 'assigned') {
-            return manager.getAssignedTasks({ deleted: false, page, pageSize, descending, attribute }).then(result => {
-                $.each(result.results, function () {
-                    const htmlOutput = taskListTemplate.render(result.results, {
-                        assigned: true,
-                        statusesList: statuses,
-                        prioritiesList: priorities,
-                    });
-                    $("#task-list-table").html(htmlOutput);
-                });
-                addTablePager(result.pageCount, result.CurrentPage);
-                addTaskEvents();
-                window.forceTranslate();
-            }).catch(e => {
-                toast.notifyErrorList(e);
-            });
+        if (promise) {
+            loadEachType(promise, configuration);
         }
         else {
             toast.notifyErrorList("An error occured(such type of tasks doesn't exist)");
@@ -248,13 +238,22 @@
     }
 
     function fillLoadedLists() {
-        fillSelect(priorities, $(".task-priority"));
+        fillSelectTranslate(priorities, $(".task-priority"));
         fillSelect(users, $(".task-users"));
+        fillSelectTranslate(statuses, $(".task-status"));
         fillSelect(users, $(".task-team"));
-        fillSelect(statuses, $(".task-status"));
+
+        let uId = $('.task-users').val();
+        let teamDisabledOption = $(`.task-team option[value="${uId}"]`);
+        teamDisabledOption.attr('disabled', 'disabled').prop('selected', false).siblings().removeAttr('disabled');
+        $('.task-users').on('change', function () {
+            uId = $(this).val();
+            teamDisabledOption = $(`.task-team option[value="${uId}"]`);
+            teamDisabledOption.attr('disabled', 'disabled').prop('selected', false).siblings().removeAttr('disabled');
+        });
     }
 
-    function fillSelect(options, selectTarget) {
+    function fillSelectTranslate(options, selectTarget) {
         selectTarget.html('');
         $.each(options, function () {
             selectTarget.append(new Option(window.translate(this.translateKey), this.value));
@@ -262,8 +261,16 @@
         window.forceTranslate(selectTarget);
     }
 
+    function fillSelect(options, selectTarget) {
+        selectTarget.html('');
+        $.each(options, function () {
+            selectTarget.append(new Option(this.text, this.value));
+        });
+        window.forceTranslate(selectTarget);
+    }
+
     function loadTaskEditModal(taskId) {
-        const editModal = $('#editTaskModal'); ``
+        const editModal = $('#editTaskModal');
         editModal.find('#edit-task').attr('data-id', taskId);
         return manager.getTask(taskId).then(result => {
             const htmlOutput = taskEditTemplate.render(result, {
@@ -272,12 +279,18 @@
             });
             $(".edit-task-form-elements").html(htmlOutput);
             fillLoadedLists();
-            editModal.find('.task-user option[value="' + result.userId + '"]').attr('selected', 'selected');
-            editModal.find('.task-status option[value="' + result.status + '"]').attr('selected', 'selected');
-            editModal.find('.task-priority option[value="' + result.taskPriority + '"]').attr('selected', 'selected');
+            editModal.find(`.task-users option[value="${result.userId}"]`).attr('selected', 'selected');
+            editModal.find(`.task-status option[value="${result.status}"]`).attr('selected', 'selected');
+            editModal.find(`.task-priority option[value="${result.taskPriority}"]`).attr('selected', 'selected');
+            editModal.find(`.task-team option[value="${result.userId}"]`).attr('disabled', 'disabled').prop('selected', false).siblings().removeAttr('disabled');
+
+            $.each(result.userTeam, function (index, userId) {
+                editModal.find(`.task-team option[value="${userId}"]`).attr('selected', 'selected');
+            });
+
             $.each(result.files, function () {
                 getFilename(this).then(filename => {
-                    fileListAppend(filename, $('.modal-edit-task .add-task-uploaded-files .file-list'), this);
+                    fileListAppend(filename, $(".modal-edit-task .add-task-uploaded-files .file-list"), this);
                 });
             });
             window.forceTranslate();
@@ -312,6 +325,7 @@
                 userId: scope.find('.task-users').val(),
                 taskPriority: scope.find('.task-priority').val(),
                 status: scope.find('.task-status').val(),
+                userTeam: scope.find('.task-team').val(),
                 files: filesToUpload
             };
             if (!moment(task.startDate).isAfter(task.endDate)) {
@@ -340,7 +354,7 @@
             $('#deleteConfirmModal').modal('show');
 
             $('#deleteConfirmModal #submit-task-delete').off().on('click', function () {
-                manager.deleteTask(taskId).then(result => {
+                manager.deleteTask(taskId).then(() => {
                     toast.notify({ text: window.translate("system_taskmanager_delete_task_success"), icon: "success" });
                 }).catch(e => {
                     toast.notifyErrorList(e);
@@ -410,7 +424,7 @@
                     EndDate: result.endDate,
                     UserId: result.userId,
                     TaskPriority: result.taskPriority,
-                    Status: scope.val(),
+                    Status: scope.val()
                 };
                 updateTask(task).then(() => { });
             });
@@ -426,7 +440,7 @@
                 deleted: false,
                 assigned: assigned,
                 statusesList: statuses,
-                prioritiesList: priorities,
+                prioritiesList: priorities
             });
 
             $('#detailsTaskModal .task-number').html('#' + result.taskNumber);
@@ -439,6 +453,13 @@
                     $('.view-task-files').append('<div><a href="/api/File/GetFile?id=' + scope + '">' + filename + '</a></div>');
                 });
             });
+
+            $('.view-task-team').html('');
+            $.each(result.userTeam, function (index, userId) {
+                const teamUser = findUserById(userId);
+                $('.view-task-team').append(`<div class="task-user-team">${teamUser.text}</div>`);
+            });
+
             window.forceTranslate();
             loadTaskItems(taskId).then(() => { });
 
@@ -475,12 +496,15 @@
 
     function loadTaskItems(taskId) {
         return manager.getTaskItems(taskId).then(taskItems => {
-            $.each(taskItems, function () {
-                const htmlOutput = taskItemsTemplate.render(taskItems);
-                $("#task-items-tab .task-items").html(htmlOutput);
+            manager.getTask(taskId).then(result => {
+                let accessLevel = result.accessLevel;
+                $.each(taskItems, function () {
+                    const htmlOutput = taskItemsTemplate.render(taskItems, { accessLevel: accessLevel });
+                    $("#task-items-tab .task-items").html(htmlOutput);
+                });
+                addTaskItemsEvents(taskId);
             });
-            addTaskItemsEvents(taskId);
-        }).catch(e => {
+        }).catch(() => {
             $("#task-items-tab .task-items").html('');
             addTaskItemsEvents(taskId);
         });
@@ -507,9 +531,9 @@
     }
 
     function createTask(task) {
-        return manager.createTask(task).then(result => {
-            toast.notify({ text: window.translate("system_taskmanager_add_task_success"), icon: "success" });
-            loadTaskList('active', tablePage, tablePageSize, false, 'StartDate').then(() => { });
+        return manager.createTask(task).then(() => {
+            toast.notify({ text: window.translate('system_taskmanager_add_task_success'), icon: "success" });
+            loadTaskList(tableProperties);
             $('.task-manager-controls .task-manager-task-types').val('active');
             window.forceTranslate();
         }).catch(e => {
@@ -526,7 +550,7 @@
         });
         $('.task-item-delete').off().on('click', function () {
             const scope = $(this);
-            taskItemId = scope.data('id');
+            let taskItemId = scope.data('id');
             deleteTaskItem(taskId, taskItemId).then(() => {
                 scope.closest('.task-item').remove();
             }).catch(e => {
@@ -537,7 +561,7 @@
             const taskItemId = $(this).data('id');
             const taskItemName = $(this).siblings('.custom-control-label').text();
             const taskItemStatus = $(this).is(':checked');
-            updateTaskItem(taskId, taskItemId, taskItemName, taskItemStatus).then(() => { }).catch(e => {
+            updateTaskItem(taskId, taskItemId, taskItemName, taskItemStatus).then(() => { }).catch(() => {
             });
         });
     }
@@ -556,7 +580,7 @@
     }
 
     function deleteTaskItem(taskId, taskItemId) {
-        return manager.deleteTaskItem(taskItemId).then(result => {
+        return manager.deleteTaskItem(taskItemId).then(() => {
             toast.notify({ text: window.translate("system_taskmanager_delete_success"), icon: "success" });
             refreshTask(taskId).then(() => { });
         }).catch(e => {
@@ -576,14 +600,14 @@
             targetTask.find('.task-item-count').html(`<span>${result.taskItemsCount[0]}/${result.taskItemsCount[1]}</span>`);
             targetTask.find('.start-date span').html(result.startDate);
             targetTask.find('.end-date span').html(result.endDate);
-            if (result.status == 3) {
+            if (result.status === 3) {
                 targetTask.find('.status').html('<i class="material-icons d-block mr-1">done_outline</i>' + statuses[result.status].text);
             }
             else {
                 targetTask.find('.status').html(statuses[result.status].text);
             }
             targetTask.find('.priority').html(`<span class="priority-${priorities[result.taskPriority].text}">${priorities[result.taskPriority].text}</span>`);
-            targetTask.removeClass('prioriry-High priority-Critical priority-Low priority-Medium').addClass('priority-' + priorities[result.taskPriority].text);
+            targetTask.removeClass('priority-High priority-Critical priority-Low priority-Medium').addClass('priority-' + priorities[result.taskPriority].text);
 
         }).catch(e => {
             toast.notifyErrorList(e);
@@ -592,7 +616,7 @@
     }
 
     function restoreTask(taskId) {
-        return manager.restoreTask(taskId).then(result => {
+        return manager.restoreTask(taskId).then(() => {
             toast.notify({ text: window.translate("system_taskmanager_restore_success"), icon: "success" });
         }).catch(e => {
             toast.notifyErrorList(e);
@@ -600,7 +624,7 @@
     }
 
     function updateTaskItem(taskId, taskItemId, name, isDone) {
-        return manager.updateTaskItem({ Id: taskItemId, Name: name, IsDone: isDone }).then(result => {
+        return manager.updateTaskItem({ Id: taskItemId, Name: name, IsDone: isDone }).then(() => {
             refreshTask(taskId).then(() => { });
         }).catch(e => {
             toast.notifyErrorList(e);
@@ -622,8 +646,8 @@
     function addTablePager(pageCount, page) {
         $('#task-list-pager').html('');
         if (pageCount > 1) {
-            for (i = 1; i <= pageCount; i++) {
-                if (page == i) {
+            for (let i = 1; i <= pageCount; i++) {
+                if (page === i) {
                     $('#task-list-pager').append(`<li class="page-item active"><a class="page-link" data-page="` + i + `">` + i + `</a></li>`);
                 }
                 else {
@@ -633,18 +657,15 @@
             $('#task-list-pager .page-item').off().on('click', function (e) {
                 const linkPage = $(this).children('.page-link').data('page');
                 e.preventDefault();
-                $('.task-manager-loader').fadeIn();
-                loadTaskList(taskType, linkPage, tablePageSize, false, 'StartDate').then(() => {
-                    $('.task-manager-loader').fadeOut();
-                });
+                let taskPropertiesLocal = taskPropertiesLocal;
+                taskPropertiesLocal.page = linkPage;
+                loadTaskList(taskPropertiesLocal);
             });
         }
     }
 
-    function findUserById(UId) {
-        const result = users.find(user => {
-            return user.value == UId;
-        });
+    function findUserById(uId) {
+        const result = users.find(({ value }) => value === uId);
         if (!result) {
             return {
                 disabled: false,
@@ -719,7 +740,7 @@
                 }
             });
         });
-    };
+    }
 
     function uploadFile(formData) {
         return new Promise((resolve, reject) => {
@@ -742,10 +763,6 @@
                 }
             });
         });
-    }
-
-    function downloadFile(fileId) {
-        window.location.href = "/api/File/GetFile?id=" + fileId;
     }
 
     function getFilename(fileId) {
@@ -786,7 +803,7 @@
                 processData: false,
                 contentType: false,
                 type: "POST",
-                success: function (data) {
+                success: function () {
                     toast.notify({ text: window.translate("system_taskmanager_file_deleted"), icon: "success" });
                 }
             }

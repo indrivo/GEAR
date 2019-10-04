@@ -621,5 +621,8 @@
   "system_email_confirmed": "Confermato email",
   "system_confirm": "Confermare",
   "system_email_sent": "Il tuo messaggio è stato inviato",
-  "system_taskmanager_task_team": "Team"
+  "system_taskmanager_task_team": "Team",
+  "system_taskmanager_author": "Autore",
+  "system_taskmanager_assigne": "Assegnato alla",
+  "system_taskmanager_modofiedby": "Modificato da"
 }
