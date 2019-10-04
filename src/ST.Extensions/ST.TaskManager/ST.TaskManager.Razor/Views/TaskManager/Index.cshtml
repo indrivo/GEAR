@@ -53,6 +53,9 @@
                     <th class="sortable" data-attribute="StartDate" data-sort="ascending">@Localizer["system_taskmanager_start_date"]<span class="sort ascending"></span></th>
                     <th class="sortable" data-attribute="EndDate">@Localizer["system_taskmanager_end_date"]<span class="sort"></span></th>
                     <th class="sortable" data-attribute="Status">@Localizer["system_taskmanager_status"]<span class="sort"></span></th>
+                    <th>@Localizer["system_taskmanager_author"]</th>
+                    <th>@Localizer["system_taskmanager_assigne"]</th>
+                    <th>@Localizer["system_taskmanager_modofiedby"]</th>
                     <th>@Localizer["system_taskmanager_actions"]</th>
                 </tr>
             </thead>
@@ -127,6 +130,11 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
+                                        <label for="add-task-team">@Localizer["system_taskmanager_task_team"]</label>
+                                        <select id="add-task-team" class="form-control task-team" multiple>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="add-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
                                         <select id="add-task-priority" class="form-control task-priority" required>
                                         </select>
@@ -142,7 +150,7 @@
                                             <div class="file-list">
                                             </div>
                                         </div>
-                                        <input class="task-files" name="taskFiles" type="file" size="1" multiple accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt"/>
+                                        <input class="task-files" name="taskFiles" type="file" size="1" multiple accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt" />
                                     </div>
                                 </div>
                             </form>
@@ -277,6 +285,15 @@
                 </div>
                 {{/if}}
             </td>
+            <td class="author">
+                {{:author}}
+            </td>
+            <td class="assigne">
+                {{:~user.text}}
+            </td>
+            <td class="modified-by">
+                {{:modifiedBy}}
+            </td>
             <td class="task-actions">
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle d-flex align-items-center" type="button" id="actions-{{:id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -311,6 +328,7 @@
 
     <script id="taskItemsTemplate" type="text/x-jsrender">
         <div class="task-item" data-id="{{:id}}">
+            {{if ~accessLevel == 'Owner'}}
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="task-item-status custom-control-input" id="{{:id}}" data-id="{{:id}}" {{if isDone}} checked="{{:isDone}}" {{/if}}>
                 <label class="custom-control-label" for="{{:id}}">{{:name}}</label>
@@ -318,6 +336,11 @@
                     <i class="material-icons d-block">close</i>
                 </button>
             </div>
+            {{else}}
+            <div>
+                <label>{{:name}}</label>
+            </div>
+            {{/if}}
             <hr class="my-3">
         </div>
     </script>
@@ -357,6 +380,11 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="edit-task-team">@Localizer["system_taskmanager_task_team"]</label>
+            <select id="edit-task-team" class="form-control task-team" multiple>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="edit-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
             <select id="edit-task-priority" class="form-control task-priority" required>
             </select>
@@ -372,7 +400,7 @@
                 <div class="file-list">
                 </div>
             </div>
-            <input class="task-files" name="taskEditFiles" type="file" size="1" accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt"/>
+            <input class="task-files" name="taskEditFiles" type="file" size="1" accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt" />
         </div>
     </script>
 
@@ -408,12 +436,17 @@
             </span>
         </div>
         <div class="form-group">
+            <label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_team"]</label>
+            <div class="view-task-team">
+            </div>
+        </div>
+        <div class="form-group">
             <label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_priority"]</label>
             <span translate="{{:~prioritiesList[taskPriority].translateKey}}">
                 {{:~prioritiesList[taskPriority].text}}
             </span>
         </div>
-        {{if ~assigned}}
+        {{if accessLevel == 'Owner'}}
         <div class="form-group">
             <label class="font-weight-bold mr-2">@Localizer["system_taskmanager_status"]</label>
             <select id="edit-assigned-task-status" class="form-control task-status" required>
