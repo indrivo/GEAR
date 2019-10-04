@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ST.Calendar.Abstractions.Models;
 using System.Threading.Tasks;
+using ST.Calendar.Abstractions.Enums;
 using ST.Calendar.Abstractions.Models.ViewModels;
 using ST.Core.Helpers;
 
@@ -76,5 +77,16 @@ namespace ST.Calendar.Abstractions
         /// <param name="eventId"></param>
         /// <returns></returns>
         Task<ResultModel> RestoreEventLogicallyAsync(Guid? eventId);
+
+        /// <summary>
+        /// Get events
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="origin">Default is today date</param>
+        /// <param name="timeLineType">Specify the interval of time</param>
+        /// <param name="expandDayPrecision">Specify the expand interval in days, default is zero</param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<CalendarEvent>>> GetUserEventsByTimeLineAsync(Guid? userId, DateTime? origin,
+            CalendarTimeLineType timeLineType = CalendarTimeLineType.Month, int expandDayPrecision = 0);
     }
 }

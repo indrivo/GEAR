@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant.Abstractions\ST.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\..\ST.TaskManager\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
     <ProjectReference Include="..\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj" />
   </ItemGroup>

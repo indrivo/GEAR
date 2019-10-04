@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ST.Calendar.Abstractions;
-using ST.Calendar.Abstractions.Enums;
-using ST.Calendar.Abstractions.Models;
-using ST.Core.Extensions;
-using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 
 namespace ST.Calendar.Razor.Controllers
@@ -29,16 +22,6 @@ namespace ST.Calendar.Razor.Controllers
         {
             _calendarManager = calendarManager;
             _userManager = userManager;
-        }
-
-        [HttpGet]
-        [Produces("application/json", Type = typeof(ResultModel<List<CalendarEvent>>))]
-        public async Task<JsonResult> GetEvents(CalendarTimeLineType timeLine, DateTime dateTime)
-        {
-            var user = await _userManager.GetCurrentUserAsync();
-
-            var response = await _calendarManager.GetEventsAsync(timeLine, dateTime,user.Result.Id.ToGuid());
-            return Json(response);
         }
 
         /// <summary>

@@ -143,7 +143,7 @@ namespace ST.Calendar
         }
 
         /// <summary>
-        /// 
+        /// Get events
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="origin">Default is today date</param>
