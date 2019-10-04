@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
@@ -50,7 +51,8 @@ namespace ST.Email
         /// <returns></returns>
         public virtual async Task SendEmailAsync(IEnumerable<string> emails, string subject, string message, bool isBodyHtml = true)
         {
-            if (!_options.Value.Enabled) return;
+            var mails = emails?.ToList() ?? new List<string>();
+            if (!_options.Value.Enabled || !mails.Any()) return;
             var settings = _options.Value;
             try
             {
@@ -75,7 +77,7 @@ namespace ST.Email
                         IsBodyHtml = isBodyHtml
                     };
 
-                    foreach (var emailTo in emails)
+                    foreach (var emailTo in mails)
                     {
                         if (!emailTo.IsValidEmail()) continue;
                         mailMessage.To.Add(emailTo);
