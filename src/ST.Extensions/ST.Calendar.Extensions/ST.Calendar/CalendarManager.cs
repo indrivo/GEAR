@@ -113,10 +113,9 @@ namespace ST.Calendar
             var response = new ResultModel<IEnumerable<CalendarEvent>>();
             var events = await _context.CalendarEvents
                 .Include(x => x.EventMembers)
-                .Where(x => x.EventMembers.Any(member => member.UserId.Equals(userId))
-                            || x.Organizer.Equals(userId)
+                .Where(x => (x.EventMembers.Any(member => member.UserId.Equals(userId)) || x.Organizer.Equals(userId))
                             && !x.IsDeleted
-                            && x.StartDate >= startDate && x.StartDate <= endDate)
+                            && (x.StartDate >= startDate && x.StartDate <= endDate || x.EndDate >= startDate && x.EndDate <= endDate))
                 .ToListAsync();
 
             response.IsSuccess = true;
