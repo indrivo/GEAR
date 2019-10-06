@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.Enums;
+using ST.Calendar.Abstractions.Helpers.Mappers;
 using ST.Calendar.Abstractions.Models;
 using ST.Calendar.Abstractions.Models.ViewModels;
 using ST.Core.Extensions;
@@ -113,7 +115,8 @@ namespace ST.Calendar
                 .Include(x => x.EventMembers)
                 .Where(x => x.EventMembers.Any(member => member.UserId.Equals(userId))
                             || x.Organizer.Equals(userId)
-                            && !x.IsDeleted && x.StartDate >= startDate && x.EndDate <= endDate)
+                            && !x.IsDeleted
+                            && x.StartDate >= startDate && x.StartDate <= endDate)
                 .ToListAsync();
 
             response.IsSuccess = true;
@@ -142,6 +145,7 @@ namespace ST.Calendar
             return await GetEventsAsync(user.Id.ToGuid(), startDate, endDate);
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get events
         /// </summary>
@@ -150,7 +154,9 @@ namespace ST.Calendar
         /// <param name="timeLineType">Specify the interval of time</param>
         /// <param name="expandDayPrecision">Specify the expand interval in days, default is zero</param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<CalendarEvent>>> GetUserEventsByTimeLineAsync(Guid? userId, DateTime? origin, CalendarTimeLineType timeLineType = CalendarTimeLineType.Month, int expandDayPrecision = 0)
+        public async Task<ResultModel<IEnumerable<CalendarEvent>>> GetUserEventsByTimeLineAsync(Guid? userId, DateTime? origin,
+            CalendarTimeLineType timeLineType = CalendarTimeLineType.Month,
+            int expandDayPrecision = 0)
         {
             var response = new ResultModel<IEnumerable<CalendarEvent>>();
             if (!userId.HasValue)
@@ -158,15 +164,15 @@ namespace ST.Calendar
                 response.Errors.Add(new ErrorModel(string.Empty, "User not specified"));
                 return response;
             }
-            var today = origin ?? DateTime.Today;
+            var today = origin ?? DateTime.Now;
 
             switch (timeLineType)
             {
                 case CalendarTimeLineType.Day:
-                    response = await GetEventsAsync(userId, today, today);
+                    response = await GetEventsAsync(userId, today.StartOfDay(), today.EndOfDay());
                     break;
                 case CalendarTimeLineType.Week:
-                    var weekStart = today.AddDays(-((int)today.DayOfWeek + expandDayPrecision));
+                    var weekStart = today.AddDays(-(today.DayIndex() + expandDayPrecision));
                     var weekEnd = weekStart.AddDays(7 + expandDayPrecision).AddSeconds(-1);
                     response = await GetEventsAsync(userId, weekStart, weekEnd);
                     break;
@@ -187,9 +193,9 @@ namespace ST.Calendar
         /// <summary>
         /// Create new event
         /// </summary>
-        /// <param name="evt"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateEventAsync(BaseEventViewModel evt)
+        public async Task<ResultModel<Guid>> AddEventAsync(BaseEventViewModel model)
         {
             var response = new ResultModel<Guid>();
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
@@ -200,6 +206,7 @@ namespace ST.Calendar
             }
 
             var user = currentUserRequest.Result;
+            var evt = model.Adapt<CalendarEvent>();
             evt.Organizer = user.Id.ToGuid();
             await _context.CalendarEvents.AddAsync(evt);
             var dbResult = await _context.PushAsync();
@@ -209,8 +216,37 @@ namespace ST.Calendar
                 return response;
             }
 
+            await AddOrUpdateMembersToEventAsync(evt.Id, model.Members);
+
             response.IsSuccess = true;
             response.Result = evt.Id;
+            return response;
+        }
+
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Update event
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="organizerId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> UpdateEventAsync(UpdateEventViewModel model, Guid? organizerId)
+        {
+            var response = new ResultModel();
+            if (!organizerId.HasValue) return response;
+            var evt = await _context.CalendarEvents.FirstOrDefaultAsync(x => x.Organizer.Equals(organizerId) && x.Id.Equals(model.Id));
+            if (evt == null)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "The event was not found or the organizer does not have access to this event"));
+                return response;
+            }
+
+            var updateModel = EventMapper.Map(evt, model);
+            _context.CalendarEvents.Update(updateModel);
+            var dbResult = await _context.PushAsync();
+            if (dbResult.IsSuccess) return await AddOrUpdateMembersToEventAsync(model.Id, model.Members);
+            response.Errors = dbResult.Errors;
             return response;
         }
 
@@ -222,14 +258,14 @@ namespace ST.Calendar
         /// <param name="eventId"></param>
         /// <param name="users"></param>
         /// <returns></returns>
-        public async Task<ResultModel> AddOrUpdateMembersToEventAsync(Guid? eventId, IList<Guid> users)
+        public async Task<ResultModel> AddOrUpdateMembersToEventAsync(Guid? eventId, IEnumerable<Guid> users)
         {
             var eventRequest = await GetEventByIdAsync(eventId);
-            if (eventRequest.IsSuccess) return eventRequest.ToBase();
+            if (!eventRequest.IsSuccess) return eventRequest.ToBase();
             var evt = eventRequest.Result;
-
+            var usrs = users.ToList();
             var oldMembers = evt.EventMembers.Select(x => x.UserId).ToList();
-            var newMembers = users.Except(oldMembers)
+            var newMembers = usrs.Except(oldMembers)
                 .Where(x => _organizationService.IsUserPartOfOrganizationAsync(x, evt.TenantId).ExecuteAsync())
                 .Select(x => new EventMember
                 {
@@ -237,7 +273,7 @@ namespace ST.Calendar
                     Event = evt
                 }).ToList();
 
-            var removeMembers = oldMembers.Except(users)
+            var removeMembers = oldMembers.Except(usrs)
                 .Select(x => evt.EventMembers
                     .FirstOrDefault(c => c.UserId.Equals(x))).ToList();
 
@@ -326,6 +362,37 @@ namespace ST.Calendar
             evt.IsDeleted = false;
             _context.Update(evt);
 
+            return await _context.PushAsync();
+        }
+
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Change acceptance
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="memberId"></param>
+        /// <param name="acceptance"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> ChangeMemberEventAcceptanceAsync(Guid? eventId, Guid? memberId, EventAcceptance acceptance = EventAcceptance.Tentative)
+        {
+            var evtRequest = await GetEventByIdAsync(eventId);
+            if (!evtRequest.IsSuccess)
+            {
+                return evtRequest.ToBase();
+            }
+
+            var memberState = evtRequest.Result.EventMembers.FirstOrDefault(x => x.UserId.Equals(memberId));
+            if (memberState == null)
+            {
+                return new ResultModel
+                {
+                    Errors = new List<IErrorModel> { new ErrorModel(string.Empty, "Member not allowed") }
+                };
+            }
+
+            memberState.Acceptance = acceptance;
+            _context.EventMembers.Update(memberState);
             return await _context.PushAsync();
         }
     }

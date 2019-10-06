@@ -43,9 +43,17 @@ namespace ST.Calendar.Abstractions
         /// <summary>
         /// Create new event
         /// </summary>
-        /// <param name="evt"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateEventAsync(BaseEventViewModel evt);
+        Task<ResultModel<Guid>> AddEventAsync(BaseEventViewModel model);
+
+        /// <summary>
+        /// Update event
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="organizerId"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateEventAsync(UpdateEventViewModel model, Guid? organizerId);
 
         /// <summary>
         /// Add or update new members to an event
@@ -53,7 +61,7 @@ namespace ST.Calendar.Abstractions
         /// <param name="eventId"></param>
         /// <param name="users"></param>
         /// <returns></returns>
-        Task<ResultModel> AddOrUpdateMembersToEventAsync(Guid? eventId, IList<Guid> users);
+        Task<ResultModel> AddOrUpdateMembersToEventAsync(Guid? eventId, IEnumerable<Guid> users);
 
 
         /// <summary>
@@ -88,5 +96,14 @@ namespace ST.Calendar.Abstractions
         /// <returns></returns>
         Task<ResultModel<IEnumerable<CalendarEvent>>> GetUserEventsByTimeLineAsync(Guid? userId, DateTime? origin,
             CalendarTimeLineType timeLineType = CalendarTimeLineType.Month, int expandDayPrecision = 0);
+
+        /// <summary>
+        /// Change acceptance
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="memberId"></param>
+        /// <param name="acceptance"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeMemberEventAcceptanceAsync(Guid? eventId, Guid? memberId, EventAcceptance acceptance = EventAcceptance.Tentative);
     }
 }

@@ -74,6 +74,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
 using ST.Application.Middleware.Extensions;
 using ST.Application.Middleware.Server;
 using ST.Audit;
@@ -370,7 +371,11 @@ namespace ST.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.AddCalendarRazorUIModule();
+				.AddCalendarRazorUIModule()
+				.SetSerializationFormatSettings(settings =>
+					{
+						settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+					});
 
 			//------------------------------------File Module-------------------------------------
 			services
