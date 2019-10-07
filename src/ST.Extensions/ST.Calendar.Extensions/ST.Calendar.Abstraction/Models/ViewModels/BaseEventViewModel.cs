@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ST.Calendar.Abstractions.Enums;
-using ST.Core;
 
-namespace ST.Calendar.Abstractions.Models
+namespace ST.Calendar.Abstractions.Models.ViewModels
 {
-    public class CalendarEvent : BaseModel
+    public class BaseEventViewModel : IValidatableObject
     {
         /// <summary>
         /// Event name
@@ -38,17 +37,6 @@ namespace ST.Calendar.Abstractions.Models
         public virtual DateTime EndDate { get; set; }
 
         /// <summary>
-        /// Owner
-        /// </summary>
-        [Required]
-        public virtual Guid Organizer { get; set; }
-
-        /// <summary>
-        /// Synced with external calendars
-        /// </summary>
-        public virtual bool Synced { get; set; }
-
-        /// <summary>
         /// Event priority
         /// </summary>
         public virtual EventPriority Priority { get; set; } = EventPriority.Low;
@@ -56,6 +44,24 @@ namespace ST.Calendar.Abstractions.Models
         /// <summary>
         /// Event member
         /// </summary>
-        public virtual ICollection<EventMember> EventMembers { get; set; } = new List<EventMember>();
+        public virtual ICollection<Guid> Members { get; set; } = new List<Guid>();
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Custom validations
+        /// </summary>
+        /// <param name="validationContext"></param>
+        /// <returns></returns>
+        public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (EndDate < StartDate)
+            {
+                yield return new ValidationResult("End Date must be greater than Start Date");
+            }
+            else if (StartDate < DateTime.Now)
+            {
+                yield return new ValidationResult("The event can only be created after this current time");
+            }
+        }
     }
 }
