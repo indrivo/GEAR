@@ -181,6 +181,7 @@ namespace ST.TaskManager.Services
             };
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Add or remove user to task team
         /// </summary>

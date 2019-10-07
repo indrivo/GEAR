@@ -44,7 +44,7 @@ $(function () {
         priorities[3].translateKey = 'system_taskmanager_critical';
 
         fillLoadedLists();
-
+        dependentInputTeam()
         loadTaskList(tableProperties);
     });
 
@@ -237,36 +237,41 @@ $(function () {
         }
     }
 
-    function fillLoadedLists() {
-        fillSelectTranslate(priorities, $(".task-priority"));
-        fillSelect(users, $(".task-users"));
-        fillSelectTranslate(statuses, $(".task-status"));
-        fillSelect(users, $(".task-team"));
-
+    function dependentInputTeam() {
         let uId = $('.task-users').val();
         let teamDisabledOption = $(`.task-team option[value="${uId}"]`);
         teamDisabledOption.attr('disabled', 'disabled').prop('selected', false).siblings().removeAttr('disabled');
-        $('.task-users').on('change', function () {
+        $('.task-users').on('select2:select', function () {
             uId = $(this).val();
             teamDisabledOption = $(`.task-team option[value="${uId}"]`);
             teamDisabledOption.attr('disabled', 'disabled').prop('selected', false).siblings().removeAttr('disabled');
+            $('.task-team').select2();
         });
+        $('.task-users').select2();
+        $('.task-team').select2();
     }
 
-    function fillSelectTranslate(options, selectTarget) {
-        selectTarget.html('');
-        $.each(options, function () {
-            selectTarget.append(new Option(window.translate(this.translateKey), this.value));
-        });
-        window.forceTranslate(selectTarget);
+    function fillLoadedLists() {
+        fillSelect(priorities, $(".task-priority"), true);
+        fillSelect(users, $(".task-users"), false);
+        fillSelect(statuses, $(".task-status"), true);
+        fillSelect(users, $(".task-team"), false);
     }
 
-    function fillSelect(options, selectTarget) {
-        selectTarget.html('');
-        $.each(options, function () {
-            selectTarget.append(new Option(this.text, this.value));
+    function fillSelect(options, selectTarget, translatable) {
+        $.each(selectTarget, function () {
+            const scope = $(this);
+            scope.html('');
+            $.each(options, function () {
+                let newOption = new Option(this.text, this.value);
+                if (translatable) {
+                    newOption = new Option(window.translate(this.translateKey), this.value);;
+                }
+                scope.append(newOption);
+            });
+            window.forceTranslate(scope);
+            scope.select2();
         });
-        window.forceTranslate(selectTarget);
     }
 
     function loadTaskEditModal(taskId) {
@@ -279,14 +284,16 @@ $(function () {
             });
             $(".edit-task-form-elements").html(htmlOutput);
             fillLoadedLists();
-            editModal.find(`.task-users option[value="${result.userId}"]`).attr('selected', 'selected');
-            editModal.find(`.task-status option[value="${result.status}"]`).attr('selected', 'selected');
-            editModal.find(`.task-priority option[value="${result.taskPriority}"]`).attr('selected', 'selected');
-            editModal.find(`.task-team option[value="${result.userId}"]`).attr('disabled', 'disabled').prop('selected', false).siblings().removeAttr('disabled');
+            dependentInputTeam();
+            editModal.find('.task-users').val(result.userId).trigger('change');
+            editModal.find('.task-status').val(result.status).trigger('change');
+            editModal.find('.task-priority').val(result.taskPriority).trigger('change');
+            editModal.find(`.task-team option[value="${result.userId}"]`).prop('disabled', true).prop('selected', false).siblings().removeAttr('disabled');
 
-            $.each(result.userTeam, function (index, userId) {
-                editModal.find(`.task-team option[value="${userId}"]`).attr('selected', 'selected');
+            $.each(result.userTeam, function (index, userTeamId) {
+                editModal.find(`.task-team option[value="${userTeamId}"]`).prop('selected', true);
             });
+            editModal.find('.task-team').select2();
 
             $.each(result.files, function () {
                 getFilename(this).then(filename => {
