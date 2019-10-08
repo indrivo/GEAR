@@ -6,6 +6,8 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.Enums;
+using ST.Calendar.Abstractions.Events;
+using ST.Calendar.Abstractions.Events.EventArgs;
 using ST.Calendar.Abstractions.Helpers.Mappers;
 using ST.Calendar.Abstractions.Models;
 using ST.Calendar.Abstractions.Models.ViewModels;
@@ -216,6 +218,16 @@ namespace ST.Calendar
             }
 
             await AddOrUpdateMembersToEventAsync(evt.Id, model.Members);
+            CalendarEvents.SystemCalendarEvents.EventCreated(new CalendarEventCreatedEventArgs
+            {
+                EventId = evt.Id,
+                StartDate = evt.StartDate,
+                EndDate = evt.EndDate,
+                Title = evt.Title,
+                Details = evt.Details,
+                Organizer = user.Email,
+                Invited = new List<string>()
+            });
 
             response.IsSuccess = true;
             response.Result = evt.Id;
@@ -245,6 +257,18 @@ namespace ST.Calendar
             _context.CalendarEvents.Update(updateModel);
             var dbResult = await _context.PushAsync();
             if (dbResult.IsSuccess) return await AddOrUpdateMembersToEventAsync(model.Id, model.Members);
+
+            CalendarEvents.SystemCalendarEvents.EventUpdated(new EventUpdatedEventArgs
+            {
+                EventId = evt.Id,
+                StartDate = evt.StartDate,
+                EndDate = evt.EndDate,
+                Title = evt.Title,
+                Details = evt.Details,
+                Organizer = "",
+                Invited = new List<string>()
+            });
+
             response.Errors = dbResult.Errors;
             return response;
         }
@@ -262,9 +286,9 @@ namespace ST.Calendar
             var eventRequest = await GetEventByIdAsync(eventId);
             if (!eventRequest.IsSuccess) return eventRequest.ToBase();
             var evt = eventRequest.Result;
-            var usrs = users.ToList();
+            var userList = users.ToList();
             var oldMembers = evt.EventMembers.Select(x => x.UserId).ToList();
-            var newMembers = usrs.Except(oldMembers)
+            var newMembers = userList.Except(oldMembers)
                 .Where(x => _organizationService.IsUserPartOfOrganizationAsync(x, evt.TenantId).ExecuteAsync())
                 .Select(x => new EventMember
                 {
@@ -272,7 +296,7 @@ namespace ST.Calendar
                     Event = evt
                 }).ToList();
 
-            var removeMembers = oldMembers.Except(usrs)
+            var removeMembers = oldMembers.Except(userList)
                 .Select(x => evt.EventMembers
                     .FirstOrDefault(c => c.UserId.Equals(x))).ToList();
 
@@ -305,7 +329,15 @@ namespace ST.Calendar
             }
 
             _context.CalendarEvents.Remove(evt);
-            return await _context.PushAsync();
+            var pushResult = await _context.PushAsync();
+            if (pushResult.IsSuccess) CalendarEvents.SystemCalendarEvents.EventDeleted(new EventDeleteOrRestoredEventArgs
+            {
+                InLife = true,
+                EventId = eventId,
+                Title = evt.Title
+            });
+
+            return pushResult;
         }
 
         /// <inheritdoc />
@@ -332,8 +364,15 @@ namespace ST.Calendar
 
             evt.IsDeleted = true;
             _context.Update(evt);
+            var pushResult = await _context.PushAsync();
+            if (pushResult.IsSuccess) CalendarEvents.SystemCalendarEvents.EventDeleted(new EventDeleteOrRestoredEventArgs
+            {
+                InLife = true,
+                EventId = eventId,
+                Title = evt.Title
+            });
 
-            return await _context.PushAsync();
+            return pushResult;
         }
 
         /// <inheritdoc />
@@ -361,7 +400,16 @@ namespace ST.Calendar
             evt.IsDeleted = false;
             _context.Update(evt);
 
-            return await _context.PushAsync();
+            var pushResult = await _context.PushAsync();
+
+            if (pushResult.IsSuccess) CalendarEvents.SystemCalendarEvents.EventRestored(new EventDeleteOrRestoredEventArgs
+            {
+                InLife = true,
+                EventId = eventId,
+                Title = evt.Title
+            });
+
+            return pushResult;
         }
 
 

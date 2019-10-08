@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Calendar.Abstractions.Events;
 using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
@@ -39,6 +40,31 @@ namespace ST.Calendar.Abstractions.Extensions
             configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
             configuration.Services.AddScopedContextFactory<ICalendarDbContext, TDbContext>();
             return configuration;
+        }
+
+
+        /// <summary>
+        /// Register runtime events
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static CalendarServiceCollection AddCalendarRuntimeEvents(this CalendarServiceCollection serviceCollection)
+        {
+            CalendarEvents.RegisterEvents();
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// Register token provider
+        /// </summary>
+        /// <typeparam name="TProvider"></typeparam>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static CalendarServiceCollection RegisterTokenProvider<TProvider>(this CalendarServiceCollection serviceCollection)
+            where TProvider : class, ICalendarExternalTokenProvider
+        {
+            IoC.RegisterTransientService<ICalendarExternalTokenProvider, TProvider>();
+            return serviceCollection;
         }
     }
 }

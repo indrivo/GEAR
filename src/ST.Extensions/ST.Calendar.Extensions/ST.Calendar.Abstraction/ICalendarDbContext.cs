@@ -15,5 +15,15 @@ namespace ST.Calendar.Abstractions
         /// Event members
         /// </summary>
         DbSet<EventMember> EventMembers { get; set; }
+
+        /// <summary>
+        /// Preferences
+        /// </summary>
+        DbSet<UserProviderSyncPreference> UserProviderSyncPreferences { get; set; }
+
+        /// <summary>
+        /// Provider tokens
+        /// </summary>
+        DbSet<ExternalProviderToken> ExternalProviderTokens { get; set; }
     }
 }

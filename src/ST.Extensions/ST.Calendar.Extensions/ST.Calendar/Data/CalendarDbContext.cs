@@ -38,6 +38,18 @@ namespace ST.Calendar.Data
 
         /// <inheritdoc />
         /// <summary>
+        /// Provider preferences
+        /// </summary>
+        public virtual DbSet<UserProviderSyncPreference> UserProviderSyncPreferences { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// External provider tokens
+        /// </summary>
+        public virtual DbSet<ExternalProviderToken> ExternalProviderTokens { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>
         /// On model creating
         /// </summary>
         /// <param name="builder"></param>
@@ -54,6 +66,9 @@ namespace ST.Calendar.Data
             builder.Entity<EventMember>().HasKey(x => new { x.EventId, x.UserId });
             builder.Entity<CalendarEvent>().HasIndex(x => new { x.StartDate, x.EndDate });
             builder.Entity<CalendarEvent>().HasIndex(x => new { Owner = x.Organizer });
+
+            builder.Entity<UserProviderSyncPreference>().HasKey(x => new { x.UserId, x.Provider });
+            builder.Entity<ExternalProviderToken>().HasKey(x => new { x.UserId, x.Attribute, x.ProviderName });
         }
 
         /// <inheritdoc />

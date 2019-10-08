@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ST.Calendar.Abstractions.Enums;
+using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.Helpers.Mappers;
 using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Identity.Abstractions.Models.MultiTenants;
@@ -59,18 +60,19 @@ namespace ST.Calendar.Razor.Controllers
         /// Internal calendar
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            var factory = new ExternalCalendarProviderFactory();
+            var providers = factory.GetProviders();
+            var googleProvider = factory.CreateService(providers.ElementAt(0));
+            var authRequest = await googleProvider.AuthorizeAsync(Guid.Parse("017326a6-29e0-4d49-84e6-2d52851bc33e"));
+            if (authRequest.IsSuccess)
+            {
+                await googleProvider.PushEventAsync(new GetEventViewModel());
+            }
 
-        /// <summary>
-        /// External calendars
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public IActionResult ExternalCalendars()
-        {
+
+
             return View();
         }
 

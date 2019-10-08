@@ -81,7 +81,9 @@ using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
 using ST.Calendar;
 using ST.Calendar.Abstractions.Extensions;
+using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Data;
+using ST.Calendar.Providers.Google.Extensions;
 using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions;
@@ -373,9 +375,12 @@ namespace ST.Cms
 				})
 				.AddCalendarRazorUIModule()
 				.SetSerializationFormatSettings(settings =>
-					{
-						settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-					});
+				{
+					settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+				})
+				.AddCalendarRuntimeEvents()
+				.RegisterTokenProvider<CalendarExternalTokenProvider>()
+				.RegisterGoogleCalendarProvider();
 
 			//------------------------------------File Module-------------------------------------
 			services
