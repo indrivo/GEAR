@@ -82,6 +82,7 @@ using ST.Audit.Abstractions.Extensions;
 using ST.Calendar;
 using ST.Calendar.Abstractions.Extensions;
 using ST.Calendar.Abstractions.ExternalProviders;
+using ST.Calendar.Abstractions.ExternalProviders.Extensions;
 using ST.Calendar.Data;
 using ST.Calendar.Providers.Google.Extensions;
 using ST.Calendar.Razor.Extensions;
@@ -379,6 +380,7 @@ namespace ST.Cms
 					settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 				})
 				.AddCalendarRuntimeEvents()
+				.RegisterSyncOnExternalCalendars()
 				.RegisterTokenProvider<CalendarExternalTokenProvider>()
 				.RegisterGoogleCalendarProvider();
 

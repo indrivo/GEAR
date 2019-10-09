@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,10 +8,8 @@ using Google.Apis.Calendar.v3;
 using Google.Apis.Services;
 using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.ExternalProviders;
-using ST.Calendar.Abstractions.Models;
 using ST.Calendar.Abstractions.Models.ViewModels;
 using ST.Calendar.Providers.Google.Mappers;
-using ST.Core.Extensions;
 using ST.Core.Helpers;
 
 namespace ST.Calendar.Providers.Google
@@ -54,23 +53,7 @@ namespace ST.Calendar.Providers.Google
                 return response;
             }
 
-            var tokenRequest = await _tokenProvider.GetTokenAsync<UserCredential>(nameof(GoogleCalendarProvider), userId);
-
-            if (tokenRequest.IsSuccess)
-            {
-                _credential = tokenRequest.Result;
-                if (_credential.Token.IsExpired(_credential.Flow.Clock))
-                {
-                    var refreshState = await _credential.RefreshTokenAsync(CancellationToken.None);
-                    if (refreshState) await _tokenProvider.SetTokenAsync(new ExternalProviderToken
-                    {
-                        UserId = userId.GetValueOrDefault(),
-                        ProviderName = nameof(GoogleCalendarProvider),
-                        Value = _credential.Serialize()
-                    });
-                }
-            }
-            else
+            try
             {
                 using (var stream = new FileStream(Path.Combine(AppContext.BaseDirectory, "googleCredentials.json"), FileMode.Open, FileAccess.Read))
                 {
@@ -78,18 +61,19 @@ namespace ST.Calendar.Providers.Google
                         GoogleClientSecrets.Load(stream).Secrets,
                         Scopes,
                         userId.ToString(),
-                        CancellationToken.None);
+                        CancellationToken.None, new GoogleDataStore(_tokenProvider));
 
-                    await _tokenProvider.SetTokenAsync(new ExternalProviderToken
-                    {
-                        UserId = userId.GetValueOrDefault(),
-                        ProviderName = nameof(GoogleCalendarProvider),
-                        Value = _credential.Serialize()
-                    });
+                    response.IsSuccess = true;
                 }
+
+                InitService();
+                Authorized = true;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
 
-            InitService();
             return response;
         }
 
@@ -105,17 +89,23 @@ namespace ST.Calendar.Providers.Google
             });
         }
 
-        public void Test()
+        /// <summary>
+        /// Update event
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <param name="evtId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId)
         {
-            var request = _service.Events.List("primary");
-            request.TimeMin = DateTime.MinValue;
-            request.ShowDeleted = false;
-            request.SingleEvents = true;
-            request.MaxResults = 10;
-            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+            var response = new ResultModel();
+            var request = _service.Events.Get(CalendarName, evtId);
+            var googleEvent = await request.ExecuteAsync();
 
-            // List events.
-            var events = request.Execute();
+            var updateRequest = _service.Events.Update(googleEvent, CalendarName, evtId);
+
+            var updateResponse = await updateRequest.ExecuteAsync();
+
+            return response;
         }
 
         /// <inheritdoc />
@@ -132,8 +122,9 @@ namespace ST.Calendar.Providers.Google
 
             try
             {
-                await request.ExecuteAsync();
+                var requestResult = await request.ExecuteAsync();
                 response.IsSuccess = true;
+                response.Result = requestResult.Id;
             }
             catch (Exception e)
             {

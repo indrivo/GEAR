@@ -9,5 +9,6 @@ namespace ST.Calendar.Abstractions
     {
         Task<ResultModel<TTokenFormat>> GetTokenAsync<TTokenFormat>(string provider, Guid? user) where TTokenFormat : class;
         Task<ResultModel> SetTokenAsync(ExternalProviderToken token);
+        Task<ResultModel> DeleteTokenAsync(string provider, Guid? user);
     }
 }

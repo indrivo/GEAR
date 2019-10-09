@@ -13,7 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ST.Calendar.Abstractions.Enums;
-using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.Helpers.Mappers;
 using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Identity.Abstractions.Models.MultiTenants;
@@ -60,19 +59,8 @@ namespace ST.Calendar.Razor.Controllers
         /// Internal calendar
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var factory = new ExternalCalendarProviderFactory();
-            var providers = factory.GetProviders();
-            var googleProvider = factory.CreateService(providers.ElementAt(0));
-            var authRequest = await googleProvider.AuthorizeAsync(Guid.Parse("017326a6-29e0-4d49-84e6-2d52851bc33e"));
-            if (authRequest.IsSuccess)
-            {
-                await googleProvider.PushEventAsync(new GetEventViewModel());
-            }
-
-
-
             return View();
         }
 
@@ -254,11 +242,15 @@ namespace ST.Calendar.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(IEnumerable<ApplicationUser>))]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
         public JsonResult GetOrganizationUsers()
         {
             var users = _organizationService.GetAllowedUsersByOrganizationId(_userManager.CurrentUserTenantId.GetValueOrDefault());
-            return Json(users.Select(x => new SampleGetUserViewModel(x)));
+            return Json(new ResultModel
+            {
+                IsSuccess = true,
+                Result = users.Select(x => new SampleGetUserViewModel(x))
+            });
         }
     }
 }

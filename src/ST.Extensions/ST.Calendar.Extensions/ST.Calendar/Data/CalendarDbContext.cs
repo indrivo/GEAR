@@ -48,6 +48,11 @@ namespace ST.Calendar.Data
         /// </summary>
         public virtual DbSet<ExternalProviderToken> ExternalProviderTokens { get; set; }
 
+        /// <summary>
+        /// Event attributes
+        /// </summary>
+        public virtual DbSet<EventAttribute> Attributes { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         /// On model creating
@@ -69,6 +74,7 @@ namespace ST.Calendar.Data
 
             builder.Entity<UserProviderSyncPreference>().HasKey(x => new { x.UserId, x.Provider });
             builder.Entity<ExternalProviderToken>().HasKey(x => new { x.UserId, x.Attribute, x.ProviderName });
+            builder.Entity<EventAttribute>().HasKey(x => new { x.EventId, x.AttributeName });
         }
 
         /// <inheritdoc />

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ST.Calendar.Data;
@@ -9,9 +10,10 @@ using ST.Calendar.Data;
 namespace ST.Calendar.Migrations
 {
     [DbContext(typeof(CalendarDbContext))]
-    partial class CalendarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191009074347_CalendarDbContext_AddEventAttributes")]
+    partial class CalendarDbContext_AddEventAttributes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

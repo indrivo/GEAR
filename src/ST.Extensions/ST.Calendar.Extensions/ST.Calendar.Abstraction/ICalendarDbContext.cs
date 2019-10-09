@@ -25,5 +25,10 @@ namespace ST.Calendar.Abstractions
         /// Provider tokens
         /// </summary>
         DbSet<ExternalProviderToken> ExternalProviderTokens { get; set; }
+
+        /// <summary>
+        /// Event attributes
+        /// </summary>
+        DbSet<EventAttribute> Attributes { get; set; }
     }
 }

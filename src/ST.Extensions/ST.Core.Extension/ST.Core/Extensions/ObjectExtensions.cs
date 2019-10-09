@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace ST.Core.Extensions
@@ -6,13 +7,30 @@ namespace ST.Core.Extensions
     public static class ObjectExtensions
     {
         /// <summary>
+        /// Serialize settings
+        /// </summary>
+        private static readonly JsonSerializerSettings SerializeSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        /// <summary>
         /// Serialize object
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public static string Serialize(this object obj)
         {
-            return JsonConvert.SerializeObject(obj);
+            try
+            {
+                return JsonConvert.SerializeObject(obj, SerializeSettings);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -26,11 +44,11 @@ namespace ST.Core.Extensions
             if (source.IsNullOrEmpty()) return null;
             try
             {
-                return JsonConvert.DeserializeObject<TOutput>(source);
+                return JsonConvert.DeserializeObject<TOutput>(source, SerializeSettings);
             }
-            catch
+            catch (Exception e)
             {
-                //Ignore
+                Debug.WriteLine(e);
             }
 
             return null;

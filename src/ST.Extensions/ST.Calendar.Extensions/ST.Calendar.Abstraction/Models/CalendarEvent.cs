@@ -57,5 +57,10 @@ namespace ST.Calendar.Abstractions.Models
         /// Event member
         /// </summary>
         public virtual ICollection<EventMember> EventMembers { get; set; } = new List<EventMember>();
+
+        /// <summary>
+        /// Attributes
+        /// </summary>
+        public virtual ICollection<EventAttribute> Attributes { get; set; } = new List<EventAttribute>();
     }
 }
