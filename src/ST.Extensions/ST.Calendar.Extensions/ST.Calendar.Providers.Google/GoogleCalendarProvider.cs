@@ -32,11 +32,17 @@ namespace ST.Calendar.Providers.Google
         /// Inject token provider
         /// </summary>
         private readonly ICalendarExternalTokenProvider _tokenProvider;
+
+        /// <summary>
+        /// Inject settings service
+        /// </summary>
+        private readonly ICalendarUserSettingsService _settingsService;
         #endregion
 
-        public GoogleCalendarProvider(ICalendarExternalTokenProvider tokenProvider)
+        public GoogleCalendarProvider(ICalendarExternalTokenProvider tokenProvider, ICalendarUserSettingsService settingsService)
         {
             _tokenProvider = tokenProvider;
+            _settingsService = settingsService;
         }
 
         /// <inheritdoc />
@@ -89,6 +95,7 @@ namespace ST.Calendar.Providers.Google
             });
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Update event
         /// </summary>
@@ -125,6 +132,7 @@ namespace ST.Calendar.Providers.Google
                 var requestResult = await request.ExecuteAsync();
                 response.IsSuccess = true;
                 response.Result = requestResult.Id;
+                await _settingsService.SetEventAttributeAsync(evt.Id, $"{nameof(GoogleCalendarProvider)}_evtId", requestResult.Id);
             }
             catch (Exception e)
             {

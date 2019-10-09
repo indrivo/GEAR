@@ -66,5 +66,18 @@ namespace ST.Calendar.Abstractions.Extensions
             IoC.RegisterTransientService<ICalendarExternalTokenProvider, TProvider>();
             return serviceCollection;
         }
+
+        /// <summary>
+        /// Register calendar
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <param name="serviceCollection"></param>
+        /// <returns></returns>
+        public static CalendarServiceCollection RegisterCalendarUserPreferencesProvider<TService>(this CalendarServiceCollection serviceCollection)
+            where TService : class, ICalendarUserSettingsService
+        {
+            IoC.RegisterTransientService<ICalendarUserSettingsService, TService>();
+            return serviceCollection;
+        }
     }
 }

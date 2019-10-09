@@ -105,5 +105,13 @@ namespace ST.Calendar.Abstractions
         /// <param name="acceptance"></param>
         /// <returns></returns>
         Task<ResultModel> ChangeMemberEventAcceptanceAsync(Guid? eventId, Guid? memberId, EventAcceptance acceptance = EventAcceptance.Tentative);
+
+        /// <summary>
+        /// Set event sync state
+        /// </summary>
+        /// <param name="evtId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        Task<ResultModel> SetEventSyncState(Guid? evtId, bool state);
     }
 }

@@ -382,6 +382,7 @@ namespace ST.Cms
 				.AddCalendarRuntimeEvents()
 				.RegisterSyncOnExternalCalendars()
 				.RegisterTokenProvider<CalendarExternalTokenProvider>()
+				.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
 				.RegisterGoogleCalendarProvider();
 
 			//------------------------------------File Module-------------------------------------

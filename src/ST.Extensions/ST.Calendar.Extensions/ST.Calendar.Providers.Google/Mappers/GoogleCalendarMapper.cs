@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Google.Apis.Calendar.v3.Data;
 using ST.Calendar.Abstractions.Models.ViewModels;
 
@@ -14,11 +15,13 @@ namespace ST.Calendar.Providers.Google.Mappers
                 Description = model.Details,
                 Start = new EventDateTime
                 {
-                    DateTime = model.StartDate
+                    DateTime = model.StartDate,
+                    TimeZone = TimeZoneInfo.Local.StandardName
                 },
                 End = new EventDateTime
                 {
-                    DateTime = model.EndDate
+                    DateTime = model.EndDate,
+                    TimeZone = TimeZoneInfo.Local.StandardName
                 },
                 Creator = new Event.CreatorData
                 {
@@ -48,6 +51,13 @@ namespace ST.Calendar.Providers.Google.Mappers
             };
 
             return evt;
+        }
+
+        public static Event Map(Event target, GetEventViewModel source)
+        {
+
+
+            return target;
         }
     }
 }

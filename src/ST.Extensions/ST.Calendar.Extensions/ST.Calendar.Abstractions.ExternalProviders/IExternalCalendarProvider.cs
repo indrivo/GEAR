@@ -19,5 +19,13 @@ namespace ST.Calendar.Abstractions.ExternalProviders
         /// <param name="evt"></param>
         /// <returns></returns>
         Task<ResultModel> PushEventAsync(GetEventViewModel evt);
+
+        /// <summary>
+        /// Sync new changes with provider
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <param name="evtId"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId);
     }
 }
