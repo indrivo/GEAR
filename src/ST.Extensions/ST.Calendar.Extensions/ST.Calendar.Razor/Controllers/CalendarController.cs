@@ -233,8 +233,12 @@ namespace ST.Calendar.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(Dictionary<string, Dictionary<int, string>>))]
-        public JsonResult Helpers() => Json(new GetEventWithHelpersViewModel().Helpers);
+        [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, Dictionary<int, string>>>))]
+        public JsonResult Helpers() => Json(new ResultModel<Dictionary<string, Dictionary<int, string>>>
+        {
+            IsSuccess = true,
+            Result = new GetEventWithHelpersViewModel().Helpers
+        });
 
 
         /// <summary>
