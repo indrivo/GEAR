@@ -141,7 +141,7 @@ namespace ST.Calendar.Providers.Outlook
 
                 await _graphClient.Me.Events[evtId]
                     .Request()
-                    .UpdateAsync(outLookEvt);
+                    .UpdateAsync(OutlookMapper.Map(outLookEvt, evt));
 
                 response.IsSuccess = true;
             }

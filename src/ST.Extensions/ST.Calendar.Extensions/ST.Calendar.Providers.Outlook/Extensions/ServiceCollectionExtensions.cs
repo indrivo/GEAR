@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,12 @@ namespace ST.Calendar.Providers.Outlook.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Register outlook provider 
+        /// </summary>
+        /// <param name="serviceCollection"></param>
+        /// <param name="outlookOptions"></param>
+        /// <returns></returns>
         public static CalendarServiceCollection RegisterOutlookCalendarProvider(this CalendarServiceCollection serviceCollection, Action<MsAuthorizationSettings> outlookOptions)
         {
             Arg.NotNull(outlookOptions, nameof(RegisterOutlookCalendarProvider));

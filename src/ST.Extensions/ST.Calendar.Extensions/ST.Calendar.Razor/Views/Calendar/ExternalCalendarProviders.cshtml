@@ -1,0 +1,27 @@
+﻿@model IEnumerable<string>
+
+@{
+    ViewData["Title"] = "External providers";
+}
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 mt-1 text-center">
+        <div class="social">
+            @if (Model.Any())
+            {
+                <form asp-action="CalendarExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                    <div>
+                        <p>
+                            @foreach (var provider in Model)
+                            {
+                                <button class="btn btn-default btn-circle" name="provider" value="Microsoft" data-toggle="tooltip" title="Login with @provider">
+                                    <i aria-hidden="true" class="fa fa-microsoft"></i>
+                                </button>
+                            }
+                        </p>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</div>

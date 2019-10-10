@@ -15,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ST.Calendar.Providers.Outlook;
 using ST.Core.Helpers;
 using ST.Core.Extensions;
 using ST.Email.Abstractions;

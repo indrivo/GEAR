@@ -11,8 +11,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using ST.Calendar.Abstractions.Enums;
+using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.Helpers.Mappers;
 using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Identity.Abstractions.Models.MultiTenants;
@@ -45,13 +47,25 @@ namespace ST.Calendar.Razor.Controllers
         /// </summary>
         private readonly JsonSerializerSettings _serializeSettings;
 
+        /// <summary>
+        /// Inject signin manager
+        /// </summary>
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+        /// <summary>
+        /// Inject token provider
+        /// </summary>
+        private readonly ICalendarExternalTokenProvider _externalTokenProvider;
+
         #endregion
 
-        public CalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService)
+        public CalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService, SignInManager<ApplicationUser> signInManager, ICalendarExternalTokenProvider externalTokenProvider)
         {
             _calendarManager = calendarManager;
             _userManager = userManager;
             _organizationService = organizationService;
+            _signInManager = signInManager;
+            _externalTokenProvider = externalTokenProvider;
             _serializeSettings = CalendarServiceCollection.JsonSerializerSettings;
         }
 
@@ -255,6 +269,66 @@ namespace ST.Calendar.Razor.Controllers
                 IsSuccess = true,
                 Result = users.Select(x => new SampleGetUserViewModel(x))
             });
+        }
+
+        /// <summary>
+        /// Calendar providers
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult ExternalCalendarProviders()
+        {
+            var factory = new ExternalCalendarProviderFactory();
+            return View(factory.GetProviders());
+        }
+
+
+        /// <summary>
+        /// External login
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CalendarExternalLogin(string provider, string returnUrl = null)
+        {
+            var user = await _userManager.GetCurrentUserAsync();
+            if (!user.IsSuccess) return NotFound();
+            var redirectUrl = Url.Action(nameof(CalendarExternalLoginCallback), "Calendar", new
+            {
+                returnUrl,
+                gearUserId = user.Result.Id
+            });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        /// <summary>
+        /// External login call back
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="remoteError"></param>
+        /// <param name="gearUserId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> CalendarExternalLoginCallback(string returnUrl = null, string remoteError = null, Guid? gearUserId = null)
+        {
+            if (remoteError != null)
+            {
+                return RedirectToAction();
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction(nameof(Index));
+
+            await _externalTokenProvider.SetTokenAsync(new ExternalProviderToken
+            {
+                ProviderName = "OutlookCalendarProvider",
+                UserId = gearUserId.GetValueOrDefault(),
+                Value = info.AuthenticationTokens.Serialize()
+            });
+            return RedirectToAction(nameof(Index));
         }
     }
 }

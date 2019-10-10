@@ -48,5 +48,19 @@ namespace ST.Calendar.Providers.Outlook.Mappers
                 })
             };
         }
+
+        /// <summary>
+        /// Map
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static Event Map(Event source, GetEventViewModel target)
+        {
+            if (source == null || target == null) return source;
+            var newEv = Map(target);
+            newEv.Id = source.Id;
+            return newEv;
+        }
     }
 }
