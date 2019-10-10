@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.Models.ViewModels;
@@ -16,16 +14,22 @@ namespace ST.Calendar.Providers.Outlook
 {
     public class OutlookCalendarProvider : IExternalCalendarProvider
     {
-        #region Injectable
-
-
-        private readonly GraphServiceClient _graphClient;
+        /// <summary>
+        /// Graph client
+        /// </summary>
+        private GraphServiceClient _graphClient;
 
         /// <summary>
         /// Auth settings
         /// </summary>
         private readonly MsAuthorizationSettings _authSettings;
 
+        /// <summary>
+        /// Is authorized state
+        /// </summary>
+        private bool _isAuthorized;
+
+        #region Injectable
         /// <summary>
         /// Inject token provider
         /// </summary>
@@ -45,29 +49,24 @@ namespace ST.Calendar.Providers.Outlook
             if (_authSettings == null) throw new Exception("No client settings present");
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Authorize user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public virtual async Task<ResultModel> AuthorizeAsync(Guid? userId)
         {
             var response = new ResultModel();
-
-            var graph = await GetGraphServiceClient();
-
-
-
-            return response;
-        }
-
-        public virtual async Task<ResultModel> PushEventAsync(GetEventViewModel evt)
-        {
-            var response = new ResultModel();
-
-
             try
             {
-                var request = await _graphClient.Me.Events
-                    .Request()
-                    .Header("Prefer", "outlook.timezone=\"Pacific Standard Time\"")
-                    .AddAsync(OutlookMapper.Map(evt));
-
+                _graphClient = new GraphServiceClient(GetAuthProvider(userId));
+                var me = await _graphClient.Me.Request().GetAsync();
+                if (me != null)
+                {
+                    _isAuthorized = true;
+                    response.IsSuccess = true;
+                }
             }
             catch (Exception e)
             {
@@ -77,23 +76,87 @@ namespace ST.Calendar.Providers.Outlook
             return response;
         }
 
-        public Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId)
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Push event to outlook calendar
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> PushEventAsync(GetEventViewModel evt)
         {
-            throw new NotImplementedException();
+            var response = new ResultModel();
+            try
+            {
+                var requestResult = await _graphClient.Me.Events
+                    .Request()
+                    .Header("Prefer", "outlook.timezone=\"Pacific Standard Time\"")
+                    .AddAsync(OutlookMapper.Map(evt));
+
+                await _settingsService.SetEventAttributeAsync(evt.Id, $"{nameof(OutlookCalendarProvider)}_evtId", requestResult.Id);
+                response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return response;
         }
 
-        public virtual void Dispose()
+        /// <inheritdoc />
+        /// <summary>
+        /// Update event on provider
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <param name="evtId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId)
         {
-            throw new NotImplementedException();
+            var response = new ResultModel();
+            if (evtId.IsNullOrEmpty() || !_isAuthorized)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return response;
+            }
+
+            try
+            {
+                var outLookEvt = await _graphClient.Me.Events[evtId]
+                    .Request()
+                    .Header("Prefer", "outlook.timezone=\"Pacific Standard Time\"")
+                    .Select(e => new
+                    {
+                        e.Subject,
+                        e.Body,
+                        e.BodyPreview,
+                        e.Organizer,
+                        e.Attendees,
+                        e.Start,
+                        e.End,
+                        e.Location
+                    })
+                    .GetAsync();
+                if (evt == null) throw new Exception("Event not found");
+
+                await _graphClient.Me.Events[evtId]
+                    .Request()
+                    .UpdateAsync(outLookEvt);
+
+                response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return response;
         }
 
-        public async Task<GraphServiceClient> GetGraphServiceClient()
-        {
-            var authProvider = await GetAuthProvider();
-            return new GraphServiceClient(authProvider);
-        }
-
-        private async Task<MsOutlookAuthenticationProvider> GetAuthProvider()
+        /// <summary>
+        /// Get auth provider
+        /// </summary>
+        /// <returns></returns>
+        private MsOutlookAuthenticationProvider GetAuthProvider(Guid? userId)
         {
             var cca = ConfidentialClientApplicationBuilder.Create(_authSettings.ClientId)
                 .WithAuthority(_authSettings.GetAuthority())
@@ -101,7 +164,12 @@ namespace ST.Calendar.Providers.Outlook
                 .WithClientSecret(_authSettings.ClientSecretId)
                 .Build();
 
-            return new MsOutlookAuthenticationProvider(cca);
+            return new MsOutlookAuthenticationProvider(cca, userId);
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }
