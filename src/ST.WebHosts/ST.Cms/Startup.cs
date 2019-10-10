@@ -85,6 +85,7 @@ using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.ExternalProviders.Extensions;
 using ST.Calendar.Data;
 using ST.Calendar.Providers.Google.Extensions;
+using ST.Calendar.Providers.Outlook.Extensions;
 using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions;
@@ -383,7 +384,13 @@ namespace ST.Cms
 				.RegisterSyncOnExternalCalendars()
 				.RegisterTokenProvider<CalendarExternalTokenProvider>()
 				.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
-				.RegisterGoogleCalendarProvider();
+				.RegisterGoogleCalendarProvider()
+				.RegisterOutlookCalendarProvider(options =>
+				{
+					options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
+					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
+					options.TenantId = "";
+				});
 
 			//------------------------------------File Module-------------------------------------
 			services
