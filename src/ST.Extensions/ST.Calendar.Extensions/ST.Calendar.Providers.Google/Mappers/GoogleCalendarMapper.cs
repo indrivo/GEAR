@@ -7,8 +7,14 @@ namespace ST.Calendar.Providers.Google.Mappers
 {
     public static class GoogleCalendarMapper
     {
+        /// <summary>
+        /// Map
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public static Event Map(GetEventViewModel model)
         {
+            if (model == null) return new Event();
             var evt = new Event
             {
                 Summary = model.Title,
@@ -16,12 +22,12 @@ namespace ST.Calendar.Providers.Google.Mappers
                 Start = new EventDateTime
                 {
                     DateTime = model.StartDate,
-                    TimeZone = TimeZoneInfo.Local.StandardName
+                    //TimeZone = TimeZoneInfo.Local.StandardName
                 },
                 End = new EventDateTime
                 {
                     DateTime = model.EndDate,
-                    TimeZone = TimeZoneInfo.Local.StandardName
+                    //TimeZone = TimeZoneInfo.Local.StandardName
                 },
                 Creator = new Event.CreatorData
                 {
@@ -53,9 +59,34 @@ namespace ST.Calendar.Providers.Google.Mappers
             return evt;
         }
 
+        /// <summary>
+        /// Map
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static Event Map(Event target, GetEventViewModel source)
         {
+            if (target == null || source == null) return target;
+            target.Summary = source.Title;
+            target.Description = source.Details;
 
+            target.Start = new EventDateTime
+            {
+                DateTime = source.StartDate
+            };
+
+            target.End = new EventDateTime
+            {
+                DateTime = source.EndDate
+            };
+
+            target.Location = source.Location;
+
+            target.Attendees = source.InvitedUsers?.Select(x => new EventAttendee
+            {
+                Email = x.Email
+            }).ToList();
 
             return target;
         }
