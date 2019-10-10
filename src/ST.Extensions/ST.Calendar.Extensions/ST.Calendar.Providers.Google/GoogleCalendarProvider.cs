@@ -105,12 +105,20 @@ namespace ST.Calendar.Providers.Google
         public async Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId)
         {
             var response = new ResultModel();
-            var request = _service.Events.Get(CalendarName, evtId);
-            var googleEvent = await request.ExecuteAsync();
+            try
+            {
+                var request = _service.Events.Get(CalendarName, evtId);
+                var googleEvent = await request.ExecuteAsync();
 
-            var updateRequest = _service.Events.Update(googleEvent, CalendarName, evtId);
+                var updateRequest = _service.Events.Update(GoogleCalendarMapper.Map(googleEvent, evt), CalendarName, evtId);
 
-            var updateResponse = await updateRequest.ExecuteAsync();
+                await updateRequest.ExecuteAsync();
+                response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
             return response;
         }
