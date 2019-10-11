@@ -50,14 +50,9 @@ namespace ST.Calendar.Providers.Google
         /// Authorize
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel> AuthorizeAsync(Guid? userId)
+        public async Task<ResultModel> AuthorizeAsync(Guid? userId, bool reset = false)
         {
             var response = new ResultModel();
-            if (Authorized && _credential.UserId.Equals(userId.ToString()))
-            {
-                response.IsSuccess = true;
-                return response;
-            }
 
             try
             {
@@ -68,6 +63,12 @@ namespace ST.Calendar.Providers.Google
                         Scopes,
                         userId.ToString(),
                         CancellationToken.None, new GoogleDataStore(_tokenProvider));
+
+                    if (reset)
+                    {
+                        var revokeResponse = await _credential.RevokeTokenAsync(CancellationToken.None);
+                        if (revokeResponse) return await AuthorizeAsync(userId);
+                    }
 
                     response.IsSuccess = true;
                 }
@@ -159,7 +160,7 @@ namespace ST.Calendar.Providers.Google
             var response = new ResultModel();
             if (!Authorized) return response;
             var googleEvent = GoogleCalendarMapper.Map(evt);
-            
+
             try
             {
                 var request = _service.Events.Insert(googleEvent, CalendarName);

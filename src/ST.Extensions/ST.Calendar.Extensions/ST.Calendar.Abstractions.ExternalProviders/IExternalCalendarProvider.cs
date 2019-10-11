@@ -11,7 +11,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders
         /// Authorize
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel> AuthorizeAsync(Guid? userId);
+        Task<ResultModel> AuthorizeAsync(Guid? userId, bool reset = false);
 
         /// <summary>
         /// Push new event

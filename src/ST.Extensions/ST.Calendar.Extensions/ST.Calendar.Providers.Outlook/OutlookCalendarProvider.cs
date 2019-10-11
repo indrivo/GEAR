@@ -54,8 +54,9 @@ namespace ST.Calendar.Providers.Outlook
         /// Authorize user
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="reset"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> AuthorizeAsync(Guid? userId)
+        public virtual async Task<ResultModel> AuthorizeAsync(Guid? userId, bool reset = false)
         {
             var response = new ResultModel();
             try

@@ -36,6 +36,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
         /// <returns></returns>
         public static CalendarServiceCollection RegisterSyncOnExternalCalendars(this CalendarServiceCollection serviceCollection)
         {
+            //On event created
             CalendarEvents.SystemCalendarEvents.OnEventCreated += async (sender, args) =>
             {
                 var calendarManager = IoC.Resolve<ICalendarManager>();
@@ -62,6 +63,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
                 await calendarManager.SetEventSyncState(evt.Id, true);
             };
 
+            //On event update
             CalendarEvents.SystemCalendarEvents.OnEventUpdated += async (sender, args) =>
             {
                 var calendarManager = IoC.Resolve<ICalendarManager>();
@@ -100,6 +102,32 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
                 }
 
                 if (!evt.Synced) await calendarManager.SetEventSyncState(evt.Id, true);
+            };
+
+            //On delete Event
+            CalendarEvents.SystemCalendarEvents.OnEventDeleted += async (sender, args) =>
+            {
+                var calendarManager = IoC.Resolve<ICalendarManager>();
+                var userSettingsService = IoC.Resolve<ICalendarUserSettingsService>();
+                var evtRequest = await calendarManager.GetEventByIdAsync(args.EventId);
+                if (!evtRequest.IsSuccess) return;
+                var evt = evtRequest.Result;
+                if (!evt.Synced) return;
+                var factory = new ExternalCalendarProviderFactory();
+                var providers = factory.GetProviders();
+
+                foreach (var provider in providers)
+                {
+                    var isProviderEnabledForUser = await userSettingsService.IsProviderEnabledAsync(evt.Organizer, provider);
+                    if (!isProviderEnabledForUser.IsSuccess) continue;
+                    var providerService = factory.CreateService(provider);
+                    var authRequest = await providerService.AuthorizeAsync(evt.Organizer);
+                    if (!authRequest.IsSuccess) continue;
+                    var attrRequest = await userSettingsService.GetEventAttributeAsync(evt.Id, $"{provider}_evtId");
+                    if (!attrRequest.IsSuccess) continue;
+                    var providerEventId = attrRequest.Result;
+                    await providerService.DeleteEventAsync(providerEventId);
+                }
             };
 
             return serviceCollection;

@@ -14,7 +14,7 @@
                         <p>
                             @foreach (var provider in Model)
                             {
-                                <button class="btn btn-default btn-circle" name="provider" value="Microsoft" data-toggle="tooltip" title="Login with @provider">
+                                <button class="btn btn-default btn-circle" name="provider" value="@provider" data-toggle="tooltip" title="Login with @provider">
                                     <i aria-hidden="true" class="fa fa-microsoft"></i>
                                 </button>
                             }

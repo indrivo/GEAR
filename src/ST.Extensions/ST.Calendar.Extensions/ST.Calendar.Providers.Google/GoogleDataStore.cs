@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Util.Store;
 using Mapster;
@@ -18,6 +17,7 @@ namespace ST.Calendar.Providers.Google
             _tokenProvider = tokenProvider;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Clear 
         /// </summary>
@@ -27,6 +27,7 @@ namespace ST.Calendar.Providers.Google
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Delete key
         /// </summary>
@@ -38,6 +39,7 @@ namespace ST.Calendar.Providers.Google
             await _tokenProvider.DeleteTokenAsync(nameof(GoogleCalendarProvider), key.ToGuid());
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Get token
         /// </summary>
@@ -50,6 +52,7 @@ namespace ST.Calendar.Providers.Google
             return tokenRequest.IsSuccess ? tokenRequest.Result.Adapt<T>() : default;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Store token
         /// </summary>

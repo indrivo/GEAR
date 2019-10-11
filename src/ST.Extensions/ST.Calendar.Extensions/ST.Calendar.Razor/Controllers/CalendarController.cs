@@ -294,13 +294,48 @@ namespace ST.Calendar.Razor.Controllers
         {
             var user = await _userManager.GetCurrentUserAsync();
             if (!user.IsSuccess) return NotFound();
-            var redirectUrl = Url.Action(nameof(CalendarExternalLoginCallback), "Calendar", new
+            var factory = new ExternalCalendarProviderFactory();
+            IActionResult result;
+            var exportModel = factory.GetProviders();
+
+            switch (provider)
             {
-                returnUrl,
-                gearUserId = user.Result.Id
-            });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return Challenge(properties, provider);
+                case "GoogleCalendarProvider":
+                    {
+
+                        if (factory.GetProviders().Contains(provider))
+                        {
+                            var serviceProvider = factory.CreateService(provider);
+                            var authResult = await serviceProvider.AuthorizeAsync(user.Result.Id.ToGuid(), true);
+                            result = View("ExternalCalendarProviders", exportModel);
+                        }
+                        else result = View("ExternalCalendarProviders", exportModel);
+                    }
+                    break;
+                case "OutlookCalendarProvider":
+                    {
+                        var redirectUrl = Url.Action(nameof(CalendarExternalLoginCallback), "Calendar", new
+                        {
+                            returnUrl,
+                            gearUserId = user.Result.Id,
+                            provider
+                        });
+
+                        const string instanceProvider = "Microsoft";
+
+                        var properties = _signInManager.ConfigureExternalAuthenticationProperties(instanceProvider, redirectUrl);
+                        result = Challenge(properties, instanceProvider);
+                    }
+                    break;
+
+                default:
+                    {
+                        result = View("ExternalCalendarProviders", exportModel);
+                    }
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary>

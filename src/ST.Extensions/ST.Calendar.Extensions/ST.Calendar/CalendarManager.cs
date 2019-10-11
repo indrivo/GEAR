@@ -411,7 +411,6 @@ namespace ST.Calendar
             return pushResult;
         }
 
-
         /// <inheritdoc />
         /// <summary>
         /// Change acceptance
@@ -442,6 +441,7 @@ namespace ST.Calendar
             return await _context.PushAsync();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Set event state
         /// </summary>
