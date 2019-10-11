@@ -27,5 +27,12 @@ namespace ST.Calendar.Abstractions.ExternalProviders
         /// <param name="evtId"></param>
         /// <returns></returns>
         Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId);
+
+        /// <summary>
+        /// Delete event by id
+        /// </summary>
+        /// <param name="evtId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteEventAsync(string evtId);
     }
 }

@@ -76,7 +76,6 @@ namespace ST.Calendar.Providers.Outlook
             return response;
         }
 
-
         /// <inheritdoc />
         /// <summary>
         /// Push event to outlook calendar
@@ -86,6 +85,7 @@ namespace ST.Calendar.Providers.Outlook
         public virtual async Task<ResultModel> PushEventAsync(GetEventViewModel evt)
         {
             var response = new ResultModel();
+            if (!_isAuthorized) return response;
             try
             {
                 var requestResult = await _graphClient.Me.Events
@@ -149,6 +149,31 @@ namespace ST.Calendar.Providers.Outlook
             {
                 Console.WriteLine(e);
             }
+            return response;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Delete event by id
+        /// </summary>
+        /// <param name="evtId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> DeleteEventAsync(string evtId)
+        {
+            var response = new ResultModel();
+            if (!_isAuthorized) return response;
+            try
+            {
+                await _graphClient.Me.Events[evtId]
+                    .Request()
+                    .DeleteAsync();
+                response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, e.Message));
+            }
+
             return response;
         }
 

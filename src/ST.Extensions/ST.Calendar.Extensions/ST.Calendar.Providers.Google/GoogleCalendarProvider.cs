@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.Models.ViewModels;
 using ST.Calendar.Providers.Google.Mappers;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 
 namespace ST.Calendar.Providers.Google
@@ -77,7 +77,7 @@ namespace ST.Calendar.Providers.Google
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                response.Errors.Add(new ErrorModel(string.Empty, e.Message));
             }
 
             return response;
@@ -105,6 +105,7 @@ namespace ST.Calendar.Providers.Google
         public async Task<ResultModel> UpdateEventAsync(GetEventViewModel evt, string evtId)
         {
             var response = new ResultModel();
+            if (!Authorized || evtId.IsNullOrEmpty()) return response;
             try
             {
                 var request = _service.Events.Get(CalendarName, evtId);
@@ -117,7 +118,31 @@ namespace ST.Calendar.Providers.Google
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                response.Errors.Add(new ErrorModel(string.Empty, e.Message));
+            }
+
+            return response;
+        }
+
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Delete provider event
+        /// </summary>
+        /// <param name="evtId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> DeleteEventAsync(string evtId)
+        {
+            var response = new ResultModel();
+            if (!Authorized || evtId.IsNullOrEmpty()) return response;
+            try
+            {
+                var deleteRequest = _service.Events.Delete(CalendarName, evtId);
+                await deleteRequest.ExecuteAsync();
+            }
+            catch (Exception e)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, e.Message));
             }
 
             return response;
@@ -132,11 +157,12 @@ namespace ST.Calendar.Providers.Google
         public async Task<ResultModel> PushEventAsync(GetEventViewModel evt)
         {
             var response = new ResultModel();
+            if (!Authorized) return response;
             var googleEvent = GoogleCalendarMapper.Map(evt);
-            var request = _service.Events.Insert(googleEvent, CalendarName);
-
+            
             try
             {
+                var request = _service.Events.Insert(googleEvent, CalendarName);
                 var requestResult = await request.ExecuteAsync();
                 response.IsSuccess = true;
                 response.Result = requestResult.Id;
@@ -149,6 +175,10 @@ namespace ST.Calendar.Providers.Google
             return response;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
             _service?.Dispose();

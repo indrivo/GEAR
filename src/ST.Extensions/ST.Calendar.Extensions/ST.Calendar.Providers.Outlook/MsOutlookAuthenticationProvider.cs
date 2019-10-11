@@ -14,13 +14,31 @@ namespace ST.Calendar.Providers.Outlook
 {
     public class MsOutlookAuthenticationProvider : IAuthenticationProvider
     {
+        /// <summary>
+        /// Client
+        /// </summary>
         private readonly IConfidentialClientApplication _clientApplication;
+
+        /// <summary>
+        /// User id
+        /// </summary>
         private readonly Guid? _userId;
+
+        /// <summary>
+        /// User tokens
+        /// </summary>
+        private IEnumerable<AuthenticationToken> _tokens = new List<AuthenticationToken>();
+
         /// <summary>
         /// Inject token provider
         /// </summary>
         private readonly ICalendarExternalTokenProvider _externalTokenProvider;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="clientApplication"></param>
+        /// <param name="userId"></param>
         public MsOutlookAuthenticationProvider(IConfidentialClientApplication clientApplication, Guid? userId)
         {
             _clientApplication = clientApplication;
@@ -46,9 +64,16 @@ namespace ST.Calendar.Providers.Outlook
         /// <returns></returns>
         public async Task<string> GetTokenAsync()
         {
+            //TODO: Check if token is expired
+            if (_tokens.Any())
+            {
+                return _tokens.FirstOrDefault(x => x.Name.Equals("access_token"))?.Value;
+            }
+
             var dbTokens = await _externalTokenProvider.GetTokenAsync<IEnumerable<AuthenticationToken>>(nameof(OutlookCalendarProvider), _userId);
             if (!dbTokens.IsSuccess) return null;
             var tokenRequest = dbTokens.Result.FirstOrDefault(x => x.Name.Equals("access_token"));
+            if (dbTokens.Result.Any()) _tokens = dbTokens.Result;
             return tokenRequest?.Value;
         }
     }
