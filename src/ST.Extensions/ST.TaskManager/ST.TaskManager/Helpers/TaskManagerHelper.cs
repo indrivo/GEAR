@@ -6,9 +6,11 @@ using Mapster;
 using Newtonsoft.Json;
 using ST.Core;
 using ST.Core.Helpers;
+using ST.Identity.Abstractions;
 using ST.TaskManager.Abstractions.Enums;
 using ST.TaskManager.Abstractions.Models;
 using ST.TaskManager.Abstractions.Models.ViewModels;
+using ST.Core.Extensions;
 
 namespace ST.TaskManager.Helpers
 {
@@ -65,16 +67,33 @@ namespace ST.TaskManager.Helpers
                     ? dbTaskResult.Author
                     : dbTaskResult.ModifiedBy,
                 UserTeam = dbTaskResult.AssignedUsers?.Select(x => x.UserId),
-                AccessLevel = currentUserId == null ? TaskAccess.Undefined.ToString()
-                    : dbTaskResult.UserId.Equals(currentUserId) ? TaskAccess.Owner.ToString()
-                    : dbTaskResult.AssignedUsers?.FirstOrDefault(x => x.UserId.Equals(currentUserId)) != null
-                        ? TaskAccess.PartOfTeam.ToString()
-                    : TaskAccess.Undefined.ToString()
+                AccessLevel = GetTaskAccessLevel(dbTaskResult, currentUserId).ToString()
             };
 
             if (!string.IsNullOrWhiteSpace(dbTaskResult.Files)) dto.Files = JsonConvert.DeserializeObject<List<Guid>>(dbTaskResult.Files);
             dto.TaskItemsCount = CountTaskItems(dbTaskResult);
             return dto;
+        }
+
+        /// <summary>
+        /// Get task permission
+        /// </summary>
+        /// <param name="dbTaskResult"></param>
+        /// <param name="currentUserId"></param>
+        /// <returns></returns>
+        private static TaskAccess GetTaskAccessLevel(Task dbTaskResult, Guid? currentUserId)
+        {
+            if (dbTaskResult == null) return TaskAccess.Undefined;
+            var userManager = IoC.Resolve<IUserManager<ApplicationUser>>();
+            if (currentUserId == null) return TaskAccess.Undefined;
+            var taskAuthor = userManager.UserManager.Users.FirstOrDefault(x => x.UserName.Equals(dbTaskResult.Author.Trim()));
+            if (taskAuthor != null && taskAuthor.Id.ToGuid().Equals(currentUserId.Value)) return TaskAccess.Author;
+
+            return dbTaskResult.UserId.Equals(currentUserId)
+                    ? TaskAccess.Owner
+                    : dbTaskResult.AssignedUsers?.FirstOrDefault(x => x.UserId.Equals(currentUserId)) != null
+                        ? TaskAccess.PartOfTeam
+                        : TaskAccess.Undefined;
         }
 
         internal static IEnumerable<GetTaskItemViewModel> TaskItemsMapper(Task dbTaskResult)

@@ -74,17 +74,22 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json;
 using ST.Application.Middleware.Extensions;
 using ST.Application.Middleware.Server;
 using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
 using ST.Calendar;
 using ST.Calendar.Abstractions.Extensions;
+using ST.Calendar.Abstractions.ExternalProviders;
+using ST.Calendar.Abstractions.ExternalProviders.Extensions;
+using ST.Calendar.Data;
+using ST.Calendar.Providers.Google.Extensions;
+using ST.Calendar.Providers.Outlook.Extensions;
 using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions;
 using ST.Dashboard.Abstractions.Extensions;
-using ST.Dashboard.Abstractions.Models;
 using ST.Dashboard.Abstractions.Models.WidgetTypes;
 using ST.Dashboard.Data;
 using ST.Dashboard.Razor.Extensions;
@@ -362,8 +367,30 @@ namespace ST.Cms
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
+
 			//------------------------------------Calendar Module-------------------------------------
-			services.AddCalendarModule<CalendarManager>();
+			services.AddCalendarModule<CalendarManager>()
+				.AddCalendarModuleStorage<CalendarDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
+				.AddCalendarRazorUIModule()
+				.SetSerializationFormatSettings(settings =>
+				{
+					settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+				})
+				.AddCalendarRuntimeEvents()
+				.RegisterSyncOnExternalCalendars()
+				.RegisterTokenProvider<CalendarExternalTokenProvider>()
+				.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
+				.RegisterGoogleCalendarProvider()
+				.RegisterOutlookCalendarProvider(options =>
+				{
+					options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
+					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
+					options.TenantId = "";
+				});
 
 			//------------------------------------File Module-------------------------------------
 			services
@@ -390,8 +417,6 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddTaskManagerRazorUIModule();
-			//----------------------------Internal calendar Module-------------------------------------
-			services.AddInternalCalendarModule();
 
 			//-----------------------------------------Form Module-------------------------------------
 			services.AddFormModule<FormDbContext>()

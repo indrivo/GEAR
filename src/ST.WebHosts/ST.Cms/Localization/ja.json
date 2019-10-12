@@ -620,5 +620,9 @@
   "system_taskmanager_file_deleted": "ファイルを削除",
   "system_email_confirmed": "確認メール",
   "system_confirm": "確認",
-  "system_email_sent": "メール送信"
+  "system_email_sent": "メール送信",
+  "system_taskmanager_task_team": "チーム",
+  "system_taskmanager_author": "著者",
+  "system_taskmanager_assigne": "に割り当て",
+  "system_taskmanager_modofiedby": "更新者"
 }

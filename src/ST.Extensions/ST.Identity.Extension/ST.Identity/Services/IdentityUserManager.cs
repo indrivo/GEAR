@@ -107,6 +107,7 @@ namespace ST.Identity.Services
         }
 
 
+        /// <inheritdoc />
         /// <summary>
         /// Add roles to user
         /// </summary>

@@ -620,5 +620,9 @@
   "system_taskmanager_file_deleted": "Файл видалено",
   "system_email_confirmed": "Підтвердив по електронній пошті",
   "system_confirm": "Підтвердити",
-  "system_email_sent": "Лист було відправлено"
+  "system_email_sent": "Лист було відправлено",
+  "system_taskmanager_task_team": "Команда",
+  "system_taskmanager_author": "Автор",
+  "system_taskmanager_assigne": "Призначений",
+  "system_taskmanager_modofiedby": "Змінені"
 }
