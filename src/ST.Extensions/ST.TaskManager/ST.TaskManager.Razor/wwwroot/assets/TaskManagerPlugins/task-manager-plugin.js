@@ -175,7 +175,6 @@
         EndDate: "",
         UserId: "",
         Files: [],
-        UserTeam: [],
         TaskPriority: "",
         Status: ""
     }) {
@@ -197,11 +196,11 @@
             });
         });
     }
-    
+
     /**
      * Update task
-     * param {any} task
-     */
+                 * param {any} task
+        */
     updateTask(task = {
         Id: "",
         Name: "",
@@ -209,8 +208,6 @@
         DtartDate: "",
         EndDate: "",
         UserId: "",
-        UserTeam: [],
-        Team: "",
         Files: [],
         TaskPriority: "",
         Status: ""
@@ -304,9 +301,9 @@
     }
 
     /**
-    * Create task item
-        * param {any} taskItem
-    */
+     * Create task item
+                 * param {any} taskItem
+        */
     createTaskItem(taskItem = {
         taskId: "",
         name: "",
@@ -332,9 +329,9 @@
     }
 
     /**
-    * Update task item
-        * param {any} taskItem
-    */
+     * Update task item
+                 * param {any} taskItem
+        */
     updateTaskItem(taskItem = {
         Id: "",
         Name: "",
@@ -360,9 +357,9 @@
     }
 
     /**
-    * Delete task item
-        * param {string} taskItemId
-    */
+     * Delete task item
+                 * param {string} taskItemId
+        */
     deleteTaskItem(taskItemId) {
         return new Promise((resolve, reject) => {
             $.ajax({

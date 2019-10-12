@@ -78,7 +78,6 @@ namespace ST.MultiTenant.Services
         /// <param name="emailSender"></param>
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
-        /// <param name="hub"></param>
         public OrganizationService(ApplicationDbContext context, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
             IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, INotificationHub hub)
         {
@@ -110,19 +109,6 @@ namespace ST.MultiTenant.Services
         /// <returns></returns>
         public virtual IEnumerable<Tenant> GetAllTenants()
             => _context.Tenants.ToList();
-
-        /// <summary>
-        /// Check if user is a part of organization
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="tenantId"></param>
-        /// <returns></returns>
-        public virtual async Task<bool> IsUserPartOfOrganizationAsync(Guid? userId, Guid? tenantId)
-        {
-            if (!userId.HasValue || !tenantId.HasValue) return false;
-            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
-            return user != null && user.TenantId.Equals(tenantId);
-        }
 
         /// <inheritdoc />
         /// <summary>

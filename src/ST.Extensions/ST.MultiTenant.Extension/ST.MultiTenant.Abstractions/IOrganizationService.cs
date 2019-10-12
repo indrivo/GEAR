@@ -15,14 +15,6 @@ namespace ST.MultiTenant.Abstractions
         where TTenant : IBaseModel
     {
         /// <summary>
-        /// Check if user is part of organization
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="tenantId"></param>
-        /// <returns></returns>
-        Task<bool> IsUserPartOfOrganizationAsync(Guid? userId, Guid? tenantId);
-
-        /// <summary>
         /// Get users for organization
         /// </summary>
         /// <param name="organizationId"></param>
