@@ -74,7 +74,6 @@ namespace ST.Calendar.Providers.Outlook
             if (!dbTokens.IsSuccess) return null;
             var tokenRequest = dbTokens.Result.FirstOrDefault(x => x.Name.Equals("access_token"));
             if (dbTokens.Result.Any()) _tokens = dbTokens.Result;
-            
             return tokenRequest?.Value;
         }
     }
