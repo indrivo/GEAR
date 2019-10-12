@@ -149,7 +149,7 @@ namespace ST.Calendar.Providers.Outlook
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                response.Errors.Add(new ErrorModel(string.Empty, e.Message));
             }
             return response;
         }
@@ -218,16 +218,18 @@ namespace ST.Calendar.Providers.Outlook
         {
             var cca = ConfidentialClientApplicationBuilder.Create(_authSettings.ClientId)
                 .WithAuthority(_authSettings.GetAuthority())
-                .WithRedirectUri("http://localhost:9099/ExternalLoginCallback")
                 .WithClientSecret(_authSettings.ClientSecretId)
                 .Build();
 
             return new MsOutlookAuthenticationProvider(cca, userId);
         }
 
+        /// <summary>
+        /// Dispose
+        /// </summary>
         public void Dispose()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
