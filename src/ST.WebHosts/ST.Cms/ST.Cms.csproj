@@ -83,9 +83,10 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Audit.Extension\ST.Audit.Razor\ST.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Backup.Extension\ST.Backup.Razor\ST.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Google\ST.Calendar.Providers.Google.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Outlook\ST.Calendar.Providers.Outlook.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Razor\ST.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar\ST.Calendar.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.Calendar.Razor.csproj" />
-	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.InternalCalendar.Razor\ST.Calendar.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Dashboard.Extension\ST.Dashboard.Razor\ST.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Dashboard.Extension\ST.Dashboard\ST.Dashboard.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Ecommerce.Extension\ST.ECommerce.BaseImplementations\ST.ECommerce.BaseImplementations.csproj" />
