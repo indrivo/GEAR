@@ -1,47 +1,28 @@
 stages:
   - test
-  - deploy-core
+  - deploy
 
 
 cache:
   paths:
-    - src/Application/ST.WebHost/wwwroot/lib/
+    - src/ST.WebHosts/ST.Cms/wwwroot/lib/
 test_projects:
   stage: test
   script:
-    - >-
-      echo Start build
+    - dotnet test
 
 deploy_core_service:
-  stage: deploy-core
+  stage: deploy
   only:
     - master
   environment:
-    name: st_core
-    url: "http://bpmn-dev.cs1.soft-tehnica.com"
+    name: ISO
+    url: "http://109.185.158.154:6969"
   before_script:
-    - pushd "./src/Application/ST.WebHost"
+    - pushd "./src/ST.WebHosts/ST.Cms"
     - dotnet restore
   script:
     - dotnet publish -c Release -o ./dist
     - >-
       lftp -c "open -u %FTP_USER%,%FTP_PASSWORD% %FTP_HOST%; mirror --only-newer
       --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./ST.WebHost"
-
-deploy_core_service_stage:
-  stage: deploy-core
-  only:
-    - stage
-  environment:
-    name: st_core_stage
-    url: "http://bpmn-test.cs1.soft-tehnica.com/"
-  before_script:
-    - pushd "./src/Application/ST.WebHost"
-    - dotnet restore
-  script:
-    - dotnet publish -c Stage -o ./dist
-    - bower install
-    - >-
-      lftp -c "open -u %FTP_USER%,%FTP_PASSWORD% %FTP_HOST%; mirror --only-newer
-      --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./StageEnv/ST.WebHost"
-

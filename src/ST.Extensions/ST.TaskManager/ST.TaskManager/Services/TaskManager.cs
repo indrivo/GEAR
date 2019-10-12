@@ -103,7 +103,8 @@ namespace ST.TaskManager.Services
                 .Where(x => (x.Author == userName.Trim()) & (x.IsDeleted == request.Deleted))
                 .OrderByWithDirection(x => TypeHelper.GetPropertyValue(x, request.Attribute), request.Descending)
                 .GetPagedAsync(request.Page, request.PageSize);
-            return GetTasksAsync(dbTasksResult);
+            var currentUser = (await _userManager.GetCurrentUserAsync()).Result?.Id.ToGuid();
+            return GetTasksAsync(dbTasksResult, currentUser);
         }
 
         public async Task<ResultModel<PagedResult<GetTaskViewModel>>> GetAssignedTasksAsync(Guid userId, string userName, PageRequest request)
@@ -180,6 +181,7 @@ namespace ST.TaskManager.Services
             };
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Add or remove user to task team
         /// </summary>

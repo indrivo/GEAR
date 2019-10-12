@@ -620,5 +620,9 @@
   "system_taskmanager_file_deleted": "File deleted",
   "system_email_confirmed": "Confirmed email",
   "system_confirm": "Confirm",
-  "system_email_sent": "Your Email has been sent"
+  "system_email_sent": "Your Email has been sent",
+  "system_taskmanager_task_team": "Team",
+  "system_taskmanager_author": "Author",
+  "system_taskmanager_assigne": "Assigned",
+  "system_taskmanager_modofiedby": "Modified by"
 }
