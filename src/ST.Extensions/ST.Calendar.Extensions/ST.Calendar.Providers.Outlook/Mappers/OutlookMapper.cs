@@ -25,19 +25,19 @@ namespace ST.Calendar.Providers.Outlook.Mappers
                 },
                 Start = new DateTimeTimeZone
                 {
-                    DateTime = model.StartDate.ToLongDateString(),
-                    TimeZone = "Pacific Standard Time"
+                    DateTime = model.StartDate.ToString("MM/dd/yyyy HH:mm:ss.fff"),
+                    TimeZone = "GTB Standard Time"
                 },
                 End = new DateTimeTimeZone
                 {
-                    DateTime = model.EndDate.ToLongDateString(),
-                    TimeZone = "Pacific Standard Time"
+                    DateTime = model.EndDate.ToString("MM/dd/yyyy HH:mm:ss.fff"),
+                    TimeZone = "GTB Standard Time"
                 },
                 Location = new Location
                 {
                     DisplayName = model.Location
                 },
-                Attendees = model?.InvitedUsers.Select(x => new Attendee
+                Attendees = model.InvitedUsers.Select(x => new Attendee
                 {
                     EmailAddress = new EmailAddress
                     {

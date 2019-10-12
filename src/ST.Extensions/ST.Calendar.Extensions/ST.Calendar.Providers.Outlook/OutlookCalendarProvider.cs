@@ -5,6 +5,7 @@ using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.ExternalProviders;
+using ST.Calendar.Abstractions.ExternalProviders.Helpers;
 using ST.Calendar.Abstractions.Models.ViewModels;
 using ST.Calendar.Providers.Outlook.Helpers;
 using ST.Calendar.Providers.Outlook.Mappers;
@@ -169,6 +170,37 @@ namespace ST.Calendar.Providers.Outlook
                     .Request()
                     .DeleteAsync();
                 response.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, e.Message));
+            }
+
+            return response;
+        }
+
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get user
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<ExternalCalendarUser>> GetUserAsync()
+        {
+            var response = new ResultModel<ExternalCalendarUser>();
+
+            try
+            {
+                var user = await _graphClient.Me.Request().GetAsync();
+                if (user != null)
+                {
+                    response.IsSuccess = true;
+                    response.Result = new ExternalCalendarUser
+                    {
+                        DisplayName = user.DisplayName,
+                        EmailAddress = user.Mail
+                    };
+                }
             }
             catch (Exception e)
             {

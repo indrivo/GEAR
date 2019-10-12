@@ -25,7 +25,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
             if (configuration.ProviderName.IsNullOrEmpty() || configuration.ProviderType == null)
                 throw new FailRegisterProviderException();
             IoC.RegisterService<IExternalCalendarProvider>(configuration.ProviderName, configuration.ProviderType);
-            CalendarProviders.RegisterProviderInMemory(configuration.ProviderName);
+            CalendarProviders.RegisterProviderInMemory(configuration);
             return serviceCollection;
         }
 

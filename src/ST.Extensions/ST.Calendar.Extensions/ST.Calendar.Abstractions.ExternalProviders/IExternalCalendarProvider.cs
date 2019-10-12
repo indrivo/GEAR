@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ST.Calendar.Abstractions.ExternalProviders.Helpers;
 using ST.Calendar.Abstractions.Models.ViewModels;
 using ST.Core.Helpers;
 
@@ -34,5 +35,11 @@ namespace ST.Calendar.Abstractions.ExternalProviders
         /// <param name="evtId"></param>
         /// <returns></returns>
         Task<ResultModel> DeleteEventAsync(string evtId);
+
+        /// <summary>
+        /// Get user
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<ExternalCalendarUser>> GetUserAsync();
     }
 }

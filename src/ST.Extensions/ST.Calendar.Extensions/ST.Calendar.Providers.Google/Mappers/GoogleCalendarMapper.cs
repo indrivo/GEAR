@@ -21,18 +21,13 @@ namespace ST.Calendar.Providers.Google.Mappers
                 Description = model.Details,
                 Start = new EventDateTime
                 {
-                    DateTime = model.StartDate,
-                    //TimeZone = TimeZoneInfo.Local.StandardName
+                    DateTime = model.StartDate.AddHours(2),
+                    TimeZone = "Europe/Bucharest"
                 },
                 End = new EventDateTime
                 {
-                    DateTime = model.EndDate,
-                    //TimeZone = TimeZoneInfo.Local.StandardName
-                },
-                Creator = new Event.CreatorData
-                {
-                    DisplayName = "ISODMS Creator",
-                    Email = "admin@admin.com"
+                    DateTime = model.EndDate.AddHours(2),
+                    TimeZone = "Europe/Bucharest"
                 },
                 Organizer = new Event.OrganizerData
                 {
@@ -73,12 +68,12 @@ namespace ST.Calendar.Providers.Google.Mappers
 
             target.Start = new EventDateTime
             {
-                DateTime = source.StartDate
+                DateTime = source.StartDate.AddHours(2)
             };
 
             target.End = new EventDateTime
             {
-                DateTime = source.EndDate
+                DateTime = source.EndDate.AddHours(2)
             };
 
             target.Location = source.Location;

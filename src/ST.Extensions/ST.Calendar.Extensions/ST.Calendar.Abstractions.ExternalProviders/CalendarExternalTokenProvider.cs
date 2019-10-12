@@ -27,6 +27,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders
             _context = context;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Set token async
         /// </summary>
@@ -39,7 +40,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders
             var response = new ResultModel<TTokenFormat>();
             if (provider.IsNullOrEmpty() || !user.HasValue) return response;
 
-            var request = await _context.ExternalProviderTokens
+            var request = await _context.ExternalProviderTokens.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Attribute.Equals(TokenAttr)
                     && x.ProviderName.Equals(provider) && x.UserId.Equals(user));
             if (request == null) return response;
@@ -49,6 +50,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders
             return response;
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Set token 
         /// </summary>
@@ -75,6 +77,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders
             return await _context.PushAsync();
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// Delete key
         /// </summary>

@@ -26,6 +26,8 @@ namespace ST.Calendar.Providers.Outlook.Extensions
             {
                 options.ProviderName = nameof(OutlookCalendarProvider);
                 options.ProviderType = typeof(OutlookCalendarProvider);
+                options.DisplayName = "Outlook";
+                options.FontAwesomeIcon = "microsoft";
             });
 
             var authSettings = new MsAuthorizationSettings();

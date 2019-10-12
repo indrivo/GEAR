@@ -16,6 +16,8 @@ namespace ST.Calendar.Providers.Google.Extensions
             {
                 options.ProviderName = nameof(GoogleCalendarProvider);
                 options.ProviderType = typeof(GoogleCalendarProvider);
+                options.DisplayName = "Google";
+                options.FontAwesomeIcon = "google";
             });
 
             return serviceCollection;
