@@ -48,24 +48,17 @@ namespace ST.Application.Middleware.Server
         /// <returns></returns>
         private static async Task ConfiguredSystem(this HttpContext ctx, Func<Task> next)
         {
-            try
+            CheckLanguage(ref ctx);
+            await next();
+            var isClientUrl = ctx.ParseClientRequest();
+            if (isClientUrl) await next();
+            else if (ctx.Response.StatusCode == StatusCodes.Status404NotFound && !ctx.Response.HasStarted)
             {
-                CheckLanguage(ref ctx);
+                //Re-execute the request so the user gets the error page
+                var originalPath = ctx.Request.Path.Value;
+                ctx.Items["originalPath"] = originalPath;
+                ctx.Request.Path = "/Handler/NotFound";
                 await next();
-                var isClientUrl = ctx.ParseClientRequest();
-                if (isClientUrl) await next();
-                else if (ctx.Response.StatusCode == StatusCodes.Status404NotFound && !ctx.Response.HasStarted)
-                {
-                    //Re-execute the request so the user gets the error page
-                    var originalPath = ctx.Request.Path.Value;
-                    ctx.Items["originalPath"] = originalPath;
-                    ctx.Request.Path = "/Handler/NotFound";
-                    await next();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
             }
         }
 
@@ -97,18 +90,11 @@ namespace ST.Application.Middleware.Server
         {
             app.Use(async (ctx, next) =>
             {
-                try
-                {
-                    var env = ctx.RequestServices.GetRequiredService<IConfiguration>();
-                    var isConfigured = env.GetValue<bool>("IsConfigured");
-                    if (isConfigured)
-                        await ctx.ConfiguredSystem(next);
-                    else await ctx.NonConfiguredSystem(next);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+                var env = ctx.RequestServices.GetRequiredService<IConfiguration>();
+                var isConfigured = env.GetValue<bool>("IsConfigured");
+                if (isConfigured)
+                    await ctx.ConfiguredSystem(next);
+                else await ctx.NonConfiguredSystem(next);
             });
         }
 

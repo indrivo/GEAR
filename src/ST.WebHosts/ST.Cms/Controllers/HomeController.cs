@@ -18,7 +18,6 @@ namespace ST.Cms.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly INotificationHub _hub;
 		private readonly ApplicationDbContext _context;
-		private readonly SignInManager<ApplicationUser> _signInManager;
 
 		#endregion
 
@@ -28,12 +27,11 @@ namespace ST.Cms.Controllers
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
-		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
+		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context)
 		{
 			_userManager = userManager;
 			_hub = hub;
 			_context = context;
-			_signInManager = signInManager;
 		}
 
 		/// <summary>
@@ -47,7 +45,16 @@ namespace ST.Cms.Controllers
 			return View();
 		}
 
+		/// <summary>
+		/// Contact view
+		/// </summary>
+		/// <returns></returns>
+		public IActionResult Contact()
+		{
+			return View();
+		}
+
 		public IActionResult Error() =>
-			View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+			View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
 	}
 }

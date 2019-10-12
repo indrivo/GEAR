@@ -785,6 +785,7 @@ namespace ST.Identity.Razor.Controllers
                 return RedirectToAction(nameof(Lockout));
             }
 
+
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var name = info.Principal.FindFirstValue(ClaimTypes.Name);
             var identifier = info.Principal.FindFirstValue(ClaimTypes.NameIdentifier);

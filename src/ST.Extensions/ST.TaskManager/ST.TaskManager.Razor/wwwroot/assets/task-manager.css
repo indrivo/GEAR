@@ -166,7 +166,3 @@ table th {
 .file-list-item.deleting label {
     opacity: 0.6;
 }
-
-.select2-container {
-    width : 100% !important;
-}
