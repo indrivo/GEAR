@@ -2,6 +2,6 @@
 {
     public enum TaskAccess
     {
-        Author, Owner, PartOfTeam, Undefined
+        Owner, PartOfTeam, Undefined
     }
 }

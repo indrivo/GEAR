@@ -55,16 +55,5 @@ namespace ST.Core.Extensions
             var seenKeys = new HashSet<TKey>();
             foreach (var element in source.Where(element => seenKeys.Add(keySelector(element)))) yield return element;
         }
-
-        /// <summary>
-        /// Join as string
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        public static string Join(this IEnumerable<string> source, string separator)
-        {
-            return source == null ? string.Empty : string.Join(separator, source);
-        }
     }
 }

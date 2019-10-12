@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ST.Core.Extension\ST.Core\ST.Core.csproj" />
-    <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant.Razor\ST.MultiTenant.Razor.csproj" />
   </ItemGroup>
 
 </Project>

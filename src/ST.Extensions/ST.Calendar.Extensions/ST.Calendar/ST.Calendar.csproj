@@ -5,15 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DataSourceServices\**" />
-    <EmbeddedResource Remove="DataSourceServices\**" />
-    <None Remove="DataSourceServices\**" />
+    <ProjectReference Include="..\..\ST.TaskManager\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
+    <ProjectReference Include="..\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ST.MultiTenant.Extension\ST.MultiTenant.Abstractions\ST.MultiTenant.Abstractions.csproj" />
-    <ProjectReference Include="..\..\ST.TaskManager\ST.TaskManager.Abstractions\ST.TaskManager.Abstractions.csproj" />
-    <ProjectReference Include="..\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj" />
+    <Folder Include="DataSourceServices\" />
   </ItemGroup>
 
 </Project>

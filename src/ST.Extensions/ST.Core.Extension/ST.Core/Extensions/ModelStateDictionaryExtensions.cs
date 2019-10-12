@@ -20,20 +20,5 @@ namespace ST.Core.Extensions
             }
             return modelState;
         }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="modelState"></param>
-        /// <returns></returns>
-        public static IEnumerable<IErrorModel> ToResultModelErrors(this ModelStateDictionary modelState)
-        {
-            foreach (var stateError in modelState.Values)
-            {
-                foreach (var error in stateError.Errors)
-                {
-                    yield return new ErrorModel(string.Empty, error.ErrorMessage);
-                }
-            }
-        }
     }
 }

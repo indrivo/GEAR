@@ -34,17 +34,5 @@ namespace ST.Core.Helpers
 
         [JsonIgnore]
         public Guid? KeyEntity { get; set; }
-
-        /// <summary>
-        /// To base
-        /// </summary>
-        /// <returns></returns>
-        public ResultModel ToBase() => new ResultModel
-        {
-            IsSuccess = IsSuccess,
-            Result = Result,
-            Errors = Errors,
-            KeyEntity = KeyEntity
-        };
     }
 }
