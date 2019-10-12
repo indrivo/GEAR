@@ -255,6 +255,3 @@ paket-files/
 
 # CodeRush
 .cr/
-.eslintrc.js
-package-lock.json
-package.json

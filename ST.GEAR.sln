@@ -209,9 +209,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.TaskManager.Razor", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Audit.Abstractions", "src\ST.Extensions\ST.Audit.Extension\ST.Audit.Abstractions\ST.Audit.Abstractions.csproj", "{A4BA9604-A474-4DF8-8C9C-60A276E4B721}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar.Abstractions", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj", "{7EF953F8-D906-4420-A484-2BCE10CBB18C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar.Abstractions", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Abstraction\ST.Calendar.Abstractions.csproj", "{7EF953F8-D906-4420-A484-2BCE10CBB18C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar\ST.Calendar.csproj", "{92AC9ACC-052B-438B-8128-44F5AF02EA20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar\ST.Calendar.csproj", "{92AC9ACC-052B-438B-8128-44F5AF02EA20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Localization.Abstractions", "src\ST.Extensions\ST.Localization.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj", "{F399EC78-2488-41EF-ACCC-03F613D23A0F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Localization.Services", "src\ST.Extensions\ST.Localization.Extension\ST.Localization\ST.Localization.Services.csproj", "{0FECE9E9-A06F-4D9B-A95F-96B0D1AEFBFE}"
 EndProject
@@ -225,9 +226,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Application.Middleware",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Core.Benchmark", "src\ST.Extensions\ST.Core.Extension\ST.Core.Benchmark\ST.Core.Benchmark.csproj", "{44100038-4507-41A5-959F-84FDE99EE5C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Processes.Abstractions", "src\ST.Extensions\ST.Processes.Extension\ST.Processes.Abstractions\ST.Processes.Abstractions.csproj", "{2228A314-7F4E-4D53-BAF8-1929F0E684E9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Localization.Abstractions", "src\ST.Extensions\ST.Localization.Extension\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj", "{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Processes.Abstractions", "src\ST.Extensions\ST.Processes.Extension\ST.Processes.Abstractions\ST.Processes.Abstractions.csproj", "{2228A314-7F4E-4D53-BAF8-1929F0E684E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -680,6 +679,12 @@ Global
 		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Release|Any CPU.Build.0 = Release|Any CPU
 		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{92AC9ACC-052B-438B-8128-44F5AF02EA20}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{F399EC78-2488-41EF-ACCC-03F613D23A0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F399EC78-2488-41EF-ACCC-03F613D23A0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F399EC78-2488-41EF-ACCC-03F613D23A0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F399EC78-2488-41EF-ACCC-03F613D23A0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F399EC78-2488-41EF-ACCC-03F613D23A0F}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{F399EC78-2488-41EF-ACCC-03F613D23A0F}.Stage|Any CPU.Build.0 = Debug|Any CPU
 		{0FECE9E9-A06F-4D9B-A95F-96B0D1AEFBFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0FECE9E9-A06F-4D9B-A95F-96B0D1AEFBFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FECE9E9-A06F-4D9B-A95F-96B0D1AEFBFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -722,12 +727,6 @@ Global
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9}.Stage|Any CPU.Build.0 = Debug|Any CPU
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -843,7 +842,6 @@ Global
 		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4} = {B595C1E9-D7E5-4A9D-8995-55720F89A815}
 		{44100038-4507-41A5-959F-84FDE99EE5C7} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9} = {7F596461-2B6C-43FD-AABF-4691B8732AEF}
-		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8} = {EC563E5C-D43C-436D-A40D-2D182B1594B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

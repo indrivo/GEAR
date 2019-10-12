@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="YandexTranslateCoreSdk" Version="1.0.0" />
+    <ProjectReference Include="..\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ST.Localization.Abstractions\ST.Localization.Abstractions.csproj" />
+    <PackageReference Include="YandexTranslateCoreSdk" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
