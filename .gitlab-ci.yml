@@ -1,7 +1,7 @@
 stages:
   - test
-  - deploy
-
+  - deploy-to-server
+  - deploy-to-nuget
 
 cache:
   paths:
@@ -9,12 +9,13 @@ cache:
 test_projects:
   stage: test
   script:
+    - pwd
     - dotnet test
 
-deploy_core_service:
+deploy_to_server:
   stage: deploy
   only:
-    - master
+    - develop
   environment:
     name: ISO
     url: "http://109.185.158.154:6969"
@@ -26,3 +27,12 @@ deploy_core_service:
     - >-
       lftp -c "open -u %FTP_USER%,%FTP_PASSWORD% %FTP_HOST%; mirror --only-newer
       --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./ST.WebHost"
+
+deploy_to-nuget:
+  stage: deploy_to_nuget
+  only: 
+    - master
+  before_script:
+    - pushd "./src"
+  script:
+    - deploy-packages.bat
