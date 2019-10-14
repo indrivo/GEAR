@@ -1,7 +1,7 @@
 stages:
   - test
-  - deploy-to-server
-  - deploy-to-nuget
+  - deploy_to_server
+  - deploy_to_nuget
 
 cache:
   paths:
@@ -13,7 +13,7 @@ test_projects:
     - dotnet test
 
 deploy_to_server_job:
-  stage: deploy
+  stage: deploy_to_server
   only:
     - develop
   environment:
