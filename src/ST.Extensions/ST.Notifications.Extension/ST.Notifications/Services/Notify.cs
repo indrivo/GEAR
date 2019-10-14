@@ -9,11 +9,11 @@ using Microsoft.Extensions.Logging;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.DynamicEntityStorage.Abstractions;
-using ST.DynamicEntityStorage.Abstractions.Enums;
 using ST.DynamicEntityStorage.Abstractions.Helpers;
 using ST.Email.Abstractions;
 using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
+using ST.Notifications.Abstractions.Mappers;
 using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.Notifications.Services
@@ -73,7 +73,7 @@ namespace ST.Notifications.Services
         /// <param name="roles"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public virtual async Task SendNotificationAsync(IEnumerable<TRole> roles, SystemNotifications notification)
+        public virtual async Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification)
         {
             var users = new List<string>();
             foreach (var role in roles)
@@ -97,7 +97,7 @@ namespace ST.Notifications.Services
         public virtual async Task SendNotificationAsync(IEnumerable<Guid> users, Guid notificationType, string subject,
             string content)
         {
-            await SendNotificationAsync(users, new SystemNotifications
+            await SendNotificationAsync(users, new Notification
             {
                 Content = content,
                 Subject = subject,
@@ -110,7 +110,7 @@ namespace ST.Notifications.Services
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public virtual async Task SendNotificationAsync(SystemNotifications notification)
+        public virtual async Task SendNotificationAsync(Notification notification)
         {
             var users = _context.Users.Select(x => Guid.Parse(x.Id)).ToList();
             await SendNotificationAsync(users, notification);
@@ -123,28 +123,32 @@ namespace ST.Notifications.Services
         /// <param name="usersIds"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public virtual async Task SendNotificationAsync(IEnumerable<Guid> usersIds, SystemNotifications notification)
+        public virtual async Task SendNotificationAsync(IEnumerable<Guid> usersIds, Notification notification)
         {
-            var users = usersIds.ToList();
-            _hub.SendNotification(users, notification);
-            var emails = new HashSet<string>();
-            foreach (var userId in users)
+            try
             {
-                var user = _userManager.UserManager.Users.FirstOrDefault(x => x.Id.ToGuid() == userId);
-
-                if (user == null) continue;
-                //send email only if email was confirmed
-                if (user.EmailConfirmed) emails.Add(user.Email);
-                notification.Id = Guid.NewGuid();
-                notification.UserId = userId;
-                var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
-                var response = await _dataService.Add<SystemNotifications>(_dataService.GetDictionary(notification), tenant.MachineName);
-                if (!response.IsSuccess)
+                var users = usersIds.ToList();
+                if (notification.SendLocal) _hub.SendNotification(users, NotificationMapper.Map(notification));
+                var emails = new HashSet<string>();
+                foreach (var userId in users)
                 {
-                    _logger.LogError("Fail to add new notification in database");
+                    var user = _userManager.UserManager.Users.FirstOrDefault(x => x.Id.ToGuid() == userId);
+                    if (user == null) continue;
+                    //send email only if email was confirmed
+                    if (user.EmailConfirmed) emails.Add(user.Email);
+                    notification.Id = Guid.NewGuid();
+                    notification.UserId = userId;
+                    var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
+                    var response = await _dataService.Add<SystemNotifications>(_dataService.GetDictionary(notification), tenant.MachineName);
+                    if (!response.IsSuccess) _logger.LogError("Fail to add new notification in database");
                 }
+
+                if (notification.SendEmail) await _emailSender.SendEmailAsync(emails, notification.Subject, notification.Content);
             }
-            await _emailSender.SendEmailAsync(emails, notification.Subject, notification.Content);
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         /// <inheritdoc />
@@ -153,7 +157,7 @@ namespace ST.Notifications.Services
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
-        public virtual async Task SendNotificationToSystemAdminsAsync(SystemNotifications notification)
+        public virtual async Task SendNotificationToSystemAdminsAsync(Notification notification)
         {
             var users = new List<Guid>();
             var roles = await _context.Roles.AsNoTracking().ToListAsync();
@@ -229,7 +233,7 @@ namespace ST.Notifications.Services
         /// <returns></returns>
         public virtual bool IsUserOnline(Guid userId)
         {
-            return _hub.IsUserOnline(userId);
+            return _hub.GetUserOnlineStatus(userId);
         }
     }
 }

@@ -5,6 +5,8 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageReleaseNotes>- Add remind notification before event minutes to remind set</PackageReleaseNotes>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

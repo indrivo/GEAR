@@ -45,5 +45,10 @@
         /// Email address
         /// </summary>
         public string EmailAdress { get; set; }
+
+        /// <summary>
+        /// Image url
+        /// </summary>
+        public string ImageUrl { get; set; }
     }
 }

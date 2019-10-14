@@ -145,6 +145,7 @@ namespace ST.Calendar.Abstractions.Helpers.Mappers
             initialSource.EndDate = targetSource.EndDate;
             initialSource.Location = targetSource.Location;
             initialSource.Priority = targetSource.Priority;
+            initialSource.MinutesToRemind = targetSource.MinutesToRemind;
             return initialSource;
         }
     }

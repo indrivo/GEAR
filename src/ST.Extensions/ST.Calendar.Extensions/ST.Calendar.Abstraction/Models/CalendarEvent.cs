@@ -62,5 +62,10 @@ namespace ST.Calendar.Abstractions.Models
         /// Attributes
         /// </summary>
         public virtual ICollection<EventAttribute> Attributes { get; set; } = new List<EventAttribute>();
+
+        /// <summary>
+        /// Minutes to remind
+        /// </summary>
+        public virtual int MinutesToRemind { get; set; } = 15;
     }
 }

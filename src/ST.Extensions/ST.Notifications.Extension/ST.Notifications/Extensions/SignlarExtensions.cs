@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
@@ -22,11 +21,10 @@ namespace ST.Notifications.Extensions
         {
             app.UseSignalR(routes =>
             {
-                routes.MapHub<NotificationsHub>("/rtn",
+                routes.MapHub<SignalRNotificationHub>("/rtn",
                     options =>
                     {
                         options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransports.All;
-                        //options.LongPolling.PollTimeout = TimeSpan.FromSeconds(10);
                     });
             });
             return app;
@@ -45,7 +43,7 @@ namespace ST.Notifications.Extensions
                 options.EnableDetailedErrors = true;
             });
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
-            services.AddTransient<INotificationHub, NotificationProvider<TUser>>();
+            services.AddTransient<INotificationHub, LocalNotificationHub>();
             services.AddTransient<INotify<TRole>, Notify<TContext, TRole, TUser>>();
             return services;
         }

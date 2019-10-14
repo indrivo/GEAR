@@ -4,6 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
+    <Authors>Lupei Nicolae</Authors>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <Company>Indrivo</Company>
   </PropertyGroup>
 
   <ItemGroup>

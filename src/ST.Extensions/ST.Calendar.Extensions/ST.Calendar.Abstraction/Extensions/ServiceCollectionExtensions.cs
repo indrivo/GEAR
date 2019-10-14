@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ST.Calendar.Abstractions.BackGroundServices;
 using ST.Calendar.Abstractions.Events;
 using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Core.Extensions;
@@ -22,6 +23,7 @@ namespace ST.Calendar.Abstractions.Extensions
         {
             Arg.NotNull(services, nameof(AddCalendarModule));
             IoC.RegisterTransientService<ICalendarManager, TCalendarService>();
+            services.AddHostedService<EventReminderBackgroundService>();
             return new CalendarServiceCollection(services);
         }
 

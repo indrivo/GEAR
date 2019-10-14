@@ -33,6 +33,12 @@ dotnet pack ./ST.Extensions/ST.Audit.Extension/ST.Audit.Abstractions/ST.Audit.Ab
 dotnet pack ./ST.Extensions/ST.Audit.Extension/ST.Audit/ST.Audit.csproj -o ../../../nupkgs
 dotnet pack ./ST.Extensions/ST.Audit.Extension/ST.Audit.Razor/ST.Audit.Razor.csproj -o ../../../nupkgs
 
+
+:: Pack Notification project
+dotnet pack ./ST.Extensions/ST.Notifications.Extension/ST.Notifications.Abstractions/ST.Notifications.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./ST.Extensions/ST.Notifications.Extension/ST.Notifications/ST.Notifications.csproj -o ../../../nupkgs
+dotnet pack ./ST.Extensions/ST.Notifications.Extension/ST.Notifications.Razor/ST.Notifications.Razor.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -59,6 +65,12 @@ dotnet nuget push -k %pushKey% -s %pushHost% ST.Calendar.Providers.Outlook*
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Audit.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Audit*
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Audit.Razor*
+
+
+::Push audit projects
+dotnet nuget push -k %pushKey% -s %pushHost% ST.Notifications.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% ST.Notifications*
+dotnet nuget push -k %pushKey% -s %pushHost% ST.Notifications.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

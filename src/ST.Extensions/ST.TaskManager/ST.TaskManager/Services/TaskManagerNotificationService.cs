@@ -38,7 +38,7 @@ namespace ST.TaskManager.Services
             await _notify.SendNotificationAsync(new List<Guid>
             {
                 task.UserId
-            }, new SystemNotifications
+            }, new Notification
             {
                 Content = string.Format(TaskCreated, task.TaskNumber),
                 Subject = TaskTitle,
@@ -68,7 +68,7 @@ namespace ST.TaskManager.Services
             }
 
             await _notify.SendNotificationAsync(recipients,
-                new SystemNotifications
+                new Notification
                 {
                     Content = content,
                     Subject = TaskTitle,
@@ -81,7 +81,7 @@ namespace ST.TaskManager.Services
             await _notify.SendNotificationAsync(new List<Guid>
             {
                 task.UserId
-            }, new SystemNotifications
+            }, new Notification
             {
                 Content = string.Format(TaskRemoved, task.TaskNumber),
                 Subject = TaskTitle,
@@ -96,7 +96,7 @@ namespace ST.TaskManager.Services
                 await _notify.SendNotificationAsync(new List<Guid>
                 {
                     item.UserId
-                    }, new SystemNotifications
+                    }, new Notification
                     {
                         Content = string.Format(TaskExpires, item.TaskNumber),
                         Subject = TaskTitle,

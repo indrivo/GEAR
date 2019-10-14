@@ -41,8 +41,11 @@ namespace ST.Application.Extensions
 
             builder.ConfigureLogging(logging =>
             {
-                //logging.ClearProviders();
                 logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                //logging.ClearProviders();
+                //logging.AddFilter("Microsoft", Microsoft.Extensions.Logging.LogLevel.Trace);
+                //logging.AddFilter("System", Microsoft.Extensions.Logging.LogLevel.Trace);
+                logging.AddConsole();
             })
             .UseNLog();
 

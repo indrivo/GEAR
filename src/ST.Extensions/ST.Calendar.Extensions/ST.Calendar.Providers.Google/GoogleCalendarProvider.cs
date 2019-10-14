@@ -44,7 +44,10 @@ namespace ST.Calendar.Providers.Google
             CalendarService.Scope.CalendarReadonly,
             CalendarService.Scope.Calendar,
             PeopleService.Scope.UserinfoProfile,
-            PeopleService.Scope.ContactsReadonly
+            PeopleService.Scope.ContactsReadonly,
+            PeopleService.Scope.Contacts,
+            PeopleService.Scope.UserAddressesRead,
+            PeopleService.Scope.UserEmailsRead,
         };
 
         /// <summary>
@@ -141,17 +144,18 @@ namespace ST.Calendar.Providers.Google
 
                 userRequest.RequestMaskIncludeField = new List<string>
                 {
-                    "person.phoneNumbers",
                     "person.emailAddresses",
-                    "person.names"
+                    "person.names",
+                    "person.photos"
                 }.Join(",");
 
                 var user = await userRequest.ExecuteAsync();
-            
+
                 response.Result = new ExternalCalendarUser
                 {
                     DisplayName = user.Names?.FirstOrDefault()?.DisplayName,
-                    EmailAddress = user.EmailAddresses?.FirstOrDefault()?.DisplayName
+                    EmailAddress = user.EmailAddresses?.FirstOrDefault()?.Value,
+                    ImageUrl = user.Photos?.FirstOrDefault()?.Url
                 };
                 response.IsSuccess = true;
             }
