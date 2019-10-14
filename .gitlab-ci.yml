@@ -12,7 +12,7 @@ test_projects:
     - pwd
     - dotnet test
 
-deploy_to_server:
+deploy_to_server_job:
   stage: deploy
   only:
     - develop
@@ -28,7 +28,7 @@ deploy_to_server:
       lftp -c "open -u %FTP_USER%,%FTP_PASSWORD% %FTP_HOST%; mirror --only-newer
       --reverse --delete --verbose --no-perms --no-symlinks ./dist/ ./ST.WebHost"
 
-deploy_to-nuget:
+deploy_to_nuget_job:
   stage: deploy_to_nuget
   only: 
     - master
