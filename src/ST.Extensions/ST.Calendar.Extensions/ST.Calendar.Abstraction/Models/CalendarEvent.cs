@@ -67,5 +67,10 @@ namespace ST.Calendar.Abstractions.Models
         /// Minutes to remind
         /// </summary>
         public virtual int MinutesToRemind { get; set; } = 15;
+
+        /// <summary>
+        /// Remind sent
+        /// </summary>
+        public virtual bool RemindSent { get; set; }
     }
 }

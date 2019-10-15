@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ST.Calendar.Abstractions.Models;
+using ST.Core.Extensions;
 using ST.Core.Helpers;
 using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
@@ -82,6 +83,9 @@ namespace ST.Calendar.Abstractions.BackGroundServices
                 var users = new List<Guid> { evt.Organizer };
                 users.AddRange(evt.EventMembers.Select(x => x.UserId));
                 await _notify.SendNotificationAsync(users, NotificationType.Info, evt.Title, $"This event will take place over {minutes} minutes");
+                evt.RemindSent = true;
+                _calendarDbContext.CalendarEvents.Update(evt);
+                await _calendarDbContext.PushAsync();
             }
         }
 
@@ -95,7 +99,7 @@ namespace ST.Calendar.Abstractions.BackGroundServices
             var now = DateTime.Now;
             var events = await _calendarDbContext.CalendarEvents
                 .Include(x => x.EventMembers)
-                .Where(x => (x.StartDate - now).TotalMinutes <= minutes && (x.StartDate - now).TotalMinutes > 0)
+                .Where(x => (x.StartDate - now).TotalMinutes <= minutes && (x.StartDate - now).TotalMinutes > 0 && !x.RemindSent)
                 .ToListAsync();
 
             response.IsSuccess = true;
