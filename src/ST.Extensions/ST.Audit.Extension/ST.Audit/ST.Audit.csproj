@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
-    <Company>Soft-tehnica</Company>
+    <Company>Indrivo</Company>
     <Description>Tracking changes from an entity</Description>
     <PackageTags>audit</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Configurations>Debug;Release;Stage</Configurations>
     <LangVersion>7.3</LangVersion>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

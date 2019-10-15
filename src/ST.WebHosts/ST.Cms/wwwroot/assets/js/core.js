@@ -390,20 +390,12 @@ function initExternalConnections(user) {
 
 
 	connPromise.then(connection => {
-		//On receive email
-		connection.on("SendClientEmailNotification",
-			(...data) => {
-				$("#notificationEmailAlarm").show();
-				var create = CreateEmailNotification(data, data[4], "");
-				$("#emailNotificationsContent").prepend(create);
-				var count = $("#emailNotificationsContent").find("a").length;
-				$("#emailNotificationsCounter").html(count);
-			});
-
 
 		//On receive notification
 		connection.on("SendClientNotification",
-			(notification) => {
+            (notification) => {
+                const date = new Date(notification.created);
+                notification.created = moment(date).format("DD.MM.YYYY");
 				notificator.addNewNotificationToContainer(notification);
 			});
 
@@ -489,16 +481,16 @@ Notificator.prototype.addNewNotificationToContainer = function (notification) {
  * Create and get notification body
  * @param {any} n
  */
-Notificator.prototype.createNotificationBodyContainer = function (n) {
+Notificator.prototype.createNotificationBodyContainer = function (notification) {
 	const content = `
 		<div class="mail-contnet">
-			<h5>${n.subject}</h5> <span class="mail-desc">${n.content}</span>
+			<h5>${notification.subject}</h5> <span class="mail-desc">${notification.content}</span>
 				<span class="time">
-					${n.created}
+					${notification.created}
 				</span>
 		</div>`;
 	const block = `
-		<a class="notification-item" data-notification-id="${n.id}" href="javascript:void(0)">
+		<a class="notification-item" data-notification-id="${notification.id}" href="javascript:void(0)">
 			<div class="btn btn-danger btn-circle"><i class="fa fa-link"></i></div>
 			${content}
 		</a>`;

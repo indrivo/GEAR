@@ -27,13 +27,21 @@
                                                 <input data-provider="@provider.ProviderName" id="@provider.ProviderName" @(provider.IsEnabled ? "checked='checked'" : "") type="checkbox">
                                             </div>
                                             <div class="col-md-6">
-                                                @if (provider.User.IsAuthorized)
+                                                @if (provider.IsEnabled)
                                                 {
-                                                    <h4>Logged as : @provider.User.EmailAdress</h4>
+                                                    @if (provider.User.IsAuthorized)
+                                                    {
+                                                        <span>Logged as :</span> <img src="@provider.User.ImageUrl" alt="No image" class="mr-2 rounded" width="28" />
+                                                        <b> @provider.User.EmailAdress</b>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h4>Need to log in</h4>
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    <h4>Need to log in</h4>
+                                                    <h4>Provider is disabled</h4>
                                                 }
                                             </div>
                                             <div class="col-md-3">

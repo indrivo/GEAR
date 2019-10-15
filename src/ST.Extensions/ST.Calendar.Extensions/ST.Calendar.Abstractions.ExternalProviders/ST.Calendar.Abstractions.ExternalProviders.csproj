@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageReleaseNotes>- Fix show email address and photo</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -194,6 +194,7 @@ namespace ST.Calendar.Providers.Outlook
                 var user = await _graphClient.Me.Request().GetAsync();
                 if (user != null)
                 {
+                    
                     response.IsSuccess = true;
                     response.Result = new ExternalCalendarUser
                     {
