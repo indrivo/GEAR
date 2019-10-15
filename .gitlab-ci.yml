@@ -31,4 +31,4 @@ deploy_to_nuget_job:
   before_script:
     - pushd "./src"
   script:
-    - deploy-packages.bat
+    - ./deploy-packages.bat
