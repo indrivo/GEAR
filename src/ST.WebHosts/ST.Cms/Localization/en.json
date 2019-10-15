@@ -624,5 +624,15 @@
   "system_taskmanager_task_team": "Team",
   "system_taskmanager_author": "Author",
   "system_taskmanager_assigne": "Assigned",
-  "system_taskmanager_modofiedby": "Modified by"
+  "system_taskmanager_modofiedby": "Modified by",
+  "system_calendar_add_guest": "Add A Guest",
+  "system_calendar_time_tosystem_casystem_ca": "to",
+  "system_calendar_add_new_event": "Add new event",
+  "system_calendar_event_title": "Title",
+  "system_calendar_event_details": "Details",
+  "system_calendar_event_location": "Location",
+  "system_calendar_event_start_date": "Start date",
+  "system_calendar_event_end_date": "End date",
+  "system_calendar_event_priority": "Priority",
+  "system_calendar_event_members": "Members"
 }

@@ -624,5 +624,15 @@
   "system_taskmanager_task_team": "Ομάδα",
   "system_taskmanager_author": "Συγγραφέας",
   "system_taskmanager_assigne": "Ανατεθεί η",
-  "system_taskmanager_modofiedby": "Τροποποιήθηκε από"
+  "system_taskmanager_modofiedby": "Τροποποιήθηκε από",
+  "system_calendar_add_guest": "Προσθέστε Ένα Guest",
+  "system_calendar_time_tosystem_casystem_ca": "πριν",
+  "system_calendar_add_new_event": "Να προσθέσετε νέα εκδήλωση",
+  "system_calendar_event_title": "Τίτλος",
+  "system_calendar_event_details": "Λεπτομέρειες",
+  "system_calendar_event_location": "Τοποθεσία",
+  "system_calendar_event_start_date": "Ημερομηνία έναρξης",
+  "system_calendar_event_end_date": "Ημερομηνία λήξης",
+  "system_calendar_event_priority": "Προτεραιότητα",
+  "system_calendar_event_members": "Μέλη"
 }

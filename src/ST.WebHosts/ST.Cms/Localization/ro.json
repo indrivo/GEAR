@@ -624,5 +624,15 @@
   "system_taskmanager_task_team": "Echipa",
   "system_taskmanager_author": "Autor",
   "system_taskmanager_assigne": "Atribuit",
-  "system_taskmanager_modofiedby": "Modificat prin"
+  "system_taskmanager_modofiedby": "Modificat prin",
+  "system_calendar_add_guest": "Adaugă Invitați",
+  "system_calendar_time_tosystem_casystem_ca": "până la",
+  "system_calendar_add_new_event": "A adăuga un eveniment nou",
+  "system_calendar_event_title": "Titlu",
+  "system_calendar_event_details": "Detalii",
+  "system_calendar_event_location": "Locație",
+  "system_calendar_event_start_date": "Data de începere",
+  "system_calendar_event_end_date": "Data de sfârșit",
+  "system_calendar_event_priority": "Prioritate",
+  "system_calendar_event_members": "Membrii"
 }

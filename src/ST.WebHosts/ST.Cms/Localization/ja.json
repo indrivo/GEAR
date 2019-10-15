@@ -624,5 +624,15 @@
   "system_taskmanager_task_team": "チーム",
   "system_taskmanager_author": "著者",
   "system_taskmanager_assigne": "に割り当て",
-  "system_taskmanager_modofiedby": "更新者"
+  "system_taskmanager_modofiedby": "更新者",
+  "system_calendar_add_guest": "追加ゲスト",
+  "system_calendar_time_tosystem_casystem_ca": "へ",
+  "system_calendar_add_new_event": "新規追加のイベント",
+  "system_calendar_event_title": "タイトル",
+  "system_calendar_event_details": "詳細",
+  "system_calendar_event_location": "所在地",
+  "system_calendar_event_start_date": "開始日",
+  "system_calendar_event_end_date": "終了日",
+  "system_calendar_event_priority": "優先度",
+  "system_calendar_event_members": "員"
 }
