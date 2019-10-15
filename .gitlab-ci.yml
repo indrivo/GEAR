@@ -23,7 +23,6 @@ deploy_to_server_job:
     - dotnet restore
   script:
     - dotnet publish -c Release -o ./dist
-    - Copy-Item -Path ./dist -Destination C:\inetpub\wwwroot\iso
 
 deploy_to_nuget_job:
   stage: deploy_to_nuget
