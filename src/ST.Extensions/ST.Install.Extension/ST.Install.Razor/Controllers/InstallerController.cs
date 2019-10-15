@@ -264,12 +264,13 @@ namespace ST.Install.Razor.Controllers
             await _dynamicService.RegisterInMemoryDynamicTypesAsync();
 
             //Send welcome message to user
-            await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id ?? string.Empty) }, new SystemNotifications
-            {
-                Content = $"Welcome to Gear Bpm {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
-                Subject = "Info",
-                NotificationTypeId = NotificationType.Info
-            });
+            await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id ?? string.Empty) },
+                new Notification
+                {
+                    Content = $"Welcome to Gear Bpm {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
+                    Subject = "Info",
+                    NotificationTypeId = NotificationType.Info
+                });
 
             //sign in user
             await _signInManager.SignInAsync(superUser, true);

@@ -15,14 +15,14 @@ namespace ST.Notifications.Abstractions
         /// <param name="roles"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        Task SendNotificationAsync(IEnumerable<TRole> roles, SystemNotifications notification);
+        Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification);
         /// <summary>
         /// Send notification
         /// </summary>
         /// <param name="users"></param>
         /// <param name="notification"></param>
         /// <returns></returns>
-        Task SendNotificationAsync(IEnumerable<Guid> users, SystemNotifications notification);
+        Task SendNotificationAsync(IEnumerable<Guid> users, Notification notification);
         /// <summary>
         /// Send notification
         /// </summary>
@@ -38,13 +38,13 @@ namespace ST.Notifications.Abstractions
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
-        Task SendNotificationAsync(SystemNotifications notification);
+        Task SendNotificationAsync(Notification notification);
         /// <summary>
         /// Send notifications to user admins
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
-        Task SendNotificationToSystemAdminsAsync(SystemNotifications notification);
+        Task SendNotificationToSystemAdminsAsync(Notification notification);
         /// <summary>
         /// Get notifications by id
         /// </summary>

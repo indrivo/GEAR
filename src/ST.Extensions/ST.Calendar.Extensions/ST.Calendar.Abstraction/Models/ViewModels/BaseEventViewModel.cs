@@ -46,6 +46,11 @@ namespace ST.Calendar.Abstractions.Models.ViewModels
         /// </summary>
         public virtual ICollection<Guid> Members { get; set; } = new List<Guid>();
 
+        /// <summary>
+        /// Minutes to remind
+        /// </summary>
+        public virtual int MinutesToRemind { get; set; } = 15;
+
         /// <inheritdoc />
         /// <summary>
         /// Custom validations
@@ -61,6 +66,10 @@ namespace ST.Calendar.Abstractions.Models.ViewModels
             else if (StartDate < DateTime.Now)
             {
                 yield return new ValidationResult("The event can only be created after this current time");
+            }
+            else if (MinutesToRemind > 60)
+            {
+                yield return new ValidationResult("MinutesToRemind must be lower than 60 minutes");
             }
         }
     }

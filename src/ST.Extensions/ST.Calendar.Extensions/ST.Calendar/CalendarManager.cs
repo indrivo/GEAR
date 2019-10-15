@@ -174,12 +174,12 @@ namespace ST.Calendar
                     break;
                 case CalendarTimeLineType.Week:
                     var weekStart = today.AddDays(-(today.DayIndex() + expandDayPrecision));
-                    var weekEnd = weekStart.AddDays(7 + expandDayPrecision).AddSeconds(-1);
+                    var weekEnd = weekStart.AddDays(7 + expandDayPrecision * 2).AddSeconds(-1);
                     response = await GetEventsAsync(userId, weekStart, weekEnd);
                     break;
                 case CalendarTimeLineType.Month:
                     var monthStart = today.AddDays(1 - today.Day + expandDayPrecision);
-                    var monthEnd = monthStart.AddMonths(1).AddDays(expandDayPrecision).AddSeconds(-1);
+                    var monthEnd = monthStart.AddMonths(1).AddDays(expandDayPrecision * 2).AddSeconds(-1);
                     response = await GetEventsAsync(userId, monthStart, monthEnd);
                     break;
                 default:

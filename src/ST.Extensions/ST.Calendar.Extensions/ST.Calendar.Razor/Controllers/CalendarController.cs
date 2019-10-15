@@ -336,7 +336,8 @@ namespace ST.Calendar.Razor.Controllers
                         {
                             IsAuthorized = true,
                             UserName = providerUser.DisplayName,
-                            EmailAdress = providerUser.EmailAddress
+                            EmailAdress = providerUser.EmailAddress,
+                            ImageUrl = providerUser.ImageUrl
                         };
                     }
                 }
@@ -387,6 +388,7 @@ namespace ST.Calendar.Razor.Controllers
                         const string instanceProvider = "Microsoft";
 
                         var properties = _signInManager.ConfigureExternalAuthenticationProperties(instanceProvider, redirectUrl);
+
                         result = Challenge(properties, instanceProvider);
                     }
                     break;

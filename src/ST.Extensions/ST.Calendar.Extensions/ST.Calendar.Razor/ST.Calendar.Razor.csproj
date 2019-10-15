@@ -6,6 +6,9 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo SRL</Company>
     <Description>UI representation of internal calendar</Description>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <Version>1.0.1</Version>
+    <PackageReleaseNotes>- Add remind notification before event minutes to remind set</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

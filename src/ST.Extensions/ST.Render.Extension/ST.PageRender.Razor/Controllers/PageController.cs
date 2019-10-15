@@ -13,7 +13,6 @@ using ST.DynamicEntityStorage.Abstractions.Extensions;
 using ST.Entities.Data;
 using ST.Identity.Data;
 using ST.Notifications.Abstractions;
-using ST.Notifications.Abstractions.Models.Notifications;
 using ST.PageRender.Razor.ViewModels.PageViewModels;
 using ST.Core;
 using ST.Core.Attributes;
@@ -56,20 +55,14 @@ namespace ST.PageRender.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
         /// <summary>
         /// Get layouts
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Layouts()
-        {
-            return View();
-        }
+        public IActionResult Layouts() => View();
 
         /// <summary>
         /// Get page scripts for manage
@@ -128,16 +121,8 @@ namespace ST.PageRender.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> Save([Required]CodeUpdateViewModel model)
         {
-            var req = await _pageRender.SavePageContent(model.PageId, model.HtmlCode, model.CssCode);
-            if (!req.IsSuccess) return new JsonResult(req);
-            var page = await _pageRender.GetPageAsync(model.PageId);
-            await Notify.SendNotificationAsync(new SystemNotifications
-            {
-                Content = $"The page {page?.Settings?.Name} was updated with page builder!",
-                Subject = "Info",
-                NotificationTypeId = NotificationType.Info
-            });
-            return new JsonResult(req);
+            var saveRequest = await _pageRender.SavePageContent(model.PageId, model.HtmlCode, model.CssCode);
+            return Json(saveRequest);
         }
 
         /// <summary>
@@ -263,8 +248,8 @@ namespace ST.PageRender.Razor.Controllers
                 return View(model);
             }
 
-            var match = _pagesContext.Pages.Include(x => x.Settings)
-                .FirstOrDefault(x => x.Settings.Name.ToLower().Equals(model.Name.ToLower()));
+            var match = await _pagesContext.Pages.Include(x => x.Settings)
+                .FirstOrDefaultAsync(x => x.Settings.Name.ToLower().Equals(model.Name.ToLower()));
 
             if (match != null)
             {
@@ -299,30 +284,23 @@ namespace ST.PageRender.Razor.Controllers
                 IsLayout = model.PageTypeId == PageManager.PageTypes[0].Id
             };
 
-            try
+            await _pagesContext.Pages.AddAsync(page);
+            var dbResult = await _pagesContext.PushAsync();
+            if (dbResult.IsSuccess)
             {
-                _pagesContext.Pages.Add(page);
-                _pagesContext.SaveChanges();
                 DynamicUiEvents.Pages.PageCreated(new PageCreatedEventArgs
                 {
                     PageId = page.Id,
                     PageName = page.Settings.Name
                 });
+
+                return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
             }
-            catch (Exception e)
-            {
-                ModelState.AddModelError(string.Empty, e.Message);
-                model.PageTypes = _pagesContext.PageTypes.ToList();
-                model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
-                return View(model);
-            }
-            await Notify.SendNotificationAsync(new SystemNotifications
-            {
-                Content = $"New page added with name {page.Settings.Name}  and route {page.Path}",
-                Subject = "Info",
-                NotificationTypeId = NotificationType.Info
-            });
-            return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
+
+            ModelState.AppendResultModelErrors(dbResult.Errors);
+            model.PageTypes = _pagesContext.PageTypes.ToList();
+            model.Layouts = _pagesContext.Pages.Include(x => x.Settings).Where(x => x.IsLayout);
+            return View(model);
         }
 
         /// <summary>
@@ -515,7 +493,7 @@ namespace ST.PageRender.Razor.Controllers
             _pagesContext.Pages.Remove(page);
 
             var dbResult = await _pagesContext.PushAsync();
-            if (!dbResult.IsSuccess) return Json(new {message = "Fail to delete form!", success = false});
+            if (!dbResult.IsSuccess) return Json(new { message = "Fail to delete form!", success = false });
             DynamicUiEvents.Pages.PageDeleted(new PageCreatedEventArgs
             {
                 PageId = page.Id,
@@ -658,6 +636,8 @@ namespace ST.PageRender.Razor.Controllers
             if (listPage == null) return NotFound();
             if (listPage.IsSuccess)
             {
+                // ReSharper disable once Mvc.ActionNotResolved
+                // ReSharper disable once Mvc.ControllerNotResolved
                 return RedirectToAction("Edit", "Table", new
                 {
                     table.Id

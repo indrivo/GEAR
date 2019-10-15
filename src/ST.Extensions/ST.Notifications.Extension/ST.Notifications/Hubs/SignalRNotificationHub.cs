@@ -1,18 +1,29 @@
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions.Models.Config;
 
 namespace ST.Notifications.Hubs
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public class NotificationsHub : Hub
+    public class SignalRNotificationHub : Hub
     {
-        /// <summary>
-        /// Store connections on memory
-        /// </summary>
-        public static readonly ConnectionMapping Connections = new ConnectionMapping();
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public SignalRNotificationHub(UserManager<ApplicationUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        internal static class UserConnections
+        {
+            /// <summary>
+            /// Store connections on memory
+            /// </summary>
+            public static readonly ConnectionMapping Connections = new ConnectionMapping();
+        }
 
         /// <summary>
         /// On web app load
@@ -20,7 +31,7 @@ namespace ST.Notifications.Hubs
         /// <returns></returns>
         public Task OnLoad(Guid id)
         {
-            Connections.Add(new SignalrConnection
+            UserConnections.Connections.Add(new SignalrConnection
             {
                 ConnectionId = Context.ConnectionId,
                 UserId = id
@@ -45,7 +56,7 @@ namespace ST.Notifications.Hubs
         /// <returns></returns>
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            Connections.Remove(Context.ConnectionId);
+            UserConnections.Connections.Remove(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
     }
