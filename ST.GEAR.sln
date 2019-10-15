@@ -231,11 +231,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar.Razor", "src\ST
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalProviders", "ExternalProviders", "{BD790F76-E1D6-4B41-8648-D5D525A2AA0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar.Providers.Outlook", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Outlook\ST.Calendar.Providers.Outlook.csproj", "{12D79ABA-BFCA-4353-966E-B26EBEC8950C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar.Providers.Outlook", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Outlook\ST.Calendar.Providers.Outlook.csproj", "{12D79ABA-BFCA-4353-966E-B26EBEC8950C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar.Abstractions.ExternalProviders", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Abstractions.ExternalProviders\ST.Calendar.Abstractions.ExternalProviders.csproj", "{F9B0D27E-8EE7-45A1-8CC1-94E7DD81D135}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar.Providers.Google", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Google\ST.Calendar.Providers.Google.csproj", "{F48F5FE9-409E-4CEB-8E77-68F4AF3600D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ST.Calendar.Providers.Google", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Google\ST.Calendar.Providers.Google.csproj", "{F48F5FE9-409E-4CEB-8E77-68F4AF3600D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST.Calendar.NetCore.Api.GraphQL", "src\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.NetCore.Api.GraphQL\ST.Calendar.NetCore.Api.GraphQL.csproj", "{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -754,6 +756,12 @@ Global
 		{F48F5FE9-409E-4CEB-8E77-68F4AF3600D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F48F5FE9-409E-4CEB-8E77-68F4AF3600D0}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{F48F5FE9-409E-4CEB-8E77-68F4AF3600D0}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -874,6 +882,7 @@ Global
 		{12D79ABA-BFCA-4353-966E-B26EBEC8950C} = {BD790F76-E1D6-4B41-8648-D5D525A2AA0A}
 		{F9B0D27E-8EE7-45A1-8CC1-94E7DD81D135} = {BD790F76-E1D6-4B41-8648-D5D525A2AA0A}
 		{F48F5FE9-409E-4CEB-8E77-68F4AF3600D0} = {BD790F76-E1D6-4B41-8648-D5D525A2AA0A}
+		{8B45B736-E04E-4FAF-ACE9-F8C8559C1126} = {643195A2-88A6-4274-9444-2D7B68C63925}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

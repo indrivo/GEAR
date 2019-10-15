@@ -111,6 +111,7 @@ using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
 using ST.TaskManager.Razor.Extensions;
 using ST.TaskManager.Services;
+using ST.Calendar.NetCore.Api.GraphQL.Extensions;
 
 #endregion
 
@@ -179,6 +180,8 @@ namespace ST.Cms
 
 			//----------------------------------Origin Cors Usage-------------------------------------
 			app.UseConfiguredCors(Configuration);
+
+			app.UseCalendarGrapHQL();
 
 			//----------------------------------Use cors-------------------------------------
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
@@ -384,7 +387,8 @@ namespace ST.Cms
 					options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
 					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
 					options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
-				});
+				})
+				.AddCalendarGraphQLApi();
 
 			//------------------------------------File Module-------------------------------------
 			services.AddFileModule<FileManager<FileDbContext>>()

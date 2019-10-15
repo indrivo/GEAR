@@ -83,6 +83,7 @@
 	<ProjectReference Include="..\..\ST.Extensions\ST.Audit.Extension\ST.Audit.Razor\ST.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Backup.Extension\ST.Backup.Razor\ST.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Cache.Extension\ST.Cache.Razor\ST.Cache.Razor.csproj" />
+	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.NetCore.Api.GraphQL\ST.Calendar.NetCore.Api.GraphQL.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Google\ST.Calendar.Providers.Google.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Providers.Outlook\ST.Calendar.Providers.Outlook.csproj" />
 	<ProjectReference Include="..\..\ST.Extensions\ST.Calendar.Extensions\ST.Calendar.Razor\ST.Calendar.Razor.csproj" />
