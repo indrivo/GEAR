@@ -287,6 +287,7 @@ namespace ST.Dashboard
                 {
                     existentRow.Order = row.Order;
                     _context.Update(existentRow);
+                    await AddOrUpdateWidgetsToRowAsync(row);
                 }
                 else
                 {
@@ -302,53 +303,9 @@ namespace ST.Dashboard
                         Order = newRow.Order
                     });
                     await _context.Rows.AddAsync(newRow);
-
-                    if (row.Widgets.Any())
-                    {
-                        foreach (var widget in row.Widgets)
-                        {
-                            if (!widget.Id.HasValue || !widget.GroupId.HasValue) continue;
-                            if (widget.GroupId == WidgetType.REPORT)
-                            {
-                                var dbWidget = await _context.ReportWidgets
-                                    .AsNoTracking()
-                                    .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
-                                if (dbWidget == null) continue;
-                                await _context.RowReportWidgets.AddAsync(new RowReportWidget
-                                {
-                                    RowId = newRow.Id,
-                                    ReportWidgetId = widget.Id.Value,
-                                    Order = widget.Order
-                                });
-                            }
-                            else if (widget.GroupId == WidgetType.CHARTS)
-                            {
-                                var dbWidget = await _context.ChartWidgets
-                                    .AsNoTracking()
-                                    .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
-                                if (dbWidget == null) continue;
-                                await _context.RowChartWidgets.AddAsync(new RowChartWidget
-                                {
-                                    RowId = newRow.Id,
-                                    ChartWidgetId = widget.Id.Value,
-                                    Order = widget.Order
-                                });
-                            }
-                            else
-                            {
-                                var dbWidget = await _context.CustomWidgets
-                                    .AsNoTracking()
-                                    .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
-                                if (dbWidget == null) continue;
-                                await _context.RowCustomWidgets.AddAsync(new RowCustomWidget
-                                {
-                                    RowId = newRow.Id,
-                                    CustomWidgetId = widget.Id.Value,
-                                    Order = widget.Order
-                                });
-                            }
-                        }
-                    }
+                    await _context.PushAsync();
+                    row.RowId = newRow.Id;
+                    await AddOrUpdateWidgetsToRowAsync(row, true);
                 }
             }
 
@@ -362,6 +319,97 @@ namespace ST.Dashboard
             result.Result = rowsConf;
             result.IsSuccess = true;
             return result;
+        }
+
+
+        /// <summary>
+        /// Add or update widgets to row
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        protected virtual async Task<ResultModel> AddOrUpdateWidgetsToRowAsync(DashboardRowViewModel row, bool? isNew = false)
+        {
+            var mappedReportWidgets = isNew.GetValueOrDefault()
+                ? new List<RowReportWidget>()
+                : await _context.RowReportWidgets
+                    .Include(x => x.ReportWidget)
+                    .Where(x => x.RowId.Equals(row.RowId)).ToListAsync();
+
+            var mappedCustomWidgets = isNew.GetValueOrDefault()
+                ? new List<RowCustomWidget>()
+                : await _context.RowCustomWidgets
+                    .Include(x => x.CustomWidget)
+                    .Where(x => x.RowId.Equals(row.RowId)).ToListAsync();
+
+            if (row.Widgets.Any())
+            {
+                foreach (var widget in row.Widgets)
+                {
+                    if (!widget.Id.HasValue || !widget.GroupId.HasValue) continue;
+                    if (widget.GroupId == WidgetType.REPORT)
+                    {
+                        var dbWidget = await _context.ReportWidgets
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
+                        if (dbWidget == null) continue;
+                        var check = mappedReportWidgets.FirstOrDefault(x => x.ReportWidgetId.Equals(widget.Id));
+                        if (check == null)
+                        {
+                            await _context.RowReportWidgets.AddAsync(new RowReportWidget
+                            {
+                                RowId = row.RowId.GetValueOrDefault(),
+                                ReportWidgetId = widget.Id.Value,
+                                Order = widget.Order
+                            });
+                        }
+                        else if (check.Order != widget.Order)
+                        {
+                            check.Order = widget.Order;
+                            _context.RowReportWidgets.Update(check);
+                        }
+                    }
+                    else if (widget.GroupId == WidgetType.CHARTS)
+                    {
+                        var dbWidget = await _context.ChartWidgets
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
+                        if (dbWidget == null) continue;
+                        await _context.RowChartWidgets.AddAsync(new RowChartWidget
+                        {
+                            RowId = row.RowId.GetValueOrDefault(),
+                            ChartWidgetId = widget.Id.Value,
+                            Order = widget.Order
+                        });
+                    }
+                    else
+                    {
+                        var dbWidget = await _context.CustomWidgets
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(x => x.Id.Equals(widget.Id));
+                        if (dbWidget == null) continue;
+
+                        var check = mappedCustomWidgets.FirstOrDefault(x => x.CustomWidgetId.Equals(widget.Id));
+
+                        if (check == null)
+                        {
+                            await _context.RowCustomWidgets.AddAsync(new RowCustomWidget
+                            {
+                                RowId = row.RowId.GetValueOrDefault(),
+                                CustomWidgetId = widget.Id.Value,
+                                Order = widget.Order
+                            });
+                        }
+                        else if (check.Order != widget.Order)
+                        {
+                            check.Order = widget.Order;
+                            _context.RowCustomWidgets.Update(check);
+                        }
+                    }
+                }
+            }
+
+            return await _context.PushAsync();
         }
 
 

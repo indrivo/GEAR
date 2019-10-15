@@ -257,9 +257,17 @@
 						}
 					},
 					error: (e) => {
-						alert(e);
+						scope.toast.notify({ heading: e });
 					}
 				});
+			}
+
+
+			checkForDuplicateWidgetsInRow(row, widgetId) {
+				const match = $(row).find(".draggable-widget-injected").filter((index, item) => {
+					return $(item).attr("data-id") == widgetId;
+				});
+				return match.length > 0;
 			}
 
 			//init draggable events for widgets
@@ -271,10 +279,16 @@
 					drop: function (event, ui) {
 						const source = $(ui.draggable);
 						const widgetId = source.data("id");
-						const groupId = source.data("group-id");
-						const widget = scope.getWidgetFromTemplate(groupId, widgetId, source.text());
-						$(this).append(widget);
-						scope.registerDroppableWidgets();
+						const exist = scope.checkForDuplicateWidgetsInRow(this, widgetId);
+						if (!exist) {
+							const groupId = source.data("group-id");
+							const widget = scope.getWidgetFromTemplate(groupId, widgetId, source.text());
+							$(this).append(widget);
+							scope.registerDroppableWidgets();
+							$(".droppable-widget").sortable({ axis: "x" }).disableSelection();
+						} else {
+							scope.toast.notify({ heading: "A widget can only appear once in a row" });
+						}
 					}
 				});
 			}
@@ -290,7 +304,14 @@
 				ctx.draggable({
 					revert: "invalid",
 					helper: "clone",
-					cursor: "move"
+					cursor: "move",
+					start: function (event, ui) {
+						const el = $(ui.helper);
+						const width = el.width();
+						const cols = el.parent().children().length - 1;
+						const maxWidth = width / cols;
+						el.css("width", maxWidth);
+					}
 				});
 
 				ctx.contextmenu(function (event) {
