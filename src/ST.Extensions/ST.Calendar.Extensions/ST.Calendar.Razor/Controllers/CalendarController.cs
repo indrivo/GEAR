@@ -108,10 +108,16 @@ namespace ST.Calendar.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> UpdateEvent([Required]UpdateEventViewModel model, Guid? organizer)
+        public async Task<JsonResult> UpdateEvent([Required]UpdateEventViewModel model)
         {
             var response = new ResultModel();
-            if (ModelState.IsValid) return Json(await _calendarManager.UpdateEventAsync(model, organizer));
+            if (ModelState.IsValid)
+            {
+                var userRequest = await _userManager.GetCurrentUserAsync();
+                if (!userRequest.IsSuccess) return Json(response);
+                var user = userRequest.Result;
+                return Json(await _calendarManager.UpdateEventAsync(model, user.Id.ToGuid()));
+            }
             response.Errors = ModelState.ToResultModelErrors().ToList();
             return Json(response, _serializeSettings);
         }
