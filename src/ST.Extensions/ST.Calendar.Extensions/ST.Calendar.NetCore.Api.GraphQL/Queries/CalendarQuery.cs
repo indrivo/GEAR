@@ -1,27 +1,40 @@
-﻿using GraphQL.Types;
+﻿using System;
+using System.Linq;
+using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using ST.Calendar.Abstractions;
 using ST.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes;
-using System;
-using System.Linq;
+using ST.Identity.Abstractions;
 
 namespace ST.Calendar.NetCore.Api.GraphQL.Queries
 {
     public class CalendarQuery : ObjectGraphType
     {
-        public CalendarQuery(ICalendarDbContext dbContext)
+        public CalendarQuery(ICalendarDbContext dbContext, IUserManager<ApplicationUser> userManager)
         {
-            Field<EventType>(
+            Field<ListGraphType<EventType>>(
                 "events",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<GuidGraphType>> { Name = "id", Description = "Category id" }
+                    new QueryArgument<IdGraphType> { Name = "id", Description = "Event id" },
+                    new QueryArgument<DateGraphType> { Name = "startDate" },
+                    new QueryArgument<DateGraphType> { Name = "endDate" }
                 ),
                 resolve: context =>
                 {
-                    var id = context.GetArgument<Guid>("id");
-                    return dbContext.CalendarEvents.Where(x => x.Id.Equals(id)).ToListAsync().Result;
-                }
-            );
+                    var id = context.GetArgument<Guid?>("id");
+                    if (id != null)
+                    {
+                        return dbContext.CalendarEvents.Where(x => x.Id.Equals(id)).ToListAsync().Result;
+                    }
+
+                    return dbContext.CalendarEvents.ToListAsync().Result;
+                });
+
+            Field<ListGraphType<UserType>>("users",
+                arguments: new QueryArguments(
+                    new QueryArgument<IdGraphType> { Name = "id", Description = "User id" }
+                ),
+                resolve: ctx => userManager.UserManager.Users.ToListAsync());
         }
     }
 }

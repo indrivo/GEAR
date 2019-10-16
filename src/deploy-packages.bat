@@ -24,6 +24,7 @@ dotnet pack ./ST.Extensions/ST.Cache.Extension/ST.Cache.Abstractions/ST.Cache.Ab
 dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Abstraction/ST.Calendar.Abstractions.csproj -o ../../../nupkgs
 dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar/ST.Calendar.csproj -o ../../../nupkgs
 dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Razor/ST.Calendar.Razor.csproj -o ../../../nupkgs
+dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar.NetCore.Api.GraphQL/ST.Calendar.NetCore.Api.GraphQL.csproj -o ../../../nupkgs
 dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Abstractions.ExternalProviders/ST.Calendar.Abstractions.ExternalProviders.csproj -o ../../../nupkgs
 dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Providers.Google/ST.Calendar.Providers.Google.csproj -o ../../../nupkgs
 dotnet pack ./ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Providers.Outlook/ST.Calendar.Providers.Outlook.csproj -o ../../../nupkgs
@@ -60,6 +61,7 @@ dotnet nuget push -k %pushKey% -s %pushHost% ST.Calendar.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Calendar.Abstractions.ExternalProviders*
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Calendar.Providers.Google*
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Calendar.Providers.Outlook*
+dotnet nuget push -k %pushKey% -s %pushHost% ST.Calendar.NetCore.Api.GraphQL*
 
 ::Push audit projects
 dotnet nuget push -k %pushKey% -s %pushHost% ST.Audit.Abstractions*

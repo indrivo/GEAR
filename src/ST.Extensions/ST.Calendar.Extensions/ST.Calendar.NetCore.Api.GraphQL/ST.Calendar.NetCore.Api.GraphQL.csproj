@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Description>Calendar api with integrated graphQL</Description>
+    <NeutralLanguage>en</NeutralLanguage>
+    <PackageTags>calendar api gear graphQL</PackageTags>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageReleaseNotes>- register api , add some get methods whitout filters</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
