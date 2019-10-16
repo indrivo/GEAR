@@ -245,7 +245,11 @@ namespace ST.Calendar
         public async Task<ResultModel> UpdateEventAsync(UpdateEventViewModel model, Guid? organizerId)
         {
             var response = new ResultModel();
-            if (!organizerId.HasValue) return response;
+            if (!organizerId.HasValue)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Organizer not identified"));
+                return response;
+            }
             var evt = await _context.CalendarEvents.FirstOrDefaultAsync(x => x.Organizer.Equals(organizerId) && x.Id.Equals(model.Id));
             if (evt == null)
             {
