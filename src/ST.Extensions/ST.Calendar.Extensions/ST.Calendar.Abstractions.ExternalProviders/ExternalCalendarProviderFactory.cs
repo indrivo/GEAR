@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ST.Calendar.Abstractions.ExternalProviders.Exceptions;
+using ST.Calendar.Abstractions.ExternalProviders.Helpers;
 using ST.Core.Extensions;
 using ST.Core.Helpers;
 
@@ -25,6 +26,15 @@ namespace ST.Calendar.Abstractions.ExternalProviders
         public IEnumerable<string> GetProviders()
         {
             return CalendarProviders.GetAllProviders();
+        }
+
+        /// <summary>
+        /// Get providers info
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ExternalProviderConfig> GetProvidersInfo()
+        {
+            return CalendarProviders.GetProvidersInfo();
         }
     }
 }

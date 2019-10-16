@@ -13,17 +13,16 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using ST.Cache.Abstractions;
 using ST.Entities.Data;
-using ST.Notifications.Abstractions;
-using ST.Notifications.Abstractions.Models.Notifications;
 using ST.Core;
 using ST.Core.Helpers;
 using ST.Core.Extensions;
-using ST.Core.Razor.Extensions;
 using ST.Entities.Abstractions.Constants;
 using ST.Identity.Abstractions;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.MultiTenant.Abstractions;
 using ST.PageRender.Abstractions;
+using ST.PageRender.Abstractions.Events;
+using ST.PageRender.Abstractions.Events.EventArgs;
 using ST.PageRender.Abstractions.Models.Pages;
 using ST.PageRender.Abstractions.Models.ViewModels;
 using ST.PageRender.Razor.Helpers;
@@ -46,11 +45,6 @@ namespace ST.PageRender.Razor.Services
         private readonly IOrganizationService<Tenant> _organizationService;
 
         /// <summary>
-        /// Inject notifier
-        /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
-
-        /// <summary>
         /// Inject cache service
         /// </summary>
         private readonly ICacheService _cacheService;
@@ -70,11 +64,10 @@ namespace ST.PageRender.Razor.Services
         /// </summary>
         private readonly IAppProvider _appProvider;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, INotify<ApplicationRole> notify, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider)
         {
             _context = context;
             _cacheService = cacheService;
-            _notify = notify;
             _userManager = userManager;
             _contextAccessor = contextAccessor;
             _pagesContext = pagesContext;
@@ -196,7 +189,6 @@ namespace ST.PageRender.Razor.Services
             var page = await GetPageAsync(pageId);
             if (page == null) return result;
             page.Settings.CssCode = css;
-            //page.Settings.JsCode = js;
             page.Settings.HtmlCode = html;
             try
             {
@@ -204,6 +196,11 @@ namespace ST.PageRender.Razor.Services
                 _pagesContext.SaveChanges();
                 await _cacheService.RemoveAsync($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
                 result.IsSuccess = true;
+                DynamicUiEvents.Pages.PageUpdated(new PageCreatedEventArgs
+                {
+                    PageId = pageId,
+                    PageName = page.Settings.Name
+                });
             }
             catch (Exception e)
             {
@@ -362,12 +359,10 @@ namespace ST.PageRender.Razor.Services
                 reader.Close();
                 fileStream.Close();
                 await SavePageContent(pageId, template, string.Empty, string.Empty);
-
-                await _notify.SendNotificationAsync(new SystemNotifications
+                DynamicUiEvents.Pages.PageCreated(new PageCreatedEventArgs
                 {
-                    Content = $"New page generated with name {page.Settings.Name}  and route {page.Path}",
-                    Subject = "Info",
-                    NotificationTypeId = NotificationType.Info
+                    PageId = pageId,
+                    PageName = page.Settings.Name
                 });
             }
             catch (Exception e)
@@ -509,7 +504,6 @@ namespace ST.PageRender.Razor.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
                 result.Errors.Add(new ErrorModel("throw", ex.Message));
                 return result;
             }

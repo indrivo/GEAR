@@ -49,8 +49,7 @@ namespace ST.Core.Helpers
         public static void RegisterService<TAbstraction>(string providerName, Type provider) where TAbstraction : class
         {
             if (providerName.IsNullOrEmpty()) throw new Exception("Provider name must be not null");
-            if (!IsServiceRegistered<TAbstraction>())
-                Container.Register(Component.For<TAbstraction>()
+            Container.Register(Component.For<TAbstraction>()
                     .ImplementedBy(provider)
                     .Named(providerName));
         }

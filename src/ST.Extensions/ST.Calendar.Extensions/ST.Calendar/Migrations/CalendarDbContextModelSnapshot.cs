@@ -105,11 +105,15 @@ namespace ST.Calendar.Migrations
 
                     b.Property<string>("Location");
 
+                    b.Property<int>("MinutesToRemind");
+
                     b.Property<string>("ModifiedBy");
 
                     b.Property<Guid>("Organizer");
 
                     b.Property<int>("Priority");
+
+                    b.Property<bool>("RemindSent");
 
                     b.Property<DateTime>("StartDate");
 

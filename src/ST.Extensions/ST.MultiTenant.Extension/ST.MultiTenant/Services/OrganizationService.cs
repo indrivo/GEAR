@@ -525,7 +525,7 @@ namespace ST.MultiTenant.Services
             {
                 var u = x.Adapt<CompanyUsersViewModel>();
                 u.Roles = await _userManager.UserManager.GetRolesAsync(x);
-                u.IsOnline = _hub.IsUserOnline(x.Id.ToGuid());
+                u.IsOnline = _hub.GetUserOnlineStatus(x.Id.ToGuid());
                 return u;
             }).Select(x => x.Result);
 

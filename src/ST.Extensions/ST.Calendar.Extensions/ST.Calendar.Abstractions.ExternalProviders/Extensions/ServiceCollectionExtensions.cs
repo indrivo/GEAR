@@ -25,7 +25,7 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
             if (configuration.ProviderName.IsNullOrEmpty() || configuration.ProviderType == null)
                 throw new FailRegisterProviderException();
             IoC.RegisterService<IExternalCalendarProvider>(configuration.ProviderName, configuration.ProviderType);
-            CalendarProviders.RegisterProviderInMemory(configuration.ProviderName);
+            CalendarProviders.RegisterProviderInMemory(configuration);
             return serviceCollection;
         }
 
@@ -36,18 +36,20 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
         /// <returns></returns>
         public static CalendarServiceCollection RegisterSyncOnExternalCalendars(this CalendarServiceCollection serviceCollection)
         {
+            //On event created
             CalendarEvents.SystemCalendarEvents.OnEventCreated += async (sender, args) =>
             {
-                //TODO: check user preferences
-                return;
-                var service = IoC.Resolve<ICalendarManager>();
-                var evtRequest = await service.GetEventByIdAsync(args.EventId);
+                var calendarManager = IoC.Resolve<ICalendarManager>();
+                var userSettingsService = IoC.Resolve<ICalendarUserSettingsService>();
+                var evtRequest = await calendarManager.GetEventByIdAsync(args.EventId);
                 if (!evtRequest.IsSuccess) return;
                 var evt = evtRequest.Result;
                 var factory = new ExternalCalendarProviderFactory();
                 var providers = factory.GetProviders();
                 foreach (var provider in providers)
                 {
+                    var isProviderEnabledForUser = await userSettingsService.IsProviderEnabledAsync(evt.Organizer, provider);
+                    if (!isProviderEnabledForUser.IsSuccess) continue;
                     var providerService = factory.CreateService(provider);
                     var authRequest = await providerService.AuthorizeAsync(evt.Organizer);
                     if (!authRequest.IsSuccess) continue;
@@ -56,6 +58,75 @@ namespace ST.Calendar.Abstractions.ExternalProviders.Extensions
                     {
                         Debug.WriteLine(syncResult.Errors);
                     }
+                }
+
+                await calendarManager.SetEventSyncState(evt.Id, true);
+            };
+
+            //On event update
+            CalendarEvents.SystemCalendarEvents.OnEventUpdated += async (sender, args) =>
+            {
+                var calendarManager = IoC.Resolve<ICalendarManager>();
+                var userSettingsService = IoC.Resolve<ICalendarUserSettingsService>();
+                var evtRequest = await calendarManager.GetEventByIdAsync(args.EventId);
+                if (!evtRequest.IsSuccess) return;
+                var evt = evtRequest.Result;
+                var factory = new ExternalCalendarProviderFactory();
+                var providers = factory.GetProviders();
+                foreach (var provider in providers)
+                {
+                    var isProviderEnabledForUser = await userSettingsService.IsProviderEnabledAsync(evt.Organizer, provider);
+                    if (!isProviderEnabledForUser.IsSuccess) continue;
+                    var providerService = factory.CreateService(provider);
+                    var authRequest = await providerService.AuthorizeAsync(evt.Organizer);
+                    if (!authRequest.IsSuccess) continue;
+
+                    if (!evt.Synced) await providerService.PushEventAsync(EventMapper.Map(evt));
+                    else
+                    {
+                        var attrRequest = await userSettingsService.GetEventAttributeAsync(evt.Id, $"{provider}_evtId");
+                        if (attrRequest.IsSuccess)
+                        {
+                            var providerEventId = attrRequest.Result;
+                            var syncResult = await providerService.UpdateEventAsync(EventMapper.Map(evt), providerEventId);
+                            if (!syncResult.IsSuccess)
+                            {
+                                Debug.WriteLine(syncResult.Errors);
+                            }
+                        }
+                        else
+                        {
+                            await providerService.PushEventAsync(EventMapper.Map(evt));
+                        }
+                    }
+                }
+
+                if (!evt.Synced) await calendarManager.SetEventSyncState(evt.Id, true);
+            };
+
+            //On delete Event
+            CalendarEvents.SystemCalendarEvents.OnEventDeleted += async (sender, args) =>
+            {
+                var calendarManager = IoC.Resolve<ICalendarManager>();
+                var userSettingsService = IoC.Resolve<ICalendarUserSettingsService>();
+                var evtRequest = await calendarManager.GetEventByIdAsync(args.EventId);
+                if (!evtRequest.IsSuccess) return;
+                var evt = evtRequest.Result;
+                if (!evt.Synced) return;
+                var factory = new ExternalCalendarProviderFactory();
+                var providers = factory.GetProviders();
+
+                foreach (var provider in providers)
+                {
+                    var isProviderEnabledForUser = await userSettingsService.IsProviderEnabledAsync(evt.Organizer, provider);
+                    if (!isProviderEnabledForUser.IsSuccess) continue;
+                    var providerService = factory.CreateService(provider);
+                    var authRequest = await providerService.AuthorizeAsync(evt.Organizer);
+                    if (!authRequest.IsSuccess) continue;
+                    var attrRequest = await userSettingsService.GetEventAttributeAsync(evt.Id, $"{provider}_evtId");
+                    if (!attrRequest.IsSuccess) continue;
+                    var providerEventId = attrRequest.Result;
+                    await providerService.DeleteEventAsync(providerEventId);
                 }
             };
 

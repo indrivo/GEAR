@@ -1,3 +1,5 @@
+#region Usings
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -80,11 +82,13 @@ using ST.Application.Middleware.Server;
 using ST.Audit;
 using ST.Audit.Abstractions.Extensions;
 using ST.Calendar;
+using ST.Calendar.Abstractions.BackGroundServices;
 using ST.Calendar.Abstractions.Extensions;
 using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.ExternalProviders.Extensions;
 using ST.Calendar.Data;
 using ST.Calendar.Providers.Google.Extensions;
+using ST.Calendar.Providers.Outlook.Extensions;
 using ST.Calendar.Razor.Extensions;
 using ST.Dashboard;
 using ST.Dashboard.Abstractions;
@@ -107,6 +111,9 @@ using ST.TaskManager.Abstractions.Extensions;
 using ST.TaskManager.Data;
 using ST.TaskManager.Razor.Extensions;
 using ST.TaskManager.Services;
+using ST.Calendar.NetCore.Api.GraphQL.Extensions;
+
+#endregion
 
 namespace ST.Cms
 {
@@ -173,6 +180,8 @@ namespace ST.Cms
 
 			//----------------------------------Origin Cors Usage-------------------------------------
 			app.UseConfiguredCors(Configuration);
+
+			app.UseCalendarGrapHQL();
 
 			//----------------------------------Use cors-------------------------------------
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
@@ -304,10 +313,6 @@ namespace ST.Cms
 				})
 				.AddEntitySecurityRazorUIModule();
 
-			//---------------------------------Multi Tenant Module-------------------------------------
-			services.AddTenantModule<OrganizationService, Tenant>()
-				.AddMultiTenantRazorUIModule();
-
 			//----------------------------------------Audit Module-------------------------------------
 			services.AddAuditModule<AuditManager>();
 
@@ -343,12 +348,6 @@ namespace ST.Cms
 				})
 				.AddNotificationRazorUIModule();
 
-			//---------------------------Background services ------------------------------------------
-			//services.AddHostedService<HostedTimeService>();
-
-			//--------------------------------------Swagger Module-------------------------------------
-			services.AddSwaggerModule(Configuration, HostingEnvironment);
-
 			//---------------------------------Localization Module-------------------------------------
 			services.AddLocalizationModule<LocalizationService, YandexTranslationProvider>(new TranslationModuleOptions
 			{
@@ -357,8 +356,7 @@ namespace ST.Cms
 			});
 
 			//------------------------------Database backup Module-------------------------------------
-			services
-				.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
+			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 			//------------------------------------Page render Module-------------------------------------
@@ -382,11 +380,18 @@ namespace ST.Cms
 				.AddCalendarRuntimeEvents()
 				.RegisterSyncOnExternalCalendars()
 				.RegisterTokenProvider<CalendarExternalTokenProvider>()
-				.RegisterGoogleCalendarProvider();
+				.RegisterCalendarUserPreferencesProvider<CalendarUserSettingsService>()
+				.RegisterGoogleCalendarProvider()
+				.RegisterOutlookCalendarProvider(options =>
+				{
+					options.ClientId = "d883c965-781c-4520-b7e7-83543eb92b4a";
+					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
+					options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
+				})
+				.AddCalendarGraphQLApi();
 
 			//------------------------------------File Module-------------------------------------
-			services
-				.AddFileModule<FileManager<FileDbContext>>()
+			services.AddFileModule<FileManager<FileDbContext>>()
 				.AddFileModuleStorage<FileDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration);
@@ -467,6 +472,14 @@ namespace ST.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.RegisterCommerceEvents();
+
+			//---------------------------------Multi Tenant Module-------------------------------------
+			services.AddTenantModule<OrganizationService, Tenant>()
+				.AddMultiTenantRazorUIModule();
+
+
+			//--------------------------------------Swagger Module-------------------------------------
+			services.AddSwaggerModule(Configuration, HostingEnvironment);
 
 
 			//------------------------------------------Custom ISO-------------------------------------

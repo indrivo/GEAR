@@ -174,12 +174,12 @@ namespace ST.Calendar
                     break;
                 case CalendarTimeLineType.Week:
                     var weekStart = today.AddDays(-(today.DayIndex() + expandDayPrecision));
-                    var weekEnd = weekStart.AddDays(7 + expandDayPrecision).AddSeconds(-1);
+                    var weekEnd = weekStart.AddDays(7 + expandDayPrecision * 2).AddSeconds(-1);
                     response = await GetEventsAsync(userId, weekStart, weekEnd);
                     break;
                 case CalendarTimeLineType.Month:
                     var monthStart = today.AddDays(1 - today.Day + expandDayPrecision);
-                    var monthEnd = monthStart.AddMonths(1).AddDays(expandDayPrecision).AddSeconds(-1);
+                    var monthEnd = monthStart.AddMonths(1).AddDays(expandDayPrecision * 2).AddSeconds(-1);
                     response = await GetEventsAsync(userId, monthStart, monthEnd);
                     break;
                 default:
@@ -225,7 +225,7 @@ namespace ST.Calendar
                 EndDate = evt.EndDate,
                 Title = evt.Title,
                 Details = evt.Details,
-                Organizer = user.Email,
+                Organizer = user.UserName,
                 Invited = new List<string>()
             });
 
@@ -256,8 +256,6 @@ namespace ST.Calendar
             var updateModel = EventMapper.Map(evt, model);
             _context.CalendarEvents.Update(updateModel);
             var dbResult = await _context.PushAsync();
-            if (dbResult.IsSuccess) return await AddOrUpdateMembersToEventAsync(model.Id, model.Members);
-
             CalendarEvents.SystemCalendarEvents.EventUpdated(new EventUpdatedEventArgs
             {
                 EventId = evt.Id,
@@ -265,9 +263,10 @@ namespace ST.Calendar
                 EndDate = evt.EndDate,
                 Title = evt.Title,
                 Details = evt.Details,
-                Organizer = "",
+                Organizer = evt.Author,
                 Invited = new List<string>()
             });
+            if (dbResult.IsSuccess) return await AddOrUpdateMembersToEventAsync(model.Id, model.Members);
 
             response.Errors = dbResult.Errors;
             return response;
@@ -412,7 +411,6 @@ namespace ST.Calendar
             return pushResult;
         }
 
-
         /// <inheritdoc />
         /// <summary>
         /// Change acceptance
@@ -440,6 +438,23 @@ namespace ST.Calendar
 
             memberState.Acceptance = acceptance;
             _context.EventMembers.Update(memberState);
+            return await _context.PushAsync();
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Set event state
+        /// </summary>
+        /// <param name="evtId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> SetEventSyncState(Guid? evtId, bool state)
+        {
+            var evtRequest = await GetEventByIdAsync(evtId);
+            if (!evtRequest.IsSuccess) return evtRequest.ToBase();
+            var evt = evtRequest.Result;
+            evt.Synced = state;
+            _context.CalendarEvents.Update(evt);
             return await _context.PushAsync();
         }
     }

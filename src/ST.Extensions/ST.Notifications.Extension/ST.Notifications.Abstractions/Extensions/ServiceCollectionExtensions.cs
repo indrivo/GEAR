@@ -70,7 +70,7 @@ namespace ST.Notifications.Abstractions.Extensions
 
                     //var templateWithParams = await engine.CompileRenderAsync($"template_{ev.EventName}", template.Result.Value, ev.EventArgs);
 
-                    var notification = new SystemNotifications
+                    var notification = new Notification
                     {
                         Subject = template.Result.Subject,
                         Content = templateWithParams,
@@ -85,7 +85,6 @@ namespace ST.Notifications.Abstractions.Extensions
                 }
             };
 
-            //seed events
             SystemEvents.Application.OnApplicationStarted += async delegate
             {
                 try

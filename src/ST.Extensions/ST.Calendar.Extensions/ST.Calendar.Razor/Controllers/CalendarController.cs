@@ -11,10 +11,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using ST.Calendar.Abstractions.Enums;
+using ST.Calendar.Abstractions.ExternalProviders;
 using ST.Calendar.Abstractions.Helpers.Mappers;
 using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
+using ST.Calendar.Razor.ViewModels;
 using ST.Identity.Abstractions.Models.MultiTenants;
 using ST.Identity.Models.UserViewModels;
 using ST.MultiTenant.Abstractions;
@@ -45,13 +48,31 @@ namespace ST.Calendar.Razor.Controllers
         /// </summary>
         private readonly JsonSerializerSettings _serializeSettings;
 
+        /// <summary>
+        /// Inject signin manager
+        /// </summary>
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+        /// <summary>
+        /// Inject token provider
+        /// </summary>
+        private readonly ICalendarExternalTokenProvider _externalTokenProvider;
+
+        /// <summary>
+        /// Inject user settings 
+        /// </summary>
+        private readonly ICalendarUserSettingsService _userSettingsService;
+
         #endregion
 
-        public CalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService)
+        public CalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService, SignInManager<ApplicationUser> signInManager, ICalendarExternalTokenProvider externalTokenProvider, ICalendarUserSettingsService userSettingsService)
         {
             _calendarManager = calendarManager;
             _userManager = userManager;
             _organizationService = organizationService;
+            _signInManager = signInManager;
+            _externalTokenProvider = externalTokenProvider;
+            _userSettingsService = userSettingsService;
             _serializeSettings = CalendarServiceCollection.JsonSerializerSettings;
         }
 
@@ -233,8 +254,12 @@ namespace ST.Calendar.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(Dictionary<string, Dictionary<int, string>>))]
-        public JsonResult Helpers() => Json(new GetEventWithHelpersViewModel().Helpers);
+        [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, Dictionary<int, Dictionary<string, string>>>>))]
+        public JsonResult Helpers() => Json(new ResultModel<Dictionary<string, Dictionary<int, Dictionary<string, string>>>>
+        {
+            IsSuccess = true,
+            Result = new GetEventWithHelpersViewModel().Helpers
+        });
 
 
         /// <summary>
@@ -251,6 +276,160 @@ namespace ST.Calendar.Razor.Controllers
                 IsSuccess = true,
                 Result = users.Select(x => new SampleGetUserViewModel(x))
             });
+        }
+
+        /// <summary>
+        /// Enable provider
+        /// </summary>
+        /// <param name="providerName"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> EnableProvider(string providerName, bool state)
+        {
+            var user = await _userManager.GetCurrentUserAsync();
+            return !user.IsSuccess ? Json(new ResultModel())
+                : Json(await _userSettingsService.ChangeProviderSettings(user.Result.Id.ToGuid(), providerName, state));
+        }
+
+        /// <summary>
+        /// Calendar providers
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ExternalCalendarProviders()
+        {
+            var user = await _userManager.GetCurrentUserAsync();
+            if (!user.IsSuccess) return NotFound();
+            var userId = user.Result.Id.ToGuid();
+            var factory = new ExternalCalendarProviderFactory();
+            var providers = factory.GetProvidersInfo();
+            var exportModel = new List<ExternalCalendarProviderSettingsViewModel>();
+
+            foreach (var provider in providers)
+            {
+                var providerConf = new ExternalCalendarProviderSettingsViewModel
+                {
+                    ProviderName = provider.ProviderName,
+                    FontAwesomeIcon = provider.FontAwesomeIcon,
+                    DisplayName = provider.DisplayName
+                };
+
+                var isEnabledRequest = await _userSettingsService.IsProviderEnabledAsync(userId, provider.ProviderName);
+                providerConf.IsEnabled = isEnabledRequest.IsSuccess;
+
+                if (!isEnabledRequest.IsSuccess)
+                {
+                    exportModel.Add(providerConf); continue;
+                }
+
+                var providerService = factory.CreateService(provider.ProviderName);
+                var authResult = await providerService.AuthorizeAsync(userId);
+                if (authResult.IsSuccess)
+                {
+                    var providerUserRequest = await providerService.GetUserAsync();
+                    if (providerUserRequest.IsSuccess)
+                    {
+                        var providerUser = providerUserRequest.Result;
+                        providerConf.User = new ExternalCalendarUser
+                        {
+                            IsAuthorized = true,
+                            UserName = providerUser.DisplayName,
+                            EmailAdress = providerUser.EmailAddress,
+                            ImageUrl = providerUser.ImageUrl
+                        };
+                    }
+                }
+                exportModel.Add(providerConf);
+            }
+
+            return View(exportModel);
+        }
+
+
+        /// <summary>
+        /// External login
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <param name="returnUrl"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CalendarExternalLogin(string provider, string returnUrl = null)
+        {
+            var user = await _userManager.GetCurrentUserAsync();
+            if (!user.IsSuccess) return NotFound();
+            var factory = new ExternalCalendarProviderFactory();
+            IActionResult result;
+            switch (provider)
+            {
+                case "GoogleCalendarProvider":
+                    {
+
+                        if (factory.GetProviders().Contains(provider))
+                        {
+                            var serviceProvider = factory.CreateService(provider);
+                            await serviceProvider.AuthorizeAsync(user.Result.Id.ToGuid(), true);
+                            result = RedirectToAction("ExternalCalendarProviders");
+                        }
+                        else result = RedirectToAction(nameof(ExternalCalendarProviders));
+                    }
+                    break;
+                case "OutlookCalendarProvider":
+                    {
+                        var redirectUrl = Url.Action(nameof(OutlookCalendarExternalLoginCallback), "Calendar", new
+                        {
+                            returnUrl,
+                            gearUserId = user.Result.Id,
+                            provider
+                        });
+
+                        const string instanceProvider = "Microsoft";
+
+                        var properties = _signInManager.ConfigureExternalAuthenticationProperties(instanceProvider, redirectUrl);
+
+                        result = Challenge(properties, instanceProvider);
+                    }
+                    break;
+
+                default:
+                    {
+                        result = RedirectToAction(nameof(ExternalCalendarProviders));
+                    }
+                    break;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// External login call back
+        /// </summary>
+        /// <param name="returnUrl"></param>
+        /// <param name="remoteError"></param>
+        /// <param name="gearUserId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OutlookCalendarExternalLoginCallback(string returnUrl = null, string remoteError = null, Guid? gearUserId = null)
+        {
+            if (remoteError != null)
+            {
+                return RedirectToAction();
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction(nameof(ExternalCalendarProviders));
+
+            await _externalTokenProvider.SetTokenAsync(new ExternalProviderToken
+            {
+                ProviderName = "OutlookCalendarProvider",
+                UserId = gearUserId.GetValueOrDefault(),
+                Value = info.AuthenticationTokens.Serialize()
+            });
+
+            return RedirectToAction(nameof(ExternalCalendarProviders));
         }
     }
 }

@@ -1,26 +1,26 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using ST.Identity.Abstractions;
 using ST.Notifications.Abstractions;
 using ST.Notifications.Abstractions.Models.Config;
 using ST.Notifications.Abstractions.Models.Notifications;
 
 namespace ST.Notifications.Hubs
 {
-    /// <inheritdoc />
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public class NotificationProvider<TUserEntity> : INotificationHub where TUserEntity : IdentityUser
+    public class LocalNotificationHub : INotificationHub
     {
-        private readonly UserManager<TUserEntity> _userManager;
-        private readonly IHubContext<NotificationsHub> _hubContext;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<SignalRNotificationHub> _hub;
 
-        public NotificationProvider(UserManager<TUserEntity> userManager, IHubContext<NotificationsHub> hubContext)
+        public LocalNotificationHub(UserManager<ApplicationUser> userManager, IHubContext<SignalRNotificationHub> hub)
         {
             _userManager = userManager;
-            _hubContext = hubContext;
+            _hub = hub;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Sent email notification
@@ -34,10 +34,10 @@ namespace ST.Notifications.Hubs
             {
                 var user = _userManager.Users.FirstOrDefault(y => y.Id.Equals(x));
                 if (user == null) return;
-                var userConnections = NotificationsHub.Connections.GetConnectionsOfUserById(Guid.Parse(user.Id));
+                var userConnections = SignalRNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(Guid.Parse(user.Id));
                 userConnections.ToList().ForEach(c =>
                 {
-                    _hubContext.Clients.Client(c).SendAsync(SignalrSendMethods.SendClientEmail,
+                    _hub.Clients.Client(c).SendAsync(SignalrSendMethods.SendClientEmail,
                         userEmailNotification.Subject, userEmailNotification.Message, fromUser?.Email, fromUser?.UserName, fromUser?.Id);
                 });
             }
@@ -53,11 +53,11 @@ namespace ST.Notifications.Hubs
             if (notification == null) return;
             foreach (var user in users)
             {
-                var userConnections = NotificationsHub.Connections.GetConnectionsOfUserById(user);
+                var userConnections = SignalRNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(user);
                 userConnections.ToList().ForEach(c =>
                 {
                     notification.UserId = user;
-                    _hubContext.Clients.Client(c).SendAsync(SignalrSendMethods.SendClientNotification, notification);
+                    _hub.Clients.Client(c).SendAsync(SignalrSendMethods.SendClientNotification, notification);
                 });
             }
         }
@@ -67,9 +67,9 @@ namespace ST.Notifications.Hubs
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public bool IsUserOnline(Guid userId)
+        public bool GetUserOnlineStatus(Guid userId)
         {
-            var userConnections = NotificationsHub.Connections.GetConnectionsOfUserById(userId);
+            var userConnections = SignalRNotificationHub.UserConnections.Connections.GetConnectionsOfUserById(userId);
             return userConnections.Any();
         }
 
@@ -79,9 +79,9 @@ namespace ST.Notifications.Hubs
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool IsUserOnline<TUser>(TUser user) where TUser : IdentityUser
+        public bool IsUserOnline(ApplicationUser user)
         {
-            return user == null ? default : IsUserOnline(Guid.Parse(user.Id));
+            return user == null ? default : GetUserOnlineStatus(Guid.Parse(user.Id));
         }
         /// <inheritdoc />
         /// <summary>
@@ -90,7 +90,7 @@ namespace ST.Notifications.Hubs
         /// <returns></returns>
         public int GetSessionsCount()
         {
-            return NotificationsHub.Connections.GetSessionCount();
+            return SignalRNotificationHub.UserConnections.Connections.GetSessionCount();
         }
         /// <inheritdoc />
         /// <summary>
@@ -100,7 +100,7 @@ namespace ST.Notifications.Hubs
         /// <returns></returns>
         public int GetSessionsCountByUserId(Guid userId)
         {
-            return NotificationsHub.Connections.GetSesionsByUserId(userId);
+            return SignalRNotificationHub.UserConnections.Connections.GetSesionsByUserId(userId);
         }
         /// <inheritdoc />
         /// <summary>
@@ -109,7 +109,7 @@ namespace ST.Notifications.Hubs
         /// <returns></returns>
         public IEnumerable<Guid> GetOnlineUsers()
         {
-            return NotificationsHub.Connections.GetUsersOnline();
+            return SignalRNotificationHub.UserConnections.Connections.GetUsersOnline();
         }
     }
 }

@@ -119,7 +119,7 @@ namespace ST.Identity.Roles.Razor.Controllers
             var user = await _signInManager.UserManager.GetUserAsync(User);
             var client = ConfigurationDbContext.Clients.AsNoTracking().FirstOrDefault(x => x.Id.Equals(model.ClientId))
                 ?.ClientName;
-            await Notify.SendNotificationAsync(new SystemNotifications
+            await Notify.SendNotificationAsync(new Notification
             {
                 Content = $"{user?.UserName} created the role {applicationRole.Name} for {client}",
                 Subject = "Info",
@@ -283,7 +283,7 @@ namespace ST.Identity.Roles.Razor.Controllers
                 return Json(new { message = "Error on delete role !", success = false });
             }
 
-            await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+            await Notify.SendNotificationToSystemAdminsAsync(new Notification
             {
                 Content = $"{User.Identity.Name} deleted the role {applicationRole.Name}",
                 Subject = "Info",
@@ -465,7 +465,7 @@ namespace ST.Identity.Roles.Razor.Controllers
 
                 //var onlineUsers = hub.GetOnlineUsers();
                 //await User.RefreshOnlineUsersClaims(Context, _signInManager, onlineUsers);
-                await Notify.SendNotificationToSystemAdminsAsync(new SystemNotifications
+                await Notify.SendNotificationToSystemAdminsAsync(new Notification
                 {
                     Content = $"{user.UserName} edited the role {applicationRole.Name}",
                     Subject = "Info",
