@@ -71,77 +71,104 @@ $(window).on("load",
 	/************************************************
 	 Toggle Sidebar Nav
 	 ************************************************/
-	$body.delegate(".toggle-sidebar",
-		"click",
-		function () {
-			$(".sidebar").toggleClass("collapsed");
 
-			if (localStorage.getItem("asideMode") === "collapsed") {
-				localStorage.setItem("asideMode", "expanded")
-			} else {
-				localStorage.setItem("asideMode", "collapsed")
-			}
-			return false;
-		});
+	$(".sidebar.collapsed li.open .sub-nav").css({"display": "none"});
 
-	var p;
-	$body.delegate(".hide-sidebar",
-		"click",
-		function () {
-			if (p) {
-				p.prependTo(".wrapper");
-				p = null;
-			} else {
-				p = $(".sidebar").detach();
-			}
-		});
+	var activeMenuItem = $(".sidebar li.active").parent().parent();
+	activeMenuItem.css({    'background-color': 'rgba(0, 0, 0, 0.15)'});
 
-	$.fn.setAsideMode = function () {
-		if (localStorage.getItem("asideMode") === null) {
-			//
-		} else if (localStorage.getItem("asideMode") === "collapsed") {
-			$(".sidebar").addClass("collapsed");
-		} else {
-			$(".sidebar").removeClass("collapsed");
+    $body.delegate('.toggle-sidebar', 'click', function () {
+        $('.sidebar').toggleClass('collapsed');
+
+        if (localStorage.getItem("asideMode") === 'collapsed') {
+            localStorage.setItem("asideMode", 'expanded')
+        } else {
+            localStorage.setItem("asideMode", 'collapsed')
+        }
+        return false;
+    });
+
+    var p;
+    $body.delegate('.hide-sidebar', 'click', function () {
+        if (p) {
+            p.prependTo(".wrapper");
+            p = null;
+        } else {
+            p = $(".sidebar").detach();
+        }
+    });
+
+    $.fn.setAsideMode = function () {
+        if (localStorage.getItem("asideMode") === null) {
+
+        } else if (localStorage.getItem("asideMode") === 'collapsed') {
+            $('.sidebar').addClass('collapsed');
+        } else {
+            $('.sidebar').removeClass('collapsed');
+        }
+    };
+    if ($(window).width() > 768) {
+        $.fn.setAsideMode();
+    }
+    
+    /************************************************
+     Sidebar Nav Accordion
+     ************************************************/
+	$body.on('click', '.navigation li:has(.sub-nav) > a', function () {
+		/*$('.navigation li').removeClass('open');*/
+		$(this).siblings('.sub-nav').slideToggle();
+		$(this).parent().toggleClass('open');
+		return false;
+	});
+	
+	
+
+	
+	/************************************************
+     Sidebar Colapsed state submenu position
+	 ************************************************/
+	$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
+		activeMenuItem.addClass('open');
+		
+		$('.sidebar.collapsed .navigation li.open').find('.sub-nav').css({"display": "block"});
+		
+		if ($(".sidebar").hasClass("collapsed")) {
+			const $menuItem = $(this),
+				$submenuWrapper = $('> .sub-nav', $menuItem);
+			// grab the menu item's position relative to its positioned parent
+			const menuItemPos = $menuItem.position();
+			
+			
+			
+			// place the submenu in the correct position relevant to the menu item
+			$submenuWrapper.css({
+				top: menuItemPos.top,
+				left: menuItemPos.left + $menuItem.outerWidth()
+			});
 		}
-	};
-	if ($(window).width() > 768) {
-		$.fn.setAsideMode();
-	}
+	});
 
 
+		
 	/************************************************
-	 Sidebar Nav Accordion
+     On mouseleave collapse in menu items
 	 ************************************************/
-	$body.on("click",
-		".navigation li:has(.sub-nav) > a",
-		function () {
-			/*$('.navigation li').removeClass('open');*/
-			$(this).siblings(".sub-nav").slideToggle();
-			$(this).parent().toggleClass("open");
-			return false;
+	$body.find('.sidebar.collapsed .navigation').on('mouseleave', function () {
+
+		
+		activeMenuItem.removeClass('open');
+
+		$('.sidebar .navigation li.active').parents('li').last().addClass('active');
+
+
+		$( ".sidebar.collapsed .navigation li.open" ).each(function( index ) {
+			$(this).find('.sub-nav').css({"display": "none"});
+			// $('active')
+			$(this).removeClass('open');
+			// .addClass('active');
 		});
-
-
-	/************************************************
-	 Sidebar Colapsed state submenu position
-	 ************************************************/
-	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover",
-		function () {
-			if ($(".sidebar").hasClass("collapsed")) {
-				const $menuItem = $(this),
-					$submenuWrapper = $("> .sub-nav", $menuItem);
-				// grab the menu item's position relative to its positioned parent
-				const menuItemPos = $menuItem.position();
-
-				// place the submenu in the correct position relevant to the menu item
-				$submenuWrapper.css({
-					top: menuItemPos.top,
-					left: menuItemPos.left + $menuItem.outerWidth()
-				});
-			}
-		});
-
+	});
+	
 	/************************************************
 	 Toggle Controls on small devices
 	 ************************************************/
@@ -395,18 +422,25 @@ function changeTextCellPosition() {
 	const textareaWidth = $(expandCell).innerWidth();
 
 	const navBarWidth = $(".navigation").width();
+	console.log(navBarWidth + 'navBarWidth');
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
 	//const diffW = docWidth - pos.left;
 
-	if (hPercent > 70 && hPercent < 80) {
+	if (hPercent > 72 && hPercent < 75) {
 		expandCell.css("top", `${pos.top - diffH}px`);
+		console.log(hPercent + 'hPercent');
 	} else if (hPercent > 80) {
-		expandCell.css("top", `${pos.top - diffH - 240}px`);
+		expandCell.css("top", `${pos.top - diffH 
+			// - 240
+		}px`);
 	}
 
 	if (wPercent > 70) {
-		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth 
+			// * 2
+		}px`);
+		console.log(wPercent + 'wPercent');
 	}
 }
 
