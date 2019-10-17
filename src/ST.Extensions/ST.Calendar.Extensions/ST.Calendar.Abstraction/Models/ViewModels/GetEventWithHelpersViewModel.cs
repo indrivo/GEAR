@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ST.Calendar.Abstractions.Enums;
 using ST.Core.Extensions;
 
@@ -14,11 +15,34 @@ namespace ST.Calendar.Abstractions.Models.ViewModels
         /// <summary>
         /// Helpers
         /// </summary>
-        public Dictionary<string, Dictionary<int, string>> Helpers => new Dictionary<string, Dictionary<int, string>>
+        public Dictionary<string, Dictionary<int, Dictionary<string, string>>> Helpers => new Dictionary<string, Dictionary<int, Dictionary<string, string>>>
         {
-            { nameof(EventAcceptance), typeof(EventAcceptance).GetEnumDefinition() },
-            { nameof(EventPriority), typeof(EventPriority).GetEnumDefinition() },
-            { nameof(CalendarTimeLineType), typeof(CalendarTimeLineType).GetEnumDefinition() },
+            { nameof(EventAcceptance), GetHelperDetails(typeof(EventAcceptance).GetEnumDefinition()) },
+            { nameof(EventPriority), GetHelperDetails(typeof(EventPriority).GetEnumDefinition()) },
+            { nameof(CalendarTimeLineType), GetHelperDetails(typeof(CalendarTimeLineType).GetEnumDefinition()) },
         };
+
+
+
+        /// <summary>
+        /// Get helper details
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<int, Dictionary<string, string>> GetHelperDetails(Dictionary<int, string> source)
+        {
+            var dict = new Dictionary<int, Dictionary<string, string>>();
+            foreach (var item in source)
+            {
+                var details = new Dictionary<string, string>
+                {
+                    {"systemName", item.Value},
+                    {"translationKey", $"system_calendar_{item.Value.ToLowerInvariant()}" }
+                };
+
+                dict.Add(item.Key, details);
+            }
+
+            return dict;
+        }
     }
 }

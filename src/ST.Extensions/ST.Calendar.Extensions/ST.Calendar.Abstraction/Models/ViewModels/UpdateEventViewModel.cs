@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ST.Calendar.Abstractions.Models.ViewModels
 {
@@ -7,6 +8,7 @@ namespace ST.Calendar.Abstractions.Models.ViewModels
         /// <summary>
         /// Event id
         /// </summary>
+        [Required]
         public Guid Id { get; set; }
     }
 }
