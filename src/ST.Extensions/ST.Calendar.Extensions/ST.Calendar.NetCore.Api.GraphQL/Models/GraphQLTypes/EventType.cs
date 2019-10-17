@@ -3,6 +3,7 @@ using GraphQL.Types;
 using Microsoft.EntityFrameworkCore;
 using ST.Calendar.Abstractions;
 using ST.Calendar.Abstractions.Models;
+using ST.Core.Extensions;
 using ST.Identity.Abstractions;
 
 namespace ST.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes
@@ -22,7 +23,7 @@ namespace ST.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes
             Field(x => x.Created).Description("Event author");
             Field(x => x.Changed).Description("Event author");
             Field(x => x.Organizer, type: typeof(IdGraphType), nullable: false).Description("Organizer id");
-            Field<UserType>("organizerInfo", resolve: ctx => new ApplicationUser());
+            Field<UserType>("organizerInfo", resolve: ctx => userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(ctx.Source.Organizer)).Result);
             Field<ListGraphType<EventMemberType>>("InvitedUsers",
                 resolve: context => dbContext.EventMembers.Where(x => x.EventId.Equals(context.Source.Id)).ToListAsync().Result);
         }
