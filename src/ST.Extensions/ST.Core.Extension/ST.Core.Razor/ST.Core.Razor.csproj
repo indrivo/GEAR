@@ -5,6 +5,9 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Core.Extension/ST.Core.Razor</RepositoryUrl>
+    <Version>1.0.1</Version>
+    <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Core.Extension/ST.Core.Razor</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

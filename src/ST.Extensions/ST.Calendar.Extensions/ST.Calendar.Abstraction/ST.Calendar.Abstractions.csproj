@@ -8,6 +8,8 @@
     <Version>1.0.2</Version>
     <PackageReleaseNotes>- Fix sent remind message more than one
 - Add remind notification before event minutes to remind set</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Abstraction</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Abstraction</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

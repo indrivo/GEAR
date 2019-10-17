@@ -5,6 +5,8 @@
     <Authors>Lupei Nicolae</Authors>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Company>Indrivo</Company>
+    <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Providers.Outlook</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Providers.Outlook</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

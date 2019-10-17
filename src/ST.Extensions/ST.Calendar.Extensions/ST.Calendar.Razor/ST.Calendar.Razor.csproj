@@ -11,6 +11,7 @@
     <PackageReleaseNotes>- Add remind notification before event minutes to remind set
 - Remove organizer parameter from</PackageReleaseNotes>
     <PackageTags>calendar .net core c# ui full calendar</PackageTags>
+    <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/ST.Extensions/ST.Calendar.Extensions/ST.Calendar.Razor</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
