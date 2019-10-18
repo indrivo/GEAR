@@ -71,77 +71,104 @@ $(window).on("load",
 	/************************************************
 	 Toggle Sidebar Nav
 	 ************************************************/
-	$body.delegate(".toggle-sidebar",
-		"click",
-		function () {
-			$(".sidebar").toggleClass("collapsed");
 
-			if (localStorage.getItem("asideMode") === "collapsed") {
-				localStorage.setItem("asideMode", "expanded")
-			} else {
-				localStorage.setItem("asideMode", "collapsed")
-			}
-			return false;
-		});
+	$(".sidebar.collapsed li.open .sub-nav").css({"display": "none"});
 
-	var p;
-	$body.delegate(".hide-sidebar",
-		"click",
-		function () {
-			if (p) {
-				p.prependTo(".wrapper");
-				p = null;
-			} else {
-				p = $(".sidebar").detach();
-			}
-		});
+	var activeMenuItem = $(".sidebar li.active").parent().parent();
+	activeMenuItem.css({    'background-color': 'rgba(0, 0, 0, 0.15)'});
 
-	$.fn.setAsideMode = function () {
-		if (localStorage.getItem("asideMode") === null) {
-			//
-		} else if (localStorage.getItem("asideMode") === "collapsed") {
-			$(".sidebar").addClass("collapsed");
-		} else {
-			$(".sidebar").removeClass("collapsed");
+    $body.delegate('.toggle-sidebar', 'click', function () {
+        $('.sidebar').toggleClass('collapsed');
+
+        if (localStorage.getItem("asideMode") === 'collapsed') {
+            localStorage.setItem("asideMode", 'expanded')
+        } else {
+            localStorage.setItem("asideMode", 'collapsed')
+        }
+        return false;
+    });
+
+    var p;
+    $body.delegate('.hide-sidebar', 'click', function () {
+        if (p) {
+            p.prependTo(".wrapper");
+            p = null;
+        } else {
+            p = $(".sidebar").detach();
+        }
+    });
+
+    $.fn.setAsideMode = function () {
+        if (localStorage.getItem("asideMode") === null) {
+
+        } else if (localStorage.getItem("asideMode") === 'collapsed') {
+            $('.sidebar').addClass('collapsed');
+        } else {
+            $('.sidebar').removeClass('collapsed');
+        }
+    };
+    if ($(window).width() > 768) {
+        $.fn.setAsideMode();
+    }
+    
+    /************************************************
+     Sidebar Nav Accordion
+     ************************************************/
+	$body.on('click', '.navigation li:has(.sub-nav) > a', function () {
+		/*$('.navigation li').removeClass('open');*/
+		$(this).siblings('.sub-nav').slideToggle();
+		$(this).parent().toggleClass('open');
+		return false;
+	});
+	
+	
+
+	
+	/************************************************
+     Sidebar Colapsed state submenu position
+	 ************************************************/
+	$body.find('.navigation ul li:has(.sub-nav)').on('mouseover', function () {
+		activeMenuItem.addClass('open');
+		
+		$('.sidebar.collapsed .navigation li.open').find('.sub-nav').css({"display": "block"});
+		
+		if ($(".sidebar").hasClass("collapsed")) {
+			const $menuItem = $(this),
+				$submenuWrapper = $('> .sub-nav', $menuItem);
+			// grab the menu item's position relative to its positioned parent
+			const menuItemPos = $menuItem.position();
+			
+			
+			
+			// place the submenu in the correct position relevant to the menu item
+			$submenuWrapper.css({
+				top: menuItemPos.top,
+				left: menuItemPos.left + $menuItem.outerWidth()
+			});
 		}
-	};
-	if ($(window).width() > 768) {
-		$.fn.setAsideMode();
-	}
+	});
 
 
+		
 	/************************************************
-	 Sidebar Nav Accordion
+     On mouseleave collapse in menu items
 	 ************************************************/
-	$body.on("click",
-		".navigation li:has(.sub-nav) > a",
-		function () {
-			/*$('.navigation li').removeClass('open');*/
-			$(this).siblings(".sub-nav").slideToggle();
-			$(this).parent().toggleClass("open");
-			return false;
+	$body.find('.sidebar.collapsed .navigation').on('mouseleave', function () {
+
+		
+		activeMenuItem.removeClass('open');
+
+		$('.sidebar .navigation li.active').parents('li').last().addClass('active');
+
+
+		$( ".sidebar.collapsed .navigation li.open" ).each(function( index ) {
+			$(this).find('.sub-nav').css({"display": "none"});
+			// $('active')
+			$(this).removeClass('open');
+			// .addClass('active');
 		});
-
-
-	/************************************************
-	 Sidebar Colapsed state submenu position
-	 ************************************************/
-	$body.find(".navigation ul li:has(.sub-nav)").on("mouseover",
-		function () {
-			if ($(".sidebar").hasClass("collapsed")) {
-				const $menuItem = $(this),
-					$submenuWrapper = $("> .sub-nav", $menuItem);
-				// grab the menu item's position relative to its positioned parent
-				const menuItemPos = $menuItem.position();
-
-				// place the submenu in the correct position relevant to the menu item
-				$submenuWrapper.css({
-					top: menuItemPos.top,
-					left: menuItemPos.left + $menuItem.outerWidth()
-				});
-			}
-		});
-
+	});
+	
 	/************************************************
 	 Toggle Controls on small devices
 	 ************************************************/
@@ -165,8 +192,8 @@ $(window).on("load",
 			var dataStyle = $(this).attr("data-style");
 
 
-			if ($(".toaGR." + dataAlignment + "-" + dataPlacement).length) {
-				$(".toaGR." + dataAlignment + "-" + dataPlacement).append(
+			if ($(".toast." + dataAlignment + "-" + dataPlacement).length) {
+				$(".toast." + dataAlignment + "-" + dataPlacement).append(
 					'<div class="alert alert-dismissible fade show alert-' +
 					dataStyle +
 					' "> ' +
@@ -395,18 +422,25 @@ function changeTextCellPosition() {
 	const textareaWidth = $(expandCell).innerWidth();
 
 	const navBarWidth = $(".navigation").width();
+	console.log(navBarWidth + 'navBarWidth');
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
 	//const diffW = docWidth - pos.left;
 
-	if (hPercent > 70 && hPercent < 80) {
+	if (hPercent > 72 && hPercent < 75) {
 		expandCell.css("top", `${pos.top - diffH}px`);
+		console.log(hPercent + 'hPercent');
 	} else if (hPercent > 80) {
-		expandCell.css("top", `${pos.top - diffH - 240}px`);
+		expandCell.css("top", `${pos.top - diffH 
+			// - 240
+		}px`);
 	}
 
 	if (wPercent > 70) {
-		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth * 2}px`);
+		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth 
+			// * 2
+		}px`);
+		console.log(wPercent + 'wPercent');
 	}
 }
 
@@ -450,30 +484,27 @@ function riskMatrixCreate() {
 						db.addAsync("CompanyRiskMatrix", matrix).then(h => {
 							if (h.is_success) {
 								const promises = [];
-
 								promises.push(new Promise((resolve, reject) => {
 									const filters = [{ parameter: "TemplateId", value: template.value }];
 									db.getAllWhereNoIncludesAsync("MatrixImpactDefinition", filters).then(y => {
 										if (y.is_success) {
-											if (y.result.length < parseInt(common.result.impactUnitScale)) {
-												//reject("All the details in the template can not be added because the template has not been completely set up");
+											if (y.result.length < parseInt(common.result.impactUnitScale))
+												reject(
+													"All the details in the template can not be added because the template has not been completely set up");
+											else
 												resolve(y);
-											}
-											else resolve(y);
 										} else {
 											reject("Configuration error, try contact administrator");
 										}
 									});
 								}));
-
 								promises.push(new Promise((resolve, reject) => {
 									const filters = [{ parameter: "MatrixId", value: template.value }];
 									db.getAllWhereNoIncludesAsync("MatrixCellValues", filters).then(y => {
 										if (y.is_success) {
-											if (y.result.length < parseInt(common.result.impactUnitScale)) {
-												//reject("All the details in the template can not be added because the template has not been completely set up");
-												resolve(y);
-											}
+											if (y.result.length < parseInt(common.result.impactUnitScale))
+												reject(
+													"All the details in the template can not be added because the template has not been completely set up");
 											else
 												resolve(y);
 										} else {
@@ -488,10 +519,11 @@ function riskMatrixCreate() {
 										const data = res[0].result;
 										for (let i = 0; i < data.length; i++) {
 											data[i].templateId = matrix.id;
-											data[i].id = helper.newGuid();
 										}
 										db.addRangeAsync("CompanyMatrixImpactDefinition", data).then(r => {
-											resolve();
+											if (r.result.length > 0) {
+												resolve();
+											}
 										});
 									}));
 
@@ -499,10 +531,11 @@ function riskMatrixCreate() {
 										const data = res[1].result;
 										for (let i = 0; i < data.length; i++) {
 											data[i].matrixId = matrix.id;
-											data[i].id = helper.newGuid();
 										}
 										db.addRangeAsync("CompanyMatrixCellValues", data).then(r => {
-											resolve();
+											if (r.result.length > 0) {
+												resolve();
+											}
 										});
 									}));
 
@@ -996,11 +1029,11 @@ if (typeof TableInlineEdit !== "undefined") {
 										const successMessage =
 											`${window.translate("system_record")} ${value} ${window
 												.translate("system_record_added_into")} ${entityName}`;
-										gScope.toaGR.notify({ heading: successMessage, icon: "success" });
+										gScope.toast.notify({ heading: successMessage, icon: "success" });
 										resolve(response.result);
 									} else {
 										reject();
-										gScope.toaGR.notifyErrorList(response.error_keys);
+										gScope.toast.notifyErrorList(response.error_keys);
 									}
 								});
 							});
@@ -1013,20 +1046,20 @@ if (typeof TableInlineEdit !== "undefined") {
 										newObj.name = obj.value;
 										gScope.db.updateAsync(entityName, newObj).then(y => {
 											if (y.is_success) {
-												gScope.toaGR.notify({
+												gScope.toast.notify({
 													heading: window.translate("system_entry_updaded"),
 													icon: "success"
 												});
 												resolve();
 											} else {
-												gScope.toaGR.notifyErrorList(y.error_keys);
+												gScope.toast.notifyErrorList(y.error_keys);
 												reject();
 											}
 										}).catch(err => {
 											reject(err);
 										});
 									} else {
-										gScope.toaGR.notify({
+										gScope.toast.notify({
 											heading: window.translate("system_data_no_item_found")
 										});
 									}
@@ -1040,13 +1073,13 @@ if (typeof TableInlineEdit !== "undefined") {
 								const params = [{ parameter: "Id", value: obj.id }];
 								gScope.db.deletePermanentWhereAsync(entityName, params).then(x => {
 									if (x.is_success) {
-										gScope.toaGR.notify({
+										gScope.toast.notify({
 											heading: window.translate("system_data_record_deleted"),
 											icon: "success"
 										});
 										resolve();
 									} else {
-										gScope.toaGR.notifyErrorList(x.error_keys);
+										gScope.toast.notifyErrorList(x.error_keys);
 										reject();
 									}
 								}).catch(err => {
@@ -1089,7 +1122,7 @@ if (typeof TableInlineEdit !== "undefined") {
 
 								$(ctx).find(".virtual-el-reference").val(x.result[param]);
 							} else {
-								gScope.toaGR.notifyErrorList(x.error_keys);
+								gScope.toast.notifyErrorList(x.error_keys);
 							}
 						});
 					});
@@ -1330,7 +1363,6 @@ if (typeof TableInlineEdit !== "undefined") {
 		let row = targetCtx.closest("tr");
 		const index = table.row(row).index();
 		let obj = table.row(index).data();
-		console.log(obj);
 		targetCtx.off("click", completeEditInlineHandler);
 		const columns = targetCtx.parent().parent().parent().find(".data-cell");
 		let viewModelId = htTable.attr("db-viewmodel");
@@ -1377,7 +1409,7 @@ if (typeof TableInlineEdit !== "undefined") {
 											obj[`${parsedPropName}Reference`] = refObject.result;
 											obj[parsedPropName] = value;
 										} else {
-											this.toaGR.notifyErrorList(refObject.error_keys);
+											this.toast.notifyErrorList(refObject.error_keys);
 										}
 										pr1Resolve();
 									}).catch(err => { console.warn(err) });
@@ -1413,7 +1445,7 @@ if (typeof TableInlineEdit !== "undefined") {
 											if (mResult.is_success) {
 												obj[`${sourceEntity.value.toLowerFirstLetter()}Reference`] = mResult.result;
 											} else {
-												this.toaGR.notifyErrorList(mResult.error_keys);
+												this.toast.notifyErrorList(mResult.error_keys);
 											}
 											localResolve();
 										}).catch(err => {
@@ -1541,12 +1573,12 @@ if (typeof TableInlineEdit !== "undefined") {
 								addO[sourceRefParamName.value] = id;
 								scope.db.addAsync(sourceEntity.value, addO).then(addResult => {
 									if (addResult.is_success) {
-										scope.toaGR.notify({
+										scope.toast.notify({
 											heading: window.translate("system_inline_saved"),
 											icon: "success"
 										});
 									} else {
-										scope.toaGR.notifyErrorList(addResult.error_keys);
+										scope.toast.notifyErrorList(addResult.error_keys);
 									}
 								}).catch(err => {
 									console.warn(err);
@@ -1559,12 +1591,12 @@ if (typeof TableInlineEdit !== "undefined") {
 								scope.db.deletePermanentWhereAsync(sourceEntity.value, deleteFilters).then(
 									deleteResult => {
 										if (deleteResult.is_success) {
-											scope.toaGR.notify({
+											scope.toast.notify({
 												heading: window.translate("system_inline_saved"),
 												icon: "success"
 											});
 										} else {
-											scope.toaGR.notifyErrorList(deleteResult.error_keys);
+											scope.toast.notifyErrorList(deleteResult.error_keys);
 										}
 									}).catch(err => err);
 							}
@@ -1637,7 +1669,7 @@ if (typeof DataInjector !== "undefined") {
 							format = format.replace(/{Year}/g, d.getFullYear());
 							format = format.replace(/{Month}/g, d.getMonth() < 10 ? `0${d.getMonth()}` : d.getMonth());
 							format = format.replace(/{Day}/g, d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
-							this.countAllAsync(entityName).then(g => {
+							this.countAsync(entityName).then(g => {
 								if (g.is_success) {
 									format = format.replace(/{NextIndex}/g, g.result + 1);
 									object[search.propName] = format;
