@@ -1,0 +1,73 @@
+@using GR.Forms.Abstractions.Models.FormModels
+@inject IStringLocalizer Localizer
+@{
+	var form = (Form)ViewBag.Form;
+	ViewData["Title"] = "Preview form";
+}
+
+<style>
+	#jsonPlace {
+		outline: 1px solid #ccc;
+		padding: 5px;
+		margin: 5px;
+	}
+
+	.string {
+		color: green;
+	}
+
+	.number {
+		color: darkorange;
+	}
+
+	.boolean {
+		color: blue;
+	}
+
+	.null {
+		color: magenta;
+	}
+
+	.key {
+		color: red;
+	}
+</style>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card card-outline-info">
+			<div class="card-body">
+				<form id="serForm" role="form">
+					<div class="form-body">
+						<h3 class="card-title">Preview form  @form.Name</h3>
+						<hr>
+						<div class="row render-dynamic-form" id="preview_place">
+
+						</div>
+					</div>
+					<div class="row button-group">
+						<div class="col-lg-2 col-md-3">
+							<a id="serializeform" href="javascript:void(0)" class="btn btn-block btn-success"> <i class="fa fa-check"></i>Simulate</a>
+						</div>
+						<div class="col-lg-2 col-md-3">
+							<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<h2>Simulation for preview serialization of form</h2>
+		<pre id="jsonPlace" style="min-height: 23em; margin-top: 3em;"></pre>
+	</div>
+</div>
+<input id="formType" type="hidden" value="@ViewBag.FormType.Name" />
+
+@section Scripts{
+	<script src="~/assets/FormModulePlugins/js/formeo.min.js"></script>
+	<script src="~/assets/FormModulePlugins/js/st-form-prototype-library-v.0.1.js" asp-append-version="true"></script>
+	<script src="~/assets/FormModulePlugins/js/st-form-render-plugin-v.0.1.js" asp-append-version="true"></script>
+}

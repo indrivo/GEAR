@@ -1,0 +1,183 @@
+@using GR.Entities.Abstractions.Constants
+@model GR.Entities.Abstractions.ViewModels.Table.CreateTableFieldViewModel
+
+@{
+	ViewData["Title"] = "Add Field";
+
+}
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card card-outline-primary">
+			<div class="card-header">
+				<h4 class="m-b-0 text-white">Add field </h4>
+			</div>
+			<div class="card-body">
+				<form asp-action="AddField" role="form">
+					<input type="hidden" asp-for="TableId" />
+					<input type="hidden" asp-for="TableFieldTypeId" />
+					<input type="hidden" asp-for="DataType" />
+					<input type="hidden" asp-for="Parameter" />
+					<div class="form-body">
+						<h3 class="card-title">General information about field.</h3>
+						<hr>
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="row p-t-20">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="Name" class="control-label"></label>
+									<input asp-for="Name" class="form-control" />
+									<span asp-validation-for="Name" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="Description" class="control-label"></label>
+									<textarea rows="3" asp-for="Description" class="form-control"></textarea>
+									<span asp-validation-for="Description" class="text-danger"></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label asp-for="DisplayName" class="control-label"></label>
+									<input asp-for="DisplayName" class="form-control" />
+									<span asp-validation-for="DisplayName" class="text-danger"></span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<div class="checkbox">
+										<input asp-for="AllowNull" checked="checked" />
+										<label asp-for="AllowNull">Allow NULL values.</label>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<h3 class="card-title">Field configuration.</h3>
+						<hr />
+						<div class="row">
+							<div id="renderedFields" class="col-md-6">
+								@if (Model != null && Model.Configurations.Any())
+								{
+									var i = 0;
+									foreach (var item in Model.Configurations)
+									{
+										if (Model.Parameter == FieldType.EntityReference)
+										{
+											<div class="form-group">
+												<label class="control-label">@Html.DisplayFor(modelItem => item.Description)</label>
+												@if (item.ConfigCode == TableFieldConfigCode.Reference.ForeingTable)
+												{
+													<select asp-for="@item.Value" name="Configurations[@i].Value" asp-items="@(new SelectList(Model.EntitiesList))" class="form-control"></select>
+												}
+												else if (item.ConfigCode == TableFieldConfigCode.Reference.ForeingSchemaTable)
+												{
+												<br/><code>Non managed</code>
+												}
+												else
+												{
+													<input name="Configurations[@i].Value" type="text" class="form-control" />
+												}
+												<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
+												<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+											</div>
+										}
+										else if (Model.Parameter == FieldType.File && item.Name == "ForeingTable")
+										{
+											<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
+											<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+										}
+										else
+										{
+											<div class="form-group">
+												<label class="control-label">@Html.DisplayFor(modelItem => item.Name)<i> (@Html.DisplayFor(modelItem => item.Description))</i></label>
+												@switch (item.Type)
+												{
+													case "int":
+													case "decimal":
+
+														var value = string.Empty;
+														switch (item.Name)
+														{
+															case "Scale":
+																{
+																	value = "2";
+																}
+																break;
+															case "Precision":
+																{
+																	value = "18";
+																}
+																break;
+															default:
+																break;
+														}
+														<input name="Configurations[@i].Value" value="@value" type="number" class="form-control" />
+
+														break;
+													case "string":
+														<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
+														break;
+													case "bool":
+														<div class="form-group">
+															<div class="checkbox checkbox-success">
+																<input type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked" />
+																<label for="@Model.AllowNull">Set default value true or false.</label>
+															</div>
+
+														</div>
+														break;
+													case "char":
+														<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="1" class="form-control" />
+														break;
+													case "time":
+													case "datetime":
+													case "date":
+														<div class="form-group">
+															<div class="checkbox checkbox-success">
+																<input type="checkbox" name="Configurations[@i].Value" value="@item.Value" class="form-control" checked="checked" />
+																<label for="@Model.AllowNull">Set default value current date or time.</label>
+															</div>
+
+														</div>
+														break;
+													default:
+														<input name="Configurations[@i].Value" value="@item.Value" type="text" maxlength="100" class="form-control" />
+														break;
+
+												}
+												<input type="hidden" name="Configurations[@i].Name" value="@item.Name" />
+												<input type="hidden" name="Configurations[@i].ConfigId" value="@item.ConfigId" />
+											</div>
+										}
+
+										i++;
+									}
+								}
+
+							</div>
+						</div>
+
+					</div>
+					<div class="row button-group">
+						<div class="col-lg-2 col-md-3">
+							<button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> Save</button>
+						</div>
+						<div class="col-lg-2 col-md-3">
+							<a asp-action="Edit" asp-route-id="@Model.TableId" asp-route-tab="two" class="btn btn-block btn-link">Back To Entity</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@section Scripts{
+	@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

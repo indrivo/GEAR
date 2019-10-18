@@ -1,0 +1,107 @@
+﻿@using GR.Dashboard.Abstractions.Helpers.Enums
+@model GR.Dashboard.Abstractions.Models.ViewModels.WidgetViewModel
+
+@{
+    ViewData["Title"] = "Add widget";
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="~/lib/codemirror/codemirror.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/codemirror/theme/monokai.css" />
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-header">
+                <h4 class="m-b-0 text-white">Add widget</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" role="form">
+                    <div class="form-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row p-t-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Name"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Description"></label>
+                                    <textarea asp-for="Description" class="form-control"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="WidgetGroupId"></label>
+                                <select asp-for="WidgetGroupId" class="form-control" asp-items="@(new SelectList(Model.Groups, "Id", "Name"))"></select>
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="WidgetTemplateType"></label>
+                                <select asp-for="WidgetTemplateType" class="form-control" asp-items="@(Html.GetEnumSelectList(typeof(WidgetTemplateType)))"></select>
+                                <span asp-validation-for="WidgetTemplateType" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div style="margin-bottom: 1em;" class="custom-control custom-checkbox">
+                                    <input asp-for="AllowCache" class="custom-control-input vis-check">
+                                    <label class="custom-control-label" asp-for="AllowCache"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <textarea style="height:100em" asp-for="Template"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row button-group">
+                        <div class="col-lg-2 col-md-3">
+                            <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/codemirror/codemirror.min.js"></script>
+    <script src="~/lib/codemirror/keymap/sublime.min.js"></script>
+    <script src="~/lib/codemirror/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="~/lib/codemirror/mode/xml/xml.min.js"></script>
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("Template"),
+            {
+                lineNumbers: true,
+                mode: "xml",
+                keyMap: "sublime",
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                showCursorWhenSelecting: true,
+                theme: "monokai",
+                tabSize: 2
+            });
+
+        editor.on('change', function () {
+            editor.save();
+        });
+
+        editor.setSize(null, 700);
+    </script>
+}
