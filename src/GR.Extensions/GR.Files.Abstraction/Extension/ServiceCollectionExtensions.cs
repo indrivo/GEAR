@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using GR.Audit.Abstractions.Extensions;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Files.Abstraction.Models.ViewModels;
+
+namespace GR.Files.Abstraction.Extension
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddFileModule<TFileService>(this IServiceCollection services)
+            where TFileService : class , IFileManager
+        {
+            services.AddTransient<IFileManager, TFileService>();
+            IoC.RegisterTransientService<IFileManager, TFileService>();
+            return services;
+        }
+
+        public static IServiceCollection AddFileModuleStorage<TFileContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options, IConfiguration configuration)
+            where TFileContext : DbContext, IFileContext
+        {
+            services.AddScopedContextFactory<IFileContext, TFileContext>();
+            services.AddDbContext<TFileContext>(options, ServiceLifetime.Transient);
+            services.RegisterAuditFor<TFileContext>("Physic File module");
+            services.ConfigureWritable<List<FileSettingsViewModel>>(configuration.GetSection("FileSettings"));
+            return services;
+        }
+    }
+}

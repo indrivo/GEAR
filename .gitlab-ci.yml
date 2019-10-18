@@ -5,7 +5,7 @@ stages:
 
 cache:
   paths:
-    - src/ST.WebHosts/ST.Cms/wwwroot/lib/
+    - src/GR.WebHosts/GR.Cms/wwwroot/lib/
 test_projects:
   stage: test
   script:
@@ -19,7 +19,7 @@ deploy_to_server_job:
     name: ISO
     url: "http://109.185.158.154:6969"
   before_script:
-    - pushd "./src/ST.WebHosts/ST.Cms"
+    - pushd "./src/GR.WebHosts/GR.Cms"
     - dotnet restore
   script:
     - dotnet publish -c Release -o ./dist
