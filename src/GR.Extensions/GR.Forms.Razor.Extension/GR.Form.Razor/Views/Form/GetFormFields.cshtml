@@ -1,0 +1,66 @@
+@model GR.Forms.Abstractions.ViewModels.FormViewModels.FormFieldsViewModel
+
+@{
+	ViewData["Title"] = "Get Form Fields";
+}
+
+<h5>Fields of <b>@Model.Name</b> form, created on <b>@Model.Table.Name</b> entity</h5>
+
+<div class="col-md-12">
+	@if (Model.Fields.Any())
+	{
+		<table class="table table-hover contact-list color-table purple-table">
+			<thead>
+				<tr>
+					<th>Entity Field</th>
+					<th>Label</th>
+					<th>Tag</th>
+					<th>Attributes</th>
+					<th>Content</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in Model.Fields.OrderBy(x => x.Order))
+				{
+					<tr>
+						<td>
+							@if (item.TableField != null)
+							{
+								<code style="font-size: 1em">@item.TableField.Name</code>
+							}
+							else
+							{
+								<span>-</span>
+							}
+						</td>
+						<td>
+							@item?.Config?.Label
+						</td>
+						<td>
+							@item.Tag
+						</td>
+						<td>
+							@string.Join(", ", item.Attrs.Select(x => x.Key))
+						</td>
+						<td>
+							@item.Content
+						</td>
+						<td>
+							<div class="btn-group" role="group" aria-label="Action buttons">
+								@*<a class="btn btn-info btn-sm" href="@Url.Action("Edit")?formId=">Events</a>*@
+								<a class="btn btn-danger btn-sm" href="@Url.Action("GetFieldAttributes")?fieldId=@item.Id">Validations</a>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+	else
+	{
+		<div class="ui horizontal divider">
+			There are no fields.
+		</div>
+	}
+</div>

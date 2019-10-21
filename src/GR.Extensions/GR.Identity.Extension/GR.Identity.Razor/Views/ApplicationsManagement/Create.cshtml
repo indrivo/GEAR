@@ -1,0 +1,116 @@
+@model GR.Identity.Razor.ViewModels.ApiClientViewModels.ApiClientCreateViewModel
+@inject IStringLocalizer Localizer
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card card-outline-info">
+    <div class="card-header">
+        <h4 class="mb-0 text-white">Add application</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" role="form">
+            <div class="form-body">
+                <h3 class="card-title">Applicaton Info</h3>
+                <hr>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row p-t-20">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ClientName" class="control-label"></label>
+                            <input asp-for="ClientName" class="form-control" />
+                            <span asp-validation-for="ClientName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ClientUri" class="control-label"></label>
+                            <input asp-for="ClientUri" class="form-control" />
+                            <span asp-validation-for="ClientUri" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <!--/row-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ChosenApiScopes" class="control-label"></label>
+                            <select asp-for="ChosenApiScopes" asp-items="Model.AvailableApiScopes" class="form-control"></select>
+                            <span asp-validation-for="ChosenApiScopes" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ClientId" class="control-label"></label>
+                            <input asp-for="ClientId" class="form-control" />
+                            <span asp-validation-for="ClientId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="checkbox checkbox-success">
+                            <input type="checkbox" asp-for="HybridGrantType" />
+                            <label asp-for="HybridGrantType"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="checkbox checkbox-success">
+                            <input type="checkbox" asp-for="AuthorizationCodeGrantType" />
+                            <label asp-for="AuthorizationCodeGrantType"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="checkbox checkbox-success">
+                            <input type="checkbox" asp-for="ClientCredentialsGrantType" />
+                            <label asp-for="ClientCredentialsGrantType"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="checkbox checkbox-success">
+                            <input type="checkbox" asp-for="ImplicitGrantType" />
+                            <label asp-for="ImplicitGrantType"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="checkbox checkbox-success">
+                            <input type="checkbox" asp-for="ResourceOwnerPasswordGrantType" />
+                            <label asp-for="ResourceOwnerPasswordGrantType"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row button-group pt-5">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+            $('#ChosenApiScopes').select2({
+                allowClear: false,
+                placeholder: "Select an api scopes..."
+            });
+        });
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

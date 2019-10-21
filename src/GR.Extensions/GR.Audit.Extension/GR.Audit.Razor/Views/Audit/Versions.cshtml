@@ -1,0 +1,47 @@
+@model IEnumerable<GR.Audit.Abstractions.Models.TrackAudit>
+
+@{
+    ViewData["Title"] = "Versions";
+}
+
+@foreach (var item in Model)
+{
+	var trackAuditDetailses = item.AuditDetailses.OrderByDescending(o => o.PropertyName);
+	<div class="card">
+		<div class="card-body">
+			<h4 class="card-title">Record Detail:</h4>
+			<h6 class="card-subtitle">Version: @item.Version</h6>
+			<div class="table-responsive">
+				<table class="table color-table info-table">
+				
+					<thead>
+					<tr>
+						<th>Property Name</th>
+						<th>Value</th>
+						<th>Type</th>
+					</tr>
+					</thead>
+					@foreach (var detail in trackAuditDetailses)
+					{
+					<tbody>
+
+					<tr>
+
+						<td>@detail.PropertyName</td>
+						<td>@detail.Value</td>
+						<td>@detail.PropertyType</td>
+					</tr>
+					</tbody>
+				}
+				</table>
+			</div>
+		</div>
+	</div>
+}
+<tfoot>
+<tr>
+	<td colspan="3">
+		
+	</td>
+</tr>
+</tfoot>

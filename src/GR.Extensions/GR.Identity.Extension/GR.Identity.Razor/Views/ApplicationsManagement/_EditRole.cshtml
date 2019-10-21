@@ -1,0 +1,122 @@
+@model GR.Identity.Roles.Razor.ViewModels.RoleViewModels.UpdateRoleViewModel
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h4 class="modal-title">Edit <code>@Model.Name</code></h4>
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		</div>
+		<form id="updateRoleForm">
+			<input asp-for="Id" type="hidden" />
+			<div class="modal-body">
+				<div class="form-group">
+					<label asp-for="Name" class="control-label"></label>
+					@if (!Model.IsNoEditable)
+					{
+						<input asp-for="Name" class="form-control" />
+					}
+					else
+					{
+						<input asp-for="Name" class="disabled form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					}
+				</div>
+				<div class="form-group">
+					<label asp-for="Title" class="control-label"></label>
+					<input asp-for="Title" class="form-control" />
+					<span asp-validation-for="Title" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					<label asp-for="SelectedProfileId"></label>
+					<select asp-for="SelectedProfileId" multiple style="width: 100%"  asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
+					<span asp-validation-for="SelectedProfileId" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					<label asp-for="SelectedPermissionId"></label>
+					<select asp-for="SelectedPermissionId" multiple style="width: 100%" asp-items="@(new MultiSelectList(Model.Permissions, "Id", "PermissionName", null))" class="form-control"></select>
+					<span asp-validation-for="SelectedPermissionId" class="text-danger"></span>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<div class="checkbox checkbox-success">
+								<input type="checkbox" asp-for="IsDeleted" />
+								<label asp-for="IsDeleted"></label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+				<button type="button" id="updatePermissionBtn" class="btn btn-success waves-effect waves-light">Save changes</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script language="javascript" type="text/javascript">
+	$(document).ready(function () {
+		$('#SelectedProfileId').select2({
+			allowClear: false,
+			placeholder: "Select a profile..."
+		});
+		$('#SelectedRoleId').select2({
+			allowClear: false,
+			placeholder: "Select role..."
+		});
+		$('#SelectedPermissionId').select2({
+			allowClear: false,
+			placeholder: "Select permission..."
+		});
+	});
+</script>
+<script type="text/javascript" language="javascript">
+	$(document).ready(function () {
+		$('#updatePermissionBtn').click(function () {
+			const formData = $('#updateRoleForm').serialize();
+				console.log(formData);
+				$.ajax({
+					type: "POST",
+					url: '@Url.Action("_EditRole")',
+					dataType: 'json',
+					data: formData,
+					success: function(response) {
+						$('#editRole-modal').modal('hide');
+						switch (response.success) {
+							case true:
+								swal({
+									title: "Success!",
+									text: response.message,
+									type: "success",
+									confirmButtonColor: "#55ce63",
+                                    confirmButtonText: "Ok",
+                                    cancelButtonText: window.translate("cancel"),
+									closeOnConfirm: true
+								}).then((result) => {
+									if (result.value) {
+										const oTable = $('#rolesTable').DataTable();
+										oTable.draw();
+									}
+								});
+							break;
+						case false:
+							swal({
+								title: "Fail",
+								text: response.message,
+								type: "error"
+							});
+							break;
+						}
+					},
+					error: function() {
+						swal({
+							title: "Fail",
+							text: "Server no response",
+							type: "error"
+						});
+					}
+				});
+			}
+		);
+	});
+</script>

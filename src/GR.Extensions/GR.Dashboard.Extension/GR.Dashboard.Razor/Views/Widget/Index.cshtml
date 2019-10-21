@@ -1,0 +1,124 @@
+﻿@using GR.Core.Razor.Enums
+@using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using GR.Core.Razor.TagHelpersStructures
+
+@{
+    ViewData["Title"] = "Widgets";
+    var conf = new ListTagHelperModel
+    {
+        Title = "Widget groups",
+        SubTitle = "List of widgets",
+        ListIdentifier = "widgets",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("GetCustomWidgets", "Widget")
+        },
+        RenderColumns = new List<ListRenderColumn>
+{
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["modified_by"], "modifiedBy"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            }
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+{
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "Widget",
+                ButtonName = "Add new widget",
+                Description = "New widget will be added"
+            },
+    new UrlTagHelperViewModel
+    {
+        ButtonName = "Import widget from reports",
+        BootstrapButton = BootstrapButton.Warning,
+        AspAction = null,
+        AspController = null,
+        HtmlAttributes = new List<HtmlAttribute>
+{
+            new HtmlAttribute("id", "importReport")
+        }
+    }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+{
+            new ListActionViewModel
+            {
+                Name = "Edit",
+                ButtonType = BootstrapButton.Warning,
+                Url = Url.Action("Edit", "Widget"),
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("id", "id")
+                }
+            }
+        },
+        Documentation = "This tan allow to manage your widgets"
+    };
+}
+
+<JList asp-for="@conf"></JList>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(() => {
+            const toast = new ToastNotifier();
+
+            $("#importReport").on("click", function () {
+                swal({
+                    title: "Choose report",
+                    input: 'select',
+                    inputOptions: window.load("/Widget/GetReports"),
+                    inputPlaceholder: window.translate("select"),
+                    showCancelButton: true,
+                    inputValidator: function (value) {
+                        return new Promise(function (resolve, reject) {
+                            if (value) {
+                                resolve();
+                            } else {
+                                reject("Error!");
+                            }
+                        });
+                    }
+                }).then(function (result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: "/Widget/ImportReportAsWidget",
+                            data: {
+                                reportId: result.value
+                            },
+                            success: (d) => {
+                                if (d.is_success) {
+                                    toast.notify({ icon: "success", heading: "Info", text: "Widget was imported" });
+                                } else {
+                                    toast.notifyErrorList(d.error_keys);
+                                }
+                            },
+                            error: (e) => {
+                                toast.notify({ heading: "Info", text: "Server error!" });
+                            }
+                        });
+                    } else {
+                        swal({
+                            type: 'warning',
+                            title: "Selected item not saved!"
+                        });
+                    }
+                }).catch(err => {
+                    swal({
+                        type: 'warning',
+                        title: err
+                    });
+                });
+            });
+        });
+    </script>
+}
