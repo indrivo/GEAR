@@ -133,7 +133,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Entities.Razor", "src\GR
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.TaskManager.Extension", "GR.TaskManager.Extension", "{8B9C9F63-6F92-4A64-B126-0DA74F8AD5AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager.Abstractions", "src\GR.Extensions\GR.TaskManager\GR.TaskManager.Abstractions\GR.TaskManager.Abstractions.csproj", "{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager.Abstractions", "src\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Abstractions\GR.TaskManager.Abstractions.csproj", "{1F315BF2-BD4A-4D65-AF65-8105A1474B0B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.IdentityServer4", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj", "{7DA6E746-5915-404A-92F8-1F6989C37CD6}"
 EndProject
@@ -201,9 +201,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Email", "src\GR.Extensio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Email.Razor", "src\GR.Extensions\GR.Email.Extension\GR.Email.Razor\GR.Email.Razor.csproj", "{09DFDEDE-F564-4AF2-BE64-A94335F895AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager", "src\GR.Extensions\GR.TaskManager\GR.TaskManager\GR.TaskManager.csproj", "{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager", "src\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager\GR.TaskManager.csproj", "{82AD0DDF-AC91-4896-91C9-727A74A9C6D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager.Razor", "src\GR.Extensions\GR.TaskManager\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj", "{1845F3F6-9606-4F2C-978F-396C54A9EF92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.TaskManager.Razor", "src\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj", "{1845F3F6-9606-4F2C-978F-396C54A9EF92}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Audit.Abstractions", "src\GR.Extensions\GR.Audit.Extension\GR.Audit.Abstractions\GR.Audit.Abstractions.csproj", "{A4BA9604-A474-4DF8-8C9C-60A276E4B721}"
 EndProject
@@ -211,7 +211,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Calendar.Abstractions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Calendar", "src\GR.Extensions\GR.Calendar.Extensions\GR.Calendar\GR.Calendar.csproj", "{92AC9ACC-052B-438B-8128-44F5AF02EA20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Localization.Services", "src\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.Services.csproj", "{0FECE9E9-A06F-4D9B-A95F-96B0D1AEFBFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Localization", "src\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.csproj", "{0FECE9E9-A06F-4D9B-A95F-96B0D1AEFBFE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Localization.Razor", "src\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj", "{2F5E1A35-F80C-4BA1-97B3-95128B15F7C6}"
 EndProject

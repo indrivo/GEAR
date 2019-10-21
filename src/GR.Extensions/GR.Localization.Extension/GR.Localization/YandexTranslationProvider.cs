@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Models;
+using Microsoft.Extensions.Options;
 using YandexTranslateCSharpSdk;
 
-namespace GR.Localization.Services
+namespace GR.Localization
 {
     public class YandexTranslationProvider : IExternalTranslationProvider
     {

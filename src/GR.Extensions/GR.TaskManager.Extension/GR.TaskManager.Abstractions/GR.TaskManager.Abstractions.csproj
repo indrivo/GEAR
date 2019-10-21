@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Plesca Cristian</Authors>
+    <Company>Indrivo</Company>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GR.Core.Helpers;
+using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Extensions;
+using GR.Localization.Abstractions.Models;
+using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GR.Core.Helpers;
-using GR.Localization.Abstractions;
-using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
-using ST.Localization;
 
-namespace GR.Localization.Services
+namespace GR.Localization
 {
     public class LocalizationService : ILocalizationService
     {

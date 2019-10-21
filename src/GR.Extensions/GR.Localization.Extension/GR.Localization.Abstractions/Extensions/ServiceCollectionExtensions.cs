@@ -12,7 +12,6 @@ using Microsoft.Extensions.Options;
 using GR.Core.Helpers;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
-using ST.Localization;
 
 namespace GR.Localization.Abstractions.Extensions
 {
@@ -53,15 +52,16 @@ namespace GR.Localization.Abstractions.Extensions
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static IServiceCollection AddLocalizationModule<TService, TExternalTranslationProvider>(this IServiceCollection services, TranslationModuleOptions options)
+        public static IServiceCollection AddLocalizationModule<TService, TExternalTranslationProvider, TStringLocalizer>(this IServiceCollection services, TranslationModuleOptions options)
             where TService : class, ILocalizationService
             where TExternalTranslationProvider : class, IExternalTranslationProvider
+            where TStringLocalizer : class, IStringLocalizer
         {
             Arg.NotNull(services, nameof(AddLocalizationModule));
             Arg.NotNull(options, nameof(TranslationModuleOptions));
             Arg.NotNull(options.Configuration, nameof(TranslationModuleOptions.Configuration));
             services.AddTransient<ILocalizationService, TService>();
-            services.AddTransient<IStringLocalizer, JsonStringLocalizer>();
+            services.AddTransient<IStringLocalizer, TStringLocalizer>();
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
             services.AddTransient<IExternalTranslationProvider, TExternalTranslationProvider>();
             services.Configure<LocalizationConfigModel>(options.Configuration.GetSection(nameof(LocalizationConfig)));

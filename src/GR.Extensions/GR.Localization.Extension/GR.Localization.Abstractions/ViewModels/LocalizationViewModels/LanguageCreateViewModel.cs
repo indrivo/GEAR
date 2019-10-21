@@ -1,4 +1,4 @@
-using ST.Localization;
+using GR.Localization.Abstractions.Models;
 
 namespace GR.Localization.Abstractions.ViewModels.LocalizationViewModels
 {

@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>GR.Localization</AssemblyName>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Description>Gear localization module with redis cache</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
