@@ -1,10 +1,12 @@
 @using GR.Dashboard.Abstractions
+@using GR.Identity.Abstractions
 @{
 	ViewData["Title"] = "Dashboard builder";
 }
 
 @inject IWidgetGroupRepository WidgetGroupRepository
 @inject IDashboardService DashboardService
+@inject RoleManager<ApplicationRole> RoleManager
 
 @section Scripts{
 	<script>
@@ -94,6 +96,24 @@
 							eventHandlers: {
 								click: function () {
 									$("#widget-configuration-modal").modal("show");
+									$(this).closest(".options-menu").remove();
+								}
+							}
+						},
+						{
+							label: "Permissions",
+							events: ["click"],
+							eventHandlers: {
+								click: function () {
+									$("#widget-permissions-modal").modal("show");
+									const menu = $(this).closest(".options-menu");
+									const widget = menu.data("extra");
+									const widgetId = widget.attr("data-id");
+									$("#form-permissions-btn").off().on("click", function () {
+										var formPermissions = $("#form-permissions");
+										console.log(formPermissions, widgetId);
+									});
+
 									$(this).closest(".options-menu").remove();
 								}
 							}
@@ -419,7 +439,9 @@
 					<div class="card-body">
 						<h5 class="card-title">Canvas</h5>
 						<div class="left-canvas droppable-row" id="canvas">
-
+							<div class="spinner-border text-primary" role="status">
+								<span class="sr-only">Loading</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -535,6 +557,43 @@
 	</div>
 </div>
 
+
+
+<div class="modal leftright-slide right-align fade" id="widget-permissions-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header px-4">
+				<h5 class="modal-title">Widget configuration</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span class="material-icons">close</span>
+				</button>
+			</div>
+			<div class="modal-body p-4">
+				<form id="form-permissions">
+					<div class="row p-t-20">
+						<div class="form-group">
+							<ul class="list-group m-b-0">
+								@foreach (var role in RoleManager.Roles.ToList())
+								{
+									<li class="list-group-item">
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input vis-check" data-id="@role.Id">
+											<label class="custom-control-label">@role.Name</label>
+										</div>
+									</li>
+								}
+							</ul>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer px-4">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" translate="close">Close</button>
+				<button id="form-permissions-btn" type="button" class="btn btn-primary" translate="save">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 @section Styles{
