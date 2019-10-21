@@ -1,0 +1,11 @@
+﻿@model GR.Dashboard.Abstractions.Models.WidgetTypes.ReportWidget
+
+<div id="widget_@Model.Id">
+
+</div>
+
+<script>
+    $(document).ready(() => {
+        GetReportDataById('/DynamicReports/GetReportDataById', "@Model.ReportId", "widget_@Model.Id");
+    });
+</script>

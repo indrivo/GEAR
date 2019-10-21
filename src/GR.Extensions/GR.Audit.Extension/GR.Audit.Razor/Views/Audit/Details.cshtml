@@ -1,0 +1,84 @@
+@model GR.Audit.Abstractions.Models.TrackAudit
+
+@inject IStringLocalizer Localizer
+
+@{
+	ViewData["Title"] = "Details";
+}
+
+
+<div class="card">
+	<div class="card-body">
+		<h4 class="card-title">Entity Changes</h4>
+		<div class="table-responsive">
+			<table class="table color-table info-table">
+				<thead>
+					<tr>
+						<th>Property Name</th>
+						<th>Value</th>
+					</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Event Type</td>
+					<td><code>@Model.TrackEventType.ToString()</code></td>
+				</tr>
+				<tr>
+					<td>Type</td>
+					<td><code>@Model.TypeFullName</code></td>
+				</tr>
+				<tr>
+					<td>Version</td>
+					<td><code>@Model.Version</code></td>
+				</tr>
+				<tr>
+					<td>Modified By</td>
+					<td><code>@Model.UserName</code></td>
+				</tr>
+				<tr>
+					<td>Created</td>
+					<td><code>@Model.Created</code></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div class="card">
+	<div class="card-body">
+		<h4 class="card-title">Record details</h4>
+		<h6 class="card-subtitle">List of proprieties</h6>
+		<div class="table-responsive">
+			<table class="table color-table info-table">
+				<thead>
+					<tr>
+						<th>Property Name</th>
+						<th>Value</th>
+						<th>Type</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.AuditDetailses)
+					{
+						<tr>
+							<td>@item.PropertyName</td>
+							<td>@item.Value</td>
+							<td>@item.PropertyType</td>
+						</tr>
+					}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="3">
+							<div>
+								<a style="text-align: left;" asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,125 @@
+﻿@using GR.Identity.Abstractions
+@using GR.PageRender.Abstractions.Models.PagesACL
+@model Page
+@{
+    ViewData["Title"] = "Page ACL";
+    //var roles = (IEnumerable<ApplicationRole>)ViewBag.Roles;
+    var acls = (Dictionary<ApplicationRole, RolePagesAcl>)ViewBag.ACL;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="col-lg-12 bt-switch">
+            <p class="text-muted font-13">Allow page ACL for : <code>@Model.Settings.Name</code></p>
+            <div class="m-b-30">
+                <input type="checkbox" @(Model.IsEnabledAcl ? "checked" : "") data-size="mini" />
+            </div>
+        </div>
+
+        @if (Model.IsEnabledAcl)
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Allow</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in acls)
+                            {
+                                <tr>
+                                    <td>@item.Key.Name</td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="checkbox checkbox-primary pull-left p-t-0">
+                                                    <input id="checkbox-@item.Key.Id" class="acl-event" data-role-id="@item.Key.Id" type="checkbox" @(item.Value != null ? (item.Value.AllowAccess) ? "checked" : string.Empty : string.Empty) />
+                                                    @* ReSharper disable once Html.IdNotResolved *@
+                                                    <label for="checkbox-@item.Key.Id">Allow?</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/lib/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" />
+}
+
+@section Scripts
+{
+    <script src="~/lib/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const pageId = "@Model.Id";
+            $(".bt-switch input[type='checkbox'], .bt-switch input[type='radio']").bootstrapSwitch({
+                onSwitchChange: function (event, state) {
+                    $.ajax({
+                        url: "@Url.Action("ChangeAclEnableStateAsync")",
+                        method: "post",
+                        data: {
+                        pageId: "@Model.Id",
+                        enableAcl: state
+                        },
+                        success: function (data) {
+                            if (data.is_success) {
+                                location.reload();
+                            } else alert("Error, check if server is up");
+                        },
+                        error: function (err) {
+                            alert("Error, check if server is up");
+                        }
+                    });
+                }
+            });
+            
+            $(".acl-event").on("change", function () {
+                const ctx = $(this);
+                const roleId = ctx.data("role-id");
+                const state = ctx.prop("checked");
+                $.ajax({
+                        url: "@Url.Action("ChangeAccessToPageByRole")",
+                        method: "post",
+                        data: {
+                            roleId: roleId,
+                            pageId: pageId,
+                            state: state
+                        },
+                        success: function (data) {
+                            if (data.is_success) {
+                                Swal.fire(
+                                    'Info',
+                                    'Access changed!',
+                                    'success'
+                                );
+                            } else Swal.fire(
+                                'Info',
+                                'Error, check if server is up',
+                                'error'
+                            );
+                        },
+                        error: function (err) {
+                            Swal.fire(
+                                'Info',
+                                'Error, check if server is up',
+                                'error'
+                            );
+                        }
+                    });
+            });
+        });
+
+    </script>
+}

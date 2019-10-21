@@ -1,0 +1,117 @@
+@using ST.Localization
+@using Microsoft.AspNetCore.Http
+@using GR.Localization.Abstractions.ViewModels.LocalizationViewModels
+
+@inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
+@inject IHttpContextAccessor Accesor
+
+@{
+	Layout = null;
+	var id = Accesor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
+	Language language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
+	var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>@Localizer["welcome"]</title>
+	<link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="~/themes/admin/css/colors/green.css" />
+	<link type="text/css" rel="stylesheet" href="~/lib/limonte-sweetalert2/sweetalert2.min.css" />
+</head>
+<body>
+	<!-- ============================================================== -->
+	<!-- Preloader - style you can find in spinners.css -->
+	<!-- ============================================================== -->
+	<div class="preloader">
+		<svg class="circular" viewBox="25 25 50 50">
+			<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+		</svg>
+	</div>
+	<!-- ============================================================== -->
+	<!-- Main wrapper - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<section id="wrapper" class="login-register" style="background-image:url(../images/background/login-register.jpg);">
+		<div class="login-box card" style="width: 50%; margin-top: -7em; margin-right: 4em">
+			<div class="card-body">
+				<h3>@Localizer["installer_welcome"]</h3>
+				<p style="font-size: 16px">
+					@Localizer["system_description"]
+				</p>
+				<a asp-action="Setup" asp-controller="Installer" class="positive ui button" id="startButton">
+					@Localizer["installer_go_to_installation"]
+				</a>
+			</div>
+		</div>
+
+		<div class="card" style="max-width: 6em; margin: 1em; position: absolute; top: 0; left: 0;">
+			<div class="card-body">
+				<span id="languageChange" style="cursor: pointer;">
+					<i class="flag-icon flag-icon-@((language.Identifier.Equals("en"))? "gb": language.Identifier)"></i>
+					@language.Identifier.ToUpper()
+				</span>
+			</div>
+		</div>
+	</section>
+	<!-- ============================================================== -->
+	<!-- End Wrapper -->
+	<!-- ============================================================== -->
+
+	<script src="~/lib/jquery/jquery.min.js"></script>
+	<script src="~/lib/tether/js/tether.min.js"></script>
+	<script src="~/lib/twitter-bootstrap/js/bootstrap.min.js"></script>
+	<script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
+	<script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
+	<script type="text/javascript" src="~/lib/limonte-sweetalert2/sweetalert2.min.js"></script>
+	<script src="~/assets/js/site.js"></script>
+	<script type="text/javascript" src="/themes/admin/js/admin-theme-script.js"></script>
+	<script>
+		window.load = function (uri, data = null, type = "get") {
+			try {
+				const url = new URL(location.href);
+				uri = `${url.origin}${uri}`;
+
+				const req = $.ajax({
+					url: uri,
+					type: type,
+					data: data,
+					async: false
+				});
+				return JSON.parse(req.responseText);
+			} catch (exp) {
+				console.log(exp);
+				return null;
+			}
+		};
+		$(document).ready(function () {
+			localStorage.removeItem("translations");
+			$('#languageChange').click(function () {
+				const lang = load("/Localization/GetLanguagesAsJson");
+				const model = {};
+
+				$.each(lang, function (index, item) {
+					model[item.identifier] = item.name;
+				});
+				swal({
+					title: "@Localizer["select_language"]",
+					input: 'select',
+					inputOptions: model,
+					type: "warning",
+					showCancelButton: true,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "@Localizer["confirm_select_language"]"
+				}).then((result) => {
+					if (result.value) {
+						location.href = `/Localization/ChangeLanguage?identifier=${result.value}`;
+					};
+				});
+			});
+		});
+	</script>
+</body>
+</html>
+

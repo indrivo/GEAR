@@ -1,0 +1,174 @@
+@model Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<GR.Report.Abstractions.Models.DynamicReportFolder, IEnumerable<GR.Report.Abstractions.Models.DynamicReport>>
+@{
+    ViewData["Title"] = "Manage Dynamic Report Folders";
+}
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center">
+                Folder Management
+                <a class=" btn btn-info pull-right text-white" asp-action="CreateFolder" asp-controller="DynamicReports">Add</a>
+            </h4>
+            <div class="table-responsive m-t-40">
+                <table class="table stylish-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2"></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var folder in Model)
+                        {
+                            <tr>
+                                <td><span class="round round-danger">S</span></td>
+                                <td>
+                                    <h4>@folder.Name</h4><small class="text-muted">Folder</small>
+                                </td>
+                                <td><a class="btn btn-primary text-white js-folder-edit-trigger" data-toggle="modal" data-target="#folderModal" data-type-id="@folder.Id">Edit</a></td>
+                                <td><a class="btn btn-danger text-white js-folder-delete-trigger" data-type-id="@folder.Id">Delete</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="folderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-md-4"><span class="pull-right">Folder new name</span></label>
+                        <div class="col-md-1"></div>
+                        <input class="form-control col-md-6" id="folderNameInput" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-inverse" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary text-white" id="folderNameSave">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function editEntity(dataTypeId, saveButton, inputField, actionUrl) {
+            var typeId = dataTypeId;
+            $("#" + saveButton).click(function () {
+                var data = {
+                    Id: typeId,
+                    Name: $("#" + inputField).val()
+                };
+                if (data.name === "") {
+                    sweetAlert("Field Shouldn't Be Empty!!", "Please enter a new Name", "error");
+                    return false;
+                } else {
+                    $.ajax({
+                        url: actionUrl,
+                        content: "application/json; charset=utf-8",
+                        type: 'POST',
+                        data: data,
+                        success: function (result) {
+                            if (result.success === true) {
+                                swal({
+                                    position: 'top-end',
+                                    type: 'success',
+                                    title: result.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then((result) => {
+                                    window.location.reload(true);
+                                });
+                            }
+                            else {
+                                swal({
+                                    position: 'top-end',
+                                    type: 'error',
+                                    title: result.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        },
+                        error: function (jqXhr) {
+                            window.ShowError(jqXhr.status);
+                        }
+                    });
+                }
+            });
+        };
+        //Generic Script to delete Service Type
+        function deleteEntity(typeId, actionUrl) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                var data = {
+                    id: typeId
+                };
+                if (result.value) {
+                    $.ajax({
+                        url: actionUrl,
+                        content: "application/json; charset=utf-8",
+                        type: 'DELETE',
+                        data: data,
+                        success: function (result) {
+                            if (result.is_success) {
+                                swal({
+                                    position: 'top-end',
+                                    type: 'success',
+                                    title: "Folder was deleted",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then((result) => {
+                                    window.location.reload(true);
+                                });
+                            }
+                            else {
+                                swal({
+                                    position: 'top-end',
+                                    type: 'error',
+                                    title: result.err,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        },
+                        error: function (jqXhr) {
+                            window.ShowError(jqXhr.status);
+                        }
+                    });
+                }
+            });
+        };
+    </script>
+    <script>
+        $(".js-folder-edit-trigger").click(function () {
+            editEntity($(this).attr('data-type-id'),'folderNameSave','folderNameInput',
+                '@Url.Action("EditFolder", "DynamicReports")');
+        });
+        $(".js-folder-delete-trigger").click(function () {
+            deleteEntity($(this).attr('data-type-id'), '@Url.Action("DeleteReportFolder","DynamicReports")');
+        });
+    </script>
+}

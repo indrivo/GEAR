@@ -258,3 +258,6 @@ paket-files/
 .eslintrc.js
 package-lock.json
 package.json
+
+# Bower Libraries
+wwwroot/lib/

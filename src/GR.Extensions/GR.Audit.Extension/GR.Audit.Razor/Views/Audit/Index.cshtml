@@ -1,0 +1,55 @@
+@using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using GR.Core.Razor.TagHelpersStructures
+@{
+    ViewData["Title"] = Localizer["audit"];
+
+    var config = new ListTagHelperModel
+    {
+        Title = Localizer["audit"],
+        ListIdentifier = "tableAudit",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("TrackAuditList", "Audit")
+        },
+        RenderColumns = new List<ListRenderColumn> {
+            new ListRenderColumn(Localizer["system_audit_record_id"], "recordId"),
+            new ListRenderColumn(Localizer["changed"], "changedString"),
+            new ListRenderColumn(Localizer["modified_by"], "modifiedBy"),
+            new ListRenderColumn(Localizer["system_audit_event_type"], "eventType"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["entity_name"], "entityName"),
+            new ListRenderColumn(Localizer["version"], "version")
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>{
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["system_versions"],
+                Url = Url.Action("Versions"),
+                ButtonType = BootstrapButton.Warning,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id"),
+                    new ActionParameter("moduleName", "moduleName")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["system_view_details"],
+                Url = Url.Action("Details"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("id", "id"),
+                    new ActionParameter("moduleName", "moduleName")
+                }
+            }
+        },
+        Documentation = "This tan allow to view audit"
+    };
+}
+
+
+<JList asp-for="config"></JList>
