@@ -1,14 +1,14 @@
 ﻿using GraphQL;
-using GraphQL.Types;
 using Microsoft.AspNetCore.Mvc;
 using ST.Calendar.NetCore.Api.GraphQL.Models;
+using ST.Calendar.NetCore.Api.GraphQL.Schemas.Contracts;
 using System;
 using System.Threading.Tasks;
 
 namespace ST.Calendar.NetCore.Api.GraphQL.Controllers
 {
-    [Route("graphql")]
-    public class GraphQLController : Controller
+    [Route("api/[controller]")]
+    public class CalendarGraphQLController : Controller
     {
         #region Injectable
         /// <summary>
@@ -19,11 +19,11 @@ namespace ST.Calendar.NetCore.Api.GraphQL.Controllers
         /// <summary>
         /// Schema
         /// </summary>
-        private readonly ISchema _schema;
+        private readonly ICalendarSchema _schema;
         #endregion
 
 
-        public GraphQLController(IDocumentExecuter documentExecuter, ISchema schema)
+        public CalendarGraphQLController(IDocumentExecuter documentExecuter, ICalendarSchema schema)
         {
             _documentExecuter = documentExecuter;
             _schema = schema;

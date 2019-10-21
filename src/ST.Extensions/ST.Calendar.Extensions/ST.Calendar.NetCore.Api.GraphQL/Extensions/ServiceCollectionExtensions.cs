@@ -10,6 +10,7 @@ using ST.Calendar.Abstractions.Helpers.ServiceBuilders;
 using ST.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes;
 using ST.Calendar.NetCore.Api.GraphQL.Queries;
 using ST.Calendar.NetCore.Api.GraphQL.Schemas;
+using ST.Calendar.NetCore.Api.GraphQL.Schemas.Contracts;
 using System;
 
 namespace ST.Calendar.NetCore.Api.GraphQL.Extensions
@@ -25,9 +26,14 @@ namespace ST.Calendar.NetCore.Api.GraphQL.Extensions
         {
             serviceCollection.Services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             serviceCollection.Services.AddSingleton<CalendarQuery>();
+
+            //Register types
             serviceCollection.Services.AddTransient<EventType>();
+            serviceCollection.Services.AddTransient<UserType>();
+            serviceCollection.Services.AddTransient<EventMemberType>();
+
             var sp = serviceCollection.Services.BuildServiceProvider();
-            serviceCollection.Services.AddSingleton<ISchema>(new CalendarSchema(new FuncDependencyResolver(type => sp.GetService(type))));
+            serviceCollection.Services.AddSingleton<ICalendarSchema>(new CalendarSchema(new FuncDependencyResolver(type => sp.GetService(type))));
             return serviceCollection;
         }
 
@@ -38,7 +44,7 @@ namespace ST.Calendar.NetCore.Api.GraphQL.Extensions
         /// <returns></returns>
         public static IApplicationBuilder UseCalendarGrapHQL(this IApplicationBuilder app)
         {
-            app.UseGraphiQl("/graphql");
+            app.UseGraphiQl("/api/CalendarGraphQL");
             return app;
         }
     }
