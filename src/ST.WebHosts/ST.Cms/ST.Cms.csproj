@@ -134,6 +134,9 @@
 	  <Pack>false</Pack>
 	</Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\tooltip.js\" />
+  </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>
 	  <_SourceWebConfig>$(MSBuildThisFileDirectory)Web.config</_SourceWebConfig>
