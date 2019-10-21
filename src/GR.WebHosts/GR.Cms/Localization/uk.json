@@ -647,5 +647,6 @@
   "system_calendar_month": "Місяць",
   "system_calendar_error_date": "Подія може бути створено тільки після цього поточний час",
   "system_calendar_update": "Оновлення",
-  "system_calendar_no_members": "Немає учасників, запрошених на захід"
+  "system_calendar_no_members": "Немає учасників, запрошених на захід",
+  "system_calendar": "Календар"
 }

@@ -80,6 +80,7 @@
 
 
 @section Scripts {
+    <script src="~/assets/helpers/icons.js"></script>
     <script>
         const trans = load("/Localization/GetTranslationsForCurrentLanguage");
         const options = $("#Translate");
@@ -97,36 +98,7 @@
             });
 
 
-        var icons = function() {
-            var get = $.ajax({
-                url:
-                    "https://giGR.githubusercontent.com/migliori/60154172ba0eea70e3c0dd4c3b5d82d0/raw/366789b2d001a99f5f41f1ceab980d991de059c3/fontawesome-icons-with-categories.json",
-                type: "get",
-                async: false,
-                success: function(data) {
-                    return data;
-                },
-                error: function() {
-                    return [];
-                }
-            });
-
-            try {
-                const all = JSON.parse(get.responseText);
-                let result = [];
-                for (let cat in all) {
-                    for (let item in all[cat]) {
-                        result.push(all[cat][item]);
-                    }
-                }
-                result = result.map(function(x) { return x.replace("far ", "fa "); });
-                result = result.map(function(x) { return x.replace("fas ", "fa "); });
-                result = result.map(function(x) { return x.replace("fab ", "fa "); });
-                return result;
-            } catch (e) {
-                return [];
-            }
-        };
+        var icons = window.gearIcons["font-awesome"];
         const opt = $("#Icon");
         $.each(icons(),
             function() {

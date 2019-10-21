@@ -647,5 +647,6 @@
   "system_calendar_month": "Month",
   "system_calendar_error_date": "The event can only be created after this current time",
   "system_calendar_update": "Update",
-  "system_calendar_no_members": "No members invited to event"
+  "system_calendar_no_members": "No members invited to event",
+  "system_calendar": "Calendar"
 }

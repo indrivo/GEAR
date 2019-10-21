@@ -1,5 +1,5 @@
 @{
-	ViewData["Title"] = "Internal Calendar";
+	ViewData["Title"] = Localizer["system_calendar"];
 }
 
 @section Styles
@@ -203,6 +203,59 @@
 			color: #081018;
 			font-size: 16px;
 			font-weight: bold;
+		}
+
+		.details-popup-members-list .member-acceptance {
+			line-height: 10px;
+			margin-right: 10px;
+		}
+
+			.details-popup-members-list .member-acceptance.acceptance-1 {
+				color: #009010;
+			}
+
+			.details-popup-members-list .member-acceptance.acceptance-2 {
+				color: #FF0000;
+			}
+
+		.event-priority-bullet {
+			width: 12px;
+			height: 12px;
+			border-radius: 2px;
+			display: inline-block;
+			margin-right: 3px;
+		}
+
+			.event-priority-bullet.priority-0 {
+				background-color: #0088FF;
+			}
+
+			.event-priority-bullet.priority-1 {
+				background-color: #0848C8;
+			}
+
+			.event-priority-bullet.priority-2 {
+				background-color: #FF6F00;
+			}
+
+			.event-priority-bullet.priority-3 {
+				background-color: #FF0000;
+			}
+
+		.event-priority-bullet-color.priority-0 {
+			color: #0088FF;
+		}
+
+		.event-priority-bullet-color.priority-1 {
+			color: #0848C8;
+		}
+
+		.event-priority-bullet-color.priority-2 {
+			color: #FF6F00;
+		}
+
+		.event-priority-bullet-color.priority-3 {
+			color: #FF0000;
 		}
 
 		.popper .popper__arrow {
@@ -619,23 +672,25 @@
 
 	<script id="teamMember" type="text/x-jsrender">
 		<div class="event-member" data-member-id="{{:id}}">
-			<div class="d-flex">
+			<div class="d-flex align-items-center">
 				<span class="member-acceptance acceptance-{{:acceptance}}">
 					<i class="material-icons">{{:~acceptanceIcon}}</i>
 				</span>
-				<div class="member-name"><span>{{:firstName}}</span><span>{{:lastName}}</span></div>
+				<div class="member-name">{{:~outputName}}</div>
 			</div>
 		</div>
 	</script>
 
 	<script id="teamMemberEdit" type="text/x-jsrender">
 		<div class="event-member" data-member-id="{{:id}}">
-			<div class="d-flex">
+			<div class="d-flex align-items-center">
 				<span class="member-acceptance acceptance-{{:acceptance}}">
 					<i class="material-icons">{{:~acceptanceIcon}}</i>
 				</span>
-				<div class="member-name"><span>{{:firstName}}</span><span>{{:lastName}}</span></div>
-				<div class="member-dismissa align-self-end"><i class="material-icons text-danger">close</i></div>
+				<div class="member-name"><span>{{:~outputName}}</span></div>
+				<div class="member-dismissa align-self-end">
+					<i class="material-icons text-danger">close</i>
+				</div>
 			</div>
 		</div>
 	</script>
@@ -742,7 +797,7 @@
 			 data-event-priority="{{:priority}}"
 			 data-event-members="{{:members}}"
 			 data-draftid="{{:draftId}}">
-			<i class="fa fa-square text-info mr-3"></i>
+			<i class="fa fa-square mr-3 event-priority-bullet-color priority-{{:priority}}"></i>
 			<span class="draft-event-title">{{:title}}</span>
 			<div class="draft-event-actions ml-auto">
 				<span class="draft-event-actions-more">
@@ -824,8 +879,8 @@
 				if (date.isAfter(new Date())) {
 					calendar.addEvent(eventData).then(newEventId => {
 						calendarEvent.id = newEventId;
-						console.log(calendarEvent);
-						$this.$calendar.fullCalendar('renderEvent', calendarEvent, true);
+						calendarEvent.editable = true;
+						this.$calendar.fullCalendar('renderEvent', calendarEvent, true);
 					}).catch(e => {
 						toast.notifyErrorList(e);
 					});
@@ -1141,15 +1196,27 @@
 						loadPlace.closest('.details-popup-members').show();
 						$.each(membersList, function (index, value) {
 							let acceptance = '';
+							let outputName = `${value.firstName} ${value.lastName}`;
+
 							switch (value.acceptance) {
 								case 0: { acceptance = 'check_circle_outline' };
 								case 1: { acceptance = 'help_outline' };
 								case 2: { acceptance = 'check_circle_outline' };
 							}
+
+							if (value.firstName === null || value.lastName === null) {
+								outputName = value.userName;
+							}
+
+							const renderConfig = {
+								outputName: outputName,
+								acceptanceIcon: acceptance
+							}
+
 							if (template === 'teamMember') {
-								htmlOutput = templates.teamMember.render(value, { acceptanceIcon: acceptance });
+								htmlOutput = templates.teamMember.render(value, renderConfig);
 							} else {
-								htmlOutput = templates.teamMemberEdit.render(value, { acceptanceIcon: acceptance });
+								htmlOutput = templates.teamMemberEdit.render(value, renderConfig);
 							}
 							loadPlace.append(htmlOutput);
 						});

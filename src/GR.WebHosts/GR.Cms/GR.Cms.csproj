@@ -9,8 +9,8 @@
 	<LangVersion>7.3</LangVersion>
 	<Version>1.0.2</Version>
 	<Authors>Lupei Nicolae</Authors>
-	<Company>Soft-Tehnica</Company>
-	<Product>ST Gear</Product>
+	<Company>Indrivo</Company>
+	<Product>Gear</Product>
 	<Description>BPMN</Description>
 	<Copyright>Indrivo 2019</Copyright>
   </PropertyGroup>

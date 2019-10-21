@@ -647,5 +647,6 @@
   "system_calendar_month": "Maand",
   "system_calendar_error_date": "Het evenement kan alleen worden gemaakt na deze huidige tijd",
   "system_calendar_update": "Update",
-  "system_calendar_no_members": "Geen leden uitgenodigd om het evenement"
+  "system_calendar_no_members": "Geen leden uitgenodigd om het evenement",
+  "system_calendar": "Agenda"
 }

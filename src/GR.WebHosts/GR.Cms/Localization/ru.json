@@ -647,5 +647,6 @@
   "system_calendar_month": "Месяц",
   "system_calendar_error_date": "Событие может быть создано только после этого текущее время",
   "system_calendar_update": "Обновление",
-  "system_calendar_no_members": "Нет участников, приглашенных на мероприятие"
+  "system_calendar_no_members": "Нет участников, приглашенных на мероприятие",
+  "system_calendar": "Календарь"
 }

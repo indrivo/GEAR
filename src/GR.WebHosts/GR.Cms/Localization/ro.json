@@ -647,5 +647,6 @@
   "system_calendar_month": "Luna",
   "system_calendar_error_date": "La eveniment pot fi create numai după acest timp curent",
   "system_calendar_update": "Update",
-  "system_calendar_no_members": "Nici membrii invitați la eveniment"
+  "system_calendar_no_members": "Nici membrii invitați la eveniment",
+  "system_calendar": "Calendar"
 }

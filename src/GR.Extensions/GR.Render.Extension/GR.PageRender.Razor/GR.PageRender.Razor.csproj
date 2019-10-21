@@ -35,7 +35,7 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
+  
   <ItemGroup>
     <EmbeddedResource Include="Templates\formDefaultTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

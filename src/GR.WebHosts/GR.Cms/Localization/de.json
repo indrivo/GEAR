@@ -647,5 +647,6 @@
   "system_calendar_month": "Monat",
   "system_calendar_error_date": "Die Veranstaltung kann erst erstellt werden, nachdem dieser Strom der Zeit",
   "system_calendar_update": "Update",
-  "system_calendar_no_members": "Nicht-Mitglieder eingeladen zur Veranstaltung"
+  "system_calendar_no_members": "Nicht-Mitglieder eingeladen zur Veranstaltung",
+  "system_calendar": "Kalender"
 }

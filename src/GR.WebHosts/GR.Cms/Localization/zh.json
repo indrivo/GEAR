@@ -647,5 +647,6 @@
   "system_calendar_month": "一个月",
   "system_calendar_error_date": "该事件只能是创建在此之后目前的时间",
   "system_calendar_update": "更新",
-  "system_calendar_no_members": "没有任何成员邀请来的事件"
+  "system_calendar_no_members": "没有任何成员邀请来的事件",
+  "system_calendar": "日历"
 }

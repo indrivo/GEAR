@@ -647,5 +647,6 @@
   "system_calendar_month": "Miesiąc",
   "system_calendar_error_date": "Zdarzenie może być stworzona tylko po to aktualny czas",
   "system_calendar_update": "Aktualizacja",
-  "system_calendar_no_members": "Nie ma uczestników, zaproszonych na imprezę"
+  "system_calendar_no_members": "Nie ma uczestników, zaproszonych na imprezę",
+  "system_calendar": "Kalendarz"
 }
