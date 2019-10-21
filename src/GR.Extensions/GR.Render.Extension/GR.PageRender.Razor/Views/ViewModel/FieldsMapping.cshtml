@@ -117,7 +117,7 @@
                                     break;
                                 default:
                                 {
-                                    toaGR.notify({ heading: "Error", text: "On development, only Many to Many reference" });
+                                    toast.notify({ heading: "Error", text: "On development, only Many to Many reference" });
                                 }break;
                             }
                         });
@@ -198,7 +198,7 @@
                                         'success'
                                     );
                                 } else {
-                                    toaGR.notifyErrorList(data.error_keys);
+                                    toast.notifyErrorList(data.error_keys);
                                 }
                             },
                             error: function(error) {

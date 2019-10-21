@@ -107,7 +107,7 @@ $(function () {
                 task.files = result;
                 sendAddTaskObject(task);
             }).catch(e => {
-                toaGR.notifyErrorList(e);
+                toast.notifyErrorList(e);
             });
         }
     });
@@ -202,7 +202,7 @@ $(function () {
             $('.task-manager-loader').fadeOut();
         }).catch(e => {
             console.log(e);
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
@@ -227,13 +227,13 @@ $(function () {
                 configuration.assigned = true;
                 break;
             default:
-                toaGR.notifyErrorList("An error occured(such type of tasks doesn't exist)");
+                toast.notifyErrorList("An error occured(such type of tasks doesn't exist)");
         }
         if (promise) {
             loadEachType(promise, configuration);
         }
         else {
-            toaGR.notifyErrorList("An error occured(such type of tasks doesn't exist)");
+            toast.notifyErrorList("An error occured(such type of tasks doesn't exist)");
         }
     }
 
@@ -302,7 +302,7 @@ $(function () {
             });
             window.forceTranslate();
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
@@ -341,12 +341,12 @@ $(function () {
                     window.forceTranslate();
                     $('.task-manager-loader').fadeOut();
                 }).catch(e => {
-                    toaGR.notifyErrorList(e);
+                    toast.notifyErrorList(e);
                 });
                 $('#editTaskModal').modal('hide');
             }
             else {
-                toaGR.notify({ text: window.translate("system_taskmanager_error_date"), icon: "error" });
+                toast.notify({ text: window.translate("system_taskmanager_error_date"), icon: "error" });
             }
         });
     }
@@ -362,9 +362,9 @@ $(function () {
 
             $('#deleteConfirmModal #submit-task-delete').off().on('click', function () {
                 manager.deleteTask(taskId).then(() => {
-                    toaGR.notify({ text: window.translate("system_taskmanager_delete_task_success"), icon: "success" });
+                    toast.notify({ text: window.translate("system_taskmanager_delete_task_success"), icon: "success" });
                 }).catch(e => {
-                    toaGR.notifyErrorList(e);
+                    toast.notifyErrorList(e);
                 });
                 $(`.task[data-id="${taskId}"]`).remove();
                 $('#deleteConfirmModal').modal('hide');
@@ -380,7 +380,7 @@ $(function () {
                 addChangeFileInputEvent('edit');
                 $('#editTaskModal').modal('show');
             }).catch(e => {
-                toaGR.notifyErrorList(e);
+                toast.notifyErrorList(e);
             });
         });
         $('.restore-task').off().on('click', function (e) {
@@ -490,11 +490,11 @@ $(function () {
             $('#edit-assigned-task-status').off().on('change', function () {
                 task.status = $(this).val();
                 updateTask(task).then(() => { }).catch(e => {
-                    toaGR.notifyErrorList(e);
+                    toast.notifyErrorList(e);
                 });
             });
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
             $("#task-items-tab .task-items").html('');
             $('#details-tab').html('');
         });
@@ -533,18 +533,18 @@ $(function () {
             $('#add-task-items-tab .task-items-add-task').html('');
         }
         else {
-            toaGR.notify({ text: window.translate("system_taskmanager_error_date"), icon: "error" });
+            toast.notify({ text: window.translate("system_taskmanager_error_date"), icon: "error" });
         }
     }
 
     function createTask(task) {
         return manager.createTask(task).then(() => {
-            toaGR.notify({ text: window.translate('system_taskmanager_add_task_success'), icon: "success" });
+            toast.notify({ text: window.translate('system_taskmanager_add_task_success'), icon: "success" });
             loadTaskList(tableProperties);
             $('.task-manager-controls .task-manager-task-types').val('active');
             window.forceTranslate();
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
@@ -582,16 +582,16 @@ $(function () {
 
             });
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
     function deleteTaskItem(taskId, taskItemId) {
         return manager.deleteTaskItem(taskItemId).then(() => {
-            toaGR.notify({ text: window.translate("system_taskmanager_delete_success"), icon: "success" });
+            toast.notify({ text: window.translate("system_taskmanager_delete_success"), icon: "success" });
             refreshTask(taskId).then(() => { });
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
@@ -617,16 +617,16 @@ $(function () {
             targetTask.removeClass('priority-High priority-Critical priority-Low priority-Medium').addClass('priority-' + priorities[result.taskPriority].text);
 
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
             console.log('here is the problem');
         });
     }
 
     function restoreTask(taskId) {
         return manager.restoreTask(taskId).then(() => {
-            toaGR.notify({ text: window.translate("system_taskmanager_restore_success"), icon: "success" });
+            toast.notify({ text: window.translate("system_taskmanager_restore_success"), icon: "success" });
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
@@ -634,19 +634,19 @@ $(function () {
         return manager.updateTaskItem({ Id: taskItemId, Name: name, IsDone: isDone }).then(() => {
             refreshTask(taskId).then(() => { });
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
     function updateTask(task) {
         return manager.updateTask(task).then(() => {
-            toaGR.notify({ text: window.translate("system_taskmanager_update_success"), icon: "success" });
+            toast.notify({ text: window.translate("system_taskmanager_update_success"), icon: "success" });
             refreshTask(task.id).then(() => {
             }).catch(e => {
-                toaGR.notifyErrorList(e);
+                toast.notifyErrorList(e);
             });
         }).catch(e => {
-            toaGR.notifyErrorList(e);
+            toast.notifyErrorList(e);
         });
     }
 
@@ -811,7 +811,7 @@ $(function () {
                 contentType: false,
                 type: "POST",
                 success: function () {
-                    toaGR.notify({ text: window.translate("system_taskmanager_file_deleted"), icon: "success" });
+                    toast.notify({ text: window.translate("system_taskmanager_file_deleted"), icon: "success" });
                 }
             }
         );

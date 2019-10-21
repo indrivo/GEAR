@@ -21,12 +21,12 @@
 			$("#saveConfiguration").on("click",
 				function () {
 					manager.saveAsync().then(response => {
-						toaGR.notify({
+						toast.notify({
 							text: "Saved",
 							icon: "success"
 						});
 					}).catch(e => {
-						toaGR.notify({
+						toast.notify({
 							text: "Error"
 						});
 					});
@@ -117,14 +117,14 @@
 										},
 										success: (sData) => {
 											if (sData.is_success) {
-												scope.toaGR.notify({ icon: "success", heading: "Info", text: "Widget deleted!" });
+												scope.toast.notify({ icon: "success", heading: "Info", text: "Widget deleted!" });
 												widget.remove();
 											} else {
 												widget.remove();
 											}
 										},
 										error: (e) => {
-											scope.toaGR.notify({ heading: "Server error" });
+											scope.toast.notify({ heading: "Server error" });
 										}
 									});
 
@@ -156,7 +156,7 @@
 									if (rowId) scope.removeRow(rowId);
 									else {
 										row.remove();
-										scope.toaGR.notify({
+										scope.toast.notify({
 											heading: "Info",
 											text: "Row was deleted",
 											icon: "success"
@@ -189,18 +189,18 @@
 					},
 					success: (data) => {
 						if (data.is_success) {
-							scope.toaGR.notify({
+							scope.toast.notify({
 								heading: "Info",
 								text: "Row was deleted",
 								icon: "success"
 							});
 							row.remove();
 						} else {
-							scope.toaGR.notifyErrorList(data.error_keys);
+							scope.toast.notifyErrorList(data.error_keys);
 						}
 					},
 					error: (e) => {
-						scope.toaGR.notify({
+						scope.toast.notify({
 							heading: "Alert",
 							text: "Server error"
 						});
@@ -257,7 +257,7 @@
 						}
 					},
 					error: (e) => {
-						scope.toaGR.notify({ heading: e });
+						scope.toast.notify({ heading: e });
 					}
 				});
 			}
@@ -287,7 +287,7 @@
 							scope.registerDroppableWidgets();
 							$(".droppable-widget").sortable({ axis: "x" }).disableSelection();
 						} else {
-							scope.toaGR.notify({ heading: "A widget can only appear once in a row" });
+							scope.toast.notify({ heading: "A widget can only appear once in a row" });
 						}
 					}
 				});

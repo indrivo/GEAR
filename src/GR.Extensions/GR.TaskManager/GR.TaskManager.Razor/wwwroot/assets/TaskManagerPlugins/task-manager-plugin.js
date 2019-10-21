@@ -395,7 +395,7 @@
                     resolve(scope.statuses);
                 }).catch(e => {
                     console.warn(e);
-                    toaGR.notifyErrorList(e);
+                    toast.notifyErrorList(e);
                 });
             }
         })
@@ -413,7 +413,7 @@
                     resolve(scope.priorities);
                 }).catch(e => {
                     console.warn(e);
-                    toaGR.notifyErrorList(e);
+                    toast.notifyErrorList(e);
                 });
             }
         })
@@ -431,7 +431,7 @@
                     resolve(scope.users);
                 }).catch(e => {
                     console.warn(e);
-                    toaGR.notifyErrorList(e);
+                    toast.notifyErrorList(e);
                 });
             }
         })

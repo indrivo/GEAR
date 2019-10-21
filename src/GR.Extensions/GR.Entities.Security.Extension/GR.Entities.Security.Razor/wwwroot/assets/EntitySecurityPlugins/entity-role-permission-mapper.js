@@ -67,17 +67,17 @@
         window.loadAsync("/EntitySecurity/SaveEntityMappedPermissions", data, "post")
             .then(serverResponse => {
                 if (serverResponse.is_success) {
-                    toaGR.notify({
+                    toast.notify({
                         heading: "Info",
                         text: window.translate("system_inline_saved"),
                         icon: "success"
                     });
                 } else {
-                    toaGR.notifyErrorList(serverResponse.error_keys);
+                    toast.notifyErrorList(serverResponse.error_keys);
                 }
             }).catch(e => {
                 console.warn(e);
-                toaGR.notify({ heading: "Error", text: "Something went wrong!" });
+                toast.notify({ heading: "Error", text: "Something went wrong!" });
             });
     });
 });

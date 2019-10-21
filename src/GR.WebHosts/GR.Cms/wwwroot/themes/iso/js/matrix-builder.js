@@ -61,12 +61,12 @@ class RiskMatrixBuilder {
 						reject(e);
 					});
 				} else {
-					this.toaGR.notifyErrorList(matrixTemplate.error_keys);
+					this.toast.notifyErrorList(matrixTemplate.error_keys);
 				}
 			}).catch(e => {
 				console.warn(e);
 				reject(e);
-				this.toaGR.notify({ heading: "error on load" });
+				this.toast.notify({ heading: "error on load" });
 			});
 		});
 	}
@@ -493,7 +493,7 @@ class RiskMatrixBuilder {
 				if (x.is_success) {
 					$(ctx).attr("data-id", x.result);
 				} else {
-					this.toaGR.notifyErrorList(x.error_keys);
+					this.toast.notifyErrorList(x.error_keys);
 				}
 			}).catch(e => {
 				console.warn(e);
@@ -508,7 +508,7 @@ class RiskMatrixBuilder {
 				if (u.is_success) {
 					$(ctx).attr("data-id", u.result);
 				} else {
-					this.toaGR.notifyErrorList(u.error_keys);
+					this.toast.notifyErrorList(u.error_keys);
 				}
 			}).catch(e => {
 				console.warn(e);
@@ -675,13 +675,13 @@ class RiskMatrixBuilder {
 			this.addNewRecordForImpactProbability(o).then(x => {
 				if (x.is_success) {
 					$(ctx).attr("data-id", x.result);
-					this.toaGR.notify({ heading: window.translate("iso_matrix_save_conf_message"), icon: "success" });
+					this.toast.notify({ heading: window.translate("iso_matrix_save_conf_message"), icon: "success" });
 				} else {
-					this.toaGR.notifyErrorList(x.error_keys);
+					this.toast.notifyErrorList(x.error_keys);
 				}
 			}).catch(e => {
 				console.warn(e);
-				this.toaGR.notifyErrorList(e);
+				this.toast.notifyErrorList(e);
 			});
 		} else {
 			const o = {
@@ -693,7 +693,7 @@ class RiskMatrixBuilder {
 				if (u.is_success) {
 					$(ctx).attr("data-id", u.result);
 				} else {
-					this.toaGR.notifyErrorList(u.error_keys);
+					this.toast.notifyErrorList(u.error_keys);
 				}
 			}).catch(e => {
 				console.warn(e);
@@ -716,7 +716,7 @@ class RiskMatrixBuilder {
 					const o = Object.assign(h.result, conf.data);
 					this.dbContext.updateAsync(this.entities.impactDefinitionEntity, o).then(u => {
 						if (u.is_success) {
-							this.toaGR.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
+							this.toast.notify({ heading: window.translate("system_inline_saved"), icon: "success" });
 							resolve(u);
 						} else {
 							reject(u.error_keys);

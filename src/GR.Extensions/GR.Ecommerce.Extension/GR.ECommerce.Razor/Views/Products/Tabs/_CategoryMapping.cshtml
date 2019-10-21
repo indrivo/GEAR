@@ -58,9 +58,9 @@
                 data: JSON.stringify(model),
                 success: function (data) {
                    if (data.is_success) {
-                    toaGR.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
+                    toast.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
                 } else {
-                    toaGR.notifyErrorList(data.error_keys);
+                    toast.notifyErrorList(data.error_keys);
                    }
                 },
                 error: function (error) {
