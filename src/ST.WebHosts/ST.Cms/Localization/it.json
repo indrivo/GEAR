@@ -634,5 +634,18 @@
   "system_calendar_event_start_date": "Data di inizio",
   "system_calendar_event_end_date": "Data di fine",
   "system_calendar_event_priority": "Priorità",
-  "system_calendar_event_members": "I membri"
+  "system_calendar_event_members": "I membri",
+  "system_calendar_accept": "Accettare",
+  "system_calendar_tentative": "Provvisorio",
+  "system_calendar_decline": "Declino",
+  "system_calendar_low": "Basso",
+  "system_calendar_medium": "Medio",
+  "system_calendar_high": "Alta",
+  "system_calendar_critical": "Critica",
+  "system_calendar_day": "Giorno",
+  "system_calendar_week": "Settimana",
+  "system_calendar_month": "Mese",
+  "system_calendar_error_date": "L'evento può essere creato solo dopo questo tempo corrente",
+  "system_calendar_update": "Aggiornamento",
+  "system_calendar_no_members": "Per i non soci invitati all'evento"
 }

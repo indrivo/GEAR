@@ -634,5 +634,18 @@
   "system_calendar_event_start_date": "Data rozpoczęcia",
   "system_calendar_event_end_date": "Data zakończenia",
   "system_calendar_event_priority": "Priorytet",
-  "system_calendar_event_members": "Członkowie"
+  "system_calendar_event_members": "Członkowie",
+  "system_calendar_accept": "Brać",
+  "system_calendar_tentative": "Podgląd",
+  "system_calendar_decline": "Spadek",
+  "system_calendar_low": "Małe",
+  "system_calendar_medium": "Średni",
+  "system_calendar_high": "Wysoka",
+  "system_calendar_critical": "Krytyczna",
+  "system_calendar_day": "Dzień",
+  "system_calendar_week": "Tydzień",
+  "system_calendar_month": "Miesiąc",
+  "system_calendar_error_date": "Zdarzenie może być stworzona tylko po to aktualny czas",
+  "system_calendar_update": "Aktualizacja",
+  "system_calendar_no_members": "Nie ma uczestników, zaproszonych na imprezę"
 }

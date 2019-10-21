@@ -634,5 +634,18 @@
   "system_calendar_event_start_date": "開始日",
   "system_calendar_event_end_date": "終了日",
   "system_calendar_event_priority": "優先度",
-  "system_calendar_event_members": "員"
+  "system_calendar_event_members": "員",
+  "system_calendar_accept": "受け入れ",
+  "system_calendar_tentative": "仮",
+  "system_calendar_decline": "減少",
+  "system_calendar_low": "低",
+  "system_calendar_medium": "中",
+  "system_calendar_high": "高",
+  "system_calendar_critical": "重要",
+  "system_calendar_day": "日",
+  "system_calendar_week": "週間",
+  "system_calendar_month": "月",
+  "system_calendar_error_date": "イベントで作成した後、この現在時刻",
+  "system_calendar_update": "更新",
+  "system_calendar_no_members": "無招聘しイベント"
 }

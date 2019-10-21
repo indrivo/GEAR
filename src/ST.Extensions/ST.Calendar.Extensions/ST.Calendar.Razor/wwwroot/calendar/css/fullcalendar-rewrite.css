@@ -897,7 +897,7 @@ NOTE: use percentage font sizes or else old IE chokes
   /* column headers can't have as much v space */ }
 
 .fc-ltr .fc-basic-view .fc-day-top .fc-day-number {
-    float: left;
+    float: left !important;
     font-size: 18px;
     color: #081018;
 }

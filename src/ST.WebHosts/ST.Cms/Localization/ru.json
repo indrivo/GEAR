@@ -634,5 +634,18 @@
   "system_calendar_event_start_date": "Дата начала",
   "system_calendar_event_end_date": "Дата окончания",
   "system_calendar_event_priority": "Приоритет",
-  "system_calendar_event_members": "Члены"
+  "system_calendar_event_members": "Члены",
+  "system_calendar_accept": "Принять",
+  "system_calendar_tentative": "Предварительный",
+  "system_calendar_decline": "Снижение",
+  "system_calendar_low": "Низкая",
+  "system_calendar_medium": "Средний",
+  "system_calendar_high": "Высокая",
+  "system_calendar_critical": "Критическая",
+  "system_calendar_day": "День",
+  "system_calendar_week": "Неделю",
+  "system_calendar_month": "Месяц",
+  "system_calendar_error_date": "Событие может быть создано только после этого текущее время",
+  "system_calendar_update": "Обновление",
+  "system_calendar_no_members": "Нет участников, приглашенных на мероприятие"
 }

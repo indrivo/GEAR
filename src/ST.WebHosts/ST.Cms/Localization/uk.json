@@ -634,5 +634,18 @@
   "system_calendar_event_start_date": "Дата початку",
   "system_calendar_event_end_date": "Дата закінчення",
   "system_calendar_event_priority": "Пріоритет",
-  "system_calendar_event_members": "Члени"
+  "system_calendar_event_members": "Члени",
+  "system_calendar_accept": "Прийняти",
+  "system_calendar_tentative": "Попередній",
+  "system_calendar_decline": "Зниження",
+  "system_calendar_low": "Низька",
+  "system_calendar_medium": "Середній",
+  "system_calendar_high": "Висока",
+  "system_calendar_critical": "Критична",
+  "system_calendar_day": "День",
+  "system_calendar_week": "Тиждень",
+  "system_calendar_month": "Місяць",
+  "system_calendar_error_date": "Подія може бути створено тільки після цього поточний час",
+  "system_calendar_update": "Оновлення",
+  "system_calendar_no_members": "Немає учасників, запрошених на захід"
 }

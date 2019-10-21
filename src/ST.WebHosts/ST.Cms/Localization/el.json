@@ -634,5 +634,18 @@
   "system_calendar_event_start_date": "Ημερομηνία έναρξης",
   "system_calendar_event_end_date": "Ημερομηνία λήξης",
   "system_calendar_event_priority": "Προτεραιότητα",
-  "system_calendar_event_members": "Μέλη"
+  "system_calendar_event_members": "Μέλη",
+  "system_calendar_accept": "Δέχεται",
+  "system_calendar_tentative": "Δειλά",
+  "system_calendar_decline": "Μείωση",
+  "system_calendar_low": "Χαμηλή",
+  "system_calendar_medium": "Μέσο",
+  "system_calendar_high": "Υψηλή",
+  "system_calendar_critical": "Κρίσιμη",
+  "system_calendar_day": "Ημέρα",
+  "system_calendar_week": "Εβδομάδα",
+  "system_calendar_month": "Μήνα",
+  "system_calendar_error_date": "Η εκδήλωση μπορεί να δημιουργηθεί μόνο μετά από αυτή την τρέχουσα ώρα",
+  "system_calendar_update": "Ενημέρωση",
+  "system_calendar_no_members": "Όχι τα μέλη καλούνται να event"
 }

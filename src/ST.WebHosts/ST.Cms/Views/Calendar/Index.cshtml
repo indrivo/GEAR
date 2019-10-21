@@ -10,6 +10,14 @@
 			background-color: transparent !important;
 		}
 
+		.hidden {
+			display: none;
+		}
+
+		span.select2 {
+			width: 100% !important;
+		}
+
 		.fc .fc-view .fc-body td {
 			padding: 0 !important;
 		}
@@ -92,10 +100,24 @@
 
 		.fc-widget-content .fc-day-top.fc-today .fc-day-number {
 			background-color: #0848C8;
-			padding: 1px 5px;
+			padding: 5px 5px;
 			font-size: 18px;
 			color: white;
+			border-radius: 2px;
+			line-height: 18px;
 		}
+
+		.fc-event {
+			border: 1px solid #3a87ad !important;
+			background-color: white !important;
+			color: #4E565A !important;
+		}
+
+			.fc-event.fc-draggable {
+				background-color: #3a87ad !important;
+				border: 1px solid white !important;
+				color: #FFFFFF !important;
+			}
 
 		.details-popup {
 			z-index: 999;
@@ -252,7 +274,7 @@
 			}
 
 		.add-event-region {
-			margin-top: 12px;
+			margin-top: 20px;
 			border-top: 1px solid #D8DCE0;
 			padding-top: 20px;
 		}
@@ -264,6 +286,44 @@
 				.add-event-region .form-group label {
 					margin-bottom: 5px;
 				}
+
+		.add-new-draft-item-btn {
+			margin-top: 12px;
+		}
+
+		#calendar-events .calendar-events .fa-square {
+			font-size: 20px;
+		}
+
+		#calendar-events .calendar-events .more-icon {
+			width: 10px;
+		}
+
+		.draft-event-actions-expandable {
+			width: 0;
+			overflow: hidden;
+			display: inline-flex;
+			transition: 0.5s ease-in-out;
+		}
+
+			.draft-event-actions-expandable a {
+				cursor: pointer;
+				transition: 0.2s ease-in-out;
+			}
+
+				.draft-event-actions-expandable a:hover {
+					color: #2862D6 !important;
+					transition: 0.2s ease-in-out;
+				}
+
+		.draft-event-actions:hover .draft-event-actions-expandable {
+			width: 59px;
+			transition: 0.2s ease-in-out;
+		}
+
+		.card {
+			height: 100%;
+		}
 	</style>
 }
 @inject IStringLocalizer Localizer
@@ -281,40 +341,38 @@
 					<div class="col">
 						<div id="calendar-events" class="m-t-20">
 						</div>
-						<!-- checkbox -->
-						<div class="checkbox">
-							<input id="drop-remove" type="checkbox">
-							<label for="drop-remove">
-								Remove after drop
-							</label>
-						</div>
 					</div>
+				</div>
+				<div class="add-new-draft-item-btn">
+					<button id="toggle-forms" class="btn btn-primary w-100">@Localizer["system_calendar_add_new_event"]</button>
 				</div>
 				<div class="add-event-region">
 					<form id="add-event">
 						<div class="form-group">
 							<label for="add-event-title">@Localizer["system_calendar_event_title"]</label>
-							<input type="text" id="add-event-title" class="form-control event-title" required>
+							<input type="text" id="add-event-title" name="title" class="form-control event-title" required>
 						</div>
 						<div class="form-group">
 							<label for="add-event-details">@Localizer["system_calendar_event_details"]</label>
-							<textarea id="add-event-details" class="form-control event-details"></textarea>
+							<textarea id="add-event-details" name="details" class="form-control event-details"></textarea>
 						</div>
 						<div class="form-group">
 							<label for="add-event-location">@Localizer["system_calendar_event_location"]</label>
-							<input type="text" id="add-event-location" class="form-control event-location">
+							<input type="text" id="add-event-location" name="location" class="form-control event-location">
 						</div>
 						<div class="form-group">
 							<label for="add-event-priority">@Localizer["system_calendar_event_priority"]</label>
-							<select id="add-event-priority" class="form-control event-priority"></select>
+							<select id="add-event-priority" name="priority" class="form-control event-priority"></select>
 						</div>
 						<div class="form-group">
 							<label for="add-event-members">@Localizer["system_calendar_event_members"]</label>
-							<select id="add-event-members" class="form-control event-members" multiple></select>
+							<select id="add-event-members" name="members" class="form-control event-members" multiple></select>
 						</div>
 						<button id="add-form-submit" type="submit" class="btn btn-outline-primary w-100">
 							@Localizer["save"]
 						</button>
+					</form>
+					<form id="edit-event">
 					</form>
 				</div>
 			</div>
@@ -329,7 +387,7 @@
 	</div>
 </div>
 
-<!-- Details popper-->
+<!-- Event popper-->
 <div class="popper details-popup">
 </div>
 
@@ -397,8 +455,7 @@
 				startDate: '',
 				endDate: '',
 				priority: '',
-				members: [],
-				organizer: ''
+				members: []
 			}) {
 				const requestUrl = '/UpdateEvent';
 				return this.ajaxRequest(requestUrl, 'post', event).then(result => {
@@ -458,6 +515,7 @@
 			getUserEventsByTimeLine(config = {
 				userId: '',
 				timeLineType: 'month',
+				origin: '',
 				expandDayPrecision: 0
 			}) {
 				const requestUrl = '/GetUserEventsByTimeLine';
@@ -501,7 +559,7 @@
 				eventId: ''
 			}) {
 				const requestUrl = '/DeletePermanently';
-				return this.ajaxRequest(requestUrl, 'post', config).then(result => {
+				return this.ajaxRequest(requestUrl, 'delete', config).then(result => {
 					return result;
 				}).catch(e => {
 					return e;
@@ -512,7 +570,7 @@
 				eventId: ''
 			}) {
 				const requestUrl = '/DeleteLogically';
-				return this.ajaxRequest(requestUrl, 'post', config).then(result => {
+				return this.ajaxRequest(requestUrl, 'delete', config).then(result => {
 					return result;
 				}).catch(e => {
 					return e;
@@ -523,7 +581,7 @@
 				eventId: ''
 			}) {
 				const requestUrl = '/Restore';
-				return this.ajaxRequest(requestUrl, 'post', config).then(result => {
+				return this.ajaxRequest(requestUrl, 'delete', config).then(result => {
 					return result;
 				}).catch(e => {
 					return e;
@@ -552,7 +610,7 @@
 	</script>
 
 	<script id="eventTemplate" type="text/x-jsrender">
-		<div class="fc-content" data-event-id="{{:id}}">
+		<div class="fc-content" data-event-id="{{:id}}" data-event-editable="{{:editable}}">
 			<span class="fc-time">{{:time}}</span>
 			<span class="fc-title">{{:title}}</span>
 		</div>
@@ -561,7 +619,9 @@
 	<script id="teamMember" type="text/x-jsrender">
 		<div class="event-member" data-member-id="{{:id}}">
 			<div class="d-flex">
-				<span class="member-acceptance acceptance-{{:acceptance}}"></span>
+				<span class="member-acceptance acceptance-{{:acceptance}}">
+					<i class="material-icons">{{:~acceptanceIcon}}</i>
+				</span>
 				<div class="member-name"><span>{{:firstName}}</span><span>{{:lastName}}</span></div>
 			</div>
 		</div>
@@ -570,7 +630,9 @@
 	<script id="teamMemberEdit" type="text/x-jsrender">
 		<div class="event-member" data-member-id="{{:id}}">
 			<div class="d-flex">
-				<span class="member-acceptance acceptance-{{:acceptance}}"></span>
+				<span class="member-acceptance acceptance-{{:acceptance}}">
+					<i class="material-icons">{{:~acceptanceIcon}}</i>
+				</span>
 				<div class="member-name"><span>{{:firstName}}</span><span>{{:lastName}}</span></div>
 				<div class="member-dismissa align-self-end"><i class="material-icons text-danger">close</i></div>
 			</div>
@@ -581,7 +643,11 @@
 		<div class="popup-content">
 			<div class="details-popup-section details-popup-header">
 				<div class="details-popup-title">{{:title}}</div>
-				<div class="details-popup-priority"><span class="event-priority-bullet priority-{{:~priority}}"></span>{{:~priority}}</div>
+				<div class="details-popup-priority">
+					<span class="event-priority-bullet priority-{{:priority}}"></span>
+					{{:~priority}}
+				</div>
+				{{if ~editable}}
 				<div class="details-popup-actions dropright">
 					<div class="cursor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						<i class="material-icons">more_vert</i>
@@ -596,6 +662,7 @@
 						<div class="dropdown-arrow"></div>
 					</div>
 				</div>
+				{{/if}}
 			</div>
 			<div class="details-popup-section details-popup-date">
 				<div class="row">
@@ -649,7 +716,8 @@
 				<div class="details-popup-section details-popup-members">
 					<div class="details-popup-members-list">
 					</div>
-					<input class="input-inline-editing event-new-guest" type="text" placeholder="@Localizer["system_calendar_add_guest"])" />
+					<label for="add-new-guest"><i class="material-icons">add_circle_outline</i></label>
+					<input id="add-new-guest" class="input-inline-editing event-new-guest" type="text" placeholder="@Localizer["system_calendar_add_guest"])" />
 				</div>
 				<div class="details-popup-section details-popup-description">
 					<textarea class="textarea-inline-editing event-details">
@@ -666,19 +734,70 @@
 	</script>
 
 	<script id="eventDraftList" type="text/x-jsrender">
-		<div class="calendar-events" data-class=""><i class="fa fa-circle text-info"></i></div>
+		<div class="calendar-events ui-draggable ui-draggable-handle d-flex align-items-center"
+			 data-event-title="{{:title}}"
+			 data-event-details="{{:details}}"
+			 data-event-location="{{:location}}"
+			 data-event-priority="{{:priority}}"
+			 data-event-members="{{:members}}"
+			 data-draftid="{{:draftId}}">
+			<i class="fa fa-square text-info mr-3"></i>
+			<span class="draft-event-title">{{:title}}</span>
+			<div class="draft-event-actions ml-auto">
+				<span class="draft-event-actions-more">
+					<i class="material-icons more-icon">more_vert</i>
+				</span>
+				<span class="draft-event-actions-expandable">
+					<a class="draft-event-edit ml-3">
+						<i class="material-icons">edit</i>
+					</a>
+					<a class="draft-event-delete">
+						<i class="material-icons">delete_outline</i>
+					</a>
+				</span>
+			</div>
+		</div>
+	</script>
+
+	<script id="editDraftEvent" type="text/x-jsrender">
+		<div class="form-group">
+			<label for="add-event-title">@Localizer["system_calendar_event_title"]</label>
+			<input type="text" id="add-event-title" name="title" class="form-control event-title" required value="{{:title}}">
+		</div>
+		<div class="form-group">
+			<label for="add-event-details">@Localizer["system_calendar_event_details"]</label>
+			<textarea id="add-event-details" name="details" class="form-control event-details">{{:details}}</textarea>
+		</div>
+		<div class="form-group">
+			<label for="add-event-location">@Localizer["system_calendar_event_location"]</label>
+			<input type="text" id="add-event-location" name="location" class="form-control event-location" value="{{:location}}">
+		</div>
+		<div class="form-group">
+			<label for="add-event-priority">@Localizer["system_calendar_event_priority"]</label>
+			<select id="add-event-priority" name="priority" class="form-control event-priority"></select>
+		</div>
+		<div class="form-group">
+			<label for="add-event-members">@Localizer["system_calendar_event_members"]</label>
+			<select id="add-event-members" name="members" class="form-control event-members" multiple></select>
+		</div>
+		<button id="edit-form-submit" type="submit" class="btn btn-outline-primary w-100" data-draftid="{{:draftId}}">
+			@Localizer["system_calendar_update"]
+		</button>
 	</script>
 
 	<script>
+
+		const calendar = new Calendar();
+		const toast = new ToastNotifier();
+
 		!function ($) {
 			"use strict";
-
-			const calendar = new Calendar();
 			const eventTemplate = $.templates("#eventTemplate");
 
 			var CalendarApp = function () {
-				this.$body = $("body")
-				this.$calendar = $('#calendar'),
+				this.$body = $("body"),
+					this.$helpers = [],
+					this.$calendar = $('#calendar'),
 					this.$event = ('#calendar-events div.calendar-events'),
 					this.$categoryForm = $('#add-new-event form'),
 					this.$extEvents = $('#calendar-events'),
@@ -689,73 +808,35 @@
 
 			/* on drop */
 			CalendarApp.prototype.onDrop = function (eventObj, date) {
-				var $this = this;
-				// retrieve the dropped element's stored Event Object
-				var originalEventObject = eventObj.data('eventObject');
-				var $categoryClass = eventObj.attr('data-class');
-				// we need to copy it, so that multiple events don't have a reference to the same object
-				var copiedEventObject = $.extend({}, originalEventObject);
-				// assign it the date that was reported
-				copiedEventObject.start = date;
-				if ($categoryClass)
-					copiedEventObject['className'] = [$categoryClass];
-				// render the event on the calendar
-				$this.$calendar.fullCalendar('renderEvent', copiedEventObject, true);
-				// is the "remove after drop" checkbox checked?
-				if ($('#drop-remove').is(':checked')) {
-					// if so, remove the element from the "Draggable Events" list
-					eventObj.remove();
+				let calendarEvent = Object.assign({}, eventObj.data('eventObject'));
+
+				let eventData = {
+					title: eventObj.data('eventObject').title,
+					details: eventObj.data('event-details'),
+					location: eventObj.data('event-location'),
+					startDate: moment(date._i, date._f).format('DD/MM/YYYY'),
+					endDate: moment(date._i, date._f).format('DD/MM/YYYY'),
+					priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,
+					members: eventObj.data('event-members').split(',')
 				}
+				calendarEvent.start = date;
+				if (date.isAfter(new Date())) {
+					calendar.addEvent(eventData).then(newEventId => {
+						calendarEvent.id = newEventId;
+						console.log(calendarEvent);
+						$this.$calendar.fullCalendar('renderEvent', calendarEvent, true);
+					}).catch(e => {
+						toast.notifyErrorList(e);
+					});
+				} else {
+					toast.notify({ text: window.translate("system_calendar_error_date"), icon: "error" });
+				}
+
 			},
 
 				/* on click on event */
 				CalendarApp.prototype.onEventClick = function (calEvent, jsEvent, view) {
 					detailsPopup.show();
-				},
-				/* on select */
-				CalendarApp.prototype.onSelect = function (start, end, allDay) {
-					var $this = this;
-					$this.$modal.modal({
-						backdrop: 'static'
-					});
-					var form = $("<form></form>");
-					form.append("<div class='row'></div>");
-					form.find(".row")
-						.append("<div class='col-md-6'><div class='form-group'><label class='control-label'>Event Name</label><input class='form-control' placeholder='Insert Event Name' type='text' name='title' /></div></div>")
-						.append("<div class='col-md-6'><div class='form-group'><label class='control-label'>Category</label><select class='form-control' name='category'></select></div></div>")
-						.find("select[name='category']")
-						.append("<option value='bg-danger'>Danger</option>")
-						.append("<option value='bg-success'>Success</option>")
-						.append("<option value='bg-purple'>Purple</option>")
-						.append("<option value='bg-primary'>Primary</option>")
-						.append("<option value='bg-pink'>Pink</option>")
-						.append("<option value='bg-info'>Info</option>")
-						.append("<option value='bg-warning'>Warning</option></div></div>");
-					$this.$modal.find('.delete-event').hide().end().find('.save-event').show().end().find('.modal-body').empty().prepend(form).end().find('.save-event').unbind('click').click(function () {
-						form.submit();
-					});
-					$this.$modal.find('form').on('submit', function () {
-						var title = form.find("input[name='title']").val();
-						var beginning = form.find("input[name='beginning']").val();
-						var ending = form.find("input[name='ending']").val();
-						var categoryClass = form.find("select[name='category'] option:checked").val();
-						if (title !== null && title.length != 0) {
-							$this.$calendarObj.fullCalendar('renderEvent', {
-								title: title,
-								start: start,
-								end: end,
-								allDay: false,
-								className: categoryClass
-							}, true);
-							$this.$modal.modal('hide');
-						}
-						else {
-							alert('You have to give a title to your event');
-						}
-						return false;
-
-					});
-					$this.$calendarObj.fullCalendar('unselect');
 				},
 				CalendarApp.prototype.enableDrag = function () {
 					//init events
@@ -763,7 +844,7 @@
 						// create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
 						// it doesn't need to have a start or end
 						var eventObject = {
-							title: $.trim($(this).text()) // use the element's text as the event title
+							title: $.trim($(this).find('.draft-event-title').text()) // use the element's text as the event title
 						};
 						// store the Event Object in the DOM element so we can get to it later
 						$(this).data('eventObject', eventObject);
@@ -776,18 +857,14 @@
 					});
 				}
 			/* Initializing */
-			CalendarApp.prototype.init = function () {
+			CalendarApp.prototype.init = function (helpers) {
+				this.$helpers = helpers;
 				this.enableDrag();
 				/*  Initialize the calendar  */
 				var date = new Date();
-				var d = date.getDate();
-				var m = date.getMonth();
-				var y = date.getFullYear();
-				var form = '';
-				var today = new Date($.now());
 				var $this = this;
 
-				const getConfig = {
+				let getConfig = {
 					userId: settings.user.id,
 					timeLyneType: 'month',
 					expandDayPrecision: 6
@@ -797,14 +874,20 @@
 				return calendar.getUserEventsByTimeLine(getConfig).then(result => {
 					$.each(result.events, function () {
 						const scope = this;
+
+						let editable = false;
+
+						if (scope.organizerInfo.id === getConfig.userId) {
+							editable = true;
+						}
+
 						events.push({
+							id: scope.id,
 							title: scope.title,
 							start: scope.startDate,
 							end: scope.endDate,
-							extendedProps: {
-								id: scope.id,
-								description: scope.description
-							},
+							description: scope.details,
+							editable: editable
 						});
 					});
 					$this.$calendarObj = $this.$calendar.fullCalendar({
@@ -813,7 +896,8 @@
 						maxTime: '19:00:00',
 						defaultView: 'month',
 						handleWindowResize: true,
-
+						fixedWeekCount: false,
+						firstDay: 1,
 						header: {
 							left: 'month,agendaWeek,agendaDay',
 							center: 'title',
@@ -823,9 +907,10 @@
 						eventRender: function (event, element, view) {
 							const time = moment(event.start._i, event.start._f).format('hha');
 							const htmlOutput = eventTemplate.render({
-								id: event.extendedProps.id,
+								id: event.id,
 								time: time,
-								title: event.title
+								title: event.title,
+								editable: event.editable
 							});
 							element.html(htmlOutput);
 						},
@@ -834,11 +919,25 @@
 						eventLimit: true, // allow "more" link when too many events
 						selectable: true,
 						drop: function (date) { $this.onDrop($(this), date); },
-						select: function (start, end, allDay) { $this.onSelect(start, end, allDay); },
-						//eventClick: function (calEvent, jsEvent, view) {
-						//	$this.onEventClick(calEvent, jsEvent, view);
-						//}
-
+						eventDrop: function (event, delta, revertFunc) {
+							const isAfter = event.start.isAfter(new Date());
+							if (!isAfter) {
+								toast.notify({ text: window.translate("system_calendar_error_date"), icon: "error" });
+								revertFunc();
+							}
+							else {
+								const startDate = event.start;
+								const endDate = event.end;
+								const daysBetween = endDate.diff(startDate, 'days');
+								const systemEvent = {
+									id: event.id,
+									title: event.title,
+									startDate: moment(event.start._i, event.start._f).format('DD/MM/YYYY'),
+									endDate: moment(event.start._i, event.start._f).add(daysBetween, 'days').format('DD/MM/YYYY')
+								}
+								calendar.updateEvent(systemEvent).then();
+							}
+						}
 					});
 
 					//on new event
@@ -864,25 +963,68 @@
 			//initializing CalendarApp
 			function ($) {
 				"use strict";
-				const toast = new ToastNotifier();
-				const calendar = new Calendar();
+				let draftEvents = [];
+
 				const templates = {
 					eventPopup: $.templates("#eventPopup"),
 					eventPopupEdit: $.templates("#eventPopupEdit"),
 					teamMember: $.templates("#teamMember"),
-					teamMemberEdit: $.templates("#teamMemberEdit")
+					teamMemberEdit: $.templates("#teamMemberEdit"),
+					eventDraftList: $.templates("#eventDraftList"),
+					editDraftEvent: $.templates("#editDraftEvent"),
+					eventDraftPopupEdit: $.templates("#eventDraftPopupEdit"),
 				}
 				const detailsPopup = $('.details-popup');
 				let helpers = [];
 				detailsPopup.hide();
+				loadDraftEvents();
+
+				$('#toggle-forms').on('click', function () {
+					$('#add-event').slideDown();
+					$('#edit-event').slideUp();
+				});
+
+				$('#add-event').submit(function (e) {
+					e.preventDefault();
+					const scope = $(this);
+					const eventObject = {
+						title: scope.find('.event-title').val(),
+						details: scope.find('.event-details').val(),
+						location: scope.find('.event-location').val(),
+						priority: scope.find('.event-priority').val(),
+						members: scope.find('.event-members').val()
+					}
+
+					const draftObject = Object.assign({}, eventObject);
+					draftObject.draftId = uniqueDraftId();
+
+					const htmlOutput = templates.eventDraftList.render(draftObject);
+					$('#calendar-events').append(htmlOutput);
+					draftEvents.push(draftObject);
+					setEventsLocalStorage(draftEvents);
+					$.CalendarApp.enableDrag();
+					$(this)[0].reset();
+					select2Refresh([$('.event-priority'), $('.event-members')]);
+					attachActionsDraftEvents();
+				});
 
 				$(document).ready(function () {
 					loadHelpers();
-
-					$('#add-event').submit(function (e) {
-						e.preventDefault();
-					});
 				});
+
+				function loadDraftEvents() {
+					$('#calendar-events').html(null);
+					draftEvents = localStorage.getItem("draftEvents");
+					draftEvents = JSON.parse(draftEvents);
+					$.each(draftEvents, function () {
+						const htmlOutput = templates.eventDraftList.render(this);
+						$('#calendar-events').append(htmlOutput);
+					});
+					if (draftEvents === null) {
+						draftEvents = [];
+					}
+					attachActionsDraftEvents();
+				}
 
 				function calendarRequest(request) {
 					return request.then(result => {
@@ -897,7 +1039,8 @@
 						fillMembersSelect(users, $('#add-event .event-members'));
 						calendarRequest(calendar.getHelpers()).then(data => {
 							helpers = data;
-							//fillSelect(helpers.EventPriority, $('#add-event .event-priority'), true);
+							helpers.users = users;
+							fillSelect(helpers.EventPriority, $('#add-event .event-priority'), true);
 							initCalendar();
 						});
 					});
@@ -905,10 +1048,10 @@
 
 				function fillSelect(options, selectTarget, translatable) {
 					selectTarget.html('');
-					$.each(options, function () {
-						let newOption = new Option(this.text, this.value);
+					$.each(options, function (index, value) {
+						let newOption = new Option(value.systemName, index);
 						if (translatable) {
-							newOption = new Option(window.translate(this.translateKey), this.value);;
+							newOption = new Option(window.translate(value.translationKey), index);;
 						}
 						selectTarget.append(newOption);
 					});
@@ -930,7 +1073,7 @@
 				}
 
 				function initCalendar() {
-					$.CalendarApp.init().then(() => {
+					$.CalendarApp.init(helpers).then(() => {
 						$('.calendar-controls').prepend($('.fc-toolbar'));
 						$('.fc-today-button').insertAfter($('.fc-prev-button'));
 						$('.fc-toolbar').addClass('row align-items-end');
@@ -938,6 +1081,7 @@
 						$('.fc-toolbar .fc-center').addClass('col text-left').insertAfter($('.fc-toolbar .fc-left'));
 						$('.fc-toolbar .fc-right').addClass('col-auto');
 						eventOnClick();
+						viewOnClick();
 					});
 				}
 
@@ -946,8 +1090,8 @@
 						//e.preventDefault();
 						let target = $(e.target);
 
-						const isEvent = target.is('.fc-day-grid-event.fc-event');
-						const isEventElement = target.is('.fc-day-grid-event.fc-event *');
+						const isEvent = target.is('.fc-event');
+						const isEventElement = target.is('.fc-event *');
 						const isPopup = target.is('.details-popup');
 						const isPopupElement = target.is('.details-popup *');
 						const isPopupAction = target.is('.details-popup .event-edit i') || target.is('.details-popup .event-delete i');
@@ -955,12 +1099,36 @@
 						if (isEvent) {
 							addPopup(target, 'eventPopup');
 						} else if (isEventElement) {
-							addPopup(target.closest('.fc-day-grid-event.fc-event'), 'eventPopup');
+							addPopup(target.closest('.fc-event'), 'eventPopup');
 						} else if (!isPopupAction && popupCase) {
 							return;
 						} else {
 							$('.details-popup').data('visibility', 'hidden').hide();
 						}
+					});
+				}
+
+				function viewOnClick() {
+					let getConfig = {
+						userId: settings.user.id,
+						timeLineType: 'month',
+						expandDayPrecision: 6
+					}
+
+					let originDateDirection = 'next';
+
+					$('.fc-header-toolbar .fc-left button').on('click', function () {
+						const currentView = $.CalendarApp.$calendar.fullCalendar('getView');
+						getConfig.timeLineType = currentView.dateProfile.currentRangeUnit;
+					});
+
+					$('.fc-header-toolbar .fc-prev-button').on('click', function () {
+						originDateDirection = 'prev';
+						loadEvents(getConfig, originDateDirection);
+					});
+
+					$('.fc-header-toolbar .fc-next-button').on('click', function () {
+						loadEvents(getConfig, originDateDirection);
 					});
 				}
 
@@ -971,17 +1139,24 @@
 					if (membersList.length > 0) {
 						loadPlace.closest('.details-popup-members').show();
 						$.each(membersList, function (index, value) {
-							if (template != 'teamMember') {
-								htmlOutput = templates.teamMemberEdit.render(value);
+							let acceptance = '';
+							switch (value.acceptance) {
+								case 0: { acceptance = 'check_circle_outline' };
+								case 1: { acceptance = 'help_outline' };
+								case 2: { acceptance = 'check_circle_outline' };
+							}
+							if (template === 'teamMember') {
+								htmlOutput = templates.teamMember.render(value, { acceptanceIcon: acceptance });
 							} else {
-								htmlOutput = templates.teamMember.render(value);
+								htmlOutput = templates.teamMemberEdit.render(value, { acceptanceIcon: acceptance });
 							}
 							loadPlace.append(htmlOutput);
 						});
 					}
 					else {
-						loadPlace.closest('.details-popup-members').hide();
+						loadPlace.html(window.translate('system_calendar_no_members'));
 					}
+					window.forceTranslate($('.details-popup-members-list'));
 				}
 
 				function attachEventsPopupActions(target) {
@@ -990,10 +1165,21 @@
 						$('.details-popup').data('visibility', 'null');
 						addPopup(target, 'eventPopupEdit');
 					});
+					$('.details-popup .event-delete').on('click', function (e) {
+						const eventId = $(this).data('event-id');
+						e.preventDefault();
+						$('.details-popup').data('visibility', 'null');
+
+						calendar.deletePermanently({ eventId }).then(() => {
+							$('.details-popup').hide();
+							$.CalendarApp.$calendar.fullCalendar('removeEvents', [eventId]);
+						});
+					});
 				}
 
 				function addPopup(targetPopup, template) {
-					let eventId = targetPopup.children('.fc-content').data('event-id');
+					const eventId = targetPopup.children('.fc-content').data('event-id');
+					const editable = targetPopup.children('.fc-content').data('event-editable');
 					let htmlOutput = null;
 					if ($('.details-popup').data('visibility') === `visible-${eventId}`) {
 						return;
@@ -1003,20 +1189,20 @@
 							startDate: moment(event.startDate, "YYYY-MM-DDTHH:mm:ss").format('MMM D, YYYY'),
 							startTime: moment(event.startDate, "YYYY-MM-DDTHH:mm:ss").format('HH:mm'),
 							endTime: moment(event.endDate, "YYYY-MM-DDTHH:mm:ss").format('HH:mm'),
-							priority: helpers.EventPriority[event.priority],
+							priority: window.translate(helpers.EventPriority[event.priority].translationKey),
+							editable: editable
 						};
 
 						if (template != 'eventPopup') {
 							htmlOutput = templates.eventPopupEdit.render(event, renderHelpers);
-							loadMembersInPopup(event.invitedUsers, 'teamMemberEdit');
 							$('.details-popup').html(htmlOutput);
+							loadMembersInPopup(event.invitedUsers, 'teamMemberEdit');
 						} else {
 							htmlOutput = templates.eventPopup.render(event, renderHelpers);
-							loadMembersInPopup(event.invitedUsers, 'teamMember');
 							$('.details-popup').html(htmlOutput);
+							loadMembersInPopup(event.invitedUsers, 'teamMember');
 							attachEventsPopupActions(targetPopup);
 						}
-
 
 						let popper = new Popper(targetPopup, $('.details-popup'), {
 							placement: 'right',
@@ -1025,7 +1211,136 @@
 								element: '.popup__arrow'
 							}
 						});
+						window.forceTranslate($('.details-popup'));
 						$('.details-popup').data('visibility', `visible-${eventId}`).show();
+					});
+				}
+
+				function attachActionsDraftEvents() {
+					$('#calendar-events .calendar-events .draft-event-edit').off().on('click', function () {
+						$('#edit-event').html(null);
+						const draftEvent = $(this).closest('.calendar-events');
+						const event = {
+							draftId: draftEvent.data('draftid'),
+							title: draftEvent.data('event-title'),
+							details: draftEvent.data('event-details'),
+							location: draftEvent.data('event-location'),
+							priority: draftEvent.data('event-priority'),
+							members: draftEvent.data('event-members').split(',')
+						}
+						const htmlOutput = templates.editDraftEvent.render(event);
+						$('#edit-event').append(htmlOutput);
+
+						fillMembersSelect(helpers.users, $('#edit-event .event-members'));
+						fillSelect(helpers.EventPriority, $('#edit-event .event-priority'), true);
+
+						$('#edit-event').find(`.event-priority option[value=${event.priority}]`).prop('selected', true);
+						if (event.members.length > 1) {
+							$.each(event.members, function () {
+								$('#edit-event').find(`.event-members option[value=${this}]`).prop('selected', true);
+							});
+						}
+
+						select2Refresh([$('.event-priority'), $('.event-members')]);
+
+						updateFormSubmitJsAction();
+
+						$('#add-event').slideUp();
+						$('#edit-event').slideDown();
+					});
+					$('#calendar-events .calendar-events .draft-event-delete').off().on('click', function () {
+						const draftId = $(this).closest('.calendar-events').data('draftid');
+						draftEvents = draftEvents.filter(function (event) {
+							return event.draftId !== draftId;
+						});
+						setEventsLocalStorage(draftEvents);
+						$(this).closest('.calendar-events').remove();
+					});
+				}
+
+				function updateFormSubmitJsAction() {
+					$('#edit-event').off().submit(function (e) {
+						e.preventDefault();
+						const scope = $(this);
+						const draftObject = {
+							draftId: scope.find('#edit-form-submit').data('draftid'),
+							title: scope.find('.event-title').val(),
+							details: scope.find('.event-details').val(),
+							location: scope.find('.event-location').val(),
+							priority: scope.find('.event-priority').val(),
+							members: scope.find('.event-members').val()
+						}
+
+						const htmlOutput = templates.eventDraftList.render(draftObject);
+						$(`.calendar-events[data-draftid="${draftObject.draftId}"]`).replaceWith(htmlOutput);
+
+						var foundIndex = draftEvents.findIndex(x => x.draftId == draftObject.draftId);
+						draftEvents[foundIndex] = Object.assign({}, draftObject);
+						setEventsLocalStorage(draftEvents);
+
+						$.CalendarApp.enableDrag();
+						$(this)[0].reset();
+						attachActionsDraftEvents();
+						scope.slideUp();
+					});
+				}
+
+				function findObjectByProperty(array, property, propertyValue) {
+					const result = array.find(({ property }) => property === propertyValue);
+					return result;
+				}
+
+				function setEventsLocalStorage(events) {
+					localStorage.setItem("draftEvents", JSON.stringify(events));
+				}
+
+				function uniqueDraftId() {
+					return '_' + Math.random().toString(36).substr(2, 9);
+				}
+
+				function select2Refresh(targets) {
+					$.each(targets, function () {
+						$(this).select2();
+					});
+				}
+
+				function loadEvents(config, originDirection) {
+
+					let getConfig = config;
+					const currentView = $.CalendarApp.$calendar.fullCalendar('getView');
+					getConfig.origin = currentView.dateProfile.date.format("MM/DD/YYYY");
+
+
+					switch (getConfig.timeLineType) {
+						case 'week':
+						case 'day': {
+							getConfig.expandDayPrecision = 0;
+							break;
+						} default: {
+							getConfig.expandDayPrecision = 6;
+						}
+					}
+
+					calendar.getUserEventsByTimeLine(getConfig).then(result => {
+						$.each(result.events, function () {
+							const scope = this;
+							const existingEvent = $.CalendarApp.$calendar.fullCalendar('clientEvents', scope.id);
+							if (existingEvent.length === 0) {
+								let editable = false;
+								if (scope.organizerInfo.id === getConfig.userId) {
+									editable = true;
+								}
+								const event = {
+									id: scope.id,
+									title: scope.title,
+									start: scope.startDate,
+									end: scope.endDate,
+									description: scope.details,
+									editable: editable
+								}
+								$.CalendarApp.$calendar.fullCalendar('renderEvent', event, true);
+							}
+						});
 					});
 				}
 
