@@ -9,8 +9,8 @@
 	<LangVersion>7.3</LangVersion>
 	<Version>1.0.2</Version>
 	<Authors>Lupei Nicolae</Authors>
-	<Company>Soft-Tehnica</Company>
-	<Product>ST Gear</Product>
+	<Company>Indrivo</Company>
+	<Product>Gear</Product>
 	<Description>BPMN</Description>
 	<Copyright>Indrivo 2019</Copyright>
   </PropertyGroup>
@@ -110,8 +110,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.LdapExtension\GR.Identity.LdapAuth\GR.Identity.LdapAuth.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install.Razor\GR.Install.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install\GR.Install.csproj" />	
-	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.Services.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj" />	
+	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
@@ -119,9 +119,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender.Razor\GR.PageRender.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender\GR.PageRender.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic.Razor\GR.Report.Dynamic.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager\GR.TaskManager.Abstractions\GR.TaskManager.Abstractions.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager\GR.TaskManager\GR.TaskManager.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager\GR.TaskManager.csproj" />
   </ItemGroup>
   <ItemGroup>
 	<Content Update="fileSettings.json">

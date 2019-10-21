@@ -261,7 +261,7 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 	const entityName = rowContext.attr("entityName");
 	const isValid = this.isValidNewRow(rowContext);
 	if (!isValid) {
-		return this.toaGR.notify({ heading: window.translate("system_inline_edit_validate_row") });
+		return this.toast.notify({ heading: window.translate("system_inline_edit_validate_row") });
 	}
 
 	if (rowContext.attr(this.attributeNames.addingInProgressAttr) === "true") return 1;
@@ -270,14 +270,14 @@ TableInlineEdit.prototype.addNewItem = function (context) {
 	const data = this.getRowDataOnAddMode(rowContext);
 	this.db.addAsync(entityName, data).then(req => {
 		if (req.is_success) {
-			this.toaGR.notify({ heading: window.translate("system_inline_edit_row_added"), icon: "success" });
+			this.toast.notify({ heading: window.translate("system_inline_edit_row_added"), icon: "success" });
 			dTable.draw();
 			this.toggleVisibilityColumnsButton(context, false);
 			context.off("click");
 			this.cancelTableAddMode(context);
 		} else {
 			$(context).attr(this.attributeNames.addingInProgressAttr, "false");
-			this.toaGR.notify({ heading: req.error_keys[0].message });
+			this.toast.notify({ heading: req.error_keys[0].message });
 			this.toggleVisibilityColumnsButton(context, false);
 		}
 	}).catch(err => {
@@ -1084,7 +1084,7 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 										obj[`${parsedPropName}Reference`] = refObject.result;
 										obj[parsedPropName] = value;
 									} else {
-										this.toaGR.notifyErrorList(refObject.error_keys);
+										this.toast.notifyErrorList(refObject.error_keys);
 									}
 									pr1Resolve();
 								}).catch(err => { console.warn(err) });
@@ -1115,7 +1115,7 @@ TableInlineEdit.prototype.completeInlineEditForRow = function (target) {
 										if (mResult.is_success) {
 											obj[`${sourceEntity.value.toLowerFirstLetter()}Reference`] = mResult.result;
 										} else {
-											this.toaGR.notifyErrorList(mResult.error_keys);
+											this.toast.notifyErrorList(mResult.error_keys);
 										}
 										localResolve();
 									}).catch(err => {

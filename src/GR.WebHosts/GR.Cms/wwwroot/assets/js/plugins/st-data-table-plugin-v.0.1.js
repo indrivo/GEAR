@@ -214,13 +214,13 @@ TableBuilder.prototype.deleteItem = function (rowId, tableId, viewModelId) {
 				if (data.is_success) {
 					const oTable = $(`${tableId}`).DataTable();
 					oTable.draw();
-					this.toaGR.notify({ heading: window.translate("row_deleted"), icon: "success" });
+					this.toast.notify({ heading: window.translate("row_deleted"), icon: "success" });
 				} else {
-					this.toaGR.notifyErrorList(data.error_keys);
+					this.toast.notifyErrorList(data.error_keys);
 				}
 			}).catch(err => {
 				console.log(err);
-				this.toaGR.notify({ heading: window.translate("delete_fail"), text: window.translate("api_not_respond") });
+				this.toast.notify({ heading: window.translate("delete_fail"), text: window.translate("api_not_respond") });
 			});
 		}
 	});
@@ -251,12 +251,12 @@ TableBuilder.prototype.deleteItemForever = function (rowId, tableId, viewModelId
 				if (data.is_success) {
 					const oTable = $(`${tableId}`).DataTable();
 					oTable.draw();
-					this.toaGR.notify({ heading: window.translate("row_deleted"), icon: "success" });
+					this.toast.notify({ heading: window.translate("row_deleted"), icon: "success" });
 				} else {
-					this.toaGR.notifyErrorList(data.error_keys);
+					this.toast.notifyErrorList(data.error_keys);
 				}
 			}).catch(err => {
-				this.toaGR.notify({ heading: window.translate("delete_fail"), text: window.translate("api_not_respond") });
+				this.toast.notify({ heading: window.translate("delete_fail"), text: window.translate("api_not_respond") });
 			});
 		}
 	});
@@ -358,7 +358,7 @@ TableBuilder.prototype.deleteSelectedRows = function () {
 TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 	const tableId = ctx.table().node().id;
 	if (!tableId) {
-		return this.toaGR.notify({ heading: "Something did not work" });
+		return this.toast.notify({ heading: "Something did not work" });
 	}
 	const selected = ctx.rows({ selected: true }).data();
 	const viewModelId = $(`#${tableId}`).attr("db-viewmodel");
@@ -382,12 +382,12 @@ TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 
 		Promise.all(promises).then(x => {
 			ctx.ajax.reload();
-			this.toaGR.notify({ heading: window.translate("items_deleted"), icon: "success" });
+			this.toast.notify({ heading: window.translate("items_deleted"), icon: "success" });
 		}).catch(e => {
-			this.toaGR.notify({ heading: window.translate("fail_delete_items") });
+			this.toast.notify({ heading: window.translate("fail_delete_items") });
 		});
 	} else {
-		this.toaGR.notify({ heading: window.translate("delete_no_selected_items"), icon: "warning" });
+		this.toast.notify({ heading: window.translate("delete_no_selected_items"), icon: "warning" });
 	}
 };
 

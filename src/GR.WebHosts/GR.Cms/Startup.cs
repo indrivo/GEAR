@@ -52,11 +52,9 @@ using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Identity.Services;
 using GR.Identity.Versioning;
 using GR.Install.Abstractions.Extensions;
-using GR.Localization;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
-using GR.Localization.Services;
 using ST.MPass.Gov;
 using GR.Notifications;
 using GR.Notifications.Abstractions.Extensions;
@@ -82,7 +80,6 @@ using GR.Application.Middleware.Server;
 using GR.Audit;
 using GR.Audit.Abstractions.Extensions;
 using GR.Calendar;
-using GR.Calendar.Abstractions.BackGroundServices;
 using GR.Calendar.Abstractions.Extensions;
 using GR.Calendar.Abstractions.ExternalProviders;
 using GR.Calendar.Abstractions.ExternalProviders.Extensions;
@@ -112,7 +109,7 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
-using ST.Localization;
+using GR.Localization;
 
 #endregion
 
@@ -350,7 +347,7 @@ namespace GR.Cms
 				.AddNotificationRazorUIModule();
 
 			//---------------------------------Localization Module-------------------------------------
-			services.AddLocalizationModule<LocalizationService, YandexTranslationProvider>(new TranslationModuleOptions
+			services.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(new TranslationModuleOptions
 			{
 				Configuration = Configuration,
 				LocalizationProvider = LocalizationProvider.Yandex

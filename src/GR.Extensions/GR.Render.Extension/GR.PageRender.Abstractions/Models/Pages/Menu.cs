@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
+using GR.Core.Attributes;
 
 namespace GR.PageRender.Abstractions.Models.Pages
 {
@@ -14,6 +15,7 @@ namespace GR.PageRender.Abstractions.Models.Pages
     public class MenuItem : BaseModel
     {
         [Required]
+        [DisplayTranslate(Key = "name")]
         public string Name { get; set; }
         public string Href { get; set; }
         public string Translate { get; set; }
@@ -22,6 +24,8 @@ namespace GR.PageRender.Abstractions.Models.Pages
         public Guid MenuId { get; set; }
         public Guid? ParentMenuItemId { get; set; }
         public string AllowedRoles { get; set; }
+
+        [DisplayTranslate(Key = "system_order")]
         public int Order { get; set; } = 1;
     }
 

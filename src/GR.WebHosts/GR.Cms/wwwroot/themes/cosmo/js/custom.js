@@ -111,9 +111,9 @@ $(function(){
 				var dataStyle = $(this).attr( 'data-style' );
 
 
-				if( $('.toaGR.' + dataAlignment + '-' + dataPlacement).length  ){
+				if( $('.toast.' + dataAlignment + '-' + dataPlacement).length  ){
 					
-					$('.toaGR.' + dataAlignment + '-' + dataPlacement ).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
+					$('.toast.' + dataAlignment + '-' + dataPlacement ).append('<div class="alert alert-dismissible fade show alert-' + dataStyle + ' "> ' + dataContent + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true" class="material-icons md-18">clear</span></button></div>');
 
 				}
 				else{

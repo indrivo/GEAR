@@ -5,12 +5,11 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <PackageReleaseNotes>- Add remind notification before event minutes to remind set
-- Remove task manager unused ref
-- Fix sent remind message more than one</PackageReleaseNotes>
-    <Version>1.0.5</Version>
+    <PackageReleaseNotes>- Fix month timeline  start  date</PackageReleaseNotes>
+    <Version>1.0.6</Version>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar</RepositoryUrl>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar</PackageProjectUrl>
+    <Description>Implementation of calendar repository with Entity framework</Description>
   </PropertyGroup>
 
   <ItemGroup>

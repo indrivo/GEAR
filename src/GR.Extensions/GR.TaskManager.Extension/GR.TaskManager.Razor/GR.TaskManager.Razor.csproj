@@ -3,6 +3,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <Authors>Girbu Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

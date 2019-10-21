@@ -70,8 +70,8 @@ $(() => {
             data.event = section.data("event");
             data.template = section.find(".templateValue").val();
             data.subject = section.find(".notificationSubject").val();
-            if (!data.template) return toaGR.notify({ heading: "Error", text: "Template can't be null!" });
-            if (!data.subject) return toaGR.notify({ heading: "Error", text: "Subject can't be null!" });
+            if (!data.template) return toast.notify({ heading: "Error", text: "Template can't be null!" });
+            if (!data.subject) return toast.notify({ heading: "Error", text: "Subject can't be null!" });
             const roles = section.find(".roles").find("input[type=checkbox]");
             $.each(roles,
                 (index, role) => {
@@ -83,17 +83,17 @@ $(() => {
             window.loadAsync("/NotificationSubscriptions/SaveNotificationSubscription", data, "post")
                 .then(serverResponse => {
                     if (serverResponse.is_success) {
-                        toaGR.notify({
+                        toast.notify({
                             heading: "Info",
                             text: window.translate("system_inline_saved"),
                             icon: "success"
                         });
                     } else {
-                        toaGR.notifyErrorList(serverResponse.error_keys);
+                        toast.notifyErrorList(serverResponse.error_keys);
                     }
                 }).catch(e => {
                     console.warn(e);
-                    toaGR.notify({ heading: "Error", text: "Something went wrong!" });
+                    toast.notify({ heading: "Error", text: "Something went wrong!" });
                 });
             return 0;
         });

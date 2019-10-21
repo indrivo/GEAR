@@ -97,13 +97,13 @@
                             },
                             success: (d) => {
                                 if (d.is_success) {
-                                    toaGR.notify({ icon: "success", heading: "Info", text: "Widget was imported" });
+                                    toast.notify({ icon: "success", heading: "Info", text: "Widget was imported" });
                                 } else {
-                                    toaGR.notifyErrorList(d.error_keys);
+                                    toast.notifyErrorList(d.error_keys);
                                 }
                             },
                             error: (e) => {
-                                toaGR.notify({ heading: "Info", text: "Server error!" });
+                                toast.notify({ heading: "Info", text: "Server error!" });
                             }
                         });
                     } else {

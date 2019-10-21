@@ -178,7 +178,7 @@ namespace GR.Calendar
                     response = await GetEventsAsync(userId, weekStart, weekEnd);
                     break;
                 case CalendarTimeLineType.Month:
-                    var monthStart = today.AddDays(1 - today.Day + expandDayPrecision);
+                    var monthStart = today.AddDays(-(today.Day + expandDayPrecision));
                     var monthEnd = monthStart.AddMonths(1).AddDays(expandDayPrecision * 2).AddSeconds(-1);
                     response = await GetEventsAsync(userId, monthStart, monthEnd);
                     break;
@@ -199,14 +199,14 @@ namespace GR.Calendar
         public async Task<ResultModel<Guid>> AddEventAsync(BaseEventViewModel model)
         {
             var response = new ResultModel<Guid>();
-            var currentuserRequest = await _userManager.GetCurrentUserAsync();
-            if (!currentuserRequest.IsSuccess)
+            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "You are not authorized"));
                 return response;
             }
 
-            var user = currentuserRequest.Result;
+            var user = currentUserRequest.Result;
             var evt = model.Adapt<CalendarEvent>();
             evt.Organizer = user.Id.ToGuid();
             await _context.CalendarEvents.AddAsync(evt);

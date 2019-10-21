@@ -11,8 +11,8 @@ using Microsoft.Extensions.Options;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Localization.Abstractions;
+using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
-using ST.Localization;
 
 namespace GR.Localization.Razor.Controllers
 {

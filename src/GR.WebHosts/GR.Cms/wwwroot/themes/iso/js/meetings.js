@@ -34,7 +34,7 @@ class IsoMeetings {
 	constructor(meetingId) {
 		this.templateManager.registerTemplate("template_template_meeting_children_accordion");
 		this.meetingId = meetingId;
-		if (!meetingId) return toaGR.notify({ heading: "Meeting not found" });
+		if (!meetingId) return toast.notify({ heading: "Meeting not found" });
 		this.init();
 	}
 
@@ -235,16 +235,16 @@ class IsoMeetings {
 							this.bindEventsToCollapseActions();
 							window.forceTranslate(blockId);
 						} else {
-							this.toaGR.notifyErrorList(result.error_keys);
+							this.toast.notifyErrorList(result.error_keys);
 						}
 					}).catch(e => {
-						this.toaGR.notify({ heading: "Fail" });
+						this.toast.notify({ heading: "Fail" });
 					});
 				} else {
-					this.toaGR.notifyErrorList(result.error_keys);
+					this.toast.notifyErrorList(result.error_keys);
 				}
 			}).catch(err => {
-				this.toaGR.notify({ heading: "Fail" });
+				this.toast.notify({ heading: "Fail" });
 			});
 	}
 
@@ -379,9 +379,9 @@ class IsoMeetings {
 		this.meeting[data.key] = data.value;
 		this.db.updateAsync(this.entities.meetings, this.meeting).then(response => {
 			if (response.is_success) {
-				this.toaGR.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
+				this.toast.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
 			} else {
-				this.toaGR.notifyErrorList(response.error_keys);
+				this.toast.notifyErrorList(response.error_keys);
 			}
 		}).catch(e => {
 			console.warn(e);

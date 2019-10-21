@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <form id="block_create" asp-action="RegisterCompany" role="form" enctype="multipart/form-data">
                         <div class="form-body">
-                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                             <div class="row p-t-20">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -35,7 +35,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label asp-for="Password" class="control-label"></label>
+                                        <JTranslateLabel asp-for="Password" class="control-label"></JTranslateLabel>
                                         <div class="input-group">
                                             <input asp-for="Password" class="form-control" />
                                             <div class="input-group-append">
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label asp-for="RepeatPassword" class="control-label"></label>
+                                        <JTranslateLabel asp-for="RepeatPassword" class="control-label"></JTranslateLabel>
                                         <div class="input-group">
                                             <input asp-for="RepeatPassword" class="form-control" />
                                             <div class="input-group-append">
