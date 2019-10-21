@@ -1,0 +1,38 @@
+﻿@model GR.Identity.Razor.ViewModels.AccountViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="ui grid">
+	<div class="ui two column centered grid">
+		<div class="column">
+			<h2>@ViewData["Title"]</h2>
+			<h4 class="text-center">Create a new account.</h4>
+			<div class=" ui top attached segment">
+				<form class="ui form" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+					<div asp-validation-summary="All" ></div>
+					<div class="field">
+						<label asp-for="Email"></label>
+						<input asp-for="Email" />
+						<span asp-validation-for="Email" class="text-danger"></span>
+					</div>
+					<div class="field">
+						<label asp-for="Password"></label>
+						<input asp-for="Password" />
+						<span asp-validation-for="Password" class="text-danger"></span>
+					</div>
+					<div class="field">
+						<label asp-for="ConfirmPassword"></label>
+						<input asp-for="ConfirmPassword"/>
+						<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+					</div>
+					<button class="ui button" type="submit">Register</button>
+					<a asp-action="Login" class="ui link">Go back</a>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/ST.WebHosts/ST.Cms/ST.Cms.csproj"
+                "${workspaceFolder}/GR.WebHosts/GR.Cms/GR.Cms.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/ST.WebHosts/ST.Cms/ST.Cms.csproj"
+                "${workspaceFolder}/GR.WebHosts/GR.Cms/GR.Cms.csproj"
             ],
             "problemMatcher": "$tsc"
         },
@@ -28,7 +28,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/ST.WebHosts/ST.Cms/ST.Cms.csproj"
+                "${workspaceFolder}/GR.WebHosts/GR.Cms/GR.Cms.csproj"
             ],
             "problemMatcher": "$tsc"
         }

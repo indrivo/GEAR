@@ -1,0 +1,4999 @@
+[
+  {
+    "Id": "BD",
+    "Name": "Bangladesh",
+    "Code3": "BGD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 1,
+        "CountryId": "BD",
+        "Code": null,
+        "Name": "Dhaka",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BE",
+    "Name": "Belgium",
+    "Code3": "BEL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 2,
+        "CountryId": "BE",
+        "Code": null,
+        "Name": "Brussels",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BF",
+    "Name": "Burkina Faso",
+    "Code3": "BFA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 3,
+        "CountryId": "BF",
+        "Code": null,
+        "Name": "Ouagadougou",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BG",
+    "Name": "Bulgaria",
+    "Code3": "BGR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 4,
+        "CountryId": "BG",
+
+        "Code": null,
+        "Name": "Sofia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BA",
+    "Name": "Bosnia and Herzegovina",
+    "Code3": "BIH",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 5,
+        "CountryId": "BA",
+
+        "Code": null,
+        "Name": "Sarajevo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BB",
+    "Name": "Barbados",
+    "Code3": "BRB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 6,
+        "CountryId": "BB",
+
+        "Code": null,
+        "Name": "Bridgetown",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "WF",
+    "Name": "Wallis and Futuna",
+    "Code3": "WLF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 7,
+        "CountryId": "WF",
+
+        "Code": null,
+        "Name": "Mata Utu",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BL",
+    "Name": "Saint Barthelemy",
+    "Code3": "BLM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 8,
+        "CountryId": "BL",
+
+        "Code": null,
+        "Name": "Gustavia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BM",
+    "Name": "Bermuda",
+    "Code3": "BMU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 9,
+        "CountryId": "BM",
+
+        "Code": null,
+        "Name": "Hamilton",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BN",
+    "Name": "Brunei",
+    "Code3": "BRN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 10,
+        "CountryId": "BN",
+
+        "Code": null,
+        "Name": "Bandar Seri Begawan",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BO",
+    "Name": "Bolivia",
+    "Code3": "BOL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 11,
+        "CountryId": "BO",
+
+        "Code": null,
+        "Name": "Sucre",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BH",
+    "Name": "Bahrain",
+    "Code3": "BHR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 12,
+        "CountryId": "BH",
+
+        "Code": null,
+        "Name": "Manama",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BI",
+    "Name": "Burundi",
+    "Code3": "BDI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 13,
+        "CountryId": "BI",
+
+        "Code": null,
+        "Name": "Bujumbura",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BJ",
+    "Name": "Benin",
+    "Code3": "BEN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 14,
+        "CountryId": "BJ",
+
+        "Code": null,
+        "Name": "Porto-Novo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BT",
+    "Name": "Bhutan",
+    "Code3": "BTN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 15,
+        "CountryId": "BT",
+
+        "Code": null,
+        "Name": "Thimphu",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "JM",
+    "Name": "Jamaica",
+    "Code3": "JAM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 16,
+        "CountryId": "JM",
+
+        "Code": null,
+        "Name": "Kingston",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BV",
+    "Name": "Bouvet Island",
+    "Code3": "BVT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 17,
+        "CountryId": "BV",
+
+        "Code": null,
+        "Name": "",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BW",
+    "Name": "Botswana",
+    "Code3": "BWA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 18,
+        "CountryId": "BW",
+
+        "Code": null,
+        "Name": "Gaborone",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "WS",
+    "Name": "Samoa",
+    "Code3": "WSM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 19,
+        "CountryId": "WS",
+
+        "Code": null,
+        "Name": "Apia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BQ",
+    "Name": "Bonaire, Saint Eustatius and Saba ",
+    "Code3": "BES",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 20,
+        "CountryId": "BQ",
+
+        "Code": null,
+        "Name": "",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BR",
+    "Name": "Brazil",
+    "Code3": "BRA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 21,
+        "CountryId": "BR",
+
+        "Code": null,
+        "Name": "Brasilia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BS",
+    "Name": "Bahamas",
+    "Code3": "BHS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 22,
+        "CountryId": "BS",
+
+        "Code": null,
+        "Name": "Nassau",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "JE",
+    "Name": "Jersey",
+    "Code3": "JEY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 23,
+        "CountryId": "JE",
+
+        "Code": null,
+        "Name": "Saint Helier",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BY",
+    "Name": "Belarus",
+    "Code3": "BLR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 24,
+        "CountryId": "BY",
+
+        "Code": null,
+        "Name": "Minsk",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "BZ",
+    "Name": "Belize",
+    "Code3": "BLZ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 25,
+        "CountryId": "BZ",
+
+        "Code": null,
+        "Name": "Belmopan",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "RU",
+    "Name": "Russia",
+    "Code3": "RUS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 26,
+        "CountryId": "RU",
+
+        "Code": null,
+        "Name": "Moscow",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "RW",
+    "Name": "Rwanda",
+    "Code3": "RWA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 27,
+        "CountryId": "RW",
+
+        "Code": null,
+        "Name": "Kigali",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "RS",
+    "Name": "Serbia",
+    "Code3": "SRB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 28,
+        "CountryId": "RS",
+
+        "Code": null,
+        "Name": "Belgrade",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TL",
+    "Name": "East Timor",
+    "Code3": "TLS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 29,
+        "CountryId": "TL",
+
+        "Code": null,
+        "Name": "Dili",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "RE",
+    "Name": "Reunion",
+    "Code3": "REU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 30,
+        "CountryId": "RE",
+
+        "Code": null,
+        "Name": "Saint-Denis",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TM",
+    "Name": "Turkmenistan",
+    "Code3": "TKM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 31,
+        "CountryId": "TM",
+
+        "Code": null,
+        "Name": "Ashgabat",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TJ",
+    "Name": "Tajikistan",
+    "Code3": "TJK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 32,
+        "CountryId": "TJ",
+
+        "Code": null,
+        "Name": "Dushanbe",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "RO",
+    "Name": "Romania",
+    "Code3": "ROU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 33,
+        "CountryId": "RO",
+
+        "Code": null,
+        "Name": "Bucharest",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TK",
+    "Name": "Tokelau",
+    "Code3": "TKL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 34,
+        "CountryId": "TK",
+
+        "Code": null,
+        "Name": "",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GW",
+    "Name": "Guinea-Bissau",
+    "Code3": "GNB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 35,
+        "CountryId": "GW",
+
+        "Code": null,
+        "Name": "Bissau",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GU",
+    "Name": "Guam",
+    "Code3": "GUM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 36,
+        "CountryId": "GU",
+
+        "Code": null,
+        "Name": "Hagatna",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GT",
+    "Name": "Guatemala",
+    "Code3": "GTM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 37,
+        "CountryId": "GT",
+
+        "Code": null,
+        "Name": "Guatemala City",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GS",
+    "Name": "South Georgia and the South Sandwich Islands",
+    "Code3": "SGS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 38,
+        "CountryId": "GS",
+
+        "Code": null,
+        "Name": "Grytviken",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GR",
+    "Name": "Greece",
+    "Code3": "GRC",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 39,
+        "CountryId": "GR",
+
+        "Code": null,
+        "Name": "Athens",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GQ",
+    "Name": "Equatorial Guinea",
+    "Code3": "GNQ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 40,
+        "CountryId": "GQ",
+
+        "Code": null,
+        "Name": "Malabo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GP",
+    "Name": "Guadeloupe",
+    "Code3": "GLP",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 41,
+        "CountryId": "GP",
+
+        "Code": null,
+        "Name": "Basse-Terre",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "JP",
+    "Name": "Japan",
+    "Code3": "JPN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 42,
+        "CountryId": "JP",
+
+        "Code": null,
+        "Name": "Tokyo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GY",
+    "Name": "Guyana",
+    "Code3": "GUY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 43,
+        "CountryId": "GY",
+
+        "Code": null,
+        "Name": "Georgetown",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GG",
+    "Name": "Guernsey",
+    "Code3": "GGY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 44,
+        "CountryId": "GG",
+
+        "Code": null,
+        "Name": "St Peter Port",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GF",
+    "Name": "French Guiana",
+    "Code3": "GUF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 45,
+        "CountryId": "GF",
+
+        "Code": null,
+        "Name": "Cayenne",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GE",
+    "Name": "Georgia",
+    "Code3": "GEO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 46,
+        "CountryId": "GE",
+
+        "Code": null,
+        "Name": "Tbilisi",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GD",
+    "Name": "Grenada",
+    "Code3": "GRD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 47,
+        "CountryId": "GD",
+
+        "Code": null,
+        "Name": "GR. George's",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GB",
+    "Name": "United Kingdom",
+    "Code3": "GBR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 48,
+        "CountryId": "GB",
+
+        "Code": null,
+        "Name": "London",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GA",
+    "Name": "Gabon",
+    "Code3": "GAB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 49,
+        "CountryId": "GA",
+
+        "Code": null,
+        "Name": "Libreville",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SV",
+    "Name": "El Salvador",
+    "Code3": "SLV",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 50,
+        "CountryId": "SV",
+
+        "Code": null,
+        "Name": "San Salvador",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GN",
+    "Name": "Guinea",
+    "Code3": "GIN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 51,
+        "CountryId": "GN",
+
+        "Code": null,
+        "Name": "Conakry",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GM",
+    "Name": "Gambia",
+    "Code3": "GMB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 52,
+        "CountryId": "GM",
+
+        "Code": null,
+        "Name": "Banjul",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GL",
+    "Name": "Greenland",
+    "Code3": "GRL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 53,
+        "CountryId": "GL",
+
+        "Code": null,
+        "Name": "Nuuk",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GI",
+    "Name": "Gibraltar",
+    "Code3": "GIB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 54,
+        "CountryId": "GI",
+
+        "Code": null,
+        "Name": "Gibraltar",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "GH",
+    "Name": "Ghana",
+    "Code3": "GHA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 55,
+        "CountryId": "GH",
+
+        "Code": null,
+        "Name": "Accra",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "OM",
+    "Name": "Oman",
+    "Code3": "OMN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 56,
+        "CountryId": "OM",
+
+        "Code": null,
+        "Name": "Muscat",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TN",
+    "Name": "Tunisia",
+    "Code3": "TUN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 57,
+        "CountryId": "TN",
+
+        "Code": null,
+        "Name": "Tunis",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "JO",
+    "Name": "Jordan",
+    "Code3": "JOR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 58,
+        "CountryId": "JO",
+
+        "Code": null,
+        "Name": "Amman",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "HR",
+    "Name": "Croatia",
+    "Code3": "HRV",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 59,
+        "CountryId": "HR",
+
+        "Code": null,
+        "Name": "Zagreb",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "HT",
+    "Name": "Haiti",
+    "Code3": "HTI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 60,
+        "CountryId": "HT",
+
+        "Code": null,
+        "Name": "Port-au-Prince",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "HU",
+    "Name": "Hungary",
+    "Code3": "HUN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 61,
+        "CountryId": "HU",
+
+        "Code": null,
+        "Name": "Budapest",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "HK",
+    "Name": "Hong Kong",
+    "Code3": "HKG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 62,
+        "CountryId": "HK",
+
+        "Code": null,
+        "Name": "Hong Kong",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "HN",
+    "Name": "Honduras",
+    "Code3": "HND",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 63,
+        "CountryId": "HN",
+
+        "Code": null,
+        "Name": "Tegucigalpa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "HM",
+    "Name": "Heard Island and McDonald Islands",
+    "Code3": "HMD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 64,
+        "CountryId": "HM",
+
+        "Code": null,
+        "Name": "",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VE",
+    "Name": "Venezuela",
+    "Code3": "VEN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 65,
+        "CountryId": "VE",
+
+        "Code": null,
+        "Name": "Caracas",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PR",
+    "Name": "Puerto Rico",
+    "Code3": "PRI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 66,
+        "CountryId": "PR",
+
+        "Code": null,
+        "Name": "San Juan",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PS",
+    "Name": "Palestinian Territory",
+    "Code3": "PSE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 67,
+        "CountryId": "PS",
+
+        "Code": null,
+        "Name": "East Jerusalem",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PW",
+    "Name": "Palau",
+    "Code3": "PLW",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 68,
+        "CountryId": "PW",
+
+        "Code": null,
+        "Name": "Melekeok",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PT",
+    "Name": "Portugal",
+    "Code3": "PRT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 69,
+        "CountryId": "PT",
+
+        "Code": null,
+        "Name": "Lisbon",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SJ",
+    "Name": "Svalbard and Jan Mayen",
+    "Code3": "SJM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 70,
+        "CountryId": "SJ",
+
+        "Code": null,
+        "Name": "Longyearbyen",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PY",
+    "Name": "Paraguay",
+    "Code3": "PRY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 71,
+        "CountryId": "PY",
+
+        "Code": null,
+        "Name": "Asuncion",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IQ",
+    "Name": "Iraq",
+    "Code3": "IRQ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 72,
+        "CountryId": "IQ",
+
+        "Code": null,
+        "Name": "Baghdad",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PA",
+    "Name": "Panama",
+    "Code3": "PAN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 73,
+        "CountryId": "PA",
+
+        "Code": null,
+        "Name": "Panama City",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PF",
+    "Name": "French Polynesia",
+    "Code3": "PYF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 74,
+        "CountryId": "PF",
+
+        "Code": null,
+        "Name": "Papeete",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PG",
+    "Name": "Papua New Guinea",
+    "Code3": "PNG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 75,
+        "CountryId": "PG",
+
+        "Code": null,
+        "Name": "Port Moresby",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PE",
+    "Name": "Peru",
+    "Code3": "PER",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 76,
+        "CountryId": "PE",
+
+        "Code": null,
+        "Name": "Lima",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PK",
+    "Name": "Pakistan",
+    "Code3": "PAK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 77,
+        "CountryId": "PK",
+
+        "Code": null,
+        "Name": "Islamabad",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PH",
+    "Name": "Philippines",
+    "Code3": "PHL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 78,
+        "CountryId": "PH",
+
+        "Code": null,
+        "Name": "Manila",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PN",
+    "Name": "Pitcairn",
+    "Code3": "PCN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 79,
+        "CountryId": "PN",
+
+        "Code": null,
+        "Name": "Adamstown",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PL",
+    "Name": "Poland",
+    "Code3": "POL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 80,
+        "CountryId": "PL",
+
+        "Code": null,
+        "Name": "Warsaw",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "PM",
+    "Name": "Saint Pierre and Miquelon",
+    "Code3": "SPM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 81,
+        "CountryId": "PM",
+
+        "Code": null,
+        "Name": "Saint-Pierre",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ZM",
+    "Name": "Zambia",
+    "Code3": "ZMB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 82,
+        "CountryId": "ZM",
+
+        "Code": null,
+        "Name": "Lusaka",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "EH",
+    "Name": "Western Sahara",
+    "Code3": "ESH",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 83,
+        "CountryId": "EH",
+
+        "Code": null,
+        "Name": "El-Aaiun",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "EE",
+    "Name": "Estonia",
+    "Code3": "EST",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 84,
+        "CountryId": "EE",
+
+        "Code": null,
+        "Name": "Tallinn",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "EG",
+    "Name": "Egypt",
+    "Code3": "EGY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 85,
+        "CountryId": "EG",
+
+        "Code": null,
+        "Name": "Cairo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ZA",
+    "Name": "South Africa",
+    "Code3": "ZAF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 86,
+        "CountryId": "ZA",
+
+        "Code": null,
+        "Name": "Pretoria",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "EC",
+    "Name": "Ecuador",
+    "Code3": "ECU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 87,
+        "CountryId": "EC",
+
+        "Code": null,
+        "Name": "Quito",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IT",
+    "Name": "Italy",
+    "Code3": "ITA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 88,
+        "CountryId": "IT",
+
+        "Code": null,
+        "Name": "Rome",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VN",
+    "Name": "Vietnam",
+    "Code3": "VNM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 89,
+        "CountryId": "VN",
+
+        "Code": null,
+        "Name": "Hanoi",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SB",
+    "Name": "Solomon Islands",
+    "Code3": "SLB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 90,
+        "CountryId": "SB",
+
+        "Code": null,
+        "Name": "Honiara",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ET",
+    "Name": "Ethiopia",
+    "Code3": "ETH",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 91,
+        "CountryId": "ET",
+
+        "Code": null,
+        "Name": "Addis Ababa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SO",
+    "Name": "Somalia",
+    "Code3": "SOM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 92,
+        "CountryId": "SO",
+
+        "Code": null,
+        "Name": "Mogadishu",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ZW",
+    "Name": "Zimbabwe",
+    "Code3": "ZWE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 93,
+        "CountryId": "ZW",
+
+        "Code": null,
+        "Name": "Harare",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SA",
+    "Name": "Saudi Arabia",
+    "Code3": "SAU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 94,
+        "CountryId": "SA",
+
+        "Code": null,
+        "Name": "Riyadh",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ES",
+    "Name": "Spain",
+    "Code3": "ESP",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 95,
+        "CountryId": "ES",
+
+        "Code": null,
+        "Name": "Madrid",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ER",
+    "Name": "Eritrea",
+    "Code3": "ERI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 96,
+        "CountryId": "ER",
+
+        "Code": null,
+        "Name": "Asmara",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ME",
+    "Name": "Montenegro",
+    "Code3": "MNE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 97,
+        "CountryId": "ME",
+
+        "Code": null,
+        "Name": "Podgorica",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MD",
+    "Name": "Moldova",
+    "Code3": "MDA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 98,
+        "CountryId": "MD",
+
+        "Code": null,
+        "Name": "Chisinau",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MG",
+    "Name": "Madagascar",
+    "Code3": "MDG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 99,
+        "CountryId": "MG",
+
+        "Code": null,
+        "Name": "Antananarivo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MF",
+    "Name": "Saint Martin",
+    "Code3": "MAF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 100,
+        "CountryId": "MF",
+
+        "Code": null,
+        "Name": "Marigot",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MA",
+    "Name": "Morocco",
+    "Code3": "MAR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 101,
+        "CountryId": "MA",
+
+        "Code": null,
+        "Name": "Rabat",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MC",
+    "Name": "Monaco",
+    "Code3": "MCO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 102,
+        "CountryId": "MC",
+
+        "Code": null,
+        "Name": "Monaco",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "UZ",
+    "Name": "Uzbekistan",
+    "Code3": "UZB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 103,
+        "CountryId": "UZ",
+
+        "Code": null,
+        "Name": "Tashkent",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MM",
+    "Name": "Myanmar",
+    "Code3": "MMR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 104,
+        "CountryId": "MM",
+
+        "Code": null,
+        "Name": "Nay Pyi Taw",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ML",
+    "Name": "Mali",
+    "Code3": "MLI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 105,
+        "CountryId": "ML",
+
+        "Code": null,
+        "Name": "Bamako",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MO",
+    "Name": "Macao",
+    "Code3": "MAC",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 106,
+        "CountryId": "MO",
+
+        "Code": null,
+        "Name": "Macao",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MN",
+    "Name": "Mongolia",
+    "Code3": "MNG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 107,
+        "CountryId": "MN",
+
+        "Code": null,
+        "Name": "Ulan Bator",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MH",
+    "Name": "Marshall Islands",
+    "Code3": "MHL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 108,
+        "CountryId": "MH",
+
+        "Code": null,
+        "Name": "Majuro",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MK",
+    "Name": "Macedonia",
+    "Code3": "MKD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 109,
+        "CountryId": "MK",
+
+        "Code": null,
+        "Name": "Skopje",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MU",
+    "Name": "Mauritius",
+    "Code3": "MUS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 110,
+        "CountryId": "MU",
+
+        "Code": null,
+        "Name": "Port Louis",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MT",
+    "Name": "Malta",
+    "Code3": "MLT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 111,
+        "CountryId": "MT",
+
+        "Code": null,
+        "Name": "Valletta",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MW",
+    "Name": "Malawi",
+    "Code3": "MWI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 112,
+        "CountryId": "MW",
+
+        "Code": null,
+        "Name": "Lilongwe",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MV",
+    "Name": "Maldives",
+    "Code3": "MDV",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 113,
+        "CountryId": "MV",
+
+        "Code": null,
+        "Name": "Male",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MQ",
+    "Name": "Martinique",
+    "Code3": "MTQ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 114,
+        "CountryId": "MQ",
+
+        "Code": null,
+        "Name": "Fort-de-France",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MP",
+    "Name": "Northern Mariana Islands",
+    "Code3": "MNP",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 115,
+        "CountryId": "MP",
+
+        "Code": null,
+        "Name": "Saipan",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MS",
+    "Name": "Montserrat",
+    "Code3": "MSR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 116,
+        "CountryId": "MS",
+
+        "Code": null,
+        "Name": "Plymouth",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MR",
+    "Name": "Mauritania",
+    "Code3": "MRT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 117,
+        "CountryId": "MR",
+
+        "Code": null,
+        "Name": "Nouakchott",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IM",
+    "Name": "Isle of Man",
+    "Code3": "IMN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 118,
+        "CountryId": "IM",
+
+        "Code": null,
+        "Name": "Douglas, Isle of Man",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "UG",
+    "Name": "Uganda",
+    "Code3": "UGA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 119,
+        "CountryId": "UG",
+
+        "Code": null,
+        "Name": "Kampala",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TZ",
+    "Name": "Tanzania",
+    "Code3": "TZA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 120,
+        "CountryId": "TZ",
+
+        "Code": null,
+        "Name": "Dodoma",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MY",
+    "Name": "Malaysia",
+    "Code3": "MYS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 121,
+        "CountryId": "MY",
+
+        "Code": null,
+        "Name": "Kuala Lumpur",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MX",
+    "Name": "Mexico",
+    "Code3": "MEX",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 122,
+        "CountryId": "MX",
+
+        "Code": null,
+        "Name": "Mexico City",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IL",
+    "Name": "Israel",
+    "Code3": "ISR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 123,
+        "CountryId": "IL",
+
+        "Code": null,
+        "Name": "Jerusalem",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "FR",
+    "Name": "France",
+    "Code3": "FRA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 124,
+        "CountryId": "FR",
+
+        "Code": null,
+        "Name": "Paris",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IO",
+    "Name": "British Indian Ocean Territory",
+    "Code3": "IOT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 125,
+        "CountryId": "IO",
+
+        "Code": null,
+        "Name": "Diego Garcia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SH",
+    "Name": "Saint Helena",
+    "Code3": "SHN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 126,
+        "CountryId": "SH",
+
+        "Code": null,
+        "Name": "Jamestown",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "FI",
+    "Name": "Finland",
+    "Code3": "FIN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 127,
+        "CountryId": "FI",
+
+        "Code": null,
+        "Name": "Helsinki",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "FJ",
+    "Name": "Fiji",
+    "Code3": "FJI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 128,
+        "CountryId": "FJ",
+
+        "Code": null,
+        "Name": "Suva",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "FK",
+    "Name": "Falkland Islands",
+    "Code3": "FLK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 129,
+        "CountryId": "FK",
+
+        "Code": null,
+        "Name": "Stanley",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "FM",
+    "Name": "Micronesia",
+    "Code3": "FSM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 130,
+        "CountryId": "FM",
+
+        "Code": null,
+        "Name": "Palikir",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "FO",
+    "Name": "Faroe Islands",
+    "Code3": "FRO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 131,
+        "CountryId": "FO",
+
+        "Code": null,
+        "Name": "Torshavn",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NI",
+    "Name": "Nicaragua",
+    "Code3": "NIC",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 132,
+        "CountryId": "NI",
+
+        "Code": null,
+        "Name": "Managua",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NL",
+    "Name": "Netherlands",
+    "Code3": "NLD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 133,
+        "CountryId": "NL",
+
+        "Code": null,
+        "Name": "Amsterdam",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NO",
+    "Name": "Norway",
+    "Code3": "NOR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 134,
+        "CountryId": "NO",
+
+        "Code": null,
+        "Name": "Oslo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NA",
+    "Name": "Namibia",
+    "Code3": "NAM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 135,
+        "CountryId": "NA",
+
+        "Code": null,
+        "Name": "Windhoek",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VU",
+    "Name": "Vanuatu",
+    "Code3": "VUT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 136,
+        "CountryId": "VU",
+
+        "Code": null,
+        "Name": "Port Vila",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NC",
+    "Name": "New Caledonia",
+    "Code3": "NCL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 137,
+        "CountryId": "NC",
+
+        "Code": null,
+        "Name": "Noumea",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NE",
+    "Name": "Niger",
+    "Code3": "NER",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 138,
+        "CountryId": "NE",
+
+        "Code": null,
+        "Name": "Niamey",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NF",
+    "Name": "Norfolk Island",
+    "Code3": "NFK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 139,
+        "CountryId": "NF",
+
+        "Code": null,
+        "Name": "Kingston",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NG",
+    "Name": "Nigeria",
+    "Code3": "NGA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 140,
+        "CountryId": "NG",
+
+        "Code": null,
+        "Name": "Abuja",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NZ",
+    "Name": "New Zealand",
+    "Code3": "NZL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 141,
+        "CountryId": "NZ",
+
+        "Code": null,
+        "Name": "Wellington",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NP",
+    "Name": "Nepal",
+    "Code3": "NPL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 142,
+        "CountryId": "NP",
+
+        "Code": null,
+        "Name": "Kathmandu",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NR",
+    "Name": "Nauru",
+    "Code3": "NRU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 143,
+        "CountryId": "NR",
+
+        "Code": null,
+        "Name": "Yaren",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "NU",
+    "Name": "Niue",
+    "Code3": "NIU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 144,
+        "CountryId": "NU",
+
+        "Code": null,
+        "Name": "Alofi",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CK",
+    "Name": "Cook Islands",
+    "Code3": "COK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 145,
+        "CountryId": "CK",
+
+        "Code": null,
+        "Name": "Avarua",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "XK",
+    "Name": "Kosovo",
+    "Code3": "XKX",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 146,
+        "CountryId": "XK",
+
+        "Code": null,
+        "Name": "Pristina",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CI",
+    "Name": "Ivory Coast",
+    "Code3": "CIV",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 147,
+        "CountryId": "CI",
+
+        "Code": null,
+        "Name": "Yamoussoukro",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CH",
+    "Name": "Switzerland",
+    "Code3": "CHE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 148,
+        "CountryId": "CH",
+
+        "Code": null,
+        "Name": "Berne",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CO",
+    "Name": "Colombia",
+    "Code3": "COL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 149,
+        "CountryId": "CO",
+
+        "Code": null,
+        "Name": "Bogota",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CN",
+    "Name": "China",
+    "Code3": "CHN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 150,
+        "CountryId": "CN",
+
+        "Code": null,
+        "Name": "Beijing",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CM",
+    "Name": "Cameroon",
+    "Code3": "CMR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 151,
+        "CountryId": "CM",
+
+        "Code": null,
+        "Name": "Yaounde",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CL",
+    "Name": "Chile",
+    "Code3": "CHL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 152,
+        "CountryId": "CL",
+
+        "Code": null,
+        "Name": "Santiago",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CC",
+    "Name": "Cocos Islands",
+    "Code3": "CCK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 153,
+        "CountryId": "CC",
+
+        "Code": null,
+        "Name": "West Island",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CA",
+    "Name": "Canada",
+    "Code3": "CAN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 154,
+        "CountryId": "CA",
+
+        "Code": null,
+        "Name": "Ottawa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CG",
+    "Name": "Republic of the Congo",
+    "Code3": "COG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 155,
+        "CountryId": "CG",
+
+        "Code": null,
+        "Name": "Brazzaville",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CF",
+    "Name": "Central African Republic",
+    "Code3": "CAF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 156,
+        "CountryId": "CF",
+
+        "Code": null,
+        "Name": "Bangui",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CD",
+    "Name": "Democratic Republic of the Congo",
+    "Code3": "COD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 157,
+        "CountryId": "CD",
+
+        "Code": null,
+        "Name": "Kinshasa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CZ",
+    "Name": "Czech Republic",
+    "Code3": "CZE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 158,
+        "CountryId": "CZ",
+
+        "Code": null,
+        "Name": "Prague",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CY",
+    "Name": "Cyprus",
+    "Code3": "CYP",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 159,
+        "CountryId": "CY",
+
+        "Code": null,
+        "Name": "Nicosia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CX",
+    "Name": "Christmas Island",
+    "Code3": "CXR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 160,
+        "CountryId": "CX",
+
+        "Code": null,
+        "Name": "Flying Fish Cove",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CR",
+    "Name": "Costa Rica",
+    "Code3": "CRI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 161,
+        "CountryId": "CR",
+
+        "Code": null,
+        "Name": "San Jose",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CW",
+    "Name": "Curacao",
+    "Code3": "CUW",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 162,
+        "CountryId": "CW",
+
+        "Code": null,
+        "Name": " Willemstad",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CV",
+    "Name": "Cape Verde",
+    "Code3": "CPV",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 163,
+        "CountryId": "CV",
+
+        "Code": null,
+        "Name": "Praia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "CU",
+    "Name": "Cuba",
+    "Code3": "CUB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 164,
+        "CountryId": "CU",
+
+        "Code": null,
+        "Name": "Havana",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SZ",
+    "Name": "Swaziland",
+    "Code3": "SWZ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 165,
+        "CountryId": "SZ",
+
+        "Code": null,
+        "Name": "Mbabane",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SY",
+    "Name": "Syria",
+    "Code3": "SYR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 166,
+        "CountryId": "SY",
+
+        "Code": null,
+        "Name": "Damascus",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SX",
+    "Name": "Sint Maarten",
+    "Code3": "SXM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 167,
+        "CountryId": "SX",
+
+        "Code": null,
+        "Name": "Philipsburg",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KG",
+    "Name": "Kyrgyzstan",
+    "Code3": "KGZ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 168,
+        "CountryId": "KG",
+
+        "Code": null,
+        "Name": "Bishkek",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KE",
+    "Name": "Kenya",
+    "Code3": "KEN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 169,
+        "CountryId": "KE",
+
+        "Code": null,
+        "Name": "Nairobi",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SS",
+    "Name": "South Sudan",
+    "Code3": "SSD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 170,
+        "CountryId": "SS",
+
+        "Code": null,
+        "Name": "Juba",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SR",
+    "Name": "Suriname",
+    "Code3": "SUR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 171,
+        "CountryId": "SR",
+
+        "Code": null,
+        "Name": "Paramaribo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KI",
+    "Name": "Kiribati",
+    "Code3": "KIR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 172,
+        "CountryId": "KI",
+
+        "Code": null,
+        "Name": "Tarawa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KH",
+    "Name": "Cambodia",
+    "Code3": "KHM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 173,
+        "CountryId": "KH",
+
+        "Code": null,
+        "Name": "Phnom Penh",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KN",
+    "Name": "Saint Kitts and Nevis",
+    "Code3": "KNA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 174,
+        "CountryId": "KN",
+
+        "Code": null,
+        "Name": "Basseterre",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KM",
+    "Name": "Comoros",
+    "Code3": "COM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 175,
+        "CountryId": "KM",
+
+        "Code": null,
+        "Name": "Moroni",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ST",
+    "Name": "Sao Tome and Principe",
+    "Code3": "STP",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 176,
+        "CountryId": "ST",
+
+        "Code": null,
+        "Name": "Sao Tome",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SK",
+    "Name": "Slovakia",
+    "Code3": "SVK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 177,
+        "CountryId": "SK",
+
+        "Code": null,
+        "Name": "Bratislava",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KR",
+    "Name": "South Korea",
+    "Code3": "KOR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 178,
+        "CountryId": "KR",
+
+        "Code": null,
+        "Name": "Seoul",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SI",
+    "Name": "Slovenia",
+    "Code3": "SVN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 179,
+        "CountryId": "SI",
+
+        "Code": null,
+        "Name": "Ljubljana",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KP",
+    "Name": "North Korea",
+    "Code3": "PRK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 180,
+        "CountryId": "KP",
+
+        "Code": null,
+        "Name": "Pyongyang",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KW",
+    "Name": "Kuwait",
+    "Code3": "KWT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 181,
+        "CountryId": "KW",
+
+        "Code": null,
+        "Name": "Kuwait City",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SN",
+    "Name": "Senegal",
+    "Code3": "SEN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 182,
+        "CountryId": "SN",
+
+        "Code": null,
+        "Name": "Dakar",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SM",
+    "Name": "San Marino",
+    "Code3": "SMR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 183,
+        "CountryId": "SM",
+
+        "Code": null,
+        "Name": "San Marino",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SL",
+    "Name": "Sierra Leone",
+    "Code3": "SLE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 184,
+        "CountryId": "SL",
+
+        "Code": null,
+        "Name": "Freetown",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SC",
+    "Name": "Seychelles",
+    "Code3": "SYC",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 185,
+        "CountryId": "SC",
+
+        "Code": null,
+        "Name": "Victoria",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KZ",
+    "Name": "Kazakhstan",
+    "Code3": "KAZ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 186,
+        "CountryId": "KZ",
+
+        "Code": null,
+        "Name": "Astana",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "KY",
+    "Name": "Cayman Islands",
+    "Code3": "CYM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 187,
+        "CountryId": "KY",
+
+        "Code": null,
+        "Name": "George Town",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SG",
+    "Name": "Singapore",
+    "Code3": "SGP",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 188,
+        "CountryId": "SG",
+
+        "Code": null,
+        "Name": "Singapur",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SE",
+    "Name": "Sweden",
+    "Code3": "SWE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 189,
+        "CountryId": "SE",
+
+        "Code": null,
+        "Name": "Stockholm",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "SD",
+    "Name": "Sudan",
+    "Code3": "SDN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 190,
+        "CountryId": "SD",
+
+        "Code": null,
+        "Name": "Khartoum",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "DO",
+    "Name": "Dominican Republic",
+    "Code3": "DOM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 191,
+        "CountryId": "DO",
+
+        "Code": null,
+        "Name": "Santo Domingo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "DM",
+    "Name": "Dominica",
+    "Code3": "DMA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 192,
+        "CountryId": "DM",
+
+        "Code": null,
+        "Name": "Roseau",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "DJ",
+    "Name": "Djibouti",
+    "Code3": "DJI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 193,
+        "CountryId": "DJ",
+
+        "Code": null,
+        "Name": "Djibouti",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "DK",
+    "Name": "Denmark",
+    "Code3": "DNK",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 194,
+        "CountryId": "DK",
+
+        "Code": null,
+        "Name": "Copenhagen",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VG",
+    "Name": "British Virgin Islands",
+    "Code3": "VGB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 195,
+        "CountryId": "VG",
+
+        "Code": null,
+        "Name": "Road Town",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "DE",
+    "Name": "Germany",
+    "Code3": "DEU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 196,
+        "CountryId": "DE",
+
+        "Code": null,
+        "Name": "Berlin",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "YE",
+    "Name": "Yemen",
+    "Code3": "YEM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 197,
+        "CountryId": "YE",
+
+        "Code": null,
+        "Name": "Sanaa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "DZ",
+    "Name": "Algeria",
+    "Code3": "DZA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 198,
+        "CountryId": "DZ",
+
+        "Code": null,
+        "Name": "Algiers",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "US",
+    "Name": "United States",
+    "Code3": "USA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 199,
+        "CountryId": "US",
+
+        "Code": null,
+        "Name": "Washington",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "UY",
+    "Name": "Uruguay",
+    "Code3": "URY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 200,
+        "CountryId": "UY",
+
+        "Code": null,
+        "Name": "Montevideo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "YT",
+    "Name": "Mayotte",
+    "Code3": "MYT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 201,
+        "CountryId": "YT",
+
+        "Code": null,
+        "Name": "Mamoudzou",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "UM",
+    "Name": "United States Minor Outlying Islands",
+    "Code3": "UMI",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 202,
+        "CountryId": "UM",
+
+        "Code": null,
+        "Name": "",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LB",
+    "Name": "Lebanon",
+    "Code3": "LBN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 203,
+        "CountryId": "LB",
+
+        "Code": null,
+        "Name": "Beirut",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LC",
+    "Name": "Saint Lucia",
+    "Code3": "LCA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 204,
+        "CountryId": "LC",
+
+        "Code": null,
+        "Name": "Castries",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LA",
+    "Name": "Laos",
+    "Code3": "LAO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 205,
+        "CountryId": "LA",
+
+        "Code": null,
+        "Name": "Vientiane",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TV",
+    "Name": "Tuvalu",
+    "Code3": "TUV",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 206,
+        "CountryId": "TV",
+
+        "Code": null,
+        "Name": "Funafuti",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TW",
+    "Name": "Taiwan",
+    "Code3": "TWN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 207,
+        "CountryId": "TW",
+
+        "Code": null,
+        "Name": "Taipei",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TT",
+    "Name": "Trinidad and Tobago",
+    "Code3": "TTO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 208,
+        "CountryId": "TT",
+
+        "Code": null,
+        "Name": "Port of Spain",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TR",
+    "Name": "Turkey",
+    "Code3": "TUR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 209,
+        "CountryId": "TR",
+
+        "Code": null,
+        "Name": "Ankara",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LK",
+    "Name": "Sri Lanka",
+    "Code3": "LKA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 210,
+        "CountryId": "LK",
+
+        "Code": null,
+        "Name": "Colombo",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LI",
+    "Name": "Liechtenstein",
+    "Code3": "LIE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 211,
+        "CountryId": "LI",
+
+        "Code": null,
+        "Name": "Vaduz",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LV",
+    "Name": "Latvia",
+    "Code3": "LVA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 212,
+        "CountryId": "LV",
+
+        "Code": null,
+        "Name": "Riga",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TO",
+    "Name": "Tonga",
+    "Code3": "TON",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 213,
+        "CountryId": "TO",
+
+        "Code": null,
+        "Name": "Nuku'alofa",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LT",
+    "Name": "Lithuania",
+    "Code3": "LTU",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 214,
+        "CountryId": "LT",
+
+        "Code": null,
+        "Name": "Vilnius",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LU",
+    "Name": "Luxembourg",
+    "Code3": "LUX",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 215,
+        "CountryId": "LU",
+
+        "Code": null,
+        "Name": "Luxembourg",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LR",
+    "Name": "Liberia",
+    "Code3": "LBR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 216,
+        "CountryId": "LR",
+
+        "Code": null,
+        "Name": "Monrovia",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LS",
+    "Name": "Lesotho",
+    "Code3": "LSO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 217,
+        "CountryId": "LS",
+
+        "Code": null,
+        "Name": "Maseru",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TH",
+    "Name": "Thailand",
+    "Code3": "THA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 218,
+        "CountryId": "TH",
+
+        "Code": null,
+        "Name": "Bangkok",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TF",
+    "Name": "French Southern Territories",
+    "Code3": "ATF",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 219,
+        "CountryId": "TF",
+
+        "Code": null,
+        "Name": "Port-aux-Francais",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TG",
+    "Name": "Togo",
+    "Code3": "TGO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 220,
+        "CountryId": "TG",
+
+        "Code": null,
+        "Name": "Lome",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TD",
+    "Name": "Chad",
+    "Code3": "TCD",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 221,
+        "CountryId": "TD",
+
+        "Code": null,
+        "Name": "N'Djamena",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "TC",
+    "Name": "Turks and Caicos Islands",
+    "Code3": "TCA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 222,
+        "CountryId": "TC",
+
+        "Code": null,
+        "Name": "Cockburn Town",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "LY",
+    "Name": "Libya",
+    "Code3": "LBY",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 223,
+        "CountryId": "LY",
+
+        "Code": null,
+        "Name": "Tripolis",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VA",
+    "Name": "Vatican",
+    "Code3": "VAT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 224,
+        "CountryId": "VA",
+
+        "Code": null,
+        "Name": "Vatican City",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VC",
+    "Name": "Saint Vincent and the Grenadines",
+    "Code3": "VCT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 225,
+        "CountryId": "VC",
+
+        "Code": null,
+        "Name": "Kingstown",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AE",
+    "Name": "United Arab Emirates",
+    "Code3": "ARE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 226,
+        "CountryId": "AE",
+
+        "Code": null,
+        "Name": "Abu Dhabi",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AD",
+    "Name": "Andorra",
+    "Code3": "AND",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 227,
+        "CountryId": "AD",
+
+        "Code": null,
+        "Name": "Andorra la Vella",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AG",
+    "Name": "Antigua and Barbuda",
+    "Code3": "ATG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 228,
+        "CountryId": "AG",
+
+        "Code": null,
+        "Name": "GR. John's",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AF",
+    "Name": "Afghanistan",
+    "Code3": "AFG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 229,
+        "CountryId": "AF",
+
+        "Code": null,
+        "Name": "Kabul",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AI",
+    "Name": "Anguilla",
+    "Code3": "AIA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 230,
+        "CountryId": "AI",
+
+        "Code": null,
+        "Name": "The Valley",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "VI",
+    "Name": "U.S. Virgin Islands",
+    "Code3": "VIR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 231,
+        "CountryId": "VI",
+
+        "Code": null,
+        "Name": "Charlotte Amalie",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IS",
+    "Name": "Iceland",
+    "Code3": "ISL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 232,
+        "CountryId": "IS",
+
+        "Code": null,
+        "Name": "Reykjavik",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IR",
+    "Name": "Iran",
+    "Code3": "IRN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 233,
+        "CountryId": "IR",
+
+        "Code": null,
+        "Name": "Tehran",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AM",
+    "Name": "Armenia",
+    "Code3": "ARM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 234,
+        "CountryId": "AM",
+
+        "Code": null,
+        "Name": "Yerevan",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AL",
+    "Name": "Albania",
+    "Code3": "ALB",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 235,
+        "CountryId": "AL",
+
+        "Code": null,
+        "Name": "Tirana",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AO",
+    "Name": "Angola",
+    "Code3": "AGO",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 236,
+        "CountryId": "AO",
+
+        "Code": null,
+        "Name": "Luanda",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AQ",
+    "Name": "Antarctica",
+    "Code3": "ATA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 237,
+        "CountryId": "AQ",
+
+        "Code": null,
+        "Name": "",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AS",
+    "Name": "American Samoa",
+    "Code3": "ASM",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 238,
+        "CountryId": "AS",
+
+        "Code": null,
+        "Name": "Pago Pago",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AR",
+    "Name": "Argentina",
+    "Code3": "ARG",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 239,
+        "CountryId": "AR",
+
+        "Code": null,
+        "Name": "Buenos Aires",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AU",
+    "Name": "Australia",
+    "Code3": "AUS",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 240,
+        "CountryId": "AU",
+
+        "Code": null,
+        "Name": "Canberra",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AT",
+    "Name": "Austria",
+    "Code3": "AUT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 241,
+        "CountryId": "AT",
+
+        "Code": null,
+        "Name": "Vienna",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AW",
+    "Name": "Aruba",
+    "Code3": "ABW",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 242,
+        "CountryId": "AW",
+
+        "Code": null,
+        "Name": "Oranjestad",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IN",
+    "Name": "India",
+    "Code3": "IND",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 243,
+        "CountryId": "IN",
+
+        "Code": null,
+        "Name": "New Delhi",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AX",
+    "Name": "Aland Islands",
+    "Code3": "ALA",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 244,
+        "CountryId": "AX",
+
+        "Code": null,
+        "Name": "Mariehamn",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "AZ",
+    "Name": "Azerbaijan",
+    "Code3": "AZE",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 245,
+        "CountryId": "AZ",
+
+        "Code": null,
+        "Name": "Baku",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "IE",
+    "Name": "Ireland",
+    "Code3": "IRL",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 246,
+        "CountryId": "IE",
+
+        "Code": null,
+        "Name": "Dublin",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "ID",
+    "Name": "Indonesia",
+    "Code3": "IDN",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 247,
+        "CountryId": "ID",
+
+        "Code": null,
+        "Name": "Jakarta",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "UA",
+    "Name": "Ukraine",
+    "Code3": "UKR",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 248,
+        "CountryId": "UA",
+
+        "Code": null,
+        "Name": "Kiev",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "QA",
+    "Name": "Qatar",
+    "Code3": "QAT",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 249,
+        "CountryId": "QA",
+
+        "Code": null,
+        "Name": "Doha",
+        "Type": null
+      }
+    ]
+  },
+  {
+    "Id": "MZ",
+    "Name": "Mozambique",
+    "Code3": "MOZ",
+    "IsBillingEnabled": false,
+    "IsShippingEnabled": false,
+    "IsCityEnabled": true,
+    "IsZipCodeEnabled": true,
+    "IsDistrictEnabled": true,
+    "StatesOrProvinces": [
+      {
+        "Id": 250,
+        "CountryId": "MZ",
+
+        "Code": null,
+        "Name": "Maputo",
+        "Type": null
+      }
+    ]
+  }
+]

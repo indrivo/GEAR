@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+    <Folder Include="Models\Constants\" />
+    <Folder Include="Models\Dto\" />
+    <Folder Include="Models\Enums\" />
+    <Folder Include="Models\ViewModels\" />
+  </ItemGroup>
+
+</Project>

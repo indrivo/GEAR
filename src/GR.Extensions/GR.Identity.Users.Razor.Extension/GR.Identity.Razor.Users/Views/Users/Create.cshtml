@@ -1,0 +1,251 @@
+@inject IStringLocalizer Localizer
+@model GR.Identity.Razor.Users.ViewModels.UserViewModels.CreateUserViewModel
+
+@{
+    ViewData["Title"] = Localizer["users_create_title"];
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-header">
+                <h4 class="mb-0 ">@Localizer["add_user"]</h4>
+            </div>
+            <div class="card-body">
+                <blockquote>
+                    @Localizer["users_header1"]<br />
+                    @Localizer["users_header2"]<br />
+                </blockquote>
+                <form asp-action="Create" role="form" id="UserCreate" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="ProfilesJson" id="profilesJson" />
+                    <div class="form-body">
+                        <h3 class="card-title">Profile Info</h3>
+                        <hr>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row p-t-20">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="UserName" class="control-label"></label>
+                                    <input asp-for="UserName" class="form-control" />
+                                    <span asp-validation-for="UserName" class="text-danger"></span><br />
+                                    <small>@Localizer["username_info"]</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Email" class="control-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span><br />
+                                    <small>
+                                        @Localizer["email_info1"] <br />@Localizer["email_info2"]
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/row-->
+                        <!--/row-->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Password" class="control-label"></label>
+                                    <div class="input-group">
+                                        <input asp-for="Password" class="form-control" />
+                                        <div class="input-group-append">
+                                            <a href="javascript:void(0)" class="toggle-password btn btn-primary">
+                                                <span class="fa fa-eye-slash icon"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="Password" class="text-danger"></span><br />
+                                    <small>@Localizer["pass_info1"]</small><br />
+                                    <small>@Localizer["pass_info2"]</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="RepeatPassword" class="control-label"></label>
+                                    <div class="input-group">
+                                        <input asp-for="RepeatPassword" class="form-control" />
+                                        <div class="input-group-append">
+                                            <a href="javascript:void(0)" class="toggle-password btn btn-primary">
+                                                <span class="fa fa-eye-slash icon"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="RepeatPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="card-title"> @Localizer["profiles"]</h3>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="FirstName" class="control-label"></label>
+                                <input class="form-control" asp-for="FirstName" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LastName" class="control-label"></label>
+                                <input class="form-control" asp-for="LastName" />
+                                <span asp-validation-for="LastName" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SelectedCountryId" class="control-label"></label>
+                                <select class="form-control" asp-for="SelectedCountryId" asp-items="Model.CountrySelectListItems"></select>
+                                <span asp-validation-for="SelectedCountryId" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SelectedCityId" class="control-label"></label>
+                                <select disabled="disabled" class="form-control" asp-for="SelectedCityId"></select>
+                                <span asp-validation-for="SelectedCityId" class="text-danger"></span><br />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label asp-for="AboutMe" class="control-label"></label>
+                                <textarea asp-for="AboutMe" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" id="role_profile">
+                                <label asp-for="SelectedRoleId" class="control-label"></label>
+                                <select multiple asp-for="SelectedRoleId" asp-items="Model.Roles" class="form-control"></select>
+                                <span asp-validation-for="SelectedRoleId" class="text-danger"></span><br />
+                                <small>@Localizer["role_info"]</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="SelectedGroupId" class="control-label"></label>
+                                <select multiple asp-for="SelectedGroupId" asp-items="Model.Groups" class="form-control"></select>
+                                <span asp-validation-for="SelectedGroupId" class="text-danger"></span><br />
+                                <small>@Localizer["group_info"]</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="TenantId" class="control-label">Organization</label>
+                                <select asp-for="TenantId" asp-items="Model.Tenants" class="form-control"></select>
+                                <span asp-validation-for="TenantId" class="text-danger"></span><br />
+                                <small>Select organization</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="UserPhoto" class="control-label"></label>
+                                <input type="file" asp-for="UserPhoto" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="checkbox checkbox-success form-group">
+                                    <input asp-for="IsDeleted" />
+                                    <label asp-for="IsDeleted"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row button-group">
+                        <div class="col-lg-2 col-md-3">
+                            <button type="submit" class="btn btn-block btn-success">
+                                <i class="fa fa-check"></i> @Localizer["save"]
+                            </button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <button type="reset" class="btn btn-block btn-inverse"> @Localizer["reset"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script type="text/javascript" language="javascript">
+		$(document).ready(function() {
+			$(".toggle-password").on("click",
+				function() {
+					const target = $(this).closest(".input-group").find("input");
+					if (target.attr("type") === "password") {
+						target.attr("type", "text");
+						$(this).find("span").removeClass("fa-eye-slash").addClass("fa-eye");
+					} else {
+						target.attr("type", "password");
+						$(this).find("span").removeClass("fa-eye").addClass("fa-eye-slash");
+					}
+				});
+			$('#SelectedGroupId').select2({
+				placeholder: "@Localizer["sel_group"]"
+			});
+			$('#SelectedRoleId').select2({
+				placeholder: "@Localizer["sel_role"]"
+			});
+			$("#SelectedCountryId").select2();
+			$("#SelectedCityId").select2({
+				placeholder: {
+					id: '',
+					text: "@Localizer["system_select_city"]"
+				}
+			});
+		});
+		$('.dropify').dropify();
+    </script>
+
+    <script type="text/javascript">
+		const notification = new ToastNotifier();
+		$("#SelectedCountryId").change(function() {
+			const selectedValue = this.value;
+			const citySelect = $("#SelectedCityId");
+			if ($("#SelectedCountryId").prop('selectedIndex') > 0) {
+				$.ajax({
+					type: "GET",
+					url: `@Url.Action("GetCityByCountryId", "Users")/?countryId=${selectedValue}`
+				}).done((response) => {
+					if (response.is_success) {
+						citySelect.empty();
+						citySelect.prop("disabled", false);
+						for (let city of response.result) {
+							citySelect.append(new Option(city.text, city.value, false, city.selected));
+						}
+					} else {
+						notification.notifyErrorList(response.error_keys);
+					}
+				}).fail(() => {
+					notify({ heading: "Error", text: window.translate("system_internal_error") });
+				});
+			} else {
+				citySelect.prop("disabled", true);
+				citySelect.empty();
+			}
+		});
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

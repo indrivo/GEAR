@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Plesca Cristian</Authors>
+    <Company>Indrivo</Company>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BackgroundServices\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+</Project>
