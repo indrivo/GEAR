@@ -39,8 +39,8 @@
   "username_info": "Se permiten espacios; los signos de puntuación no está permitido, salvo los puntos, guiones, apóstrofes y guiones bajos.",
   "email_info1": "Una dirección de correo electrónico válida. Todos los correos del sistema se enviaran a esta dirección. ",
   "email_info2": "La dirección de correo no es pública y sólo se utiliza si quiere recibir una contraseña nueva o si quiere recibir noticias o notificaciones por correo electrónico.",
-  "pass_info1": "Establecer contraseña para iniciar sesión en su cuenta de BPMN",
-  "pass_info2": "Al menos 8 caracteres, Añadir letras minúsculas, Añadir las letras en mayúsculas, Agregar números, Agregar los signos de puntuación",
+  "pass_info1": "Establezca la contraseña para iniciar sesión en su cuenta.",
+  "pass_info2": "La contraseña debe tener al menos 8 caracteres, añadir letras minúsculas, añadir letras mayúsculas, agregar números, añadir los signos de puntuación",
   "role_info": "Seleccione las funciones para este usuario",
   "sel_role": "Seleccione un papel...",
   "sel_group": "Seleccione un grupo de...",
@@ -466,7 +466,7 @@
   "system_birthday": "Cumpleaños",
   "profile_updated_successfully": "Perfil actualizado correctamente",
   "system_invite_user": "Invitar a un nuevo usuario",
-  "system_tenant_logo_info": "Cargar el logotipo de la organización aquí. Imagen preferido es 240x240 píxeles y menos wahn 1 MB.",
+  "system_tenant_logo_info": "Cargar el logotipo de su organización aquí. Preferido el tamaño de la imagen de 240x240 píxeles y un tamaño inferior a 1 MB.",
   "system_my_company": "Mi empresa",
   "system_tenant_logo": "El logotipo de la organización",
   "system_company_add": "Añadir empresa",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "El evento sólo puede ser creado después de este tiempo actual",
   "system_calendar_update": "Actualización",
   "system_calendar_no_members": "No miembros invitados a evento",
-  "system_calendar": "Calendario"
+  "system_calendar": "Calendario",
+  "system_childs": "La rama de la carta",
+  "system_order": "Número de pedido"
 }

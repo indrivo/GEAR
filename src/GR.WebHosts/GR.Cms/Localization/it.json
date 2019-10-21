@@ -39,8 +39,8 @@
   "username_info": "Gli spazi sono consentiti; la punteggiatura non è consentita ad eccezione di punti, trattini, apostrofi e underscore.",
   "email_info1": "Un indirizzo valido di posta elettronica. Tutte le e-mail dal sistema saranno inviate a questo indirizzo. ",
   "email_info2": "L'e-mail non viene reso pubblico e verrà utilizzato soltanto se desideri ricevere una nuova password o se vuoi ricevere notizie e avvisi via e-mail.",
-  "pass_info1": "Impostazione di una password per accedere a vostro conto BPMN",
-  "pass_info2": "Fare almeno 8 caratteri, Aggiungere le lettere minuscole, Aggiungere le lettere maiuscole, Aggiungere i numeri, Aggiungere la punteggiatura",
+  "pass_info1": "Impostare la password per accedere al tuo account.",
+  "pass_info2": "La Password deve essere di almeno 8 caratteri, aggiungere le lettere minuscole, aggiungere le lettere maiuscole, aggiungere i numeri, aggiungere i segni di punteggiatura",
   "role_info": "Selezionare i ruoli per questo utente",
   "sel_role": "Selezionare un ruolo...",
   "sel_group": "Selezionare un gruppo di...",
@@ -466,7 +466,7 @@
   "system_birthday": "Compleanno",
   "profile_updated_successfully": "Profilo aggiornato con successo",
   "system_invite_user": "Invitare nuovi utenti",
-  "system_tenant_logo_info": "Caricare il logo dell'organizzazione qui. Immagine preferita è di 240 x 240 pixel e meno wahn 1 MB.",
+  "system_tenant_logo_info": "Caricare il logo della vostra organizzazione qui. Dimensione dell'immagine preferita di 240 x 240 pixel e dimensioni inferiori a 1 MB.",
   "system_my_company": "La mia azienda",
   "system_tenant_logo": "Logo dell'organizzazione",
   "system_company_add": "Aggiungere azienda",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "L'evento può essere creato solo dopo questo tempo corrente",
   "system_calendar_update": "Aggiornamento",
   "system_calendar_no_members": "Per i non soci invitati all'evento",
-  "system_calendar": "Calendario"
+  "system_calendar": "Calendario",
+  "system_childs": "Rami menu",
+  "system_order": "Numero d'ordine"
 }

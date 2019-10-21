@@ -24,7 +24,7 @@
                 <div class="row p-t-20">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label class="control-label" asp-for="Order"></label>
+                            <JTranslateLabel class="control-label" asp-for="Order"></JTranslateLabel>
                             <input class="form-control" asp-for="Order" />
                             <span asp-validation-for="Name" class="text-danger"></span><br />
                             <small>Order of the menu</small>
@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label class="control-label" asp-for="Name"></label>
+                            <JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
                             <input class="form-control" asp-for="Name" />
                             <span asp-validation-for="Name" class="text-danger"></span><br />
                             <small>Name of the menu</small>
@@ -109,15 +109,25 @@
 			$("#Href").val(selected.val());
 		});
 
-		var icons = window.
-		const opt = $("#Icon");
-		$.each(icons(), function () {
-			opt.append(new Option(this, this));
-		});
+		 $("select").select2({
+            theme: "bootstrap"
+        });
+        const iconEl = $("#Icon");
+        $.each(window.gearIcons["font-awesome"], function () {
+			iconEl.append(new Option(this, `fa ${this}`));
+        });
+         iconEl.select2({
+            theme: "bootstrap",
+            templateResult: function (state) {
+               return $(`<span class='fa ${state.text}'> ${state.text}</span>`);
+            }
+        });
 
-		opt.val("@Model.Icon");
+		iconEl.val("@Model.Icon");
 
-		$("#iconView").attr("class", opt.val());
+        $("#iconView").attr("class", iconEl.val());
+
+        $("#Translate").select2({ theme: "bootstrap", templateResult: function(state){ if (!state.id) return state.text; return $(`<span>${state.text}  (${state.id})</span>`); }});
 
 		$("#Icon").on("change", function () {
 			const selected = $(this).find(":checked");

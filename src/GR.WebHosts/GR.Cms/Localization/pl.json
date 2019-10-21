@@ -39,8 +39,8 @@
   "username_info": "Spacje są dozwolone; znaki interpunkcyjne zabronione, za wyjątkiem kropek, łączników, apostrofy i znaków podkreślenia.",
   "email_info1": "Prawidłowy adres e-mail. Wszystkie e-maile z systemu zostaną wysłane na ten adres. ",
   "email_info2": "Adres e-mail nie jest udostępniany publicznie i będzie wykorzystywany jedynie, jeśli chcesz uzyskać nowe hasło lub chcesz otrzymywać pewne wiadomości lub powiadomienia e-mail.",
-  "pass_info1": "Ustawić hasło, aby zalogować się na swoje konto w BPMN ",
-  "pass_info2": "Sprawiają, że nie mniej niż 8 znaków, dodać małe litery, dodać litery, dodać cyfry, znaki interpunkcyjne dodać",
+  "pass_info1": "Ustawić hasło, aby zalogować się do swojego konta",
+  "pass_info2": "Hasło musi mieć co najmniej 8 znaków, dodać małe litery, dodawać litery, dodawać cyfry, dodać znaki interpunkcyjne ",
   "role_info": "Wybierz roli dla tego użytkownika",
   "sel_role": "Wybierz rolę...",
   "sel_group": "Wybierz grupę...",
@@ -466,7 +466,7 @@
   "system_birthday": "Urodziny",
   "profile_updated_successfully": "Profil pomyślnie zaktualizowany ",
   "system_invite_user": "Zaproś nowych użytkowników",
-  "system_tenant_logo_info": "Pobierz tutaj logo organizacji. Preferowany obraz 240х240 pikseli i mniej Вахний 1 MB.",
+  "system_tenant_logo_info": "Pobierz logo swojej organizacji tutaj. Preferowany rozmiar obrazu 240х240 pikseli i rozmiar mniej niż 1 MB.",
   "system_my_company": "Moja firma",
   "system_tenant_logo": "Logo organizacji ",
   "system_company_add": "Dodaj firmę",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "Zdarzenie może być stworzona tylko po to aktualny czas",
   "system_calendar_update": "Aktualizacja",
   "system_calendar_no_members": "Nie ma uczestników, zaproszonych na imprezę",
-  "system_calendar": "Kalendarz"
+  "system_calendar": "Kalendarz",
+  "system_childs": "Gałęzie menu",
+  "system_order": "Numer zamówienia"
 }

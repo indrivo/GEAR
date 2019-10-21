@@ -39,8 +39,8 @@
   "username_info": "Les espaces sont autorisés; la ponctuation n'est pas autorisée à l'exception des points, traits d'union, apostrophes et tirets bas.",
   "email_info1": "Une adresse e-mail valide. Tous les e-mails à partir de ce système seront envoyés à cette adresse. ",
   "email_info2": "L'adresse électronique ne sera pas rendue publique et ne sera utilisée que si vous souhaitez recevoir un nouveau mot de passe ou recevoir personnellement certaines nouvelles ou des notifications par e-mail.",
-  "pass_info1": "Définir le mot de passe pour se connecter dans votre compte BPMN",
-  "pass_info2": "Faire au moins 8 caractères, Ajouter des lettres minuscules, Ajouter des majuscules, Ajouter des numéros, Ajouter de la ponctuation",
+  "pass_info1": "Définir le mot de passe pour ouvrir une session dans votre compte.",
+  "pass_info2": "Le mot de passe doit être d'au moins 8 caractères, ajouter des lettres minuscules, ajouter des majuscules, ajouter des numéros, ajouter des signes de ponctuation",
   "role_info": "Sélectionnez les rôles pour cet utilisateur",
   "sel_role": "Sélectionnez un rôle...",
   "sel_group": "Sélectionnez un groupe de...",
@@ -466,7 +466,7 @@
   "system_birthday": "Anniversaire",
   "profile_updated_successfully": "Profil mis à jour avec succès",
   "system_invite_user": "Inviter un nouvel utilisateur",
-  "system_tenant_logo_info": "Télécharger le logo de l'organisation ici. Image préférée est de 240 x 240 pixels et moins wahn 1 MO.",
+  "system_tenant_logo_info": "Télécharger le logo de votre organisation ici. La taille d'image souhaitée de 240 x 240 pixels et une taille inférieure à 1 MO.",
   "system_my_company": "Mon entreprise",
   "system_tenant_logo": "Logo de l'organisation",
   "system_company_add": "Ajouter de l'entreprise",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "L'événement ne peut être créée qu'après le temps actuel",
   "system_calendar_update": "Mise à jour",
   "system_calendar_no_members": "Pas de membres, invités à l'événement",
-  "system_calendar": "Calendrier"
+  "system_calendar": "Calendrier",
+  "system_childs": "Les branches de la carte",
+  "system_order": "Numéro de commande"
 }

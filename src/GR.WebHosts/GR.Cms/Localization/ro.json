@@ -39,8 +39,8 @@
   "username_info": "Spațiile sunt permise; punctuația nu este permisă, cu excepția perioadelor, cratimelor, apostrofelor și sublinierilor.",
   "email_info1": "O adresă de e-mail valabilă. Toate e-mailurile din sistem vor fi trimise la această adresă.",
   "email_info2": "Adresa de e-mail nu este făcută publică și va fi utilizată numai dacă doriți să primiți o nouă parolă sau doriți să primiți anumite știri sau notificări prin e-mail.",
-  "pass_info1": "Setați parola pentru a vă conecta în contul dvs. BPMN",
-  "pass_info2": "Asigurați-vă cel puțin 8 caractere, Adăugați litere mici, Adăugați litere mari, Adăugați numere, Adăugați semne de punctuație",
+  "pass_info1": "Setați parola pentru logare în contul dvs.",
+  "pass_info2": "Parola trebuie să fie de cel puțin 8 caractere, adăugați litere mici,adăugați majuscule, adăugați numere, adăugați semne de punctuație",
   "role_info": "Selectați rolurile pentru acest utilizator",
   "sel_role": "Selectați un rol ...",
   "sel_group": "Selectați un grup ...",
@@ -466,7 +466,7 @@
   "system_birthday": "Ziua de nastere",
   "profile_updated_successfully": "Profil actualizat cu succes",
   "system_invite_user": "Invitați un utilizator nou",
-  "system_tenant_logo_info": "Încărcați logo-ul organizației aici. Imaginea preferată este 240x240 pixeli și mai puțin wahn 1 MB.",
+  "system_tenant_logo_info": "Încărcați logo-ul organizației aici. De preferat dimensiunea imaginii de 240x240 pixeli și o dimensiune mai mică de 1 MB.",
   "system_my_company": "Compania mea",
   "system_tenant_logo": "Logo-ul organizației",
   "system_company_add": "Adauga companie",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "La eveniment pot fi create numai după acest timp curent",
   "system_calendar_update": "Update",
   "system_calendar_no_members": "Nici membrii invitați la eveniment",
-  "system_calendar": "Calendar"
+  "system_calendar": "Calendar",
+  "system_childs": "Ramuri de meniu",
+  "system_order": "Numărul de ordine"
 }

@@ -39,8 +39,8 @@
   "username_info": "空间允许的标点符号是不允许的除外期间的连字符撇号和下划线。",
   "email_info1": "一个有效的电子邮件地址。 所有电子邮件系统将被发送到该地址。 ",
   "email_info2": "电子邮件地址是不公开的，并将仅使用，如果你希望收到一个新的密码或希望接受某些新闻或通知的电子邮件。",
-  "pass_info1": "设置密码登录在您的医疗保健行业的帐户",
-  "pass_info2": "使至少8人物，加大写字母，加大写字母，添加编号，添加标点符号",
+  "pass_info1": "设置密码登录在您的帐户。",
+  "pass_info2": "密码必须包含至少8人物，加大写字母，加大写字母，添加编号，添加标点符号",
   "role_info": "选择的角色，对于这个用户",
   "sel_role": "选择一个角色...",
   "sel_group": "选择一组...",
@@ -466,7 +466,7 @@
   "system_birthday": "生日",
   "profile_updated_successfully": "配置文件的更新的成功",
   "system_invite_user": "邀请新的用户",
-  "system_tenant_logo_info": "上传本组织的标志在这里。 优选的图像是240x240素和少望恩1MB。",
+  "system_tenant_logo_info": "上传组织的标志在这里。 优选的图像大小240x240素和尺寸小于1兆。",
   "system_my_company": "我的公司",
   "system_tenant_logo": "组织的标志",
   "system_company_add": "加入公司",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "该事件只能是创建在此之后目前的时间",
   "system_calendar_update": "更新",
   "system_calendar_no_members": "没有任何成员邀请来的事件",
-  "system_calendar": "日历"
+  "system_calendar": "日历",
+  "system_childs": "菜单的分支",
+  "system_order": "以数量"
 }

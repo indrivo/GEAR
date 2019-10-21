@@ -39,8 +39,8 @@
   "username_info": "空間は、使用可能な句読点が許可されない受信には、アポストロフィルアドレスを入力してください。.",
   "email_info1": "有効なe-メールアドレスにお送りします。 すべてのメールシステムから送信されるアドレスです。 ",
   "email_info2": "E-mailアドレスが公開されませんのみに利用を希望される方は新しいパスワードを希望する特定のニュースや通知をメールです。",
-  "pass_info1": "設定のパスワードサでお客様の口座図",
-  "pass_info2": "では最低8文字、小文字の追加、追加の大文字の文字の追加-番号、句読点を追加",
+  "pass_info1": "パスワードを設定したログインアカウントを設定します。",
+  "pass_info2": "パスワードは少なくとも8文字、小文字の追加、追加の資本文の追加、追加句読点",
   "role_info": "選択の役割のためのユーザー",
   "sel_role": "を選択---",
   "sel_group": "グループを選択し---",
@@ -466,7 +466,7 @@
   "system_birthday": "誕生日",
   "profile_updated_successfully": "概要の更新に成功し",
   "system_invite_user": "新しいユーザーを招待",
-  "system_tenant_logo_info": "アップロードの組織のロゴです。 優先画像は240x240ピクセル以下wahn1応募を推奨いたします。",
+  "system_tenant_logo_info": "アップロードの組織のロゴです。 優先画像サイズの240x240ピクセルサイズ以下の1応募を推奨いたします。",
   "system_my_company": "私の会社",
   "system_tenant_logo": "組織のロゴ",
   "system_company_add": "追加会社",
@@ -648,5 +648,7 @@
   "system_calendar_error_date": "イベントで作成した後、この現在時刻",
   "system_calendar_update": "更新",
   "system_calendar_no_members": "無招聘しイベント",
-  "system_calendar": "カレンダー"
+  "system_calendar": "カレンダー",
+  "system_childs": "メニューの店",
+  "system_order": "注文番号"
 }
