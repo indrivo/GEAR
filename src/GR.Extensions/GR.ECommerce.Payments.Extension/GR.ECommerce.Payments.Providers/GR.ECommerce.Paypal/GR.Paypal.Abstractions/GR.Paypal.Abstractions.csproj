@@ -11,13 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\..\..\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Http"></Reference>
-    <Reference Include="System.Net.Http.Formatting"></Reference>
-  </ItemGroup>
-
 </Project>
