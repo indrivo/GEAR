@@ -1,0 +1,68 @@
+﻿@using GR.Core.Razor.Enums
+@using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using GR.Core.Razor.TagHelpersStructures
+@{
+    ViewData["Title"] = "Dashboards";
+    var conf = new ListTagHelperModel
+    {
+        Title = "Dashboards",
+        SubTitle = "List of Dashboards",
+        ListIdentifier = "dashboards",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("OrderedList", "Dashboard")
+        },
+        RenderColumns = new List<ListRenderColumn>
+{
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn("IsActive", "isActive")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            },
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            }
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+{
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "Dashboard",
+                ButtonName = "Add new dashboard",
+                Description = "New dashboard will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+{
+            new ListActionViewModel
+            {
+                Name = "Edit",
+                ButtonType = BootstrapButton.Warning,
+                Url = Url.Action("Edit", "Dashboard"),
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("dashboardId", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                Name = "Builder",
+                ButtonType = BootstrapButton.Success,
+                Url = Url.Action("Builder", "Dashboard"),
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("dashboardId", "id")
+                }
+            }
+        },
+        Documentation = "This tan allow to manage your dashboards"
+    };
+}
+
+<JList asp-for="@conf"></JList>

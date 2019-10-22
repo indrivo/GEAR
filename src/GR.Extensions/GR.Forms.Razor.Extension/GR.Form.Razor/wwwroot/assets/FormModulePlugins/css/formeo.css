@@ -1,0 +1,1321 @@
+.save-form {
+	display: none !important;
+}
+
+/*
+	---------------Custom css for rendered forms----------------
+*/
+
+.render-dynamic-form .server-errors {
+	color: red;
+	list-style-type: none;
+}
+
+.render-dynamic-form .formeo .form-group .help-block {
+	margin-left: 1em;
+}
+
+.render-dynamic-form .formeo input[type=text],
+.render-dynamic-form .formeo input[type=number],
+.render-dynamic-form .formeo input[type=date],
+.render-dynamic-form .formeo select,
+.render-dynamic-form .formeo textarea {
+	-webkit-transition: all 0.30s ease-in-out;
+	-moz-transition: all 0.30s ease-in-out;
+	-ms-transition: all 0.30s ease-in-out;
+	-o-transition: all 0.30s ease-in-out;
+	outline: none;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 98%;
+	min-width: 98% !important;
+	border: 1px solid #ccc;
+	font: 100% Arial, Helvetica, sans-serif;
+	margin-left: 1em;
+	color: #555;
+}
+
+.render-dynamic-form .formeo .f-checkbox {
+	-webkit-transition: all 0.30s ease-in-out;
+	-moz-transition: all 0.30s ease-in-out;
+	-ms-transition: all 0.30s ease-in-out;
+	-o-transition: all 0.30s ease-in-out;
+	outline: none;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 98%;
+	font: 100% Arial, Helvetica, sans-serif;
+	margin-left: 1em;
+	color: #555;
+}
+
+.render-dynamic-form
+.formeo input[type=text],
+.formeo input[type=number],
+.render-dynamic-form .formeo textarea {
+	background: #fff;
+}
+
+.render-dynamic-form
+.formeo input[type=text],
+.formeo input[type=number],
+.formeo input[type=date],
+.render-dynamic-form .formeo select {
+	height: 2.7em;
+}
+
+.render-dynamic-form .formeo textarea {
+	min-height: 10em;
+}
+
+
+	.render-dynamic-form .formeo input[type=text]:focus,
+	.render-dynamic-form .formeo input[type=number]:focus,
+	.render-dynamic-form .formeo input[type=date]:focus,
+	.render-dynamic-form .formeo select:focus,
+	.render-dynamic-form .formeo textarea:focus {
+		box-shadow: 0 0 7px #1e7e34;
+		border: 1px solid #1e7e34;
+	}
+
+.render-dynamic-form .formeo .f-field-group label {
+	margin-left: 1em;
+	font-size: 1.2em;
+}
+
+.render-dynamic-form .formeo button {
+	font-size: 1rem;
+	line-height: 1.5;
+	border-radius: .25rem;
+	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	box-sizing: border-box;
+	color: #fff;
+	background-color: #28a745;
+	border-color: #28a745;
+	margin-left: 1em;
+}
+
+	.render-dynamic-form .formeo button:hover {
+		background: #55ce63;
+		opacity: 0.7;
+		border: 1px solid #55ce63;
+		cursor: pointer;
+	}
+
+/*
+	---------------/End custom css for rendered forms----------------
+*/
+
+.field-edit-group, .formeo-controls ul, .panels-wrap ul, .stage-column, .stage-wrap .stage {
+	margin: 0;
+	padding: 0;
+	list-style: none
+}
+
+.f-row div {
+	padding: 0.3em;
+}
+
+.formeo-controls .field-control button {
+	color: black;
+}
+
+
+.formeo {
+	font-size: 14px;
+	-webkit-tap-highlight-color: transparent;
+	font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+	line-height: 1.5;
+	color: #373a3c;
+	background-color: #fff;
+	box-shadow: 0 1px 2px 0 rgba(0,0,0,.15);
+	margin: 20px;
+	position: relative;
+	margin-bottom: 50px;
+	transition: all .2s ease-in-out;
+}
+
+	.formeo [tabindex='-1']:focus {
+		outline: none !important
+	}
+
+	.formeo h1, .formeo h2, .formeo h3, .formeo h4, .formeo h5, .formeo h6 {
+		margin-top: 0;
+		margin-bottom: .5rem;
+		padding: 1%;
+	}
+
+	.formeo p {
+		margin-top: 0;
+		margin-bottom: 1rem
+	}
+
+	.formeo abbr[data-original-title], .formeo abbr[title] {
+		cursor: help;
+		border-bottom: 1px dotted #bcbfc1
+	}
+
+	.formeo address {
+		margin-bottom: 1rem;
+		font-style: normal;
+		line-height: inherit
+	}
+
+	.formeo dl, .formeo ol, .formeo ul {
+		margin-top: 0;
+		margin-bottom: 1rem
+	}
+
+		.formeo ol ol, .formeo ol ul, .formeo ul ol, .formeo ul ul {
+			margin-bottom: 0
+		}
+
+	.formeo dt {
+		font-weight: 700
+	}
+
+	.formeo dd {
+		margin-bottom: .5rem;
+		margin-left: 0
+	}
+
+	.formeo blockquote {
+		margin: 0 0 1rem
+	}
+
+	.formeo a {
+		color: #325d88;
+		text-decoration: none
+	}
+
+		.formeo a:focus, .formeo a:hover {
+			color: #1d3750;
+			text-decoration: underline
+		}
+
+		.formeo a:focus {
+			outline: thin dotted;
+			outline: 5px auto -webkit-focus-ring-color;
+			outline-offset: -2px
+		}
+
+	.formeo pre {
+		margin-top: 0;
+		margin-bottom: 1rem
+	}
+
+	.formeo figure {
+		margin: 0 0 1rem
+	}
+
+	.formeo img {
+		vertical-align: middle
+	}
+
+	.formeo [role=button] {
+		cursor: pointer
+	}
+
+	.formeo [role=button], .formeo a, .formeo area, .formeo button, .formeo input, .formeo label, .formeo select, .formeo summary, .formeo textarea {
+		touch-action: manipulation;
+	}
+
+	.formeo button {
+		display: inline-block;
+		font-weight: 400;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		border: 1px solid transparent;
+		padding: .375rem .75rem;
+	}
+
+	.formeo table {
+		background-color: transparent
+	}
+
+	.formeo caption {
+		padding-top: .75rem;
+		padding-bottom: .75rem;
+		color: #bcbfc1;
+		text-align: left;
+		caption-side: bottom
+	}
+
+	.formeo th {
+		text-align: left
+	}
+
+	.formeo label {
+		display: inline-block;
+		margin-bottom: .5rem
+	}
+
+	.formeo button:focus {
+		outline: 1px dotted;
+		outline: 5px auto -webkit-focus-ring-color
+	}
+
+	.formeo button, .formeo input, .formeo select, .formeo textarea {
+		margin: 0;
+		line-height: inherit
+	}
+
+	.formeo textarea {
+		resize: vertical
+	}
+
+	.formeo fieldset {
+		min-width: 0;
+		padding: 0;
+		margin: 0;
+		border: 0
+	}
+
+	.formeo legend {
+		display: block;
+		width: 100%;
+		padding: 0;
+		margin-bottom: .5rem;
+		font-size: 1.5rem;
+		line-height: inherit
+	}
+
+	.formeo input[type=search] {
+		box-sizing: inherit;
+		-webkit-appearance: none
+	}
+
+	.formeo output {
+		display: inline-block
+	}
+
+	.formeo [hidden] {
+		display: none !important
+	}
+
+.formeo-controls .control-group .field-control, .panels-wrap .panel .field-control, .stage-wrap .field-control {
+	cursor: move;
+	list-style: none;
+	margin: -1px 0 0;
+	border: 1px solid #d6d8da;
+	padding: 10px;
+	text-align: left;
+	background: #fff;
+	user-select: none;
+	font-size: 1em;
+	line-height: 1.5em
+}
+
+.formeo-controls .control-group .control-moving.field-control, .panels-wrap .panel .control-moving.field-control, .stage-wrap .control-moving.field-control {
+	border-radius: 5px;
+	opacity: .95 !important;
+	animation: DRAG_GHOST .5s forwards
+}
+
+.formeo-controls .control-group .field-control:before, .panels-wrap .panel .field-control:before, .stage-wrap .field-control:before {
+	margin-right: 10px;
+	font-size: 16px
+}
+
+.formeo-controls .control-group .field-control:hover, .panels-wrap .panel .field-control:hover, .stage-wrap .field-control:hover {
+	background-color: #f2f2f2
+}
+
+.formeo-controls .control-group .field-control svg, .panels-wrap .panel .field-control svg, .stage-wrap .field-control svg {
+	float: left;
+	margin-right: 10px
+}
+
+.formeo-controls .control-group .control-ghoGR.field-control, .panels-wrap .panel .control-ghoGR.field-control, .stage-wrap .control-ghoGR.field-control {
+	opacity: .5
+}
+
+.formeo-controls .control-group .chosen-ghoGR.field-control, .panels-wrap .panel .chosen-ghoGR.field-control, .stage-wrap .chosen-ghoGR.field-control {
+	opacity: 1
+}
+
+@keyframes PLACEHOLDER {
+	0% {
+		height: 1px
+	}
+
+	to {
+		height: 15px
+	}
+}
+
+@keyframes DRAG_GHOST {
+	0% {
+		box-shadow: 0 0 0 0 #000;
+		background-color: #f2f2f2
+	}
+
+	to {
+		background-color: #fff;
+		box-shadow: 0 3px 8px 0 #000
+	}
+}
+
+@keyframes EDIT_PULSE {
+	0%,to {
+		border-color: #66afe9
+	}
+
+	50% {
+		border-color: #bfdef6
+	}
+}
+
+.formeo-controls {
+	float: right;
+	width: 26%;
+	overflow: hidden
+}
+
+	.formeo-controls.pull-left .form-actions {
+		float: left
+	}
+
+	.formeo-controls nav {
+		position: relative;
+		margin-bottom: 1px;
+		padding: 0 24px;
+		overflow: hidden;
+		height: 38px
+	}
+
+		.formeo-controls nav .btn {
+			position: absolute;
+			width: 24px;
+			color: #000;
+			height: 100%;
+			padding: 0;
+			line-height: 0
+		}
+
+			.formeo-controls nav .btn .svg-icon {
+				width: 20px;
+				height: 20px
+			}
+
+			.formeo-controls nav .btn.next-group {
+				right: 0;
+				top: 0;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+				border-bottom-right-radius: 0
+			}
+
+			.formeo-controls nav .btn.prev-group {
+				left: 0;
+				top: 0;
+				border-top-right-radius: 0;
+				border-bottom-left-radius: 0;
+				border-bottom-right-radius: 0
+			}
+
+	.formeo-controls .panel-count-1 {
+		border-bottom-left-radius: 0
+	}
+
+		.formeo-controls .panel-count-1 .panel-nav {
+			display: none
+		}
+
+		.formeo-controls .panel-count-1 .control-group > li:first-child {
+			border-radius: 5px 5px 0 0
+		}
+
+	.formeo-controls .control-group {
+		vertical-align: top;
+		display: inline-block;
+		width: 100%
+	}
+
+		.formeo-controls .control-group h5 {
+			margin: 0;
+			color: #55595c;
+			line-height: 2.25em;
+			padding: 0 10px;
+			display: inline-block;
+			width: 100%;
+			font-size: 1.1em;
+			letter-spacing: 1px
+		}
+
+		.formeo-controls .control-group > li:first-child {
+			border-top-right-radius: 0
+		}
+
+		.formeo-controls .control-group > li:last-child {
+			border-radius: 0 0 0 5px
+		}
+
+	.formeo-controls .control-groups {
+		white-space: nowrap
+	}
+
+	.formeo-controls .control-group-labels {
+		height: 100%;
+		background: #fff;
+		overflow: hidden
+	}
+
+		.formeo-controls .control-group-labels div {
+			white-space: nowrap
+		}
+
+		.formeo-controls .control-group-labels h4 {
+			display: inline-block;
+			width: 100%
+		}
+
+	.formeo-controls .form-actions {
+		float: right;
+		margin-top: 5px
+	}
+
+		.formeo-controls .form-actions .svg-icon {
+			fill: #55595c;
+			display: none
+		}
+
+			.formeo-controls .form-actions .svg-icon:hover {
+				fill: #000
+			}
+
+		.formeo-controls .form-actions > .btn + .btn {
+			margin-left: -1px
+		}
+
+		.formeo-controls .form-actions button:not(:first-child):not(:last-child) {
+			border-radius: 0
+		}
+
+		.formeo-controls .form-actions button:first-child:not(:last-child) {
+			border-bottom-left-radius: .25rem;
+			border-top-left-radius: .25rem;
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0
+		}
+
+		.formeo-controls .form-actions button:last-child:not(:first-child) {
+			border-bottom-right-radius: .25rem;
+			border-top-right-radius: .25rem;
+			border-bottom-left-radius: 0;
+			border-top-left-radius: 0
+		}
+
+		.formeo-controls .form-actions .clear-form:hover, .formeo-controls .form-actions .save-form:hover {
+			color: #fff
+		}
+
+		.formeo-controls .form-actions .save-form:hover {
+			background-color: #325d88
+		}
+
+		.formeo-controls .form-actions .clear-form:hover {
+			background-color: #d9534f
+		}
+
+@media (max-width:481px) {
+	.formeo-controls {
+		width: 45px
+	}
+
+		.formeo-controls .control-group {
+			text-indent: -9999px
+		}
+
+		.formeo-controls .form-actions {
+			display: inline-block;
+			width: 100%;
+			position: relative;
+			vertical-align: middle;
+			float: none;
+			margin-top: 10px
+		}
+
+			.formeo-controls .form-actions > .btn + .btn {
+				margin-top: -1px;
+				margin-left: 0
+			}
+
+			.formeo-controls .form-actions > button {
+				padding: 10px;
+				border-radius: 0;
+				line-height: 0;
+				width: 100%;
+				max-width: 100%;
+				float: none;
+				position: relative;
+				display: block
+			}
+
+				.formeo-controls .form-actions > button:not(:first-child):not(:last-child) {
+					border-radius: 0
+				}
+
+				.formeo-controls .form-actions > button:first-child:not(:last-child) {
+					border-top-right-radius: .25rem;
+					border-top-left-radius: .25rem;
+					border-bottom-right-radius: 0;
+					border-bottom-left-radius: 0
+				}
+
+				.formeo-controls .form-actions > button:last-child:not(:first-child) {
+					border-bottom-left-radius: .25rem;
+					border-bottom-right-radius: .25rem;
+					border-top-right-radius: 0;
+					border-top-left-radius: 0
+				}
+
+			.formeo-controls .form-actions .svg-icon {
+				display: inline-block;
+				margin-right: 10px
+			}
+}
+
+.group-actions {
+	position: absolute;
+	top: 0;
+	z-index: 1
+}
+
+	.group-actions, .group-actions button {
+		width: 24px;
+		height: 24px;
+		overflow: hidden;
+		line-height: 0
+	}
+
+		.group-actions button {
+			padding: 6px;
+			border: 0 none
+		}
+
+			.group-actions button:focus {
+				border: 0 none;
+				outline: 0 none
+			}
+
+		.group-actions .svg-icon {
+			width: 12px;
+			height: 12px
+		}
+
+		.group-actions .icon-handle {
+			opacity: .5
+		}
+
+.last-field .group-actions button:last-child {
+	border-radius: 0
+}
+
+.group-actions .icon-menu, .group-actions .icon-move, .group-actions .icon-move-vertical {
+	display: none
+}
+
+.field-actions {
+	right: 0;
+	text-align: right;
+	transition: width .15s;
+	border-bottom-left-radius: .25rem;
+	border-bottom-right-radius: 0;
+	padding-right: 2px
+}
+
+.editing-field .field-actions, .hovering-field .field-actions {
+	width: 72px;
+	border-color: #93c54b;
+	border-width: 0 0 1px 1px;
+	border-style: solid
+}
+
+.hovering-column .field-actions, .hovering-row .field-actions {
+	display: none
+}
+
+.field-actions button {
+	border-radius: 0;
+	position: absolute
+}
+
+	.field-actions button:nth-of-type(1) {
+		right: 0
+	}
+
+	.field-actions button:nth-of-type(2) {
+		right: 24px
+	}
+
+	.field-actions button:nth-of-type(3) {
+		right: 48px
+	}
+
+	.field-actions button:first-child {
+		right: 0
+	}
+
+.group-config {
+	padding: .5rem;
+	display: none
+}
+
+.column-actions {
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	right: 50%;
+	transform: translateX(12px);
+	z-index: 1;
+	transition: width .15s
+}
+
+.editing-row .column-actions {
+	display: none
+}
+
+.column-actions .action-btn-wrap {
+	position: relative;
+	white-space: nowrap
+}
+
+.column-actions button {
+	position: absolute;
+	background-color: transparent
+}
+
+	.column-actions button:nth-of-type(1) {
+		right: 0
+	}
+
+	.column-actions button:nth-of-type(2) {
+		right: 24px
+	}
+
+	.column-actions button:nth-of-type(3) {
+		right: 48px
+	}
+
+	.column-actions button:first-child {
+		right: 0
+	}
+
+.hovering-column .column-actions {
+	width: 72px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: .25rem;
+	border-width: 0 0 1px 1px;
+	border-style: solid;
+	border-color: #29abe0;
+	background-color: #fff
+}
+
+	.hovering-column .column-actions button:first-child {
+		border-bottom-right-radius: 0;
+		right: 0
+	}
+
+.column-actions button {
+	margin-bottom: 1px;
+	border-radius: 0
+}
+
+	.column-actions button:first-child {
+		border-bottom-right-radius: 0
+	}
+
+.hovering-column .column-actions button:first-child {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0
+}
+
+.hovering-column .column-actions button:last-child, .row-actions {
+	border-bottom-left-radius: .25rem
+}
+
+.row-actions {
+	width: 24px;
+	height: 24px;
+	left: -25px;
+	text-align: right;
+	transition: height .15s ease-in-out;
+	white-space: normal
+}
+
+.editing-row .row-actions, .hovering-row .row-actions {
+	height: 80px
+}
+
+.row-moving .row-actions {
+	height: 24px
+}
+
+.row-actions .row-handle .icon-handle {
+	transform: rotate(90deg)
+}
+
+.row-actions button {
+	margin-bottom: 1px;
+	border-radius: 0
+}
+
+	.row-actions button:first-child {
+		border-top-left-radius: 5px;
+		border-bottom-left-radius: 5px
+	}
+
+.editing-row .row-actions button:first-child, .hovering-row .row-actions button:first-child {
+	border-bottom-left-radius: 0
+}
+
+.row-actions button:last-child {
+	border-bottom-left-radius: 5px
+}
+
+[class*=hovering-] > .group-actions .svg-icon.icon-menu, [class*=hovering-] > .group-actions .svg-icon.icon-move, [class*=hovering-] > .group-actions .svg-icon.icon-move-vertical {
+	display: inline-block
+}
+
+[class*=hovering-] > .group-actions .svg-icon.icon-handle {
+	display: none
+}
+
+.field-control, .stage-row {
+	position: relative;
+	clear: both;
+	margin-left: 0;
+	margin-bottom: 6px;
+	background-color: #fff;
+	padding: 5px
+}
+
+	.field-control:after, .stage-row:after {
+		content: '';
+		display: table;
+		clear: both
+	}
+
+	.field-control.hidden-field, .stage-row.hidden-field {
+		background-color: hsla(0,0%,100%,.6)
+	}
+
+	.field-control.control-ghost, .stage-row.control-ghost {
+		padding: 10px
+	}
+
+	.field-control:first-child, .stage-row:first-child {
+		border-top-right-radius: 5px;
+		border-top-left-radius: 0
+	}
+
+	.field-control:last-child, .stage-row:last-child {
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px
+	}
+
+	.field-control.hovering-row:first-child, .stage-row.hovering-row:first-child {
+		border-top-left-radius: 0
+	}
+
+	.field-control.hovering-row .stage-row:before, .stage-row.hovering-row .stage-row:before {
+		width: 100px
+	}
+
+	.field-control.hovering-row .stage-column, .stage-row.hovering-row .stage-column {
+		opacity: .5
+	}
+
+	.field-control.editing-row .row-edit, .stage-row.editing-row .row-edit {
+		display: block
+	}
+
+	.field-control.resizing-columns .stage-column, .stage-row.resizing-columns .stage-column {
+		transition: none
+	}
+
+.stage-row {
+	transition: background-color 125ms ease-in-out
+}
+
+	.stage-row:before {
+		left: 0
+	}
+
+	.stage-row.editing-row, .stage-row.hovering-row {
+		box-shadow: inset 0 0 0 1px #325d88
+	}
+
+		.stage-row.editing-row:before, .stage-row.hovering-row:before {
+			border-bottom: 1px solid #325d88;
+			border-right: 1px solid #325d88;
+			width: 80px !important
+		}
+
+.row-edit {
+	padding-top: 2rem
+}
+
+.input-group-addon label {
+	margin-bottom: 0
+}
+
+.stage-column {
+	transition: background-color 125ms ease-in-out,box-shadow 125ms,width .25s;
+	position: relative;
+	background-color: #fff
+}
+
+	.stage-column:first-of-type {
+		border-top-right-radius: 5px
+	}
+
+	.stage-column:last-of-type {
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px
+	}
+
+		.stage-column:last-of-type .resize-x-handle {
+			display: none !important
+		}
+
+	.stage-column .resize-x-handle {
+		display: none;
+		position: absolute;
+		right: -4px;
+		top: 0;
+		bottom: 0;
+		width: 6px;
+		border: 4px dotted #fff;
+		z-index: 1;
+		cursor: w-resize
+	}
+
+	.stage-column:before {
+		padding: 0 10px;
+		left: 50%;
+		transform: translateX(12px)
+	}
+
+	.stage-column.hovering-column:first-child {
+		border-top-left-radius: 0
+	}
+
+	.stage-column.hovering-column .stage-field {
+		opacity: .5
+	}
+
+	.stage-column.editing-column, .stage-column.hovering-column {
+		box-shadow: inset 0 0 0 1px #29abe0
+	}
+
+		.stage-column.editing-column:before, .stage-column.hovering-column:before {
+			line-height: 23px !important;
+			width: 68px !important;
+			border-right: 1px solid #29abe0;
+			border-bottom: 1px solid #29abe0
+		}
+
+	.stage-column.editing-column {
+		overflow: hidden
+	}
+
+		.stage-column.editing-column .column-edit {
+			display: block
+		}
+
+.editing-row .stage-column {
+	border-radius: 5px;
+	height: 60px;
+	background-color: #bcbfc1
+}
+
+	.editing-row .stage-column .stage-field {
+		display: none
+	}
+
+	.editing-row .stage-column .resize-x-handle {
+		display: block
+	}
+
+	.editing-row .stage-column:after {
+		content: attr(data-col-width);
+		display: block;
+		width: 100%;
+		text-align: center;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%)
+	}
+
+.stage-field {
+	position: relative;
+	padding: 5px;
+	transition: background-color 125ms ease-in-out
+}
+
+	.stage-field:hover .group-actions {
+		display: block
+	}
+
+	.stage-field.first-field {
+		border-top-right-radius: .25rem;
+		border-top-left-radius: .25rem
+	}
+
+	.stage-field.last-field {
+		border-bottom-right-radius: .25rem;
+		border-bottom-left-radius: .25rem
+	}
+
+	.stage-field [contenteditable] {
+		transition: border-color .25s;
+		border-bottom: 1px dashed #d6d8da;
+		padding: 0 10px 0 0
+	}
+
+		.stage-field [contenteditable]:focus {
+			border-style: solid;
+			border-color: #66afe9;
+			border-width: 0 0 1px;
+			outline: none
+		}
+
+	.stage-field:before {
+		display: none;
+		position: absolute;
+		top: 0;
+		padding: 0 10px;
+		right: 0;
+		transform: translateX(-72px);
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: .25rem
+	}
+
+	.stage-field.editing-field, .stage-field.hovering-field {
+		box-shadow: inset 0 0 0 1px #93c54b
+	}
+
+		.stage-field.editing-field:before, .stage-field.hovering-field:before {
+			line-height: 23px !important;
+			width: 68px !important;
+			border-left: 1px solid #93c54b;
+			border-bottom: 1px solid #93c54b
+		}
+
+	.stage-field.editing-field {
+		background-color: #f1f2f2
+	}
+
+.field-preview p {
+	white-space: normal
+}
+
+.field-edit {
+	margin-top: 1.5rem;
+	display: none
+}
+
+	.field-edit .panel-nav {
+		position: relative;
+		margin-bottom: 1px;
+		padding: 0;
+		overflow: hidden;
+		height: 38px
+	}
+
+	.field-edit.field-edit-options {
+		list-style: decimal
+	}
+
+	.field-edit .prop-controls {
+		display: inline-block;
+		width: 31px;
+		text-align: right;
+		position: absolute;
+		right: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		bottom: 0;
+		height: 31px
+	}
+
+		.field-edit .prop-controls .svg-icon {
+			width: 15px;
+			height: 15px
+		}
+
+		.field-edit .prop-controls:hover .prop-control:last-child, :not(.control-count-1) .field-edit .prop-controls .prop-control:last-child {
+			border-radius: .25rem 0 0 .25rem
+		}
+
+		.field-edit .prop-controls:hover .prop-control:first-child, :not(.control-count-1) .field-edit .prop-controls .prop-control:first-child {
+			border-radius: 0 .25rem .25rem 0
+		}
+
+	.field-edit .prop-control {
+		display: inline-block;
+		padding: 0;
+		width: 31px;
+		height: 31px;
+		line-height: 31px;
+		text-align: center;
+		position: absolute;
+		right: 0;
+		border-radius: .25rem
+	}
+
+		.field-edit .prop-control:nth-of-type(1) {
+			right: -1px
+		}
+
+		.field-edit .prop-control:nth-of-type(2) {
+			right: 30px
+		}
+
+		.field-edit .prop-control:nth-of-type(3) {
+			right: 61px
+		}
+
+		.field-edit .prop-control:nth-of-type(4) {
+			right: 92px
+		}
+
+		.field-edit .prop-control:first-child {
+			right: 0
+		}
+
+	.field-edit .prop-wrap {
+		position: relative;
+		padding-right: 34px
+	}
+
+	.field-edit .field-edit-group {
+		padding: 10px
+	}
+
+	.field-edit .prop-controls, .field-edit .prop-inputs {
+		transition: width .15s
+	}
+
+	.field-edit .prop-inputs {
+		width: 100%
+	}
+
+	.field-edit .control-count-2 .prop-controls:hover {
+		width: 62px
+	}
+
+		.field-edit .control-count-2 .prop-controls:hover + .prop-inputs {
+			width: calc(100% - 31px)
+		}
+
+	.field-edit.panel-count-1 .panel-nav {
+		border-bottom: 1px solid #bcbfc1
+	}
+
+		.field-edit.panel-count-1 .panel-nav .btn {
+			display: none
+		}
+
+	.field-edit.panel-count-1 .panel-labels {
+		background-color: transparent
+	}
+
+	.field-edit .attrs-type-wrap {
+		display: none
+	}
+
+.options-panel .prop-wrap {
+	margin-bottom: 10px
+}
+
+.options-panel .input-group .form-control {
+	width: 50%
+}
+
+.options-panel .input-group-addon {
+	line-height: 0;
+	min-width: 88px
+}
+
+.options-panel .prop-labels {
+	padding-right: 34px
+}
+
+	.options-panel .prop-labels label {
+		width: 50%;
+		position: relative;
+		display: table-cell;
+		float: left
+	}
+
+.options-panel .prop-label-disabled, .options-panel .prop-label-selected {
+	width: 1% !important;
+	white-space: nowrap;
+	vertical-align: middle;
+	border: 0 none;
+	background-color: transparent
+}
+
+.add-remove-attrs {
+	padding: 10px;
+	float: right
+}
+
+.panels-wrap h5 {
+	margin: 0;
+	padding: .55em 0;
+	color: #55595c;
+	font-size: 1.1em;
+	line-height: 1.5em;
+	display: inline-block;
+	width: 100%
+}
+
+.panels-wrap nav {
+	position: relative;
+	margin-bottom: 1px;
+	padding: 0 24px;
+	overflow: hidden;
+	height: 38px
+}
+
+	.panels-wrap nav .btn {
+		position: absolute;
+		width: 24px;
+		color: #000;
+		height: 100%;
+		padding: 0;
+		line-height: 0;
+		z-index: 1
+	}
+
+		.panels-wrap nav .btn:focus {
+			outline: none;
+			border: 1px solid #66afe9
+		}
+
+		.panels-wrap nav .btn .svg-icon {
+			width: 20px;
+			height: 20px
+		}
+
+		.panels-wrap nav .btn.next-group {
+			right: 0;
+			top: 0;
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0
+		}
+
+		.panels-wrap nav .btn.prev-group {
+			left: 0;
+			top: 0;
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0
+		}
+
+.panels-wrap .panel {
+	vertical-align: top;
+	display: inline-block;
+	width: 100%
+}
+
+	.panels-wrap .panel > li:last-child {
+		border-radius: 0 0 5px 5px
+	}
+
+.panels-wrap .panels {
+	white-space: nowrap;
+	transition-property: transform,height;
+	transition-duration: .15s;
+	transition-timing-function: ease-in-out
+}
+
+.panels-wrap .panel-labels {
+	height: 100%;
+	background: #fff;
+	overflow: hidden;
+	text-align: center
+}
+
+	.panels-wrap .panel-labels div {
+		transition: transform .15s ease-in-out;
+		white-space: nowrap
+	}
+
+.options-panel .prop-inputs .form-group {
+	width: 33%;
+	display: inline-block
+}
+
+.stage-wrap {
+	position: relative;
+	float: left;
+	width: calc(74% - 5px);
+	box-sizing: border-box;
+	transition: width .25s;
+	margin-right: 5px
+}
+
+@media (max-width:481px) {
+	.stage-wrap {
+		width: calc(100% - 50px)
+	}
+}
+
+.stage-wrap .stage {
+	min-height: 450px;
+	transition-property: background-color,border-color;
+	transition-duration: .5s,333ms;
+	border: 0 dashed transparent;
+	background-color: hsla(0,0%,100%,0);
+	padding-left: 25px;
+	padding-bottom: 15px
+}
+
+	.stage-wrap .stage.stage-empty {
+		border: 3px dashed #fff;
+		background-color: hsla(0,0%,100%,.25)
+	}
+
+	.stage-wrap .stage.removing-all-fields {
+		overflow: hidden
+	}
+
+		.stage-wrap .stage.removing-all-fields .stage-row {
+			transition: margin-top .25s ease-in
+		}
+
+.stage-wrap .field-control {
+	margin-bottom: 5px
+}
+
+	.stage-wrap .field-control.sortable-ghost {
+		opacity: 1
+	}
+
+.stage-wrap .stage-column:before, .stage-wrap .stage-field:before, .stage-wrap .stage-row:before {
+	font-size: 12px;
+	position: absolute;
+	top: 0;
+	width: 0;
+	padding: 0;
+	line-height: 24px;
+	text-align: center;
+	overflow: hidden;
+	z-index: 100;
+	transition-property: width;
+	transition-duration: .15s;
+	content: attr(data-hover-tag);
+	border-bottom-right-radius: 5px;
+	background-color: #fff
+}

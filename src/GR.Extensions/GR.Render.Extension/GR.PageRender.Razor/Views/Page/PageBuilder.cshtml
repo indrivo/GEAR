@@ -1,0 +1,74 @@
+@using GR.PageRender.Abstractions
+@inject IPageRender PageRender
+
+@{
+    ViewData["Title"] = "Page Builder";
+    var pageData = (Page)ViewBag.Page;
+    var styles = PageRender.GetPageStyles(pageData.Id);
+    var scripts = PageRender.GetPageScripts(pageData.Id);
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/assets/stylesheets/grapes.min.css?v0.14.43">
+    <link rel="stylesheet" href="~/assets/stylesheets/grapesjs-preset-webpage.min.css">
+    <link rel="stylesheet" href="~/assets/stylesheets/tooltip.css">
+    <link rel="stylesheet" href="~/assets/stylesheets/grapesjs-plugin-filestack.css">
+    <link rel="stylesheet" href="~/assets/stylesheets/page-builder.css">
+}
+
+<a style="float: right;" target="_blank" class="btn btn-warning" href="@pageData.Path">Preview page</a>
+<h2 style="margin-bottom: 1em;">Edit <code>@pageData.Settings.Name</code> page content</h2>
+
+<p>
+    <a class="btn" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Builder Info
+    </a>
+</p>
+<div class="collapse" id="collapseExample">
+    <div class="card card-body">
+        <blockquote>
+            This is a builder that allows you to add, stylize content to the desired mode. For this it offers a set of possibilities:
+            <ul class="list-icons">
+                <li><i class="fa fa-minus text-info"></i> Adding textual content with block manager</li>
+                <li><i class="fa fa-minus text-info"></i> Adding images from both local and external sources</li>
+                <li><i class="fa fa-minus text-info"></i> Adding forms through drag and drop of the component, but also with the preview and setting option from the right menu</li>
+                <li><i class="fa fa-minus text-info"></i> Add dynamic lists from a database source with the option to set a set of options</li>
+                <li><i class="fa fa-minus text-info"></i> Adding new types of blocks</li>
+                <li><i class="fa fa-minus text-info"></i> Copying a block and reusing it</li>
+            </ul>
+        </blockquote>
+    </div>
+</div>
+
+<div id="gjs" style="height: 150em;">
+    @Html.Raw(ViewBag.Html)
+
+    <style>
+		@Html.Raw(ViewBag.Css)
+    </style>
+</div>
+
+<!--Info command content-->
+<div id="info-panel" style="display:none">
+    <br />
+    <div class="info-panel-label">
+        <h3 style="color: white;">Page Builder</h3>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="//static.filestackapi.com/v3/filestack.js"></script>
+
+    <script src="~/assets/js/grapes.min.js?v0.14.43"></script>
+    <script src="~/assets/js/grapesjs-preset-webpage.min.js"></script>
+    <script src="~/assets/js/grapesjs-lory-slider.min.js?0.1.5"></script>
+    <script src="~/assets/js/grapesjs-tabs.min.js?0.1.1"></script>
+    <script src="~/assets/js/grapesjs-custom-code.min.js?0.1.1"></script>
+    <script src="~/assets/js/grapesjs-touch.min.js?0.1.1"></script>
+    <script src="~/assets/js/grapesjs-parser-postcss.min.js?0.1.1"></script>
+    <script src="~/assets/js/grapesjs-tooltip.min.js?0.1.1"></script>
+    <script type="text/javascript" asp-append-version="true" src="~/assets/js/builder/custom-plugins.js"></script>
+    <script type="text/javascript" asp-append-version="true" src="~/assets/js/builder/page-builder.js"></script>
+    <script src="~/assets/js/page-builder.js" asp-append-version="true"></script>
+}

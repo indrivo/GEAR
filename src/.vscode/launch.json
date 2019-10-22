@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/ST.WebHosts/ST.Cms/bin/Debug/netcoreapp2.2/ST.Cms.dll",
+            "program": "${workspaceFolder}/GR.WebHosts/GR.Cms/bin/Debug/netcoreapp2.2/GR.Cms.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/ST.WebHosts/ST.Cms",
+            "cwd": "${workspaceFolder}/GR.WebHosts/GR.Cms",
             "stopAtEntry": false,
             "launchBrowser": {
                 "enabled": true

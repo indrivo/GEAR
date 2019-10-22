@@ -1,0 +1,25 @@
+@model GR.MultiTenant.Abstractions.ViewModels.CreateTenantViewModel
+@{
+    ViewData["Title"] = Localizer["system_company_add"];
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+}
+
+<div class="card card-outline-primary">
+    <div class="card-header">
+        <h4 class="mb-0 text-white">Add new organization </h4>
+    </div>
+    <div class="card-body">
+       <partial name="Partial/_CreateTenantPartialView" model="@Model"/>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity\GR.Identity.csproj" />
+    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Install.Abstractions\GR.Install.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

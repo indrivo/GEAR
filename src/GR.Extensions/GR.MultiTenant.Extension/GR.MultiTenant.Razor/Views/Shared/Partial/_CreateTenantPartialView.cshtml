@@ -1,0 +1,71 @@
+﻿@model GR.MultiTenant.Abstractions.ViewModels.CreateTenantViewModel
+
+<form id="block_create" asp-action="Create" role="form" enctype="multipart/form-data">
+    <div class="form-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row p-t-20">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <JTranslateLabel asp-for="OrganizationLogoFormFile" class="control-label"></JTranslateLabel>
+                    <input type="file" asp-for="OrganizationLogoFormFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <p class="mt-5">
+                    @Localizer["system_tenant_logo_info"]
+                </p>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
+                    <input class="form-control" type="text" asp-for="Name" />
+                    <span asp-validation-for="Name" class="text-danger"></span><br />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <JTranslateLabel class="control-label" asp-for="Description"></JTranslateLabel>
+                    <textarea class="form-control" type="text" asp-for="Description"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span><br />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <JTranslateLabel class="control-label" asp-for="SiteWeb"></JTranslateLabel>
+                    <input class="form-control" type="text" asp-for="SiteWeb" />
+                    <span asp-validation-for="SiteWeb" class="text-danger"></span><br />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <JTranslateLabel class="control-label" asp-for="Address"></JTranslateLabel>
+                    <input class="form-control" type="text" asp-for="Address" />
+                    <span asp-validation-for="Address" class="text-danger"></span><br />
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <JTranslateLabel asp-for="CountryId" class="control-label"></JTranslateLabel>
+                    <select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
+                    <span asp-validation-for="CountryId" class="text-danger"></span><br />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <JTranslateLabel asp-for="CityId" class="control-label"></JTranslateLabel>
+                    <select disabled="disabled" class="form-control" asp-for="CityId"></select>
+                    <span asp-validation-for="CityId" class="text-danger"></span><br />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row button-group">
+        <div class="col-lg-2 col-md-3">
+            <button type="submit" class="btn btn-block btn-success"> <i class="fa fa-check"></i> @Localizer["save"]</button>
+        </div>
+        <div class="col-lg-2 col-md-3">
+            <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+        </div>
+    </div>
+</form>

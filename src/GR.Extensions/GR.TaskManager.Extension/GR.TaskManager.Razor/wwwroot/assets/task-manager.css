@@ -1,0 +1,172 @@
+﻿.task .task-number,
+.task .task-label {
+    font-size: 18px;
+}
+
+.dropdown-item {
+    padding: 10px 20px;
+}
+
+.task-details .form-group label {
+    min-width: 100px;
+}
+
+.task-details .form-group select {
+    width: calc(100% - 112px);
+    display: inline-block;
+}
+
+.task-manager-task-list table th,
+.task-manager-task-list table tbody td {
+    padding: .75rem 2rem !important;
+}
+
+    .task-manager-task-list table tbody td.task-actions {
+        width: 100px;
+    }
+
+.task .status {
+    position: relative;
+    padding-left: 30px;
+}
+
+    .task .status i {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+.task-manager-loader {
+    background-color: white;
+    z-index: 99;
+    display: flex;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 100vh;
+    width: 100vw;
+}
+
+.priority span {
+    padding: 3px 10px;
+    border-radius: 0.25rem;
+    color: white;
+}
+
+.priority-Low .priority span {
+    background-color: #48a1af;
+}
+
+.priority-Medium .priority span {
+    background-color: #4B89FC;
+}
+
+.priority-High .priority span {
+    background-color: #FBB357;
+}
+
+.priority-Critical .priority span {
+    background-color: #EA585A;
+}
+
+.status-Completed {
+    color: #009010;
+}
+
+.task-item .custom-control-label {
+    margin-top: 2px;
+}
+
+    .task-item .custom-control-label:before {
+        top: 0;
+    }
+
+    .task-item .custom-control-label:after {
+        top: 0;
+    }
+
+#new-task-item-name,
+#new-task-item-name-add-task {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+    #new-task-item-name:focus,
+    #new-task-item-name-add-task:focus {
+        border-color: inherit;
+        outline: 0;
+        box-shadow: none;
+    }
+
+#add-new-task-item,
+#add-new-task-item-add-task {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.task-actions i {
+    font-size: 20px;
+}
+
+.task-actions .btn-outline-danger {
+    border-color: #ff000080;
+}
+
+.task-actions .btn-outline-success {
+    border-color: #008f1180;
+}
+
+.task-actions .btn-outline-warning {
+    border-color: #fbb35780;
+}
+
+.task-details .modal-body,
+.add-task-modal .modal-body {
+    background-color: white;
+    border: 1px solid #dddddd;
+}
+
+table th {
+    position: relative;
+}
+
+    table th.sortable {
+        cursor: pointer;
+    }
+
+    table th .sort:before,
+    table th .sort:after {
+        font-family: 'FontAwesome';
+        font-weight: 900;
+        right: 16px;
+        font-size: 1rem;
+        position: absolute;
+        bottom: .5em;
+        display: block;
+        opacity: .3;
+        color: white;
+    }
+
+    table th .sort:before {
+        content: "\f0dd";
+    }
+
+    table th .sort:after {
+        content: "\f0de";
+    }
+
+    table th .sort.descending:before {
+        opacity: 1;
+    }
+
+    table th .sort.ascending:after {
+        opacity: 1;
+    }
+
+.file-list-item.deleting label {
+    opacity: 0.6;
+}
+
+.select2-container {
+    width : 100% !important;
+}

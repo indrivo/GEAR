@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>GR.Procesess</AssemblyName>
+    <RootNamespace>GR.Procesess</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <Configurations>Debug;Release;Stage</Configurations>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BPMN.Sharp">
+      <HintPath>libs\BPMN.Sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity\GR.Identity.csproj" />
+    <ProjectReference Include="..\GR.Processes.Abstractions\GR.Processes.Abstractions.csproj" />
+  </ItemGroup>
+</Project>
+

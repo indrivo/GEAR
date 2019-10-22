@@ -1,0 +1,47 @@
+@model GR.Forms.Razor.ViewModels.FormsViewModels.FieldValidationViewModel
+
+@{
+	ViewData["Title"] = "Get Field Attributes";
+}
+
+<div class="card">
+	<div class="card-header">
+		<h2>Validations</h2>
+	</div>
+	<div class="card-body">
+		<form asp-action="GetFieldAttributes" method="post">
+			@Html.HiddenFor(x => x.Field.Id)
+			@Html.HiddenFor(x => x.Field.FormId)
+			@for (var item = 0; item < Model.FormValidations.Count(); item++)
+			{
+				@Html.HiddenFor(x => x.FormValidations[item].Code)
+				@Html.HiddenFor(x => x.FormValidations[item].Name)
+				@Html.HiddenFor(x => x.FormValidations[item].Description)
+				<div class="row">
+					<div class="col-md-1">
+						<input style="margin-left: 2em; -ms-transform: scale(2); -webkit-transform: scale(2); transform: scale(2);"
+							   type="checkbox" asp-for="FormValidations[item].IsSelected" />
+					</div>
+					<div class="col-md-4">
+						<h4>@Model.FormValidations[item].Name</h4>
+						<code>@Model.FormValidations[item].Description</code>
+					</div>
+					<div class="col-md-4">
+						<input type="text" asp-for="FormValidations[item].Default" class="form-control" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<hr />
+					</div>
+				</div>
+			}
+			<div class="row">
+				<div class="col-md-12">
+					<button type="submit" class="btn btn-success">Save</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
