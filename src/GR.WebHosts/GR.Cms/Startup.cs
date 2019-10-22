@@ -110,8 +110,8 @@ using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.ECommerce.Paypal;
-using GR.ECommerce.Paypal.Abstractions.Extensions;
 using GR.Localization;
+using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 
 #endregion
@@ -232,7 +232,7 @@ namespace GR.Cms
 				//Use compression
 				services.AddResponseCompression();
 			}
-
+			services.AddHttpClient();
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 

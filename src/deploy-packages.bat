@@ -105,7 +105,7 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager.Razor*
 
 ::Push commerce modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Abstractions*
-dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Products*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
