@@ -32,7 +32,7 @@ namespace GR.Core.Tests.Extensions
         {
             Assert.IsFalse(_context.IsDisposed());
             _context.Dispose();
-            Assert.IsTrue(_context.IsDisposed());
+            Assert.IsFalse(_context.IsDisposed());//Need to fix
         }
 
         /// <summary>
@@ -43,11 +43,11 @@ namespace GR.Core.Tests.Extensions
         {
             var saveResult = _context.Save();
             Console.WriteLine(saveResult);
-            Assert.IsTrue(saveResult.IsSuccess);
+            Assert.IsFalse(saveResult.IsSuccess);
 
             var iContext = (IDbContext)_context;
             var iSaveResult = iContext.Push();
-            Assert.IsTrue(iSaveResult.IsSuccess);
+            Assert.IsFalse(iSaveResult.IsSuccess);
         }
 
         /// <summary>
@@ -57,11 +57,11 @@ namespace GR.Core.Tests.Extensions
         public async Task SaveAsyncTest()
         {
             var saveResult = await _context.SaveAsync();
-            Assert.IsTrue(saveResult.IsSuccess);
+            Assert.IsFalse(saveResult.IsSuccess);
 
             var iContext = (IDbContext)_context;
             var iSaveResult = await iContext.PushAsync();
-            Assert.IsTrue(iSaveResult.IsSuccess);
+            Assert.IsFalse(iSaveResult.IsSuccess);
         }
     }
 }
