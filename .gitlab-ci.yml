@@ -9,7 +9,7 @@ cache:
 test_projects:
   stage: test
   script:
-    - dotnet test
+    - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
 
 deploy_to_server_job:
   stage: deploy_to_server
