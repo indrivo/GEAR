@@ -1,6 +1,6 @@
-﻿namespace ST.ECommerce.Payments.Abstractions.Configurator
+﻿namespace GR.ECommerce.Payments.Abstractions.Configurator
 {
-    public class PaymentProvider<TProvider> where TProvider : class, IPaymentManager
+    public class PaymentProvider<TProvider> where TProvider : class, IPaymentService
     {
         /// <summary>
         /// Provider name

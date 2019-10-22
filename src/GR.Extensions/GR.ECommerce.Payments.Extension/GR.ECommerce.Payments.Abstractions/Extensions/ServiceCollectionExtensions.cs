@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ST.Core.Helpers;
-using ST.ECommerce.Payments.Abstractions.Configurator;
+﻿using GR.Core.Helpers;
+using GR.ECommerce.Payments.Abstractions.Configurator;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace ST.ECommerce.Payments.Abstractions.Extensions
+namespace GR.ECommerce.Payments.Abstractions.Extensions
 {
     public static class ServiceCollectionExtensions
     {
@@ -14,12 +14,12 @@ namespace ST.ECommerce.Payments.Abstractions.Extensions
         /// <param name="config"></param>
         /// <returns></returns>
         public static IServiceCollection RegisterPaymentProvider<TProvider>(this IServiceCollection services, PaymentProvider<TProvider> config)
-            where TProvider : class, IPaymentManager
+            where TProvider : class, IPaymentService
         {
             Arg.NotNull(services, nameof(RegisterPaymentProvider));
             Arg.NotNull(config, nameof(RegisterPaymentProvider));
 
-            IoC.RegisterService<IPaymentManager>(config.ProviderName, typeof(TProvider));
+            IoC.RegisterService<IPaymentService>(config.ProviderName, typeof(TProvider));
 
             return services;
         }

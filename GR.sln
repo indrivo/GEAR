@@ -247,11 +247,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Payments.Provi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.Paypal", "GR.ECommerce.Paypal", "{9BEA7DC3-0498-4E31-805C-40E09C36F88F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.ECommerce.Paypal", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.ECommerce.Paypal\GR.ECommerce.Paypal.csproj", "{BC502397-8AD0-4EC1-9766-287E324461BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal\GR.Paypal.csproj", "{BC502397-8AD0-4EC1-9766-287E324461BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.ECommerce.Paypal.Abstractions", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.ECommerce.Paypal.Abstractions\GR.ECommerce.Paypal.Abstractions.csproj", "{5870204E-721F-4C1A-BB07-F8180EC031F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Abstractions", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal.Abstractions\GR.Paypal.Abstractions.csproj", "{5870204E-721F-4C1A-BB07-F8180EC031F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.ECommerce.Paypal.Razor", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.ECommerce.Paypal.Razor\GR.ECommerce.Paypal.Razor.csproj", "{D091F7EB-AC77-4601-A11F-D2E18519E012}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Razor", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal.Razor\GR.Paypal.Razor.csproj", "{D091F7EB-AC77-4601-A11F-D2E18519E012}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
