@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageTags>commerce products gear abstractions</PackageTags>
+    <PackageReleaseNotes>-Add entities for commerce</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
