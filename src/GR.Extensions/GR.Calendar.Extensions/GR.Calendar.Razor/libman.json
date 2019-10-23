@@ -5,6 +5,14 @@
     {
       "library": "fullcalendar@3.10.0",
       "destination": "wwwroot/lib/fullcalendar/"
+    },
+    {
+      "library": "clockpicker@0.0.7",
+      "destination": "wwwroot/lib/clockpicker/",
+      "files": [
+        "bootstrap-clockpicker.min.css",
+        "bootstrap-clockpicker.min.js"
+      ]
     }
   ]
 }

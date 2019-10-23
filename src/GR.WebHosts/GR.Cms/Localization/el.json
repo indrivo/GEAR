@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Όχι τα μέλη καλούνται να event",
   "system_calendar": "Ημερολόγιο",
   "system_childs": "Κλάδων μενού",
-  "system_order": "Αριθμός παραγγελίας"
+  "system_order": "Αριθμός παραγγελίας",
+  "system_calendar_starts": "Ξεκινά",
+  "system_calendar_ends": "Τελειώνει"
 }

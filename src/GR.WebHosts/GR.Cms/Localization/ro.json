@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Nici membrii invitați la eveniment",
   "system_calendar": "Calendar",
   "system_childs": "Ramuri de meniu",
-  "system_order": "Numărul de ordine"
+  "system_order": "Numărul de ordine",
+  "system_calendar_starts": "Începe",
+  "system_calendar_ends": "Se termină"
 }

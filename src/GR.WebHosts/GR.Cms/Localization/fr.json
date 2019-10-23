@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Pas de membres, invités à l'événement",
   "system_calendar": "Calendrier",
   "system_childs": "Les branches de la carte",
-  "system_order": "Numéro de commande"
+  "system_order": "Numéro de commande",
+  "system_calendar_starts": "Commence",
+  "system_calendar_ends": "Se termine"
 }

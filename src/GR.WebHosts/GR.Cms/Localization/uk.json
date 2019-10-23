@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Немає учасників, запрошених на захід",
   "system_calendar": "Календар",
   "system_childs": "Гілки меню",
-  "system_order": "Номер замовлення"
+  "system_order": "Номер замовлення",
+  "system_calendar_starts": "Починається",
+  "system_calendar_ends": "Закінчується"
 }

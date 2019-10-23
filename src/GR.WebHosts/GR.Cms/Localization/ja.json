@@ -650,5 +650,7 @@
   "system_calendar_no_members": "無招聘しイベント",
   "system_calendar": "カレンダー",
   "system_childs": "メニューの店",
-  "system_order": "注文番号"
+  "system_order": "注文番号",
+  "system_calendar_starts": "を開始",
+  "system_calendar_ends": "終了"
 }
