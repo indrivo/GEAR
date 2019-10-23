@@ -1,18 +1,22 @@
 @{
-	ViewData["Title"] = Localizer["system_calendar"];
+	ViewData["Title"] = "Internal Calendar";
 }
 
 @section Styles
 {
 	<link rel="stylesheet" type="text/css" href="~/calendar/css/fullcalendar-rewrite.css" />
+	<link rel="stylesheet" type="text/css" href="~/lib/clockpicker/bootstrap-clockpicker.min.css" />
 	<style>
-
 		thead {
 			background-color: transparent !important;
 		}
 
 		.hidden {
 			display: none;
+		}
+
+		.bg-popup-gray {
+			background-color: #F4F6F8 !important;
 		}
 
 		span.select2 {
@@ -378,6 +382,88 @@
 		.card {
 			height: 100%;
 		}
+
+		#edit-event .input-inline-editing {
+			border: 0;
+			border-bottom: 1px solid #d8dce0;
+			width: 100%;
+			line-height: 15px;
+			background-color: transparent;
+			color: inherit;
+			font-weight: inherit;
+			font-size: inherit;
+			transition: 0.2s ease-in-out;
+		}
+
+			#edit-event .input-inline-editing:focus {
+				border-color: #818999;
+				transition: 0.2s ease-in-out;
+			}
+
+		#edit-event .select2-selection {
+			background-color: transparent;
+			border: none;
+			outline: none;
+			-moz-appearance: none;
+			-webkit-appearance: none;
+			appearance: none;
+		}
+
+		#edit-event .details-popup-priority .select2-container--open + i {
+			transform: rotate(180deg);
+			transition: 0.2s ease-in-out;
+		}
+
+		#edit-event .details-popup-priority i {
+			transition: 0.2s ease-in-out;
+			transform: rotate(0deg);
+			right: 0;
+		}
+
+		#edit-event .details-popup-priority .select2-selection__arrow {
+			display: none;
+		}
+
+		.select2-dropdown.edit-event-priority {
+			background-color: #f4f6f8;
+			border: 1px solid #818999;
+		}
+
+			.select2-dropdown.edit-event-priority .select2-search {
+				display: none;
+			}
+
+		input[type="date"]::-webkit-inner-spin-button {
+			display: none;
+			-webkit-appearance: none;
+		}
+
+		input[type="date"]::-webkit-calendar-picker-indicator {
+			opacity: 0.1;
+		}
+
+		.details-popup-date-label {
+			width: 50px;
+			font-size: 12px;
+			color: #818999;
+			text-align: right;
+		}
+
+		.details-popup .date-inline-editing {
+			background-color: transparent;
+			border: none;
+			outline: none;
+			margin-left: 15px;
+			width: 80px;
+		}
+
+		.details-popup .time-inline-editing {
+			background-color: transparent;
+			border: none;
+			outline: none;
+			margin-left: 15px;
+			width: 40px;
+		}
 	</style>
 }
 @inject IStringLocalizer Localizer
@@ -455,8 +541,7 @@
 {
 	<script src="~/lib/moment.js/moment.js"></script>
 	<script src="~/lib/fullcalendar/fullcalendar.js"></script>
-	<script src="~/lib/tooltip.js/popper.min.js"></script>
-	<script src="~/lib/tooltip.js/tooltip.min.js"></script>
+	<script src="~/lib/clockpicker/bootstrap-clockpicker.min.js"></script>
 	@*<script src="~/calendar/js/internal-calendar-plugin-v1.js"></script>*@
 
 	<script>
@@ -471,7 +556,7 @@
 						success: (data) => {
 							if (data.is_success) {
 								resolve(data.result);
-							} else if (data.is_success === false) {
+							} else if (!data.is_success) {
 								reject(data.error_keys);
 							} else {
 								resolve(data);
@@ -494,11 +579,7 @@
 				members: []
 			}) {
 				const requestUrl = '/AddEvent';
-				return this.ajaxRequest(requestUrl, 'post', event).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'post', event);
 			}
 
 			updateEvent(event = {
@@ -512,11 +593,7 @@
 				members: []
 			}) {
 				const requestUrl = '/UpdateEvent';
-				return this.ajaxRequest(requestUrl, 'post', event).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'post', event);
 			}
 
 			changeMemberEventAcceptance(event = {
@@ -525,20 +602,12 @@
 				acceptance: ''
 			}) {
 				const requestUrl = '/ChangeMemberEventAcceptance';
-				return this.ajaxRequest(requestUrl, 'post', event).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'post', event);
 			}
 
 			getAllEventsOrganizedByMe() {
 				const requestUrl = '/GetAllEventsOrganizedByMe';
-				return this.ajaxRequest(requestUrl, 'get', null).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', null);
 			}
 
 			getOrganizationUserEvents(config = {
@@ -547,11 +616,7 @@
 				endDate: ''
 			}) {
 				const requestUrl = '/GetOrganizationUserEvents';
-				return this.ajaxRequest(requestUrl, 'get', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', config);
 			}
 
 			getMyEvents(config = {
@@ -559,11 +624,7 @@
 				endDate: ''
 			}) {
 				const requestUrl = '/GetMyEvents';
-				return this.ajaxRequest(requestUrl, 'get', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', config);
 			}
 
 			getUserEventsByTimeLine(config = {
@@ -573,73 +634,45 @@
 				expandDayPrecision: 0
 			}) {
 				const requestUrl = '/GetUserEventsByTimeLine';
-				return this.ajaxRequest(requestUrl, 'get', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', config);
 			}
 
 			getEventById(config = {
 				eventId: '',
 			}) {
 				const requestUrl = '/GetEventById';
-				return this.ajaxRequest(requestUrl, 'get', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', config);
 			}
 
 			getHelpers() {
 				const requestUrl = '/Helpers';
-				return this.ajaxRequest(requestUrl, 'get', null).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', null);
 			}
 
 			getOrganizationUsers() {
 				const requestUrl = '/GetOrganizationUsers';
-				return this.ajaxRequest(requestUrl, 'get', null).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'get', null);
 			}
 
 			deletePermanently(config = {
 				eventId: ''
 			}) {
 				const requestUrl = '/DeletePermanently';
-				return this.ajaxRequest(requestUrl, 'delete', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'delete', config);
 			}
 
 			deleteLogically(config = {
 				eventId: ''
 			}) {
 				const requestUrl = '/DeleteLogically';
-				return this.ajaxRequest(requestUrl, 'delete', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'delete', config);
 			}
 
 			restore(config = {
 				eventId: ''
 			}) {
 				const requestUrl = '/Restore';
-				return this.ajaxRequest(requestUrl, 'delete', config).then(result => {
-					return result;
-				}).catch(e => {
-					return e;
-				});
+				return this.ajaxRequest(requestUrl, 'delete', config);
 			}
 
 			helpers = {};
@@ -671,7 +704,7 @@
 	</script>
 
 	<script id="teamMember" type="text/x-jsrender">
-		<div class="event-member" data-member-id="{{:id}}">
+		<div class="event-member mt-2" data-member-id="{{:id}}">
 			<div class="d-flex align-items-center">
 				<span class="member-acceptance acceptance-{{:acceptance}}">
 					<i class="material-icons">{{:~acceptanceIcon}}</i>
@@ -682,15 +715,13 @@
 	</script>
 
 	<script id="teamMemberEdit" type="text/x-jsrender">
-		<div class="event-member" data-member-id="{{:id}}">
+		<div class="event-member mt-2" data-member-id="{{:id}}">
 			<div class="d-flex align-items-center">
 				<span class="member-acceptance acceptance-{{:acceptance}}">
 					<i class="material-icons">{{:~acceptanceIcon}}</i>
 				</span>
 				<div class="member-name"><span>{{:~outputName}}</span></div>
-				<div class="member-dismissa align-self-end">
-					<i class="material-icons text-danger">close</i>
-				</div>
+				<i class="ml-auto material-icons member-dismiss text-danger">close</i>
 			</div>
 		</div>
 	</script>
@@ -749,31 +780,51 @@
 	</script>
 
 	<script id="eventPopupEdit" type="text/x-jsrender">
-		<div class="popup-content">
-			<form id="edit-event" data-event-id="{{:id}}">
+		<div class="popup-content bg-popup-gray">
+			<form id="edit-event">
 				<div class="details-popup-section details-popup-header">
 					<div class="details-popup-title">
 						<input type="text" class="input-inline-editing event-title" value="{{:title}}">
 					</div>
-					<div class="details-popup-priority">
-						<select class="select-inline-editing event-proprity"></select>
+					<div class="details-popup-priority d-flex align-items-center mt-2 position-relative">
+						<span class="event-priority-bullet mr-2 priority-{{:priority}}"></span>
+						<select class="select-inline-editing event-priority"></select>
+						<i class="material-icons position-absolute">keyboard_arrow_down</i>
 					</div>
 				</div>
 				<div class="details-popup-section details-popup-date">
-					<div class="details-popup-date">
-						<input type="date" class="date-inline-editing event-start-date" value="{{:startDate}}">
-						<input type="time" class="time-inline-editing event-start-time" value="{{:startTime}}">
+					<div class="details-popup-start-date d-flex">
+						<div class="details-popup-date-label">@Localizer["system_calendar_starts"]:</div>
+						<div class="date-time">
+							<input type="text" class="date-inline-editing event-start-date" required value="{{:~startDateEdit}}">
+							<input type="text"
+								   class="time-inline-editing event-start-time"
+								   data-autoclose="true"
+								   value="{{:~startTime}}">
+						</div>
 					</div>
-					<div class="details-popup-time">
-						<input type="date" class="date-inline-editing event-end-date" value="{{:endDate}}">
-						<input type="time" class="date-inline-editing event-end-time" value="{{:endTime}}">
+					<div class="details-popup-end-date d-flex">
+						<div class="details-popup-date-label">@Localizer["system_calendar_ends"]:</div>
+						<div class="date-time">
+							<input type="text" class="date-inline-editing event-end-date" value="{{:~endDateEdit}}">
+							<input type="text"
+								   class="time-inline-editing event-end-time"
+								   data-autoclose="true"
+								   value="{{:~endTime}}">
+						</div>
 					</div>
 				</div>
 				<div class="details-popup-section details-popup-members">
 					<div class="details-popup-members-list">
 					</div>
-					<label for="add-new-guest"><i class="material-icons">add_circle_outline</i></label>
-					<input id="add-new-guest" class="input-inline-editing event-new-guest" type="text" placeholder="@Localizer["system_calendar_add_guest"])" />
+					<div class="mt-2 d-flex">
+						<label for="edit-event-members"><i class="material-icons">add_circle_outline</i></label>
+						<select id="edit-event-members"
+								placeholder="@Localizer["system_calendar_add_guest"])"
+								name="members"
+								class="form-control event-members">
+						</select>
+					</div>
 				</div>
 				<div class="details-popup-section details-popup-description">
 					<textarea class="textarea-inline-editing event-details">
@@ -782,7 +833,9 @@
 				</div>
 				<div class="pull-right pb-4 pr-4">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="submit" class="submit-add-task btn btn-success text-white" form="add-task">@Localizer["system_taskmanager_save_task"]</button>
+					<button type="submit" class="submit-add-event btn btn-success text-white" form="edit-event" data-event-id="{{:id}}">
+						@Localizer["system_taskmanager_save_task"]
+					</button>
 				</div>
 			</form>
 		</div>
@@ -865,21 +918,38 @@
 			/* on drop */
 			CalendarApp.prototype.onDrop = function (eventObj, date) {
 				let calendarEvent = Object.assign({}, eventObj.data('eventObject'));
+				const currentView = this.$calendar.fullCalendar('getView').dateProfile.currentRangeUnit;
+				let displayDate = date.clone();
+				let requestStartDate = date.clone();
+				let requestEndDate = date.clone();
 
-				let eventData = {
+				if (currentView === 'month') {
+					displayDate = displayDate.local().hour(8);
+					requestStartDate = requestStartDate.local().hour(8);
+					requestEndDate = requestEndDate.local().hour(9);
+				} else {
+					requestStartDate = requestStartDate.local();
+					requestEndDate = requestEndDate.local().add(1, 'h');
+				}
+
+				requestStartDate = requestStartDate.format('YYYY-MM-DD[T]HH:mm');
+				requestEndDate = requestEndDate.format('YYYY-MM-DD[T]HH:mm');
+
+				const eventData = {
 					title: eventObj.data('eventObject').title,
 					details: eventObj.data('event-details'),
 					location: eventObj.data('event-location'),
-					startDate: moment(date._i, date._f).format('DD/MM/YYYY'),
-					endDate: moment(date._i, date._f).format('DD/MM/YYYY'),
+					startDate: requestStartDate,
+					endDate: requestEndDate,
 					priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,
 					members: eventObj.data('event-members').split(',')
 				}
-				calendarEvent.start = date;
-				if (date.isAfter(new Date())) {
+
+				calendarEvent.start = displayDate;
+				calendarEvent.editable = true;
+				if (displayDate.isAfter(new Date())) {
 					calendar.addEvent(eventData).then(newEventId => {
 						calendarEvent.id = newEventId;
-						calendarEvent.editable = true;
 						this.$calendar.fullCalendar('renderEvent', calendarEvent, true);
 					}).catch(e => {
 						toast.notifyErrorList(e);
@@ -912,13 +982,53 @@
 						});
 					});
 				}
+
+			CalendarApp.prototype.eventMouseover = function (event) {
+				//console.log(event);
+			}
+
+			CalendarApp.prototype.eventDrop = function (event, delta, revertFunc) {
+				const isAfter = event.start.isAfter(new Date());
+				if (!isAfter) {
+					toast.notify({ text: window.translate("system_calendar_error_date"), icon: "error" });
+					revertFunc();
+				}
+				else {
+					let endDate = null;
+
+					if (event.end !== null) {
+						endDate = event.end;
+					} else {
+						endDate = event.start;
+					}
+
+					const systemEvent = {
+						id: event.id,
+						title: event.title,
+						startDate: event.start.format('YYYY-MM-DD'),
+						endDate: endDate.format('YYYY-MM-DD')
+					}
+					calendar.updateEvent(systemEvent).then();
+				}
+			}
+
+			CalendarApp.prototype.eventRender = function (event, element, view) {
+				const time = event.start.local().format('hha');
+				const htmlOutput = eventTemplate.render({
+					id: event.id,
+					time: time,
+					title: event.title,
+					editable: event.editable
+				});
+				element.html(htmlOutput);
+			}
 			/* Initializing */
 			CalendarApp.prototype.init = function (helpers) {
 				this.$helpers = helpers;
 				this.enableDrag();
 				/*  Initialize the calendar  */
-				var date = new Date();
-				var $this = this;
+				let date = new Date();
+				let $this = this;
 
 				let getConfig = {
 					userId: settings.user.id,
@@ -946,6 +1056,7 @@
 							editable: editable
 						});
 					});
+
 					$this.$calendarObj = $this.$calendar.fullCalendar({
 						slotDuration: '00:15:00', /* If we want to split day time each 15minutes */
 						minTime: '08:00:00',
@@ -961,38 +1072,16 @@
 						},
 						events: events,
 						eventRender: function (event, element, view) {
-							const time = moment(event.start._i, event.start._f).format('hha');
-							const htmlOutput = eventTemplate.render({
-								id: event.id,
-								time: time,
-								title: event.title,
-								editable: event.editable
-							});
-							element.html(htmlOutput);
+							$this.eventRender(event, element, view);
 						},
 						editable: true,
 						droppable: true, // this allows things to be dropped onto the calendar !!!
 						eventLimit: true, // allow "more" link when too many events
 						selectable: true,
 						drop: function (date) { $this.onDrop($(this), date); },
+						eventMouseover: function () { $this.eventMouseover($(this)); },
 						eventDrop: function (event, delta, revertFunc) {
-							const isAfter = event.start.isAfter(new Date());
-							if (!isAfter) {
-								toast.notify({ text: window.translate("system_calendar_error_date"), icon: "error" });
-								revertFunc();
-							}
-							else {
-								const startDate = event.start;
-								const endDate = event.end;
-								const daysBetween = endDate.diff(startDate, 'days');
-								const systemEvent = {
-									id: event.id,
-									title: event.title,
-									startDate: moment(event.start._i, event.start._f).format('DD/MM/YYYY'),
-									endDate: moment(event.start._i, event.start._f).add(daysBetween, 'days').format('DD/MM/YYYY')
-								}
-								calendar.updateEvent(systemEvent).then();
-							}
+							$this.eventDrop(event, delta, revertFunc);
 						}
 					});
 
@@ -1092,40 +1181,78 @@
 
 				function loadHelpers() {
 					calendarRequest(calendar.getOrganizationUsers()).then(users => {
-						fillMembersSelect(users, $('#add-event .event-members'));
+						const selectMembersConfig = {
+							options: users,
+							selectTarget: $('#add-event .event-members'),
+							selectedValues: [],
+							isSelect2: true
+						}
+						fillMembersSelect(selectMembersConfig);
+
 						calendarRequest(calendar.getHelpers()).then(data => {
 							helpers = data;
 							helpers.users = users;
-							fillSelect(helpers.EventPriority, $('#add-event .event-priority'), true);
+							const selectConfig = {
+								options: helpers.EventPriority,
+								selectTarget: $('#add-event .event-priority'),
+								selectedValues: null,
+								translatable: true,
+								isSelect2: true
+							}
+							fillSelect(selectConfig);
 							initCalendar();
 						});
 					});
 				}
 
-				function fillSelect(options, selectTarget, translatable) {
-					selectTarget.html('');
-					$.each(options, function (index, value) {
-						let newOption = new Option(value.systemName, index);
-						if (translatable) {
-							newOption = new Option(window.translate(value.translationKey), index);;
+				function fillSelect(selectConfig) {
+					selectConfig.selectTarget.html(null);
+					$.each(selectConfig.options, function (index, value) {
+						let text = value.systemName;
+						let defaultSelected = false;
+						let selected = false;
+						if (selectConfig.translatable) {
+							text = window.translate(value.translationKey);
 						}
-						selectTarget.append(newOption);
+						if (selectConfig.selectedValues) {
+							if ($.inArray(index.toString(), selectConfig.selectedValues.toString()) != -1) {
+								defaultSelected = true;
+								selected = true;
+							}
+						}
+						const newOption = new Option(text, index, defaultSelected, selected);
+						selectConfig.selectTarget.append(newOption);
 					});
-					window.forceTranslate(selectTarget);
-					selectTarget.select2();
+					window.forceTranslate(selectConfig.selectTarget);
+					if (selectConfig.isSelect2) {
+						selectConfig.selectTarget.select2();
+					}
 				}
 
-				function fillMembersSelect(options, selectTarget) {
-					selectTarget.html('');
-					$.each(options, function () {
-						let newOption = new Option(`${this.firstName} ${this.lastName}`, this.id);
-						if (this.firstName === null || this.lastName === null) {
-							newOption = new Option(this.userName, this.id);
+				function fillMembersSelect(selectMembersConfig) {
+					selectMembersConfig.selectTarget.html(null);
+					$.each(selectMembersConfig.options, function (index, value) {
+						let text = `${value.firstName} ${value.lastName}`;
+						let defaultSelected = false;
+						let selected = false;
+						if (value.firstName === null || value.lastName === null) {
+							text = value.userName
 						}
-						selectTarget.append(newOption);
+						if (selectMembersConfig.selectedValues) {
+							if ($.inArray(value.id, selectMembersConfig.selectedValues) != -1) {
+								defaultSelected = true;
+								selected = true;
+							}
+						}
+						const newOption = new Option(text, value.id, defaultSelected, selected);
+						selectMembersConfig.selectTarget.append(newOption);
 					});
-					window.forceTranslate(selectTarget);
-					selectTarget.select2();
+
+					window.forceTranslate(selectMembersConfig.selectTarget);
+
+					if (selectMembersConfig.isSelect2) {
+						selectMembersConfig.selectTarget.select2();
+					}
 				}
 
 				function initCalendar() {
@@ -1151,7 +1278,10 @@
 						const isPopup = target.is('.details-popup');
 						const isPopupElement = target.is('.details-popup *');
 						const isPopupAction = target.is('.details-popup .event-edit i') || target.is('.details-popup .event-delete i');
-						const popupCase = isPopup || isPopupElement;
+						const isSelect = target.is('.select2-container *');
+						const isDatepicker = target.is('.datepicker-dropdown *');
+						const isClockpicker = target.is('.clockpicker-popover *');
+						const popupCase = isPopup || isPopupElement || isSelect || isDatepicker || isClockpicker;
 						if (isEvent) {
 							addPopup(target, 'eventPopup');
 						} else if (isEventElement) {
@@ -1190,41 +1320,47 @@
 
 				function loadMembersInPopup(membersList, template) {
 					const loadPlace = $('.details-popup-members-list');
-					let htmlOutput = null;
-					loadPlace.html('');
+					loadPlace.html(null);
 					if (membersList.length > 0) {
 						loadPlace.closest('.details-popup-members').show();
 						$.each(membersList, function (index, value) {
-							let acceptance = '';
-							let outputName = `${value.firstName} ${value.lastName}`;
-
-							switch (value.acceptance) {
-								case 0: { acceptance = 'check_circle_outline' };
-								case 1: { acceptance = 'help_outline' };
-								case 2: { acceptance = 'check_circle_outline' };
-							}
-
-							if (value.firstName === null || value.lastName === null) {
-								outputName = value.userName;
-							}
-
-							const renderConfig = {
-								outputName: outputName,
-								acceptanceIcon: acceptance
-							}
-
-							if (template === 'teamMember') {
-								htmlOutput = templates.teamMember.render(value, renderConfig);
-							} else {
-								htmlOutput = templates.teamMemberEdit.render(value, renderConfig);
-							}
-							loadPlace.append(htmlOutput);
+							appendMemberToList(value, loadPlace, template);
 						});
 					}
 					else {
-						loadPlace.html(window.translate('system_calendar_no_members'));
+						if (template === 'teamMember') {
+							loadPlace.html(window.translate('system_calendar_no_members'));
+						}
 					}
 					window.forceTranslate($('.details-popup-members-list'));
+				}
+
+				function appendMemberToList(value, loadPlace, template) {
+					let htmlOutput = null;
+					let acceptance = '';
+					let outputName = `${value.firstName} ${value.lastName}`;
+
+					switch (value.acceptance) {
+						case 0: { acceptance = 'check_circle_outline' };
+						case 1: { acceptance = 'help_outline' };
+						case 2: { acceptance = 'check_circle_outline' };
+					}
+
+					if (value.firstName === null || value.lastName === null) {
+						outputName = value.userName;
+					}
+
+					const renderConfig = {
+						outputName: outputName,
+						acceptanceIcon: acceptance
+					}
+
+					if (template === 'teamMember') {
+						htmlOutput = templates.teamMember.render(value, renderConfig);
+					} else {
+						htmlOutput = templates.teamMemberEdit.render(value, renderConfig);
+					}
+					loadPlace.append(htmlOutput);
 				}
 
 				function attachEventsPopupActions(target) {
@@ -1253,18 +1389,36 @@
 						return;
 					}
 					calendarRequest(calendar.getEventById({ eventId: eventId })).then(event => {
-						const renderHelpers = {
+						let renderHelpers = {
 							startDate: moment(event.startDate, "YYYY-MM-DDTHH:mm:ss").format('MMM D, YYYY'),
+							endDate: moment(event.endDate, "YYYY-MM-DDTHH:mm:ss").format('MMM D, YYYY'),
+							startDateEdit: moment(event.startDate, "YYYY-MM-DDTHH:mm:ss").format('YYYY-MM-DD'),
+							endDateEdit: moment(event.endDate, "YYYY-MM-DDTHH:mm:ss").format('YYYY-MM-DD'),
 							startTime: moment(event.startDate, "YYYY-MM-DDTHH:mm:ss").format('HH:mm'),
 							endTime: moment(event.endDate, "YYYY-MM-DDTHH:mm:ss").format('HH:mm'),
 							priority: window.translate(helpers.EventPriority[event.priority].translationKey),
-							editable: editable
+							editable: editable,
 						};
 
 						if (template != 'eventPopup') {
 							htmlOutput = templates.eventPopupEdit.render(event, renderHelpers);
 							$('.details-popup').html(htmlOutput);
 							loadMembersInPopup(event.invitedUsers, 'teamMemberEdit');
+							$('.time-inline-editing').clockpicker();
+							const selectMembersConfig = {
+								options: helpers.users,
+								selectTarget: $('.details-popup .event-members'),
+								selectedValues: [],
+								isSelect2: true
+							}
+							fillMembersSelect(selectMembersConfig);
+							//$('.date-time input').datepicker({
+							//	dateFormat: 'M d, yy',
+							//	minDate: new Date(),
+							//	firstDay: 1,
+							//	showOtherMonths: true,
+							//	selectOtherMonths: true
+							//});
 						} else {
 							htmlOutput = templates.eventPopup.render(event, renderHelpers);
 							$('.details-popup').html(htmlOutput);
@@ -1279,6 +1433,47 @@
 								element: '.popup__arrow'
 							}
 						});
+
+						const selectConfig = {
+							options: helpers.EventPriority,
+							selectTarget: $('.details-popup .event-priority'),
+							selectedValues: [event.priority],
+							translatable: true,
+							isSelect2: true
+						}
+
+						fillSelect(selectConfig);
+
+						$('.details-popup-priority .select2').off().on('click', function () {
+							$('.select2-dropdown').addClass('edit-event-priority');
+						});
+
+						$('.details-popup-priority .event-priority').on('change', function () {
+							const allPriorities = 'priority-0 priority-1 priority-2 priority-3';
+							const priority = $(this).val();
+							console.log(priority);
+							$('.details-popup .event-priority-bullet').removeClass(allPriorities).addClass(`priority-${priority}`);
+						});
+
+						$('#edit-event').off().submit(function (e) {
+							e.preventDefault();
+							const scope = '#edit-event';
+							const startDate = $(`${scope} .event-start-date`).val();
+							const startTime = $(`${scope} .event-start-time`).val();
+							const endDate = $(`${scope} .event-end-date`).val();
+							const endTime = $(`${scope} .event-end-time`).val();
+							const event = {
+								id: $(`${scope} .submit-add-event`).data('event-id'),
+								title: $(`${scope} .event-title`).val(),
+								startDate: `${startDate}T${startTime}`,
+								endDate: `${endDate}T${endTime}`,
+								details: $(`${scope} .event-details`).val(),
+								priority: $(`${scope} .event-priority`).val(),
+							}
+							console.log(event);
+							updateEvent(event);
+						});
+
 						window.forceTranslate($('.details-popup'));
 						$('.details-popup').data('visibility', `visible-${eventId}`).show();
 					});
@@ -1299,15 +1494,30 @@
 						const htmlOutput = templates.editDraftEvent.render(event);
 						$('#edit-event').append(htmlOutput);
 
-						fillMembersSelect(helpers.users, $('#edit-event .event-members'));
-						fillSelect(helpers.EventPriority, $('#edit-event .event-priority'), true);
+						let selectMembersConfig = {
+							options: helpers.users,
+							selectTarget: $('#edit-event .event-members'),
+							selectedValues: [],
+							isSelect2: true
+						}
 
-						$('#edit-event').find(`.event-priority option[value=${event.priority}]`).prop('selected', true);
 						if (event.members.length > 1) {
 							$.each(event.members, function () {
-								$('#edit-event').find(`.event-members option[value=${this}]`).prop('selected', true);
+								selectMembersConfig.selectedValues.push(this);
 							});
 						}
+
+						fillMembersSelect(selectMembersConfig);
+
+						const selectConfig = {
+							options: helpers.EventPriority,
+							selectTarget: $('#edit-event .event-priority'),
+							selectedValues: [event.priority],
+							translatable: true,
+							isSelect2: true
+						}
+						fillSelect(selectConfig);
+
 
 						select2Refresh([$('.event-priority'), $('.event-members')]);
 
@@ -1409,6 +1619,14 @@
 								$.CalendarApp.$calendar.fullCalendar('renderEvent', event, true);
 							}
 						});
+					});
+				}
+
+				function updateEvent(event) {
+					calendar.updateEvent(event).then(() => {
+						//refreshEvent(eventId);
+					}).catch(e => {
+						toast.notifyErrorList(e);
 					});
 				}
 
