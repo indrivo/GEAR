@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Per i non soci invitati all'evento",
   "system_calendar": "Calendario",
   "system_childs": "Rami menu",
-  "system_order": "Numero d'ordine"
+  "system_order": "Numero d'ordine",
+  "system_close": "Chiudere",
+  "system_customization": "Personalizzazione"
 }

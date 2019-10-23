@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Нет участников, приглашенных на мероприятие",
   "system_calendar": "Календарь",
   "system_childs": "Ветви меню",
-  "system_order": "Номер"
+  "system_order": "Номер",
+  "system_close": "Закрыть",
+  "system_customization": "Мой стиль"
 }

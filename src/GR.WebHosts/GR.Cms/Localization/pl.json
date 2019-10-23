@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Nie ma uczestników, zaproszonych na imprezę",
   "system_calendar": "Kalendarz",
   "system_childs": "Gałęzie menu",
-  "system_order": "Numer zamówienia"
+  "system_order": "Numer zamówienia",
+  "system_close": "Zamknij",
+  "system_customization": "Mój styl"
 }

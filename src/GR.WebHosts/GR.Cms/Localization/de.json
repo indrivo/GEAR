@@ -650,5 +650,7 @@
   "system_calendar_no_members": "Nicht-Mitglieder eingeladen zur Veranstaltung",
   "system_calendar": "Kalender",
   "system_childs": "Äste Menü",
-  "system_order": "Bestellnummer"
+  "system_order": "Bestellnummer",
+  "system_close": "In der Nähe",
+  "system_customization": "Anpassung"
 }

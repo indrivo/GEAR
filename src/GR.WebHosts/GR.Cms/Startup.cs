@@ -110,6 +110,7 @@ using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.ECommerce.Paypal;
+using GR.Entities.Extensions;
 using GR.Localization;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
@@ -294,6 +295,7 @@ namespace GR.Cms
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
+
 			//---------------------------------------Entity Module-------------------------------------
 			services.AddEntityModule<EntitiesDbContext, EntityRepository>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
@@ -303,6 +305,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddEntityModuleEvents()
+				.RegisterEntityBuilderJob()
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------

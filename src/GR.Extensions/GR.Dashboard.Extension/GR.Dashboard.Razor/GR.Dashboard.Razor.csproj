@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="libman.json" />
+    <None Remove="wwwroot\assets\dashboard-plugins\dashboard-builder.css" />
   </ItemGroup>
 
   <ItemGroup>

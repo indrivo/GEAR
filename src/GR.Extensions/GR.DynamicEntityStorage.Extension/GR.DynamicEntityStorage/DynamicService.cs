@@ -157,7 +157,7 @@ namespace GR.DynamicEntityStorage
             result.IsSuccess = true;
             result.Result = predicate != null 
                 // ReSharper disable once AssignNullToNotNullAttribute
-                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>)?.ToList() 
+                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>).ToList() 
                 : model.Adapt<IEnumerable<TOutput>>().ToList();
             return result;
         }
@@ -954,7 +954,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = await ViewModelBuilder.ResolveAsync(_context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(_context, model);
             return (TViewModel)model;
         }
 
@@ -967,7 +967,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = await ViewModelBuilder.ResolveAsync(_context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(_context, model);
             return (TViewModel)model;
         }
 
@@ -996,7 +996,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = ViewModelBuilder.Create(_context, model);
+            model = ViewModelBuilderFactory.Resolve(_context, model);
             return (TViewModel)model;
         }
 

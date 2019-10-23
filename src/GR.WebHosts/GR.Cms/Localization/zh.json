@@ -650,5 +650,7 @@
   "system_calendar_no_members": "没有任何成员邀请来的事件",
   "system_calendar": "日历",
   "system_childs": "菜单的分支",
-  "system_order": "以数量"
+  "system_order": "以数量",
+  "system_close": "靠近",
+  "system_customization": "定制的"
 }
