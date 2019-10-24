@@ -52,6 +52,10 @@ dotnet pack ./GR.Extensions/GR.TaskManager.Extension/GR.TaskManager.Abstractions
 dotnet pack ./GR.Extensions/GR.TaskManager.Extension/GR.TaskManager.Razor/GR.TaskManager.Razor.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.TaskManager.Extension/GR.TaskManager/GR.TaskManager.csproj -o ../../../nupkgs
 
+:: Pack commerce modules
+dotnet pack ./GR.Extensions/GR.ECommerce.Extension/GR.ECommerce.Abstractions/GR.ECommerce.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.ECommerce.Extension/GR.ECommerce.Products/GR.ECommerce.Products.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.ECommerce.Extension/GR.ECommerce.Razor/GR.ECommerce.Razor.csproj -o ../../../nupkgs
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
@@ -97,6 +101,12 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Localization.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager.Razor*
+
+
+::Push commerce modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Products*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

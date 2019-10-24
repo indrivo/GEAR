@@ -109,7 +109,10 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
+using GR.ECommerce.Paypal;
 using GR.Localization;
+using GR.Paypal.Abstractions.Extensions;
+using GR.Paypal.Razor.Extensions;
 
 #endregion
 
@@ -229,7 +232,7 @@ namespace GR.Cms
 				//Use compression
 				services.AddResponseCompression();
 			}
-
+			services.AddHttpClient();
 			//Register system config
 			services.RegisterSystemConfig(Configuration);
 
@@ -469,6 +472,8 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.RegisterPaypalProvider<PaypalPaymentService>()
+				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterCommerceEvents();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
