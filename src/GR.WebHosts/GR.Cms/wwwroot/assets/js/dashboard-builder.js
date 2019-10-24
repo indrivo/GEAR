@@ -49,6 +49,39 @@ class DashboardManager extends BaseClass {
         this.initDraggableWidgets();
     }
 
+    getWidgetIndexesFromMenuItem(menuItem) {
+        const menu = $(menuItem).closest(".options-menu");
+        const widget = menu.data("extra");
+        const widgetId = widget.attr("data-id");
+        const row = widget.closest(".draggable-row-injected");
+        const rowId = row.attr("data-id");
+
+        return { widgetId, rowId };
+    }
+
+    closeMenu(menuItem) {
+        $(menuItem).closest(".options-menu").remove();
+    }
+
+    getAclConfiguration(widgetId, rowId) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/api/Dashboard/GetWidgetConf",
+                data: {
+                    rowId: rowId,
+                    widgetId: widgetId
+                },
+                success: function (sResult) {
+                    if (sResult.is_success) resolve(sResult.result);
+                    else reject(sResult.error_keys);
+                },
+                error: function (e) {
+                    reject(e);
+                }
+            });
+        });
+    }
+
     setConfiguration() {
         const scope = this;
         this.set("widgetMenuConf",
@@ -59,11 +92,7 @@ class DashboardManager extends BaseClass {
                     eventHandlers: {
                         click: function () {
                             $("#widget-configuration-modal").modal("show");
-                            const menu = $(this).closest(".options-menu");
-                            const widget = menu.data("extra");
-                            const widgetId = widget.attr("data-id");
-                            const row = widget.closest(".draggable-row-injected");
-                            const rowId = row.attr("data-id");
+                            const { widgetId, rowId } = scope.getWidgetIndexesFromMenuItem(this);
 
                             $("configuration-modal-save").off().on("click", function () {
                                 const modal = $("#addDayModal");
@@ -95,7 +124,8 @@ class DashboardManager extends BaseClass {
                                     }
                                 });
                             });
-                            $(this).closest(".options-menu").remove();
+
+                            scope.closeMenu(this);
                         }
                     }
                 },
@@ -104,13 +134,14 @@ class DashboardManager extends BaseClass {
                     events: ["click"],
                     eventHandlers: {
                         click: function () {
-                            $("#widget-permissions-modal").modal("show");
-                            const menu = $(this).closest(".options-menu");
-                            const widget = menu.data("extra");
-                            const widgetId = widget.attr("data-id");
-                            $("#form-permissions-btn").off().on("click", function () {
-                                var formPermissions = $("#form-permissions");
-                                console.log(formPermissions, widgetId);
+                            const { widgetId, rowId } = scope.getWidgetIndexesFromMenuItem(this);
+                            scope.getAclConfiguration(widgetId, rowId).then(data => { }).catch(e => {
+                                $("#widget-permissions-modal").modal("show");
+
+                                $("#form-permissions-btn").off().on("click", function () {
+                                    var formPermissions = $("#form-permissions");
+                                    
+                                });
                             });
 
                             $(this).closest(".options-menu").remove();
@@ -122,11 +153,7 @@ class DashboardManager extends BaseClass {
                     events: ["click"],
                     eventHandlers: {
                         click: function () {
-                            const menu = $(this).closest(".options-menu");
-                            const widget = menu.data("extra");
-                            const widgetId = widget.attr("data-id");
-                            const row = widget.closest(".draggable-row-injected");
-                            const rowId = row.attr("data-id");
+                            const { widgetId, rowId } = scope.getWidgetIndexesFromMenuItem(this);
                             $.ajax({
                                 url: "/api/Dashboard/DeleteMappedWidget",
                                 method: "delete",
@@ -147,7 +174,7 @@ class DashboardManager extends BaseClass {
                                 }
                             });
 
-                            $(this).closest(".options-menu").remove();
+                            scope.closeMenu(this);
                         }
                     }
                 },

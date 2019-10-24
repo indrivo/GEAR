@@ -1,4 +1,6 @@
-﻿namespace GR.Dashboard.Abstractions.Models
+﻿using System;
+
+namespace GR.Dashboard.Abstractions.Models
 {
     public abstract class WidgetUISettings
     {
