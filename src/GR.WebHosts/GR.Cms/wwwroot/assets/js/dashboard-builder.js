@@ -82,6 +82,42 @@ class DashboardManager extends BaseClass {
         });
     }
 
+    saveAclConfiguration(widgetId, rowId, conf = []) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/api/Dashboard/UpdateAclForWidget",
+                method: "post",
+                data: { widgetId, rowId, conf },
+                success: function (sResult) {
+                    if (sResult.is_success) resolve(sResult.result);
+                    else reject(sResult.error_keys);
+                },
+                error: function (e) {
+                    reject(e);
+                }
+            });
+        });
+    }
+
+    getUISettingsForWidget(widgetId, rowId) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/api/Dashboard/GetUISettingsForWidget",
+                data: {
+                    rowId: rowId,
+                    widgetId: widgetId
+                },
+                success: function (sResult) {
+                    if (sResult.is_success) resolve(sResult.result);
+                    else reject(sResult.error_keys);
+                },
+                error: function (e) {
+                    reject(e);
+                }
+            });
+        });
+    }
+
     setConfiguration() {
         const scope = this;
         this.set("widgetMenuConf",
@@ -91,36 +127,40 @@ class DashboardManager extends BaseClass {
                     events: ["click"],
                     eventHandlers: {
                         click: function () {
-                            $("#widget-configuration-modal").modal("show");
+                            const modal = $("#widget-configuration-modal");
                             const { widgetId, rowId } = scope.getWidgetIndexesFromMenuItem(this);
+                            const form = $("#configuration-form");
+                            scope.getUISettingsForWidget(widgetId, rowId).then(data => {
+                                console.log(data);
+                            });
+                            modal.modal("show");
 
-                            $("configuration-modal-save").off().on("click", function () {
-                                const modal = $("#addDayModal");
+                            $("#configuration-modal-save").off().on("click", function () {
                                 const o = {};
-                                const form = $("#configuration-form");
+
                                 const dataForm = form.serializeArray();
                                 $.each(dataForm,
                                     (i, j) => {
                                         o[j.name] = j.value;
                                     });
-                                o.adventureId = adventureId;
+
                                 $.ajax({
-                                    url: "/Adventure/AddDayToAdventure",
+                                    url: "/api/Dashboard/UpdateUISettings",
                                     method: "post",
-                                    data: o,
+                                    data: {
+                                        rowId, widgetId, uiSettings: o
+                                    },
                                     success: function (sResult) {
                                         if (sResult.is_success) {
-                                            toast.notify({ icon: "success", heading: "New day was added" });
-                                            o.id = sResult.result;
-                                            dayDrawer.drawAndPushDay(o);
+                                            scope.toast.notifySuccess("Info", "Configuration was saved!");
                                             modal.modal("hide");
                                             form.get(0).reset();
                                         } else {
-                                            toast.notifyErrorList(sResult.error_keys);
+                                            scope.toast.notifyErrorList(sResult.error_keys);
                                         }
                                     },
                                     error: function (e) {
-                                        toast.notify({ heading: e });
+                                        scope.toast.notifyErrorList(sResult.error_keys);
                                     }
                                 });
                             });
@@ -135,16 +175,42 @@ class DashboardManager extends BaseClass {
                     eventHandlers: {
                         click: function () {
                             const { widgetId, rowId } = scope.getWidgetIndexesFromMenuItem(this);
-                            scope.getAclConfiguration(widgetId, rowId).then(data => { }).catch(e => {
-                                $("#widget-permissions-modal").modal("show");
+                            scope.getAclConfiguration(widgetId, rowId).then(data => {
+                                const container = $("#widget-roles-container");
+                                const modal = $("#widget-permissions-modal");
+                                container.find("input[type='checkbox']").prop('checked', false);
+                                modal.modal("show");
+
+                                $.each(data, (index, item) => {
+                                    const el = container.find(`input[data-id='${item.roleId}']`);
+                                    el.prop('checked', item.allow);
+                                });
 
                                 $("#form-permissions-btn").off().on("click", function () {
                                     var formPermissions = $("#form-permissions");
-                                    
+
+                                    const checkedRoles = container.find("input[type='checkbox']");
+                                    const roles = [];
+                                    $.each(checkedRoles, (index, item) => {
+                                        const el = $(item);
+                                        const roleId = el.data("id");
+                                        const state = el.is(":checked");
+                                        roles.push({
+                                            roleId, allow: state
+                                        });
+                                    });
+                                    scope.saveAclConfiguration(widgetId, rowId, roles).then(() => {
+                                        scope.toast.notifySuccess("Info", "Configuration was saved!");
+                                        modal.modal("hide");
+                                    }).catch(e => {
+                                        scope.toast.notifyErrorList(e);
+                                    });
                                 });
+                            }).catch(e => {
+                                console.warn(e);
                             });
 
-                            $(this).closest(".options-menu").remove();
+                            scope.closeMenu(this);
                         }
                     }
                 },

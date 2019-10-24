@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace GR.Dashboard.Abstractions.Models
+﻿namespace GR.Dashboard.Abstractions.Models
 {
-    public abstract class WidgetUISettings
+    public class WidgetUISettings
     {
         /// <summary>
         /// Width

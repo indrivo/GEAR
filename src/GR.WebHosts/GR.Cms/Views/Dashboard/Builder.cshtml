@@ -88,35 +88,35 @@
 								<div class="col-md-12">
 									<div class="form-group">
 										<label for="WidgetWidth">Width</label>
-										<input name="widgetWidth" id="WidgetWidth" type="number" placeholder="auto" class="form-control" />
+										<input name="width" id="WidgetWidth" type="number" placeholder="auto" class="form-control" />
 									</div>
 								</div>
 
 								<div class="col-md-12">
 									<div class="form-group">
 										<label for="WidgetHeight">Height</label>
-										<input name="widgetHeight" id="WidgetHeight" type="number" placeholder="auto" class="form-control" />
+										<input name="height" id="WidgetHeight" type="number" placeholder="auto" class="form-control" />
 									</div>
 								</div>
 
 								<div class="col-md-12">
 									<div class="form-group">
 										<label for="WidgetColor">BackGround Color</label>
-										<input name="widgetColor" id="WidgetColor" type="color" class="form-control" style="height: 2em" />
+										<input name="backGroundColor" id="WidgetColor" type="color" class="form-control" style="height: 2em" />
 									</div>
 								</div>
 
 								<div class="col-md-12">
 									<div class="form-group">
 										<label for="WidgetBRadius">Border radius</label>
-										<input name="widgetRadius" id="WidgetRadius" placeholder="0" type="number" class="form-control" />
+										<input name="borderRadius" id="WidgetRadius" placeholder="0" type="number" class="form-control" />
 									</div>
 								</div>
 
 								<div class="col-md-12">
 									<div class="form-group">
 										<label for="WidgetClasses">Classes</label>
-										<input name="widgetClasses" id="WidgetClasses" type="text" class="form-control" />
+										<input name="classes" id="WidgetClasses" type="text" class="form-control" />
 									</div>
 								</div>
 
@@ -142,7 +142,7 @@
 				</form>
 			</div>
 			<div class="modal-footer px-4">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["close"]</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_close"]</button>
 				<button id="configuration-modal-save" type="button" class="btn btn-primary">@Localizer["save"]</button>
 			</div>
 		</div>
@@ -165,13 +165,13 @@
 					<div class="card">
 						<div class="card-body">
 							<h5>@Localizer["roles"]</h5>
-							<ul class="list-group m-b-0">
+							<ul class="list-group m-b-0" id="widget-roles-container">
 								@foreach (var role in RoleManager.Roles.ToList())
 								{
 									<li class="list-group-item">
 										<div class="custom-control custom-checkbox">
-											<input type="checkbox" class="custom-control-input vis-check" data-id="@role.Id">
-											<label class="custom-control-label">@role.Name</label>
+											<input id="check_@role.Id" type="checkbox" class="custom-control-input vis-check" data-id="@role.Id">
+											<label for="check_@role.Id" class="custom-control-label">@role.Name</label>
 										</div>
 									</li>
 								}

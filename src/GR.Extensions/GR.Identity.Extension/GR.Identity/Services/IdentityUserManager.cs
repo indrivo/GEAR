@@ -152,5 +152,18 @@ namespace GR.Identity.Services
 
             return result;
         }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get user roles
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<ApplicationRole>> GetUserRolesAsync(ApplicationUser user)
+        {
+            if (user == null) throw new NullReferenceException();
+            var roles = await UserManager.GetRolesAsync(user);
+            return roles.Select(async x => await RoleManager.FindByNameAsync(x)).Select(x => x.Result);
+        }
     }
 }
