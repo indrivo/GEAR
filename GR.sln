@@ -253,6 +253,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Abstractions", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Razor", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.Paypal\GR.Paypal.Razor\GR.Paypal.Razor.csproj", "{D091F7EB-AC77-4601-A11F-D2E18519E012}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Tests", "GR.Tests", "{95D3792C-FED2-459D-B818-2D4C07108CA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Core.Tests", "src\GR.Tests\GR.Core.Tests\GR.Core.Tests.csproj", "{49353CF9-498B-4F48-8542-6B94FE6187FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -800,6 +804,12 @@ Global
 		{D091F7EB-AC77-4601-A11F-D2E18519E012}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D091F7EB-AC77-4601-A11F-D2E18519E012}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{D091F7EB-AC77-4601-A11F-D2E18519E012}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{49353CF9-498B-4F48-8542-6B94FE6187FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49353CF9-498B-4F48-8542-6B94FE6187FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49353CF9-498B-4F48-8542-6B94FE6187FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49353CF9-498B-4F48-8542-6B94FE6187FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49353CF9-498B-4F48-8542-6B94FE6187FF}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{49353CF9-498B-4F48-8542-6B94FE6187FF}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -928,6 +938,7 @@ Global
 		{BC502397-8AD0-4EC1-9766-287E324461BB} = {9BEA7DC3-0498-4E31-805C-40E09C36F88F}
 		{5870204E-721F-4C1A-BB07-F8180EC031F4} = {9BEA7DC3-0498-4E31-805C-40E09C36F88F}
 		{D091F7EB-AC77-4601-A11F-D2E18519E012} = {9BEA7DC3-0498-4E31-805C-40E09C36F88F}
+		{49353CF9-498B-4F48-8542-6B94FE6187FF} = {95D3792C-FED2-459D-B818-2D4C07108CA2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

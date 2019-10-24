@@ -1,0 +1,9 @@
+language: csharp
+mono: none
+dotnet: 2.2.402
+dist: xenial
+install:
+- dotnet restore ./GR.sln
+script:
+- dotnet build ./GR.sln
+- dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
