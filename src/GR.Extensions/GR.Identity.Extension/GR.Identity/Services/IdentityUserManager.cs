@@ -93,7 +93,7 @@ namespace GR.Identity.Services
             get
             {
                 Guid? val = _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
-                                ?.ToGuid() ?? Settings.TenantId;
+                                ?.ToGuid() ?? GearSettings.TenantId;
                 var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
                 if (val != Guid.Empty) return val;
                 var user = userManager.GetUserAsync(_httpContextAccessor?.HttpContext?.User).GetAwaiter()

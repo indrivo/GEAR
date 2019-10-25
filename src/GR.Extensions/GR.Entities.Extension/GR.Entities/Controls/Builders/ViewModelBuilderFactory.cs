@@ -39,7 +39,7 @@ namespace GR.Entities.Controls.Builders
             if (entityName.IsNullOrEmpty()) return model;
             var entity = dbContext.Table
                 .Include(x => x.TableFields)
-                .FirstOrDefault(d => d.Name == entityName.Trim() && d.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA)
+                .FirstOrDefault(d => d.Name == entityName.Trim() && d.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
                 || d.Name == entityName.Trim() && d.IsPartOfDbContext);
 
             if (entity == null) return model;

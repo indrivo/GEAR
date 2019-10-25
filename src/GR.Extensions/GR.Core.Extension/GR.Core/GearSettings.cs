@@ -3,7 +3,7 @@
 
 namespace GR.Core
 {
-    public struct Settings
+    public static class GearSettings
     {
         /// <summary>
         /// Default tenant id
@@ -24,11 +24,6 @@ namespace GR.Core
         /// Access denied message
         /// </summary>
         public const string ACCESS_DENIED_MESSAGE = "Access denied";
-
-        public struct Tables
-        {
-            public const string CustomTable = "CustomTableName";
-        }
 
         public struct Date
         {

@@ -4,12 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+    <Version>1.0.1</Version>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Description>UI for dashboard builder</Description>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageTags>dashboard builder .net core gear</PackageTags>
+    <PackageReleaseNotes>- Simple builder to add custom widgets and  gear reports</PackageReleaseNotes>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="libman.json" />
-    <None Remove="wwwroot\assets\dashboard-plugins\dashboard-builder.css" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="libman.json">
@@ -26,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Report.Extension\GR.Report.Abstractions\GR.Report.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Dashboard.Abstractions\GR.Dashboard.Abstractions.csproj" />
   </ItemGroup>

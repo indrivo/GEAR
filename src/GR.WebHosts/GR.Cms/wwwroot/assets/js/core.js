@@ -816,6 +816,7 @@ ST.prototype.populateForm = function (frm, data) {
                 switch ($ctrl.attr("type")) {
                     case "text":
                     case "hidden":
+                    case "color":
                     case "number":
                         $ctrl.val(value);
                         break;

@@ -1,19 +1,7 @@
-﻿using System;
-
-namespace GR.Calendar.Abstractions.Events.EventArgs
+﻿namespace GR.Calendar.Abstractions.Events.EventArgs
 {
-    public class EventDeleteOrRestoredEventArgs : System.EventArgs
+    public class EventDeleteOrRestoredEventArgs : CalendarEventCreatedEventArgs
     {
-        /// <summary>
-        /// Event id
-        /// </summary>
-        public virtual Guid? EventId { get; set; }
-
-        /// <summary>
-        /// Event title
-        /// </summary>
-        public virtual string Title { get; set; }
-
         /// <summary>
         /// Event state
         /// </summary>

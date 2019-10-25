@@ -1,6 +1,7 @@
 ﻿@using System.Text
 @using GR.Core.Extensions
 @using GR.Dashboard.Abstractions
+@using GR.Dashboard.Abstractions.Enums
 @using GR.Dashboard.Abstractions.Models
 @inject IDashboardService DashboardService
 
@@ -10,12 +11,18 @@
     string GetWidgetStyle(WidgetUISettings uiSettings)
     {
         var builder = new StringBuilder();
+
         var color = uiSettings.BackGroundColor.IsNullOrEmpty() ? "" : $"background-color: {uiSettings.BackGroundColor};";
         builder.Append(color);
-        var width = uiSettings.Width.IsNullOrEmpty() ? "" : $"width: {uiSettings.Width};";
+        var width = uiSettings.Width.IsNullOrEmpty() ? "" : $"width: {uiSettings.Width}px;";
         builder.Append(width);
-        var height = uiSettings.Height.IsNullOrEmpty() ? "" : $"width: {uiSettings.Height};";
+        var height = uiSettings.Height.IsNullOrEmpty() ? "" : $"height: {uiSettings.Height}px;";
         builder.Append(height);
+        var radius = uiSettings.BorderRadius == 0 ? "" : $"border-radius: {uiSettings.BorderRadius}px;";
+        builder.Append(radius);
+
+        var border = uiSettings.BorderStyle.IsNullOrEmpty() ? "" : $"border: 1px { Enum.GetName(typeof(WidgetBorderStyle), Convert.ToInt16(uiSettings.BorderStyle))} black;";
+        builder.Append(border);
         return builder.ToString();
     }
 }
@@ -40,7 +47,7 @@
                             {
                                 <div class="col-md">
                                     <div class="card mb-sm-4 mb-3">
-                                        <div class="card-body p-0" style="@(GetWidgetStyle(uiSettings))">
+                                        <div class="card-body p-0 @uiSettings.ClassAttribute" style="@(GetWidgetStyle(uiSettings))">
                                             <div class="p-3 pl-4">
                                                 <h5>@widget.Name</h5>
                                                 @if (!widgetBody.IsNullOrEmpty())

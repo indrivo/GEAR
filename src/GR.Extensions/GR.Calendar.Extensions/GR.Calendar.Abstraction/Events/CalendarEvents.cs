@@ -8,7 +8,7 @@ namespace GR.Calendar.Abstractions.Events
     {
         public struct SystemCalendarEvents
         {
-            #region Event Created
+            #region Event created
             /// <summary>
             /// On event created
             /// </summary>
@@ -64,6 +64,19 @@ namespace GR.Calendar.Abstractions.Events
             /// <param name="e"></param>
             public static void EventRestored(EventDeleteOrRestoredEventArgs e) => SystemEvents.InvokeEvent(null, OnEventRestored, e, nameof(OnEventRestored));
 
+            #endregion
+
+            #region Acceptance chnage
+            /// <summary>
+            /// On event created
+            /// </summary>
+            public static event EventHandler<UserChangeAcceptanceEventArgs> OnUserChangeAcceptance;
+
+            /// <summary>
+            /// Event trigger
+            /// </summary>
+            /// <param name="e"></param>
+            public static void UserChangeAcceptance(UserChangeAcceptanceEventArgs e) => SystemEvents.InvokeEvent(null, OnUserChangeAcceptance, e, nameof(OnUserChangeAcceptance));
             #endregion
         }
 
