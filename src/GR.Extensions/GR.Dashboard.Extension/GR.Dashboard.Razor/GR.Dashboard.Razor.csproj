@@ -10,7 +10,10 @@
     <Description>UI for dashboard builder</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>dashboard builder .net core gear</PackageTags>
-    <PackageReleaseNotes>- Simple builder to add custom widgets and  gear reports</PackageReleaseNotes>
+    <PackageReleaseNotes>- Simple builder to add custom widgets and  gear reports
+- Fix custom preset for widgets</PackageReleaseNotes>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <FileVersion>1.0.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

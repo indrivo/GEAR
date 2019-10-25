@@ -5,8 +5,8 @@
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <PackageReleaseNotes>- Fix month timeline  start  date</PackageReleaseNotes>
-    <Version>1.0.6</Version>
+    <PackageReleaseNotes>- Send notifications on  event manipulation to invited members</PackageReleaseNotes>
+    <Version>1.0.7</Version>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar</RepositoryUrl>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar</PackageProjectUrl>
     <Description>Implementation of calendar repository with Entity framework</Description>
