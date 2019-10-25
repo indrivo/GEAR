@@ -652,5 +652,9 @@
   "system_childs": "Gałęzie menu",
   "system_order": "Numer zamówienia",
   "system_close": "Zamknij",
-  "system_customization": "Mój styl"
+  "system_customization": "Mój styl",
+  "system_calendar_starts": "Zaczyna się",
+  "system_calendar_ends": "Kończy się",
+  "system_calendar_respond_success": "Odpowiedź pomyślnie wysłana ",
+  "system_calendar_back": "Powrót do kalendarza"
 }

@@ -652,5 +652,9 @@
   "system_childs": "Κλάδων μενού",
   "system_order": "Αριθμός παραγγελίας",
   "system_close": "Κοντά",
-  "system_customization": "Προσαρμογή"
+  "system_customization": "Προσαρμογή",
+  "system_calendar_starts": "Ξεκινά",
+  "system_calendar_ends": "Τελειώνει",
+  "system_calendar_respond_success": "Απάντηση σταλεί με επιτυχία",
+  "system_calendar_back": "Πίσω στο ημερολόγιο"
 }

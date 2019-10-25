@@ -652,5 +652,9 @@
   "system_childs": "Rami menu",
   "system_order": "Numero d'ordine",
   "system_close": "Chiudere",
-  "system_customization": "Personalizzazione"
+  "system_customization": "Personalizzazione",
+  "system_calendar_starts": "Inizia",
+  "system_calendar_ends": "Finisce",
+  "system_calendar_respond_success": "Risposta inviata con successo",
+  "system_calendar_back": "Torna al calendario"
 }

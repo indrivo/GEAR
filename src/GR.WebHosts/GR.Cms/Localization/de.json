@@ -652,5 +652,9 @@
   "system_childs": "Äste Menü",
   "system_order": "Bestellnummer",
   "system_close": "In der Nähe",
-  "system_customization": "Anpassung"
+  "system_customization": "Anpassung",
+  "system_calendar_starts": "Beginnt",
+  "system_calendar_ends": "Endet",
+  "system_calendar_respond_success": "Antwort erfolgreich gesendet",
+  "system_calendar_back": "Zurück zum Kalender"
 }
