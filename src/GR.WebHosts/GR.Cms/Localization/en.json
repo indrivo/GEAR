@@ -650,5 +650,9 @@
   "system_calendar_no_members": "No members invited to event",
   "system_calendar": "Calendar",
   "system_childs": "The menu branches",
-  "system_order": "Order number"
+  "system_order": "Order number",
+  "system_calendar_starts": "Starts",
+  "system_calendar_ends": "Ends",
+  "system_calendar_respond_success": "Response sent successfully",
+  "system_calendar_back": "Back to calendar"
 }

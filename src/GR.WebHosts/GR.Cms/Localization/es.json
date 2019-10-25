@@ -650,5 +650,9 @@
   "system_calendar_no_members": "No miembros invitados a evento",
   "system_calendar": "Calendario",
   "system_childs": "La rama de la carta",
-  "system_order": "Número de pedido"
+  "system_order": "Número de pedido",
+  "system_calendar_starts": "Comienza",
+  "system_calendar_ends": "Termina",
+  "system_calendar_respond_success": "Respuesta enviada con éxito",
+  "system_calendar_back": "Volver al calendario"
 }

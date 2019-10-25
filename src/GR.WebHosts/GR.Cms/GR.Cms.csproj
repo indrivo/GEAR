@@ -37,9 +37,6 @@
 	<Content Include="Certificates\testmpass.cer">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
-	<Content Include="Certificates\samplempass.pfx">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
 	<EmbeddedResource Include="Configuration\CustomEntities.json">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
