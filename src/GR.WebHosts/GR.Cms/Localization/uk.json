@@ -652,5 +652,7 @@
   "system_childs": "Гілки меню",
   "system_order": "Номер замовлення",
   "system_calendar_starts": "Починається",
-  "system_calendar_ends": "Закінчується"
+  "system_calendar_ends": "Закінчується",
+  "system_calendar_respond_success": "Відповідь успішно відправлено ",
+  "system_calendar_back": "Тому в календар"
 }

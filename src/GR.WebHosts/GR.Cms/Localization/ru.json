@@ -652,5 +652,7 @@
   "system_childs": "Ветви меню",
   "system_order": "Номер",
   "system_calendar_starts": "Начинается",
-  "system_calendar_ends": "Заканчивается"
+  "system_calendar_ends": "Заканчивается",
+  "system_calendar_respond_success": "Ответ успешно отправлен ",
+  "system_calendar_back": "Назад в календарь"
 }

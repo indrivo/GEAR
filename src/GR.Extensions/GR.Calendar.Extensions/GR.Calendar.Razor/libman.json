@@ -13,6 +13,10 @@
         "bootstrap-clockpicker.min.css",
         "bootstrap-clockpicker.min.js"
       ]
+    },
+    {
+      "library": "tooltip.js@1.3.2",
+      "destination": "wwwroot/lib/tooltip.js/"
     }
   ]
 }

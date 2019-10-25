@@ -12,6 +12,8 @@
 - Remove organizer parameter from</PackageReleaseNotes>
     <PackageTags>calendar .net core c# ui full calendar</PackageTags>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Razor</RepositoryUrl>
+    <AssemblyVersion>1.0.2.1</AssemblyVersion>
+    <FileVersion>1.0.2.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -41,7 +43,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\calendar\js\internal-calendar-plugin-v1.js" />
-  </ItemGroup>
 </Project>
