@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Version>1.0.1</Version>
+    <Company>Indrivo</Company>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageTags>commerce-ui gear</PackageTags>
+    <PackageReleaseNotes>- .net core mvc ui for manage products</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

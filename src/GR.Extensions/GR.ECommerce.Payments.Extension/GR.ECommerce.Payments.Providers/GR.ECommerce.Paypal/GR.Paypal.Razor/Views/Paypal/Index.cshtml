@@ -1,0 +1,45 @@
+@{
+	ViewBag.Title = "title";
+	Layout = "_Layout";
+}
+
+
+<label>Paypal Express </label>
+<div id="paypal-button"></div>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+<script type="text/javascript">
+	paypal.Button.render({
+			env: 'sandbox',
+			commit: true,
+			payment: function(data, actions) {
+				return paypal.request.post('@Url.Action("CreatePayment", "Paypal")')
+					.then(function(res) {
+						return res.paymentId;
+					})
+					.catch(function(error) {
+						const errorDiv = document.getElementById("paymentError");
+						errorDiv.innerText = error;
+						errorDiv.style.display = "block";
+					});
+			},
+
+			onAuthorize: function(data, actions) {
+				return paypal.request.post('/PaypalExpress/ExecutePayment',
+						{
+							paymentID: data.paymentID,
+							payerID: data.payerID
+						})
+					.then(function(res) {
+						window.location = `/checkout/success?orderId=${res.orderId}`;
+					})
+					.catch(function(error) {
+						const errorDiv = document.getElementById("paymentError");
+						errorDiv.innerText = error;
+						errorDiv.style.display = "block";
+					});
+			}
+		},
+		'#paypal-button');
+</script>

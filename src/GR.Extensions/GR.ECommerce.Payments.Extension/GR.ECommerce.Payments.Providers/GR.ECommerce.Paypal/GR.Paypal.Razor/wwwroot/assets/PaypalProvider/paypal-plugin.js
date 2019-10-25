@@ -1,0 +1,1 @@
+﻿alert("Trebuie de scris gavno-code");

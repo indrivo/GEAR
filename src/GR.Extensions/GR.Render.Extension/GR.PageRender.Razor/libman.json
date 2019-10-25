@@ -16,7 +16,7 @@
     },
     {
       "provider": "unpkg",
-      "library": "grapesjs-preset-webpage@0.1.9",
+      "library": "grapesjs-preset-webpage@0.1.11",
       "destination": "wwwroot/lib/grapesjs-preset-webpage/"
     },
     {
