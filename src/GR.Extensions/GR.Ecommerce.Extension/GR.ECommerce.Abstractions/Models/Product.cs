@@ -90,5 +90,7 @@ namespace GR.ECommerce.Abstractions.Models
         /// Gtin
         /// </summary>
         public virtual string Gtin { get; set; }
+
+        public virtual List<ProductVariation> ProductVariations { get; set; }
     }
 }

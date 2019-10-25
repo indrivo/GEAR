@@ -38,7 +38,7 @@ namespace GR.ECommerce.Razor.ViewModels
         /// Category list
         /// </summary>
         public List<ProductCategoryDto> ProductCategoryList { get; set; } = new List<ProductCategoryDto>();
-
+        public List<SelectListItem> ProductOption { get; set; } = new List<SelectListItem>();
 
         /// <summary>
         /// Images

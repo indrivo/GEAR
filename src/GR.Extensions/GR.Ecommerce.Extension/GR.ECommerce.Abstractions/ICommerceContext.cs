@@ -85,5 +85,20 @@ namespace GR.ECommerce.Abstractions
         /// Product attributes
         /// </summary>
         DbSet<ProductAttributes> ProductAttributes { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        DbSet<ProductVariation> ProductVariations { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        DbSet<ProductVariationDetail> ProductVariationDetails { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        DbSet<ProductOption> ProductOption { get; set; }
     }
 }

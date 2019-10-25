@@ -1,0 +1,14 @@
+
+migration
+dd-migration -Context ComerceDbContext ComerceDbContext_addProductVariation
+
+
+acaunt
+u: admin  p: mPa1icqZ.d
+
+
+
+
+sumpleComerce
+login: admin@simplcommerce.com
+password : 1qazZAQ!

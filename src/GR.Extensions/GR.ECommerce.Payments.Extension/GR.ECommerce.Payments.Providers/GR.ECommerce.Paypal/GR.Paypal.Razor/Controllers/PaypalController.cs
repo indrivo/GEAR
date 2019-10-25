@@ -7,6 +7,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Paypal;
+using GR.ECommerce.Paypal.Abstractions;
 using GR.ECommerce.Paypal.Models;
 using GR.Paypal.Razor.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -24,7 +25,7 @@ namespace GR.Paypal.Razor.Controllers
         /// <summary>
         /// Inject payment service
         /// </summary>
-        private readonly IPaymentService _paymentManager;
+        private readonly IPaypalPaymentService _paymentManager;
 
         /// <summary>
         /// Inject http client factory
@@ -46,7 +47,7 @@ namespace GR.Paypal.Razor.Controllers
         {
             _httpClientFactory = httpClientFactory;
             _payPalOptions = payPalOptions;
-            _paymentManager = IoC.Resolve<IPaymentService>(nameof(PaypalPaymentService));
+            _paymentManager = IoC.Resolve<IPaypalPaymentService>(nameof(PaypalPaymentService));
         }
 
         /// <summary>
@@ -64,82 +65,21 @@ namespace GR.Paypal.Razor.Controllers
         public async Task<IActionResult> CreatePayment()
         {
             var hostingDomain = Request.Host.Value;
-            var accessToken = await GetAccessToken();
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                return BadRequest("No access token");
-            }
 
-            using (var httpClient = new HttpClient())
-            {
-                //var regionInfo = new RegionInfo(_currencyService.CurrencyCulture.LCID)
-                var experienceProfileId = await CreateExperienceProfile(accessToken);
-                dynamic cart = new {};
-                if (cart == null)
+                var response = _paymentManager.CreatePayment(hostingDomain);
+                if (response.Result.IsSucces)
                 {
-                    return NotFound();
-                }
-
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var paypalAcceptedNumericFormatCulture = CultureInfo.CreateSpecificCulture("en-US");
-
-                var paymentCreateRequest = new PaymentCreateRequest
-                {
-                    experience_profile_id = experienceProfileId,
-                    intent = "sale",
-                    payer = new Payer
-                    {
-                        payment_method = "paypal",
-                    },
-                    transactions = new[]
-                    {
-                        new Transaction
-                        {
-                            amount = new Amount
-                            {
-                                total = (cart.OrderTotal + CalculatePaymentFee(cart.OrderTotal)).ToString("N2",
-                                    paypalAcceptedNumericFormatCulture),
-                                currency = "USD",
-                                details = new Details
-                                {
-                                    handling_fee = CalculatePaymentFee(cart.OrderTotal)
-                                        .ToString("N2", paypalAcceptedNumericFormatCulture),
-                                    subtotal = cart.SubTotalWithDiscountWithoutTax.ToString("N2",
-                                        paypalAcceptedNumericFormatCulture),
-                                    tax = cart.TaxAmount?.ToString("N2", paypalAcceptedNumericFormatCulture) ?? "0",
-                                    shipping =
-                                        cart.ShippingAmount?.ToString("N2", paypalAcceptedNumericFormatCulture) ?? "0"
-                                }
-                            }
-                        }
-                    },
-                    redirect_urls = new Redirect_Urls()
-                    {
-                        cancel_url = $"http://{hostingDomain}/Paypal/Cancel",
-                        return_url = $"http://{hostingDomain}/Paypal/Success"
-                    }
-                };
-
-                var response = await httpClient.PostJsonAsync(
-                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment",
-                    paymentCreateRequest);
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-                dynamic payment = JObject.Parse(responseBody);
-                if (response.IsSuccessStatusCode)
-                {
-                    string paymentId = payment.id;
+                    string paymentId = response.Result.Message;
                     return Ok(new { PaymentId = paymentId });
                 }
 
-                return BadRequest(responseBody);
-            }
+                return BadRequest(response.Result.Message);
         }
 
 
         public async Task<IActionResult> ExecutePayment(PaymentExecuteVm model)
         {
-            var accessToken = await GetAccessToken();
+            //var accessToken = await GetAccessToken();
             //var currentUser = await 
             //var cart = GetActiveCart();
             //var orderCreateResult = await _orderService.CreateOrder(cart.Id, "PaypalExpress",
@@ -159,33 +99,42 @@ namespace GR.Paypal.Razor.Controllers
             //    CreatedOn = DateTimeOffset.UtcNow,
             //};
 
-            using (var httpClient = new HttpClient())
+            //using (var httpClient = new HttpClient())
+            //{
+            //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            //    var paymentExecuteRequest = new PaymentExecuteRequest { PayerId = model.PayerId };
+
+            //    var response = await httpClient.PostJsonAsync(
+            //        $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment/{model.PaymentId}/execute",
+            //        paymentExecuteRequest);
+            //    var responseBody = await response.Content.ReadAsStringAsync();
+            //    dynamic responseObject = JObject.Parse(responseBody);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        // Has to explicitly declare the type to be able to get the propery
+            //        //string payPalPaymentId = responseObject.id;
+            //        //payment.Status = PaymentStatus.Succeeded;
+            //        //payment.GatewayTransactionId = payPalPaymentId;
+            //        //_paymentRepository.Add(payment);
+            //        //order.OrderStatus = OrderStatus.PaymentReceived;
+            //        //await _paymentRepository.SaveChangesAsync();
+            //        return Ok(new { Status = "success", OrderId = 12 });
+            //    }
+
+            //    string errorName = responseObject.name;
+            //    string errorDescription = responseObject.message;
+            //    return BadRequest($"{errorName} - {errorDescription}");
+            //}
+
+
+            var response = _paymentManager.ExecutePayment(model);
+
+            if (response.Result.IsSucces)
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var paymentExecuteRequest = new PaymentExecuteRequest { PayerId = model.PayerId };
-
-                var response = await httpClient.PostJsonAsync(
-                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment/{model.PaymentId}/execute",
-                    paymentExecuteRequest);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                dynamic responseObject = JObject.Parse(responseBody);
-                if (response.IsSuccessStatusCode)
-                {
-                    // Has to explicitly declare the type to be able to get the propery
-                    //string payPalPaymentId = responseObject.id;
-                    //payment.Status = PaymentStatus.Succeeded;
-                    //payment.GatewayTransactionId = payPalPaymentId;
-                    //_paymentRepository.Add(payment);
-                    //order.OrderStatus = OrderStatus.PaymentReceived;
-                    //await _paymentRepository.SaveChangesAsync();
-                    return Ok(new { Status = "success", OrderId = 12 });
-                }
-
-                string errorName = responseObject.name;
-                string errorDescription = responseObject.message;
-                return BadRequest($"{errorName} - {errorDescription}");
+                return Ok(new { Status = "success", OrderId = response.Result.Message });
             }
 
+            return BadRequest(response.Result.Message);
 
             //payment.Status = PaymentStatus.Failed;
             //payment.FailureMessage = responseBody;
@@ -204,56 +153,6 @@ namespace GR.Paypal.Razor.Controllers
         public async Task<IActionResult> Success()
         {
             return default;
-        }
-
-        private async Task<string> GetAccessToken()
-        {
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-                "Basic",
-                Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes(
-                        $"{_payPalOptions.Value.ClientId}:{_payPalOptions.Value.ClientSecret}")));
-            var requestBody = new StringContent("grant_type=client_credentials");
-            requestBody.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-            var response = await httpClient.PostAsync(
-                $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/oauth2/token", requestBody);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            dynamic token = JObject.Parse(responseBody);
-            string accessToken = token.access_token;
-            return accessToken;
-        }
-
-
-        private decimal CalculatePaymentFee(decimal total)
-        {
-            var percent = _payPalOptions.Value.PaymentFee;
-            return total / 100 * percent;
-        }
-
-        private async Task<string> CreateExperienceProfile(string accessToken)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var experienceRequest = new ExperienceProfile
-                {
-                    Name = $"simpl_{Guid.NewGuid()}",
-                    InputFields = new InputFields
-                    {
-                        NoShipping = 1
-                    },
-                    Temporary = true
-                };
-                var response = await httpClient.PostJsonAsync(
-                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payment-experience/web-profiles",
-                    experienceRequest);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                dynamic experience = JObject.Parse(responseBody);
-                string profileId = experience.id;
-                return profileId;
-            }
         }
     }
 }

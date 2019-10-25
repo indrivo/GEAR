@@ -117,6 +117,8 @@ namespace GR.ECommerce.Razor.Controllers
             result.ProductCategoryList = new List<ProductCategoryDto>();
             result.ProductTypeList = new List<SelectListItem>();
             result.Price = result.CurrentPrice;
+            result.ProductOption = new List<SelectListItem>();
+
 
             return View(GetDropdownItems(result));
         }
@@ -207,6 +209,13 @@ namespace GR.ECommerce.Razor.Controllers
                     Value = w.Id.ToString()
                 }));
 
+            model.ProductOption = Context.ProductOption.ToList().Select(s => new SelectListItem
+            {
+                Text = s.Name,
+                Value =  s.Id.ToString(),
+            }).ToList();
+                
+
             model.ProductCategoryList = Context.Categories.Select(x => new ProductCategoryDto
             {
                 Name = x.Name,
@@ -246,6 +255,55 @@ namespace GR.ECommerce.Razor.Controllers
             return Json(dbResult);
         }
 
+        
+        [HttpPost]
+        public async Task<JsonResult> SaveProductVariation([FromBody] ProductVariationViewModel model)
+        {
+
+            var prod = Context.Products.FirstOrDefault(i => i.Id == model.ProductId);
+
+            if (prod != null)
+            {
+                var newVariation = new ProductVariation()
+                {
+                    ProductId =  model.ProductId,
+                    Price =  model.Price,
+                };
+
+                Context.ProductVariations.Add(newVariation);
+
+
+                foreach (var variationDetail in model.ProductVaritionDetails)
+                {
+                    var newVariationDetails = new ProductVariationDetail()
+                    {
+                        ProductVariationId = newVariation.Id,
+                        Value = variationDetail.Value,
+                        ProductOptionId =  variationDetail.ProductOptionId
+                    };
+
+                    Context.ProductVariationDetails.Add(newVariationDetails);
+                }
+                
+            }
+
+            var dbResult = await Context.PushAsync();
+
+
+            return Json(dbResult);
+        }
+
+
+        [HttpGet]
+        public JsonResult GetProductVariation(string productId) => Json(Context.ProductVariations
+            .Include(x => x.ProductVariationDetails).ThenInclude(x=>x.ProductOption)
+            .Where(x => x.ProductId == productId.ToGuid())
+            .Select(x => new
+            {
+                VariationId = x.Id,
+                Price = x.Price,
+                VariationDetails = x.ProductVariationDetails.Select(s=>  new {Value = s.Value, Option = s.ProductOption.Name})
+            }));
 
         [HttpGet]
         public JsonResult GetProductAttributes(string productId) => Json(Context.ProductAttributes
