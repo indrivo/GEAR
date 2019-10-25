@@ -63,7 +63,7 @@ namespace GR.Calendar.Abstractions.Extensions
             CalendarEvents.SystemCalendarEvents.OnEventCreated += async (sender, args) =>
             {
                 var subject = "Changes in the event " + args.Title;
-                var message = $"An event is created for which you are invited, more details ${calendarLink}";
+                var message = $"An event is created for which you are invited, more details {calendarLink}";
                 var notifier = IoC.Resolve<INotify<ApplicationRole>>();
                 if (notifier == null) return;
                 var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();

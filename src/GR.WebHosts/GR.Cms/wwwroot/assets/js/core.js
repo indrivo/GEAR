@@ -513,7 +513,7 @@ Notificator.prototype.createNotificationBodyContainer = function (notification) 
 		<div class="mail-contnet">
 			<h5>${notification.subject}</h5> <span class="mail-desc">${notification.content}</span>
 				<span class="time">
-					${notification.created}
+					${notification.created} 
 				</span>
 		</div>`;
     const block = `
@@ -526,27 +526,8 @@ Notificator.prototype.createNotificationBodyContainer = function (notification) 
 
 
 Notificator.prototype.registerOpenNotificationEvent = function () {
-    $(".notification-item").off("click", this.openNotificationHandler);
-    $(".notification-item").on("click", this.openNotificationHandler);
+    
 };
-
-
-Notificator.prototype.openNotificationHandler = function () {
-    const notId = $(this).data("notification-id");
-    if (!notId) {
-        return;
-    }
-    const notContext = new Notificator();
-    const res = notContext.getNotificationById(notId);
-    if (res.is_success) {
-        Swal.fire(
-            res.result.Subject,
-            res.result.Content,
-            'warning'
-        );
-    }
-};
-
 
 Notificator.prototype.origin = function () {
     const uri = new URL(location.href);

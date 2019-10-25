@@ -1624,14 +1624,14 @@ if (typeof Notificator !== "undefined") {
 		this.registerOpenNotificationEvent();
 	}
 
-	Notificator.prototype.createNotificationBodyContainer = function (n) {
+    Notificator.prototype.createNotificationBodyContainer = function (n) {
 		const block = `
-		<a data-notification-id="${n.id
-			}" href="javascript:void(0)" class="notification-item dropdown-item py-3 border-bottom">
+		<div data-notification-id="${n.id
+			}" class="notification-item dropdown-item py-3 border-bottom">
             <p><small>${n.subject}</small></p>
             <p class="text-muted mb-1"><small>${n.content}</small></p>
             <p class="text-muted mb-1"><small>${n.created}</small></p>
-		</a>`;
+		</div>`;
 		return block;
 	}
 }
