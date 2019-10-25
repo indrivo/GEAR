@@ -370,7 +370,7 @@ namespace GR.Report.Dynamic
             var schemas = new List<string>();
             var tenants = _organizationService.GetAllTenants().Select(s => new { s.Id, Name = s.MachineName }).ToList();
             if (userTenant.HasValue)
-                schemas = tenants.Any(s => s.Id == userTenant.Value && s.Name == Settings.DEFAULT_ENTITY_SCHEMA)
+                schemas = tenants.Any(s => s.Id == userTenant.Value && s.Name == GearSettings.DEFAULT_ENTITY_SCHEMA)
                     ? tenants.Select(s => s.Name).ToList()
                     : tenants.Where(s => s.Id == userTenant).Select(s => s.Name).ToList();
             return schemas;

@@ -651,6 +651,8 @@
   "system_calendar": "Календарь",
   "system_childs": "Ветви меню",
   "system_order": "Номер",
+  "system_close": "Закрыть",
+  "system_customization": "Мой стиль",
   "system_calendar_starts": "Начинается",
   "system_calendar_ends": "Заканчивается",
   "system_calendar_respond_success": "Ответ успешно отправлен ",

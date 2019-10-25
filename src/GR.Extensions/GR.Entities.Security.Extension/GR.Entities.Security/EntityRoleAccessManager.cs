@@ -69,7 +69,7 @@ namespace GR.Entities.Security
         /// Tables
         /// </summary>
         public IQueryable<TableModel> Tables => _entityContext.Table
-            .Where(x => x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA) || x.IsPartOfDbContext);
+            .Where(x => x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA) || x.IsPartOfDbContext);
 
         /// <summary>
         /// 

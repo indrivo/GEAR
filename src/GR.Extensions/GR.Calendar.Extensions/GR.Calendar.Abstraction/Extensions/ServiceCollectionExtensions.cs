@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Calendar.Abstractions.BackGroundServices;
@@ -6,6 +8,10 @@ using GR.Calendar.Abstractions.Events;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Identity.Abstractions;
+using GR.Notifications.Abstractions;
+using GR.Notifications.Abstractions.Models.Notifications;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace GR.Calendar.Abstractions.Extensions
@@ -53,6 +59,55 @@ namespace GR.Calendar.Abstractions.Extensions
         public static CalendarServiceCollection AddCalendarRuntimeEvents(this CalendarServiceCollection serviceCollection)
         {
             CalendarEvents.RegisterEvents();
+            const string calendarLink = "<a href='/calendar'>here</a>";
+            CalendarEvents.SystemCalendarEvents.OnEventCreated += async (sender, args) =>
+            {
+                var subject = "Changes in the event " + args.Title;
+                var message = $"An event is created for which you are invited, more details {calendarLink}";
+                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                if (notifier == null) return;
+                var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();
+                if (users.Any())
+                {
+                    await notifier.SendNotificationAsync(users, NotificationType.Info, subject, message);
+                }
+            };
+
+            CalendarEvents.SystemCalendarEvents.OnEventUpdated += async (sender, args) =>
+            {
+                var subject = "Changes in the event " + args.Title;
+                var message = $"Event {args.Title} has been modified, more details {calendarLink}";
+                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();
+                if (users.Any())
+                {
+                    await notifier.SendNotificationAsync(users, NotificationType.Info, subject, message);
+                }
+            };
+
+            CalendarEvents.SystemCalendarEvents.OnEventDeleted += async (sender, args) =>
+            {
+                var subject = "Changes in the event " + args.Title;
+                var message = $"Event {args.Title} was canceled";
+                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();
+                if (users.Any())
+                {
+                    await notifier.SendNotificationAsync(users, NotificationType.Info, subject, message);
+                }
+            };
+
+            CalendarEvents.SystemCalendarEvents.OnUserChangeAcceptance += async (sender, args) =>
+            {
+                var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
+                if (userManager == null) return;
+                var subject = "Changes in the event " + args.Title;
+                var user = await userManager.FindByIdAsync(args.Member.UserId.ToString());
+                var message = $"User {user.Email} responded with {args.AcceptanceState} to event {args.Title}";
+                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                await notifier.SendNotificationAsync(new List<Guid> { args.Organizer }, NotificationType.Info, subject, message);
+            };
+
             return serviceCollection;
         }
 

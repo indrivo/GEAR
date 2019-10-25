@@ -69,7 +69,7 @@ namespace GR.DynamicEntityStorage
 
             var proprieties = BaseModel.GetPropsName().ToList();
 
-            model = await ViewModelBuilder.ResolveAsync(context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(context, model);
 
             var dynamicClass = CreateClass();
             CreateConstructor(dynamicClass);

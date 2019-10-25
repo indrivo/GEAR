@@ -651,6 +651,8 @@
   "system_calendar": "Calendrier",
   "system_childs": "Les branches de la carte",
   "system_order": "Numéro de commande",
+  "system_close": "Fermer",
+  "system_customization": "Personnalisation",
   "system_calendar_starts": "Commence",
   "system_calendar_ends": "Se termine",
   "system_calendar_respond_success": "Réponse envoyée avec succès",

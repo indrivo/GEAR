@@ -47,7 +47,7 @@ namespace GR.Identity.Seeders
                     if (exists) continue;
                     role.Created = DateTime.Now;
                     role.Changed = DateTime.Now;
-                    role.TenantId = Settings.TenantId;
+                    role.TenantId = GearSettings.TenantId;
                     await roleManager.CreateAsync(role.Adapt<ApplicationRole>());
                     await context.SaveChangesAsync();
                 }
@@ -62,7 +62,7 @@ namespace GR.Identity.Seeders
                     if (context.AuthGroups.Any(x => x.Name.Equals(item.Name))) continue;
                     item.Created = DateTime.Now;
                     item.Changed = DateTime.Now;
-                    item.TenantId = Settings.TenantId;
+                    item.TenantId = GearSettings.TenantId;
                     context.AuthGroups.Add(item);
                     context.SaveChanges();
                 }
@@ -83,7 +83,7 @@ namespace GR.Identity.Seeders
                     user.Created = DateTime.Now;
                     user.Changed = DateTime.Now;
                     user.AuthenticationType = AuthenticationType.Local;
-                    user.TenantId = Settings.TenantId;
+                    user.TenantId = GearSettings.TenantId;
                     var result = await userManager.CreateAsync(user);
                     if (!result.Succeeded) continue;
                     if (entity.ApplicationRoles.Any())
@@ -97,7 +97,7 @@ namespace GR.Identity.Seeders
                         {
                             UserId = user.Id,
                             AuthGroupId = group.Id,
-                            TenantId = Settings.TenantId
+                            TenantId = GearSettings.TenantId
                         };
                         context.UserGroups.Add(userGroup);
                     }
@@ -111,7 +111,7 @@ namespace GR.Identity.Seeders
                 foreach (var item in entity.Profiles)
                 {
                     if (context.Profiles.Any(x => x.ProfileName == item.ProfileName)) continue;
-                    item.TenantId = Settings.TenantId;
+                    item.TenantId = GearSettings.TenantId;
                     context.Profiles.Add(item);
                     context.SaveChanges();
                 }

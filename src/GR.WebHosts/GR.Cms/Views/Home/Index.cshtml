@@ -1,66 +1,8 @@
-@using IdentityServer4.Extensions
-@using GR.Dashboard.Abstractions
 @using GR.Identity.Abstractions
-@inject UserManager<ApplicationUser> UserManager
+@inject IUserManager<ApplicationUser> UserManager
 @inject IStringLocalizer Localizer
-@inject IDashboardService DashboardService
 @{
 	ViewData["Title"] = Localizer["title_home"];
-	//var user = await UserManager.GetUserAsync(User);
-	var activeDashboard = await DashboardService.GetActiveDashboardAsync();
 }
 
-<link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
-<link rel="stylesheet" href="~/assets/ReportScripts/report.css" />
-
-@if (activeDashboard.IsSuccess)
-{
-	var configuration = await DashboardService.GetDashboardConfigurationForRenderAsync();
-	<div class="card">
-		<div class="card-body">
-			<h5>@activeDashboard.Result.Name</h5>
-			@if (configuration.IsSuccess)
-			{
-				foreach (var row in configuration.Result)
-				{
-					<div class="row">
-						@foreach (var (widget, widgetBody) in row.GetWidgetBodies())
-						{
-							<div class="col-md">
-								<div class="card mb-sm-4 mb-3">
-									<div class="card-body p-0">
-										<div class="p-3 pl-4">
-											<h5>@widget.Name</h5>
-											@if (!widgetBody.IsNullOrEmpty())
-											{
-												@Html.Raw(widgetBody)
-											}
-										</div>
-									</div>
-								</div>
-							</div>
-						}
-					</div>
-				}
-			}
-			else
-			{
-				<h1>@configuration.Errors.ElementAt(0)?.Message</h1>
-			}
-		</div>
-	</div>
-
-}
-else
-{
-	<h1>@activeDashboard.Errors.ElementAt(0)?.Message</h1>
-}
-
-@section PreScripts{
-	<script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
-	<script src="~/lib/Chart.js/Chart.min.js"></script>
-}
-
-@section Scripts{
-	<script src="~/assets/ReportScripts/report.js"></script>
-}
+<partial name="_DashBoardPartialView" />

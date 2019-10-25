@@ -41,7 +41,7 @@ namespace GR.Entities.Razor.Controllers
             _dynamicService = dynamicService;
             _jsonSerializeOptions = new JsonSerializerSettings
             {
-                DateFormatString = Settings.Date.DateFormat,
+                DateFormatString = GearSettings.Date.DateFormat,
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 NullValueHandling = NullValueHandling.Ignore
             };

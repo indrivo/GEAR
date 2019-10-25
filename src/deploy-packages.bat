@@ -57,6 +57,17 @@ dotnet pack ./GR.Extensions/GR.ECommerce.Extension/GR.ECommerce.Abstractions/GR.
 dotnet pack ./GR.Extensions/GR.ECommerce.Extension/GR.ECommerce.Products/GR.ECommerce.Products.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.ECommerce.Extension/GR.ECommerce.Razor/GR.ECommerce.Razor.csproj -o ../../../nupkgs
 
+:: Pack dashboard modules
+dotnet pack ./GR.Extensions/GR.Dashboard.Extension/GR.Dashboard.Abstractions/GR.Dashboard.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Dashboard.Extension/GR.Dashboard/GR.Dashboard.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Dashboard.Extension/GR.Dashboard.Razor/GR.Dashboard.Razor.csproj -o ../../../nupkgs
+
+:: Pack report modules
+dotnet pack ./GR.Extensions/GR.Report.Extension/GR.Report.Abstractions/GR.Report.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Report.Extension/GR.Report.Dynamic/GR.Report.Dynamic.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Report.Extension/GR.Report.Dynamic.Razor/GR.Report.Dynamic.Razor.csproj -o ../../../nupkgs
+
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -96,17 +107,25 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Localization.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Localization*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Localization.Razor*
 
-
 ::Push task manager modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.TaskManager.Razor*
 
-
 ::Push commerce modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Products*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.ECommerce.Razor*
+
+::Push dashboard modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Dashboard.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Dashboard*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Dashboard.Razor*
+
+::Push report modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Dynamic*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

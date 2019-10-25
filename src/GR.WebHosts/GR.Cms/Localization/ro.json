@@ -651,6 +651,8 @@
   "system_calendar": "Calendar",
   "system_childs": "Ramuri de meniu",
   "system_order": "Numărul de ordine",
+  "system_close": "Inchide",
+  "system_customization": "Personalizare",
   "system_calendar_starts": "Începe",
   "system_calendar_ends": "Se termină",
   "system_calendar_respond_success": "Răspuns trimis cu succes",

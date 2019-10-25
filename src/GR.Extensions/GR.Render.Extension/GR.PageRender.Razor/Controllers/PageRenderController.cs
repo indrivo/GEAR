@@ -510,7 +510,7 @@ namespace GR.PageRender.Razor.Controllers
             var serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                DateFormatString = Settings.Date.DateFormat
+                DateFormatString = GearSettings.Date.DateFormat
             };
             return Json(finalResult, serializerSettings);
         }

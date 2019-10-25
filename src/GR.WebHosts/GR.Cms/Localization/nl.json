@@ -651,6 +651,8 @@
   "system_calendar": "Agenda",
   "system_childs": "Het menu takken",
   "system_order": "Bestelling aantal",
+  "system_close": "Sluiten",
+  "system_customization": "Maatwerk",
   "system_calendar_starts": "Start",
   "system_calendar_ends": "Eindigt",
   "system_calendar_respond_success": "Reactie is succesvol verstuurd",
