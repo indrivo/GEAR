@@ -80,14 +80,19 @@
 {
 
     <script id="eventTemplate" type="text/x-jsrender">
-        <div class="fc-content" data-event-id="{{:id}}" data-event-editable="{{:editable}}">
+        <div class="fc-content"
+             data-event-id="{{:id}}"
+             title="{{:title}}"
+             data-toggle="tooltip"
+             data-placement="top"
+             data-event-editable="{{:editable}}">
             <span class="fc-time">{{:time}}</span>
             <span class="fc-title">{{:title}}</span>
         </div>
     </script>
 
     <script id="teamMember" type="text/x-jsrender">
-        <div class="event-member" data-member-id="{{:id}}">
+        <div class="event-member mt-2" data-member-id="{{:id}}">
             <div class="d-flex align-items-center">
                 <span class="member-acceptance acceptance-{{:acceptance}}">
                     <i class="material-icons">{{:~acceptanceIcon}}</i>
@@ -98,15 +103,13 @@
     </script>
 
     <script id="teamMemberEdit" type="text/x-jsrender">
-        <div class="event-member" data-member-id="{{:id}}">
+        <div class="event-member mt-2" data-member-id="{{:id}}">
             <div class="d-flex align-items-center">
                 <span class="member-acceptance acceptance-{{:acceptance}}">
                     <i class="material-icons">{{:~acceptanceIcon}}</i>
                 </span>
                 <div class="member-name"><span>{{:~outputName}}</span></div>
-                <div class="member-dismissa align-self-end">
-                    <i class="material-icons text-danger">close</i>
-                </div>
+                <i class="ml-auto material-icons member-dismiss text-danger">close</i>
             </div>
         </div>
     </script>
@@ -161,23 +164,23 @@
                 </p>
             </div>
             {{if !~editable}}
-            <div class="pl-2 pt-2 pr-2 d-flex justify-content-between">
-                <button type="button" 
+            <div class="d-flex w-100 pt-2 pl-2 pr-2 justify-content-between">
+                <button type="button"
                         class="respond-event btn btn-outline-success"
-                        data-event-id="{{:id}}"
-                        data-acceptance="0">
+                        data-acceptance="0"
+                        data-event-id="{{:id}}">
                     @Localizer["system_calendar_accept"]
                 </button>
-                <button type="button" 
+                <button type="button"
                         class="respond-event btn btn-outline-info"
-                        data-event-id="{{:id}}"
-                        data-acceptance="1">
+                        data-acceptance="1"
+                        data-event-id="{{:id}}">
                     @Localizer["system_calendar_tentative"]
                 </button>
-                <button type="button" 
+                <button type="button"
                         class="respond-event btn btn-outline-danger"
-                        data-event-id="{{:id}}"
-                        data-acceptance="2">
+                        data-acceptance="2"
+                        data-event-id="{{:id}}">
                     @Localizer["system_calendar_decline"]
                 </button>
             </div>
@@ -187,40 +190,71 @@
     </script>
 
     <script id="eventPopupEdit" type="text/x-jsrender">
-        <div class="popup-content">
-            <form id="edit-event" data-event-id="{{:id}}">
+        <div class="popup-content bg-popup-gray">
+            <form id="edit-event">
                 <div class="details-popup-section details-popup-header">
                     <div class="details-popup-title">
                         <input type="text" class="input-inline-editing event-title" value="{{:title}}">
                     </div>
-                    <div class="details-popup-priority">
-                        <select class="select-inline-editing event-proprity"></select>
+                    <div class="details-popup-priority d-flex align-items-center mt-2 position-relative">
+                        <span class="event-priority-bullet mr-2 priority-{{:priority}}"></span>
+                        <select class="select-inline-editing event-priority"></select>
+                        <i class="material-icons position-absolute">keyboard_arrow_down</i>
                     </div>
                 </div>
                 <div class="details-popup-section details-popup-date">
-                    <div class="details-popup-date">
-                        <input type="date" class="date-inline-editing event-start-date" value="{{:startDate}}">
-                        <input type="time" class="time-inline-editing event-start-time" value="{{:startTime}}">
+                    <div class="details-popup-start-date d-flex">
+                        <div class="details-popup-date-label">@Localizer["system_calendar_starts"]:</div>
+                        <div class="date-time">
+                            <input type="text"
+                                   class="date-inline-editing event-start-date"
+                                   data-date-autoclose="true"
+                                   data-date-format="M d, yyyy"
+                                   data-date-week-start="1"
+                                   data-date-today-highlight="true"
+                                   required
+                                   value="{{:~startDateEdit}}">
+                            <input type="text"
+                                   class="time-inline-editing event-start-time"
+                                   data-autoclose="true"
+                                   value="{{:~startTime}}">
+                        </div>
                     </div>
-                    <div class="details-popup-time">
-                        <input type="date" class="date-inline-editing event-end-date" value="{{:endDate}}">
-                        <input type="time" class="date-inline-editing event-end-time" value="{{:endTime}}">
+                    <div class="details-popup-end-date d-flex">
+                        <div class="details-popup-date-label">@Localizer["system_calendar_ends"]:</div>
+                        <div class="date-time">
+                            <input type="text"
+                                   class="date-inline-editing event-end-date"
+                                   required
+                                   value="{{:~endDateEdit}}">
+                            <input type="text"
+                                   class="time-inline-editing event-end-time"
+                                   data-autoclose="true"
+                                   value="{{:~endTime}}">
+                        </div>
                     </div>
                 </div>
                 <div class="details-popup-section details-popup-members">
                     <div class="details-popup-members-list">
                     </div>
-                    <label for="add-new-guest"><i class="material-icons">add_circle_outline</i></label>
-                    <input id="add-new-guest" class="input-inline-editing event-new-guest" type="text" placeholder="@Localizer["system_calendar_add_guest"])" />
+                    <div class="mt-2 d-flex">
+                        <label for="edit-event-members"><i class="material-icons">add_circle_outline</i></label>
+                        <select id="edit-event-members"
+                                name="members"
+                                class="form-control event-members">
+                        </select>
+                    </div>
                 </div>
                 <div class="details-popup-section details-popup-description">
-                    <textarea class="textarea-inline-editing event-details">
-						{{:details}}
-					</textarea>
+                    <textarea class="textarea-inline-editing event-details">{{:details}}</textarea>
                 </div>
-                <div class="pull-right pb-4 pr-4">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="submit-add-task btn btn-success text-white" form="add-task">@Localizer["system_taskmanager_save_task"]</button>
+                <div class="d-flex w-100 pt-2 pr-2">
+                    <button type="submit"
+                            class="ml-auto submit-edit-event btn btn-success text-white"
+                            form="edit-event"
+                            data-event-id="{{:id}}">
+                        @Localizer["save"]
+                    </button>
                 </div>
             </form>
         </div>
