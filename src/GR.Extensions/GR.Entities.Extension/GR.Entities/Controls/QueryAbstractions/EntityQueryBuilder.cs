@@ -23,6 +23,16 @@ namespace GR.Entities.Controls.QueryAbstractions
         public abstract string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters, int perPage, int currentPage);
 
+        /// <summary>
+        /// Get pagination query with filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        public abstract string GetPaginationByFilters(EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null);
+
         public abstract string GetByColumnParameterQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters);
 

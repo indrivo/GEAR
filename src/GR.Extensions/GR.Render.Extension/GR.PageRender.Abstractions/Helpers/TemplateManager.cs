@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Helpers;
-using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.RenderTemplates;
+using Microsoft.EntityFrameworkCore;
 
-namespace GR.PageRender.Razor.Helpers
+namespace GR.PageRender.Abstractions.Helpers
 {
     public static class TemplateManager
     {

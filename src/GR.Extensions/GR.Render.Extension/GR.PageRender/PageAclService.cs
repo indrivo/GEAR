@@ -5,10 +5,16 @@ using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
 
-namespace GR.PageRender.Razor.Services
+namespace GR.PageRender
 {
-    internal class PageAclService : IPageAclService
+    public class PageAclService : IPageAclService
     {
+        /// <summary>
+        /// Check access
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
         public bool HasAccess(Page page, IEnumerable<ApplicationRole> roles)
         {
             if (!page.IsEnabledAcl) return true;

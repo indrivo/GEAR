@@ -2,41 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Mvc;
 using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Filters;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.PageRender.Abstractions;
+using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
+using Mapster;
+using Microsoft.AspNetCore.Mvc;
 
-namespace GR.PageRender.Razor.Services
+namespace GR.PageRender
 {
-    public static class MenuHelper
-    {
-        /// <summary>
-        /// Get menu cache key
-        /// </summary>
-        /// <param name="menuId"></param>
-        /// <returns></returns>
-        public static string GetCacheKey(string menuId)
-        {
-            return $"_menu_{menuId}";
-        }
-
-        /// <summary>
-        /// Cache key
-        /// </summary>
-        /// <param name="menuBlockId"></param>
-        /// <returns></returns>
-        public static string GetBlockCacheKey(string menuBlockId)
-        {
-            return $"_menu_block_{menuBlockId}";
-        }
-    }
-
     public class MenuService<TService> : IMenuService where TService : IDynamicService
     {
         #region Injectable

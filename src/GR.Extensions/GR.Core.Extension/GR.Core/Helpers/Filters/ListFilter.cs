@@ -1,4 +1,4 @@
-﻿namespace GR.DynamicEntityStorage.Abstractions.Helpers
+﻿namespace GR.Core.Helpers.Filters
 {
     public class ListFilter : Filter
     {

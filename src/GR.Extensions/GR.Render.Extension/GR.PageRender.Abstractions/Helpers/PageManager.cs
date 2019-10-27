@@ -4,14 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Helpers;
+using GR.PageRender.Abstractions.Models.Pages;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GR.Core.Helpers;
-using GR.PageRender.Abstractions;
-using GR.PageRender.Abstractions.Models.Pages;
 
-namespace GR.PageRender.Razor.Helpers
+namespace GR.PageRender.Abstractions.Helpers
 {
     public static class PageManager
     {

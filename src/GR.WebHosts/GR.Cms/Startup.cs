@@ -109,9 +109,11 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
+using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.Paypal;
 using GR.Entities.Extensions;
 using GR.Localization;
+using GR.PageRender;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 
@@ -363,9 +365,6 @@ namespace GR.Cms
 			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
-			//------------------------------------Page render Module-------------------------------------
-			services.AddPageRenderUiModule();
-
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
 
@@ -434,7 +433,10 @@ namespace GR.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddPageRenderUIModule<PageRender.PageRender>()
+				.AddMenuService<MenuService<IDynamicService>>()
+				.AddPageAclService<PageAclService>();
 
 
 			//---------------------------------------Report Module-------------------------------------

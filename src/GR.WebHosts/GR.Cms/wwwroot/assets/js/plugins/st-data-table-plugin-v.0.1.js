@@ -112,40 +112,33 @@ TableExport.prototype.newExportAction = function (e, dt, button, config) {
 //								Table Builder
 //------------------------------------------------------------------------------------//
 
-/**
- * Define new prototype for table render
- * @param {any} confs
- */
-function TableBuilder(confs) {
-	this.showActionsColumn = true;
-	this.ajax = {
-		"url": "/PageRender/LoadPagedData",
-		"type": "POST",
-		"data": {}
-	};
-	this.configurations = {
-		tableId: undefined,
-		tableJqInstance: undefined,
-		tableJsInstance: undefined,
-		table: undefined
-	};
-	Object.assign(this, confs);
-};
+class TableBuilder {
+    constructor(confs) {
+        this.showActionsColumn = true;
+        this.ajax = {
+            "url": "/PageRender/LoadPagedData",
+            "type": "POST",
+            "data": {}
+        };
+        this.configurations = {
+            tableId: undefined,
+            tableJqInstance: undefined,
+            tableJsInstance: undefined,
+            table: undefined
+        };
+        Object.assign(this, confs);
 
-/*
- * Constructor
- */
-TableBuilder.constructor = TableBuilder;
+        this.registerServices();
+    }
 
-/*
- * Toast notifier
- */
-TableBuilder.prototype.toast = new ToastNotifier();
-
-/**
- * Database provider
-*/
-TableBuilder.prototype.db = new DataInjector();
+	/*
+	 * Register services
+	*/
+    registerServices() {
+        this.toast = new ToastNotifier();
+        this.db = new DataInjector();
+    }
+}
 
 /**
  * Restore item
@@ -602,8 +595,7 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 		const renderColumns = [];
 		if (dataX.viewmodelData.result.viewModelFields.length > 0) {
 			const renderTableSelect = new RenderTableSelect();
-			const columns = $(`#${dataX.listId} thead`);
-			columns.html(null);
+			const columns = $(`#${dataX.listId} thead`); columns.html(null);
 			const tr = document.createElement("tr");
 			const th = document.createElement("th");
 			th.setAttribute("class", "no-sort");
@@ -624,7 +616,8 @@ TableBuilder.prototype.configureTableBody = function (dataX) {
 						colName = window.translate(column.translate);
 					}
 					const htmlCol = document.createElement("th");
-					htmlCol.innerHTML = colName;
+                    htmlCol.innerHTML = colName;
+                    htmlCol.append($("<br/><button>Test</button>").get(0));
 					tr.appendChild(htmlCol);
 					renderColumns.push({
 						config: {

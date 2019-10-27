@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Filters.Enums;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Entities.Controls.QueryAbstractions;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
 {
@@ -122,7 +126,6 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             return sql.ToString();
         }
 
-
         public override string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel, int perPage,
             int currentPage)
         {
@@ -141,8 +144,7 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             return sql.ToString();
         }
 
-        public override string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel,
-            Dictionary<string, object> parameters, int perPage, int currentPage)
+        public override string GetByColumnParameterAndPaginationQuery(EntityViewModel viewModel, Dictionary<string, object> parameters, int perPage, int currentPage)
         {
             var sql = new StringBuilder();
 
@@ -167,6 +169,100 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             return sql.ToString();
         }
 
+        /// <summary>
+        /// Get pagination result
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="queryString"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <returns></returns>
+        public override string GetPaginationByFilters(EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null)
+        {
+            Arg.NotNull(viewModel, nameof(GetPaginationByFilters));
+            var table = $"\"{viewModel.TableSchema}\".\"{viewModel.TableName}\"";
+            var query = new StringBuilder();
+            var fields = new StringBuilder();
+            if (viewModel.Fields.Any())
+            {
+                var lastField = viewModel.Fields.Last();
+                foreach (var field in viewModel.Fields)
+                {
+                    fields.AppendFormat("\"{0}\" ", field.ColumnName);
+                    if (lastField != field) fields.Append(", ");
+                }
+            }
+            else fields.Append(" * ");
+
+            query.AppendFormat("SELECT {1} FROM {0}", table,
+                fields);
+
+            var whereApplied = false;
+
+            if (viewModel.Filters.Any())
+            {
+                var filterBuilder = new StringBuilder();
+                foreach (var filter in viewModel.Filters)
+                {
+                    switch (filter.Criteria)
+                    {
+                        case Criteria.Equals:
+                            filterBuilder.AppendFormat("\"{0}\"='{1}'", filter.Parameter, filter.Value);
+                            break;
+                        case Criteria.Greater:
+                            filterBuilder.AppendFormat("\"{0}\">'{1}'", filter.Parameter, filter.Value);
+                            break;
+                        case Criteria.Less:
+                            filterBuilder.AppendFormat("\"{0}\"<'{1}'", filter.Parameter, filter.Value);
+                            break;
+                        case Criteria.Contains:
+                            filterBuilder.AppendFormat("\"{0}\" like '%{1}%'", filter.Parameter, filter.Value);
+                            break;
+                        case Criteria.StartWith:
+                            filterBuilder.AppendFormat("\"{0}\" like '{1}%'", filter.Parameter, filter.Value);
+                            break;
+                        case Criteria.EndWith:
+                            filterBuilder.AppendFormat("\"{0}\" like '%{1}'", filter.Parameter, filter.Value);
+                            break;
+                        case Criteria.BetWheen:
+                            var data = filter.Value.ToString().Split(",");
+                            if (data.Length == 2)
+                            {
+                                filterBuilder.AppendFormat("\"{0}\" BETWEEN '{1}' AND '{2}'", filter.Parameter, data[0], data[1]);
+                            }
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                query.AppendFormat(" WHERE {0} ", filterBuilder);
+                whereApplied = true;
+            }
+
+            if (!queryString.IsNullOrEmpty())
+            {
+                query.Append(whereApplied ? " AND " : " WHERE ");
+                query.AppendFormat("to_tsvector(\"{0}\"::text) @@ to_tsquery('{1}') ", viewModel.TableName, queryString);
+            }
+
+            if (viewModel.OrderByColumns.Any())
+            {
+                var orderByBuilder = new StringBuilder();
+                orderByBuilder.Append(" ORDER BY ");
+                foreach (var orderColumn in viewModel.OrderByColumns)
+                {
+                    orderByBuilder.AppendFormat("\"{0}\" {1} ", orderColumn.Key, orderColumn.Value.ToString());
+                    if (viewModel.OrderByColumns.IndexOf(orderColumn) != viewModel.OrderByColumns.Count() - 1)
+                        orderByBuilder.Append(", ");
+                }
+
+                query.Append(orderByBuilder);
+            }
+
+            query.AppendFormat(" OFFSET {0} LIMIT {1};", perPage * (page - 1), perPage);
+
+            return query.ToString();
+        }
 
         public override string GetByColumnParameterQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters)
@@ -328,24 +424,24 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             return sql.ToString();
         }
 
-        public override string GetByIncludeParam(EntityViewModel parrentTable, EntityViewModel childTable,
+        public override string GetByIncludeParam(EntityViewModel parentTable, EntityViewModel childTable,
             string fieldName)
         {
             var sql = new StringBuilder();
             var idIn = new StringBuilder();
             var fields = new StringBuilder();
-            if (parrentTable.Fields.Any())
+            if (parentTable.Fields.Any())
             {
-                var last = parrentTable.Fields.Last();
-                foreach (var field in parrentTable.Fields)
+                var last = parentTable.Fields.Last();
+                foreach (var field in parentTable.Fields)
                 {
                     fields.AppendFormat("\"{0}\"", field.ColumnName);
                     if (field != last) fields.Append(", ");
                 }
             }
 
-            idIn.AppendFormat("SELECT \"{2}\" FROM \"{0}\".\"{1}\" WHERE \"Id\" = @Id ", parrentTable.TableSchema,
-                parrentTable.TableName, fieldName);
+            idIn.AppendFormat("SELECT \"{2}\" FROM \"{0}\".\"{1}\" WHERE \"Id\" = @Id ", parentTable.TableSchema,
+                parentTable.TableName, fieldName);
             sql.AppendFormat("SELECT \"{3}\" FROM \"{0}\".\"{1}\" WHERE \"Id\" IN ({2})", childTable.TableSchema,
                 childTable.TableName, idIn, fields);
             return sql.ToString();

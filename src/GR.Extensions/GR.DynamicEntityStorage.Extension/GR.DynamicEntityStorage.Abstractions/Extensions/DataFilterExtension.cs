@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
+using GR.Core.Helpers.Filters;
 using GR.DynamicEntityStorage.Abstractions.Helpers;
 
 namespace GR.DynamicEntityStorage.Abstractions.Extensions

@@ -46,5 +46,18 @@ namespace GR.Core.Helpers
             Errors = Errors,
             KeyEntity = KeyEntity
         };
+
+        /// <summary>
+        /// Adapt
+        /// </summary>
+        /// <typeparam name="TModelOutput"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public ResultModel<TModelOutput> Map<TModelOutput>(TModelOutput result) => new ResultModel<TModelOutput>
+        {
+            IsSuccess = IsSuccess,
+            Result = result,
+            Errors = Errors
+        };
     }
 }

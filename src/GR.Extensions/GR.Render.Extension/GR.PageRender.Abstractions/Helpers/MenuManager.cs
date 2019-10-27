@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Mapster;
-using Microsoft.EntityFrameworkCore.Internal;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.PageRender.Abstractions.Models.Pages;
+using Mapster;
+using Microsoft.EntityFrameworkCore.Internal;
 
-namespace GR.PageRender.Razor.Helpers
+namespace GR.PageRender.Abstractions.Helpers
 {
     public static class MenuManager
     {

@@ -14,20 +14,21 @@ using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Identity.Data;
 using GR.PageRender.Razor.Extensions;
-using GR.PageRender.Razor.Helpers;
 using GR.PageRender.Razor.ViewModels.PageViewModels;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Enums;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
+using GR.Core.Helpers.Filters;
+using GR.Core.Helpers.Filters.Enums;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Security.Abstractions;
 using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Configurations;
+using GR.PageRender.Abstractions.Helpers;
+using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Abstractions.Models.ViewModels;
 using GR.PageRender.Razor.Attributes;
 
@@ -460,14 +461,6 @@ namespace GR.PageRender.Razor.Controllers
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(defaultResult);
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(viewModel.TableModelId)) return Json(defaultResult);
-
-            filters?.ToList().ForEach(x =>
-            {
-                x.SetValue();
-                x.AdaptTypes();
-            });
-
             var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
             var sortColumn = param.SortOrder;
             try
@@ -494,25 +487,57 @@ namespace GR.PageRender.Razor.Controllers
 
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
 
-            var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
-                param.Start,
-                param.Length, x => x.SortByUserRoleAccess(roles, GlobalResources.Roles.ADMINISTRATOR), filters);
+            //var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
+            //    param.Start,
+            //    param.Length, x => x.SortByUserRoleAccess(roles, GlobalResources.Roles.ADMINISTRATOR), filters);
+            var page = param.Start == 0 ? 1 : param.Start / param.Length;
+            var pageData = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page, (uint)param.Length, param.Search.Value);
+            var final1 = await LoadManyToManyReferences(pageData.Result.ToList(), viewModel);
 
-            var final = await LoadManyToManyReferences(data, viewModel);
-
-            var finalResult = new DTResult<object>
+            var finalResult1 = new DTResult<object>
             {
                 Draw = param.Draw,
-                Data = final.ToList(),
-                RecordsFiltered = recordsCount,
-                RecordsTotal = data.Count
+                Data = final1.ToList(),
+                RecordsFiltered = 10,
+                RecordsTotal = 14
             };
-            var serializerSettings = new JsonSerializerSettings
+            var serializerSettings1 = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateFormatString = GearSettings.Date.DateFormat
             };
-            return Json(finalResult, serializerSettings);
+            return Json(finalResult1, serializerSettings1);
+
+
+
+
+
+
+            //if (!await _entityRoleAccessManager.HaveReadAccessAsync(viewModel.TableModelId)) return Json(defaultResult);
+
+            //filters?.ToList().ForEach(x =>
+            //{
+            //    x.SetValue();
+            //    x.AdaptTypes();
+            //});
+
+//
+
+            //var final = await LoadManyToManyReferences(data, viewModel);
+
+            //var finalResult = new DTResult<object>
+            //{
+            //    Draw = param.Draw,
+            //    Data = final.ToList(),
+            //    RecordsFiltered = recordsCount,
+            //    RecordsTotal = data.Count
+            //};
+            //var serializerSettings = new JsonSerializerSettings
+            //{
+            //    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            //    DateFormatString = GearSettings.Date.DateFormat
+            //};
+            //return Json(finalResult, serializerSettings);
         }
 
         /// <summary>
@@ -521,11 +546,11 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="data"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<object> data, ViewModel model)
+        private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<Dictionary<string, object>> data, ViewModel model)
         {
             Arg.NotNull(model, nameof(ViewModel));
-            if (data == null) return new List<dynamic>();
-            var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
+            //if (data == null) return new List<dynamic>();
+            //var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
 
             try
             {
@@ -539,7 +564,7 @@ namespace GR.PageRender.Razor.Controllers
                     var propName = field.Configurations.FirstOrDefault(x => x.ViewModelFieldCodeId == ViewModelConfigCode.MayToManyStorageSenderPropertyName);
                     if (storageEntity == null || referenceEntity == null || referencePropName == null ||
                         propName == null) continue;
-                    foreach (var item in dicData)
+                    foreach (var item in data)
                     {
                         var referenceData = await _service.Table(storageEntity.Value).GetAllWithInclude<object>(filters: new List<Filter>
                         {
@@ -554,7 +579,7 @@ namespace GR.PageRender.Razor.Controllers
             {
                 Console.WriteLine(e);
             }
-            return dicData;
+            return data;
         }
 
         /// <summary>

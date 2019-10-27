@@ -19,8 +19,11 @@ using GR.Entities.Data;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Filters;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Constants;
+using GR.Entities.Abstractions.Enums;
+using GR.Entities.Abstractions.Extensions;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Entities.Security.Abstractions;
@@ -155,9 +158,9 @@ namespace GR.DynamicEntityStorage
             var model = GetObject<TEntity>(data.Result)?.ToList();
             if (model == null) return result;
             result.IsSuccess = true;
-            result.Result = predicate != null 
+            result.Result = predicate != null
                 // ReSharper disable once AssignNullToNotNullAttribute
-                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>).ToList() 
+                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>).ToList()
                 : model.Adapt<IEnumerable<TOutput>>().ToList();
             return result;
         }
@@ -636,6 +639,7 @@ namespace GR.DynamicEntityStorage
             result.Result = count.Result;
             return result;
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Get paginated result
@@ -643,20 +647,51 @@ namespace GR.DynamicEntityStorage
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="page"></param>
         /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <param name="filters"></param>
+        /// <param name="orderDirection"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginated<TEntity>(ulong page = 1, ulong perPage = 10) where TEntity : BaseModel
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginatedResultAsync<TEntity>(uint page = 1, uint perPage = 10, string queryString = null,
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null) where TEntity : BaseModel
         {
-            //TODO: Create paginates sql query result
-            var result = new ResultModel<IEnumerable<Dictionary<string, object>>>()
+            return await GetPaginatedResultAsync(typeof(TEntity).Name, page, perPage, queryString, filters, orderDirection);
+        }
+
+
+        /// <summary>
+        /// Get paginated result
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <param name="filters"></param>
+        /// <param name="orderDirection"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginatedResultAsync(string entity, uint page = 1, uint perPage = 10, string queryString = null,
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null)
+        {
+            var response = new ResultModel<IEnumerable<Dictionary<string, object>>>();
+            if (entity.IsNullOrEmpty()) return response;
+            var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
+            if (!state)
             {
-                Result = new List<Dictionary<string, object>>()
-            };
-            var data = await GetAll<TEntity>();
-            if (!data.IsSuccess) return result;
-            result.Result = data.Result.Skip(((int)page - 1) * (int)perPage)
-                .Take((int)perPage).ToList();
-            result.IsSuccess = true;
-            return result;
+                response.Errors.Add(errorModel);
+                return response;
+            }
+
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
+            {
+                response.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
+                return response;
+            }
+
+            var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
+            if (filters != null) model.Filters = filters.ToList();
+            if (orderDirection != null) model.OrderByColumns = orderDirection;
+
+            var dbRequest = _context.GetPaginationResult(model, page, perPage, queryString);
+            return dbRequest.Map<IEnumerable<Dictionary<string, object>>>(dbRequest.Result?.Values);
         }
 
         /// <inheritdoc />
@@ -700,7 +735,7 @@ namespace GR.DynamicEntityStorage
                 model["Version"] = audit.Version;
             }
             table.Values = new List<Dictionary<string, object>> { model };
-            result = _context.Insert(table);
+            result = _context.AddEntry(table);
             if (!result.IsSuccess) return result;
             if (audit == null) return result;
             audit.RecordId = result.Result;
@@ -817,7 +852,7 @@ namespace GR.DynamicEntityStorage
             }
 
             table.Values = new List<Dictionary<string, object>> { model };
-            var req = _context.Refresh(table);
+            var req = _context.UpdateEntry(table);
             if (!req.IsSuccess || !req.Result) return result;
             result.IsSuccess = true;
             result.Result = Guid.Parse(model["Id"].ToString());

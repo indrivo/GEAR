@@ -1,4 +1,4 @@
-﻿namespace GR.PageRender.Razor.Helpers
+﻿namespace GR.PageRender.Abstractions.Helpers
 {
     public class TemplateCacheModel 
     {

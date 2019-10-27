@@ -6,37 +6,46 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GR.Cache.Abstractions;
+using GR.Core;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Filters;
+using GR.Entities.Abstractions.Constants;
+using GR.Entities.Data;
+using GR.Entities.Security.Abstractions;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.MultiTenant.Abstractions;
+using GR.PageRender.Abstractions;
+using GR.PageRender.Abstractions.Constants;
+using GR.PageRender.Abstractions.Enums;
+using GR.PageRender.Abstractions.Events;
+using GR.PageRender.Abstractions.Events.EventArgs;
+using GR.PageRender.Abstractions.Helpers;
+using GR.PageRender.Abstractions.Models.Pages;
+using GR.PageRender.Abstractions.Models.ViewModels;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using GR.Cache.Abstractions;
-using GR.Entities.Data;
-using GR.Core;
-using GR.Core.Helpers;
-using GR.Core.Extensions;
-using GR.Entities.Abstractions.Constants;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.MultiTenant.Abstractions;
-using GR.PageRender.Abstractions;
-using GR.PageRender.Abstractions.Events;
-using GR.PageRender.Abstractions.Events.EventArgs;
-using GR.PageRender.Abstractions.Models.Pages;
-using GR.PageRender.Abstractions.Models.ViewModels;
-using GR.PageRender.Razor.Helpers;
 
-namespace GR.PageRender.Razor.Services
+namespace GR.PageRender
 {
     public class PageRender : IPageRender
     {
         private const string BasePath = "Templates/";
+
+        #region Injectable
         /// <summary>
         /// Context
         /// </summary>
         private readonly EntitiesDbContext _context;
 
+        /// <summary>
+        /// Inject page context
+        /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
         /// <summary>
@@ -64,7 +73,13 @@ namespace GR.PageRender.Razor.Services
         /// </summary>
         private readonly IAppProvider _appProvider;
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider)
+        /// <summary>
+        /// Inject role access manager
+        /// </summary>
+        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
+        #endregion
+
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider, IEntityRoleAccessManager entityRoleAccessManager)
         {
             _context = context;
             _cacheService = cacheService;
@@ -73,6 +88,7 @@ namespace GR.PageRender.Razor.Services
             _pagesContext = pagesContext;
             _organizationService = organizationService;
             _appProvider = appProvider;
+            _entityRoleAccessManager = entityRoleAccessManager;
         }
 
         private async Task<ApplicationUser> GetCurrentUserAsync()
@@ -529,10 +545,38 @@ namespace GR.PageRender.Razor.Services
             }
             return result;
         }
-    }
 
-    public enum PageContentType
-    {
-        Html, Js, Css
+
+        public async Task<DTResult<object>> FilterJqueryDataTableRequestAsync(DTParameters param, Guid? viewModelId, ICollection<ListFilter> filters)
+        {
+            var defaultResult = new DTResult<object>
+            {
+                Data = new List<object>()
+            };
+
+            if (viewModelId == Guid.Empty) return defaultResult;
+            var viewModel = await _pagesContext.ViewModels
+                .Include(x => x.TableModel)
+                .ThenInclude(x => x.TableFields)
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.TableModelFields)
+                .Include(x => x.ViewModelFields)
+                .ThenInclude(x => x.Configurations)
+                .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
+
+            if (viewModel == null) return defaultResult;
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(viewModel.TableModelId)) return defaultResult;
+
+            filters?.ToList().ForEach(x =>
+            {
+                x.SetValue();
+                x.AdaptTypes();
+            });
+
+
+
+
+            return defaultResult;
+        }
     }
 }

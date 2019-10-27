@@ -1,4 +1,4 @@
-﻿namespace GR.PageRender.Razor
+﻿namespace GR.PageRender.Abstractions.Constants
 {
     public struct PageRenderConstants
     {

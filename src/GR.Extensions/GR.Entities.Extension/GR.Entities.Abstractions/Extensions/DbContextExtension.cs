@@ -4,9 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Npgsql;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -14,8 +11,11 @@ using GR.Entities.Abstractions.Events;
 using GR.Entities.Abstractions.Events.EventArgs;
 using GR.Entities.Abstractions.Query;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 
-namespace GR.Entities.Data
+namespace GR.Entities.Abstractions.Extensions
 {
     public static class DbContextExtension
     {
@@ -29,15 +29,15 @@ namespace GR.Entities.Data
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private static DbConnection GetOpenConnection(this DbContext context)
+        private static DbConnection GetOpenConnection(this IEntityContext context)
         {
-            var conn = (NpgsqlConnection)context.Database.GetDbConnection();
+            var conn = (NpgsqlConnection)((DbContext)context).Database.GetDbConnection();
             var export = conn.CloneWith(conn.ConnectionString);
             if (export.State != ConnectionState.Open) export.Open();
             return export;
         }
 
-        public static ResultModel<EntityViewModel> GetEntityByParams(this EntitiesDbContext dbContext,
+        public static ResultModel<EntityViewModel> GetEntityByParams(this IEntityContext dbContext,
             EntityViewModel viewModel)
         {
 
@@ -107,7 +107,7 @@ namespace GR.Entities.Data
         /// <param name="viewModel"></param>
         /// <param name="parameterId"></param>
         /// <returns></returns>
-        public static ResultModel<EntityViewModel> GetEntityById(this EntitiesDbContext dbContext,
+        public static ResultModel<EntityViewModel> GetEntityById(this IEntityContext dbContext,
             EntityViewModel viewModel, Guid parameterId)
         {
             viewModel.Values =
@@ -121,7 +121,7 @@ namespace GR.Entities.Data
         /// <param name="dbContext"></param>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static ResultModel<Guid> Insert(this EntitiesDbContext dbContext, EntityViewModel viewModel)
+        public static ResultModel<Guid> AddEntry(this IEntityContext dbContext, EntityViewModel viewModel)
         {
             var returnModel = new ResultModel<Guid>
             {
@@ -142,8 +142,8 @@ namespace GR.Entities.Data
                     {
                         cmd.CommandText = sqlQuery;
 
-                        if (dbContext.Database.CurrentTransaction != null)
-                            cmd.Transaction = ((RelationalTransaction)dbContext.Database.CurrentTransaction)
+                        if (dbContext.GetContext().Database.CurrentTransaction != null)
+                            cmd.Transaction = ((RelationalTransaction)dbContext.GetContext().Database.CurrentTransaction)
                                 .GetDbTransaction();
 
                         foreach (var item in viewModel.Fields)
@@ -188,7 +188,7 @@ namespace GR.Entities.Data
             return returnModel;
         }
 
-        public static ResultModel<bool> Refresh(this EntitiesDbContext dbContext, EntityViewModel viewModel)
+        public static ResultModel<bool> UpdateEntry(this IEntityContext dbContext, EntityViewModel viewModel)
         {
             var queryBuilder = IoC.Resolve<IEntityQueryBuilder>();
             var returnModel = new ResultModel<bool>
@@ -208,8 +208,8 @@ namespace GR.Entities.Data
                     {
                         cmd.CommandText = sqlQuery;
 
-                        if (dbContext.Database.CurrentTransaction != null)
-                            cmd.Transaction = ((RelationalTransaction)dbContext.Database.CurrentTransaction)
+                        if (dbContext.GetContext().Database.CurrentTransaction != null)
+                            cmd.Transaction = ((RelationalTransaction)dbContext.GetContext().Database.CurrentTransaction)
                                 .GetDbTransaction();
 
                         foreach (var item in viewModel.Fields)
@@ -246,12 +246,54 @@ namespace GR.Entities.Data
         }
 
         /// <summary>
+        /// Get pagination request
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="viewModel"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        public static ResultModel<EntityViewModel> GetPaginationResult(this IEntityContext dbContext, EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null)
+        {
+            var response = new ResultModel<EntityViewModel>();
+            var watch = new Stopwatch();
+            watch.Start();
+            var evArgs = new ExecutedQueryEventArgs();
+            response.Result = viewModel;
+
+            if (viewModel == null) return response;
+
+            try
+            {
+                var sqlQuery = QueryBuilder.GetPaginationByFilters(viewModel, page, perPage, queryString);
+                evArgs.Query = sqlQuery;
+                var result = EntitiesFromSql(dbContext, sqlQuery, new Dictionary<string, object>()).ToList();
+                response.Result.Values = result;
+                response.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                watch.Stop();
+                evArgs.Elapsed = watch.ElapsedMilliseconds;
+                evArgs.Completed = false;
+                evArgs.Exception = ex;
+                EntityEvents.SqlQuery.QueryExecuted(evArgs);
+                response.Errors.Add(new ErrorModel("_ex", ex.ToString()));
+                return response;
+            }
+
+            return response;
+        }
+
+
+        /// <summary>
         /// Get data by params
         /// </summary>
         /// <param name="dbContext"></param>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static ResultModel<EntityViewModel> ListEntitiesByParams(this EntitiesDbContext dbContext,
+        public static ResultModel<EntityViewModel> ListEntitiesByParams(this IEntityContext dbContext,
             EntityViewModel viewModel)
         {
             var returnModel = new ResultModel<EntityViewModel>
@@ -320,7 +362,7 @@ namespace GR.Entities.Data
         /// <param name="viewModel"></param>
         /// <param name="completeDelete"></param>
         /// <returns></returns>
-        public static ResultModel<bool> DeleteById(this DbContext dbContext, EntityViewModel viewModel,
+        public static ResultModel<bool> DeleteById(this IEntityContext dbContext, EntityViewModel viewModel,
             bool completeDelete = false)
         {
             var returnModel = new ResultModel<bool>
@@ -345,8 +387,8 @@ namespace GR.Entities.Data
                         if (cmd.Connection.State != ConnectionState.Open)
                             cmd.Connection.Open();
 
-                        if (dbContext.Database.CurrentTransaction != null)
-                            cmd.Transaction = ((RelationalTransaction)dbContext.Database.CurrentTransaction)
+                        if (dbContext.GetContext().Database.CurrentTransaction != null)
+                            cmd.Transaction = ((RelationalTransaction)dbContext.GetContext().Database.CurrentTransaction)
                                 .GetDbTransaction();
 
                         //Added Parameter
@@ -378,7 +420,7 @@ namespace GR.Entities.Data
         /// <param name="dbContext"></param>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        public static ResultModel<EntityViewModel> GetCountByParameter(this EntitiesDbContext dbContext,
+        public static ResultModel<EntityViewModel> GetCountByParameter(this IEntityContext dbContext,
             EntityViewModel viewModel)
         {
             var returnModel = new ResultModel<EntityViewModel>
@@ -417,7 +459,7 @@ namespace GR.Entities.Data
         /// <param name="viewModel"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        public static ResultModel<int> GetCount(this EntitiesDbContext dbContext,
+        public static ResultModel<int> GetCount(this IEntityContext dbContext,
             EntityViewModel viewModel, Dictionary<string, object> filters = null)
         {
             var returnModel = new ResultModel<int>
@@ -450,7 +492,7 @@ namespace GR.Entities.Data
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private static IEnumerable<Dictionary<string, object>> EntitiesFromSql(this EntitiesDbContext dbContext,
+        private static IEnumerable<Dictionary<string, object>> EntitiesFromSql(this IEntityContext dbContext,
             string sql, Dictionary<string, object> parameters)
         {
             if (dbContext == null) throw new ArgumentNullException(nameof(dbContext));
@@ -493,7 +535,7 @@ namespace GR.Entities.Data
             return result;
         }
 
-        private static List<Dictionary<string, object>> GetRecursiveSingle(this EntitiesDbContext dbContext,
+        private static List<Dictionary<string, object>> GetRecursiveSingle(this IEntityContext dbContext,
             EntityViewModel entityViewModel, List<Dictionary<string, object>> values)
         {
             //Every Table in Include

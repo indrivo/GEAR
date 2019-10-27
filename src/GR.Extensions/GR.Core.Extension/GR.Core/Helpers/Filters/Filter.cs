@@ -1,8 +1,8 @@
 ﻿using System;
 using GR.Core.Extensions;
-using GR.DynamicEntityStorage.Abstractions.Enums;
+using GR.Core.Helpers.Filters.Enums;
 
-namespace GR.DynamicEntityStorage.Abstractions.Helpers
+namespace GR.Core.Helpers.Filters
 {
     public class Filter
     {
@@ -27,14 +27,10 @@ namespace GR.DynamicEntityStorage.Abstractions.Helpers
         /// </summary>
         public void AdaptTypes()
         {
-            if (Value != null)
-            {
-                if (Value.ToString().IsGuid())
-                {
-                    Guid.TryParse(Value?.ToString(), out var val);
-                    Value = val;
-                }
-            }
+            if (Value == null) return;
+            if (!Value.ToString().IsGuid()) return;
+            Guid.TryParse(Value?.ToString(), out var val);
+            Value = val;
         }
     }
 }
