@@ -656,5 +656,7 @@
   "system_calendar_starts": "を開始",
   "system_calendar_ends": "終了",
   "system_calendar_respond_success": "応答が正常に送信され",
-  "system_calendar_back": "バレジットカード、デビットカード"
+  "system_calendar_back": "バレジットカード、デビットカード",
+  "system_auth_welcome_back": "おかえり",
+  "system_auth_pass_here": "追加パスワードはこちら"
 }

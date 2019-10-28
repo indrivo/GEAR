@@ -656,5 +656,7 @@
   "system_calendar_starts": "Ξεκινά",
   "system_calendar_ends": "Τελειώνει",
   "system_calendar_respond_success": "Απάντηση σταλεί με επιτυχία",
-  "system_calendar_back": "Πίσω στο ημερολόγιο"
+  "system_calendar_back": "Πίσω στο ημερολόγιο",
+  "system_auth_welcome_back": "Καλώς ήρθατε και πάλι",
+  "system_auth_pass_here": "Προσθέστε τον κωδικό σας εδώ"
 }

@@ -175,7 +175,7 @@
     <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
     <script src="~/themes/admin/js/admin-theme-script.js"></script>
     <script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
-    <script src="~/assets/js/site.js" asp-append-version="true"></script>
+    <script src="~/assets/js/core.js" asp-append-version="true"></script>
     <script>
         function getIdentifier(idt) {
             switch (idt) {
@@ -214,9 +214,9 @@
                 $.each(x,
                     function (index, item) {
                         langBlock.append(`<li style="list-style-type: none;">
-                                <i class="flag-icon flag-icon-${getIdentifier(item.identifier)}"></i>
-                                <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
-                            </li>`);
+                                    <i class="flag-icon flag-icon-${getIdentifier(item.identifier)}"></i>
+                                    <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
+                                </li>`);
                     });
                 langBlock.find("li a").on("click",
                     function () {

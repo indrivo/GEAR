@@ -1245,15 +1245,15 @@ Buttons
 
 .btn-primary,
 .btn-primary.disabled {
-	background: #7460ee;
-	border: 1px solid #7460ee;
+	background: #0848C8;
+	border: 1px solid #0848C8;
 }
 
 	.btn-primary:hover,
 	.btn-primary.disabled:hover {
-		background: #7460ee;
+		background: #093ea9;
 		opacity: 0.7;
-		border: 1px solid #7460ee;
+		border: 1px solid #093ea9;
 	}
 
 	.btn-primary.active, .btn-primary:focus,
@@ -1411,15 +1411,15 @@ Buttons
 	}
 
 .btn-outline-primary {
-	color: #7460ee;
+	color: #0848C8;
 	background-color: #ffffff;
-	border-color: #7460ee;
+	border-color: #0848C8;
 }
 
 	.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary.focus {
-		background: #7460ee;
+		background: #0848C8;
 		color: #ffffff;
-		border-color: #7460ee;
+		border-color: #0848C8;
 	}
 
 .btn-outline-success {
@@ -2565,6 +2565,14 @@ File: scss
 	margin: 0 auto;
 }
 
+
+.logo-image {
+	background-image: url(../../../images/logo.svg);
+	width: 150px;
+	height: 41px;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
 /*******************
  Breadcrumb and page title
 *******************/
@@ -6380,9 +6388,16 @@ Login register and recover password Page
 	position: fixed;
 }
 
+	.login-register .image-area {
+		background-size: cover;
+	}
+
 .login-box {
-	width: 400px;
 	margin: 0 auto;
+	padding-top: 100px;
+	padding-bottom: 100px;
+	padding-left: 200px;
+	padding-right: 200px;
 }
 
 	.login-box .footer {
@@ -6406,8 +6421,6 @@ Login register and recover password Page
 }
 
 	.login-sidebar .login-box {
-		right: 0px;
-		position: absolute;
 		height: 100%;
 	}
 
@@ -7941,13 +7954,13 @@ File: scss
 	margin-bottom: 96px;
 }
 
-	.social-profile-firGR.bg-over {
-		background: rgba(56, 83, 161, 0.7);
-	}
+.social-profile-firGR.bg-over {
+	background: rgba(56, 83, 161, 0.7);
+}
 
-	.social-profile-first .middle {
-		vertical-align: middle;
-	}
+.social-profile-first .middle {
+	vertical-align: middle;
+}
 
 /*******************/
 /*country-state*/
@@ -8729,4 +8742,14 @@ File: scss
 		.dataTables_wrapper .dataTables_paginate .paginate_button {
 			padding: 0.5rem 0.5rem;
 		}
+}
+
+.fw-600 {
+	font-weight: 600;
+}
+
+
+.bottom-buttons {
+	bottom: 0;
+	width: 100%;
 }

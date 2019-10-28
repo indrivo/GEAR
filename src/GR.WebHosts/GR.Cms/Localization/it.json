@@ -656,5 +656,7 @@
   "system_calendar_starts": "Inizia",
   "system_calendar_ends": "Finisce",
   "system_calendar_respond_success": "Risposta inviata con successo",
-  "system_calendar_back": "Torna al calendario"
+  "system_calendar_back": "Torna al calendario",
+  "system_auth_welcome_back": "Bentornato",
+  "system_auth_pass_here": "Aggiungi la tua password qui"
 }

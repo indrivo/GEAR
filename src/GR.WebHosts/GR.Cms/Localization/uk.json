@@ -656,5 +656,7 @@
   "system_calendar_starts": "Починається",
   "system_calendar_ends": "Закінчується",
   "system_calendar_respond_success": "Відповідь успішно відправлено ",
-  "system_calendar_back": "Тому в календар"
+  "system_calendar_back": "Тому в календар",
+  "system_auth_welcome_back": "Ласкаво просимо назад",
+  "system_auth_pass_here": "Додайте свій пароль тут"
 }
