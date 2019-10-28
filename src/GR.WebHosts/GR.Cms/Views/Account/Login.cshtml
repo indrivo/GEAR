@@ -1,0 +1,230 @@
+@using GR.Identity.Abstractions
+@using ST.MPass.Gov;
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IMPassService _mpassService
+@inject IAppProvider AppProvider
+
+@model GR.Identity.Razor.ViewModels.AccountViewModels.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Localizer["system_log_in"]</title>
+
+    <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <svg class="circular" viewBox="25 25 50 50">
+            <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+        </svg>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <section id="wrapper" class="login-register login-sidebar d-flex">
+        <div class="login-box card col-5">
+            <form class="form-horizontal h-100 position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                <div>
+                    <a href="javascript:void(0)" class="text-center db">
+                        <div class="logo-image"></div>
+                    </a>
+
+                    <h2 class="mt-5 pt-5 fw-600">@Localizer["system_auth_welcome_back"]</h2>
+
+                    <div class="form-group mt-5">
+                        <label for="username">@Localizer["system_auth_username"]</label>
+                        <input id="username" class="form-control" asp-for="Email" placeholder="Ex: John">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="username">@Localizer["system_auth_password"]</label>
+                        <input class="form-control" asp-for="Password" placeholder="@Localizer["system_auth_pass_here"]">
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="form-group mb-0">
+                            <div class="checkbox checkbox-primary p-t-0">
+                                <input id="checkbox-signup" asp-for="RememberMe">
+                                <label for="checkbox-signup"> @Localizer["system_auth_remenber_me"]</label>
+                            </div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <button type="button" data-toggle="modal" data-target="#forgotPassword" class="btn btn-link">Forgot password ?</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-12">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-buttons">
+                    <div class="form-group mb-3 text-center mt-2">
+                        <div class="col-xs-12">
+                            <button class="btn btn-primary btn-block waves-effect waves-light" type="submit">@Localizer["system_log_in"]</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @*<div class="col-xs-12 col-sm-12 col-md-12 mt-1 text-center">
+                            <div class="social">
+                                @{
+                                    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+                                    if (loginProviders.Any())
+                                    {
+                                        <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+                                            <div>
+                                                <p>
+                                                    @foreach (var provider in loginProviders)
+                                                    {
+                                                        <button class="btn btn-outline-primary w-100" name="provider" value="@provider.Name" data-toggle="tooltip" title="Login with @provider.Name">
+                                                            Login with @provider.Name
+                                                        </button>
+                                                    }
+                                                </p>
+                                            </div>
+                                        </form>
+                                    }
+                                }
+                            </div>
+                        </div>*@
+                        @*<div class="form-group mb-0">
+                                <div class="col-sm-12 text-center">
+                                    <p>
+                                        Don't have an account?
+                                        <a asp-action="Register" class="text-primary ml-2">
+                                            <b>Sign Up</b>
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>*@
+                        <div class="row position-absolute" style="bottom: 0">
+                            <ul id="languages"></ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="image-area col" style="background-image: url(../images/public/globe.svg);"></div>
+    </section>
+
+
+    <div class="modal fade " id="forgotPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <form class="modal-content" method="post" asp-controller="Account" asp-action="ForgotPassword" name="forgotPasswordForm" id="forgotPasswordForm">
+                <div class="modal-body">
+                    <h4 class="mb-3">Forgot Your Password ?</h4>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input required="required" type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Ex: ExpertCompanyOIL@gmail.com">
+                    </div>
+                    <div class="modal-actions d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary mr-2" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/tether/js/tether.min.js"></script>
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
+    <script src="~/themes/admin/js/admin-theme-script.js"></script>
+    <script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
+    <script src="~/assets/js/site.js" asp-append-version="true"></script>
+    <script>
+        function getIdentifier(idt) {
+            switch (idt) {
+                case "en":
+                    {
+                        idt = "gb";
+                    }
+                    break;
+                case "ja":
+                    {
+                        idt = "jp";
+                    }
+                    break;
+                case "zh":
+                    {
+                        idt = "cn";
+                    }
+                    break;
+                case "uk":
+                    {
+                        idt = "ua";
+                    }
+                    break;
+                case "el":
+                    {
+                        idt = "gr";
+                    }
+                    break;
+            }
+            return idt;
+        }
+
+        $(document).ready(() => {
+            window.loadAsync("/Localization/GetLanguagesAsJson").then(x => {
+                var langBlock = $("#languages");
+                $.each(x,
+                    function (index, item) {
+                        langBlock.append(`<li style="list-style-type: none;">
+                                                            <i class="flag-icon flag-icon-${getIdentifier(item.identifier)}"></i>
+                                                            <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
+                                                        </li>`);
+                    });
+                langBlock.find("li a").on("click",
+                    function () {
+                        localStorage.removeItem("hasLoadedTranslations");
+                    });
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        const notification = new ToastNotifier();
+        $("form[name='forgotPasswordForm']").submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize()
+            }).done((data) => {
+                if (data.is_success) {
+                    notification.notify({ icon: "success", heading: window.translate("email_check_email") });
+                    $('#forgotPassword').modal('hide');
+                    document.getElementById("forgotPasswordForm").reset();
+                } else {
+                    notification.notifyErrorList(data.error_keys);
+                }
+
+            }).fail(() => {
+                notify({ heading: "Error", text: window.translate("system_internal_error") });
+            });
+        });
+
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>
