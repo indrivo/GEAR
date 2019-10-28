@@ -111,26 +111,49 @@ TableExport.prototype.newExportAction = function (e, dt, button, config) {
 //------------------------------------------------------------------------------------//
 //								Table Builder
 //------------------------------------------------------------------------------------//
+class TBuilderInstance {
+    constructor() {
+        this.instances = [];
+    }
+
+    register(instance) {
+        this.instances.push(instance);
+    }
+}
+
+window.TableBuilderInstances = new TBuilderInstance();
 
 class TableBuilder {
-    constructor(confs) {
+    constructor(configuration) {
         this.showActionsColumn = true;
         this.enableColumnFilters = true;
+        const scope = this;
         this.ajax = {
             "url": "/PageRender/LoadPagedData",
             "type": "POST",
-            "data": {}
+            "data": function (config) {
+	            Object.assign(config, scope.configurations.ajaxParameters);
+                config.filters = scope.filters;
+                return config;
+            }
         };
         this.configurations = {
             tableId: undefined,
             tableJqInstance: undefined,
             tableJsInstance: undefined,
-            table: undefined
+            table: undefined,
+            ajaxParameters: {
+                viewModelId: undefined
+            }
         };
-        Object.assign(this, confs);
-
+        Object.assign(this, configuration);
+        this.filters = [];
         this.registerServices();
-        console.log(this);
+        window.TableBuilderInstances.register(this);
+    }
+
+    injectFilters(val) {
+        this.filters.push(val);
     }
 
 	/*
@@ -282,19 +305,160 @@ class TableBuilder {
         columnsEl.append(rowFilters);
     }
 
+
     pushFilterColumn(vField) {
+        const scope = this;
+        console.log(vField);
         const el = $(`<th>
-<div class="row">
-                                <div class="col-md row-filter">
-                                    <div class="filter">
+				<div class="row">
+						<div class="col-md row-filter">
+                               <div class="filter">
                                         <i class="fa fa-filter" aria-hidden="true"></i>
                                     </div>
                                 </div>
-
                             </div>
-</th>`);
+					</th>`);
+        if (vField.tableModelFields) {
+            switch (vField.tableModelFields.dataType) {
+                case "nvarchar":
+                case "int32":
+                case "decimal":
+                    {
+                        el.find(".filter").on("click", function () {
+                            const item = $.Iso.DynamicFilter('text',
+                                this,
+                                null,
+                                {
+                                    id: 'testId',
+                                    searchBarPlaceholder: "Caută",
+                                    textEmitEventTimeout: 300
+                                });
+
+                            $(item.dynamicSelect).on('filterValueChange', function (event, arg) {
+                                scope.injectFilters(arg.value);
+                            });
+                        });
+                    }
+                    break;
+                case "uniqueidentifier":
+                    {
+                        el.find(".filter").on('click', function (event) {
+                            const item = $.Iso.dynamicFilter('list',
+                                event.target,
+                                [
+                                    {
+                                        id: '1',
+                                        value: 'First Option'
+                                    },
+                                    {
+                                        id: '2',
+                                        value: 'Second Option'
+                                    },
+                                    {
+                                        id: '3',
+                                        value: 'Third Option'
+                                    },
+                                    {
+                                        id: '4',
+                                        value: 'Fourth Option'
+                                    },
+                                    {
+                                        id: '5',
+                                        value: 'Fifth Option'
+                                    },
+
+                                ],
+                                null);
+
+                            $(item.container).on('selectValueChange',
+                                (event, arg) => {
+                                });
+                        });
+                    }
+                    break;
+                case "bool":
+                    {
+
+                    }
+                    break;
+                case "datetime":
+                case "date":
+                    {
+                        el.find(".filter").on('click', () => {
+
+                            // picker stores the component: HTMLElement
+                            const picker = $.Iso.DatePicker(el[0], {
+                                format: 'dd/mm/yyyy',
+                                todayHighlight: true,
+                                autoclose: true
+                            }, {
+                                placement: 'top-start'
+                            });
+
+                            // bind to date change
+                            $(picker).on('rangeChangeDate', (event) => {
+                                console.log(event.detail);
+                            });
+
+                            // bind to closing datepicker
+                            $(picker).on('closeDatePickerPopper', (event) => {
+                                console.log(event.detail);
+                                console.log('Date Picker closed');
+                            })
+                        });
+                    }
+                    break;
+            }
+        } else {
+
+        }
 
         return el;
+    }
+
+	/**
+	 * Render table
+	 * @param {any} data
+	 */
+    renderTable(data) {
+	    this.configurations.ajaxParameters.viewModelId = data.viewmodelId;
+        const table = this.configurations.tableJqInstance;
+        const renderTableSelect = new RenderTableSelect();
+        let dtConfig = Object.assign({
+            "language": {
+                "url": this.translationsJson()
+            },
+            dom: this.dom,
+            buttons: this.buttons,
+            columnDefs: [
+                {
+                    orderable: false,
+                    className: renderTableSelect.className(),
+                    targets: "no-sort"
+                }
+            ],
+            "order": [[1, "desc"]],
+            colReorder: true,
+            select: renderTableSelect.settings.select,
+            columnSorting: false,
+            orderable: false,
+            "scrollX": true,
+            "scrollCollapse": true,
+            "autoWidth": true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false,
+            "destroy": true,
+            "ajax": this.ajax,
+            "columns": data.renderColumns,
+            "createdRow": (row, data, dataIndex) => this.onRowCreate(row, data, dataIndex),
+            "rowCallback": (row, data) => this.rowCallback(row, data),
+            "createdCell": (td, cellData, rowData, row, col) => this.createdCell(td, cellData, rowData, row, col),
+            "initComplete": (settings, json) => this.onInitComplete(settings, json)
+        }, this.dtConfs);
+
+        this.JQueryDataTableInstance = table.DataTable(dtConfig);
     }
 }
 
@@ -674,61 +838,9 @@ TableBuilder.prototype.translationsJson = function () {
 };
 
 /*
- * Addtional configs for dt
+ * Additional configs for dt
  */
 TableBuilder.prototype.dtConfs = {};
-
-/**
- * Init new instance of jquery datatable
- * @param {any} data
- */
-TableBuilder.prototype.renderTable = function (data) {
-    Object.assign(this.ajax.data, {
-        "viewModelId": data.viewmodelId
-    });
-
-    const tableId = `#${data.listId}`;
-    if ($.fn.DataTable.isDataTable(tableId)) {
-        $(tableId).dataTable().fnDestroy();
-        $(tableId).dataTable().empty();
-    }
-    const renderTableSelect = new RenderTableSelect();
-    let dtConfig = Object.assign({
-        "language": {
-            "url": this.translationsJson(),
-        },
-        dom: this.dom,
-        buttons: this.buttons,
-        columnDefs: [
-            {
-                orderable: false,
-                className: renderTableSelect.className(),
-                targets: "no-sort"
-            }
-        ],
-        "order": [[1, "desc"]],
-        colReorder: true,
-        select: renderTableSelect.settings.select,
-        columnSorting: false,
-        orderable: false,
-        "scrollX": true,
-        "scrollCollapse": true,
-        "autoWidth": true,
-        "processing": true,
-        "serverSide": true,
-        "filter": true,
-        "orderMulti": false,
-        "destroy": true,
-        "ajax": this.ajax,
-        "columns": data.renderColumns,
-        "createdRow": (row, data, dataIndex) => this.onRowCreate(row, data, dataIndex),
-        "rowCallback": (row, data) => this.rowCallback(row, data),
-        "createdCell": (td, cellData, rowData, row, col) => this.createdCell(td, cellData, rowData, row, col),
-        "initComplete": (settings, json) => this.onInitComplete(settings, json)
-    }, this.dtConfs);
-    //Start new instance of Jquery dt
-    $(tableId).DataTable(dtConfig);
-}
 
 /**
  * Handler after init complete
