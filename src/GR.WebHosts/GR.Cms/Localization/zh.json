@@ -654,5 +654,7 @@
   "system_calendar_starts": "开始",
   "system_calendar_ends": "结束",
   "system_calendar_respond_success": "响应发送成功",
-  "system_calendar_back": "回历"
+  "system_calendar_back": "回历",
+  "system_auth_welcome_back": "欢迎回来",
+  "system_auth_pass_here": "加入你的密码在这里"
 }

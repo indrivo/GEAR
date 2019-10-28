@@ -75,14 +75,14 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 
 /* line 57, ../../scss/bootstrap/_reboot.scss */
 body {
-  margin: 0;
-  font-family: "GTWalsheim";
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #4E565A;
-  text-align: left;
-  background-color: #fff;
+	margin: 0;
+	font-family: Roboto;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #20272e;
+	text-align: left;
+	background-color: #fff;
 }
 
 /* line 73, ../../scss/bootstrap/_reboot.scss */

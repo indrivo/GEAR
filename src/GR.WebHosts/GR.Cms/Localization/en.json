@@ -654,5 +654,7 @@
   "system_calendar_starts": "Starts",
   "system_calendar_ends": "Ends",
   "system_calendar_respond_success": "Response sent successfully",
-  "system_calendar_back": "Back to calendar"
+  "system_calendar_back": "Back to calendar",
+  "system_auth_welcome_back": "Welcome back",
+  "system_auth_pass_here": "Add your password here"
 }
