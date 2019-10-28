@@ -691,7 +691,7 @@ namespace GR.DynamicEntityStorage
             if (orderDirection != null) model.OrderByColumns = orderDirection;
 
             var dbRequest = _context.GetPaginationResult(model, page, perPage, queryString);
-            return dbRequest.Map<IEnumerable<Dictionary<string, object>>>(dbRequest.Result?.Values);
+            return dbRequest.Map<IEnumerable<Dictionary<string, object>>>(dbRequest.Result?.ViewModel?.Values);
         }
 
         /// <inheritdoc />

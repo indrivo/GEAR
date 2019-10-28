@@ -13,7 +13,6 @@ using Newtonsoft.Json.Serialization;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Identity.Data;
-using GR.PageRender.Razor.Extensions;
 using GR.PageRender.Razor.ViewModels.PageViewModels;
 using GR.Core;
 using GR.Core.Attributes;
@@ -28,7 +27,6 @@ using GR.Identity.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Configurations;
 using GR.PageRender.Abstractions.Helpers;
-using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Abstractions.Models.ViewModels;
 using GR.PageRender.Razor.Attributes;
 
@@ -485,59 +483,23 @@ namespace GR.PageRender.Razor.Controllers
                 Console.WriteLine(e);
             }
 
-            var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
-
-            //var (data, recordsCount) = await _service.Filter(viewModel.TableModel.Name, param.Search.Value, sortColumn,
-            //    param.Start,
-            //    param.Length, x => x.SortByUserRoleAccess(roles, GlobalResources.Roles.ADMINISTRATOR), filters);
             var page = param.Start == 0 ? 1 : param.Start / param.Length;
             var pageData = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page, (uint)param.Length, param.Search.Value);
-            var final1 = await LoadManyToManyReferences(pageData.Result.ToList(), viewModel);
+            var final = await LoadManyToManyReferences(pageData.Result.ToList(), viewModel);
 
-            var finalResult1 = new DTResult<object>
+            var finalResult = new DTResult<object>
             {
                 Draw = param.Draw,
-                Data = final1.ToList(),
+                Data = final.ToList(),
                 RecordsFiltered = 10,
                 RecordsTotal = 14
             };
-            var serializerSettings1 = new JsonSerializerSettings
+            var serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateFormatString = GearSettings.Date.DateFormat
             };
-            return Json(finalResult1, serializerSettings1);
-
-
-
-
-
-
-            //if (!await _entityRoleAccessManager.HaveReadAccessAsync(viewModel.TableModelId)) return Json(defaultResult);
-
-            //filters?.ToList().ForEach(x =>
-            //{
-            //    x.SetValue();
-            //    x.AdaptTypes();
-            //});
-
-//
-
-            //var final = await LoadManyToManyReferences(data, viewModel);
-
-            //var finalResult = new DTResult<object>
-            //{
-            //    Draw = param.Draw,
-            //    Data = final.ToList(),
-            //    RecordsFiltered = recordsCount,
-            //    RecordsTotal = data.Count
-            //};
-            //var serializerSettings = new JsonSerializerSettings
-            //{
-            //    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            //    DateFormatString = GearSettings.Date.DateFormat
-            //};
-            //return Json(finalResult, serializerSettings);
+            return Json(finalResult, serializerSettings);
         }
 
         /// <summary>
@@ -549,9 +511,6 @@ namespace GR.PageRender.Razor.Controllers
         private async Task<IEnumerable<dynamic>> LoadManyToManyReferences(IList<Dictionary<string, object>> data, ViewModel model)
         {
             Arg.NotNull(model, nameof(ViewModel));
-            //if (data == null) return new List<dynamic>();
-            //var dicData = data.Select(x => new Dictionary<string, object>(x.ToDictionary())).ToList();
-
             try
             {
                 foreach (var field in model.ViewModelFields)

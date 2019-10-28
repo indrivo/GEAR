@@ -254,13 +254,18 @@ namespace GR.Entities.Abstractions.Extensions
         /// <param name="perPage"></param>
         /// <param name="queryString"></param>
         /// <returns></returns>
-        public static ResultModel<EntityViewModel> GetPaginationResult(this IEntityContext dbContext, EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null)
+        public static ResultModel<PaginationResponseViewModel> GetPaginationResult(this IEntityContext dbContext, EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null)
         {
-            var response = new ResultModel<EntityViewModel>();
+            var response = new ResultModel<PaginationResponseViewModel>();
             var watch = new Stopwatch();
             watch.Start();
             var evArgs = new ExecutedQueryEventArgs();
-            response.Result = viewModel;
+            response.Result = new PaginationResponseViewModel
+            {
+                ViewModel = viewModel,
+                Page = page,
+                PerPage = perPage,
+            };
 
             if (viewModel == null) return response;
 
@@ -269,7 +274,9 @@ namespace GR.Entities.Abstractions.Extensions
                 var sqlQuery = QueryBuilder.GetPaginationByFilters(viewModel, page, perPage, queryString);
                 evArgs.Query = sqlQuery;
                 var result = EntitiesFromSql(dbContext, sqlQuery, new Dictionary<string, object>()).ToList();
-                response.Result.Values = result;
+                var countRequest = dbContext.GetCount(viewModel);
+                if (countRequest.IsSuccess) response.Result.Total = (uint)countRequest.Result;
+                response.Result.ViewModel.Values = result;
                 response.IsSuccess = true;
             }
             catch (Exception ex)
