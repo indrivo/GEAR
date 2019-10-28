@@ -651,6 +651,8 @@
   "system_calendar": "日历",
   "system_childs": "菜单的分支",
   "system_order": "以数量",
+  "system_close": "靠近",
+  "system_customization": "定制的",
   "system_calendar_starts": "开始",
   "system_calendar_ends": "结束",
   "system_calendar_respond_success": "响应发送成功",

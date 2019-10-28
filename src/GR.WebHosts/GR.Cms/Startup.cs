@@ -110,6 +110,7 @@ using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.ECommerce.Paypal;
+using GR.Entities.Extensions;
 using GR.Localization;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
@@ -157,7 +158,7 @@ namespace GR.Cms
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (CoreApp.IsHostedOnLinux())
+			if (GearApplication.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -213,7 +214,7 @@ namespace GR.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() => { CoreApp.ApplicationStarted(app); });
+			lifetime.ApplicationStarted.Register(() => { GearApplication.ApplicationStarted(app); });
 
 			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 
@@ -263,7 +264,7 @@ namespace GR.Cms
 				.AddIdentityModuleEvents()
 				.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
+				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat; });
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
@@ -294,6 +295,7 @@ namespace GR.Cms
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
+
 			//---------------------------------------Entity Module-------------------------------------
 			services.AddEntityModule<EntitiesDbContext, EntityRepository>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
@@ -303,6 +305,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddEntityModuleEvents()
+				.RegisterEntityBuilderJob()
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
@@ -451,7 +454,7 @@ namespace GR.Cms
 				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
-			if (CoreApp.IsHostedOnLinux())
+			if (GearApplication.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{

@@ -96,7 +96,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
                     {
                         Errors = new List<IErrorModel>
                         {
-                            new ErrorModel(nameof(Settings.ACCESS_DENIED_MESSAGE), Settings.ACCESS_DENIED_MESSAGE)
+                            new ErrorModel(nameof(GearSettings.ACCESS_DENIED_MESSAGE), GearSettings.ACCESS_DENIED_MESSAGE)
                         }
                     }.Serialize());
                 }

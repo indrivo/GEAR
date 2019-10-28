@@ -10,6 +10,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Models;
+using GR.Dashboard.Abstractions.Models.Permissions;
 using GR.Dashboard.Abstractions.Models.ViewModels;
 
 namespace GR.Dashboard.Razor.Controllers
@@ -164,6 +165,57 @@ namespace GR.Dashboard.Razor.Controllers
         {
             var commit = await _dashboardService.DeleteMappedWidgetToRowAsync(rowId, widgetId);
             return Json(commit);
+        }
+
+        /// <summary>
+        /// Get widget acl
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel<IEnumerable<RowWidgetAcl>>))]
+        public async Task<JsonResult> GetWidgetConf(Guid? widgetId, Guid? rowId)
+        {
+            return Json(await _dashboardService.GetRowWidgetAclInfoAsync(widgetId, rowId));
+        }
+
+        /// <summary>
+        /// Update acl configuration
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <param name="conf"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> UpdateAclForWidget(Guid? widgetId, Guid? rowId, IEnumerable<RowWidgetAclBase> conf)
+        {
+            return Json(await _dashboardService.UpdateAclAsync(widgetId, rowId, conf));
+        }
+
+
+        /// <summary>
+        /// Get widget acl
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel<WidgetUISettings>))]
+        public async Task<JsonResult> GetUISettingsForWidget(Guid? widgetId, Guid? rowId)
+        {
+            return Json(await _dashboardService.GetUISettingsForWidgetAsync(widgetId, rowId));
+        }
+
+        /// <summary>
+        /// Update acl configuration
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <param name="uiSettings"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]"), Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> UpdateUISettings(Guid? widgetId, Guid? rowId, WidgetUISettings uiSettings)
+        {
+            return Json(await _dashboardService.UpdateUISettingsAsync(widgetId, rowId, uiSettings));
         }
     }
 }

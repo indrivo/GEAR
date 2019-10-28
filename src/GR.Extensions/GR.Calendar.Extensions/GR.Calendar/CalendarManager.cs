@@ -16,6 +16,7 @@ using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.MultiTenant.Abstractions;
+using Microsoft.AspNetCore.Http;
 
 namespace GR.Calendar
 {
@@ -36,14 +37,20 @@ namespace GR.Calendar
         /// Inject organization service
         /// </summary>
         private readonly IOrganizationService<Tenant> _organizationService;
+
+        /// <summary>
+        /// Inject http context
+        /// </summary>
+        private readonly IHttpContextAccessor _contextAccessor;
         #endregion
 
 
-        public CalendarManager(ICalendarDbContext context, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService)
+        public CalendarManager(ICalendarDbContext context, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService, IHttpContextAccessor contextAccessor)
         {
             _context = context;
             _userManager = userManager;
             _organizationService = organizationService;
+            _contextAccessor = contextAccessor;
         }
 
         /// <inheritdoc />
@@ -83,14 +90,14 @@ namespace GR.Calendar
         public async Task<ResultModel<IEnumerable<CalendarEvent>>> GetAllEventsOrganizedByMeAsync()
         {
             var response = new ResultModel<IEnumerable<CalendarEvent>>();
-            var currentuserRequest = await _userManager.GetCurrentUserAsync();
-            if (!currentuserRequest.IsSuccess)
+            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "You are not authorized"));
                 return response;
             }
 
-            var user = currentuserRequest.Result;
+            var user = currentUserRequest.Result;
 
             var events = await _context.CalendarEvents
                 .Include(x => x.EventMembers)
@@ -135,14 +142,14 @@ namespace GR.Calendar
         public async Task<ResultModel<IEnumerable<CalendarEvent>>> GetMyEventsAsync(DateTime startDate, DateTime endDate)
         {
             var response = new ResultModel<IEnumerable<CalendarEvent>>();
-            var currentuserRequest = await _userManager.GetCurrentUserAsync();
-            if (!currentuserRequest.IsSuccess)
+            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "You are not authorized"));
                 return response;
             }
 
-            var user = currentuserRequest.Result;
+            var user = currentUserRequest.Result;
             return await GetEventsAsync(user.Id.ToGuid(), startDate, endDate);
         }
 
@@ -226,7 +233,8 @@ namespace GR.Calendar
                 Title = evt.Title,
                 Details = evt.Details,
                 Organizer = user.UserName,
-                Invited = new List<string>()
+                Invited = model.Members?.Select(x => x.ToString()),
+                BaseAppUrl = _contextAccessor?.GetAppBaseUrl()
             });
 
             response.IsSuccess = true;
@@ -268,7 +276,8 @@ namespace GR.Calendar
                 Title = evt.Title,
                 Details = evt.Details,
                 Organizer = evt.Author,
-                Invited = new List<string>()
+                Invited = model.Members?.Select(x => x.ToString()),
+                BaseAppUrl = _contextAccessor?.GetAppBaseUrl()
             });
             if (dbResult.IsSuccess) return await AddOrUpdateMembersToEventAsync(model.Id, model.Members);
 
@@ -324,7 +333,9 @@ namespace GR.Calendar
                 return response;
             }
 
-            var evt = await _context.CalendarEvents.FirstOrDefaultAsync(x => x.Id.Equals(eventId));
+            var evt = await _context.CalendarEvents
+                .Include(x => x.EventMembers)
+                .FirstOrDefaultAsync(x => x.Id.Equals(eventId));
             if (evt == null)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "Event not found"));
@@ -337,7 +348,9 @@ namespace GR.Calendar
             {
                 InLife = true,
                 EventId = eventId,
-                Title = evt.Title
+                Title = evt.Title,
+                BaseAppUrl = _contextAccessor?.GetAppBaseUrl(),
+                Invited = evt.EventMembers?.Select(x => x.UserId.ToString()),
             });
 
             return pushResult;
@@ -358,7 +371,9 @@ namespace GR.Calendar
                 return response;
             }
 
-            var evt = await _context.CalendarEvents.FirstOrDefaultAsync(x => x.Id.Equals(eventId));
+            var evt = await _context.CalendarEvents
+                .Include(x => x.EventMembers)
+                .FirstOrDefaultAsync(x => x.Id.Equals(eventId));
             if (evt == null)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "Event not found"));
@@ -372,7 +387,9 @@ namespace GR.Calendar
             {
                 InLife = true,
                 EventId = eventId,
-                Title = evt.Title
+                Title = evt.Title,
+                BaseAppUrl = _contextAccessor?.GetAppBaseUrl(),
+                Invited = evt.EventMembers?.Select(x => x.UserId.ToString()),
             });
 
             return pushResult;
@@ -393,7 +410,10 @@ namespace GR.Calendar
                 return response;
             }
 
-            var evt = await _context.CalendarEvents.FirstOrDefaultAsync(x => x.Id.Equals(eventId));
+            var evt = await _context.CalendarEvents
+                .Include(x => x.EventMembers)
+                .FirstOrDefaultAsync(x => x.Id.Equals(eventId));
+
             if (evt == null)
             {
                 response.Errors.Add(new ErrorModel(string.Empty, "Event not found"));
@@ -409,7 +429,9 @@ namespace GR.Calendar
             {
                 InLife = true,
                 EventId = eventId,
-                Title = evt.Title
+                Title = evt.Title,
+                BaseAppUrl = _contextAccessor?.GetAppBaseUrl(),
+                Invited = evt.EventMembers?.Select(x => x.UserId.ToString()),
             });
 
             return pushResult;
@@ -430,7 +452,7 @@ namespace GR.Calendar
             {
                 return evtRequest.ToBase();
             }
-
+      
             var memberState = evtRequest.Result.EventMembers.FirstOrDefault(x => x.UserId.Equals(memberId));
             if (memberState == null)
             {
@@ -442,7 +464,18 @@ namespace GR.Calendar
 
             memberState.Acceptance = acceptance;
             _context.EventMembers.Update(memberState);
-            return await _context.PushAsync();
+            var dbResultRequest = await _context.PushAsync();
+            if (!dbResultRequest.IsSuccess) return dbResultRequest;
+            var e = evtRequest.Result;
+            CalendarEvents.SystemCalendarEvents.UserChangeAcceptance(new UserChangeAcceptanceEventArgs
+            {
+                Title = e.Title,
+                EventId = e.Id,
+                Member = memberState,
+                AcceptanceState = acceptance.ToString(),
+                Organizer = e.Organizer
+            });
+            return dbResultRequest;
         }
 
         /// <inheritdoc />

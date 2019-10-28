@@ -28,10 +28,11 @@ using GR.PageRender.Data;
 using GR.PageRender.Razor.Helpers;
 using GR.Procesess.Data;
 using GR.Report.Dynamic.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace GR.Application
 {
-    public static class CoreApp
+    public static class GearApplication
     {
         /// <summary>
         /// Build web host
@@ -66,16 +67,16 @@ namespace GR.Application
         {
             webHost.MigrateDbContext<EntitiesDbContext>((context, services) =>
                 {
-                    EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+                    EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(context, Core.GearSettings.TenantId).Wait();
                 })
                 .MigrateDbContext<FormDbContext>((context, services) =>
                 {
-                    FormDbContextSeeder<FormDbContext>.SeedAsync(context, Core.Settings.TenantId).Wait();
+                    FormDbContextSeeder<FormDbContext>.SeedAsync(context, Core.GearSettings.TenantId).Wait();
                 })
                 .MigrateDbContext<ProcessesDbContext>()
                 .MigrateDbContext<DynamicPagesDbContext>((context, services) =>
                 {
-                    DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.Settings.TenantId)
+                    DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.GearSettings.TenantId)
                         .Wait();
                 })
                 .MigrateDbContext<DynamicReportDbContext>()
@@ -168,7 +169,7 @@ namespace GR.Application
                 var context = serviceScope.ServiceProvider.GetService<DynamicPagesDbContext>();
                 var cacheService = serviceScope.ServiceProvider.GetService<ICacheService>();
                 if (!IsConfigured(env)) return;
-                await DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.Settings.TenantId);
+                await DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.GearSettings.TenantId);
                 //Run only if application is configured
                 var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
                 cacheService.FlushAll();
@@ -200,7 +201,7 @@ namespace GR.Application
                 .AddJsonFile("fileSettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
-
+           
             _webHost = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .UseConfiguration(config)

@@ -157,7 +157,7 @@ namespace GR.DynamicEntityStorage
             result.IsSuccess = true;
             result.Result = predicate != null 
                 // ReSharper disable once AssignNullToNotNullAttribute
-                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>)?.ToList() 
+                ? model.Adapt<IEnumerable<TOutput>>()?.Where(predicate as Func<TOutput, bool>).ToList() 
                 : model.Adapt<IEnumerable<TOutput>>().ToList();
             return result;
         }
@@ -299,7 +299,7 @@ namespace GR.DynamicEntityStorage
 
             if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
 
@@ -333,7 +333,7 @@ namespace GR.DynamicEntityStorage
             }
             if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             result.IsSuccess = true;
@@ -460,7 +460,7 @@ namespace GR.DynamicEntityStorage
             }
             if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
@@ -626,7 +626,7 @@ namespace GR.DynamicEntityStorage
             }
             if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
@@ -681,7 +681,7 @@ namespace GR.DynamicEntityStorage
             }
             if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Write))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(dbSchema ?? schema);
@@ -801,7 +801,7 @@ namespace GR.DynamicEntityStorage
             }
             if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Update))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var table = await CreateEntityDefinition<EntityViewModel>(entity, schema);
@@ -860,7 +860,7 @@ namespace GR.DynamicEntityStorage
             }
             if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.DeletePermanent))
             {
-                result.Errors.Add(new ErrorModel(Settings.ACCESS_DENIED_MESSAGE, Settings.ACCESS_DENIED_MESSAGE));
+                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
                 return result;
             }
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
@@ -954,7 +954,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = await ViewModelBuilder.ResolveAsync(_context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(_context, model);
             return (TViewModel)model;
         }
 
@@ -967,7 +967,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = await ViewModelBuilder.ResolveAsync(_context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(_context, model);
             return (TViewModel)model;
         }
 
@@ -996,7 +996,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = ViewModelBuilder.Create(_context, model);
+            model = ViewModelBuilderFactory.Resolve(_context, model);
             return (TViewModel)model;
         }
 

@@ -3,15 +3,17 @@ using System;
 using GR.Dashboard.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GR.Dashboard.Migrations
 {
     [DbContext(typeof(DashBoardDbContext))]
-    partial class DashBoardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191023161518_DashBoardDbContext_AddWidgetAcl")]
+    partial class DashBoardDbContext_AddWidgetAcl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

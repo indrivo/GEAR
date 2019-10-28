@@ -29,7 +29,7 @@ namespace GR.PageRender.Razor.Helpers
                 var template = new Template
                 {
                     Name = info.Name,
-                    TenantId = Settings.TenantId,
+                    TenantId = GearSettings.TenantId,
                     Author = "system",
                     ModifiedBy = "system",
                     IdentifierName = $"template_{info.Name}",
