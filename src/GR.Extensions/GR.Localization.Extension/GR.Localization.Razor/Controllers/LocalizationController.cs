@@ -462,7 +462,8 @@ namespace GR.Localization.Razor.Controllers
         [AllowAnonymous]
         public JsonResult GetLanguagesAsJson()
         {
-            var languages = _locConfig.Value.Languages.ToList();
+            var languages = _locConfig.Value.Languages
+                .Where(x => !x.IsDisabled).ToList();
             return Json(languages);
         }
 
