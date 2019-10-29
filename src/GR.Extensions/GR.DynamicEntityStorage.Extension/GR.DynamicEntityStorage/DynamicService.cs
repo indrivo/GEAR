@@ -35,6 +35,7 @@ namespace GR.DynamicEntityStorage
     /// <inheritdoc />
     public class DynamicService<TContext> : IDynamicService where TContext : EntitiesDbContext, IEntityContext
     {
+        #region Injectable
         /// <summary>
         /// Inject db context
         /// </summary>
@@ -56,18 +57,25 @@ namespace GR.DynamicEntityStorage
         private readonly IEntityRoleAccessManager _entityRoleAccessManager;
 
         /// <summary>
+        /// Inject entity repository
+        /// </summary>
+        private readonly IEntityRepository _entityRepository;
+        #endregion
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="entityRoleAccessManager"></param>
         /// <param name="userManager"></param>
         /// <param name="httpContextAccessor"></param>
-        public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IEntityRepository entityRepository)
         {
             _context = context;
             _entityRoleAccessManager = entityRoleAccessManager;
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            _entityRepository = entityRepository;
         }
 
         /// <summary>
@@ -92,6 +100,8 @@ namespace GR.DynamicEntityStorage
         protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema(string entity)
         {
             var table = _context.Table
+                .Include(x => x.TableFields)
+                .ThenInclude(x => x.TableFieldConfigValues)
                 .FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId
                                      || x.Name.Equals(entity) && x.IsCommon
                                      || x.IsPartOfDbContext && x.Name.Equals(entity));
@@ -689,9 +699,26 @@ namespace GR.DynamicEntityStorage
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             if (filters != null) model.Filters = filters.ToList();
             if (orderDirection != null) model.OrderByColumns = orderDirection;
-
             var dbRequest = _context.GetPaginationResult(model, page, perPage, queryString);
-            return dbRequest.Map<IEnumerable<Dictionary<string, object>>>(dbRequest.Result?.ViewModel?.Values);
+            var referenceFields = table.TableFields?.Where(x => x.DataType.Equals(TableFieldDataType.Guid)).ToList();
+            var responseData = dbRequest.Result.ViewModel.Values;
+            if (referenceFields != null)
+            {
+                foreach (var field in referenceFields)
+                {
+                    var fieldConfigurations = await _entityRepository.GetTableFieldConfigurations(field, schema);
+                    var tableName = fieldConfigurations?.FirstOrDefault(x => x.ConfigCode.Equals(TableFieldConfigCode.Reference.ForeingTable));
+                    if (tableName == null) continue;
+                    foreach (var entry in responseData)
+                    {
+                        var identifier = entry[field.Name]?.ToString().ToGuid();
+                        var obj = identifier != null ? await GetById(tableName?.Value, identifier.Value) : null;
+                        entry.Add($"{field.Name}Reference", obj?.Result);
+                    }
+                }
+            }
+
+            return dbRequest.Map<IEnumerable<Dictionary<string, object>>>(responseData);
         }
 
         /// <inheritdoc />
