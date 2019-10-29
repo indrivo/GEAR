@@ -72,18 +72,27 @@ HelpCrunch('init', 'iso27001expert', {
 
 HelpCrunch('showChatWidget');
 
-setTimeout(function () {
-    const helpCrunchContainer = $($(`iframe[name='helpcrunch-iframe']`).get(0).contentDocument);
-    if (helpCrunchContainer) {
-        $(`iframe[name='helpcrunch-iframe']`).css("display", "block");
-        helpCrunchContainer.on("click", function () {
-            setTimeout(() => {
-                helpCrunchContainer.find("#helpcrunch-container.helpcrunch-chat-fadein .helpcrunch-chat").css("background", "#0540b5");
-            }, 200);
-        });
+$(function () {
+    let index = 0;
+    const helpCrunchTimer = setInterval(function () {
+        try {
+            const helpCrunchContainer = $($(`iframe[name='helpcrunch-iframe']`).get(0).contentDocument);
+            if (helpCrunchContainer) {
+                helpCrunchContainer.on("click", function () {
+                    setTimeout(() => {
+                        helpCrunchContainer.find("#helpcrunch-container.helpcrunch-chat-fadein .helpcrunch-chat").css("background", "#0540b5");
+                    }, 200);
+                });
 
-        helpCrunchContainer.find(".helpcrunch-widget-type-icon-label").css("background", "#0540b5");
-        helpCrunchContainer.find(".helpcrunch-widget-icon-block").css("background", "#0540b5");
-        helpCrunchContainer.find(".helpcrunch-widget-type-icon-triangle").css("border", "#0540b5");
-    }
-}, 1650);
+                helpCrunchContainer.find(".helpcrunch-widget-type-icon-label").css("background", "#0540b5");
+                helpCrunchContainer.find(".helpcrunch-widget-icon-block").css("background", "#0540b5");
+                helpCrunchContainer.find(".helpcrunch-widget-type-icon-triangle").css("border", "#0540b5");
+                $(`iframe[name='helpcrunch-iframe']`).css("display", "block");
+                if (index == 3) clearInterval(helpCrunchTimer);
+                index++;
+            }
+        }
+        catch (e) { }
+        console.log("dd");
+    }, 300);
+});
