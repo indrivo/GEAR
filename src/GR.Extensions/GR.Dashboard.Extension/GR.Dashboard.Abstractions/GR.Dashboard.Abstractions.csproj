@@ -11,11 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Configurations\WidgetGroups.json" />
+    <None Remove="Configuration\WidgetGroups.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Configurations\WidgetGroups.json">
+    <EmbeddedResource Include="Configuration\WidgetGroups.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
