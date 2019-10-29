@@ -93,6 +93,5 @@ $(function () {
             }
         }
         catch (e) { }
-        console.log("dd");
     }, 300);
 });
