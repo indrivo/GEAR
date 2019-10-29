@@ -656,5 +656,7 @@
   "system_calendar_starts": "Începe",
   "system_calendar_ends": "Se termină",
   "system_calendar_respond_success": "Răspuns trimis cu succes",
-  "system_calendar_back": "Înapoi la calendar"
+  "system_calendar_back": "Înapoi la calendar",
+  "system_auth_welcome_back": "Bine ai revenit",
+  "system_auth_pass_here": "Adăugați parola aici"
 }

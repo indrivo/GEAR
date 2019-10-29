@@ -656,5 +656,7 @@
   "system_calendar_starts": "Start",
   "system_calendar_ends": "Eindigt",
   "system_calendar_respond_success": "Reactie is succesvol verstuurd",
-  "system_calendar_back": "Terug naar agenda"
+  "system_calendar_back": "Terug naar agenda",
+  "system_auth_welcome_back": "Welkom terug",
+  "system_auth_pass_here": "Voeg uw wachtwoord hier op"
 }
