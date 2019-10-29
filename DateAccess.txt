@@ -12,3 +12,8 @@ u: admin  p: mPa1icqZ.d
 sumpleComerce
 login: admin@simplcommerce.com
 password : 1qazZAQ!
+
+
+bizon 
+log: ion.dorosenco@indrivo.com
+pass: @userPass1

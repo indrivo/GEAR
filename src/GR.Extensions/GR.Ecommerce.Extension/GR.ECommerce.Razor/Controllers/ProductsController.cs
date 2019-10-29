@@ -16,9 +16,12 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.ECommerce.Razor.Controllers
 {
+   
     public class ProductsController : CommerceBaseController<Product, ProductViewModel>
     {
         public ProductsController(ICommerceContext context, IDataFilter dataFilter) : base(context, dataFilter)
@@ -212,9 +215,9 @@ namespace GR.ECommerce.Razor.Controllers
             model.ProductOption = Context.ProductOption.ToList().Select(s => new SelectListItem
             {
                 Text = s.Name,
-                Value =  s.Id.ToString(),
+                Value = s.Id.ToString(),
             }).ToList();
-                
+
 
             model.ProductCategoryList = Context.Categories.Select(x => new ProductCategoryDto
             {
@@ -255,55 +258,113 @@ namespace GR.ECommerce.Razor.Controllers
             return Json(dbResult);
         }
 
-        
+
         [HttpPost]
         public async Task<JsonResult> SaveProductVariation([FromBody] ProductVariationViewModel model)
         {
+            var response = new ResultModel();
 
-            var prod = Context.Products.FirstOrDefault(i => i.Id == model.ProductId);
+            if (!ModelState.IsValid)
+            {
+                response.Errors = ModelState.ToResultModelErrors().ToList();
+                return Json(response);
+            }
+
+            var prod = await Context.Products.FirstOrDefaultAsync(i => i.Id == model.ProductId);
 
             if (prod != null)
             {
-                var newVariation = new ProductVariation()
+                var variation = await Context.ProductVariations
+                    .FirstOrDefaultAsync(i => i.Id == model.VariationId && i.ProductId == model.ProductId);
+
+
+                if (variation != null)
                 {
-                    ProductId =  model.ProductId,
-                    Price =  model.Price,
-                };
+                    variation.Price = model.Price;
+                    Context.ProductVariations.Update(variation);
 
-                Context.ProductVariations.Add(newVariation);
+                    var listProductVariationDetails =
+                        Context.ProductVariationDetails.Where(x => x.ProductVariationId == variation.Id);
 
-
-                foreach (var variationDetail in model.ProductVaritionDetails)
+                    Context.ProductVariationDetails.RemoveRange(listProductVariationDetails);
+                }
+                else
                 {
-                    var newVariationDetails = new ProductVariationDetail()
+                    variation = new ProductVariation
                     {
-                        ProductVariationId = newVariation.Id,
-                        Value = variationDetail.Value,
-                        ProductOptionId =  variationDetail.ProductOptionId
+                        ProductId = model.ProductId,
+                        Price = model.Price,
                     };
 
-                    Context.ProductVariationDetails.Add(newVariationDetails);
+                    Context.ProductVariations.Add(variation);
                 }
-                
+
+                var variationDetails = model.ProductVariationDetails.Select(x => new ProductVariationDetail()
+                {
+                    ProductVariationId = variation.Id,
+                    Value = x.Value,
+                    ProductOptionId = x.ProductOptionId
+                });
+
+                await Context.ProductVariationDetails.AddRangeAsync(variationDetails);
             }
 
             var dbResult = await Context.PushAsync();
+            return Json(dbResult);
+        }
 
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveOptione([Required]Guid? productId, [Required]Guid? variationId)
+        {
+            var resultModel = new ResultModel();
+            if (productId is null || variationId is null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty,"Invalid parameters"));
+                return Json(resultModel);
+            }
 
+            var result = Context.ProductVariations
+                .FirstOrDefault(x => x.Id == variationId && x.ProductId == productId);
+
+            if (result == null) return Json(resultModel);
+            Context.ProductVariations.Remove(result);
+            var dbResult = await Context.PushAsync();
             return Json(dbResult);
         }
 
 
         [HttpGet]
         public JsonResult GetProductVariation(string productId) => Json(Context.ProductVariations
-            .Include(x => x.ProductVariationDetails).ThenInclude(x=>x.ProductOption)
+            .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
             .Where(x => x.ProductId == productId.ToGuid())
             .Select(x => new
             {
+                VariationId = x.Id, 
+                x.Price,
+                VariationDetails = x.ProductVariationDetails.Select(s => new { s.Value, Option = s.ProductOption.Name })
+            }));
+
+
+        [HttpGet]
+        public JsonResult GetProductVariationById(string productId, string variationId) => Json(Context
+            .ProductVariations
+            .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
+            .Where(x => x.ProductId == productId.ToGuid() && x.Id == variationId.ToGuid())
+            .Select(x => new
+            {
+                ProductId = x.ProductId,
                 VariationId = x.Id,
                 Price = x.Price,
-                VariationDetails = x.ProductVariationDetails.Select(s=>  new {Value = s.Value, Option = s.ProductOption.Name})
-            }));
+                VariationDetails = x.ProductVariationDetails.Select(s => new { Value = s.Value, Option = s.ProductOption.Name, optionId = s.ProductOptionId })
+            }).FirstOrDefault());
+
 
         [HttpGet]
         public JsonResult GetProductAttributes(string productId) => Json(Context.ProductAttributes

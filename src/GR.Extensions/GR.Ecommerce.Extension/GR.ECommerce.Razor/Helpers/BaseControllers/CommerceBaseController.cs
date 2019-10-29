@@ -15,7 +15,7 @@ using GR.ECommerce.Abstractions.Helpers;
 
 namespace GR.ECommerce.Razor.Helpers.BaseControllers
 {
-    [ApiExplorerSettings(IgnoreApi = true), Authorize]
+    [ Authorize]
     public abstract class CommerceBaseController<TEntity, TViewModel> : Controller
         where TEntity : BaseModel
         where TViewModel : TEntity
