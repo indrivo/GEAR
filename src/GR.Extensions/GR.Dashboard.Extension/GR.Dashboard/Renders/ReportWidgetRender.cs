@@ -32,7 +32,7 @@ namespace GR.Dashboard.Renders
             var htmlTemplate = cacheResult.Success
                 ? RazorCompilerEngine.Compiler.RenderTemplateAsync(cacheResult.Template.TemplatePageFactory(), widget).ExecuteAsync()
                 : RazorCompilerEngine.Compiler.CompileRenderAsync(ReportTemplateCacheKey,
-                    RazorCompilerEngine.ReadTemplateFromFile(Path.Combine(AppContext.BaseDirectory, "Templates\\ReportTemplate.cshtml")), widget).ExecuteAsync();
+                    RazorCompilerEngine.ReadTemplateFromFile(Path.Combine(AppContext.BaseDirectory, "Templates/ReportTemplate.cshtml")), widget).ExecuteAsync();
 
             builder.AppendLine(htmlTemplate);
 
