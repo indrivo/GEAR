@@ -7,8 +7,9 @@
 <html lang="en">
 <head>
 	<meta name="viewport" content="width=device-width" />
-	<title>@Localizer["system_log_in"]</title>
+	<title>@Localizer["system_register"]</title>
 
+	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
 	<link rel="stylesheet" type="text/css" href="~/lib/select2/css/select2.min.css" />
@@ -61,20 +62,43 @@
 			right: 0;
 		}
 
-		.input-group-append a,
-		.input-group-append a:hover,
-		.input-group-append a:focus{
-			background-color: transparent;
-			border: 0;
-			outline: none !important;
-			padding: 8px 10px;
-			color: #707070;
-			box-shadow: none;
-		}
+			.input-group-append a,
+			.input-group-append a:hover,
+			.input-group-append a:focus {
+				background-color: transparent;
+				border: 0;
+				outline: none !important;
+				padding: 8px 10px;
+				color: #707070;
+				box-shadow: none;
+			}
 
-		.register-page .login-box{
+		.register-page .login-box {
 			padding-top: 50px !important;
 			padding-bottom: 50px !important;
+		}
+
+		#register-company .form-content {
+			overflow-y: auto;
+			height: calc(100% - 50px);
+		}
+
+		/* width */
+		::-webkit-scrollbar {
+			margin-left: 5px;
+			width: 2px;
+			background-color: #e4e2e2;
+		}
+
+		/* Track */
+		::-webkit-scrollbar-track {
+			border-radius: 2px;
+		}
+
+		/* Handle */
+		::-webkit-scrollbar-thumb {
+			background: #807e7e;
+			border-radius: 3px;
 		}
 	</style>
 </head>
@@ -92,106 +116,108 @@
 	<!-- ============================================================== -->
 	<section id="wrapper" class="register-page login-register login-sidebar d-flex">
 		<div class="login-box card col-5">
+			<a href="/" class="text-center db">
+				<div class="logo-image"></div>
+			</a>
+			<h2 class="mt-5 mb-3 fw-600">@Localizer["system_multitenant_register_new"]</h2>
 			<div class="form-horizontal h-100 position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-				<a href="/" class="text-center db">
-					<div class="logo-image"></div>
-				</a>
-				<h2 class="mt-5 mb-3 fw-600">@Localizer["system_multitenant_register_new"]</h2>
 				<form class="h-100" id="register-company" asp-action="RegisterCompany" role="form" enctype="multipart/form-data">
-					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-					<div class="tab">
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="UserName"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="UserName" required />
-							<span asp-validation-for="UserName" class="text-danger"></span><br />
-						</div>
-						<div class="form-group mb-0">
-							<JTranslateLabel asp-for="Password" class="control-label"></JTranslateLabel>
-							<div class="input-group position-relative">
-								<input asp-for="Password" class="form-control" required />
-								<div class="input-group-append">
-									<a href="javascript:void(0)" class="toggle-password ">
-										<span class="fa fa-eye-slash icon"></span>
-									</a>
-								</div>
+					<div class="form-content pr-1">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="tab">
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="UserName"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="UserName" required />
+								<span asp-validation-for="UserName" class="text-danger"></span><br />
 							</div>
-							<span asp-validation-for="Password" class="text-danger"></span><br />
-							@*<small>@Localizer["pass_info1"]</small><br />
-								<small>@Localizer["pass_info2"]</small>*@
-						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel asp-for="RepeatPassword" class="control-label"></JTranslateLabel>
-							<div class="input-group position-relative">
-								<input asp-for="RepeatPassword" class="form-control" required />
-								<div class="input-group-append">
-									<a href="javascript:void(0)" class="toggle-password ">
-										<span class="fa fa-eye-slash icon"></span>
-									</a>
+							<div class="form-group mb-0">
+								<JTranslateLabel asp-for="Password" class="control-label"></JTranslateLabel>
+								<div class="input-group position-relative">
+									<input asp-for="Password" class="form-control" required />
+									<div class="input-group-append">
+										<a href="javascript:void(0)" class="toggle-password ">
+											<span class="fa fa-eye-slash icon"></span>
+										</a>
+									</div>
 								</div>
+								<span asp-validation-for="Password" class="text-danger"></span><br />
+								@*<small>@Localizer["pass_info1"]</small><br />
+									<small>@Localizer["pass_info2"]</small>*@
 							</div>
-							<span asp-validation-for="RepeatPassword" class="text-danger"></span>
+							<div class="form-group mb-3">
+								<JTranslateLabel asp-for="RepeatPassword" class="control-label"></JTranslateLabel>
+								<div class="input-group position-relative">
+									<input asp-for="RepeatPassword" class="form-control" required />
+									<div class="input-group-append">
+										<a href="javascript:void(0)" class="toggle-password ">
+											<span class="fa fa-eye-slash icon"></span>
+										</a>
+									</div>
+								</div>
+								<span asp-validation-for="RepeatPassword" class="text-danger"></span>
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="Email"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="Email" required />
+								<span asp-validation-for="Email" class="text-danger"></span><br />
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="FirstName"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="FirstName" required />
+								<span asp-validation-for="FirstName" class="text-danger"></span><br />
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="LastName"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="LastName" required />
+								<span asp-validation-for="LastName" class="text-danger"></span><br />
+							</div>
 						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="Email"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="Email" required />
-							<span asp-validation-for="Email" class="text-danger"></span><br />
+						<div class="tab">
+							<div class="form-group mb-3">
+								<JTranslateLabel asp-for="OrganizationLogoFormFile" class="control-label"></JTranslateLabel>
+								<input type="file" asp-for="OrganizationLogoFormFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
+							</div>
+							<p class="mt-5">
+								@Localizer["system_tenant_logo_info"]
+							</p>
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="Name" required />
+								<span asp-validation-for="Name" class="text-danger"></span><br />
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="Description"></JTranslateLabel>
+								<textarea class="form-control" type="text" asp-for="Description"></textarea>
+								<span asp-validation-for="Description" class="text-danger"></span><br />
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="SiteWeb"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="SiteWeb" />
+								<span asp-validation-for="SiteWeb" class="text-danger"></span><br />
+							</div>
 						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="FirstName"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="FirstName" required />
-							<span asp-validation-for="FirstName" class="text-danger"></span><br />
-						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="LastName"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="LastName" required />
-							<span asp-validation-for="LastName" class="text-danger"></span><br />
+						<div class="tab">
+							<div class="form-group mb-3">
+								<JTranslateLabel class="control-label" asp-for="Address"></JTranslateLabel>
+								<input class="form-control" type="text" asp-for="Address" />
+								<span asp-validation-for="Address" class="text-danger"></span><br />
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel asp-for="CountryId" class="control-label"></JTranslateLabel>
+								<select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
+								<span asp-validation-for="CountryId" class="text-danger"></span><br />
+							</div>
+							<div class="form-group mb-3">
+								<JTranslateLabel asp-for="CityId" class="control-label"></JTranslateLabel>
+								<select disabled="disabled" class="form-control" asp-for="CityId"></select>
+								<span asp-validation-for="CityId" class="text-danger"></span><br />
+							</div>
+							@*<div class="col-md-12">
+									<span>@Localizer["system_multi_tenant_accept_agreement"] <a href="#">@Localizer["system_subscriptions_agreement"]</a> @Localizer["system_and"] <a href="#">@Localizer["system_privacy_policies"]</a></span>
+								</div>*@
 						</div>
 					</div>
-					<div class="tab">
-						<div class="form-group mb-3">
-							<JTranslateLabel asp-for="OrganizationLogoFormFile" class="control-label"></JTranslateLabel>
-							<input type="file" asp-for="OrganizationLogoFormFile" class="dropify" data-allowed-file-extensions="png jpg jpeg" data-max-file-size-preview="3M" />
-						</div>
-						<p class="mt-5">
-							@Localizer["system_tenant_logo_info"]
-						</p>
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="Name"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="Name" required />
-							<span asp-validation-for="Name" class="text-danger"></span><br />
-						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="Description"></JTranslateLabel>
-							<textarea class="form-control" type="text" asp-for="Description"></textarea>
-							<span asp-validation-for="Description" class="text-danger"></span><br />
-						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="SiteWeb"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="SiteWeb" />
-							<span asp-validation-for="SiteWeb" class="text-danger"></span><br />
-						</div>
-					</div>
-					<div class="tab">
-						<div class="form-group mb-3">
-							<JTranslateLabel class="control-label" asp-for="Address"></JTranslateLabel>
-							<input class="form-control" type="text" asp-for="Address" />
-							<span asp-validation-for="Address" class="text-danger"></span><br />
-						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel asp-for="CountryId" class="control-label"></JTranslateLabel>
-							<select class="form-control" asp-for="CountryId" asp-items="Model.CountrySelectListItems"></select>
-							<span asp-validation-for="CountryId" class="text-danger"></span><br />
-						</div>
-						<div class="form-group mb-3">
-							<JTranslateLabel asp-for="CityId" class="control-label"></JTranslateLabel>
-							<select disabled="disabled" class="form-control" asp-for="CityId"></select>
-							<span asp-validation-for="CityId" class="text-danger"></span><br />
-						</div>
-						@*<div class="col-md-12">
-								<span>@Localizer["system_multi_tenant_accept_agreement"] <a href="#">@Localizer["system_subscriptions_agreement"]</a> @Localizer["system_and"] <a href="#">@Localizer["system_privacy_policies"]</a></span>
-							</div>*@
-					</div>
-					<div class="form-progress w-100 position-absolute d-flex justify-content-between align-items-center">
+					<div class="form-progress mt-3 w-100 d-flex justify-content-between align-items-center">
 						<div class="step-buttons">
 							<button class="btn btn-primary" type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
 							<button class="btn btn-primary" type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
