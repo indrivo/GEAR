@@ -662,5 +662,16 @@
   "iso_read_more": "Leggi di più",
   "iso_get_started": "Iniziare",
   "iso_about_project": "Il progetto",
-  "iso_iso": "ISO"
+  "iso_iso": "ISO",
+  "iso_homepage_1p": "COSÌ 27001 Esperto este un software specializat pentru managementul tuturor activităților aferente unui sistema di gestione al securității informațiilor conformi standardului internațional ISO 27001. Sistemul vă va ajuta în sistematizarea tuturor activităților, cum ar fi evaluarea riscurilor, implementarea controalelor, managementul neconformităților, managementul activelor ecc.... precum şi politicile şi procedurile aferente securității informațiilor. ",
+  "iso_homepage_2p": "Il software fornisce una panoramica grafica del livello di conformità che l'organizzazione soddisfi in un dato tempo e vi darà un prezioso aiuto nella realizzazione e gestione Sistema Gestione Sicurezza delle Informazioni (SGSI) secondo la norma ISO 27001.",
+  "iso_homepage_about_project": "L'Esperto in Azienda, - OLIO, S. R. L., con sede legale in Comune. Bucarest, settore 2 è implementato nei locali del Comune. Città, per saperne di Più RAILWAY street, Bl. 36/335, Scara B, Et Al.1, Ap.25 nel periodo di 01.12.2016 – 31.10.2019, il progetto è di “Rafforzare la posizione dell'azienda, Esperti, Società, OLIO, stampa e commercializzazione del prodotto, l'innovazione è un Online ISO 27001 Sicurezza delle Informazioni del Sistema di Gestione (OIISMS) - &gt; mercato & C”, che è finanziato dal Programma Operativo Regionale, Asse prioritario 2 - promuovere la competitività delle piccole e medie imprese di investimento Priorità 2.1 Promuovere l'imprenditorialità, in particolare facilitando lo sfruttamento economico di nuove idee e promuovendo la creazione di nuove aziende, anche attraverso incubatori di imprese, cod PMI 109658. Il programma Operativo Regionale è attuata a livello nazionale dal Ministero dello Sviluppo Regionale e dell'Amministrazione Pubblica, quale Autorità di Gestione, e, a livello regionale, l'Agenzia Regionale per lo Sviluppo del Sud Muntenia regione, un Organismo Intermedio che monitora lo stato di attuazione del progetto.",
+  "iso_homepage_header_manage_your_iso": "Gestire le ISO 27001 progetti di conformità con facilità.",
+  "iso_easy_to_use": "Facile da usare",
+  "iso_easy_to_use_text": "ISO 27001 Esperto di software web-based e molto facile da utilizzare: non è necessaria l'installazione minima iniziale di configurazione è necessaria.",
+  "iso_covers_all_requirements": "Copre tutti i requisiti ISO 27001",
+  "iso_covers_all_requirements_text": "Il software fornisce gli strumenti per la gestione di tutte le attività richieste dalla norma ISO 27001 e la relativa documentazione.",
+  "iso_pre_defined_templates": "Modelli predefiniti",
+  "iso_pre_defined_templates_text": "Il software viene fornito con modelli predefiniti che saranno di aiuto, anche non tecnici ISMS manager e consulenti per ottenere la conformità con la norma ISO 27001.",
+  "iso_chat_what_is_your_question": "Qual è la tua domanda? "
 }

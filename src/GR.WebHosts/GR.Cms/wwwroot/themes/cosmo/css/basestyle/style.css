@@ -10878,3 +10878,23 @@ html, body {
   display: block;
   z-index: -1;
 }
+
+.preloader {
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	position: fixed;
+	z-index: 99999;
+	background: #fff;
+}
+
+	.preloader .cssload-speeding-wheel {
+		position: absolute;
+		top: calc(50% - 3.5px);
+		left: calc(50% - 3.5px);
+	}
+
+.sponsor-image {
+	height: 50px;
+	background-size: contain;
+}

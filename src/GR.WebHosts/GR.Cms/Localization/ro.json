@@ -662,5 +662,16 @@
   "iso_read_more": "Citeste mai mult",
   "iso_get_started": "Începeți",
   "iso_about_project": "Despre proiect",
-  "iso_iso": "ISO"
+  "iso_iso": "ISO",
+  "iso_homepage_1p": "ISO 27001 Expert este un software specializat pentru managementul tuturor activităților aferente unui sistem de management al securității informațiilor conform standardului internațional ISO 27001. Sistemul vă va ajuta în sistematizarea tuturor activităților, cum ar fi evaluarea riscurilor, implementarea controalelor, managementul neconformităților, managementul activelor etc., precum și politicile și procedurile aferente securității informațiilor. ",
+  "iso_homepage_2p": "Software-ul vă va oferi o imagine grafică de ansamblu a nivelului de conformitate pe care organizația îl îndeplinește în orice moment și vă va oferi un ajutor de neprețuit în implementarea și gestionarea sistemului dumneavoastră de management al securității informațiilor (SMSI) conform standardului ISO 27001. ",
+  "iso_homepage_about_project": "Expert Company OIL S.R.L, cu sediul social în Mun. București, sector 2 implementează la punctul de lucru din Mun. Giurgiu, Bvd. CFR, Bl. 36/335, Scara B, Et.1, Ap.25 în perioada 01.12.2016 – 31.10.2019, proiectul “Consolidarea poziției firmei Expert Company OIL prin editarea și comercializarea produsului inovativ &lt; Online ISO 27001 Information Security Management System (OIISMS) &gt; pe piața TIC”, finanțat prin Programul Operațional Regional Axa prioritară 2 - Îmbunătăţirea competitivităţii întreprinderilor mici şi mijlocii, Prioritatea de investiții 2.1 – Promovarea spiritului antreprenorial, în special prin facilitarea exploatării economice a ideilor noi și prin încurajarea creării de noi întreprinderi, inclusiv prin incubatoare de afaceri, cod SMIS 109658. Programul Operațional Regional este implementat la nivel național de Ministerul Dezvoltării Regionale și Administrației Publice, în calitate de Autoritate de Management, iar la nivel regional de Agenția pentru Dezvoltare Regională Sud-Muntenia, Organism Intermediar ce monitorizează implementarea acestui proiect.",
+  "iso_homepage_header_manage_your_iso": "Gestionați ISO 27001 conformitatea proiectelor cu usurinta.",
+  "iso_easy_to_use": "Ușor de folosit",
+  "iso_easy_to_use_text": "Software-ul ISO 27001 Expert este găzduit pe web și foarte ușor de utilizat: nu este necesară instalarea; este necesară o minimă configurație inițială.",
+  "iso_covers_all_requirements": "Acoperă toate cerințele ISO 27001",
+  "iso_covers_all_requirements_text": "Software-ul oferă instrumentele pentru gestionarea tuturor activităților cerute de standardul ISO 27001 și documentația aferentă.",
+  "iso_pre_defined_templates": "Șabloane predefinite",
+  "iso_pre_defined_templates_text": "Software-ul vine cu șabloane predefinite care vor ajuta chiar și managerii și consultanții ISMS care nu sunt tehnici să obțină conformitatea cu standardul ISO 27001.",
+  "iso_chat_what_is_your_question": "Care este întrebarea ta? "
 }

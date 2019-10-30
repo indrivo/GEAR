@@ -662,5 +662,16 @@
   "iso_read_more": "Read more",
   "iso_get_started": "Get started",
   "iso_about_project": "About project",
-  "iso_iso": "ISO"
+  "iso_iso": "ISO",
+  "iso_homepage_1p": "ISO 27001  Expert is a specialized software for managing all the activities related to an Information Security Management System according to the ISO 27001 international standard. The system will help you in systemizing all the activities such as risk assessment, controls implementation, non-conformities management, asset management etc. and the related information security policies and procedures. ",
+  "iso_homepage_2p": "The software will provide you with a graphical overview of the level of compliance that the organization meets at a given time and will give you invaluable help in implementing and managing your Information Security Management System (ISMS) according to the ISO 27001 standard.",
+  "iso_homepage_about_project": "The Expert Company, - OIL, S. R. L., with its registered office in the Municipality. Bucharest, sector 2 is implemented on the premises of the Municipality. Town, Read More RAILWAY street, Bl. 36/335, Scara B, Et Al.1, Ap.25 in the period of the 01.12.2016 – 31.10.2019, the project is “to Strengthen the position of the firm, Expert, Company, OIL, printing and marketing of the product innovation it is an Online ISO 27001 Information Security Management System (OIISMS) - &gt; the market, & C”, which is financed by the Regional Operational Programme, priority Axis 2 - Enhancing the competitiveness of small and medium-sized enterprises investment Priority 2.1 Promoting entrepreneurship, in particular by facilitating the economic exploitation of new ideas and fostering the creation of new firms, including through business incubators, cod SMIS 109658. The Regional Operational programme is implemented at national level by the Ministry of Regional Development and Public Administration, as Managing Authority, and at the regional level by the Regional Development Agency of South Muntenia region, an Intermediate Body that monitors the implementation of the project.",
+  "iso_homepage_header_manage_your_iso": "Manage your ISO 27001 compliance projects with ease.",
+  "iso_easy_to_use": "Easy to use",
+  "iso_easy_to_use_text": "ISO 27001 Expert software is web-based and very easy to use: no installation is required; minimum initial configuration is needed.",
+  "iso_covers_all_requirements": "Covers all ISO 27001 requirements",
+  "iso_covers_all_requirements_text": "The software provides the tools for managing all the activities required by the ISO 27001 standard and the related documentation.",
+  "iso_pre_defined_templates": "Pre-defined templates",
+  "iso_pre_defined_templates_text": "The software comes with predefined templates which will help even non-technical ISMS managers and consultants to achieve compliance with the ISO 27001 standard.",
+  "iso_chat_what_is_your_question": "What is your question? "
 }
