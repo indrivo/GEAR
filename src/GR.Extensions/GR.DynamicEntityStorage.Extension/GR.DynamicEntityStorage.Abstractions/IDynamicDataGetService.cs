@@ -6,6 +6,7 @@ using GR.Core;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Entities.Abstractions.Enums;
+using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace GR.DynamicEntityStorage.Abstractions
 {
@@ -83,7 +84,7 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginatedResultAsync<TEntity>(uint page = 1,
+        Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync<TEntity>(uint page = 1,
             uint perPage = 10, string queryString = null,
             IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null)
             where TEntity : BaseModel;
@@ -98,7 +99,7 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginatedResultAsync(string entity, uint page = 1,
+        Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync(string entity, uint page = 1,
             uint perPage = 10, string queryString = null,
             IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null);
 

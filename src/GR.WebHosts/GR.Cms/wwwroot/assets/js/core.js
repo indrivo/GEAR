@@ -302,11 +302,6 @@ window.translate = function (key) {
     return trans[key];
 };
 
-
-//$(document).ajaxComplete(function (event, xhr, settings) {
-//	window.forceTranslate();
-//});
-
 //Translate page content
 window.forceTranslate = function (selector = null) {
     return new Promise((resolve, reject) => {
@@ -335,9 +330,7 @@ window.forceTranslate = function (selector = null) {
                         }
                     }
                 });
-        } catch (e) {
-            //ignore
-        }
+        } catch (e) { }
         resolve();
     });
 };
@@ -526,7 +519,7 @@ Notificator.prototype.createNotificationBodyContainer = function (notification) 
 
 
 Notificator.prototype.registerOpenNotificationEvent = function () {
-    
+
 };
 
 Notificator.prototype.origin = function () {
@@ -946,9 +939,11 @@ ST.prototype.registerLocalLogout = function (selector) {
                         if (data.is_success) {
                             swal("Success!", data.message, "success");
                             localStorage.clear();
+                            //window.deleteCookie("language");
                             window.location.href = "/Account/Login";
                         } else {
                             swal("Fail!", data.error_keys[0].message, "error");
+                            localStorage.removeItem("current_user");
                         }
                     },
                     error: function () {
@@ -982,3 +977,10 @@ class Validator {
         return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email);
     }
 }
+
+//Extensions
+jQuery.fn.extend({
+    hasAttr: function (attrName) {
+        return this.get(0).hasAttribute(attrName);
+    }
+});

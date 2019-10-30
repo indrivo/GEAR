@@ -28,6 +28,7 @@ using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Entities.Security.Abstractions;
 using GR.Entities.Security.Abstractions.Enums;
+using GR.Entities.Security.Abstractions.Helpers;
 using GR.Identity.Abstractions;
 
 namespace GR.DynamicEntityStorage
@@ -69,6 +70,7 @@ namespace GR.DynamicEntityStorage
         /// <param name="entityRoleAccessManager"></param>
         /// <param name="userManager"></param>
         /// <param name="httpContextAccessor"></param>
+        /// <param name="entityRepository"></param>
         public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IEntityRepository entityRepository)
         {
             _context = context;
@@ -102,6 +104,7 @@ namespace GR.DynamicEntityStorage
             var table = _context.Table
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
+                .ThenInclude(x => x.TableFieldConfig)
                 .FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId
                                      || x.Name.Equals(entity) && x.IsCommon
                                      || x.IsPartOfDbContext && x.Name.Equals(entity));
@@ -661,12 +664,11 @@ namespace GR.DynamicEntityStorage
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginatedResultAsync<TEntity>(uint page = 1, uint perPage = 10, string queryString = null,
+        public virtual async Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync<TEntity>(uint page = 1, uint perPage = 10, string queryString = null,
             IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null) where TEntity : BaseModel
         {
             return await GetPaginatedResultAsync(typeof(TEntity).Name, page, perPage, queryString, filters, orderDirection);
         }
-
 
         /// <summary>
         /// Get paginated result
@@ -678,10 +680,10 @@ namespace GR.DynamicEntityStorage
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginatedResultAsync(string entity, uint page = 1, uint perPage = 10, string queryString = null,
+        public virtual async Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync(string entity, uint page = 1, uint perPage = 10, string queryString = null,
             IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null)
         {
-            var response = new ResultModel<IEnumerable<Dictionary<string, object>>>();
+            var response = new ResultModel<PaginationResponseViewModel>();
             if (entity.IsNullOrEmpty()) return response;
             var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
             if (!state)
@@ -691,10 +693,7 @@ namespace GR.DynamicEntityStorage
             }
 
             if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
-            {
-                response.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return response;
-            }
+                return new AccessDeniedResult<PaginationResponseViewModel>();
 
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             if (filters != null) model.Filters = filters.ToList();
@@ -712,13 +711,14 @@ namespace GR.DynamicEntityStorage
                     foreach (var entry in responseData)
                     {
                         var identifier = entry[field.Name]?.ToString().ToGuid();
-                        var obj = identifier != null ? await GetById(tableName?.Value, identifier.Value) : null;
+                        var obj = identifier != null ? await GetById(tableName.Value, identifier.Value) : null;
                         entry.Add($"{field.Name}Reference", obj?.Result);
                     }
                 }
             }
 
-            return dbRequest.Map<IEnumerable<Dictionary<string, object>>>(responseData);
+            dbRequest.Result.ViewModel.Values = responseData;
+            return dbRequest;
         }
 
         /// <inheritdoc />
@@ -1249,7 +1249,7 @@ namespace GR.DynamicEntityStorage
         /// <param name="predicate"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null)
+        public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<Filter> filters = null)
             => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate, filters);
     }
 }

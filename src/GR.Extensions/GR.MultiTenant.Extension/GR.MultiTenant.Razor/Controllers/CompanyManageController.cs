@@ -27,6 +27,7 @@ using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.MultiTenant.Razor.Helpers;
 using GR.Notifications.Abstractions;
+using IdentityServer4.Extensions;
 
 namespace GR.MultiTenant.Razor.Controllers
 {
@@ -146,6 +147,8 @@ namespace GR.MultiTenant.Razor.Controllers
         [HttpGet("/register-company"), AllowAnonymous]
         public async Task<IActionResult> RegisterCompany()
         {
+            if (User.IsAuthenticated()) return Redirect($"{HttpContext.GetAppBaseUrl()}/home");
+
             var model = new RegisterCompanyViewModel
             {
                 CountrySelectListItems = await _organizationService.GetCountrySelectList()
@@ -161,13 +164,14 @@ namespace GR.MultiTenant.Razor.Controllers
         [HttpPost("/register-company"), AllowAnonymous]
         public async Task<IActionResult> RegisterCompany(RegisterCompanyViewModel data)
         {
+            if (User.IsAuthenticated()) return Redirect($"{HttpContext.GetAppBaseUrl()}/home");
+
             if (!ModelState.IsValid)
             {
                 data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
                 return View(data);
             }
 
-            //check if exist
             var userNameExist = await _userManager.UserManager.FindByNameAsync(data.UserName);
             var userEmailExist = await _userManager.UserManager.FindByEmailAsync(data.Email);
 

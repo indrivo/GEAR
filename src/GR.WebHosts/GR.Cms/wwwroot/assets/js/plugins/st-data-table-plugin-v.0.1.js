@@ -33,11 +33,11 @@ RenderTableSelect.prototype.settings = {
     }
 };
 
-RenderTableSelect.prototype.className = function() {
+RenderTableSelect.prototype.className = function () {
     return this.settings.classNameText;
 };
 
-RenderTableSelect.prototype.templateSelect = function(data, type, row, meta) {
+RenderTableSelect.prototype.templateSelect = function (data, type, row, meta) {
     return "";
 };
 
@@ -50,7 +50,7 @@ RenderTableSelect.prototype.templateSelect = function(data, type, row, meta) {
  */
 function TableExport() { };
 TableExport.constructor = TableExport;
-TableExport.prototype.oldExportAction = function(self, e, dt, button, config) {
+TableExport.prototype.oldExportAction = function (self, e, dt, button, config) {
     if (button[0].className.indexOf("buttons-excel") >= 0) {
         if ($.fn.dataTable.ext.buttons.excelHtml5.available(dt, config)) {
             $.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config);
@@ -73,23 +73,23 @@ TableExport.prototype.oldExportAction = function(self, e, dt, button, config) {
  * @param {any} button
  * @param {any} config
  */
-TableExport.prototype.newExportAction = function(e, dt, button, config) {
+TableExport.prototype.newExportAction = function (e, dt, button, config) {
     var self = this;
     var oldStart = dt.settings()[0]._iDisplayStart;
 
     dt.one("preXhr",
-        function(e, s, data) {
+        function (e, s, data) {
             // Just this once, load all data from the server...
             data.start = 0;
             data.length = 2147483647;
 
             dt.one("preDraw",
-                function(e, settings) {
+                function (e, settings) {
                     // Call the original action function
                     new TableExport().oldExportAction(self, e, dt, button, config);
 
                     dt.one("preXhr",
-                        function(e, s, data) {
+                        function (e, s, data) {
                             // DataTables thinks the first item displayed is index 0, but we're not drawing that.
                             // Set the property to what it was before exporting.
                             settings._iDisplayStart = oldStart;
@@ -131,7 +131,7 @@ class TableBuilder {
         this.ajax = {
             "url": "/PageRender/LoadPagedData",
             "type": "POST",
-            "data": function(config) {
+            "data": function (config) {
                 Object.assign(config, scope.configurations.ajaxParameters);
                 config.filters = scope.filters;
                 return config;
@@ -150,10 +150,6 @@ class TableBuilder {
         this.filters = [];
         this.registerServices();
         window.TableBuilderInstances.register(this);
-    }
-
-    injectFilters(val) {
-        this.filters.push(val);
     }
 
 	/*
@@ -206,7 +202,7 @@ class TableBuilder {
         }).then(dataX => {
             this.configureTableBody(dataX);
 
-            $(".dynamic-table thead th:not(.no-sort)").on("click", function() {
+            $(".dynamic-table thead th:not(.no-sort)").on("click", function () {
                 const select = $(this).closest("thead").find("th.no-sort").find("input[type='checkbox']");
                 const state = select.is(":checked");
                 if (select && state) select.get(0).checked = false;
@@ -232,13 +228,13 @@ class TableBuilder {
             //CheckBox column
             renderColumns.push({
                 data: null,
-                "render": function(data, type, row, meta) {
+                "render": function (data, type, row, meta) {
                     return renderTableSelect.templateSelect(data, type, row, meta);
                 }
             });
 
             $.each(dataX.viewmodelData.viewModelFields,
-                function(index, column) {
+                function (index, column) {
                     let colName = column.name;
                     if (column.translate) {
                         colName = window.translate(column.translate);
@@ -251,7 +247,7 @@ class TableBuilder {
                             column: column
                         },
                         data: null,
-                        "render": function(data, type, row, meta) {
+                        "render": function (data, type, row, meta) {
                             const elDiv = document.createElement("div");
                             elDiv.setAttribute("class", "data-cell hasTooltip");
                             elDiv.setAttribute("data-prop-name", (column.tableModelFields) ? column.tableModelFields.name : "");
@@ -272,7 +268,7 @@ class TableBuilder {
 
                 renderColumns.push({
                     data: null,
-                    "render": function(data, type, row, meta) {
+                    "render": function (data, type, row, meta) {
                         const elDiv = document.createElement("div");
                         elDiv.setAttribute("class", "btn-group");
                         elDiv.setAttribute("role", "group");
@@ -294,6 +290,28 @@ class TableBuilder {
     }
 
 	/**
+	 * Add filter
+	 * @param {any} filter
+	 */
+    injectFilter(filter = {
+        parmeter: "",
+        searchValue: "",
+        criteria: "equals"
+    }) {
+        const exist = this.filters.find(x => x.parameter == filter.parameter);
+        if (!exist) this.filters.push(filter);
+        else {
+
+        }
+        console.log(this);
+        this.jTableInstance.ajax.reload();
+    }
+
+    getFilter(parameter) {
+        return this.filters.find(x => x.parameter == parameter);
+    }
+
+	/**
 	 * Add column filters
 	 * @param {any} columnsEl
 	 */
@@ -310,7 +328,6 @@ class TableBuilder {
 
     pushFilterColumn(vField) {
         const scope = this;
-        console.log(vField);
         const el = $(`<th>
 				<div class="row">
 						<div class="col-md row-filter">
@@ -322,30 +339,39 @@ class TableBuilder {
 					</th>`);
         const filterEl = el.find(".fa-filter");
         if (vField.tableModelFields) {
+            const fieldName = vField.tableModelFields.name;
             switch (vField.tableModelFields.dataType) {
                 case "nvarchar":
                 case "int32":
                 case "decimal":
                     {
-                        filterEl.on("click", function() {
+                        console.log(vField);
+                        filterEl.on("click", function () {
                             const item = $.Iso.DynamicFilter('text',
                                 this,
                                 null,
+                                null,
                                 {
-                                    id: 'testId',
+                                    id: fieldName,
                                     searchBarPlaceholder: "Caută",
+									searchValue: "test",
+                                    addButtonLabel: "",
                                     textEmitEventTimeout: 300
                                 });
 
-                            $(item.dynamicSelect).on('filterValueChange', function(event, arg) {
-                                scope.injectFilters(arg.value);
+                            $(item.dynamicSelect).on('filterValueChange', function (event, arg) {
+                                scope.injectFilter({
+                                    parameter: fieldName,
+                                    criteria: "contains",
+                                    searchValue: arg.value
+                                });
                             });
                         });
                     }
                     break;
                 case "uniqueidentifier":
                     {
-                        filterEl.on('click', function(event) {
+                        filterEl.on('click', function (event) {
                             const item = $.Iso.dynamicFilter('list',
                                 event.target,
                                 [
@@ -446,7 +472,7 @@ class TableBuilder {
             "initComplete": (settings, json) => this.onInitComplete(settings, json)
         }, this.dtConfs);
 
-        this.JQueryDataTableInstance = table.DataTable(dtConfig);
+        this.jTableInstance = table.DataTable(dtConfig);
     }
 }
 
@@ -456,7 +482,7 @@ class TableBuilder {
  * @param {any} tableId
  * @param {any} viewModelId
  */
-TableBuilder.prototype.restoreItem = function(rowId, tableId, viewModelId) {
+TableBuilder.prototype.restoreItem = function (rowId, tableId, viewModelId) {
     swal({
         title: window.translate("restore_alert"),
         text: "",
@@ -475,7 +501,7 @@ TableBuilder.prototype.restoreItem = function(rowId, tableId, viewModelId) {
                     id: rowId,
                     viewModelId: viewModelId
                 },
-                success: function(data) {
+                success: function (data) {
                     if (data.success) {
                         const oTable = $(`${tableId}`).DataTable();
                         oTable.draw();
@@ -484,7 +510,7 @@ TableBuilder.prototype.restoreItem = function(rowId, tableId, viewModelId) {
                         swal(window.translate("restore_fail"), data.message, "error");
                     }
                 },
-                error: function() {
+                error: function () {
                     swal(window.translate("restore_fail"), window.translate("api_not_respond"), "error");
                 }
             });
@@ -498,7 +524,7 @@ TableBuilder.prototype.restoreItem = function(rowId, tableId, viewModelId) {
  * @param {any} tableId
  * @param {any} viewModelId
  */
-TableBuilder.prototype.deleteItem = function(rowId, tableId, viewModelId) {
+TableBuilder.prototype.deleteItem = function (rowId, tableId, viewModelId) {
     swal({
         title: window.translate("delete_query_item"),
         text: "",
@@ -535,7 +561,7 @@ TableBuilder.prototype.deleteItem = function(rowId, tableId, viewModelId) {
  * @param {any} tableId
  * @param {any} viewModelId
  */
-TableBuilder.prototype.deleteItemForever = function(rowId, tableId, viewModelId) {
+TableBuilder.prototype.deleteItemForever = function (rowId, tableId, viewModelId) {
     swal({
         title: window.translate("delete_query_item"),
         text: "",
@@ -569,7 +595,7 @@ TableBuilder.prototype.deleteItemForever = function(rowId, tableId, viewModelId)
  * Render table cell
  * @param {any} column
  */
-TableBuilder.prototype.renderCell = function(row, column) {
+TableBuilder.prototype.renderCell = function (row, column) {
     try {
         return eval(column.template);
     }
@@ -587,7 +613,7 @@ TableBuilder.prototype.renderCell = function(row, column) {
  * @param {any} hasInlineEdit
  * @param {any} editPageLink
  */
-TableBuilder.prototype.getRenderRowActions = function(row, dataX) {
+TableBuilder.prototype.getRenderRowActions = function (row, dataX) {
     const container = this.getTableRowInlineActionButton(row, dataX)
         + this.getTableRowEditActionButton(row, dataX)
         + this.getTableRowDeleteRestoreActionButton(row, dataX)
@@ -600,7 +626,7 @@ TableBuilder.prototype.getRenderRowActions = function(row, dataX) {
  * @param {any} row
  * @param {any} dataX
  */
-TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function(row, dataX) {
+TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function (row, dataX) {
     return `${dataX.hasDeleteRestore
         ? `${row.isDeleted
             ? `<a href="javascript:void(0)" class='btn restore-item btn-warning btn-sm' onclick="new TableBuilder().restoreItem('${row.id
@@ -615,7 +641,7 @@ TableBuilder.prototype.getTableRowDeleteRestoreActionButton = function(row, data
  * @param {any} row
  * @param {any} dataX
  */
-TableBuilder.prototype.getTableRowInlineActionButton = function(row, dataX) {
+TableBuilder.prototype.getTableRowInlineActionButton = function (row, dataX) {
     if (row.isDeleted) return "";
     return `${dataX.hasInlineEdit
         ? `	<a data-viewmodel="${dataX.viewmodelData.result.id
@@ -628,7 +654,7 @@ TableBuilder.prototype.getTableRowInlineActionButton = function(row, dataX) {
  * @param {any} row
  * @param {any} dataX
  */
-TableBuilder.prototype.getTableDeleteForeverActionButton = function(row, dataX) {
+TableBuilder.prototype.getTableDeleteForeverActionButton = function (row, dataX) {
     return `${dataX.hasDeleteForever
         ? `	<a data-viewmodel="${dataX.viewmodelData.result.id
         }" class="delete-forever btn btn-warning btn-sm" href="javascript:void(0)">Delete forever</a>`
@@ -640,7 +666,7 @@ TableBuilder.prototype.getTableDeleteForeverActionButton = function(row, dataX) 
  * @param {any} row
  * @param {any} dataX
  */
-TableBuilder.prototype.getTableRowEditActionButton = function(row, dataX) {
+TableBuilder.prototype.getTableRowEditActionButton = function (row, dataX) {
     if (row.isDeleted) return "";
     return `${dataX.hasEditPage ? `<a class="btn btn-info btn-sm" href="${dataX.editPageLink}?itemId=${row.id
         }&&listId=${dataX.viewmodelData.result.id}">${window.translate("edit")}</a>`
@@ -650,7 +676,7 @@ TableBuilder.prototype.getTableRowEditActionButton = function(row, dataX) {
 /*
  * Delete/Restore selected rows
 */
-TableBuilder.prototype.deleteSelectedRows = function() {
+TableBuilder.prototype.deleteSelectedRows = function () {
     this.deleteSelectedRowsHandler(this);
 }
 
@@ -658,7 +684,7 @@ TableBuilder.prototype.deleteSelectedRows = function() {
  * Handler for delete/restore items
  * @param {any} ctx
  */
-TableBuilder.prototype.deleteSelectedRowsHandler = function(ctx) {
+TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
     const tableId = ctx.table().node().id;
     if (!tableId) {
         return this.toast.notify({ heading: "Something did not work" });
@@ -701,7 +727,7 @@ TableBuilder.prototype.deleteSelectedRowsHandler = function(ctx) {
  * @param {any} viewModelId
  * @param {any} mode
  */
-TableBuilder.prototype.deleteRestoreApiAsync = function(ctx, data, viewModelId, mode) {
+TableBuilder.prototype.deleteRestoreApiAsync = function (ctx, data, viewModelId, mode) {
     return new Promise((resolve, reject) => {
         window.loadAsync("/PageRender/DeleteItemsFromDynamicEntity",
             {
@@ -772,11 +798,11 @@ TableBuilder.prototype.buttons = [
     }
 ];
 
-TableBuilder.prototype.createdCell = function(td, cellData, rowData, row, col) {
+TableBuilder.prototype.createdCell = function (td, cellData, rowData, row, col) {
     //on created cell
 };
 
-TableBuilder.prototype.rowCallback = function(row, data) {
+TableBuilder.prototype.rowCallback = function (row, data) {
     //on callback
 };
 
@@ -786,7 +812,7 @@ TableBuilder.prototype.rowCallback = function(row, data) {
  * @param {any} data
  * @param {any} dataIndex
  */
-TableBuilder.prototype.onRowCreate = function(row, data, dataIndex) {
+TableBuilder.prototype.onRowCreate = function (row, data, dataIndex) {
     if (data.isDeleted) {
         $(row).addClass("row-deleted");
         $(row).find("td.select-checkbox").find("input").css("display", "none");
@@ -811,7 +837,7 @@ TableBuilder.prototype.dom = '<"CustomizeColumns">lBfrtip';
 /**
  * Set your own props to be translated
  */
-TableBuilder.prototype.replaceTableSystemTranslations = function() {
+TableBuilder.prototype.replaceTableSystemTranslations = function () {
     const customReplace = new Array();
     //customReplace.push({ Key: "propName", Value: "value" });
     const searialData = JSON.stringify(customReplace);
@@ -821,7 +847,7 @@ TableBuilder.prototype.replaceTableSystemTranslations = function() {
 /*
  * Get translations for jquery dt
  */
-TableBuilder.prototype.translationsJson = function() {
+TableBuilder.prototype.translationsJson = function () {
     return `${location.origin}/api/LocalizationApi/GetJQueryTableTranslations?language=${window.getCookie("language")}&customReplace=${this.replaceTableSystemTranslations()}`;
 };
 
@@ -835,25 +861,25 @@ TableBuilder.prototype.dtConfs = {};
  * @param {any} settings
  * @param {any} json
  */
-TableBuilder.prototype.onInitComplete = function(settings, json) {
+TableBuilder.prototype.onInitComplete = function (settings, json) {
     //do something after table complete
 }
 
 
-TableBuilder.prototype.appendColumnsBeforeActions = function() {
+TableBuilder.prototype.appendColumnsBeforeActions = function () {
     return "";
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     const tables = Array.prototype.filter.call(
         document.getElementsByTagName("table"),
-        function(el) {
+        function (el) {
             return el.getAttribute("db-viewmodel") != null;
         }
     );
 
     $.each(tables,
-        function(index, tableEl) {
+        function (index, tableEl) {
             const conf = {
                 showActionsColumn: false
             };

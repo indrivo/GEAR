@@ -274,7 +274,7 @@ namespace GR.Entities.Abstractions.Extensions
                 var sqlQuery = QueryBuilder.GetPaginationByFilters(viewModel, page, perPage, queryString);
                 evArgs.Query = sqlQuery;
                 var result = EntitiesFromSql(dbContext, sqlQuery, new Dictionary<string, object>()).ToList();
-                var countRequest = dbContext.GetCount(viewModel);
+                var countRequest = dbContext.GetCountByFilters(viewModel);
                 if (countRequest.IsSuccess) response.Result.Total = (uint)countRequest.Result;
                 response.Result.ViewModel.Values = result;
                 response.IsSuccess = true;
@@ -480,6 +480,38 @@ namespace GR.Entities.Abstractions.Extensions
             {
                 var sqlQuery = QueryBuilder.GetCountByParameter(viewModel, filters);
                 var result = EntitiesFromSql(dbContext, sqlQuery, filters).FirstOrDefault();
+                var data = result?.FirstOrDefault();
+                if (data.IsNull()) return returnModel;
+                returnModel.Result = Convert.ToInt32(data?.Value);
+                returnModel.IsSuccess = true;
+                return returnModel;
+            }
+            catch (Exception)
+            {
+                return returnModel;
+            }
+        }
+
+        /// <summary>
+        /// Get count by filters
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        public static ResultModel<int> GetCountByFilters(this IEntityContext dbContext,
+            EntityViewModel viewModel)
+        {
+            var returnModel = new ResultModel<int>
+            {
+                IsSuccess = false,
+                Result = 0
+            };
+            if (viewModel == null) return returnModel;
+
+            try
+            {
+                var sqlQuery = QueryBuilder.CountByFilters(viewModel);
+                var result = EntitiesFromSql(dbContext, sqlQuery, new Dictionary<string, object>()).FirstOrDefault();
                 var data = result?.FirstOrDefault();
                 if (data.IsNull()) return returnModel;
                 returnModel.Result = Convert.ToInt32(data?.Value);

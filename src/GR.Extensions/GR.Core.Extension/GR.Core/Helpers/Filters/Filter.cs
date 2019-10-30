@@ -21,6 +21,7 @@ namespace GR.Core.Helpers.Filters
         public Criteria Criteria { get; set; } = Criteria.Equals;
         public string Parameter { get; set; }
         public object Value { get; set; }
+        public string SearchValue { get; set; }
 
         /// <summary>
         /// Adapt types
@@ -31,6 +32,11 @@ namespace GR.Core.Helpers.Filters
             if (!Value.ToString().IsGuid()) return;
             Guid.TryParse(Value?.ToString(), out var val);
             Value = val;
+        }
+
+        public void SetValue()
+        {
+            Value = SearchValue;
         }
     }
 }

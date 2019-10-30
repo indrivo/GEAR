@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace GR.Core.Extensions
 {
-	public static class HttpRequestExtensions
-	{
-		private const string RequestedWithHeader = "X-Requested-With";
-		private const string XmlHttpRequest = "XMLHttpRequest";
+    public static class HttpRequestExtensions
+    {
+        private const string RequestedWithHeader = "X-Requested-With";
+        private const string XmlHttpRequest = "XMLHttpRequest";
 
         /// <summary>
         /// Check if is ajax request
@@ -14,15 +14,15 @@ namespace GR.Core.Extensions
         /// <param name="request"></param>
         /// <returns></returns>
 		public static bool IsAjaxRequest(this HttpRequest request)
-		{
-			if (request == null)
-				throw new ArgumentNullException(nameof(request));
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
 
-			if (request.Headers != null)
-				return request.Headers[RequestedWithHeader] == XmlHttpRequest;
+            if (request.Headers != null)
+                return request.Headers[RequestedWithHeader] == XmlHttpRequest;
 
-			return false;
-		}
+            return false;
+        }
 
         /// <summary>
         /// Get app base url
@@ -34,5 +34,16 @@ namespace GR.Core.Extensions
             var request = accessor?.HttpContext?.Request;
             return $"{request?.Scheme}://{request?.Host}{request?.PathBase}";
         }
-	}
+
+        /// <summary>
+        /// Get app url
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string GetAppBaseUrl(this HttpContext context)
+        {
+            var request = context?.Request;
+            return $"{request?.Scheme}://{request?.Host}{request?.PathBase}";
+        }
+    }
 }

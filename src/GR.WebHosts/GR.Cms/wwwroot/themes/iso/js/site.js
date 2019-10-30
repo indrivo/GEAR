@@ -422,14 +422,12 @@ function changeTextCellPosition() {
 	const textareaWidth = $(expandCell).innerWidth();
 
 	const navBarWidth = $(".navigation").width();
-	console.log(navBarWidth + 'navBarWidth');
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
 	//const diffW = docWidth - pos.left;
 
 	if (hPercent > 72 && hPercent < 75) {
 		expandCell.css("top", `${pos.top - diffH}px`);
-		console.log(hPercent + 'hPercent');
 	} else if (hPercent > 80) {
 		expandCell.css("top", `${pos.top - diffH 
 			// - 240
@@ -440,7 +438,6 @@ function changeTextCellPosition() {
 		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth 
 			// * 2
 		}px`);
-		console.log(wPercent + 'wPercent');
 	}
 }
 

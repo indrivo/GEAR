@@ -547,7 +547,7 @@ namespace GR.PageRender
         }
 
 
-        public async Task<DTResult<object>> FilterJqueryDataTableRequestAsync(DTParameters param, Guid? viewModelId, ICollection<ListFilter> filters)
+        public async Task<DTResult<object>> FilterJqueryDataTableRequestAsync(DTParameters param, Guid? viewModelId, ICollection<Filter> filters)
         {
             var defaultResult = new DTResult<object>
             {

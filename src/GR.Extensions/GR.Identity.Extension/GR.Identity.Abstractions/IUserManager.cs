@@ -58,5 +58,12 @@ namespace GR.Identity.Abstractions
         /// <param name="user"></param>
         /// <returns></returns>
         Task<IEnumerable<ApplicationRole>> GetUserRolesAsync(ApplicationUser user);
+
+        /// <summary>
+        /// Disable user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DisableUserAsync(Guid? userId);
     }
 }

@@ -115,6 +115,6 @@ namespace GR.PageRender.Abstractions
         /// <param name="viewModelId"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        Task<DTResult<object>> FilterJqueryDataTableRequestAsync(DTParameters param, Guid? viewModelId, ICollection<ListFilter> filters);
+        Task<DTResult<object>> FilterJqueryDataTableRequestAsync(DTParameters param, Guid? viewModelId, ICollection<Filter> filters);
     }
 }

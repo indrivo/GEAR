@@ -118,7 +118,6 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             foreach (var item in viewModel.Fields)
                 fieldsData.AppendFormat(!item.Equals(last) ? "\"{0}\", " : "\"{0}\" ", item.ColumnName);
 
-
             sql.AppendFormat(
                 "SELECT \"{0}\" FROM \"{1}\".\"{2}\" WHERE {3}='{4}' ORDER BY \"Id\" OFFSET {5} * ({6} -1) ROWS FETCH NEXT {5} ROWS ONLY"
                 , fieldsData, viewModel.TableSchema, viewModel.TableName, parameterName, parameter, perPage,
@@ -170,6 +169,120 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
         }
 
         /// <summary>
+        /// Parse filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        private static string ParseFilters(EntityViewModel viewModel)
+        {
+            var filterBuilder = new StringBuilder();
+            if (!viewModel.Filters.Any()) return filterBuilder.ToString();
+            foreach (var filter in viewModel.Filters)
+            {
+                switch (filter.Criteria)
+                {
+                    case Criteria.Equals:
+                        filterBuilder.AppendFormat("\"{0}\"='{1}' ", filter.Parameter, filter.SearchValue);
+                        break;
+                    case Criteria.Greater:
+                        filterBuilder.AppendFormat("\"{0}\">'{1}' ", filter.Parameter, filter.SearchValue);
+                        break;
+                    case Criteria.Less:
+                        filterBuilder.AppendFormat("\"{0}\"<'{1}' ", filter.Parameter, filter.SearchValue);
+                        break;
+                    case Criteria.Contains:
+                        filterBuilder.AppendFormat("CAST(\"{0}\" AS VARCHAR) LIKE '%{1}%' ", filter.Parameter, filter.SearchValue);
+                        break;
+                    case Criteria.StartWith:
+                        filterBuilder.AppendFormat("CAST(\"{0}\" AS VARCHAR) LIKE '{1}%' ", filter.Parameter, filter.SearchValue);
+                        break;
+                    case Criteria.EndWith:
+                        filterBuilder.AppendFormat("CAST(\"{0}\" AS VARCHAR) LIKE '%{1}' ", filter.Parameter, filter.SearchValue);
+                        break;
+                    case Criteria.BetWheen:
+                        var data = filter.Value.ToString().Split(",");
+                        if (data.Length == 2)
+                        {
+                            filterBuilder.AppendFormat("\"{0}\" BETWEEN '{1}' AND '{2}' ", filter.Parameter, data[0], data[1]);
+                        }
+                        break;
+                }
+
+                filterBuilder.Append(!viewModel.Filters.IsLast(filter) ? " AND " : " ");
+            }
+
+            return filterBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Get global search
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        private static string GetGlobalSearchFilters(EntityViewModel viewModel, string queryString = null)
+        {
+            var queryBuilder = new StringBuilder();
+            foreach (var field in viewModel.Fields)
+            {
+                queryBuilder.AppendFormat(" \"{0}\"::TEXT LIKE '%{1}%' ", field.ColumnName, queryString);
+                if (!viewModel.Fields.IsLast(field))
+                {
+                    queryBuilder.Append(" OR ");
+                }
+            }
+
+            return queryBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        private static string AllFiltersCombine(EntityViewModel viewModel, string queryString = null)
+        {
+            var query = new StringBuilder();
+            var whereApplied = false;
+
+            if (viewModel.Filters.Any())
+            {
+                query.AppendFormat(" WHERE {0} ", ParseFilters(viewModel));
+                whereApplied = true;
+            }
+
+            if (queryString.IsNullOrEmpty()) return query.ToString();
+            query.Append(whereApplied ? " AND " : " WHERE ");
+            query.Append(GetGlobalSearchFilters(viewModel, queryString));
+
+            return query.ToString();
+        }
+
+        /// <summary>
+        /// Get order by
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        private static string GeOrderByColumnsQuery(EntityViewModel viewModel)
+        {
+            var query = new StringBuilder();
+            if (!viewModel.OrderByColumns.Any()) return query.ToString();
+            var orderByBuilder = new StringBuilder();
+            orderByBuilder.Append(" ORDER BY ");
+            foreach (var orderColumn in viewModel.OrderByColumns)
+            {
+                orderByBuilder.AppendFormat("\"{0}\" {1} ", orderColumn.Key, orderColumn.Value.ToString());
+                if (viewModel.OrderByColumns.IndexOf(orderColumn) != viewModel.OrderByColumns.Count - 1)
+                    orderByBuilder.Append(", ");
+            }
+
+            query.Append(orderByBuilder);
+
+            return query.ToString();
+        }
+
+        /// <summary>
         /// Get pagination result
         /// </summary>
         /// <param name="viewModel"></param>
@@ -197,70 +310,28 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
             query.AppendFormat("SELECT {1} FROM {0}", table,
                 fields);
 
-            var whereApplied = false;
+            query.Append(AllFiltersCombine(viewModel, queryString));
 
-            if (viewModel.Filters.Any())
-            {
-                var filterBuilder = new StringBuilder();
-                foreach (var filter in viewModel.Filters)
-                {
-                    switch (filter.Criteria)
-                    {
-                        case Criteria.Equals:
-                            filterBuilder.AppendFormat("\"{0}\"='{1}'", filter.Parameter, filter.Value);
-                            break;
-                        case Criteria.Greater:
-                            filterBuilder.AppendFormat("\"{0}\">'{1}'", filter.Parameter, filter.Value);
-                            break;
-                        case Criteria.Less:
-                            filterBuilder.AppendFormat("\"{0}\"<'{1}'", filter.Parameter, filter.Value);
-                            break;
-                        case Criteria.Contains:
-                            filterBuilder.AppendFormat("\"{0}\" like '%{1}%'", filter.Parameter, filter.Value);
-                            break;
-                        case Criteria.StartWith:
-                            filterBuilder.AppendFormat("\"{0}\" like '{1}%'", filter.Parameter, filter.Value);
-                            break;
-                        case Criteria.EndWith:
-                            filterBuilder.AppendFormat("\"{0}\" like '%{1}'", filter.Parameter, filter.Value);
-                            break;
-                        case Criteria.BetWheen:
-                            var data = filter.Value.ToString().Split(",");
-                            if (data.Length == 2)
-                            {
-                                filterBuilder.AppendFormat("\"{0}\" BETWEEN '{1}' AND '{2}'", filter.Parameter, data[0], data[1]);
-                            }
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-                query.AppendFormat(" WHERE {0} ", filterBuilder);
-                whereApplied = true;
-            }
-
-            if (!queryString.IsNullOrEmpty())
-            {
-                query.Append(whereApplied ? " AND " : " WHERE ");
-                query.AppendFormat("to_tsvector(\"{0}\"::text) @@ to_tsquery('{1}') ", viewModel.TableName, queryString);
-            }
-
-            if (viewModel.OrderByColumns.Any())
-            {
-                var orderByBuilder = new StringBuilder();
-                orderByBuilder.Append(" ORDER BY ");
-                foreach (var orderColumn in viewModel.OrderByColumns)
-                {
-                    orderByBuilder.AppendFormat("\"{0}\" {1} ", orderColumn.Key, orderColumn.Value.ToString());
-                    if (viewModel.OrderByColumns.IndexOf(orderColumn) != viewModel.OrderByColumns.Count() - 1)
-                        orderByBuilder.Append(", ");
-                }
-
-                query.Append(orderByBuilder);
-            }
+            query.Append(GeOrderByColumnsQuery(viewModel));
 
             query.AppendFormat(" OFFSET {0} LIMIT {1};", perPage * (page - 1), perPage);
 
+            return query.ToString();
+        }
+
+        /// <summary>
+        /// Count by filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        public override string CountByFilters(EntityViewModel viewModel, string queryString = null)
+        {
+            Arg.NotNull(viewModel, nameof(GetPaginationByFilters));
+            var table = $"\"{viewModel.TableSchema}\".\"{viewModel.TableName}\"";
+            var query = new StringBuilder();
+            query.AppendFormat("SELECT COUNT(*) FROM {0}", table);
+            query.Append(AllFiltersCombine(viewModel, queryString));
             return query.ToString();
         }
 

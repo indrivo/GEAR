@@ -175,6 +175,11 @@ namespace GR.Entities.EntityBuilder.MsSql.Controls.Query
             throw new NotImplementedException();
         }
 
+        public override string CountByFilters(EntityViewModel viewModel, string queryString = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public override string GetByColumnParameterQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters)
         {

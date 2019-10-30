@@ -37,5 +37,21 @@ namespace GR.Identity.Abstractions.Extensions
 
             return binder;
         }
+
+        /// <summary>
+        /// Identity result to result model 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static ResultModel<T> ToResultModel<T>(this IdentityResult result)
+        {
+            var response = new ResultModel<T>();
+            foreach (var e in result.Errors)
+            {
+                response.Errors.Add(new ErrorModel(e.Code, e.Description));
+            }
+            return response;
+        }
     }
 }

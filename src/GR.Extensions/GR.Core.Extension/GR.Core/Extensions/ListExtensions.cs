@@ -66,5 +66,21 @@ namespace GR.Core.Extensions
         {
             return source == null ? string.Empty : string.Join(separator, source);
         }
+
+        /// <summary>
+        /// Is last
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool IsLast<T>(this IEnumerable<T> items, T item)
+        {
+            var list = items?.ToList() ?? new List<T>();
+            if (!list.Any())
+                return false;
+            var last = list.ElementAt(list.Count - 1);
+            return item.Equals(last);
+        }
     }
 }

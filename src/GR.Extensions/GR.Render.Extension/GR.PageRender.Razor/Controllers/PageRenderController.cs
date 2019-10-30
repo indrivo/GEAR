@@ -441,14 +441,15 @@ namespace GR.PageRender.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AjaxOnly]
-        public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, ICollection<ListFilter> filters)
+        public async Task<JsonResult> LoadPagedData(DTParameters param, Guid viewModelId, ICollection<Filter> filters)
         {
-            var defaultResult = new DTResult<object>
+            var response = new DTResult<object>
             {
-                Data = new List<object>()
+                Data = new List<object>(),
+                Draw = param.Draw
             };
 
-            if (viewModelId == Guid.Empty) return Json(defaultResult);
+            if (viewModelId == Guid.Empty) return Json(response);
             var viewModel = await _pagesContext.ViewModels
                 .Include(x => x.TableModel)
                 .ThenInclude(x => x.TableFields)
@@ -458,48 +459,48 @@ namespace GR.PageRender.Razor.Controllers
                 .ThenInclude(x => x.Configurations)
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
-            if (viewModel == null) return Json(defaultResult);
-            var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
-            var sortColumn = param.SortOrder;
-            try
+            if (viewModel == null) return Json(response);
+            //var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
+            //var sortColumn = param.SortOrder;
+            //try
+            //{
+            //    var colIndex = Convert.ToInt32(param.Order[0].Column);
+            //    var columnIndex = colIndex == 0 ? colIndex : colIndex - 1;
+            //    if (fields.Count - 1 > columnIndex)
+            //    {
+            //        var field = fields.ElementAt(columnIndex);
+            //        if (field != null)
+            //        {
+            //            var column =
+            //                viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
+            //            sortColumn = column != null
+            //                ? $"{column.Name ?? field.Name} {param.SortOrder}"
+            //                : $"{field.Name} {param.SortOrder}";
+            //        }
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e);
+            //}
+
+            var page = param.Start / param.Length + 1;
+            var pageDataRequest = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page, 
+                (uint)param.Length, param.Search.Value, filters);
+            if (pageDataRequest.IsSuccess)
             {
-                var colIndex = Convert.ToInt32(param.Order[0].Column);
-                var columnIndex = colIndex == 0 ? colIndex : colIndex - 1;
-                if (fields.Count - 1 > columnIndex)
-                {
-                    var field = fields.ElementAt(columnIndex);
-                    if (field != null)
-                    {
-                        var column =
-                            viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
-                        sortColumn = column != null
-                            ? $"{column.Name ?? field.Name} {param.SortOrder}"
-                            : $"{field.Name} {param.SortOrder}";
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
+                var final = (await LoadManyToManyReferences(pageDataRequest.Result.ViewModel.Values.ToList(), viewModel)).ToList();
+                response.Data = final;
+                response.RecordsTotal = final.Count;
+                response.RecordsFiltered = (int)pageDataRequest.Result.Total;
             }
 
-            var page = param.Start == 0 ? 1 : param.Start / param.Length;
-            var pageData = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page, (uint)param.Length, param.Search.Value);
-            var final = await LoadManyToManyReferences(pageData.Result.ToList(), viewModel);
-
-            var finalResult = new DTResult<object>
-            {
-                Draw = param.Draw,
-                Data = final.ToList(),
-                RecordsFiltered = 10,
-                RecordsTotal = 14
-            };
             var serializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateFormatString = GearSettings.Date.DateFormat
             };
-            return Json(finalResult, serializerSettings);
+            return Json(response, serializerSettings);
         }
 
         /// <summary>

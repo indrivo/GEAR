@@ -111,6 +111,6 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <param name="predicate"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null);
+        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<Filter> filters = null);
     }
 }
