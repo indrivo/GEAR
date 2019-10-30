@@ -4,8 +4,7 @@
   * Licensed under MIT    
   */
 
-$(window).on("load", function() {
-
+$(window).on("load", function () {
 	$('.loader-wrapper').fadeOut(1000, function() {
 		$(this).remove();
 	});
@@ -13,8 +12,6 @@ $(window).on("load", function() {
 });
 
 $(function(){
-
-
 
         $('[data-toggle="tooltip"]').tooltip();
         $('[data-toggle="popover"]').popover();
@@ -278,7 +275,3 @@ function toggleFullScreen() {
 		}
 	}
 }
-
-
-
-

@@ -12,6 +12,7 @@ loadAsync("/PageRender/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").th
 		});
 		window.forceTranslate("#navbarNavAltMarkup");
 	}
+	$(".preloader").fadeOut();
 });
 
 //user Section
@@ -56,4 +57,87 @@ $(document).ready(function () {
 			localStorage.removeItem("hasLoadedTranslations");
 		});
 	});
+});
+
+
+//Include chat
+(function (w, d) {
+	w.HelpCrunch = function () { w.HelpCrunch.q.push(arguments) }; w.HelpCrunch.q = [];
+	function r() { var s = document.createElement('script'); s.async = 1; s.type = 'text/javascript'; s.src = 'https://widget.helpcrunch.com/'; (d.body || d.head).appendChild(s) };
+	if (w.attachEvent) { w.attachEvent('onload', r) } else { w.addEventListener('load', r, false) }
+})(window, document);
+HelpCrunch('init', 'iso27001expert', {
+	applicationId: 1,
+	applicationSecret: 'GqwtGJkruYiB8bbRmISXaHSl1DuhRdmJpXrIiAr+8omlkxJa5ef7FzgkwQuJecAvfX/MzGLSPK6pAOsEzybCzQ=='
+});
+
+HelpCrunch('showChatWidget');
+
+$(function () {
+	let index = 0;
+	const helpCrunchTimer = setInterval(function () {
+		try {
+			const helpCrunchContainer = $($(`iframe[name='helpcrunch-iframe']`).get(0).contentDocument);
+			if (helpCrunchContainer) {
+				helpCrunchContainer.on("click", function () {
+					setTimeout(() => {
+						helpCrunchContainer.find("#helpcrunch-container.helpcrunch-chat-fadein .helpcrunch-chat").css("background", "#0540b5");
+					}, 200);
+				});
+
+				helpCrunchContainer.find(".helpcrunch-widget-type-icon-label").css("background", "#0540b5");
+				helpCrunchContainer.find(".helpcrunch-widget-icon-block").css("background", "#0540b5");
+				helpCrunchContainer.find(".helpcrunch-widget-type-icon-triangle").css("border", "#0540b5");
+				helpCrunchContainer.find(".helpcrunch-widget-type-icon-text").html(window.translate('iso_chat_what_is_your_question'));
+				$(`iframe[name='helpcrunch-iframe']`).css("display", "block");
+				if (index == 3) clearInterval(helpCrunchTimer);
+				index++;
+			}
+		}
+		catch (e) { }
+	}, 300);
+});
+
+$(function () {
+	let btn = $(".scroll-to-top");
+
+	$(window).scroll(function () {
+		if ($(window).scrollTop() > 300) {
+			btn.fadeIn();
+		} else {
+			btn.fadeOut();
+		}
+		if ($(window).scrollTop() > 80) {
+			$('.page-header').addClass('no-padding');
+			$('.sponsors').addClass('slideup');
+		} else {
+			$('.page-header').removeClass('no-padding');
+			$('.sponsors').removeClass('slideup');
+		}
+	});
+
+	btn.on('click', function (e) {
+		e.preventDefault();
+		$('html, body').animate({ scrollTop: 0 }, '300');
+	});
+
+	$(document).ready(function () {
+		window.forceTranslate().then(() => {
+			replaceIso();
+		});
+		replaceIso();
+	});
+
+
+	function replaceIso() {
+		$.each($('.iso-text'), function () {
+			let str = $(this);
+			if (!$(this).find('.color-blue-fw-4400').length > 0) {
+				str.html(
+					str.text().replace('ISO 27001', '<span><i><span class="color-blue fw-400">ISO</span> 27001</i></span>')
+				);
+			}
+		});
+	}
+
 });

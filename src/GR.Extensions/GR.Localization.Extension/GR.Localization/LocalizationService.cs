@@ -156,7 +156,7 @@ namespace GR.Localization
                             {
                                 Identifier = e.Identifier,
                                 Name = e.Name,
-                                IsDisabled = false
+                                IsDisabled = e.IsDisabled
                             });
                         }
                     }

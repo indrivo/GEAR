@@ -17,6 +17,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>@Localizer["system_log_in"]</title>
 
+	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
@@ -34,10 +35,10 @@
     <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
     <section id="wrapper" class="login-register login-sidebar d-flex">
-        <div class="login-box card col-5">
+        <div class="login-box col-5">
             <form class="form-horizontal h-100 position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
                 <div>
-                    <a href="javascript:void(0)" class="text-center db">
+                    <a href="/" class="text-center db">
                         <div class="logo-image"></div>
                     </a>
 
@@ -116,7 +117,8 @@
                 </div>
             </form>
         </div>
-        <div class="image-area col" style="background-image: url(../images/public/globe.svg);"></div>
+        <div class="image-area col" style="background-image: url(../images/public/home-background.svg);
+    background-color: hsla(220, 92%, 41%, 0.1);"></div>
     </section>
 
 
