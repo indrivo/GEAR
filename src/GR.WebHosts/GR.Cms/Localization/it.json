@@ -658,5 +658,9 @@
   "system_calendar_respond_success": "Risposta inviata con successo",
   "system_calendar_back": "Torna al calendario",
   "system_auth_welcome_back": "Bentornato",
-  "system_auth_pass_here": "Aggiungi la tua password qui"
+  "system_auth_pass_here": "Aggiungi la tua password qui",
+  "iso_read_more": "Leggi di più",
+  "iso_get_started": "Iniziare",
+  "iso_about_project": "Il progetto",
+  "iso_iso": "ISO"
 }

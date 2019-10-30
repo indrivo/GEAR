@@ -658,5 +658,9 @@
   "system_calendar_respond_success": "Reactie is succesvol verstuurd",
   "system_calendar_back": "Terug naar agenda",
   "system_auth_welcome_back": "Welkom terug",
-  "system_auth_pass_here": "Voeg uw wachtwoord hier op"
+  "system_auth_pass_here": "Voeg uw wachtwoord hier op",
+  "iso_read_more": "Lees meer",
+  "iso_get_started": "Aan de slag",
+  "iso_about_project": "Over het project",
+  "iso_iso": "ISO"
 }

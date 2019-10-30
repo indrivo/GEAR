@@ -658,5 +658,9 @@
   "system_calendar_respond_success": "Răspuns trimis cu succes",
   "system_calendar_back": "Înapoi la calendar",
   "system_auth_welcome_back": "Bine ai revenit",
-  "system_auth_pass_here": "Adăugați parola aici"
+  "system_auth_pass_here": "Adăugați parola aici",
+  "iso_read_more": "Citeste mai mult",
+  "iso_get_started": "Începeți",
+  "iso_about_project": "Despre proiect",
+  "iso_iso": "ISO"
 }
