@@ -28,7 +28,8 @@ namespace GR.ECommerce.Abstractions.Helpers
                 var pOrder = new ProductOrder
                 {
                     ProductVariationId = x.ProductVariationId,
-                    
+                    Amount = x.Amount,
+                    Price = x.Product?.PriceWithDiscount ?? 0
                 };
                 return pOrder;
             });

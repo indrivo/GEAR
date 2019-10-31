@@ -95,11 +95,14 @@ namespace GR.ECommerce.Products.Services
         /// <param name="cartId"></param>
         /// <param name="notes"></param>
         /// <returns></returns>
-        public async Task<ResultModel> CreateOrderAsync(Guid? cartId, string notes = null)
+        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? cartId, string notes = null)
         {
-            if (cartId == null) return new NotFoundResultModel<object>().ToBase();
+            if (cartId == null) return new NotFoundResultModel<Guid>();
             var cartRequest = await _cartService.GetCartByIdAsync(cartId);
-            if (!cartRequest.IsSuccess) return cartRequest.ToBase();
+            if (!cartRequest.IsSuccess) return new ResultModel<Guid>
+            {
+                Errors = cartRequest.Errors
+            };
             var cart = cartRequest.Result;
             var order = OrderMapper.Map(cart, notes);
             await _commerceContext.Orders.AddAsync(order);
@@ -113,7 +116,7 @@ namespace GR.ECommerce.Products.Services
                 });
             }
 
-            return dbRequest;
+            return new ResultModel<Guid>();
         }
 
         /// <summary>

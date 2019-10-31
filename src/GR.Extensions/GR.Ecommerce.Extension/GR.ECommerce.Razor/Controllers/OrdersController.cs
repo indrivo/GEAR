@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GR.Core;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
@@ -33,7 +34,22 @@ namespace GR.ECommerce.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult MyOrders() => View();
+
+        /// <summary>
+        /// Create order
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> CreateOrder()
+        {
+            var createOrderRequest = await _orderProductService.CreateOrderAsync(Guid.Empty);
+            if (createOrderRequest.IsSuccess)
+            {
+                return RedirectToAction("MyOrders");
+            }
+
+            return RedirectToAction("MyOrders");
+        }
 
         /// <summary>
         /// Get orders with pagination

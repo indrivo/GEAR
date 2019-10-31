@@ -22,7 +22,7 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Product variation ref
         /// </summary>
-        public  ProductVariation ProductVariation { get; set; }
+        public ProductVariation ProductVariation { get; set; }
         public Guid? ProductVariationId { get; set; }
 
         /// <summary>
@@ -30,5 +30,10 @@ namespace GR.ECommerce.Abstractions.Models
         /// </summary>
         [Required]
         public virtual double Price { get; set; } = 0;
+
+        /// <summary>
+        /// Amount
+        /// </summary>
+        public virtual int Amount { get; set; } = 0;
     }
 }
