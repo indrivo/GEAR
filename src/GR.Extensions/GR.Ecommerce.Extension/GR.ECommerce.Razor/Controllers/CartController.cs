@@ -11,7 +11,9 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
 using GR.Identity.Abstractions;
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,7 +30,10 @@ namespace GR.ECommerce.Razor.Controllers
         // GET: /<controller>/
         public override IActionResult Index()
         {
-            return View();
+
+
+
+            return View(GetCartItem());
         }
 
 
@@ -59,7 +64,7 @@ namespace GR.ECommerce.Razor.Controllers
                     await Context.Carts.AddAsync(cart);
                 }
 
-                var cartItem = Context.CartItems.FirstOrDefault(x => x.ProductId == model.ProductId && x.CartId == cart.Id);
+                var cartItem = Context.CartItems.FirstOrDefault(x => x.ProductId == model.ProductId && x.CartId == cart.Id && x.ProductVariationId == model.VariationId);
 
                 if (cartItem == null)
                 {
@@ -85,5 +90,14 @@ namespace GR.ECommerce.Razor.Controllers
             return Json("");
         }
 
+
+        public AddToCartViewModel GetCartItem()
+        {
+            var user = _userManager.GetCurrentUserAsync();
+            var cartByUser = Context.Carts.Include(i => i.CartItems).ThenInclude(i=>i.Product).FirstOrDefault(x => x.UserId == user.Result.Result.Id.ToGuid());
+
+            var result = cartByUser.Adapt<AddToCartViewModel>();
+            return result;
+        }
     }
 }

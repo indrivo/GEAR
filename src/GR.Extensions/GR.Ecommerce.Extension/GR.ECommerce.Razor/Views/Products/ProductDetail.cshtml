@@ -123,10 +123,40 @@
 
 
                 <div class="card">
-                    <div class=" card-body">
+                    <div class="card-body">
                        
-                        
+	                    <div class="col-12">
+		                    <p>Product is add to card</p>
+	                    </div>
 
+	                    <div class="row col-12">
+		                    <div class="col-3">
+			                    Iamge
+		                    </div>
+
+		                    <div class="col-6">
+			                    @Model.Name
+		                    </div>
+		                    <div alignclass="col-3">
+
+			                    1 x 250.00
+		                    </div>
+	                    </div>
+
+	                    <div class="mt-2 col-12 row">
+		                    <div class="col-8"></div>
+		                    <div class="col-4">
+			                    total sum: 250
+		                    </div>
+
+		                    <div class="col-4"></div>
+		                    <div class="mt-2 col-8">
+			                    <button class="btn button-label">Continue</button>
+			                    <button class="btn button-label">Go to cart</button>
+		                    </div>
+	                    </div>
+
+	                    
 
                     </div>
                 </div>
@@ -208,7 +238,27 @@
     }
 
 
-    function AddProductToCart() {
+	function AddProductToCart() {
+
+
+		const model = {
+			ProductId: '@Model.Id',
+			Quantity: $("#quantity_input").val(),
+			
+		}
+
+		$.ajax({
+			url: '@Url.Action("AddToCard","Cart")',
+			method: 'post',
+			data: model,
+			success: function(data) {
+
+			},
+			error: function(error) {
+				console.log(error);
+			}
+		});
+
         $('#productModal').modal('show');
     }
 

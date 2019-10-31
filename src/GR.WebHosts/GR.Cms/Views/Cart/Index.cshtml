@@ -1,0 +1,47 @@
+@model GR.ECommerce.Razor.ViewModels.AddToCartViewModel
+
+
+@{
+	ViewData["Title"] = "Cart";
+}
+
+<div class="col-12 row">
+	<div class="col-8">
+		<table class="table">
+			<tr>
+				<th>Product</th>
+				<th>Price</th>
+				<th>Quantity</th>
+				<th></th>
+			</tr>
+            
+			<tbody class="listProducts">
+			@foreach (var cartItem in Model.CartItems)
+			{
+				<tr>
+					<td>
+						@cartItem.Product.Name
+					</td>
+					<td>
+						@cartItem.Product.CurrentPrice
+					</td>
+					<td>
+						@cartItem.Amount
+					</td>
+					<td>
+						X
+					</td>
+				</tr>
+			}
+			</tbody>
+		</table>
+
+		<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter order note"></textarea>
+	</div>
+	<div class="col-4">
+		<p>Order summary</p>
+		<hr class="style1">
+		<p>S</p>
+		<hr class="style1">
+	</div>
+</div>
