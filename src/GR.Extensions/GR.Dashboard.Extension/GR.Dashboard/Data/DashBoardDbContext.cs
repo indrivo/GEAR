@@ -40,7 +40,7 @@ namespace GR.Dashboard.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
-            var path = Path.Combine(AppContext.BaseDirectory, "Configurations\\WidgetGroups.json");
+            var path = Path.Combine(AppContext.BaseDirectory, "Configuration/WidgetGroups.json");
             var items = JsonParser.ReadArrayDataFromJsonFile<ICollection<WidgetGroup>>(path);
             builder.Entity<WidgetGroup>().HasData(items);
             builder.Entity<RowReportWidget>().HasKey(x => new { x.ReportWidgetId, x.RowId });
