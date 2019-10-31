@@ -27,7 +27,8 @@ namespace GR.ECommerce.Abstractions.Helpers
             {
                 var pOrder = new ProductOrder
                 {
-                    ProductVariationId = x.
+                    ProductVariationId = x.ProductVariationId,
+                    
                 };
                 return pOrder;
             });
