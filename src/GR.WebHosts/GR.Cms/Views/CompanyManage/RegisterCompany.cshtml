@@ -120,7 +120,7 @@
 				<div class="logo-image"></div>
 			</a>
 			<h2 class="mt-5 mb-3 fw-600">@Localizer["system_multitenant_register_new"]</h2>
-			<div class="form-horizontal h-100 position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+			<div class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
 				<form class="h-100" id="register-company" asp-action="RegisterCompany" role="form" enctype="multipart/form-data">
 					<div class="form-content pr-1">
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>

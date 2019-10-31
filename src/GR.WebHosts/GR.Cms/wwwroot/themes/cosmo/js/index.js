@@ -125,6 +125,7 @@ $(function () {
 		window.forceTranslate().then(() => {
 			replaceIso();
 		});
+		window.forceTranslatePlaceHolders();
 		replaceIso();
 	});
 
@@ -139,5 +140,39 @@ $(function () {
 			}
 		});
 	}
+
+	window.forceTranslatePlaceHolders = function (selector = null) {
+		return new Promise((resolve, reject) => {
+			try {
+				const ctx = (!selector)
+					? document.getElementsByTagName('*')
+					: document.querySelector(selector).getElementsByTagName('*');
+				const translations = Array.prototype.filter.call(ctx,
+					function (el) {
+						return el.getAttribute('translate-placeholder') != null && !el.hasAttribute("translated-placeholder");
+					}
+				);
+				const trans = window.translations();
+				$.each(translations,
+					function (index, item) {
+						let key = $(item).attr("translate-placeholder");
+						if (key != "none" && key) {
+							const translation = trans[key];
+							if (translation) {
+								$(item).attr("placeholder", translation);
+								$(item).attr("translated-placeholder", "");
+							} else {
+								const message = `Key: ${key} is not translated!`;
+								console.warn(message);
+								localStorage.removeItem("hasLoadedTranslations");
+							}
+						}
+					});
+			} catch (e) {
+				//ignore
+			}
+			resolve();
+		});
+	};
 
 });

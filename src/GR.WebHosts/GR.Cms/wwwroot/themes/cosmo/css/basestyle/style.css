@@ -10893,8 +10893,3 @@ html, body {
 		top: calc(50% - 3.5px);
 		left: calc(50% - 3.5px);
 	}
-
-.sponsor-image {
-	height: 50px;
-	background-size: contain;
-}

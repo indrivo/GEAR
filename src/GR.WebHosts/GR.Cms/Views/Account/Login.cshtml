@@ -36,13 +36,13 @@
     <!-- ============================================================== -->
     <section id="wrapper" class="login-register login-sidebar d-flex">
         <div class="login-box col-5">
-            <form class="form-horizontal h-100 position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                <div>
-                    <a href="/" class="text-center db">
-                        <div class="logo-image"></div>
-                    </a>
+            <a href="/" class="text-center db">
+                <div class="logo-image"></div>
+            </a>
 
-                    <h2 class="mt-5 pt-5 fw-600">@Localizer["system_auth_welcome_back"]</h2>
+            <h2 class="mt-5 pt-5 fw-600">@Localizer["system_auth_welcome_back"]</h2>
+            <form class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
+                <div>
 
                     <div class="form-group mt-5">
                         <label for="username">@Localizer["system_auth_username"]</label>
