@@ -9,10 +9,10 @@
 	<div class="col-8">
 		<table class="table">
 			<tr>
-				<th>Product</th>
-				<th>Price</th>
-				<th>Quantity</th>
-				<th></th>
+				<th scope="col">Product</th>
+				<th scope="col">Price</th>
+				<th scope="col">Quantity</th>
+				<th scope="col"></th>
 			</tr>
             
 			<tbody class="listProducts">
@@ -38,11 +38,13 @@
 
 		<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter order note"></textarea>
 	</div>
-	<div class="col-4 row">
+	<div class="col-3 m-2 row border">
 		<p>Order summary</p>
 		<hr class="style1">
-		<div class="6">Subtotal</div>
-		<div class="6">@Model.TotalPrice</div>
+
+		<div class="6">TotalPrice</div>
+		<div class="6"></div>
+
 		<hr class="style1">
 	</div>
 </div>

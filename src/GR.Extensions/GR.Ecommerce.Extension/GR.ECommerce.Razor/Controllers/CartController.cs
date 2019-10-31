@@ -58,7 +58,6 @@ namespace GR.ECommerce.Razor.Controllers
                     cart = new Cart
                     {
                         UserId = user.Result.Result.Id.ToGuid(),
-                        TotalPrice = product.CurrentPrice * model.Quantity,
                     };
 
                     await Context.Carts.AddAsync(cart);
