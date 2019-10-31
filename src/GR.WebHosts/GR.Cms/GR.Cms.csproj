@@ -127,12 +127,11 @@
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
-	<Content Update="Views\CompanyManage\RegisterCompany.cshtml">
-	  <Pack>false</Pack>
-	</Content>
-	<Content Update="Views\Dashboard\Builder.cshtml">
-	  <Pack>false</Pack>
-	</Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Certificates\samplempass.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>
