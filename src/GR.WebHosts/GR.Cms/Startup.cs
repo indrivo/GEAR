@@ -110,6 +110,7 @@ using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.ECommerce.Paypal;
+using GR.ECommerce.Products.Services;
 using GR.Localization;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
@@ -466,7 +467,7 @@ namespace GR.Cms
 
 			//-------------------------------------Commerce module-------------------------------------
 			services.RegisterCommerceModule<CommerceDbContext>()
-				.RegisterCommerceProductRepository<ProductRepository, Product>()
+				.RegisterCommerceProductRepository<ProductService, Product>()
 				.RegisterCommerceStorage<CommerceDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -474,6 +475,8 @@ namespace GR.Cms
 				})
 				.RegisterPaypalProvider<PaypalPaymentService>()
 				.RegisterPaypalRazorProvider(Configuration)
+				.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterCartService<CartService>()
 				.RegisterCommerceEvents();
 
 			//---------------------------------Multi Tenant Module-------------------------------------

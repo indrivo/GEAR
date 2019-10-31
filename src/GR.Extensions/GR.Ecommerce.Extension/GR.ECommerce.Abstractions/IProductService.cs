@@ -6,7 +6,7 @@ using GR.ECommerce.Abstractions.Models;
 
 namespace GR.ECommerce.Abstractions
 {
-    public interface IProductRepository<TProduct> where TProduct : Product
+    public interface IProductService<TProduct> where TProduct : Product
     {
         /// <summary>
         /// Get all products

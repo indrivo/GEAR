@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.ECommerce.Abstractions\GR.ECommerce.Abstractions.csproj" />
   </ItemGroup>
 

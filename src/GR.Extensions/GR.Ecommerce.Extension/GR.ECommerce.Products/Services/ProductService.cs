@@ -9,14 +9,14 @@ using GR.ECommerce.Abstractions.Models;
 
 namespace GR.ECommerce.BaseImplementations.Repositories
 {
-    public class ProductRepository : IProductRepository<Product>
+    public class ProductService : IProductService<Product>
     {
         /// <summary>
         /// Inject commerce context
         /// </summary>
         private readonly ICommerceContext _commerceContext;
 
-        public ProductRepository(ICommerceContext commerceContext)
+        public ProductService(ICommerceContext commerceContext)
         {
             _commerceContext = commerceContext;
         }

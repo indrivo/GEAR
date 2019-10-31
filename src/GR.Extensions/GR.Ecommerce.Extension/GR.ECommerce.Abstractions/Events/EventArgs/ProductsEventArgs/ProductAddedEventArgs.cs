@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GR.ECommerce.Abstractions.Events.EventArgs
+namespace GR.ECommerce.Abstractions.Events.EventArgs.ProductsEventArgs
 {
     public class ProductAddedEventArgs : System.EventArgs
     {

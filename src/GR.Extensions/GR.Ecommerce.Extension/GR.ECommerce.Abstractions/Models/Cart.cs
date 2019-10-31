@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using GR.Core;
 
 namespace GR.ECommerce.Abstractions.Models
 {
-    public class Cart: BaseModel
+    public class Cart : BaseModel
     {
-        public double TotalPrice { get; set; }
+        /// <summary>
+        /// Total price
+        /// </summary>
+        public virtual double TotalPrice { get; set; }
 
-        public Guid UserId { get; set; }
+        /// <summary>
+        /// User id
+        /// </summary>
+        public virtual Guid UserId { get; set; }
 
-        public IEnumerable<CartItem> CartItems { get; set; } 
+        /// <summary>
+        /// Cart items
+        /// </summary>
+        public virtual IEnumerable<CartItem> CartItems { get; set; }
     }
 }

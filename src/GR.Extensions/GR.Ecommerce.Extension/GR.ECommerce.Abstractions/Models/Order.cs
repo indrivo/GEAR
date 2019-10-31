@@ -33,12 +33,19 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Order state
         /// </summary>
+        [Required]
         public virtual OrderState OrderState { get; set; } = OrderState.New;
 
         /// <summary>
         /// Order histories
         /// </summary>
         public virtual IEnumerable<OrderHistory> OrderHistories { get; set; }
+
+        /// <summary>
+        /// User notes
+        /// </summary>
+        [MaxLength(255)]
+        public virtual string Notes { get; set; }
     }
 
     public class OrderHistory : BaseModel

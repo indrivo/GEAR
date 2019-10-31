@@ -77,9 +77,24 @@ namespace GR.ECommerce.Abstractions.Models
         public virtual IEnumerable<ProductCategory> ProductCategories { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public ProductDiscount ProductDiscount { get; set; }
+
+        /// <summary>
+        /// Discount price
+        /// </summary>
+        public double DiscountPrice => (CurrentPrice * ProductDiscount?.Discount?.Percentage ?? 0) / 100;
+
+        /// <summary>
         /// Current price
         /// </summary>
         public virtual double CurrentPrice => ProductPrices?.OrderBy(x => x.Created).LastOrDefault()?.Price ?? 0;
+
+        /// <summary>
+        /// Final price with discount
+        /// </summary>
+        public virtual double PriceWithDiscount => CurrentPrice - DiscountPrice;
 
         /// <summary>
         /// Publish state of product
@@ -95,7 +110,5 @@ namespace GR.ECommerce.Abstractions.Models
         /// Gtin
         /// </summary>
         public virtual string Gtin { get; set; }
-
-       
     }
 }

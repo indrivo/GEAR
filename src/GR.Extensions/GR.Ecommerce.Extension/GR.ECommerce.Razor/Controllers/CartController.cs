@@ -19,7 +19,7 @@ namespace GR.ECommerce.Razor.Controllers
 {
     public class CartController  : CommerceBaseController<Cart, AddToCartViewModel>
     {
-        private IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<ApplicationUser> _userManager;
 
         public CartController(ICommerceContext context, IDataFilter dataFilter, IUserManager<ApplicationUser> userManager) : base(context, dataFilter)
         {
