@@ -7,11 +7,6 @@ namespace GR.ECommerce.Abstractions.Models
     public class Cart : BaseModel
     {
         /// <summary>
-        /// Total price
-        /// </summary>
-        public virtual double TotalPrice { get; set; }
-
-        /// <summary>
         /// User id
         /// </summary>
         public virtual Guid UserId { get; set; }
