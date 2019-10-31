@@ -1,6 +1,6 @@
 
 migration
-dd-migration -Context ComerceDbContext ComerceDbContext_addProductVariation
+add-migration -Context CommerceDbContext ComerceDbContext_addProductVariation
 
 
 acaunt

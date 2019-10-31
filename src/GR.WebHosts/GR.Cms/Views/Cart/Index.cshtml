@@ -6,12 +6,10 @@
 }
 
 <div class="row">
-	<form>
+	
 		<div class="col-8">
-
 			<partial name="_TableCartItems" model="@Model" />
-
-			<textarea name="" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter order note"></textarea>
+			<textarea class="form-control" id="OrderNotes" rows="3" placeholder="Enter order note"></textarea>
 		</div>
 		<div class="col-3 m-2 border border-light">
 			<p>Order summary</p>
@@ -24,7 +22,35 @@
 
 			<hr class="style1">
 
-			<button class="btn btn-success">Process to checkout</button>
+			<button class="btn btn-success" onclick="CreateOrder()">Process to checkout</button>
 		</div>
-	</form>
+	
 </div>
+
+
+<script type="text/javascript">
+	function CreateOrder() {
+
+
+		const model = {
+            cartId: '@Model.Id',
+            notes: $("#OrderNotes").val(),
+			
+		}
+
+		console.log(model);
+
+		$.ajax({
+			url: '@Url.Action("CreateOrder","Orders")',
+			method: 'post',
+			data: model,
+			success: function(data) {
+
+			},
+			error: function(error) {
+				console.log(error);
+			}
+		});
+        
+    }
+</script>
