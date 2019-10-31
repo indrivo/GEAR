@@ -22,4 +22,31 @@
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\GR.ECommerce.Abstractions\GR.ECommerce.Abstractions.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Products\Create.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\Edit.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\ProductDetail.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\Tabs\_CategoryMapping.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\Tabs\_GeneralInformation.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\Tabs\_ProductAttributes.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Products\Tabs\_ProductVariations.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

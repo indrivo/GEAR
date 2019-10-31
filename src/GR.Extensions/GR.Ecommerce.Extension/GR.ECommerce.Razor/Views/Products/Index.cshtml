@@ -52,6 +52,17 @@
                 },
                 ButtonType = BootstrapButton.Danger
             },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = "Details",
+                Url = Url.Action("ProductDetail", "Products"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("productId", "id")
+                }
+            },
         },
         Documentation = "This tan allow to manage your products"
     };

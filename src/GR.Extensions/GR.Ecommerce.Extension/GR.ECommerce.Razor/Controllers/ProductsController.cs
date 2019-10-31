@@ -39,6 +39,72 @@ namespace GR.ECommerce.Razor.Controllers
             return View();
         }
 
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ProductDetail(Guid? productId)
+        {
+            if (productId == null) return NotFound();
+
+            var productBd = await Context.Products.Include(i=>i.ProductImages).Include(i => i.ProductAttributes).ThenInclude(i=>i.ProductAttribute).Include(i => i.ProductVariations)
+                .FirstOrDefaultAsync(x=> x.Id == productId);
+            if (productBd is null) return NotFound();
+
+            var result = productBd.Adapt<ProductViewModel>();
+            result.ProductOption = GetProdOptionByVariation(result.Id);
+            result.ProductVariationDetails = GetProdVariationDetailsByOptions(result.ProductOption).DistinctBy(d=>d.Value).ToList();
+
+            return View(result);
+        }
+
+
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public JsonResult GetPriceByVariation(ProductPriceVariationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
+                return Json(model);
+            }
+
+            //var variationDetails = Context.ProductVariations.Include(i => i.ProductVariationDetails)
+            //    .Where(x => x.ProductId == model.ProductId); 
+
+
+            //var variationDetails = Context.ProductVariationDetails.Include(i=> i.ProductVariation).Where(x =>
+            //    model.ListVariationDetailsId.Contains(x.Id) && x.ProductVariation.ProductId == model.ProductId);
+
+            var listProductVariationDelails = Context.ProductVariationDetails.Include(i => i.ProductVariation)
+                .Where(x => x.ProductVariation.ProductId == model.ProductId);
+
+            var variationValueList =
+                listProductVariationDelails.Where(x => model.ListVariationDetailsId.Contains(x.Id))?.Select(s=>s.Value.Trim().ToLower());
+
+            var listVariationByValue = listProductVariationDelails
+                .Where(x => variationValueList.Contains(x.Value.Trim().ToLower())).Select(s=>s.ProductVariationId).DistinctBy(s=>s).ToList();
+
+
+            var listVariationById = Context.ProductVariations.Where(x => listVariationByValue.Contains(x.Id));
+
+
+            
+
+
+
+            return Json("");
+        }
+
         /// <inheritdoc />
         /// <summary>
         /// Create new product
@@ -209,7 +275,7 @@ namespace GR.ECommerce.Razor.Controllers
                 .ToDictionary(grouping => grouping.Key, x => x.ToList().Select(w => new SelectListItem
                 {
                     Text = w.Name,
-                    Value = w.Id.ToString()
+                    Value = w.Id.ToString(),
                 }));
 
             model.ProductOption = Context.ProductOption.ToList().Select(s => new SelectListItem
@@ -233,7 +299,28 @@ namespace GR.ECommerce.Razor.Controllers
                     Text = x.Name,
                     Value = x.Id.ToString()
                 }));
+
+           
             return model;
+        }
+
+
+        public List<SelectListItem> GetProdOptionByVariation(Guid productId)
+        {
+                return Context.ProductVariationDetails.Where(x=>x.ProductVariation.ProductId == productId).Select( s => new SelectListItem
+                {
+                    Text = s.ProductOption.Name,
+                    Value = s.ProductOptionId.ToString(),
+                }).AsEnumerable().DistinctBy(d=>d.Value).ToList();
+        }
+
+        public List<ProductVariationDetail> GetProdVariationDetailsByOptions(IEnumerable<SelectListItem> options)
+        {
+
+            var a = Context.ProductVariationDetails.Where(x =>
+                options.FirstOrDefault(i => i.Value.ToGuid() == x.ProductOptionId) != null).ToList();
+
+            return a;
         }
 
 

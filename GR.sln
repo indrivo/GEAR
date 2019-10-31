@@ -255,7 +255,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Paypal.Razor", "src\GR.E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Tests", "GR.Tests", "{95D3792C-FED2-459D-B818-2D4C07108CA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Core.Tests", "src\GR.Tests\GR.Core.Tests\GR.Core.Tests.csproj", "{49353CF9-498B-4F48-8542-6B94FE6187FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Core.Tests", "src\GR.Tests\GR.Core.Tests\GR.Core.Tests.csproj", "{49353CF9-498B-4F48-8542-6B94FE6187FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

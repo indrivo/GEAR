@@ -59,7 +59,12 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Product attributes
         /// </summary>
-        public virtual IEnumerable<ProductAttribute> ProductAttributes { get; set; }
+        public virtual IEnumerable<ProductAttributes> ProductAttributes { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        public virtual IEnumerable<ProductVariation> ProductVariations { get; set; }
 
         /// <summary>
         /// Product prices
@@ -91,6 +96,6 @@ namespace GR.ECommerce.Abstractions.Models
         /// </summary>
         public virtual string Gtin { get; set; }
 
-        public virtual List<ProductVariation> ProductVariations { get; set; }
+       
     }
 }

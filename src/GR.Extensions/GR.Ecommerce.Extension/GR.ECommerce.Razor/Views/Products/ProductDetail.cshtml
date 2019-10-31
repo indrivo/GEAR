@@ -1,0 +1,178 @@
+@model GR.ECommerce.Razor.ViewModels.ProductViewModel
+
+@{ ViewData["Title"] = "Product Detail"; }
+
+
+
+<style>
+	.activVariation {
+		border: 1px solid #9c9b9b;
+		cursor: pointer;
+
+	}
+	.selectVariation {
+		border: 1px solid #003d92;
+		cursor: pointer;
+	}
+	.disableVariation {
+		border: 1px dashed #9c9c9c;
+		opacity: 0.5;
+		pointer-events: none;
+		cursor: none;
+	}
+</style>
+ 
+<div class="container">
+	<div class="row">
+
+		<div class="col-lg-5 order-lg-2 order-1">
+			@*<div class="image_selected"><img src="images/single_4.jpg" alt=""></div>*@
+
+		</div>
+
+		<!-- Description -->
+		<div class="col-lg-5 order-3">
+			<div class="product_description">
+				<div class="product_name">@Model.Name</div>
+	 		
+				<div class="product_shortDescription"><p>@Html.Raw(Model.ShortDescription)</p></div>
+				<div class="order_info d-flex flex-row">
+					<form action="#">
+						<div class="clearfix" style="z-index: 1000;">
+
+							<!-- Product Quantity -->
+							<div class="product_quantity clearfix">
+								<span>Quantity: </span>
+								<button class="btn btn-light">-</button>
+								<input class="col-2" id="quantity_input" type="text" pattern="[0-9]*" value="1" disabled>
+								<button class="btn btn-light">+</button>
+							</div>
+
+							<!-- Product Variation -->
+
+							<div class="mt-3">
+								<p>Product variation</p>
+								<ul class="list-group">
+									@foreach (var productOption in Model.ProductOption)
+									{
+										<li class="list-group-item col-12" id="@productOption.Value">
+											<p class="mb-2">@productOption.Text: </p>
+											@foreach (var variatioDetail in Model.ProductVariationDetails.Where(x=> x.ProductOptionId.ToString() == productOption.Value))
+											{
+												<div class="variationDetails form-check p-2 form-check-inline activVariation" onclick="chengeStatus('@productOption.Value','@variatioDetail.Id')" id="@variatioDetail.Id">
+													@variatioDetail.Value
+												</div>
+											}
+										</li>
+									}
+								</ul>
+							</div>
+
+						</div>
+
+						<div class="product_price">Price: @Model.Price</div>
+						<div>
+							<button type="button" class="btn btn-success" onclick="getProductVariation()">Add to Cart</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="mt-2 col-12 row">
+		<h3 class="col-12">Specifications</h3>
+		<table class="table  col-12 col-md-6">
+			<tr>
+				<th>Atribut</th>
+				<th>Value</th>
+			</tr>
+			
+			@foreach(var atribut in Model.ProductAttributes)
+			{
+				<tr>
+					<td>@atribut.ProductAttribute?.Name</td>
+					<td>@atribut.Value</td>
+				</tr>
+			}
+			
+		</table>
+	</div>
+
+	<div class="mt-2 col-12">
+		<h3>Description</h3>
+
+			@Html.Raw(Model.Description)
+	</div>
+
+</div>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+
+	});
+
+
+	function chengeStatus(optionId, variationId) {
+
+		var controlSelectVariation = true;
+
+		if (!$("#" + variationId).hasClass("disableVariation"))
+		{
+			if ($("#" + variationId).hasClass("selectVariation"))
+			{
+				$("#" + variationId).removeClass("selectVariation");
+				$("#" + variationId).addClass("activVariation");
+				controlSelectVariation = false;
+			}
+
+			if (controlSelectVariation)
+			{
+				$("#" + optionId).find(".variationDetails").each(function (index, element) {
+					
+						$(element).removeClass("selectVariation");
+						$(element).addClass("activVariation");
+				});
+
+				$("#" + variationId).removeClass("activVariation");
+				$("#" + variationId).addClass("selectVariation");
+			}
+
+			getPriceByVariation(optionId);
+		}
+	}
+
+	function getPriceByVariation(optionId) {
+
+		var variationDetailsId = [];
+
+		$(".variationDetails").each(function(index, element) {
+			if ($(element).hasClass("selectVariation"))
+				variationDetailsId.push($(element).attr("id"));
+		});
+
+		const model = {
+			ProductId: '@Model.Id',
+			ListVariationDetailsId: variationDetailsId,
+			optionId: optionId
+		}
+
+		console.log(model);
+
+		$.ajax({
+			url: '@Url.Action("GetPriceByVariation")',
+			method: 'post',
+			data: model,
+			success: function(data) {
+				
+			},
+			error: function(error) {
+				console.log(error);
+			}
+		});		
+	}
+</script>
