@@ -1,0 +1,82 @@
+﻿@using System.Text
+@using GR.Core.Extensions
+@using GR.Dashboard.Abstractions
+@using GR.Dashboard.Abstractions.Enums
+@using GR.Dashboard.Abstractions.Models
+@inject IDashboardService DashboardService
+
+@{
+    var activeDashboard = await DashboardService.GetActiveDashboardAsync();
+
+    string GetWidgetStyle(WidgetUISettings uiSettings)
+    {
+        var builder = new StringBuilder();
+
+        var color = uiSettings.BackGroundColor.IsNullOrEmpty() ? "" : $"background-color: {uiSettings.BackGroundColor};";
+        builder.Append(color);
+        var width = uiSettings.Width.IsNullOrEmpty() ? "" : $"width: {uiSettings.Width}px;";
+        builder.Append(width);
+        var height = uiSettings.Height.IsNullOrEmpty() ? "" : $"height: {uiSettings.Height}px;";
+        builder.Append(height);
+        var radius = uiSettings.BorderRadius == 0 ? "" : $"border-radius: {uiSettings.BorderRadius}px;";
+        builder.Append(radius);
+
+        var border = uiSettings.BorderStyle.IsNullOrEmpty() ? "" : $"border: 1px { Enum.GetName(typeof(WidgetBorderStyle), Convert.ToInt16(uiSettings.BorderStyle))} black;";
+        builder.Append(border);
+        return builder.ToString();
+    }
+}
+
+<link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
+<link rel="stylesheet" href="~/assets/ReportScripts/report.css" />
+
+@if (activeDashboard.IsSuccess)
+{
+    var configuration = await DashboardService.GetDashboardConfigurationForRenderAsync();
+    <div class="card">
+        <div class="card-body">
+            <h5>@activeDashboard.Result.Name</h5>
+            @if (configuration.IsSuccess)
+            {
+                foreach (var row in configuration.Result)
+                {
+                    <div class="row">
+                        @foreach (var (widget, widgetBody, uiSettings) in row.GetWidgetBodies())
+                        {
+                            if (await DashboardService.HasAccess(row.Id, widget.Id))
+                            {
+                                <div class="col-md">
+                                    <div class="card mb-sm-4 mb-3">
+                                        <div class="card-body p-0 @uiSettings.ClassAttribute" style="@(GetWidgetStyle(uiSettings))">
+                                            <div class="p-3 pl-4">
+                                                <h5>@widget.Name</h5>
+                                                @if (!widgetBody.IsNullOrEmpty())
+                                                {
+                                                    @Html.Raw(widgetBody)
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <h1>@configuration.Errors.ElementAt(0)?.Message</h1>
+            }
+        </div>
+    </div>
+
+}
+else
+{
+    <h1>@activeDashboard.Errors.ElementAt(0)?.Message</h1>
+}
+
+<script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+<script src="~/lib/Chart.js/Chart.min.js"></script>
+
+<script src="~/assets/ReportScripts/report.js" asp-append-version="true"></script>

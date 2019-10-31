@@ -29,7 +29,8 @@ namespace GR.Dashboard.Abstractions.Helpers.Compilers
         /// <param name="builder"></param>
         public static void RegisterEngine(RazorLightEngineBuilder builder = null)
         {
-            Compiler = (builder ?? new RazorLightEngineBuilder().UseMemoryCachingProvider()).Build();
+            Compiler = (builder ?? new RazorLightEngineBuilder()
+                            .UseMemoryCachingProvider()).Build();
         }
     }
 }

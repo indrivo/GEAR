@@ -4,7 +4,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
+using GR.Core.Helpers.Filters;
+using GR.Entities.Abstractions.Enums;
+using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 
 namespace GR.DynamicEntityStorage.Abstractions
 {
@@ -72,13 +74,34 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <returns></returns>
 
         Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetAll<TEntity>(Func<Dictionary<string, object>, bool> func) where TEntity : BaseModel;
+
         /// <summary>
         /// Get paginated result
         /// </summary>
         /// <param name="page"></param>
         /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <param name="filters"></param>
+        /// <param name="orderDirection"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Dictionary<string, object>>>> GetPaginated<TEntity>(ulong page = 1, ulong perPage = 10) where TEntity : BaseModel;
+        Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync<TEntity>(uint page = 1,
+            uint perPage = 10, string queryString = null,
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null)
+            where TEntity : BaseModel;
+
+        /// <summary>
+        /// Get paginated result
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <param name="filters"></param>
+        /// <param name="orderDirection"></param>
+        /// <returns></returns>
+        Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync(string entity, uint page = 1,
+            uint perPage = 10, string queryString = null,
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null);
 
         /// <summary>
         /// Get by id

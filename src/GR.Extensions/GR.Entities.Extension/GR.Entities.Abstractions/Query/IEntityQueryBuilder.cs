@@ -36,5 +36,23 @@ namespace GR.Entities.Abstractions.Query
 
         string GetByIncludeParam(EntityViewModel parentTable, EntityViewModel childTable,
            string fieldName);
+
+        /// <summary>
+        /// Get pagination result with filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        string GetPaginationByFilters(EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null);
+
+        /// <summary>
+        /// Get count by filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        string CountByFilters(EntityViewModel viewModel, string queryString = null);
     }
 }

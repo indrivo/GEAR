@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Linq;
+using GR.Cms.ViewModels.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using GR.Cms.ViewModels.InstallerModels;
 using GR.Identity.Abstractions;
 using GR.Identity.Data;
 using GR.Notifications.Abstractions;
@@ -28,6 +28,7 @@ namespace GR.Cms.Controllers
 		/// <param name="userManager"></param>
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
+		/// <param name="signInManager"></param>
 		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
 		{
 			_userManager = userManager;
@@ -47,6 +48,10 @@ namespace GR.Cms.Controllers
 			return View();
 		}
 
+		/// <summary>
+		/// Error page
+		/// </summary>
+		/// <returns></returns>
 		public IActionResult Error() =>
 			View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 	}

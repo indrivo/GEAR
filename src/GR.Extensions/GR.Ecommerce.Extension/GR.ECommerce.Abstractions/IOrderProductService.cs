@@ -29,7 +29,7 @@ namespace GR.ECommerce.Abstractions
         /// <param name="cartId"></param>
         /// <param name="notes"></param>
         /// <returns></returns>
-        Task<ResultModel> CreateOrderAsync(Guid? cartId, string notes = null);
+        Task<ResultModel<Guid>> CreateOrderAsync(Guid? cartId, string notes = null);
 
         /// <summary>
         /// Get paginated orders by user id

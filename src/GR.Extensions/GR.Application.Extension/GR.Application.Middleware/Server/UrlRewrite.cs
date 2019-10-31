@@ -79,7 +79,7 @@ namespace GR.Application.Middleware.Server
             {
                 if (ctx.Request.Cookies.FirstOrDefault(x => x.Key == "language").Equals(default(KeyValuePair<string, string>)))
                 {
-                    ctx.Response.Cookies.Append("language", Settings.DEFAULT_LANGUAGE);
+                    ctx.Response.Cookies.Append("language", GearSettings.DEFAULT_LANGUAGE);
                 }
             }
             catch (Exception e)

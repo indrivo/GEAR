@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
 using GR.Dashboard.Abstractions.Models;
+using GR.Dashboard.Abstractions.Models.Permissions;
 using GR.Dashboard.Abstractions.Models.RowWidgets;
 using GR.Dashboard.Abstractions.Models.WidgetTypes;
 
@@ -62,5 +63,10 @@ namespace GR.Dashboard.Abstractions
         /// Widgets
         /// </summary>
         DbSet<RowReportWidget> RowReportWidgets { get; set; }
+
+        /// <summary>
+        /// Access to view
+        /// </summary>
+        DbSet<RowWidgetAcl> WidgetAcls { get; set; }
     }
 }

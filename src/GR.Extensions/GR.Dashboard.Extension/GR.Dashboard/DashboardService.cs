@@ -11,9 +11,13 @@ using GR.Core.Helpers;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Constants;
 using GR.Dashboard.Abstractions.Models;
+using GR.Dashboard.Abstractions.Models.Permissions;
 using GR.Dashboard.Abstractions.Models.RowWidgets;
 using GR.Dashboard.Abstractions.Models.ViewModels;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Identity.Abstractions;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
 
 namespace GR.Dashboard
 {
@@ -27,11 +31,23 @@ namespace GR.Dashboard
         /// Inject db context
         /// </summary>
         private readonly IDashboardDbContext _context;
+
+        /// <summary>
+        /// Inject role manager
+        /// </summary>
+        private readonly RoleManager<ApplicationRole> _roleManager;
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
         #endregion
 
-        public DashboardService(IDashboardDbContext context)
+        public DashboardService(IDashboardDbContext context, RoleManager<ApplicationRole> roleManager, IUserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -326,7 +342,7 @@ namespace GR.Dashboard
         /// Add or update widgets to row
         /// </summary>
         /// <param name="row"></param>
-        /// <param name="rowId"></param>
+        /// <param name="isNew"></param>
         /// <returns></returns>
         protected virtual async Task<ResultModel> AddOrUpdateWidgetsToRowAsync(DashboardRowViewModel row, bool? isNew = false)
         {
@@ -560,7 +576,156 @@ namespace GR.Dashboard
         public virtual Task SeedWidgetsAsync()
         {
             return Task.CompletedTask;
+        }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Get ui settings for mapped
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<WidgetUISettings>> GetUISettingsForWidgetAsync(Guid? widgetId, Guid? rowId)
+        {
+            var response = new ResultModel<WidgetUISettings>();
+            if (!widgetId.HasValue || !rowId.HasValue)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return response;
+            }
+
+            var customWidgets =
+                await _context.RowCustomWidgets.FirstOrDefaultAsync(
+                    x => x.RowId.Equals(rowId) && x.CustomWidgetId.Equals(widgetId));
+            if (customWidgets != null)
+            {
+                response.IsSuccess = true;
+                response.Result = customWidgets;
+                return response;
+            }
+
+            response.Errors.Add(new ErrorModel(string.Empty, "UI settings are not currently available for this widget group"));
+
+            return response;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Update
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <param name="uiSettings"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> UpdateUISettingsAsync(Guid? widgetId, Guid? rowId, WidgetUISettings uiSettings)
+        {
+            var response = new ResultModel();
+            if (!widgetId.HasValue || !rowId.HasValue)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return response;
+            }
+
+            var customWidget =
+                await _context.RowCustomWidgets.FirstOrDefaultAsync(
+                    x => x.RowId.Equals(rowId) && x.CustomWidgetId.Equals(widgetId));
+            if (customWidget != null)
+            {
+                customWidget.BackGroundColor = uiSettings.BackGroundColor;
+                customWidget.BorderRadius = uiSettings.BorderRadius;
+                customWidget.BorderStyle = uiSettings.BorderStyle;
+                customWidget.ClassAttribute = uiSettings.ClassAttribute;
+                customWidget.Height = uiSettings.Height;
+                customWidget.Width = uiSettings.Width;
+                _context.Update(customWidget);
+                return await _context.PushAsync();
+            }
+
+            return response;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Get acl for widget mapped on row
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<RowWidgetAcl>>> GetRowWidgetAclInfoAsync(Guid? widgetId, Guid? rowId)
+        {
+            var response = new ResultModel<IEnumerable<RowWidgetAcl>>();
+            if (!widgetId.HasValue || !rowId.HasValue)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return response;
+            }
+
+            var conf = await _context.WidgetAcls.Where(x => x.WidgetId.Equals(widgetId) && x.RowId.Equals(rowId)).ToListAsync();
+            response.IsSuccess = true;
+            response.Result = conf;
+            return response;
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Update conf
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <param name="configuration"></param>
+        /// <param name="widgetId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> UpdateAclAsync(Guid? widgetId, Guid? rowId, IEnumerable<RowWidgetAclBase> configuration)
+        {
+            var response = new ResultModel();
+            if (!widgetId.HasValue || !rowId.HasValue)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return response;
+            }
+            var roles = await _roleManager.Roles.NonDeleted().ToListAsync();
+
+            var dbConfRequest = await GetRowWidgetAclInfoAsync(widgetId, rowId);
+            if (!dbConfRequest.IsSuccess) return dbConfRequest.ToBase();
+
+            var oldConf = dbConfRequest.Result.ToList();
+            _context.WidgetAcls.RemoveRange(oldConf);
+
+            if (configuration != null)
+            {
+                foreach (var item in configuration)
+                {
+                    if (roles.FirstOrDefault(x => x.Id.ToGuid().Equals(item.RoleId)) == null) continue;
+
+                    var o = item.Adapt<RowWidgetAcl>();
+                    o.RowId = rowId.GetValueOrDefault();
+                    o.WidgetId = widgetId.GetValueOrDefault();
+                    await _context.WidgetAcls.AddAsync(o);
+                }
+            }
+
+            return await _context.PushAsync();
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Check permissions for view widget
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <param name="widgetId"></param>
+        /// <returns></returns>
+        public async Task<bool> HasAccess(Guid? rowId, Guid? widgetId)
+        {
+            if (rowId == null || widgetId == null) return false;
+            var confRequest = await GetRowWidgetAclInfoAsync(widgetId, rowId);
+            if (!confRequest.IsSuccess) return false;
+            if (!confRequest.Result.Any()) return true;
+            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess) return false;
+            var roles = (await _userManager.GetUserRolesAsync(currentUserRequest.Result))
+                .Select(x => x.Id.ToGuid()).ToList();
+
+            var selected = confRequest.Result.Where(x => x.Allow).Select(x => x.RoleId).ToList();
+            return roles.Intersect(selected).Any();
         }
     }
 }

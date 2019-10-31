@@ -92,9 +92,9 @@ namespace GR.Entities
                 {
                     if (foreignTable.IsPartOfDbContext)
                         foreignSchema.Value = foreignTable.EntityType;
-                    else if (foreignTable.EntityType != Settings.DEFAULT_ENTITY_SCHEMA)
+                    else if (foreignTable.EntityType != GearSettings.DEFAULT_ENTITY_SCHEMA)
                     {
-                        foreignSchema.Value = Settings.DEFAULT_ENTITY_SCHEMA;
+                        foreignSchema.Value = GearSettings.DEFAULT_ENTITY_SCHEMA;
                     }
                 }
                 var exist = data.FirstOrDefault(x =>
@@ -122,7 +122,7 @@ namespace GR.Entities
         {
             var rs = new ResultModel<CreateTableFieldViewModel>();
             var entitiesList = await _context.Table
-                .Where(x => x.IsPartOfDbContext || x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA))
+                .Where(x => x.IsPartOfDbContext || x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA))
                 .ToListAsync();
             if (!entitiesList.Any(x => x.Id.Equals(id)))
             {
@@ -202,7 +202,7 @@ namespace GR.Entities
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
-                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA))
+                .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA))
                 .ToListAsync();
             var syncModels = new List<SynchronizeTableViewModel>();
             foreach (var item in entities)
@@ -274,6 +274,7 @@ namespace GR.Entities
             var fieldType = await _context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == field.TableFieldTypeId);
             var fieldTypeConfig = _context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
             var configFields = new List<FieldConfigViewModel>();
+            //TODO: if config not defined, load it
             foreach (var y in field.TableFieldConfigValues)
             {
                 var fTypeConfig = fieldTypeConfig.FirstOrDefault(x => x.Id == y.TableFieldConfigId);
@@ -297,7 +298,7 @@ namespace GR.Entities
                     if (tableName != null)
                     {
                         var table = _context.Table.FirstOrDefault(x =>
-                            x.Name.Equals(tableName.Value) && x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
+                            x.Name.Equals(tableName.Value) && x.EntityType == GearSettings.DEFAULT_ENTITY_SCHEMA);
                         if (table != null && !table.IsPartOfDbContext && !table.IsSystem && !table.IsCommon)
                         {
                             config.Value = schema;

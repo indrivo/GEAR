@@ -35,5 +35,10 @@ namespace GR.Calendar.Abstractions.Events.EventArgs
         /// End date
         /// </summary>
         public virtual DateTime EndDate { get; set; }
+
+        /// <summary>
+        /// Url
+        /// </summary>
+        public  virtual  string BaseAppUrl { get; set; }
     }
 }

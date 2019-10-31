@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.DynamicEntityStorage.Exceptions;
-using GR.DynamicEntityStorage.Services;
 using GR.Entities.Controls.Builders;
 using GR.Entities.Data;
 using GR.Core;
@@ -69,7 +68,7 @@ namespace GR.DynamicEntityStorage
 
             var proprieties = BaseModel.GetPropsName().ToList();
 
-            model = await ViewModelBuilder.ResolveAsync(context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(context, model);
 
             var dynamicClass = CreateClass();
             CreateConstructor(dynamicClass);
