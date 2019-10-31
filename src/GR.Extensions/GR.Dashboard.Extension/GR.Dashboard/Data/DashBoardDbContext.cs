@@ -7,6 +7,7 @@ using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Models;
+using GR.Dashboard.Abstractions.Models.Permissions;
 using GR.Dashboard.Abstractions.Models.RowWidgets;
 using GR.Dashboard.Abstractions.Models.WidgetTypes;
 
@@ -39,12 +40,13 @@ namespace GR.Dashboard.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
-            var path = Path.Combine(AppContext.BaseDirectory, "Configurations\\WidgetGroups.json");
+            var path = Path.Combine(AppContext.BaseDirectory, "Configuration/WidgetGroups.json");
             var items = JsonParser.ReadArrayDataFromJsonFile<ICollection<WidgetGroup>>(path);
             builder.Entity<WidgetGroup>().HasData(items);
             builder.Entity<RowReportWidget>().HasKey(x => new { x.ReportWidgetId, x.RowId });
             builder.Entity<RowChartWidget>().HasKey(x => new { x.ChartWidgetId, x.RowId });
             builder.Entity<RowCustomWidget>().HasKey(x => new { x.CustomWidgetId, x.RowId });
+            builder.Entity<RowWidgetAcl>().HasKey(x => new { x.RowId, x.WidgetId, x.RoleId });
         }
 
         /// <inheritdoc />
@@ -66,5 +68,6 @@ namespace GR.Dashboard.Data
         public virtual DbSet<RowChartWidget> RowChartWidgets { get; set; }
         public virtual DbSet<RowCustomWidget> RowCustomWidgets { get; set; }
         public virtual DbSet<RowReportWidget> RowReportWidgets { get; set; }
+        public virtual DbSet<RowWidgetAcl> WidgetAcls { get; set; }
     }
 }

@@ -4,10 +4,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Filters;
 using GR.DynamicEntityStorage.Abstractions.Helpers;
-using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
-using GR.Entities.Abstractions.ViewModels.Table;
 
 namespace GR.DynamicEntityStorage.Abstractions
 {
@@ -112,6 +111,6 @@ namespace GR.DynamicEntityStorage.Abstractions
         /// <param name="predicate"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null);
+        Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<Filter> filters = null);
     }
 }

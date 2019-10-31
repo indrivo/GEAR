@@ -11,13 +11,15 @@
 
 @model Guid
 
+@{
+	var id = Accessor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
+	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
+}
+
 @if (User.Identity.IsAuthenticated)
 {
 	var user = await UserManager.GetUserAsync(User);
-	var id = Accessor.HttpContext.Session.GetString(LocalizationConfig.Value.SessionStoreKeyName);
-	var language = LocalizationConfig.Value.Languages.FirstOrDefault(l => l.Identifier == id);
 	var organization = TenantService.GetTenantById(user?.TenantId.GetValueOrDefault(Guid.Empty) ?? Guid.Empty);
-	//var languages = LocalizationConfig.Value.Languages.Where(x => x.IsDisabled == false);
 
 	<script>
 		var st = new ST();
@@ -28,7 +30,7 @@
 			s.user = {
 				userName: "@user?.UserName",
 				email: "@user?.Email",
-				id: "@user.Id",
+				id: "@user?.Id",
 				organization: "@organization.Name"
 			};
 			s.layout = {
@@ -48,10 +50,10 @@
 			};
 
 			s.user = {
-				userName: "@user.UserName",
-				email: "@user.Email",
-				id: "@user.Id",
-				organization: "@organization?.Name"
+				userName: "@user?.UserName",
+				email: "@user?.Email",
+				id: "@user?.Id",
+				organization: "@organization.Name"
 			};
 
 			s.localization = {
@@ -63,5 +65,27 @@
 			};
 			localStorage.setItem("settings", JSON.stringify(s));
 		}
+	</script>
+}
+else
+{
+	<script>
+		localStorage.removeItem("current_user");
+		const s = {
+				layout: {
+					id : "@Model"
+				}
+		};
+
+		s.localization = {
+				languages: window.load("/Localization/GetLanguagesAsJson"),
+				current: {
+					identifier: "@language?.Identifier",
+					name: "@language?.Name"
+				}
+			};
+
+		localStorage.setItem("settings", JSON.stringify(s));
+
 	</script>
 }

@@ -24,22 +24,22 @@ namespace GR.Dashboard.Abstractions.Models
         /// Get widget html bodies
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<(Widget, string)> GetWidgetBodies()
+        public IEnumerable<(Widget, string, WidgetUISettings)> GetWidgetBodies()
         {
-            var widgets = new (Widget, string)[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
+            var widgets = new (Widget, string, WidgetUISettings)[CustomWidgets.Count + ChartWidgets.Count + ReportWidgets.Count];
             foreach (var widget in CustomWidgets)
             {
-                widgets[widget.Order] = (widget.CustomWidget, widget.CustomWidget.Render());
+                widgets[widget.Order] = (widget.CustomWidget, widget.CustomWidget.Render(), widget);
             }
 
             foreach (var widget in ChartWidgets)
             {
-                widgets[widget.Order] = (widget.ChartWidget, widget.ChartWidget.Render());
+                widgets[widget.Order] = (widget.ChartWidget, widget.ChartWidget.Render(), widget);
             }
 
             foreach (var widget in ReportWidgets)
             {
-                widgets[widget.Order] = (widget.ReportWidget, widget.ReportWidget.Render());
+                widgets[widget.Order] = (widget.ReportWidget, widget.ReportWidget.Render(), widget);
             }
 
             return widgets;

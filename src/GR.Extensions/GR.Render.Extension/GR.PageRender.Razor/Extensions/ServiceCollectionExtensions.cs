@@ -1,26 +1,50 @@
 ﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using GR.DynamicEntityStorage.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Razor.Helpers;
-using GR.PageRender.Razor.Services;
 
 namespace GR.PageRender.Razor.Extensions
 {
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Register page render
+        /// Register razor page render
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddPageRenderUiModule(this IServiceCollection services)
+        public static IServiceCollection AddPageRenderUIModule<TPageRenderService>(this IServiceCollection services)
+            where TPageRenderService : class, IPageRender
         {
-            services.AddTransient<IPageRender, Services.PageRender>();
-            services.AddTransient<IMenuService, MenuService<IDynamicService>>();
+            services.AddTransient<IPageRender, TPageRenderService>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddTransient<IPageAclService, PageAclService>();
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
+            return services;
+        }
+
+        /// <summary>
+        /// Menu service
+        /// </summary>
+        /// <typeparam name="TMenuService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddMenuService<TMenuService>(this IServiceCollection services)
+            where TMenuService : class, IMenuService
+        {
+            services.AddTransient<IMenuService, TMenuService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Add page acl
+        /// </summary>
+        /// <typeparam name="TPageAclService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddPageAclService<TPageAclService>(this IServiceCollection services)
+            where TPageAclService : class, IPageAclService
+        {
+            services.AddTransient<IPageAclService, TPageAclService>();
+
             return services;
         }
     }

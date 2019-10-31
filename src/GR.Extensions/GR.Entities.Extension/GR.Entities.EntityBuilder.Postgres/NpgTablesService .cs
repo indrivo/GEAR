@@ -36,6 +36,7 @@ namespace GR.Entities.EntityBuilder.Postgres
                 Result = false,
                 Errors = new List<IErrorModel>()
             };
+            
             var sqlQuery = isNew
                 ? QueryTableBuilder.AddFieldQuery(table, tableName, tableSchema)
                 : QueryTableBuilder.UpdateFieldQuery(table, tableName, tableSchema);
@@ -371,6 +372,7 @@ namespace GR.Entities.EntityBuilder.Postgres
                 var command = new NpgsqlCommand(sqlQuery, connection);
                 connection.Open();
                 await command.ExecuteNonQueryAsync();
+                command.Dispose();
                 connection.Close();
             }
         }
@@ -399,6 +401,7 @@ namespace GR.Entities.EntityBuilder.Postgres
                     }
                     reader.Close();
                 }
+                command.Dispose();
                 connection.Close();
             }
             return result;

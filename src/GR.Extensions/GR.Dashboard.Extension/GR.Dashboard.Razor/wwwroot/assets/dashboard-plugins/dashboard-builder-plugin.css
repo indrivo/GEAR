@@ -1,0 +1,49 @@
+﻿.ui-draggable:hover {
+    cursor: move;
+}
+
+.left-canvas {
+    min-height: 30em;
+}
+
+.draggable-row-injected {
+    min-height: 8em;
+    border-style: dashed;
+    margin: 0.2em;
+    border-color: #2a4b65;
+    margin-bottom: 1em;
+    padding: 0.5em;
+}
+
+    .draggable-row-injected:hover {
+        border-color: orange;
+        border-style: solid;
+    }
+
+    .draggable-row-injected:active {
+        cursor: move;
+    }
+
+.draggable-widget-injected {
+    min-height: 7em;
+    border-style: dashed;
+    margin: 0.2em;
+    border-color: #2a4b65;
+}
+
+    .draggable-widget-injected:hover {
+        border-color: orange;
+        border-style: solid;
+    }
+
+.options-menu {
+    padding: 0.5em;
+}
+
+    .options-menu li {
+        list-style-type: none;
+    }
+
+        .options-menu li:hover {
+            cursor: pointer;
+        }

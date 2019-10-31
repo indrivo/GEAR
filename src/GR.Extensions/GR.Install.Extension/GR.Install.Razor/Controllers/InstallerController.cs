@@ -105,7 +105,7 @@ namespace GR.Install.Razor.Controllers
             _permissionService = permissionService;
             _cacheService = cacheService;
             _notify = notify;
-            _isConfigured = Application.CoreApp.IsConfigured(_hostingEnvironment);
+            _isConfigured = Application.GearApplication.IsConfigured(_hostingEnvironment);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace GR.Install.Razor.Controllers
         {
             if (_isConfigured) return RedirectToAction("Index", "Home");
             var model = new SetupModel();
-            var settings = Application.CoreApp.Settings(_hostingEnvironment);
+            var settings = Application.GearApplication.Settings(_hostingEnvironment);
             if (settings != null)
             {
                 model.DataBaseType = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
@@ -155,7 +155,7 @@ namespace GR.Install.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> Setup(SetupModel model)
         {
-            var settings = Application.CoreApp.Settings(_hostingEnvironment);
+            var settings = Application.GearApplication.Settings(_hostingEnvironment);
 
             if (model.DataBaseType == DbProviderType.MsSqlServer)
             {
@@ -191,12 +191,12 @@ namespace GR.Install.Razor.Controllers
             settings.SystemConfig.MachineIdentifier = $"_{tenantMachineName}_";
             var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
             await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
-            Application.CoreApp.InitMigrations();
+            Application.GearApplication.InitMigrations();
 
             await _permissionService.RefreshCache();
 
             var tenantExist =
-                await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == Settings.TenantId);
+                await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == GearSettings.TenantId);
             if (tenantExist)
             {
                 ModelState.AddModelError(string.Empty, "Invalid name for organization because is used for another organization or organization was configured");
@@ -205,7 +205,7 @@ namespace GR.Install.Razor.Controllers
 
             var tenant = new Tenant
             {
-                Id = Settings.TenantId,
+                Id = GearSettings.TenantId,
                 Name = model.Organization.Name,
                 MachineName = tenantMachineName,
                 Created = DateTime.Now,
@@ -253,12 +253,12 @@ namespace GR.Install.Razor.Controllers
             await _entitiesDbContext.SaveChangesAsync();
 
             //Create system tables
-            await Application.CoreApp.SyncDefaultEntityFrameWorkEntities(tenant.Id);
+            await Application.GearApplication.SyncDefaultEntityFrameWorkEntities(tenant.Id);
 
             //Create dynamic tables for configured tenant
             await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
 
-            await Application.CoreApp.SeedDynamicDataAsync();
+            await Application.GearApplication.SeedDynamicDataAsync();
 
             //Register in memory types
             await _dynamicService.RegisterInMemoryDynamicTypesAsync();

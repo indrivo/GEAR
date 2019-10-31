@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GR.Calendar.Abstractions.Events.EventArgs
+﻿namespace GR.Calendar.Abstractions.Events.EventArgs
 {
     public class EventUpdatedEventArgs : CalendarEventCreatedEventArgs
     {

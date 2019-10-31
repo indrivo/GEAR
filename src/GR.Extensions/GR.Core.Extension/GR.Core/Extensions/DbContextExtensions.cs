@@ -12,6 +12,16 @@ namespace GR.Core.Extensions
     public static class DbContextExtensions
     {
         /// <summary>
+        /// Get db context
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static DbContext GetContext(this IDbContext context)
+        {
+            return (DbContext)context;
+        }
+
+        /// <summary>
         /// Check if context is disposed
         /// </summary>
         /// <param name="context"></param>
@@ -58,7 +68,7 @@ namespace GR.Core.Extensions
             var local = context.Set<T>()
                 .Local
                 .FirstOrDefault(entry => entry.Id.Equals(entryId));
-            if (!local.IsNull())
+            if (local != null)
                 context.Entry(local).State = EntityState.Detached;
 
             context.Entry(t).State = EntityState.Modified;
@@ -162,6 +172,30 @@ namespace GR.Core.Extensions
 
             services.AddScoped(ContextFactory);
             return services;
+        }
+
+        /// <summary>
+        /// Deleted
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="eQuery"></param>
+        /// <returns></returns>
+        public static IQueryable<TEntity> Deleted<TEntity>(this IQueryable<TEntity> eQuery)
+            where TEntity : class, IBaseModel
+        {
+            return eQuery.Where(x => x.IsDeleted);
+        }
+
+        /// <summary>
+        /// Deleted
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="eQuery"></param>
+        /// <returns></returns>
+        public static IQueryable<TEntity> NonDeleted<TEntity>(this IQueryable<TEntity> eQuery)
+            where TEntity : class, IBaseModel
+        {
+            return eQuery.Where(x => !x.IsDeleted);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace GR.Cms
 		/// <param name="args"></param>
 		public static void Main(string[] args)
 		{
-			CoreApp.Run<Startup>(args);
+			GearApplication.Run<Startup>(args);
 		}
 	}
 }

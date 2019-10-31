@@ -6,9 +6,6 @@ namespace GR.Core.Helpers
 {
     public class ResultModel<T> : IResultModel<T>
     {
-        public ResultModel() =>
-            Errors = new List<IErrorModel>();
-
         /// <inheritdoc />
         /// <summary>
         /// Bool indicating that the request resulted with success.
@@ -16,14 +13,14 @@ namespace GR.Core.Helpers
         /// contain a Error message that produced this error.
         /// </summary>
         [JsonProperty("is_success")]
-        public bool IsSuccess { get; set; }
+        public virtual bool IsSuccess { get; set; }
 
         /// <inheritdoc />
         /// <summary>
         /// This property will contain error keys if any.
         /// </summary>
         [JsonProperty("error_keys")]
-        public ICollection<IErrorModel> Errors { get; set; }
+        public virtual ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>();
 
         /// <inheritdoc />
         /// <summary>
@@ -45,6 +42,19 @@ namespace GR.Core.Helpers
             Result = Result,
             Errors = Errors,
             KeyEntity = KeyEntity
+        };
+
+        /// <summary>
+        /// Adapt
+        /// </summary>
+        /// <typeparam name="TModelOutput"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public virtual ResultModel<TModelOutput> Map<TModelOutput>(TModelOutput result) => new ResultModel<TModelOutput>
+        {
+            IsSuccess = IsSuccess,
+            Result = result,
+            Errors = Errors
         };
     }
 }

@@ -13,39 +13,45 @@
  */
 /* line 1, ../../scss/bootstrap/_root.scss */
 
+iframe[name="helpcrunch-iframe"] {
+	bottom: 92px !important;
+	right: 10px !important;
+	display: none;
+}
+
 
 @import url(../../../../lib/font-awesome/css/font-awesome.min.css);
 @import url(../../../../lib/flag-icon-css/css/flag-icon.min.css);
 
 :root {
-  --colors-blue: #007bff;
-  --colors-indigo: #6610f2;
-  --colors-purple: #6f42c1;
-  --colors-pink: #e83e8c;
-  --colors-red: #dc3545;
-  --colors-orange: #fd7e14;
-  --colors-yellow: #ffc107;
-  --colors-green: #28a745;
-  --colors-teal: #20c997;
-  --colors-cyan: #17a2b8;
-  --colors-white: #fff;
-  --colors-gray: #6c757d;
-  --colors-gray-dark: #343a40;
-  --theme-colors-primary: #4B89FC;
-  --theme-colors-secondary: #6c757d;
-  --theme-colors-success: #69BA6D;
-  --theme-colors-info: #48a1af;
-  --theme-colors-warning: #FBB357;
-  --theme-colors-danger: #EA585A;
-  --theme-colors-light: #f8f9fa;
-  --theme-colors-dark: #343a40;
-  --breakpoint-xs: 0;
-  --breakpoint-sm: 576px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 992px;
-  --breakpoint-xl: 1200px;
-  --font-family-sans-serif: "GTWalsheim";
-  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	--colors-blue: #007bff;
+	--colors-indigo: #6610f2;
+	--colors-purple: #6f42c1;
+	--colors-pink: #e83e8c;
+	--colors-red: #dc3545;
+	--colors-orange: #fd7e14;
+	--colors-yellow: #ffc107;
+	--colors-green: #28a745;
+	--colors-teal: #20c997;
+	--colors-cyan: #17a2b8;
+	--colors-white: #fff;
+	--colors-gray: #6c757d;
+	--colors-gray-dark: #343a40;
+	--theme-colors-primary: #4B89FC;
+	--theme-colors-secondary: #6c757d;
+	--theme-colors-success: #69BA6D;
+	--theme-colors-info: #48a1af;
+	--theme-colors-warning: #FBB357;
+	--theme-colors-danger: #EA585A;
+	--theme-colors-light: #f8f9fa;
+	--theme-colors-dark: #343a40;
+	--breakpoint-xs: 0;
+	--breakpoint-sm: 576px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 992px;
+	--breakpoint-xl: 1200px;
+	--font-family-sans-serif: "GTWalsheim";
+	--font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* line 21, ../../scss/bootstrap/_reboot.scss */
@@ -75,14 +81,14 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 
 /* line 57, ../../scss/bootstrap/_reboot.scss */
 body {
-  margin: 0;
-  font-family: "GTWalsheim";
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #4E565A;
-  text-align: left;
-  background-color: #fff;
+	margin: 0;
+	font-family: Roboto;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #20272e;
+	text-align: left;
+	background-color: #fff;
 }
 
 /* line 73, ../../scss/bootstrap/_reboot.scss */
@@ -10871,4 +10877,24 @@ html, body {
   content: '';
   display: block;
   z-index: -1;
+}
+
+.preloader {
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	position: fixed;
+	z-index: 99999;
+	background: #fff;
+}
+
+	.preloader .cssload-speeding-wheel {
+		position: absolute;
+		top: calc(50% - 3.5px);
+		left: calc(50% - 3.5px);
+	}
+
+.sponsor-image {
+	height: 50px;
+	background-size: contain;
 }
