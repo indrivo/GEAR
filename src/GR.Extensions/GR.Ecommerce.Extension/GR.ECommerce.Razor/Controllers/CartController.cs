@@ -30,9 +30,6 @@ namespace GR.ECommerce.Razor.Controllers
         // GET: /<controller>/
         public override IActionResult Index()
         {
-
-
-
             return View(GetCartItem());
         }
 
@@ -84,8 +81,6 @@ namespace GR.ECommerce.Razor.Controllers
 
                  await Context.SaveChangesAsync();
             }
-
-
             return Json("");
         }
 

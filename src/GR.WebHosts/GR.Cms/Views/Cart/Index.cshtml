@@ -5,46 +5,26 @@
 	ViewData["Title"] = "Cart";
 }
 
-<div class="col-12 row">
-	<div class="col-8">
-		<table class="table">
-			<tr>
-				<th scope="col">Product</th>
-				<th scope="col">Price</th>
-				<th scope="col">Quantity</th>
-				<th scope="col"></th>
-			</tr>
-            
-			<tbody class="listProducts">
-			@foreach (var cartItem in Model.CartItems)
-			{
-				<tr>
-					<td>
-						@cartItem.Product.Name
-					</td>
-					<td>
-						@cartItem.Product.CurrentPrice
-					</td>
-					<td>
-						@cartItem.Amount
-					</td>
-					<td>
-						X
-					</td>
-				</tr>
-			}
-			</tbody>
-		</table>
+<div class="row">
+	<form>
+		<div class="col-8">
 
-		<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter order note"></textarea>
-	</div>
-	<div class="col-3 m-2 row border">
-		<p>Order summary</p>
-		<hr class="style1">
+			<partial name="_TableCartItems" model="@Model" />
 
-		<div class="6">TotalPrice</div>
-		<div class="6"></div>
+			<textarea name="" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Enter order note"></textarea>
+		</div>
+		<div class="col-3 m-2 border border-light">
+			<p>Order summary</p>
+			<hr class="style1">
 
-		<hr class="style1">
-	</div>
+			<div class="col-12 row">
+				<div class="col-6">TotalPrice: </div>
+				<div class="col-6 text-right"> @Model.CartItems.Sum(s => s.Product?.PriceWithDiscount)</div>
+			</div>
+
+			<hr class="style1">
+
+			<button class="btn btn-success">Process to checkout</button>
+		</div>
+	</form>
 </div>

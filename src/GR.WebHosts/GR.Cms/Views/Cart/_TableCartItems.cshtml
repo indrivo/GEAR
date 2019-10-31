@@ -1,0 +1,23 @@
+@model GR.ECommerce.Razor.ViewModels.AddToCartViewModel
+
+
+<table class="table">
+	<tr class="table-dark">
+		<th scope="col">Product</th>
+		<th scope="col">Price</th>
+		<th scope="col">Quantity</th>
+		<th scope="col"></th>
+	</tr>
+
+	<tbody class="listProducts">
+		@foreach (var cartItem in Model.CartItems)
+		{
+			<tr>
+				<td>@cartItem.Product.Name</td>
+				<td>@cartItem.Product.CurrentPrice</td>
+				<td>@cartItem.Amount</td>
+				<td>X</td>
+			</tr>
+		}
+	</tbody>
+</table>
