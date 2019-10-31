@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Products";
+    var conf = new ListTagHelperModel
+    {
+        Title = "Products",
+        ListIdentifier = "products",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("OrderedList", "Products")
+        },
+        RenderColumns = new List<ListRenderColumn>
+        {
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["is_deleted"], "isDeleted")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+        {
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "Products",
+                ButtonName = "Add new product",
+                Description = "New product will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+        {
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["edit"],
+                Url = Url.Action("Edit", "Products"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["delete"],
+                IsJsEvent = true,
+                ButtonEvent = new JsActionButtonEvent
+                {
+                    JsEvent = JsEvent.OnClick,
+                    JsEventHandler = "createAlert('${row.id}');"
+                },
+                ButtonType = BootstrapButton.Danger
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = "Details",
+                Url = Url.Action("ProductDetail", "Products"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("productId", "id")
+                }
+            },
+        },
+        Documentation = "This tan allow to manage your products"
+    };
+}
+
+<JList asp-for="@conf"></JList>

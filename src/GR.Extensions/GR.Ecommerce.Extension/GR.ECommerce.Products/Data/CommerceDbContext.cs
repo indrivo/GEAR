@@ -45,7 +45,8 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<ProductVariation> ProductVariations { get; set; }
         public virtual DbSet<ProductVariationDetail> ProductVariationDetails { get; set; }
         public virtual DbSet<ProductOption> ProductOption { get; set; }
-
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<CartItem> CartItems { get; set; }
 
         #endregion
 

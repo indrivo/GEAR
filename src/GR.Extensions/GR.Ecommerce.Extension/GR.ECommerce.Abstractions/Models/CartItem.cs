@@ -16,8 +16,8 @@ namespace GR.ECommerce.Abstractions.Models
         public Guid ProductId { get; set; }
         public Product Product { get; set; }
 
-        [Required]
-        public Guid VariationId { get; set; }
+        
+        public Guid? VariationId { get; set; }
         public ProductVariation ProductVariation { get; set; }
 
 

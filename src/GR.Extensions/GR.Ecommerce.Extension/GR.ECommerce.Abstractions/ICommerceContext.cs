@@ -100,5 +100,8 @@ namespace GR.ECommerce.Abstractions
         /// Product attributes
         /// </summary>
         DbSet<ProductOption> ProductOption { get; set; }
+
+        DbSet<Cart> Carts { get; set; }
+        DbSet<CartItem> CartItems { get; set; }
     }
 }

@@ -29,6 +29,7 @@ namespace GR.ECommerce.Razor.Helpers.BaseControllers
         /// Inject data filter
         /// </summary>
         protected readonly IDataFilter DataFilter;
+        
 
         /// <summary>
         /// Constructor
