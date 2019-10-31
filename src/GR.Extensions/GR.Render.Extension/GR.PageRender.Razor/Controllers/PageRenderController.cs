@@ -21,6 +21,7 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
 using GR.Entities.Abstractions.Constants;
+using GR.Entities.Abstractions.Enums;
 using GR.Entities.Security.Abstractions;
 using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
@@ -460,33 +461,20 @@ namespace GR.PageRender.Razor.Controllers
                 .FirstOrDefaultAsync(x => x.Id.Equals(viewModelId));
 
             if (viewModel == null) return Json(response);
-            //var fields = viewModel.ViewModelFields.OrderBy(x => x.Order).ToList();
-            //var sortColumn = param.SortOrder;
-            //try
-            //{
-            //    var colIndex = Convert.ToInt32(param.Order[0].Column);
-            //    var columnIndex = colIndex == 0 ? colIndex : colIndex - 1;
-            //    if (fields.Count - 1 > columnIndex)
-            //    {
-            //        var field = fields.ElementAt(columnIndex);
-            //        if (field != null)
-            //        {
-            //            var column =
-            //                viewModel.TableModel.TableFields.FirstOrDefault(x => x.Id == field.TableModelFieldsId);
-            //            sortColumn = column != null
-            //                ? $"{column.Name ?? field.Name} {param.SortOrder}"
-            //                : $"{field.Name} {param.SortOrder}";
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //}
+            var orderConf = new Dictionary<string, EntityOrderDirection>();
+            if (param.Order.Any())
+            {
+                foreach (var order in param.Order)
+                {
+                    var field = viewModel.ViewModelFields.FirstOrDefault(x => x.Order == order.Column - 1);
+                    if (field != null)
+                        orderConf.Add(field.TableModelFields?.Name ?? field.Name, (EntityOrderDirection)order.Dir);
+                }
+            }
 
             var page = param.Start / param.Length + 1;
-            var pageDataRequest = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page, 
-                (uint)param.Length, param.Search.Value, filters);
+            var pageDataRequest = await _service.GetPaginatedResultAsync(viewModel.TableModel.Name, (uint)page,
+                (uint)param.Length, param.Search.Value, filters, orderConf);
             if (pageDataRequest.IsSuccess)
             {
                 var final = (await LoadManyToManyReferences(pageDataRequest.Result.ViewModel.Values.ToList(), viewModel)).ToList();

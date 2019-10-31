@@ -978,9 +978,19 @@ class Validator {
     }
 }
 
-//Extensions
+//Jquery Extensions
 jQuery.fn.extend({
     hasAttr: function (attrName) {
         return this.get(0).hasAttribute(attrName);
     }
 });
+
+
+//Array Extensions
+Array.prototype.update = function (predicate, item) {
+    try {
+        const old = this.find(predicate);
+        const index = this.indexOf(old);
+        this[index] = item;
+    } catch (e) { console.warn(e); }
+};

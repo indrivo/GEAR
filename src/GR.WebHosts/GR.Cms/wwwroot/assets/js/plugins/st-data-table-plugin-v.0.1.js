@@ -297,16 +297,27 @@ class TableBuilder {
         parmeter: "",
         searchValue: "",
         criteria: "equals"
-    }) {
+    }, target = null) {
         const exist = this.filters.find(x => x.parameter == filter.parameter);
-        if (!exist) this.filters.push(filter);
-        else {
-
+        if (!exist) {
+            this.filters.push(filter);
+            target.css("background", "#2A4B65");
         }
-        console.log(this);
+        else if (filter.value) {
+            this.filters.update(x => x.parameter == filter.parameter, filter);
+            target.css("background", "#2A4B65");
+        } else {
+            this.filters = this.filters.filter(x => x.parameter != filter.parameter);
+            target.css("background", "");
+        }
+
         this.jTableInstance.ajax.reload();
     }
 
+	/**
+	 * Get filter by name
+	 * @param {any} parameter
+	 */
     getFilter(parameter) {
         return this.filters.find(x => x.parameter == parameter);
     }
@@ -317,7 +328,7 @@ class TableBuilder {
 	 */
     addColumnFilters(columnsEl) {
         const scope = this;
-        const rowFilters = $(`<tr style="background: #a4c4fd;  height: 15px"> <th class="no-sort"> </th> </tr>`);
+        const rowFilters = $(`<tr style="background: #a4c4fd;  height: 10px"> <th class="no-sort"> </th> </tr>`);
         $.each(this.configurations.viewmodelData.viewModelFields, (i, vField) => {
             rowFilters.append(scope.pushFilterColumn(vField));
         });
@@ -325,7 +336,10 @@ class TableBuilder {
         $(".sorting").off();
     }
 
-
+	/**
+	 * Add column filter
+	 * @param {any} vField
+	 */
     pushFilterColumn(vField) {
         const scope = this;
         const el = $(`<th>
@@ -345,26 +359,23 @@ class TableBuilder {
                 case "int32":
                 case "decimal":
                     {
-                        console.log(vField);
                         filterEl.on("click", function () {
-                            const item = $.Iso.DynamicFilter('text',
-                                this,
-                                null,
-                                null,
-                                {
-                                    id: fieldName,
-                                    searchBarPlaceholder: "Caută",
-									searchValue: "test",
-                                    addButtonLabel: "",
-                                    textEmitEventTimeout: 300
-                                });
+                            const f = scope.getFilter(fieldName);
+                            const conf = {
+                                id: fieldName,
+                                searchBarPlaceholder: "Caută",
+                                searchValue: f ? f.searchValue : "",
+                                addButtonLabel: "",
+                                textEmitEventTimeout: 300
+                            };
+                            const item = $.Iso.DynamicFilter('text', this, null, null, conf);
 
                             $(item.dynamicSelect).on('filterValueChange', function (event, arg) {
                                 scope.injectFilter({
                                     parameter: fieldName,
                                     criteria: "contains",
                                     searchValue: arg.value
-                                });
+                                }, el);
                             });
                         });
                     }
@@ -398,8 +409,6 @@ class TableBuilder {
                 case "date":
                     {
                         filterEl.on('click', () => {
-
-                            // picker stores the component: HTMLElement
                             const picker = $.Iso.DatePicker(filterEl[0], {
                                 format: 'dd/mm/yyyy',
                                 todayHighlight: true,
@@ -410,20 +419,36 @@ class TableBuilder {
 
                             // bind to date change
                             $(picker).on('rangeChangeDate', (event) => {
-                                console.log(event.detail);
+                               
                             });
 
                             // bind to closing datepicker
                             $(picker).on('closeDatePickerPopper', (event) => {
-                                console.log(event.detail);
-                                console.log('Date Picker closed');
-                            })
+                                let maxDate = new Date(8640000000000000);
+                                let minDate = new Date(-8640000000000000);
+
+                                let start = event.detail.fromDate;
+                                let end = event.detail.toDate;
+                                if (!start) {
+                                    start = minDate.toLocaleDateString();
+                                } else start = start.toLocaleDateString();
+
+                                if (!end) {
+                                    end = maxDate.toLocaleDateString();
+                                } else end = end.toLocaleDateString();
+
+                                scope.injectFilter({
+                                    parameter: fieldName,
+                                    criteria: "dateRange",
+                                    searchValue: `${start},${end}`
+                                }, el);
+                            });
                         });
                     }
                     break;
             }
         } else {
-
+            filterEl.remove();
         }
 
         return el;

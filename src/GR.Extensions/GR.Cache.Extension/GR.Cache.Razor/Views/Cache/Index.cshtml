@@ -7,34 +7,6 @@
     ViewData["Title"] = "Redis keys";
 }
 
-<style>
-    #jsonPlace {
-        outline: 1px solid #ccc;
-        padding: 5px;
-        margin: 5px;
-    }
-
-    .string {
-        color: green;
-    }
-
-    .number {
-        color: darkorange;
-    }
-
-    .boolean {
-        color: blue;
-    }
-
-    .null {
-        color: magenta;
-    }
-
-    .key {
-        color: red;
-    }
-</style>
-
 <div class="row">
     <div class="col-lg-6">
         <div class="card">
@@ -54,7 +26,7 @@
                         <input type="checkbox" readonly data-on-color="info" data-off-color="success">
                     }
                 </div>
-                <div class="table-responsive">
+                <div id="keys-container" class="table-responsive">
                     <table class="table color-table primary-table">
                         <thead>
                             <tr>
@@ -173,4 +145,40 @@
             });
         });
     </script>
+}
+
+
+@section Styles
+{
+    <style>
+        #jsonPlace {
+            outline: 1px solid #ccc;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .string {
+            color: green;
+        }
+
+        .number {
+            color: darkorange;
+        }
+
+        .boolean {
+            color: blue;
+        }
+
+        .null {
+            color: magenta;
+        }
+
+        .key {
+            color: red;
+        }
+
+        #keys-container {
+            min-height: 70vh;
+        }
+    </style>
 }

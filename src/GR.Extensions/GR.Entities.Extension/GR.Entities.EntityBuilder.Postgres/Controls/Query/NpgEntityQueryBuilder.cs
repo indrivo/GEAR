@@ -200,10 +200,17 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
                         filterBuilder.AppendFormat("CAST(\"{0}\" AS VARCHAR) LIKE '%{1}' ", filter.Parameter, filter.SearchValue);
                         break;
                     case Criteria.BetWheen:
-                        var data = filter.Value.ToString().Split(",");
+                        var data = filter.SearchValue.Split(",");
                         if (data.Length == 2)
                         {
                             filterBuilder.AppendFormat("\"{0}\" BETWEEN '{1}' AND '{2}' ", filter.Parameter, data[0], data[1]);
+                        }
+                        break;
+                    case Criteria.DateRange:
+                        var dates = filter.SearchValue.Split(",");
+                        if (dates.Length == 2)
+                        {
+                            filterBuilder.AppendFormat("\"{0}\" BETWEEN '{1}' AND '{2}' ", filter.Parameter, dates[0], dates[1]);
                         }
                         break;
                 }

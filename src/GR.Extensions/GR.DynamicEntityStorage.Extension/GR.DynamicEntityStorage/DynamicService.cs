@@ -313,11 +313,7 @@ namespace GR.DynamicEntityStorage
                 return result;
             }
 
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
 
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
@@ -347,11 +343,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model.Values = GetFilters(filters);
@@ -474,21 +466,11 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<Dictionary<string, object>>();
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model.Values = new List<Dictionary<string, object>>
             {
-                new Dictionary<string, object>
-                {
-                    {
-                        "Id",
-                        id
-                    }
-                }
+                new Dictionary<string, object>{ { nameof(BaseModel.Id), id } }
             };
             var data = _context.ListEntitiesByParams(model);
             result.Result = data.Result.Values.FirstOrDefault();
@@ -640,11 +622,8 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+
+            if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<int>();
             var model = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             var count = _context.GetCount(model, filters);
             if (!count.IsSuccess) return result;
@@ -741,11 +720,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Write))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Write)) return new AccessDeniedResult<Guid>();
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(dbSchema ?? schema);
             var author = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
             //Set default values
@@ -861,11 +836,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Update))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.Update)) return new AccessDeniedResult<Guid>();
             var table = await CreateEntityDefinition<EntityViewModel>(entity, schema);
             model["Changed"] = DateTime.Now;
             model["ModifiedBy"] = _httpContextAccessor?.HttpContext?.User?.Identity?.Name ?? "system";
@@ -920,11 +891,7 @@ namespace GR.DynamicEntityStorage
                 result.Errors.Add(errorModel);
                 return result;
             }
-            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.DeletePermanent))
-            {
-                result.Errors.Add(new ErrorModel(GearSettings.ACCESS_DENIED_MESSAGE, GearSettings.ACCESS_DENIED_MESSAGE));
-                return result;
-            }
+            if (!await _entityRoleAccessManager.HaveAccessAsync(dto.Id, EntityAccessType.DeletePermanent)) return new AccessDeniedResult<Guid>();
             var table = await CreateEntityDefinition<TEntity, EntityViewModel>(schema);
             table.Values = new List<Dictionary<string, object>>
             {
