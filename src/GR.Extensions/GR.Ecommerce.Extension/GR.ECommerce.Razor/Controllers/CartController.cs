@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Abstractions;
+using GR.Core.Extensions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
@@ -16,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GR.ECommerce.Razor.Controllers
 {
-    public class CartController  : CommerceBaseController<Cart, CartViewModel>
+    public class CartController  : CommerceBaseController<Cart, AddToCartViewModel>
     {
         private IUserManager<ApplicationUser> _userManager;
 
@@ -32,7 +33,7 @@ namespace GR.ECommerce.Razor.Controllers
 
 
         [HttpPost]
-        public async Task<JsonResult> AddToCard(CartViewModel model)
+        public async Task<JsonResult> AddToCard(AddToCartViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -41,10 +42,43 @@ namespace GR.ECommerce.Razor.Controllers
             }
 
             var product = Context.Products.FirstOrDefault(x => x.Id == model.ProductId);
+            var user = _userManager.GetCurrentUserAsync();
 
             if (product != null)
             {
-                // var card = Context
+                var cart = Context.Carts.FirstOrDefault(x => x.UserId == user.Result.Result.Id.ToGuid());
+
+                if (cart == null)
+                {
+                    cart = new Cart
+                    {
+                        UserId = user.Result.Result.Id.ToGuid(),
+                        TotalPrice = product.CurrentPrice * model.Quantity,
+                    };
+
+                    await Context.Carts.AddAsync(cart);
+                }
+
+                var cartItem = Context.CartItems.FirstOrDefault(x => x.ProductId == model.ProductId && x.CartId == cart.Id);
+
+                if (cartItem == null)
+                {
+                    cartItem = new CartItem
+                    {
+                        ProductId = model.ProductId,
+                        Amount = model.Quantity,
+                        CartId = cart.Id,
+                    };
+
+                    await Context.CartItems.AddAsync(cartItem);
+                }
+                else
+                {
+                    cartItem.Amount += model.Quantity; 
+                    Context.CartItems.Update(cartItem);
+                }
+
+                 await Context.SaveChangesAsync();
             }
 
 
