@@ -52,11 +52,12 @@ namespace GR.ECommerce.Razor.Controllers
 
             var productBd = await Context.Products
                 .Include(i => i.ProductPrices)
-                .Include(i=>i.ProductImages)
+                .Include(i => i.ProductImages)
                 .Include(i => i.ProductAttributes)
-                .ThenInclude(i=>i.ProductAttribute).
+                .ThenInclude(i => i.ProductAttribute).
                  Include(i => i.ProductVariations)
-                .FirstOrDefaultAsync(x=> x.Id == productId);
+                .FirstOrDefaultAsync(x => x.Id == productId);
+
             if (productBd is null) return NotFound();
 
             var result = productBd.Adapt<ProductViewModel>();

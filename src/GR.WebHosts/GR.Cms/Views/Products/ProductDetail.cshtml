@@ -67,10 +67,9 @@
                                     }
                                 </ul>
                             </div>
-
                         </div>
 
-                        <div class="product_price">Price: @Model.CurrentPrice</div>
+                        <div class="product_price">Price: <span id="productPrice">@Model.CurrentPrice</span></div>
                         <div>
                             <button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
                         </div>
@@ -115,52 +114,44 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="clearForm()">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="card">
-                    <div class="card-body">
+	        <div class="modal-body">
+		        <div class="card">
+			        <div class="card-body">
                        
-	                    <div class="col-12">
-		                    <p>Product is add to card</p>
-	                    </div>
+				        <div class="col-12">
+					        <p>Product is add to card</p>
+				        </div>
 
-	                    <div class="row col-12">
-		                    <div class="col-3">
-			                    Iamge
-		                    </div>
+				        <div class="row col-12">
+					        <div class="col-3">
+						        Iamge
+					        </div>
 
-		                    <div class="col-6">
-			                    @Model.Name
-		                    </div>
-		                    <div alignclass="col-3">
+					        <div class="col-6">
+						        @Model.Name
+					        </div>
+					        <div alignclass="col-3">
+						        <span id="cartQuantity"> 1 </span> x @Model.CurrentPrice
+					        </div>
+				        </div>
 
-			                    1 x 250.00
-		                    </div>
-	                    </div>
-
-	                    <div class="mt-2 col-12 row">
-		                    <div class="col-8"></div>
-		                    <div class="col-4">
-			                    total sum: 250
-		                    </div>
-
-		                    <div class="col-4"></div>
-		                    <div class="mt-2 col-8">
-			                    <button class="btn button-label">Continue</button>
-			                    <button class="btn button-label">Go to cart</button>
-		                    </div>
-	                    </div>
-
-	                    
-
-                    </div>
-                </div>
-
-
-            </div>
+				        <div class="mt-2 col-12 row">
+					        <div class="col-8"></div>
+					        <div class="col-4">
+						        total sum: <span id="cartTotalPrice">1</span>
+					        </div>
+				        </div>
+			        </div>
+		        </div>
+	        </div>
+	        <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue</button>
+		        <button type="button" class="btn btn-primary" onclick="redirectToCart()">Go to cart</button>
+	        </div>
         </div>
     </div>
 </div>
@@ -169,12 +160,6 @@
 
 
 <script type="text/javascript">
-
-	$(document).ready(function() {
-
-
-	});
-
 
 	function chengeStatus(optionId, variationId) {
 
@@ -236,16 +221,28 @@
     }
 
 	function addQuantity() {
-		var curentQuantity = parseInt($("#quantity_input").val());
-		$("#quantity_input").val(curentQuantity + 1);
-		
+        var curentQuantity = parseInt($("#quantity_input").val());
+        curentQuantity += 1;
+		$("#quantity_input").val(curentQuantity);
+        newProductPrice(curentQuantity);
+
 	}
 
 	function decreasesQuantity() {
 		var curentQuantity = parseInt($("#quantity_input").val());
-		if (curentQuantity > 1)
-			$("#quantity_input").val(curentQuantity - 1);
-		
+		if (curentQuantity > 1) {
+            curentQuantity -= 1;
+            newProductPrice(curentQuantity);
+		}
+
+	}
+
+	function newProductPrice(curentQuantity) {
+		$("#quantity_input").val(curentQuantity);
+
+		var productPrice = @Model.CurrentPrice;
+		$("#productPrice").empty();
+		$("#productPrice").append(productPrice * curentQuantity);
 	}
 
 
@@ -257,18 +254,33 @@
 		}
 
 		$.ajax({
-			url: '@Url.Action("AddToCard","Cart")',
+			url: '@Url.Action("AddToCard", "Cart")',
 			method: 'post',
 			data: model,
 			success: function(data) {
 
+				if (data.is_success) {
+					$("#cartQuantity").empty();
+					$("#cartQuantity").append(model.Quantity);
+
+					var productPrice = @Model.CurrentPrice;
+
+					$("#cartTotalPrice").empty();
+					$("#cartTotalPrice").append(model.Quantity * productPrice);
+
+					$('#productModal').modal('show');
+				}
 			},
 			error: function(error) {
 				console.log(error);
 			}
 		});
+	}
 
-        $('#productModal').modal('show');
+
+    function redirectToCart() {
+	    window.location.replace('@Url.Action("Index", "Cart")');
     }
+
 
 </script>

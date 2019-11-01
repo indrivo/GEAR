@@ -207,7 +207,7 @@ namespace GR.ECommerce.BaseImplementations.Data.Services
         /// <returns></returns>
         private double GetTotalPrice(Guid cartId)
         {
-            var cart = _context.Carts.Include(i => i.CartItems).ThenInclude(i => i.Product).FirstOrDefault(x => x.Id == cartId);
+            var cart = _context.Carts.Include(i => i.CartItems).ThenInclude(i => i.Product).ThenInclude(i=>i.ProductPrices).FirstOrDefault(x => x.Id == cartId);
 
             if (cart != null)
             {
