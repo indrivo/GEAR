@@ -108,13 +108,13 @@ using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.DynamicEntityStorage.Abstractions;
-using GR.ECommerce.Paypal;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.BaseImplementations.Data.Services;
 using GR.ECommerce.Products.Services;
 using GR.Entities.Extensions;
 using GR.Localization;
 using GR.PageRender;
+using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 

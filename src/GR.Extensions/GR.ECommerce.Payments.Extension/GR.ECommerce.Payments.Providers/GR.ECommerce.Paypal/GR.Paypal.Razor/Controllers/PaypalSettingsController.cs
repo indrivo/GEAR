@@ -1,5 +1,5 @@
 ﻿using GR.Core.Abstractions;
-using GR.ECommerce.Paypal.Models;
+using GR.Paypal.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Paypal.Razor.Controllers

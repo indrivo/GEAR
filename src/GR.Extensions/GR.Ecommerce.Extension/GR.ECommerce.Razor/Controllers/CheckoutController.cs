@@ -101,6 +101,30 @@ namespace GR.ECommerce.Razor.Controllers
         [HttpGet]
         public async Task<IActionResult> Payment(Guid? orderId)
         {
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return NotFound();
+
+            return View(orderRequest.Result);
+        }
+
+        /// <summary>
+        /// Cancel
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Cancel()
+        {
+            return default;
+        }
+
+        /// <summary>
+        /// Success
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Success(Guid? orderId)
+        {
             return View();
         }
     }

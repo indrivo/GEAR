@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.ECommerce.Payments.Abstractions;
-using GR.ECommerce.Paypal.Abstractions;
-using GR.ECommerce.Paypal.Models;
+using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Models;
+using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.ViewModels;
-using GR.Paypal.Razor.ViewModels;
+using GR.Paypal.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
-namespace GR.ECommerce.Paypal
+namespace GR.Paypal
 {
     public class PaypalPaymentService : IPaypalPaymentService
     {
 
         #region Injectable       
-       
+
         /// <summary>
         /// Inject http client factory
         /// </summary>
@@ -29,54 +28,55 @@ namespace GR.ECommerce.Paypal
         /// Inject service options
         /// </summary>
         private readonly IOptionsSnapshot<PaypalExpressConfigForm> _payPalOptions;
+
+        /// <summary>
+        /// Inject order service
+        /// </summary>
+        private readonly IOrderProductService<Order> _orderProductService;
         #endregion
 
 
-        public PaypalPaymentService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions)
+        public PaypalPaymentService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService)
         {
             _httpClientFactory = httpClientFactory;
-            _payPalOptions = payPalOptions;           
+            _payPalOptions = payPalOptions;
+            _orderProductService = orderProductService;
         }
 
-        public ResultModel Pay()
+        /// <summary>
+        /// Create payment
+        /// </summary>
+        /// <param name="hostingDomain"></param>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public async Task<ResponsePaypal> CreatePayment(string hostingDomain, Guid? orderId)
         {
-            throw new NotImplementedException();
-        }
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess)
+            {
+                return new ResponsePaypal { Message = "Order not Found", IsSucces = false };
+            }
 
-        public Task<ResultModel> PayAsync()
-        {
-            throw new NotImplementedException();
-        }
+            var order = orderRequest.Result;
 
-
-        public async Task<ResponsePaypal> CreatePayment(string hostingDomain)
-        {
             var accessToken = await GetAccessToken();
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                return new ResponsePaypal() {Message = "No access token", IsSucces = false};
+                return new ResponsePaypal { Message = "No access token", IsSucces = false };
             }
 
             using (var httpClient = new HttpClient())
             {
                 var experienceProfileId = await CreateExperienceProfile(accessToken);
-                dynamic cart = new { OrderTotal = 2, SubTotalWithDiscountWithoutTax = 1, TaxAmount = 1, ShippingAmount = 2 };
-                if (cart == null)
-                {
-                    return  new ResponsePaypal() { Message = "NotFound", IsSucces = false };
-                }
-
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                var paypalAcceptedNumericFormatCulture = CultureInfo.CreateSpecificCulture("en-US");
-
                 var paymentCreateRequest = new PaymentCreateRequest
                 {
                     experience_profile_id = experienceProfileId,
                     intent = "sale",
                     payer = new Payer
                     {
-                        payment_method = "paypal",
+                        payment_method = "paypal"
                     },
                     transactions = new[]
                     {
@@ -84,20 +84,11 @@ namespace GR.ECommerce.Paypal
                         {
                             amount = new Amount
                             {
-                                //total = (cart.OrderTotal + CalculatePaymentFee(cart.OrderTotal)).ToString("N2",
-                                //    paypalAcceptedNumericFormatCulture),
-                                total = "30.11",
+                                total = (order.Total + 0.11).ToString("N2"),
                                 currency = "USD",
                                 details = new Details
                                 {
-                                    //handling_fee = CalculatePaymentFee(cart.OrderTotal)
-                                    //    .ToString("N2", paypalAcceptedNumericFormatCulture),
-                                    //subtotal = cart.SubTotalWithDiscountWithoutTax.ToString("N2",
-                                    //    paypalAcceptedNumericFormatCulture),
-                                    //tax = cart.TaxAmount?.ToString("N2", paypalAcceptedNumericFormatCulture) ?? "0",
-                                    //shipping =
-                                    //    cart.ShippingAmount?.ToString("N2", paypalAcceptedNumericFormatCulture) ?? "0"
-                                    subtotal = "30.00",
+                                    subtotal =  order.Total.ToString("N2"),
                                     tax = "0.07",
                                     shipping = "0.03",
                                     handling_fee = "1.00",
@@ -107,7 +98,7 @@ namespace GR.ECommerce.Paypal
                             }
                         }
                     },
-                    redirect_urls = new Redirect_Urls()
+                    redirect_urls = new Redirect_Urls
                     {
                         cancel_url = $"http://{hostingDomain}/Paypal/Cancel",
                         return_url = $"http://{hostingDomain}/Paypal/Success"
@@ -123,14 +114,18 @@ namespace GR.ECommerce.Paypal
                 if (response.IsSuccessStatusCode)
                 {
                     string paymentId = payment.id;
-                    return new ResponsePaypal() { Message = paymentId, IsSucces = true };
+                    return new ResponsePaypal { Message = paymentId, IsSucces = true };
                 }
 
-                return new ResponsePaypal() { Message = responseBody, IsSucces = false }; ;
+                return new ResponsePaypal { Message = responseBody, IsSucces = false }; ;
             }
         }
 
-
+        /// <summary>
+        /// Execute payment
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async Task<ResponsePaypal> ExecutePayment(PaymentExecuteVm model)
         {
             var accessToken = await GetAccessToken();
@@ -147,35 +142,26 @@ namespace GR.ECommerce.Paypal
                 dynamic responseObject = JObject.Parse(responseBody);
                 if (response.IsSuccessStatusCode)
                 {
-                    // Has to explicitly declare the type to be able to get the propery
-                    //string payPalPaymentId = responseObject.id;
-                    //payment.Status = PaymentStatus.Succeeded;
-                    //payment.GatewayTransactionId = payPalPaymentId;
-                    //_paymentRepository.Add(payment);
-                    //order.OrderStatus = OrderStatus.PaymentReceived;
-                    //await _paymentRepository.SaveChangesAsync();
-                   // return Ok(new { Status = "success", OrderId = 12 });
-                    return new ResponsePaypal() { Message = "12", IsSucces = true };
+                    return new ResponsePaypal { Message = "12", IsSucces = true };
                 }
 
                 string errorName = responseObject.name;
                 string errorDescription = responseObject.message;
-                //return BadRequest($"{errorName} - {errorDescription}");
-                return new ResponsePaypal() { Message = $"{errorName} - {errorDescription}", IsSucces = false };
+                return new ResponsePaypal { Message = $"{errorName} - {errorDescription}", IsSucces = false };
             }
-           
         }
 
-
-
-
+        /// <summary>
+        /// Get access token
+        /// </summary>
+        /// <returns></returns>
         private async Task<string> GetAccessToken()
         {
             var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                 "Basic",
                 Convert.ToBase64String(
-                    System.Text.Encoding.ASCII.GetBytes(
+                    Encoding.ASCII.GetBytes(
                         $"{_payPalOptions.Value.ClientId}:{_payPalOptions.Value.ClientSecret}")));
             var requestBody = new StringContent("grant_type=client_credentials");
             requestBody.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
@@ -188,6 +174,11 @@ namespace GR.ECommerce.Paypal
             return accessToken;
         }
 
+        /// <summary>
+        /// Create experience profile
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
         private async Task<string> CreateExperienceProfile(string accessToken)
         {
             using (var httpClient = new HttpClient())
@@ -195,7 +186,7 @@ namespace GR.ECommerce.Paypal
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var experienceRequest = new ExperienceProfile
                 {
-                    Name = $"simpl_{Guid.NewGuid()}",
+                    Name = $"gear_{Guid.NewGuid()}",
                     InputFields = new InputFields
                     {
                         NoShipping = 1
@@ -212,7 +203,12 @@ namespace GR.ECommerce.Paypal
             }
         }
 
-         private decimal CalculatePaymentFee(decimal total)
+        /// <summary>
+        /// Calculate payment fee
+        /// </summary>
+        /// <param name="total"></param>
+        /// <returns></returns>
+        private decimal CalculatePaymentFee(decimal total)
         {
             var percent = _payPalOptions.Value.PaymentFee;
             return total / 100 * percent;

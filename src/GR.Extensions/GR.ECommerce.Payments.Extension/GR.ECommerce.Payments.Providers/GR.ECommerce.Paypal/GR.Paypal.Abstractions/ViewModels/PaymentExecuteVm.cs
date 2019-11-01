@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace GR.Paypal.Razor.ViewModels
+namespace GR.Paypal.Abstractions.ViewModels
 {
     public class PaymentExecuteVm
     {

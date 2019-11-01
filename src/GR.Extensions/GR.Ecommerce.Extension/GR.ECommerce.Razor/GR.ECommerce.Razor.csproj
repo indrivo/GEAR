@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj" />
     <ProjectReference Include="..\GR.ECommerce.Abstractions\GR.ECommerce.Abstractions.csproj" />
   </ItemGroup>
 

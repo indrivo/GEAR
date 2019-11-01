@@ -1,0 +1,41 @@
+﻿@model Guid
+
+<label>Paypal Express </label>
+<div id="paypal-button"></div>
+<p style="display: none; color: red" id="paypalPaymentError"></p>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+
+<script type="text/javascript">
+	paypal.Button.render({
+			env: 'sandbox',
+			commit: true,
+			payment: function(data, actions) {
+				return paypal.request.post('@Url.Action("CreatePayment", "Paypal", new{ OrderId = Model })')
+                    .then(function (res) {
+						return res.paymentId;
+					})
+                    .catch(function (error) {
+						const errorDiv = document.getElementById("paypalPaymentError");
+						errorDiv.innerText = error;
+						errorDiv.style.display = "block";
+					});
+			},
+			onAuthorize: function(data, actions) {
+				return paypal.request.post('/Paypal/ExecutePayment',
+						{
+							paymentID: data.paymentID,
+							payerID: data.payerID
+						})
+                    .then(function (res) {
+						window.location = `/checkout/success?orderId=${res.orderId}`;
+					})
+                    .catch(function (error) {
+						const errorDiv = document.getElementById("paypalPaymentError");
+						errorDiv.innerText = error;
+						errorDiv.style.display = "block";
+					});
+			}
+		},
+		'#paypal-button');
+</script>
