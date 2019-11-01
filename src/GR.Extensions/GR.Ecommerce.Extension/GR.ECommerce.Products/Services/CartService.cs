@@ -54,6 +54,7 @@ namespace GR.ECommerce.BaseImplementations.Data.Services
             var cart = await _context.Carts
                 .Include(x => x.CartItems)
                 .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
                 .Include(x => x.CartItems)
                 .ThenInclude(x => x.ProductVariation)
                 .FirstOrDefaultAsync(x => x.Id.Equals(cartId));
@@ -139,7 +140,7 @@ namespace GR.ECommerce.BaseImplementations.Data.Services
                     _context.CartItems.Update(cartItem);
                 }
 
-                var result =  await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync();
                 resultModel.IsSuccess = true;
                 resultModel.Result = result;
                 return resultModel;

@@ -185,7 +185,7 @@ namespace GR.ECommerce.Razor.Controllers
             result.ProductAttributesList = new Dictionary<string, IEnumerable<SelectListItem>>();
             result.ProductCategoryList = new List<ProductCategoryDto>();
             result.ProductTypeList = new List<SelectListItem>();
-            result.Price = result.CurrentPrice;
+            result.Price = result.PriceWithoutDiscount;
             result.ProductOption = new List<SelectListItem>();
 
 
@@ -235,7 +235,7 @@ namespace GR.ECommerce.Razor.Controllers
                 }).ToList();
             }
 
-            if (model.Price.AreEqual(dbModel.CurrentPrice).Negate())
+            if (model.Price.AreEqual(dbModel.PriceWithoutDiscount).Negate())
             {
                 Context.ProductPrices.Add(new ProductPrice
                 {

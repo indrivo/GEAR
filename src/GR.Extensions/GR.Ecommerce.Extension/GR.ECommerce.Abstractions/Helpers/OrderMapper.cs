@@ -29,7 +29,8 @@ namespace GR.ECommerce.Abstractions.Helpers
                 {
                     ProductVariationId = x.ProductVariationId,
                     Amount = x.Amount,
-                    Price = x.Product?.PriceWithDiscount ?? 0,
+                    PriceWithOutDiscount = x.Product?.PriceWithoutDiscount ?? 0,
+                    DiscountValue = x.Product?.DiscountPrice ?? 0,
                     OrderId = order.Id,
                     ProductId = x.ProductId
                 };

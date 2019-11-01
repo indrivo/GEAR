@@ -2,6 +2,8 @@
 
 @{
 	ViewData["Title"] = "Checkout";
+
+	Guid? defaultAddress = null;
 }
 
 <div class="card">
@@ -12,6 +14,11 @@
 				<ul class="list-group">
 					@foreach (var address in Model.Addresses)
 					{
+						if (address.IsDefault)
+						{
+							defaultAddress = address.Id;
+						}
+
 						<li class="list-group-item">
 							<div class="custom-control custom-radio">
 								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id">
@@ -31,6 +38,7 @@
 				<form asp-action="Shipping">
 					@Html.HiddenFor(x => x.BillingAddressId)
 					@Html.HiddenFor(x => x.ShipmentAddress)
+					<input type="hidden" value="@defaultAddress" />
 
 					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -60,7 +68,7 @@
 							<tr>
 								<td>@prOrder.Product?.Name</td>
 								<td>@prOrder.Amount</td>
-								<td>@prOrder.Price</td>
+								<td>$@prOrder.AmountFinalPriceWithOutDiscount.ToString("N2")</td>
 							</tr>
 						}
 						<tr>
@@ -72,17 +80,17 @@
 						<tr>
 							<td>Subtotal</td>
 							<td></td>
-							<td></td>
+							<td>$@Model.Order.SubTotal.ToString("N2")</td>
 						</tr>
 						<tr>
 							<td>Discount</td>
 							<td></td>
-							<td></td>
+							<td>$@Model.Order.DiscountTotal.ToString("N2")</td>
 						</tr>
 						<tr>
 							<td>Order total</td>
 							<td></td>
-							<td></td>
+							<td>$@Model.Order.Total.ToString("N2")</td>
 						</tr>
 					</tbody>
 				</table>
@@ -97,8 +105,9 @@
 		$(document).ready(function () {
 			const toast = new ToastNotifier();
 			$("#cancel-order").on("click", function () {
-				$.ajax({
-					url: "/Orders/CancelOrder",
+                $.ajax({
+                    method: "delete",
+					url: "/api/Orders/CancelOrder",
 					data: {
 						orderId: "@Model.Order.Id"
 					},

@@ -67,6 +67,7 @@ namespace GR.ECommerce.Products.Services
             var order = await _commerceContext.Orders
                 .Include(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
                 .FirstOrDefaultAsync(x => x.Id.Equals(orderId));
             if (order == null) return new NotFoundResultModel<Order>();
             response.IsSuccess = true;

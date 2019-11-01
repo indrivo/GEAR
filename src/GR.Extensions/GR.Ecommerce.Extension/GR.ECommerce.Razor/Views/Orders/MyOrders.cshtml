@@ -20,7 +20,17 @@
         HasActions = true,
         ListActions = new List<ListActionViewModel>
         {
-
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = "Details",
+                Url = Url.Action("Details", "Orders"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("orderId", "id")
+                }
+            },
         },
         Documentation = "List of my orders"
     };

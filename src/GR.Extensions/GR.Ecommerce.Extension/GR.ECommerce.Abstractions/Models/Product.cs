@@ -84,17 +84,17 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Discount price
         /// </summary>
-        public double DiscountPrice => (CurrentPrice * ProductDiscount?.Discount?.Percentage ?? 0) / 100;
+        public double DiscountPrice => (PriceWithoutDiscount * ProductDiscount?.Discount?.Percentage ?? 0) / 100;
 
         /// <summary>
         /// Current price
         /// </summary>
-        public virtual double CurrentPrice => ProductPrices?.OrderBy(x => x.Created).LastOrDefault()?.Price ?? 0;
+        public virtual double PriceWithoutDiscount => ProductPrices?.OrderBy(x => x.Created).LastOrDefault()?.Price ?? 0;
 
         /// <summary>
         /// Final price with discount
         /// </summary>
-        public virtual double PriceWithDiscount => CurrentPrice - DiscountPrice;
+        public virtual double PriceWithDiscount => PriceWithoutDiscount - DiscountPrice;
 
         /// <summary>
         /// Publish state of product

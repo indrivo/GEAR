@@ -28,7 +28,17 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Total
         /// </summary>
-        public virtual double Total => ProductOrders?.Sum(x => x.Price) ?? 0;
+        public virtual double Total => ProductOrders?.Sum(x => x.FinalPrice * x.Amount) ?? 0;
+
+        /// <summary>
+        /// Sub total
+        /// </summary>
+        public virtual double SubTotal => ProductOrders?.Sum(x => x.PriceWithOutDiscount * x.Amount) ?? 0;
+
+        /// <summary>
+        /// Discount total
+        /// </summary>
+        public virtual double DiscountTotal => ProductOrders?.Sum(x => x.DiscountValue * x.Amount) ?? 0;
 
         /// <summary>
         /// Order state
@@ -46,6 +56,16 @@ namespace GR.ECommerce.Abstractions.Models
         /// </summary>
         [MaxLength(255)]
         public virtual string Notes { get; set; }
+
+        /// <summary>
+        /// Billing address
+        /// </summary>
+        public virtual Guid? BillingAddress { get; set; }
+
+        /// <summary>
+        /// Shipment address
+        /// </summary>
+        public virtual Guid? ShipmentAddress { get; set; }
     }
 
     public class OrderHistory : BaseModel

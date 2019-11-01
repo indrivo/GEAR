@@ -29,7 +29,27 @@ namespace GR.ECommerce.Abstractions.Models
         /// Price
         /// </summary>
         [Required]
-        public virtual double Price { get; set; } = 0;
+        public virtual double PriceWithOutDiscount { get; set; } = 0;
+
+        /// <summary>
+        /// Get set
+        /// </summary>
+        public virtual double FinalPrice => PriceWithOutDiscount - DiscountValue;
+
+        /// <summary>
+        /// Final price for all 
+        /// </summary>
+        public virtual double AmountFinalPrice => FinalPrice * Amount;
+
+        /// <summary>
+        /// Amount price without discount
+        /// </summary>
+        public virtual double AmountFinalPriceWithOutDiscount => PriceWithOutDiscount * Amount;
+
+        /// <summary>
+        /// Discount value
+        /// </summary>
+        public virtual double DiscountValue { get; set; } = 0;
 
         /// <summary>
         /// Amount

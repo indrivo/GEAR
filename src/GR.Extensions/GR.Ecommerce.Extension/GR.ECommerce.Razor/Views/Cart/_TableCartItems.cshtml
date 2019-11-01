@@ -14,7 +14,7 @@
 		{
 			<tr>
 				<td>@cartItem.Product.Name</td>
-				<td>@cartItem.Product.CurrentPrice</td>
+				<td>@cartItem.Product.PriceWithoutDiscount</td>
 				<td>
 					<button class="btn btn-light"onclick="decreasesQuantity('@cartItem.Id')" >-</button>
 						<input id="quantyty_@cartItem.Id" class="" value="@cartItem.Amount" readonly/>
