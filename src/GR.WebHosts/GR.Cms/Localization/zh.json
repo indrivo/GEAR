@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "现有的执行情况",
   "iso_price_plan_modal_comment": "评论",
   "iso_price_plan_please_describe_services": "请描述的服务需要从我们的专家(例如审查的文件，全ISO27001的实施，具体在需求咨询等)。",
-  "iso_demo_text": "借助这一特点，可以组织你的文件、让他们更新并有机会有一个概述的文件的范围。"
+  "iso_demo_text": "借助这一特点，可以组织你的文件、让他们更新并有机会有一个概述的文件的范围。",
+  "iso_previous": "以前的",
+  "iso_next": "下",
+  "iso_step": "步骤",
+  "iso_register": "注册"
 }

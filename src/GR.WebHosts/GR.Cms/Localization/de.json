@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "Vorhandene Implementierung",
   "iso_price_plan_modal_comment": "Kommentar",
   "iso_price_plan_please_describe_services": "Bitte beschreiben Sie die Leistungen unserer Experten (z.B. überprüfung der Dokumentation, vollständige ISO-27001-Implementierung, spezifische on-demand-Berater, etc.)",
-  "iso_demo_text": "Mit Hilfe dieser Funktion können Sie organisieren Sie Ihre Dokumente, halten Sie aktualisiert, und haben die Möglichkeit, einen überblick über die Dokumentation im Rahmen."
+  "iso_demo_text": "Mit Hilfe dieser Funktion können Sie organisieren Sie Ihre Dokumente, halten Sie aktualisiert, und haben die Möglichkeit, einen überblick über die Dokumentation im Rahmen.",
+  "iso_previous": "Vorherige",
+  "iso_next": "Weiter",
+  "iso_step": "Schritt",
+  "iso_register": "Registrieren"
 }

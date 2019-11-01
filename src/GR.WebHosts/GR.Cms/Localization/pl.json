@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "Istniejące realizacji",
   "iso_price_plan_modal_comment": "Komentarz",
   "iso_price_plan_please_describe_services": "Opisz niezbędne usługi z naszymi specjalistami (np. weryfikacja dokumentacji, pełne wdrożenie normy ISO 27001, określonej na żądanie, konsultacje itp.)",
-  "iso_demo_text": "Za pomocą tej funkcji, możesz zorganizować swoje dokumenty, zachować je na bieżąco i móc mieć przegląd dokumentacji w ramach."
+  "iso_demo_text": "Za pomocą tej funkcji, możesz zorganizować swoje dokumenty, zachować je na bieżąco i móc mieć przegląd dokumentacji w ramach.",
+  "iso_previous": "Poprzednie",
+  "iso_next": "Dalej",
+  "iso_step": "Krok",
+  "iso_register": "Zarejestruj się"
 }

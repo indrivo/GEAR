@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "既存の実施",
   "iso_price_plan_modal_comment": "コメント",
   "iso_price_plan_please_describe_services": "で記述してくださいに必要とされるサービスから弊社の専門家などの調査は、書類、ISO27001の実装では、特定の必要な助言等）",
-  "iso_demo_text": "この機能を使をつけることができご書類されているのを機について概観を理解してい文書です。"
+  "iso_demo_text": "この機能を使をつけることができご書類されているのを機について概観を理解してい文書です。",
+  "iso_previous": "前",
+  "iso_next": "次へ",
+  "iso_step": "ステップ",
+  "iso_register": "登録"
 }

@@ -75,7 +75,7 @@
   "next_step": "Urmatorul pas",
   "taskStatuses": "Situatia Task-urilor",
   "signin_key": "Logare",
-  "email": "Mesagerie",
+  "email": "Email",
   "_classfiers_projectcategories_create": "Nou tip de proiect",
   "_classfiers_projectcategories": "Categorii de proiecte",
   "_classfiers_taskstatuses": "Tipuri de Statuturi",
@@ -694,7 +694,7 @@
   "iso_powerful_dashboards_p1": "Software-ul vă oferă o listă de verificare pentru evaluarea conformității cu cerințele din standardul ISO 27001 în timp real.",
   "iso_powerful_dashboards_p2": "De asemenea, vine cu puternice tablouri de bord care vă arată tendințele principale de Informații zone de Securitate și permite să facă decizii de calitate bazat pe rapoarte și diagrame grafice. Tablourile de bord sunt complet personalizabil pentru a se potrivi nevoilor dumneavoastră.",
   "iso_endless_features_components": "Multe alte funcționalități și componente vor fi disponibile în curând ",
-  "iso_endless_features_components_text": "Dezvoltăm în permanență aplicația pentru a o îmbunătăți permanent cu noi funcționalități și pentru a asigura conformitatea cu modificările standardului ISO27001 și cu nevoile individuale ale clienților noștri.",
+  "iso_endless_features_components_text": "Dezvoltăm în permanență aplicația pentru a o îmbunătăți permanent cu noi funcționalități și pentru a asigura conformitatea cu modificările standardului ISO 27001 și cu nevoile individuale ale clienților noștri.",
   "iso_detailed_features": "Funcționalități detaliate",
   "iso_contact_us": "Contactează-ne",
   "iso_phone_fax": "Telefon / Fax",
@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "Implementare existentă",
   "iso_price_plan_modal_comment": "Comentariu",
   "iso_price_plan_please_describe_services": "Vă rugăm să descrieți serviciile dorite din partea experților noștri (de exemplu, revizuirea documentației, implementarea completă a ISO 27001, consultanță specifică la cerere etc.)",
-  "iso_demo_text": "Cu ajutorul acestei funcții, puteți organiza documente, păstrați-le la curent și au posibilitatea de a avea o imagine de ansamblu de documentare în domeniul de aplicare."
+  "iso_demo_text": "Cu ajutorul acestei funcții, puteți organiza documente, păstrați-le la curent și au posibilitatea de a avea o imagine de ansamblu de documentare în domeniul de aplicare.",
+  "iso_previous": "Anterior",
+  "iso_next": "Următorul",
+  "iso_step": "Pas",
+  "iso_register": "Înregistrare"
 }
