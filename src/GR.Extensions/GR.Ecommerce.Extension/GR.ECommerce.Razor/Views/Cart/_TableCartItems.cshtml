@@ -15,8 +15,12 @@
 			<tr>
 				<td>@cartItem.Product.Name</td>
 				<td>@cartItem.Product.CurrentPrice</td>
-				<td>@cartItem.Amount</td>
-				<td>X</td>
+				<td>
+					<button class="btn btn-light"onclick="decreasesQuantity('@cartItem.Id')" >-</button>
+						<input id="quantyty_@cartItem.Id" class="" value="@cartItem.Amount" readonly/>
+					<button class="btn btn-light" onclick="addQuantity('@cartItem.Id')">+</button>
+				</td>
+				<td><button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')">X</button></td>
 			</tr>
 		}
 	</tbody>
