@@ -40,7 +40,7 @@ namespace GR.ECommerce.Razor.Controllers
         public override IActionResult Index()
         {
 
-            var cart = _cartService.GetCartByUser().Result;
+            var cart = _cartService.GetCartByUserAsync().Result;
             var result = cart.Result.Adapt<AddToCartViewModel>();
 
             return View(result);
@@ -54,7 +54,7 @@ namespace GR.ECommerce.Razor.Controllers
                 ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
                 return Json(model);
             }
-            var result = _cartService.AddToCard(model).Result;
+            var result = _cartService.AddToCardAsync(model).Result;
          
             return Json(result);
         }
@@ -62,14 +62,14 @@ namespace GR.ECommerce.Razor.Controllers
 
         public async Task<JsonResult> DeleteCartItem([Required]Guid? cartItemId)
         {
-            return Json(_cartService.DeleteCartItem(cartItemId).Result);
+            return Json(_cartService.DeleteCartItemAsync(cartItemId).Result);
         }
 
 
         public async Task<JsonResult> SetQuantity([Required] Guid? cartItemId, [Required] int? quantity)
         {
            
-            return Json(_cartService.SetQuantity(cartItemId, quantity).Result);
+            return Json(_cartService.SetQuantityAsync(cartItemId, quantity).Result);
         }
     }
 }
