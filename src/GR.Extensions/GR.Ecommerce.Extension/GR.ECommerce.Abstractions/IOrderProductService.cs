@@ -60,5 +60,14 @@ namespace GR.ECommerce.Abstractions
         /// <param name="orderId"></param>
         /// <returns></returns>
         Task<ResultModel> CancelOrderAsync(Guid? orderId);
+
+        /// <summary>
+        /// Set up addresses
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="shipmentAddress"></param>
+        /// <param name="billingAddress"></param>
+        /// <returns></returns>
+        Task<ResultModel> SetOrderBillingAddressAndShipmentAsync(Guid? orderId, Guid shipmentAddress, Guid billingAddress);
     }
 }

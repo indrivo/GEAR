@@ -165,6 +165,23 @@ namespace GR.ECommerce.Products.Services
         }
 
         /// <summary>
+        /// Set billing
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="shipmentAddress"></param>
+        /// <param name="billingAddress"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> SetOrderBillingAddressAndShipmentAsync(Guid? orderId, Guid shipmentAddress, Guid billingAddress)
+        {
+            var orderRequest = await GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return new NotFoundResultModel<object>().ToBase();
+            var order = orderRequest.Result;
+            order.BillingAddress = billingAddress;
+            order.ShipmentAddress = shipmentAddress;
+            return await _commerceContext.PushAsync();
+        }
+
+        /// <summary>
         /// Get filtered list of organization
         /// </summary>
         /// <param name="param"></param>

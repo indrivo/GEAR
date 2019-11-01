@@ -69,7 +69,7 @@
                             </div>
                         </div>
 
-                        <div class="product_price">Price: <span id="productPrice">@Model.CurrentPrice</span></div>
+                        <div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span></div>
                         <div>
                             <button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
                         </div>
@@ -135,7 +135,7 @@
 						        @Model.Name
 					        </div>
 					        <div alignclass="col-3">
-						        <span id="cartQuantity"> 1 </span> x @Model.CurrentPrice
+						        <span id="cartQuantity"> 1 </span> x @Model.PriceWithoutDiscount
 					        </div>
 				        </div>
 
@@ -240,7 +240,7 @@
 	function newProductPrice(curentQuantity) {
 		$("#quantity_input").val(curentQuantity);
 
-		var productPrice = @Model.CurrentPrice;
+		var productPrice = @Model.PriceWithoutDiscount;
 		$("#productPrice").empty();
 		$("#productPrice").append(productPrice * curentQuantity);
 	}
@@ -263,7 +263,7 @@
 					$("#cartQuantity").empty();
 					$("#cartQuantity").append(model.Quantity);
 
-					var productPrice = @Model.CurrentPrice;
+					var productPrice = @Model.PriceWithoutDiscount;
 
 					$("#cartTotalPrice").empty();
 					$("#cartTotalPrice").append(model.Quantity * productPrice);

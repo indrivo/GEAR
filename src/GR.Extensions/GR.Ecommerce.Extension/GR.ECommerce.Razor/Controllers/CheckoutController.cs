@@ -66,27 +66,31 @@ namespace GR.ECommerce.Razor.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Set up shipment and billing address
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Shipping([Required]CheckoutShippingViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (model == null) return NotFound();
+
+            if (model.Order != null)
             {
-                var userRequest = await _userManager.GetCurrentUserAsync();
-                if (!userRequest.IsSuccess) return NotFound();
-                var orderRequest = await _orderProductService.GetOrderByIdAsync(model.Order.Id);
-                if (!orderRequest.IsSuccess) return NotFound();
-                if (orderRequest.Result.OrderState != OrderState.New) return NotFound();
-                var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id.ToGuid());
-                model.Addresses = addressesRequest.Result;
-                return View(model);
+                var addressUpdateRequest = await _orderProductService.SetOrderBillingAddressAndShipmentAsync(model.Order?.Id, model.ShipmentAddress, model.BillingAddressId);
+                if (addressUpdateRequest.IsSuccess)
+                    return RedirectToAction("Payment", new { OrderId = model.Order.Id });
+                ModelState.AppendResultModelErrors(addressUpdateRequest.Errors);
             }
 
-
-            return RedirectToAction("Payment", new { OrderId = model.Order.Id });
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return NotFound();
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(model.Order?.Id);
+            if (!orderRequest.IsSuccess) return NotFound();
+            if (orderRequest.Result.OrderState != OrderState.New) return NotFound();
+            var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id.ToGuid());
+            model.Addresses = addressesRequest.Result;
+            return View(model);
         }
 
         /// <summary>
