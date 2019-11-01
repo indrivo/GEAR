@@ -9,10 +9,12 @@ namespace GR.ECommerce.Razor.ViewModels
     public class AddToCartViewModel: Cart
     {
         [Required]
-        public Guid ProductId { get; set; }
+        public virtual Guid ProductId { get; set; }
         [Required]
-        public int Quantity { get; set; }
+        public virtual int Quantity { get; set; }
       
-        public Guid? VariationId { get; set; }
+        public virtual Guid? VariationId { get; set; }
+
+   
     }
 }
