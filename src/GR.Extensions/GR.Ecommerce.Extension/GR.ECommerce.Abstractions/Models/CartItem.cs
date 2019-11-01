@@ -22,6 +22,5 @@ namespace GR.ECommerce.Abstractions.Models
 
 
         public int Amount { get; set; }
-
     }
 }
