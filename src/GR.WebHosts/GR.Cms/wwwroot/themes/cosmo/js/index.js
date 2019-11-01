@@ -19,7 +19,7 @@ loadAsync("/PageRender/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").th
 const userSection = $("#userSection");
 new Notificator().getCurrentUser().then(user => {
 	if (user.is_success) {
-		userSection.replaceWith($(`<div class="navbar-nav user-nav" style="margin-right: -6em; padding-right: 1em;">
+		userSection.replaceWith($(`<div class="navbar-nav user-nav">
         <a class="nav-item nav-link py-1 px-3" href="/home">${window.translate("iso_hello").toUpperFirstLetter()}, ${user.result.userName}</a>
         <a href="#" class="logoff btn btn-outline-primary py-2 ml-2 sa-logout">${window.translate("logout")}</a>
     </div>`));
@@ -125,9 +125,14 @@ $(function () {
 		window.forceTranslate().then(() => {
 			replaceIso();
 		});
-		window.forceTranslatePlaceHolders();
+		window.forceTranslatePlaceHolders()
 		replaceIso();
 	});
+
+	String.prototype.replaceAll = function (search, replacement) {
+		var target = this;
+		return target.replace(new RegExp(search, 'g'), replacement);
+	};
 
 
 	function replaceIso() {
@@ -135,7 +140,7 @@ $(function () {
 			let str = $(this);
 			if (!$(this).find('.color-blue-fw-4400').length > 0) {
 				str.html(
-					str.text().replace('ISO 27001', '<span><i><span class="color-blue fw-400">ISO</span> 27001</i></span>')
+					str.text().replaceAll('ISO 27001', '<span><i><span class="color-blue fw-400">ISO</span> 27001</i></span>')
 				);
 			}
 		});

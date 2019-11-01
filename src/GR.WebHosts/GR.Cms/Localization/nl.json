@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "Bestaande implementatie",
   "iso_price_plan_modal_comment": "Reactie",
   "iso_price_plan_please_describe_services": "Geef een omschrijving van de diensten nodig van onze experts (bijvoorbeeld beoordeling van de documentatie, de volledige ISO 27001 implementatie, specifieke on-demand advies etc.)",
-  "iso_demo_text": "Met behulp van deze functie kunt u het organiseren van uw documenten, houden hen op de hoogte en hebben de mogelijkheid om een overzicht te hebben van de documentatie in het bereik."
+  "iso_demo_text": "Met behulp van deze functie kunt u het organiseren van uw documenten, houden hen op de hoogte en hebben de mogelijkheid om een overzicht te hebben van de documentatie in het bereik.",
+  "iso_previous": "Vorige",
+  "iso_next": "Volgende",
+  "iso_step": "Stap",
+  "iso_register": "Registreren"
 }

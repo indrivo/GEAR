@@ -749,5 +749,9 @@
   "iso_price_plan_modal_existng_implementation": "De mise en œuvre existantes",
   "iso_price_plan_modal_comment": "Commentaire",
   "iso_price_plan_please_describe_services": "Veuillez décrire les services nécessaires de nos experts (p. ex. examen de la documentation, de la pleine mise en œuvre de la norme ISO 27001, sur demande, conseil, etc.)",
-  "iso_demo_text": "Avec l'aide de cette fonctionnalité, vous pouvez organiser vos documents, de les garder à jour et la possibilité d'avoir une vue d'ensemble de la documentation dans le champ d'application."
+  "iso_demo_text": "Avec l'aide de cette fonctionnalité, vous pouvez organiser vos documents, de les garder à jour et la possibilité d'avoir une vue d'ensemble de la documentation dans le champ d'application.",
+  "iso_previous": "Précédente",
+  "iso_next": "Prochaine",
+  "iso_step": "Étape",
+  "iso_register": "Registre"
 }
