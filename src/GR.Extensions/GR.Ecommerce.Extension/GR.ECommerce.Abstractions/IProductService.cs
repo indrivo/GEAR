@@ -14,5 +14,12 @@ namespace GR.ECommerce.Abstractions
         /// <param name="predicate"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<TProduct>>> GetAllProducts(Func<TProduct, bool> predicate = null);
+
+        /// <summary>
+        /// Get product bu id
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Product>> GetProductByIdAsync(Guid? productId);
     }
 }

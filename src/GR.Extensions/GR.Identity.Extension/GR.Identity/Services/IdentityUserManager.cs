@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Models.AddressModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Services
@@ -182,6 +184,26 @@ namespace GR.Identity.Services
             user.IsDisabled = true;
             var request = await UserManager.UpdateAsync(user);
             return request.ToResultModel<object>().ToBase();
+        }
+
+        /// <summary>
+        /// Get user addresses
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId)
+        {
+            if (userId == null) return new NotFoundResultModel<IEnumerable<Address>>();
+            var addresses = await IdentityContext.Addresses
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince)
+                .Where(x => x.ApplicationUserId.ToGuid().Equals(userId))
+                .ToListAsync();
+            return new ResultModel<IEnumerable<Address>>
+            {
+                IsSuccess = true,
+                Result = addresses
+            };
         }
     }
 }

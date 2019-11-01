@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
+using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 
@@ -26,10 +27,9 @@ namespace GR.ECommerce.Abstractions
         /// <summary>
         /// Create order from cart
         /// </summary>
-        /// <param name="cartId"></param>
-        /// <param name="notes"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateOrderAsync(Guid? cartId, string notes = null);
+        Task<ResultModel<Guid>> CreateOrderAsync(OrderCartViewModel model);
 
         /// <summary>
         /// Get paginated orders by user id
@@ -45,5 +45,20 @@ namespace GR.ECommerce.Abstractions
         /// <param name="param"></param>
         /// <returns></returns>
         Task<DTResult<GetOrdersViewModel>> GetMyOrdersWithPaginationWayAsync(DTParameters param);
+
+        /// <summary>
+        /// Change order state
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="orderState"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState);
+
+        /// <summary>
+        /// Cancel order
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        Task<ResultModel> CancelOrderAsync(Guid? orderId);
     }
 }

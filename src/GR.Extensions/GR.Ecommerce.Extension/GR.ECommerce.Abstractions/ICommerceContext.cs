@@ -67,11 +67,6 @@ namespace GR.ECommerce.Abstractions
         DbSet<Order> Orders { get; set; }
 
         /// <summary>
-        /// Shipment Addresses
-        /// </summary>
-        DbSet<ShipmentAddress> ShipmentAddresses { get; set; }
-
-        /// <summary>
         /// Product attributes
         /// </summary>
         DbSet<ProductAttribute> ProductAttribute { get; set; }
@@ -101,7 +96,14 @@ namespace GR.ECommerce.Abstractions
         /// </summary>
         DbSet<ProductOption> ProductOption { get; set; }
 
+        /// <summary>
+        /// Carts
+        /// </summary>
         DbSet<Cart> Carts { get; set; }
+
+        /// <summary>
+        /// Cart Items
+        /// </summary>
         DbSet<CartItem> CartItems { get; set; }
     }
 }

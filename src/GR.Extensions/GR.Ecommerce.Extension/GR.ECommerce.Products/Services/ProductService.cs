@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.BaseImplementations.Repositories
+namespace GR.ECommerce.Products.Services
 {
     public class ProductService : IProductService<Product>
     {
@@ -38,6 +39,32 @@ namespace GR.ECommerce.BaseImplementations.Repositories
             result.IsSuccess = true;
             result.Result = data;
             return result;
+        }
+
+        /// <summary>
+        /// Get product by id
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Product>> GetProductByIdAsync(Guid? productId)
+        {
+            if (productId == null) return new NotFoundResultModel<Product>();
+            var product = await _commerceContext.Products
+                .Include(x => x.Brand)
+                .Include(x => x.ProductAttributes)
+                .ThenInclude(x => x.ProductAttribute)
+                .Include(x => x.ProductCategories)
+                .ThenInclude(x => x.Category)
+                .Include(x => x.ProductPrices)
+                .FirstOrDefaultAsync(x => x.Id.Equals(productId));
+            if (product == null) return new NotFoundResultModel<Product>();
+            var response = new ResultModel<Product>
+            {
+                IsSuccess = true,
+                Result = product
+            };
+
+            return response;
         }
     }
 }

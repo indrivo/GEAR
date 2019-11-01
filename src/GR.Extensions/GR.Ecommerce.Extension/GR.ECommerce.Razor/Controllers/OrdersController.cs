@@ -1,8 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,15 +43,24 @@ namespace GR.ECommerce.Razor.Controllers
         /// Create order
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> CreateOrder()
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([Required]OrderCartViewModel model)
         {
-            var createOrderRequest = await _orderProductService.CreateOrderAsync(Guid.Empty);
-            if (createOrderRequest.IsSuccess)
-            {
-                return RedirectToAction("MyOrders");
-            }
+            var createOrderRequest = await _orderProductService.CreateOrderAsync(model);
+            return Json(createOrderRequest);
+        }
 
-            return RedirectToAction("MyOrders");
+        /// <summary>
+        /// Cancel order
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        [HttpDelete, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> CancelOrder(Guid? orderId)
+        {
+            var cancelRequest = await _orderProductService.CancelOrderAsync(orderId);
+            return Json(cancelRequest);
         }
 
         /// <summary>

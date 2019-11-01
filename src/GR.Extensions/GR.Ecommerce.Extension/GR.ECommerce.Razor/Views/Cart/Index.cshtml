@@ -22,35 +22,41 @@
 
 			<hr class="style1">
 
-			<button class="btn btn-success" onclick="CreateOrder()">Process to checkout</button>
+			<button class="btn btn-success" id="checkout">Process to checkout</button>
 		</div>
 	
 </div>
 
 
 <script type="text/javascript">
-	function CreateOrder() {
-
-		const model = {
-			cartId: '@Model.Id',
-			notes: $("#OrderNotes").val(),
+	$(document).ready(function () {
+		const toast = new ToastNotifier();
+		$("#checkout").on("click", function () {
+			const model = {
+            cartId: '@Model.Id',
+            notes: $("#OrderNotes").val(),
 		}
 
-		console.log(model);
-
 		$.ajax({
-			url: '@Url.Action("CreateOrder", "Orders")',
+			url: '@Url.Action("CreateOrder","Orders")',
 			method: 'post',
 			data: model,
 			success: function(data) {
-
+				if (data.is_success) {
+					toast.notifySuccess("Info", "Order was created");
+					setTimeout(function () {
+						location.href = `/Checkout/Shipping?orderId=${data.result}`;
+					}, 500);
+				} else {
+					toast.notifyErrorList(data.error_keys);
+				}
 			},
 			error: function(error) {
 				console.log(error);
 			}
 		});
-	}
-
+		});
+	});
 
 	function deleteCartItem(id) {
 		$.ajax({

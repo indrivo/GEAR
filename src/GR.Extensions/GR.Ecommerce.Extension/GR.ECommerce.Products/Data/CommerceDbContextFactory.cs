@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GR.Core.Helpers.DbContexts;
 using Microsoft.EntityFrameworkCore.Design;
-using GR.Core.Helpers.DbContexts;
 
 namespace GR.ECommerce.BaseImplementations.Data
 {

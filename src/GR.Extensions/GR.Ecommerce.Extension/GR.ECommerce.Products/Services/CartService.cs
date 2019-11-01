@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using GR.ECommerce.Razor.ViewModels;
 
-namespace GR.ECommerce.Products.Services
+namespace GR.ECommerce.BaseImplementations.Data.Services
 {
     public class CartService : ICartService
     {

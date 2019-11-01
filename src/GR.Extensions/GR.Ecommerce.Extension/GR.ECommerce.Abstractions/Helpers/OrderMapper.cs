@@ -29,12 +29,14 @@ namespace GR.ECommerce.Abstractions.Helpers
                 {
                     ProductVariationId = x.ProductVariationId,
                     Amount = x.Amount,
-                    Price = x.Product?.PriceWithDiscount ?? 0
+                    Price = x.Product?.PriceWithDiscount ?? 0,
+                    OrderId = order.Id,
+                    ProductId = x.ProductId
                 };
                 return pOrder;
             });
 
-            order.ProductOrders = orderItems;
+            order.ProductOrders = orderItems.ToList();
 
             return order;
         }
