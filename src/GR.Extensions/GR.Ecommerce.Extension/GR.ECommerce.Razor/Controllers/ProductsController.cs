@@ -50,7 +50,12 @@ namespace GR.ECommerce.Razor.Controllers
         {
             if (productId == null) return NotFound();
 
-            var productBd = await Context.Products.Include(i=>i.ProductImages).Include(i => i.ProductAttributes).ThenInclude(i=>i.ProductAttribute).Include(i => i.ProductVariations)
+            var productBd = await Context.Products
+                .Include(i => i.ProductPrices)
+                .Include(i=>i.ProductImages)
+                .Include(i => i.ProductAttributes)
+                .ThenInclude(i=>i.ProductAttribute).
+                 Include(i => i.ProductVariations)
                 .FirstOrDefaultAsync(x=> x.Id == productId);
             if (productBd is null) return NotFound();
 

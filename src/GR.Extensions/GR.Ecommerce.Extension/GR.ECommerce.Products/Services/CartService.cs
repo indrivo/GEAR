@@ -73,7 +73,7 @@ namespace GR.ECommerce.Products.Services
         /// Get cart by login user
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<Cart>> GetCartByUser()
+        public async Task<ResultModel<Cart>> GetCartByUserAsync()
         {
             var response = new ResultModel<Cart>();
 
@@ -81,6 +81,7 @@ namespace GR.ECommerce.Products.Services
             var cart = await _context.Carts
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.Product)
+                .ThenInclude(i=> i.ProductPrices)
                 .FirstOrDefaultAsync(x => x.UserId == user.Result.Result.Id.ToGuid());
 
             if (cart == null)
@@ -100,7 +101,7 @@ namespace GR.ECommerce.Products.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> AddToCard(AddToCartViewModel model)
+        public async Task<ResultModel> AddToCardAsync(AddToCartViewModel model)
         {
             var resultModel = new ResultModel();
             var product = _context.Products.FirstOrDefault(x => x.Id == model.ProductId);
@@ -154,7 +155,7 @@ namespace GR.ECommerce.Products.Services
         /// </summary>
         /// <param name="cartItemId"></param>
         /// <returns></returns>
-        public async Task<ResultModel> DeleteCartItem([Required] Guid? cartItemId)
+        public async Task<ResultModel> DeleteCartItemAsync([Required] Guid? cartItemId)
         {
 
             var resultModel = new ResultModel();
@@ -179,7 +180,7 @@ namespace GR.ECommerce.Products.Services
         /// <param name="cartItemId"></param>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        public async Task<ResultModel> SetQuantity([Required] Guid? cartItemId, [Required] int? quantity)
+        public async Task<ResultModel> SetQuantityAsync([Required] Guid? cartItemId, [Required] int? quantity)
         {
             var resultModel = new ResultModel();
             if (cartItemId is null || quantity is null)
