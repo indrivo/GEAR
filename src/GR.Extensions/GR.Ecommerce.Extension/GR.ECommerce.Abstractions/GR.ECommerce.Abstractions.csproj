@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,131 @@
+@model GR.ECommerce.Abstractions.ViewModels.CheckoutViewModels.CheckoutShippingViewModel
+
+@{
+	ViewData["Title"] = "Checkout";
+}
+
+<div class="card">
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-6">
+				<h2>Billing Address</h2>
+				<ul class="list-group">
+					@foreach (var address in Model.Addresses)
+					{
+						<li class="list-group-item">
+							<div class="custom-control custom-radio">
+								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id">
+								<label class="custom-control-label mt-2 ml-2" for="a_@address.Id">@address.ContactName</label>
+							</div>
+
+							<address>
+								@address.AddressLine1
+								@address.AddressLine2 <br />
+								Phone: @address.Phone <br />
+								Postal code: @address.ZipCode <br />
+							</address>
+						</li>
+					}
+				</ul>
+
+				<form asp-action="Shipping">
+					@Html.HiddenFor(x => x.BillingAddressId)
+					@Html.HiddenFor(x => x.ShipmentAddress)
+
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+					<div class="row button-group p-2">
+						<div class="col-lg-2 col-md-3">
+							<a id="cancel-order" href="#" class="btn btn-block btn-inverse"> Cancel order</a>
+						</div>
+						<div class="col-lg-2 col-md-3">
+							<button type="submit" class="btn btn-block  btn-success"> Payment</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-6">
+				<h2>Order summary</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Product</th>
+							<th>Quantity</th>
+							<th>Price</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var prOrder in Model.Order.ProductOrders)
+						{
+							<tr>
+								<td>@prOrder.Product?.Name</td>
+								<td>@prOrder.Amount</td>
+								<td>@prOrder.Price</td>
+							</tr>
+						}
+						<tr>
+							<td>Order note</td>
+							<td colspan="2">
+								@Model.Order.Notes
+							</td>
+						</tr>
+						<tr>
+							<td>Subtotal</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Discount</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Order total</td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	<script>
+		$(document).ready(function () {
+			const toast = new ToastNotifier();
+			$("#cancel-order").on("click", function () {
+				$.ajax({
+					url: "/Orders/CancelOrder",
+					data: {
+						orderId: "@Model.Order.Id"
+					},
+					success: function (response) {
+						if (response.is_success) {
+							toast.notifySuccess("Info", "Order was canceled");
+							setTimeout(function () {
+								location.href = "/Orders/MyOrders";
+							}, 300);
+						} else {
+							toast.notifyErrorList(response.error_keys);
+						}
+					},
+					error: function () {
+						toast.notifyErrorList("Error");
+					}
+				});
+            });
+
+            $(".billing-address").on("change", function () {
+                $("#BillingAddressId").val($(this).val());
+            });
+		});
+	</script>
+}
+
+@section Styles
+{
+
+}

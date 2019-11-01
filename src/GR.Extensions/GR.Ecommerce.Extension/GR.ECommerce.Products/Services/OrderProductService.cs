@@ -8,6 +8,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Events;
 using GR.ECommerce.Abstractions.Events.EventArgs.OrderEventArgs;
 using GR.ECommerce.Abstractions.Helpers;
@@ -65,6 +66,7 @@ namespace GR.ECommerce.Products.Services
             if (orderId == null) return new InvalidParametersResultModel<Order>();
             var order = await _commerceContext.Orders
                 .Include(x => x.ProductOrders)
+                .ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(x => x.Id.Equals(orderId));
             if (order == null) return new NotFoundResultModel<Order>();
             response.IsSuccess = true;
@@ -92,20 +94,18 @@ namespace GR.ECommerce.Products.Services
         /// <summary>
         /// Create order
         /// </summary>
-        /// <param name="cartId"></param>
-        /// <param name="notes"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? cartId, string notes = null)
+        public async Task<ResultModel<Guid>> CreateOrderAsync(OrderCartViewModel model)
         {
-            if (cartId == null) return new NotFoundResultModel<Guid>();
-            var cartRequest = await _cartService.GetCartByIdAsync(cartId);
-            if (!cartRequest.IsSuccess) return new ResultModel<Guid>
-            {
-                Errors = cartRequest.Errors
-            };
+            if (model == null) throw new NullReferenceException();
+            if (model.CartId == null) return new NotFoundResultModel<Guid>();
+            var cartRequest = await _cartService.GetCartByIdAsync(model.CartId);
+            if (!cartRequest.IsSuccess) return cartRequest.Map(Guid.Empty);
             var cart = cartRequest.Result;
-            var order = OrderMapper.Map(cart, notes);
+            var order = OrderMapper.Map(cart, model.Notes);
             await _commerceContext.Orders.AddAsync(order);
+            _commerceContext.Carts.Remove(cart);
             var dbRequest = await _commerceContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
@@ -116,7 +116,7 @@ namespace GR.ECommerce.Products.Services
                 });
             }
 
-            return new ResultModel<Guid>();
+            return dbRequest.Map(order.Id);
         }
 
         /// <summary>
@@ -128,6 +128,39 @@ namespace GR.ECommerce.Products.Services
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
             return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : GetPaginatedOrdersByUserId(param, userRequest.Result.Id.ToGuid());
+        }
+
+        /// <summary>
+        /// Cancel order
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> CancelOrderAsync(Guid? orderId)
+        {
+            var response = new ResultModel();
+            var orderRequest = await GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return orderRequest.ToBase();
+            var order = orderRequest.Result;
+            if (order.OrderState == OrderState.New) return await ChangeOrderStateAsync(orderId, OrderState.Canceled);
+            response.Errors.Add(new ErrorModel(string.Empty, "The order can only be canceled in the new order status"));
+            return response;
+
+        }
+
+        /// <summary>
+        /// Change order state
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="orderState"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState)
+        {
+            var orderRequest = await GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return orderRequest.ToBase();
+            var order = orderRequest.Result;
+            order.OrderState = orderState;
+            _commerceContext.Update(order);
+            return await _commerceContext.PushAsync();
         }
 
         /// <summary>

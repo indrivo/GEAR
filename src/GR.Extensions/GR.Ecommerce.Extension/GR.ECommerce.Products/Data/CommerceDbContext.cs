@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GR.Audit.Contexts;
+﻿using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.BaseImplementations.Extensions;
+using GR.ECommerce.BaseImplementations.Data.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.BaseImplementations.Data
 {
@@ -37,11 +37,9 @@ namespace GR.ECommerce.BaseImplementations.Data
         public DbSet<ProductPrice> ProductPrices { get; set; }
         public virtual DbSet<ProductOrder> ProductOrders { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
-        public virtual DbSet<ShipmentAddress> ShipmentAddresses { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
         public virtual DbSet<AttributeGroup> AttributeGroups { get; set; }
         public virtual DbSet<ProductAttributes> ProductAttributes { get; set; }
-
         public virtual DbSet<ProductVariation> ProductVariations { get; set; }
         public virtual DbSet<ProductVariationDetail> ProductVariationDetails { get; set; }
         public virtual DbSet<ProductOption> ProductOption { get; set; }

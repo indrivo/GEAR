@@ -5,7 +5,7 @@ using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.Products.Services
+namespace GR.ECommerce.BaseImplementations.Data.Services
 {
     public class CartService : ICartService
     {
