@@ -32,7 +32,7 @@ namespace GR.Orders
         private readonly ICommerceContext _commerceContext;
 
         /// <summary>
-        /// Inject order db context
+        /// Inject orders db context
         /// </summary>
         private readonly IOrderDbContext _orderDbContext;
 
@@ -113,8 +113,7 @@ namespace GR.Orders
             var cart = cartRequest.Result;
             var order = OrderMapper.Map(cart, model.Notes);
             await _orderDbContext.Orders.AddAsync(order);
-            _commerceContext.Carts.Remove(cart);
-            var dbRequest = await _commerceContext.PushAsync();
+            var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
                 CommerceEvents.Orders.OrderCreated(new AddOrderEventArgs
@@ -123,6 +122,9 @@ namespace GR.Orders
                     OrderStatus = order.OrderState.ToString()
                 });
             }
+
+            _commerceContext.CartItems.RemoveRange(cart.CartItems);
+            await _commerceContext.PushAsync();
 
             return dbRequest.Map(order.Id);
         }
@@ -167,8 +169,8 @@ namespace GR.Orders
             if (!orderRequest.IsSuccess) return orderRequest.ToBase();
             var order = orderRequest.Result;
             order.OrderState = orderState;
-            _commerceContext.Update(order);
-            return await _commerceContext.PushAsync();
+            _orderDbContext.Orders.Update(order);
+            return await _orderDbContext.PushAsync();
         }
 
         /// <summary>
@@ -185,7 +187,8 @@ namespace GR.Orders
             var order = orderRequest.Result;
             order.BillingAddress = billingAddress;
             order.ShipmentAddress = shipmentAddress;
-            return await _commerceContext.PushAsync();
+            _orderDbContext.Orders.Update(order);
+            return await _orderDbContext.PushAsync();
         }
 
         /// <summary>

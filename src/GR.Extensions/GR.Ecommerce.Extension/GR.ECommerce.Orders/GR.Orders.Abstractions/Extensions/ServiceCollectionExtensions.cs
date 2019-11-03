@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using GR.ECommerce.Abstractions;
+﻿using GR.ECommerce.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
 using GR.Orders.Abstractions.Models;
@@ -33,6 +31,7 @@ namespace GR.Orders.Abstractions.Extensions
         public static IServiceCollection RegisterOrdersStorage<TContext>(this IServiceCollection services)
             where TContext : DbContext, IOrderDbContext
         {
+            services.AddTransient<IOrderDbContext, TContext>();
             IoC.RegisterService<IOrderDbContext>(nameof(IOrderDbContext), typeof(TContext));
             return services;
         }
