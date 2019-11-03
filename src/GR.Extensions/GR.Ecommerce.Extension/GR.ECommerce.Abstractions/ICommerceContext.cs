@@ -57,16 +57,6 @@ namespace GR.ECommerce.Abstractions
         DbSet<ProductPrice> ProductPrices { get; set; }
 
         /// <summary>
-        /// Product orders
-        /// </summary>
-        DbSet<ProductOrder> ProductOrders { get; set; }
-
-        /// <summary>
-        /// Product orders
-        /// </summary>
-        DbSet<Order> Orders { get; set; }
-
-        /// <summary>
         /// Product attributes
         /// </summary>
         DbSet<ProductAttribute> ProductAttribute { get; set; }

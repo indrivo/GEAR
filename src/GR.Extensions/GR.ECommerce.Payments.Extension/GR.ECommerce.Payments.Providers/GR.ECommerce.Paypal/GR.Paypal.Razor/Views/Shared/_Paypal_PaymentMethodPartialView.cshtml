@@ -25,7 +25,8 @@
 				return paypal.request.post('/Paypal/ExecutePayment',
 						{
 							paymentID: data.paymentID,
-							payerID: data.payerID
+                            payerID: data.payerID,
+                            orderId: "@Model"
 						})
                     .then(function (res) {
 						window.location = `/checkout/success?orderId=${res.orderId}`;

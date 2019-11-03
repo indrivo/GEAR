@@ -7,9 +7,10 @@ using GR.Core.Extensions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.Abstractions.ViewModels.CheckoutViewModels;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Orders.Abstractions.Models;
+using GR.Orders.Abstractions.ViewModels.CheckoutViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -125,7 +126,9 @@ namespace GR.ECommerce.Razor.Controllers
         [HttpGet]
         public async Task<IActionResult> Success(Guid? orderId)
         {
-            return View();
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return NotFound();
+            return View(orderRequest.Result);
         }
     }
 }

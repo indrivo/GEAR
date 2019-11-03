@@ -5,7 +5,7 @@ using System.Linq;
 using GR.Core;
 using GR.ECommerce.Abstractions.Enums;
 
-namespace GR.ECommerce.Abstractions.Models
+namespace GR.Orders.Abstractions.Models
 {
     public class Order : BaseModel
     {
@@ -28,17 +28,17 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Total
         /// </summary>
-        public virtual double Total => ProductOrders?.Sum(x => x.FinalPrice * x.Amount) ?? 0;
+        public virtual decimal Total => ProductOrders?.Sum(x => x.FinalPrice * x.Amount) ?? 0;
 
         /// <summary>
         /// Sub total
         /// </summary>
-        public virtual double SubTotal => ProductOrders?.Sum(x => x.PriceWithOutDiscount * x.Amount) ?? 0;
+        public virtual decimal SubTotal => ProductOrders?.Sum(x => x.PriceWithOutDiscount * x.Amount) ?? 0;
 
         /// <summary>
         /// Discount total
         /// </summary>
-        public virtual double DiscountTotal => ProductOrders?.Sum(x => x.DiscountValue * x.Amount) ?? 0;
+        public virtual decimal DiscountTotal => ProductOrders?.Sum(x => x.DiscountValue * x.Amount) ?? 0;
 
         /// <summary>
         /// Order state

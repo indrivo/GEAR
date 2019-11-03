@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace GR.Paypal.Abstractions.ViewModels
 {
@@ -6,5 +7,6 @@ namespace GR.Paypal.Abstractions.ViewModels
     {
         [JsonProperty("paymentID")] public string PaymentId { get; set; }
         [JsonProperty("payerID")] public string PayerId { get; set; }
+        public Guid? OrderId { get; set; }
     }
 }

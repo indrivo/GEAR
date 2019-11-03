@@ -1,19 +1,16 @@
-﻿using GR.ECommerce.Abstractions;
-using System;
-using System.Collections;
-using System.Threading.Tasks;
-using GR.Core.Helpers;
-using GR.ECommerce.Abstractions.Models;
-using Microsoft.EntityFrameworkCore;
-using GR.Identity.Abstractions;
-using System.Linq;
-using GR.Core.Extensions;
-using Mapster;
-using Microsoft.AspNetCore.Mvc;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using GR.ECommerce.Razor.ViewModels;
+using System.Linq;
+using System.Threading.Tasks;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
+using GR.Identity.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.BaseImplementations.Data.Services
+namespace GR.ECommerce.Products.Services
 {
     public class CartService : ICartService
     {
@@ -206,7 +203,7 @@ namespace GR.ECommerce.BaseImplementations.Data.Services
         /// </summary>
         /// <param name="cartId"></param>
         /// <returns></returns>
-        private double GetTotalPrice(Guid cartId)
+        private decimal GetTotalPrice(Guid cartId)
         {
             var cart = _context.Carts.Include(i => i.CartItems).ThenInclude(i => i.Product).ThenInclude(i=>i.ProductPrices).FirstOrDefault(x => x.Id == cartId);
 

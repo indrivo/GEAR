@@ -57,7 +57,7 @@ namespace GR.ECommerce.Razor.ViewModels
         /// <summary>
         /// Last price
         /// </summary>
-        public virtual double Price { get; set; }
+        public virtual decimal Price { get; set; }
     }
 
     public class ProductCategoryDto

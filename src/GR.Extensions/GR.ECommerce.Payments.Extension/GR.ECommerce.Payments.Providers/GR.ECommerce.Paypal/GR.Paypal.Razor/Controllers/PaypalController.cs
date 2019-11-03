@@ -14,7 +14,7 @@ namespace GR.Paypal.Razor.Controllers
         /// <summary>
         /// Inject payment service
         /// </summary>
-        private readonly IPaypalPaymentService _paymentManager;
+        private readonly IPaypalPaymentMethodService _paymentMethodManager;
         #endregion
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace GR.Paypal.Razor.Controllers
         /// </summary>
         public PaypalController()
         {
-            _paymentManager = IoC.Resolve<IPaypalPaymentService>(nameof(PaypalPaymentService));
+            _paymentMethodManager = IoC.Resolve<IPaypalPaymentMethodService>(nameof(PaypalPaymentMethodService));
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace GR.Paypal.Razor.Controllers
         {
             var hostingDomain = Request.Host.Value;
 
-            var response = await _paymentManager.CreatePayment(hostingDomain, orderId);
-            if (response.IsSucces)
+            var response = await _paymentMethodManager.CreatePayment(hostingDomain, orderId);
+            if (response.IsSuccess)
             {
                 var paymentId = response.Message;
                 return Ok(new { PaymentId = paymentId });
@@ -64,11 +64,11 @@ namespace GR.Paypal.Razor.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ExecutePayment(PaymentExecuteVm model)
         {
-            var response = await _paymentManager.ExecutePayment(model);
+            var response = await _paymentMethodManager.ExecutePayment(model);
 
-            if (response.IsSucces)
+            if (response.IsSuccess)
             {
-                return Ok(new { Status = "success", OrderId = response.Message });
+                return Ok(new { Status = "success", response.OrderId });
             }
 
             return BadRequest(response.Message);

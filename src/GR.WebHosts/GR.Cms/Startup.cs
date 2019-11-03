@@ -109,10 +109,13 @@ using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
-using GR.ECommerce.BaseImplementations.Data.Services;
+using GR.ECommerce.Payments.Abstractions;
+using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
 using GR.Entities.Extensions;
 using GR.Localization;
+using GR.Orders.Abstractions.Extensions;
+using GR.Orders.Abstractions.Models;
 using GR.PageRender;
 using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
@@ -478,10 +481,13 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterPaypalProvider<PaypalPaymentService>()
+				.RegisterPaypalProvider<PaypalPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterPayments<IPaymentService>()
 				.RegisterCartService<CartService>()
+				.RegisterOrdersStorage<CommerceDbContext>()
+				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents();
 
 			//---------------------------------Multi Tenant Module-------------------------------------

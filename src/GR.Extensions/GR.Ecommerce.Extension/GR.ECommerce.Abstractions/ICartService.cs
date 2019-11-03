@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.Razor.ViewModels;
+using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
 
 namespace GR.ECommerce.Abstractions
 {

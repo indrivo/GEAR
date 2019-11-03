@@ -1,13 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GR.Paypal.Abstractions.ViewModels
 {
-   public class ResponsePaypal
+    public class ResponsePaypal
     {
+        /// <summary>
+        /// State 
+        /// </summary>
+        public virtual bool IsSuccess { get; set; }
 
-        public bool IsSucces { get; set; }
-        public string Message { get; set; }
+        /// <summary>
+        /// Response message
+        /// </summary>
+        public virtual string Message { get; set; }
+
+        /// <summary>
+        /// Order id
+        /// </summary>
+        public virtual Guid? OrderId { get; set; }
     }
 }

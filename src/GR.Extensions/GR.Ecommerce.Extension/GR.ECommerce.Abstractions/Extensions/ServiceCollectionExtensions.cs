@@ -72,19 +72,6 @@ namespace GR.ECommerce.Abstractions.Extensions
         }
 
         /// <summary>
-        /// Register order services
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterProductOrderServices<TOrder, TOrderProductService>(this IServiceCollection services)
-            where TOrderProductService : class, IOrderProductService<TOrder>
-            where TOrder : Order
-        {
-            IoC.RegisterTransientService<IOrderProductService<TOrder>, TOrderProductService>();
-            return services;
-        }
-
-        /// <summary>
         /// Register cart service
         /// </summary>
         /// <typeparam name="TCartService"></typeparam>

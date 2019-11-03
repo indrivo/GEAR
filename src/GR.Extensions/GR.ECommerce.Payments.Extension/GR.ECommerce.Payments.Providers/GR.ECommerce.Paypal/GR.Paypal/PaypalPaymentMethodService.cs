@@ -5,7 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.ECommerce.Abstractions;
-using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.Enums;
+using GR.ECommerce.Payments.Abstractions;
+using GR.ECommerce.Payments.Abstractions.Enums;
+using GR.ECommerce.Payments.Abstractions.Models;
+using GR.Orders.Abstractions.Models;
 using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.ViewModels;
 using GR.Paypal.Models;
@@ -14,7 +18,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GR.Paypal
 {
-    public class PaypalPaymentService : IPaypalPaymentService
+    public class PaypalPaymentMethodService : IPaypalPaymentMethodService
     {
 
         #region Injectable       
@@ -33,14 +37,21 @@ namespace GR.Paypal
         /// Inject order service
         /// </summary>
         private readonly IOrderProductService<Order> _orderProductService;
+
+        /// <summary>
+        /// Inject payment service
+        /// </summary>
+        private readonly IPaymentService _paymentService;
+
         #endregion
 
 
-        public PaypalPaymentService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService)
+        public PaypalPaymentMethodService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService, IPaymentService paymentService)
         {
             _httpClientFactory = httpClientFactory;
             _payPalOptions = payPalOptions;
             _orderProductService = orderProductService;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -54,7 +65,13 @@ namespace GR.Paypal
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess)
             {
-                return new ResponsePaypal { Message = "Order not Found", IsSucces = false };
+                return new ResponsePaypal { Message = "Order not Found", IsSuccess = false };
+            }
+
+            var isPayedRequest = await _paymentService.IsOrderPayedAsync(orderId);
+            if (isPayedRequest.IsSuccess)
+            {
+                return new ResponsePaypal { Message = "Order was payed before, Check your orders", IsSuccess = false };
             }
 
             var order = orderRequest.Result;
@@ -63,7 +80,7 @@ namespace GR.Paypal
 
             if (string.IsNullOrEmpty(accessToken))
             {
-                return new ResponsePaypal { Message = "No access token", IsSucces = false };
+                return new ResponsePaypal { Message = "No access token", IsSuccess = false };
             }
 
             using (var httpClient = new HttpClient())
@@ -84,7 +101,7 @@ namespace GR.Paypal
                         {
                             amount = new Amount
                             {
-                                total = (order.Total + 0.11).ToString("N2"),
+                                total = (order.Total + 0.11m).ToString("N2"),
                                 currency = "USD",
                                 details = new Details
                                 {
@@ -113,11 +130,12 @@ namespace GR.Paypal
                 dynamic payment = JObject.Parse(responseBody);
                 if (response.IsSuccessStatusCode)
                 {
+                    await _orderProductService.ChangeOrderStateAsync(orderId, OrderState.PendingPayment);
                     string paymentId = payment.id;
-                    return new ResponsePaypal { Message = paymentId, IsSucces = true };
+                    return new ResponsePaypal { Message = paymentId, IsSuccess = true };
                 }
-
-                return new ResponsePaypal { Message = responseBody, IsSucces = false }; ;
+                await _orderProductService.ChangeOrderStateAsync(orderId, OrderState.PaymentFailed);
+                return new ResponsePaypal { Message = responseBody, IsSuccess = false };
             }
         }
 
@@ -128,6 +146,12 @@ namespace GR.Paypal
         /// <returns></returns>
         public async Task<ResponsePaypal> ExecutePayment(PaymentExecuteVm model)
         {
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(model.OrderId);
+            if (!orderRequest.IsSuccess)
+            {
+                return new ResponsePaypal { Message = "Order not Found", IsSuccess = false };
+            }
+            var order = orderRequest.Result;
             var accessToken = await GetAccessToken();
 
             using (var httpClient = new HttpClient())
@@ -140,14 +164,35 @@ namespace GR.Paypal
                     paymentExecuteRequest);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 dynamic responseObject = JObject.Parse(responseBody);
+                var payment = new Payment
+                {
+                    PaymentMethodId = "Paypal",
+                    GatewayTransactionId = model.PaymentId,
+                    PaymentStatus = PaymentStatus.Failed,
+                    Total = order.Total
+                };
+
                 if (response.IsSuccessStatusCode)
                 {
-                    return new ResponsePaypal { Message = "12", IsSucces = true };
+                    await _orderProductService.ChangeOrderStateAsync(model.OrderId, OrderState.PaymentReceived);
+                    payment.PaymentStatus = PaymentStatus.Succeeded;
+                    await _paymentService.AddPaymentAsync(model.OrderId, payment);
+                    return new ResponsePaypal
+                    {
+                        Message = "Payment received",
+                        OrderId = model.OrderId,
+                        IsSuccess = true
+                    };
                 }
+
+                await _orderProductService.ChangeOrderStateAsync(model.OrderId, OrderState.PaymentFailed);
+                payment.PaymentStatus = PaymentStatus.Failed;
+                payment.FailureMessage = responseBody;
+                await _paymentService.AddPaymentAsync(model.OrderId, payment);
 
                 string errorName = responseObject.name;
                 string errorDescription = responseObject.message;
-                return new ResponsePaypal { Message = $"{errorName} - {errorDescription}", IsSucces = false };
+                return new ResponsePaypal { Message = $"{errorName} - {errorDescription}", IsSuccess = false };
             }
         }
 

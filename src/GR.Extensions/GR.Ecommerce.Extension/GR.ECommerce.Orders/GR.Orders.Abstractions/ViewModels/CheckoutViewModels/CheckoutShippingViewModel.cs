@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Orders.Abstractions.Models;
 
-namespace GR.ECommerce.Abstractions.ViewModels.CheckoutViewModels
+namespace GR.Orders.Abstractions.ViewModels.CheckoutViewModels
 {
     public class CheckoutShippingViewModel
     {

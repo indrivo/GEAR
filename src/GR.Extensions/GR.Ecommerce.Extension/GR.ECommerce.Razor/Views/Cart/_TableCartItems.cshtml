@@ -1,27 +1,36 @@
-@model GR.ECommerce.Razor.ViewModels.AddToCartViewModel
+@model GR.ECommerce.Abstractions.ViewModels.CartViewModels.AddToCartViewModel
 
 
 <table class="table">
-	<tr class="table-dark">
-		<th scope="col">Product</th>
-		<th scope="col">Price</th>
-		<th scope="col">Quantity</th>
-		<th scope="col"></th>
-	</tr>
+    <tr class="table-dark">
+        <th scope="col">Product</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
+        <th scope="col"></th>
+    </tr>
 
-	<tbody class="listProducts">
-		@foreach (var cartItem in Model.CartItems)
-		{
-			<tr>
-				<td>@cartItem.Product.Name</td>
-				<td>@cartItem.Product.PriceWithoutDiscount</td>
-				<td>
-					<button class="btn btn-light"onclick="decreasesQuantity('@cartItem.Id')" >-</button>
-						<input id="quantyty_@cartItem.Id" class="" value="@cartItem.Amount" readonly/>
-					<button class="btn btn-light" onclick="addQuantity('@cartItem.Id')">+</button>
-				</td>
-				<td><button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')">X</button></td>
-			</tr>
-		}
-	</tbody>
+    <tbody class="listProducts">
+        @if (!Model?.CartItems.Any() ?? false)
+        {
+            <tr>
+                <td colspan="4">No items</td>
+            </tr>
+        }
+
+        @foreach (var cartItem in Model?.CartItems)
+        {
+            <tr>
+                <td>@cartItem.Product?.Name</td>
+                <td>@cartItem.Product?.PriceWithoutDiscount</td>
+                <td>
+                    <button class="btn btn-light" onclick="decreasesQuantity('@cartItem.Id')">-</button>
+                    <input id="quantyty_@cartItem.Id" class="" value="@cartItem.Amount" readonly />
+                    <button class="btn btn-light" onclick="addQuantity('@cartItem.Id')">+</button>
+                </td>
+                <td>
+                    <button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')"> <span fa fa-close></span></button>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>

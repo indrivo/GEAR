@@ -15,9 +15,7 @@ namespace GR.Identity.IdentityServer4
         {
             return new List<ApiResource>
             {
-                new ApiResource(BPMNServerConstants.StandarScopes.CORE, "Core web application"),
-                new ApiResource(BPMNServerConstants.StandarScopes.ProcessEngine, "Process engine api"),
-                new ApiResource(BPMNServerConstants.StandarScopes.ECommerce, "ECommerce application"),
+                new ApiResource(BPMNServerConstants.StandarScopes.CORE, "Core web application")
             };
         }
         /// <summary>
@@ -60,39 +58,6 @@ namespace GR.Identity.IdentityServer4
                         IdentityServerConstants.StandardScopes.Phone,
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         BPMNServerConstants.StandarScopes.CORE
-                    }
-                },
-                new Client
-                {
-                    ClientId = "eCommerce",
-                    ClientName = "eCommerce",
-                    ClientSecrets = new List<Secret>
-                    {
-                        new Secret("very_secret".Sha256())
-                    },
-                    AllowedGrantTypes = GrantTypes.Hybrid,
-                    ClientUri = clientsUrl["eCommerce"],
-                    AllowAccessTokensViaBrowser = false,
-                    RequireConsent = false,
-                    AllowOfflineAccess = true,
-                    AlwaysIncludeUserClaimsInIdToken = true,
-                    RedirectUris = new List<string>
-                    {
-                        $"{clientsUrl["eCommerce"]}/signin-oidc"
-                    },
-                    PostLogoutRedirectUris = new List<string>
-                    {
-                        $"{clientsUrl["eCommerce"]}/signout-callback-oidc"
-                    },
-                    AllowedScopes = new List<string>
-                    {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.OfflineAccess,
-                        IdentityServerConstants.StandardScopes.Email,
-                        IdentityServerConstants.StandardScopes.Address,
-                        IdentityServerConstants.StandardScopes.Phone,
-                        BPMNServerConstants.StandarScopes.ECommerce
                     }
                 },
                 new Client

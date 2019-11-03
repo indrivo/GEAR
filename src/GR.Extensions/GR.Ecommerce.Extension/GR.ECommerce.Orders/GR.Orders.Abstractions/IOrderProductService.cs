@@ -6,6 +6,7 @@ using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
+using GR.Orders.Abstractions.Models;
 
 namespace GR.ECommerce.Abstractions
 {

@@ -14,6 +14,6 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Cart items
         /// </summary>
-        public virtual IEnumerable<CartItem> CartItems { get; set; }
+        public virtual IEnumerable<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
 }

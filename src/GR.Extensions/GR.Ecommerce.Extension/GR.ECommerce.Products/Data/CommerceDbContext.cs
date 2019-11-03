@@ -3,11 +3,15 @@ using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.BaseImplementations.Data.Extensions;
+using GR.ECommerce.Payments.Abstractions;
+using GR.ECommerce.Payments.Abstractions.Models;
+using GR.Orders.Abstractions;
+using GR.Orders.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.BaseImplementations.Data
 {
-    public class CommerceDbContext : TrackerDbContext, ICommerceContext
+    public class CommerceDbContext : TrackerDbContext, ICommerceContext, IOrderDbContext, IPaymentContext
     {
         /// <summary>
         /// Schema
@@ -34,7 +38,7 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<ProductImage> ProductImages { get; set; }
         public virtual DbSet<ProductOptions> ProductOptions { get; set; }
         public virtual DbSet<ProductType> ProductTypes { get; set; }
-        public DbSet<ProductPrice> ProductPrices { get; set; }
+        public virtual DbSet<ProductPrice> ProductPrices { get; set; }
         public virtual DbSet<ProductOrder> ProductOrders { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<ProductAttribute> ProductAttribute { get; set; }
@@ -45,6 +49,8 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<ProductOption> ProductOption { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; }
+        public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public virtual DbSet<Payment> Payments { get; set; }
 
         #endregion
 
@@ -61,6 +67,8 @@ namespace GR.ECommerce.BaseImplementations.Data
             builder.Entity<ProductDiscount>().HasKey(x => new { x.DiscountId, x.ProductId });
             builder.Entity<ProductOrder>().HasKey(x => new { x.OrderId, x.ProductId });
             builder.Entity<ProductAttributes>().HasKey(x => new { x.ProductAttributeId, x.ProductId });
+
+            builder.Entity<PaymentMethod>().HasKey(x => x.Name);
         }
 
         /// <inheritdoc />

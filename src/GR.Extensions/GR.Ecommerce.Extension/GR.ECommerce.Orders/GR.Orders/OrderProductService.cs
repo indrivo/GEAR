@@ -20,7 +20,7 @@ using GR.Orders.Abstractions.Models;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
-namespace GR.ECommerce.Products.Services
+namespace GR.Orders
 {
     public class OrderProductService : IOrderProductService<Order>
     {
@@ -32,7 +32,7 @@ namespace GR.ECommerce.Products.Services
         private readonly ICommerceContext _commerceContext;
 
         /// <summary>
-        /// Inject orders db context
+        /// Inject order db context
         /// </summary>
         private readonly IOrderDbContext _orderDbContext;
 
@@ -113,6 +113,7 @@ namespace GR.ECommerce.Products.Services
             var cart = cartRequest.Result;
             var order = OrderMapper.Map(cart, model.Notes);
             await _orderDbContext.Orders.AddAsync(order);
+            _commerceContext.Carts.Remove(cart);
             var dbRequest = await _commerceContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
@@ -122,9 +123,6 @@ namespace GR.ECommerce.Products.Services
                     OrderStatus = order.OrderState.ToString()
                 });
             }
-
-            _commerceContext.CartItems.RemoveRange(cart.CartItems);
-            await _commerceContext.PushAsync();
 
             return dbRequest.Map(order.Id);
         }

@@ -2,8 +2,9 @@
 using System.Linq;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
+using GR.Orders.Abstractions.Models;
 
-namespace GR.ECommerce.Abstractions.Helpers
+namespace GR.Orders.Abstractions.Helpers
 {
     public static class OrderMapper
     {

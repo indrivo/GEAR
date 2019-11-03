@@ -16,7 +16,6 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using System.ComponentModel.DataAnnotations;
 
 namespace GR.ECommerce.Razor.Controllers
@@ -39,8 +38,6 @@ namespace GR.ECommerce.Razor.Controllers
             return View();
         }
 
-
-        /// <inheritdoc />
         /// <summary>
         /// Index page
         /// </summary>
@@ -71,8 +68,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <summary>
         /// Remove variation option
         /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="variationId"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
@@ -95,7 +91,7 @@ namespace GR.ECommerce.Razor.Controllers
                 .Where(x => x.ProductVariation.ProductId == model.ProductId);
 
             var variationValueList =
-                listProductVariationDelails.Where(x => model.ListVariationDetailsId.Contains(x.Id))?.Select(s=>s.Value.Trim().ToLower());
+                listProductVariationDelails.Where(x => model.ListVariationDetailsId.Contains(x.Id)).Select(s=>s.Value.Trim().ToLower());
 
             var listVariationByValue = listProductVariationDelails
                 .Where(x => variationValueList.Contains(x.Value.Trim().ToLower())).Select(s=>s.ProductVariationId).DistinctBy(s=>s).ToList();
@@ -241,7 +237,7 @@ namespace GR.ECommerce.Razor.Controllers
                 }).ToList();
             }
 
-            if (model.Price.AreEqual(dbModel.PriceWithoutDiscount).Negate())
+            if (model.Price.Equals(dbModel.PriceWithoutDiscount).Negate())
             {
                 Context.ProductPrices.Add(new ProductPrice
                 {
@@ -452,10 +448,10 @@ namespace GR.ECommerce.Razor.Controllers
             .Where(x => x.ProductId == productId.ToGuid() && x.Id == variationId.ToGuid())
             .Select(x => new
             {
-                ProductId = x.ProductId,
+                x.ProductId,
                 VariationId = x.Id,
-                Price = x.Price,
-                VariationDetails = x.ProductVariationDetails.Select(s => new { Value = s.Value, Option = s.ProductOption.Name, optionId = s.ProductOptionId })
+                x.Price,
+                VariationDetails = x.ProductVariationDetails.Select(s => new {s.Value, Option = s.ProductOption.Name, optionId = s.ProductOptionId })
             }).FirstOrDefault());
 
 

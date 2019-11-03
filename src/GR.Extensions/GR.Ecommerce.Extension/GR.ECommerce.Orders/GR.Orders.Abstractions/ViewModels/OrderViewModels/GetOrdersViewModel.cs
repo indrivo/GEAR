@@ -1,4 +1,5 @@
 ﻿using GR.ECommerce.Abstractions.Models;
+using GR.Orders.Abstractions.Models;
 
 namespace GR.ECommerce.Abstractions.ViewModels.OrderViewModels
 {

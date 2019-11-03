@@ -9,6 +9,6 @@ namespace GR.ECommerce.Abstractions.Models
         /// Discount of Product
         /// </summary>
         [Range(0, 100), Required]
-        public virtual double Percentage { get; set; }
+        public virtual decimal Percentage { get; set; }
     }
 }

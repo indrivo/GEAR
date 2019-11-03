@@ -1,10 +1,8 @@
-﻿using GR.ECommerce.Abstractions.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using GR.ECommerce.Abstractions.Models;
 
-namespace GR.ECommerce.Razor.ViewModels
+namespace GR.ECommerce.Abstractions.ViewModels.CartViewModels
 {
     public class AddToCartViewModel: Cart
     {
@@ -14,7 +12,5 @@ namespace GR.ECommerce.Razor.ViewModels
         public virtual int Quantity { get; set; }
       
         public virtual Guid? VariationId { get; set; }
-
-   
     }
 }

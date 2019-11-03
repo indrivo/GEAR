@@ -12,7 +12,7 @@ namespace GR.Paypal.Abstractions.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection RegisterPaypalProvider<TPayPalProvider>(this IServiceCollection services)
-            where TPayPalProvider : class, IPaypalPaymentService
+            where TPayPalProvider : class, IPaypalPaymentMethodService
         {
             services.RegisterPaymentProvider(new PaymentProvider<TPayPalProvider>
             {

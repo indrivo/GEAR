@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using GR.ECommerce.Abstractions.Models;
 
-namespace GR.ECommerce.Abstractions.Models
+namespace GR.Orders.Abstractions.Models
 {
     public class ProductOrder
     {
@@ -29,27 +30,27 @@ namespace GR.ECommerce.Abstractions.Models
         /// Price
         /// </summary>
         [Required]
-        public virtual double PriceWithOutDiscount { get; set; } = 0;
+        public virtual decimal PriceWithOutDiscount { get; set; } = 0;
 
         /// <summary>
         /// Get set
         /// </summary>
-        public virtual double FinalPrice => PriceWithOutDiscount - DiscountValue;
+        public virtual decimal FinalPrice => PriceWithOutDiscount - DiscountValue;
 
         /// <summary>
         /// Final price for all 
         /// </summary>
-        public virtual double AmountFinalPrice => FinalPrice * Amount;
+        public virtual decimal AmountFinalPrice => FinalPrice * Amount;
 
         /// <summary>
         /// Amount price without discount
         /// </summary>
-        public virtual double AmountFinalPriceWithOutDiscount => PriceWithOutDiscount * Amount;
+        public virtual decimal AmountFinalPriceWithOutDiscount => PriceWithOutDiscount * Amount;
 
         /// <summary>
         /// Discount value
         /// </summary>
-        public virtual double DiscountValue { get; set; } = 0;
+        public virtual decimal DiscountValue { get; set; } = 0;
 
         /// <summary>
         /// Amount

@@ -10,6 +10,7 @@ using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
 using GR.Identity.Abstractions;
