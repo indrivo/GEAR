@@ -111,5 +111,18 @@ namespace GR.ECommerce.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, int>>))]
         public virtual async Task<JsonResult> GetOrdersGraphInfo() =>
             Json(await _orderProductService.GetOrdersCountForOrderStatesAsync());
+
+
+        /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Order>>))]
+        public async Task<JsonResult> GetAllOrders()
+        {
+            var ordersRequest = await _orderProductService.GetAllOrdersAsync();
+            return Json(ordersRequest);
+        }
     }
 }

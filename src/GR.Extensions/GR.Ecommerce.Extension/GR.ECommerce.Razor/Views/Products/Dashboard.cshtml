@@ -4,8 +4,29 @@
 
 @section Styles
 {
+    <link rel="stylesheet" href="~/lib/bootstrap-daterangepicker/daterangepicker.min.css" />
     <link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
 }
+<div class="row">
+    <div class="col-md-9"></div>
+    <div class="col controls-wrapper mt-3 mt-md-0 d-none d-md-block ">
+        <div class="controls d-flex justify-content-center justify-content-md-end">
+            <input type="text" class="form-control date-rage width-260">
+            <button type="button" class="btn btn-danger">Apply Range</button>
+            <div class="dropdown">
+                <button type="button" id="downloadGrid" data-toggle="dropdown" class="btn btn-secondary py-1 px-2"><span class="material-icons align-text-bottom">save_alt</span></button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="downloadGrid">
+                    <a class="dropdown-item" href="#">Save as PDF</a>
+                    <a class="dropdown-item" href="#">Save as Image</a>
+                    <a class="dropdown-item" href="#">Save as Word</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Export Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="card mb-4">
     <div class="card-body  p-lg-4">
@@ -183,7 +204,6 @@
                         </tr>
                     </thead>
                     <tbody>
-
                     </tbody>
                 </table>
 
@@ -195,6 +215,7 @@
 
 @section Scripts{
     <script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+    <script src="~/lib/bootstrap-daterangepicker/daterangepicker.min.js"></script>
     <script src="~/lib/Chart.js/Chart.min.js"></script>
     <script src="~/commerce/commerce-dashboard.js" asp-append-version="true"></script>
 }

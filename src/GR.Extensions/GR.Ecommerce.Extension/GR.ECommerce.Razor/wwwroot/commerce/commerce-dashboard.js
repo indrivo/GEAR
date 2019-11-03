@@ -1,6 +1,10 @@
 ﻿"use strict";
 
 window.onload = function () {
+    $('.date-rage').daterangepicker({
+        opens: 'left'
+    });
+
     const ctx = document.getElementById('canvas').getContext('2d');
     window.myBar = new Chart(ctx, {
         type: 'bar',

@@ -2,6 +2,13 @@
   "version": "1.0",
   "defaultProvider": "cdnjs",
   "libraries": [
-
+    {
+      "library": "bootstrap-daterangepicker@3.0.5",
+      "destination": "wwwroot/lib/bootstrap-daterangepicker/",
+      "files": [
+        "daterangepicker.min.js",
+        "daterangepicker.min.css"
+      ]
+    }
   ]
 }
