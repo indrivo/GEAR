@@ -1,6 +1,12 @@
-﻿using GR.ECommerce.Payments.Abstractions.Configurator;
+﻿using GR.Core.Events;
+using GR.Core.Helpers;
+using GR.ECommerce.Payments.Abstractions;
+using GR.ECommerce.Payments.Abstractions.Configurator;
 using GR.ECommerce.Payments.Abstractions.Extensions;
+using GR.ECommerce.Payments.Abstractions.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using GR.Core.Extensions;
 
 namespace GR.Paypal.Abstractions.Extensions
 {
@@ -19,6 +25,21 @@ namespace GR.Paypal.Abstractions.Extensions
                 DisplayName = "Paypal",
                 Description = "Paypal is an American company operating a worldwide online payments"
             });
+
+            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
+            {
+                var context = IoC.Resolve<IPaymentContext>();
+
+                if (context.PaymentMethods.Any(x => x.Name == "Paypal")) return;
+                var paymentMethod = new PaymentMethod
+                {
+                    Name = "Paypal",
+                    IsEnabled = true
+                };
+                await context.PaymentMethods.AddAsync(paymentMethod);
+                await context.PushAsync();
+            };
+
             return services;
         }
     }

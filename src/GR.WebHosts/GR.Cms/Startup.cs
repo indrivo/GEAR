@@ -485,7 +485,7 @@ namespace GR.Cms
 				.RegisterPaypalProvider<PaypalPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
-				.RegisterPayments<IPaymentService>()
+				.RegisterPayments<PaymentService>()
 				.RegisterCartService<CartService>()
 				.RegisterOrdersStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()

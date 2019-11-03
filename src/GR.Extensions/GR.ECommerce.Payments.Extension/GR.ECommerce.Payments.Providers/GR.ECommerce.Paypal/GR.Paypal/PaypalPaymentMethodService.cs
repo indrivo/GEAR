@@ -9,6 +9,7 @@ using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
+using GR.Identity.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.ViewModels;
@@ -43,15 +44,21 @@ namespace GR.Paypal
         /// </summary>
         private readonly IPaymentService _paymentService;
 
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
         #endregion
 
 
-        public PaypalPaymentMethodService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService, IPaymentService paymentService)
+        public PaypalPaymentMethodService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<ApplicationUser> userManager)
         {
             _httpClientFactory = httpClientFactory;
             _payPalOptions = payPalOptions;
             _orderProductService = orderProductService;
             _paymentService = paymentService;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -146,6 +153,11 @@ namespace GR.Paypal
         /// <returns></returns>
         public async Task<ResponsePaypal> ExecutePayment(PaymentExecuteVm model)
         {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess)
+            {
+                return new ResponsePaypal { Message = "User not Found", IsSuccess = false };
+            }
             var orderRequest = await _orderProductService.GetOrderByIdAsync(model.OrderId);
             if (!orderRequest.IsSuccess)
             {
@@ -169,7 +181,8 @@ namespace GR.Paypal
                     PaymentMethodId = "Paypal",
                     GatewayTransactionId = model.PaymentId,
                     PaymentStatus = PaymentStatus.Failed,
-                    Total = order.Total
+                    Total = order.Total,
+                    UserId = userRequest.Result.Id.ToGuid()
                 };
 
                 if (response.IsSuccessStatusCode)
