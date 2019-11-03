@@ -17,6 +17,7 @@ using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Helpers;
 using GR.Orders.Abstractions.Models;
+using GR.Orders.Abstractions.ViewModels.OrderViewModels;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
@@ -93,6 +94,44 @@ namespace GR.Orders
             if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<Order>>();
             var orders = await _orderDbContext.Orders
                 .Include(x => x.ProductOrders)
+                .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
+                .Where(x => x.UserId.Equals(userRequest.Result.Id.ToGuid()))
+                .ToListAsync();
+            response.IsSuccess = true;
+            response.Result = orders;
+            return response;
+        }
+
+        /// <summary>
+        /// Get orders count
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<Dictionary<string, int>>> GetOrdersCountForOrderStatesAsync()
+        {
+            var response = new Dictionary<string, int>();
+            var statuses = Enum.GetNames(typeof(OrderState)).ToList();
+            foreach (var state in statuses)
+            {
+                var count = await _orderDbContext.Orders.CountAsync(x => x.OrderState.ToString().Equals(state));
+                response.Add(state, count);
+            }
+            return new ResultModel<Dictionary<string, int>> { IsSuccess = true, Result = response };
+        }
+
+        /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Order>>> GetAllOrdersAsync()
+        {
+            var response = new ResultModel<IEnumerable<Order>>();
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<Order>>();
+            var orders = await _orderDbContext.Orders
+                .Include(x => x.ProductOrders)
+                .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
                 .ToListAsync();
             response.IsSuccess = true;
             response.Result = orders;
@@ -165,12 +204,28 @@ namespace GR.Orders
         /// <returns></returns>
         public virtual async Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState)
         {
+            var response = new ResultModel();
             var orderRequest = await GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return orderRequest.ToBase();
             var order = orderRequest.Result;
+            if (order.OrderState == orderState)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Same status"));
+                return response;
+            }
+
+            var oldState = order.OrderState;
             order.OrderState = orderState;
             _orderDbContext.Orders.Update(order);
-            return await _orderDbContext.PushAsync();
+            var dbRequest = await _orderDbContext.PushAsync();
+            if (dbRequest.IsSuccess)
+                await _orderDbContext.OrderHistories.AddAsync(new OrderHistory
+                {
+                    Notes = string.Empty,
+                    OrderState = oldState,
+                    OrderId = order.Id
+                });
+            return dbRequest;
         }
 
         /// <summary>
@@ -192,6 +247,17 @@ namespace GR.Orders
         }
 
         /// <summary>
+        /// Get order history
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<OrderHistory>>> GetOrderHistoryAsync(Guid? orderId)
+        {
+            var history = await _orderDbContext.OrderHistories.Where(x => x.OrderId.Equals(orderId)).ToListAsync();
+            return new ResultModel<IEnumerable<OrderHistory>> { IsSuccess = true, Result = history };
+        }
+
+        /// <summary>
         /// Get filtered list of organization
         /// </summary>
         /// <param name="param"></param>
@@ -207,6 +273,7 @@ namespace GR.Orders
             var list = filtered.Select(x =>
             {
                 var map = x.Adapt<GetOrdersViewModel>();
+                map.ProductOrders = _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id));
                 return map;
             });
 

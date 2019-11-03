@@ -1,10 +1,10 @@
-﻿using GR.ECommerce.Abstractions;
+﻿using GR.Core.Abstractions;
 using GR.Orders.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Orders.Abstractions
 {
-    public interface IOrderDbContext : ICommerceContext
+    public interface IOrderDbContext : IDbContext
     {
         /// <summary>
         /// Orders
@@ -15,5 +15,10 @@ namespace GR.Orders.Abstractions
         /// Product orders
         /// </summary>
         DbSet<ProductOrder> ProductOrders { get; set; }
+
+        /// <summary>
+        /// Order histories
+        /// </summary>
+        DbSet<OrderHistory> OrderHistories { get; set; }
     }
 }

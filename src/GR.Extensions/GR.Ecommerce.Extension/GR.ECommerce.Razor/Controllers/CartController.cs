@@ -55,7 +55,7 @@ namespace GR.ECommerce.Razor.Controllers
                 ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
                 return Json(model);
             }
-            var result = _cartService.AddToCardAsync(model).Result;
+            var result = await _cartService.AddToCardAsync(model);
          
             return Json(result);
         }
@@ -63,14 +63,14 @@ namespace GR.ECommerce.Razor.Controllers
 
         public async Task<JsonResult> DeleteCartItem([Required]Guid? cartItemId)
         {
-            return Json(_cartService.DeleteCartItemAsync(cartItemId).Result);
+            return Json(await _cartService.DeleteCartItemAsync(cartItemId));
         }
 
 
         public async Task<JsonResult> SetQuantity([Required] Guid? cartItemId, [Required] int? quantity)
         {
            
-            return Json(_cartService.SetQuantityAsync(cartItemId, quantity).Result);
+            return Json(await _cartService.SetQuantityAsync(cartItemId, quantity));
         }
     }
 }

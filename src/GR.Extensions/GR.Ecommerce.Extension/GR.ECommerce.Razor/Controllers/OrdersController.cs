@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
-using GR.ECommerce.Abstractions;
-using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
+using GR.ECommerce.Payments.Abstractions;
+using GR.ECommerce.Razor.ViewModels.OrderViewModels;
+using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,15 +25,20 @@ namespace GR.ECommerce.Razor.Controllers
         /// </summary>
         private readonly IOrderProductService<Order> _orderProductService;
 
+        /// <summary>
+        /// Inject payment service
+        /// </summary>
+        private readonly IPaymentService _paymentService;
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="orderProductService"></param>
-        public OrdersController(IOrderProductService<Order> orderProductService)
+        public OrdersController(IOrderProductService<Order> orderProductService, IPaymentService paymentService)
         {
             _orderProductService = orderProductService;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -39,6 +47,25 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         public IActionResult MyOrders() => View();
+
+        /// <summary>
+        /// Get order details
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Details(Guid? orderId)
+        {
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return NotFound();
+
+            var paymentsRequest = await _paymentService.GetPaymentsForOrderAsync(orderId);
+
+            return View(new OrderViewModel
+            {
+                Order = orderRequest.Result,
+                Payments = paymentsRequest.Result?.ToList()
+            });
+        }
 
         /// <summary>
         /// Create order
@@ -73,5 +100,16 @@ namespace GR.ECommerce.Razor.Controllers
         [Produces("application/json", Type = typeof(DTResult<Order>))]
         public virtual async Task<JsonResult> GetMyOrdersWithPagination(DTParameters param)
             => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param));
+
+
+
+        /// <summary>
+        /// Get orders count
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, int>>))]
+        public virtual async Task<JsonResult> GetOrdersGraphInfo() =>
+            Json(await _orderProductService.GetOrdersCountForOrderStatesAsync());
     }
 }

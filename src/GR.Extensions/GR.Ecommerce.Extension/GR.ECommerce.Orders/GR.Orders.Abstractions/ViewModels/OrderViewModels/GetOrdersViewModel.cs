@@ -1,7 +1,6 @@
-﻿using GR.ECommerce.Abstractions.Models;
-using GR.Orders.Abstractions.Models;
+﻿using GR.Orders.Abstractions.Models;
 
-namespace GR.ECommerce.Abstractions.ViewModels.OrderViewModels
+namespace GR.Orders.Abstractions.ViewModels.OrderViewModels
 {
     public sealed class GetOrdersViewModel : Order
     {
@@ -9,5 +8,10 @@ namespace GR.ECommerce.Abstractions.ViewModels.OrderViewModels
         /// Status
         /// </summary>
         public string State => OrderState.ToString();
+
+        /// <summary>
+        /// Text
+        /// </summary>
+        public string FormattedTotal => "$" + Total.ToString("N2");
     }
 }

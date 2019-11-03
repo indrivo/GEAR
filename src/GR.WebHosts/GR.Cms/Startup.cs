@@ -109,7 +109,6 @@ using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
-using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
 using GR.Entities.Extensions;
@@ -121,6 +120,7 @@ using GR.PageRender;
 using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
+using GR.ECommerce.Razor.Extensions;
 
 #endregion
 
@@ -489,7 +489,8 @@ namespace GR.Cms
 				.RegisterCartService<CartService>()
 				.RegisterOrdersStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
-				.RegisterCommerceEvents();
+				.RegisterCommerceEvents()
+				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
 			services.AddTenantModule<OrganizationService, Tenant>()

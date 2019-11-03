@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
-using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Orders.Abstractions.ViewModels.CheckoutViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -113,9 +113,9 @@ namespace GR.ECommerce.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Cancel()
+        public IActionResult Cancel()
         {
-            return default;
+            return View();
         }
 
         /// <summary>

@@ -6,11 +6,11 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Payments.Abstractions;
-using GR.ECommerce.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Orders.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
+using GR.Orders.Abstractions;
 
 namespace GR.ECommerce.Products.Services
 {

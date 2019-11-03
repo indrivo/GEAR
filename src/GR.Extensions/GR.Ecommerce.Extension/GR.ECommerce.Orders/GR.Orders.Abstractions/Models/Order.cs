@@ -67,23 +67,4 @@ namespace GR.Orders.Abstractions.Models
         /// </summary>
         public virtual Guid? ShipmentAddress { get; set; }
     }
-
-    public class OrderHistory : BaseModel
-    {
-        /// <summary>
-        /// Order reference
-        /// </summary>
-        public virtual Order Order { get; set; }
-        public virtual Guid OrderId { get; set; }
-
-        /// <summary>
-        /// On state changed description  
-        /// </summary>
-        public virtual string Description { get; set; }
-
-        /// <summary>
-        /// Order state
-        /// </summary>
-        public virtual OrderState OrderState { get; set; } = OrderState.New;
-    }
 }

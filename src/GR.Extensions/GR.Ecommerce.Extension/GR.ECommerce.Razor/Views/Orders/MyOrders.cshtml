@@ -12,10 +12,9 @@
         {
             new ListRenderColumn("Id", "id"),
             new ListRenderColumn("State", "state"),
+            new ListRenderColumn("Total", "formattedTotal"),
             new ListRenderColumn(Localizer["created"], "created"),
-            new ListRenderColumn(Localizer["changed"], "changed"),
-            new ListRenderColumn(Localizer["author"], "author"),
-            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+            new ListRenderColumn(Localizer["changed"], "changed")
         },
         HeadButtons = new List<UrlTagHelperViewModel>(),
         HasActions = true,

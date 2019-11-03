@@ -1,5 +1,4 @@
-﻿using GR.ECommerce.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
 using GR.Orders.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;

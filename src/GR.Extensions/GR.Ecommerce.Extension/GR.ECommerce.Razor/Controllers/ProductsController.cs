@@ -523,5 +523,14 @@ namespace GR.ECommerce.Razor.Controllers
         {
             return Json(Context.ProductCategories.Where(x => x.ProductId == productId));
         }
+
+        /// <summary>
+        /// Dashboard
+        /// </summary>
+        [HttpGet]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
     }
 }

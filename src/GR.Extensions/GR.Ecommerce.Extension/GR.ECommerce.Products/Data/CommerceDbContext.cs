@@ -51,6 +51,7 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<CartItem> CartItems { get; set; }
         public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
+        public virtual DbSet<OrderHistory> OrderHistories { get; set; }
 
         #endregion
 

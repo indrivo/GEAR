@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Enums;
-using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using GR.Orders.Abstractions.Models;
+using GR.Orders.Abstractions.ViewModels.OrderViewModels;
 
-namespace GR.ECommerce.Abstractions
+namespace GR.Orders.Abstractions
 {
     public interface IOrderProductService<TOrderEntity> where TOrderEntity : Order
     {
@@ -70,5 +70,24 @@ namespace GR.ECommerce.Abstractions
         /// <param name="billingAddress"></param>
         /// <returns></returns>
         Task<ResultModel> SetOrderBillingAddressAndShipmentAsync(Guid? orderId, Guid shipmentAddress, Guid billingAddress);
+
+        /// <summary>
+        /// Get order history
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<OrderHistory>>> GetOrderHistoryAsync(Guid? orderId);
+
+        /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Order>>> GetAllOrdersAsync();
+
+        /// <summary>
+        /// Get orders count
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<Dictionary<string, int>>> GetOrdersCountForOrderStatesAsync();
     }
 }
