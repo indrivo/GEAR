@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "My orders";
+    var conf = new ListTagHelperModel
+    {
+        Title = "Orders",
+        ListIdentifier = "my_orders",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("GetMyOrdersWithPagination", "Orders")
+        },
+        RenderColumns = new List<ListRenderColumn>
+        {
+            new ListRenderColumn("Id", "id"),
+            new ListRenderColumn("State", "state"),
+            new ListRenderColumn("Total", "formattedTotal"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>(),
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+        {
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = "Details",
+                Url = Url.Action("Details", "Orders"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("orderId", "id")
+                }
+            },
+        },
+        Documentation = "List of my orders"
+    };
+}
+
+<JList asp-for="@conf"></JList>

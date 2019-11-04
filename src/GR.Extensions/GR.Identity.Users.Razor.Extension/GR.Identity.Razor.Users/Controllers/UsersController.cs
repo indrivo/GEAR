@@ -666,7 +666,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            currentUser.UserLastName = model.UserFirstName;
+            currentUser.UserFirstName = model.UserFirstName;
             currentUser.UserLastName = model.UserLastName;
             currentUser.Birthday = model.Birthday;
             currentUser.AboutMe = model.AboutMe;

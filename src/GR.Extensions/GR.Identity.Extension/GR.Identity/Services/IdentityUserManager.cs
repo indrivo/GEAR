@@ -8,8 +8,11 @@ using Microsoft.AspNetCore.Identity;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Models.AddressModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Services
 {
@@ -164,6 +167,43 @@ namespace GR.Identity.Services
             if (user == null) throw new NullReferenceException();
             var roles = await UserManager.GetRolesAsync(user);
             return roles.Select(async x => await RoleManager.FindByNameAsync(x)).Select(x => x.Result);
+        }
+
+        /// <summary>
+        /// Disable user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> DisableUserAsync(Guid? userId)
+        {
+            var response = new ResultModel();
+            if (userId == null) return response;
+            var user = await UserManager.Users.FirstOrDefaultAsync(x => x.Id.ToGuid().Equals(userId));
+            if (user == null) return response;
+            if (CurrentUserTenantId != user.TenantId) return response;
+            user.IsDisabled = true;
+            var request = await UserManager.UpdateAsync(user);
+            return request.ToResultModel<object>().ToBase();
+        }
+
+        /// <summary>
+        /// Get user addresses
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId)
+        {
+            if (userId == null) return new NotFoundResultModel<IEnumerable<Address>>();
+            var addresses = await IdentityContext.Addresses
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince)
+                .Where(x => x.ApplicationUserId.ToGuid().Equals(userId))
+                .ToListAsync();
+            return new ResultModel<IEnumerable<Address>>
+            {
+                IsSuccess = true,
+                Result = addresses
+            };
         }
     }
 }

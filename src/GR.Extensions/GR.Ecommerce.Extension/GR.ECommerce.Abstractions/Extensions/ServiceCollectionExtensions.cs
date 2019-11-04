@@ -22,7 +22,7 @@ namespace GR.ECommerce.Abstractions.Extensions
             services.AddTransient<ICommerceContext, TCommerceContext>();
             IoC.RegisterServiceCollection(new Dictionary<Type, Type>
             {
-                { typeof(ICommerceContext), typeof(TCommerceContext) },
+                { typeof(ICommerceContext), typeof(TCommerceContext) }
             });
             return services;
         }
@@ -35,12 +35,12 @@ namespace GR.ECommerce.Abstractions.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection RegisterCommerceProductRepository<TProductRepository, TProduct>(this IServiceCollection services)
-            where TProductRepository : class, IProductRepository<TProduct>
+            where TProductRepository : class, IProductService<TProduct>
             where TProduct : Product
         {
             Arg.NotNull(services, nameof(services));
-            services.AddTransient<IProductRepository<TProduct>, TProductRepository>();
-            IoC.RegisterTransientService<IProductRepository<TProduct>, TProductRepository>();
+            services.AddTransient<IProductService<TProduct>, TProductRepository>();
+            IoC.RegisterTransientService<IProductService<TProduct>, TProductRepository>();
             return services;
         }
 
@@ -68,6 +68,19 @@ namespace GR.ECommerce.Abstractions.Extensions
         {
             //register commerce events
             CommerceEvents.RegisterEvents();
+            return services;
+        }
+
+        /// <summary>
+        /// Register cart service
+        /// </summary>
+        /// <typeparam name="TCartService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterCartService<TCartService>(this IServiceCollection services)
+            where TCartService : class, ICartService
+        {
+            IoC.RegisterTransientService<ICartService, TCartService>();
             return services;
         }
     }

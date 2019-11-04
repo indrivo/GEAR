@@ -1,4 +1,4 @@
-﻿namespace GR.ECommerce.Paypal.Models
+﻿namespace GR.Paypal.Models
 {
     public class PaypalExpressConfigForm
     {

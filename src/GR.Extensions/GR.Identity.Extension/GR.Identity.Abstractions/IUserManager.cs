@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using GR.Core.Helpers;
+using GR.Identity.Abstractions.Models.AddressModels;
 
 namespace GR.Identity.Abstractions
 {
@@ -58,5 +59,19 @@ namespace GR.Identity.Abstractions
         /// <param name="user"></param>
         /// <returns></returns>
         Task<IEnumerable<ApplicationRole>> GetUserRolesAsync(ApplicationUser user);
+
+        /// <summary>
+        /// Disable user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DisableUserAsync(Guid? userId);
+
+        /// <summary>
+        /// Get user addresses
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId);
     }
 }

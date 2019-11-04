@@ -1,0 +1,72 @@
+﻿@using GR.ECommerce.Razor.ViewModels;
+@model ProductViewModel
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="card card-outline-info">
+            <div class="tab-content">
+                <div class="card-body">
+                    <form asp-action="Create" role="form">
+                        <div class="form-body">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="row p-t-20">
+                                @foreach (var item in Model.ProductCategoryList)
+                                {
+                                    <div class="col-md-12">
+                                        <div style="margin-bottom: 1em;" class="custom-control custom-checkbox">
+                                            <input type="checkbox" @(item.IsChecked ? "checked" : "") id="category_@item.CategoryId" class="custom-control-input vis-check">
+                                            <label class="custom-control-label" for="category_@item.CategoryId">@item.Name</label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="row button-group">
+                            <div class="col-lg-2 col-md-3">
+                                <button type="button" class="btn btn-block btn-success" id="saveCategoriesBtn"> @Localizer["save"]</button>
+                            </div>
+                            <div class="col-lg-2 col-md-3">
+                                <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                            </div>
+                            <div class="col-lg-2 col-md-3">
+                                <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $("#saveCategoriesBtn").on('click', function () {
+            var model = [];
+            $("#categoryMapping input[type=checkbox]").each(function (index, element) {
+                model.push({
+                    productId: '@Model.Id',
+                    categoryId: element.id.substring(9),
+                    checked: $(element)[0].checked
+                });
+            });
+            $.ajax({
+                url: '@Url.Action("EditProductCategories")',
+                method: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(model),
+                success: function (data) {
+                   if (data.is_success) {
+                    toast.notify({ heading: "Info", text: window.translate("system_inline_saved"), icon: "success" });
+                } else {
+                    toast.notifyErrorList(data.error_keys);
+                   }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>

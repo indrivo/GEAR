@@ -274,6 +274,7 @@ namespace GR.Entities
             var fieldType = await _context.TableFieldTypes.FirstOrDefaultAsync(x => x.Id == field.TableFieldTypeId);
             var fieldTypeConfig = _context.TableFieldConfigs.Where(x => x.TableFieldTypeId == fieldType.Id).ToList();
             var configFields = new List<FieldConfigViewModel>();
+            //TODO: if config not defined, load it
             foreach (var y in field.TableFieldConfigValues)
             {
                 var fTypeConfig = fieldTypeConfig.FirstOrDefault(x => x.Id == y.TableFieldConfigId);

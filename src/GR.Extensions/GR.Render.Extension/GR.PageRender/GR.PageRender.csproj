@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities\GR.Entities.csproj" />
+    <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
   </ItemGroup>
 

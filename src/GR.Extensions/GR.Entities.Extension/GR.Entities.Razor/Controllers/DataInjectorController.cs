@@ -10,9 +10,9 @@ using Newtonsoft.Json.Serialization;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Filters;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.Entities.Security.Abstractions.Attributes;
 using GR.Entities.Security.Abstractions.Enums;
 using GR.Entities.Security.Abstractions.Helpers;
@@ -289,10 +289,8 @@ namespace GR.Entities.Razor.Controllers
             try
             {
                 var f = JsonConvert.DeserializeObject<IEnumerable<Filter>>(filters).ToList();
-                foreach (var filter in f)
+                foreach (var filter in f.Where(filter => filter.Value != null).Where(filter => filter.Value.ToString().IsGuid()))
                 {
-                    if (filter.Value == null) continue;
-                    if (!filter.Value.ToString().IsGuid()) continue;
                     Guid.TryParse(filter.Value?.ToString(), out var val);
                     filter.Value = val;
                 }

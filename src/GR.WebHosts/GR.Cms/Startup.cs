@@ -21,8 +21,6 @@ using GR.Core.Razor.Extensions;
 using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.BaseImplementations.Data;
-using GR.ECommerce.BaseImplementations.Repositories;
 using GR.Email;
 using GR.Email.Abstractions.Extensions;
 using GR.Entities;
@@ -109,11 +107,20 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
-using GR.ECommerce.Paypal;
+using GR.DynamicEntityStorage.Abstractions;
+using GR.ECommerce.BaseImplementations.Data;
+using GR.ECommerce.Payments.Abstractions.Extensions;
+using GR.ECommerce.Products.Services;
 using GR.Entities.Extensions;
 using GR.Localization;
+using GR.Orders;
+using GR.Orders.Abstractions.Extensions;
+using GR.Orders.Abstractions.Models;
+using GR.PageRender;
+using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
+using GR.ECommerce.Razor.Extensions;
 
 #endregion
 
@@ -363,9 +370,6 @@ namespace GR.Cms
 			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
-			//------------------------------------Page render Module-------------------------------------
-			services.AddPageRenderUiModule();
-
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
 
@@ -434,7 +438,10 @@ namespace GR.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddPageRenderUIModule<PageRender.PageRender>()
+				.AddMenuService<MenuService<IDynamicService>>()
+				.AddPageAclService<PageAclService>();
 
 
 			//---------------------------------------Report Module-------------------------------------
@@ -469,15 +476,21 @@ namespace GR.Cms
 
 			//-------------------------------------Commerce module-------------------------------------
 			services.RegisterCommerceModule<CommerceDbContext>()
-				.RegisterCommerceProductRepository<ProductRepository, Product>()
+				.RegisterCommerceProductRepository<ProductService, Product>()
 				.RegisterCommerceStorage<CommerceDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterPaypalProvider<PaypalPaymentService>()
+				.RegisterPaypalProvider<PaypalPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
-				.RegisterCommerceEvents();
+				.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterPayments<PaymentService>()
+				.RegisterCartService<CartService>()
+				.RegisterOrdersStorage<CommerceDbContext>()
+				.RegisterPaymentStorage<CommerceDbContext>()
+				.RegisterCommerceEvents()
+				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
 			services.AddTenantModule<OrganizationService, Tenant>()

@@ -1,0 +1,26 @@
+﻿@model GR.Orders.Abstractions.Models.Order
+
+@using GR.ECommerce.Payments.Abstractions.Storage
+
+@{
+    ViewData["Title"] = "Payments";
+
+    var providers = PaymentProviders.GetProviders().ToList();
+}
+
+<div class="card">
+    <div class="card-body">
+        @if (providers.Any())
+        {
+            @foreach (var provider in providers)
+            {
+                var partialViewName = $"_{provider}_PaymentMethodPartialView";
+                <partial name="@partialViewName" model="@Model.Id" />
+            }
+        }
+        else
+        {
+            <h2>No payment providers registered!</h2>
+        }
+    </div>
+</div>

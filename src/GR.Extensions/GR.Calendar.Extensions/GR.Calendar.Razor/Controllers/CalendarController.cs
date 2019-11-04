@@ -104,7 +104,6 @@ namespace GR.Calendar.Razor.Controllers
         /// Update event
         /// </summary>
         /// <param name="model"></param>
-        /// <param name="organizer"></param>
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]

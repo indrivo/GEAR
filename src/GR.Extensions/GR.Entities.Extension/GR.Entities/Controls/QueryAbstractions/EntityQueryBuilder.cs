@@ -40,5 +40,24 @@ namespace GR.Entities.Controls.QueryAbstractions
 
         protected abstract string GetWhereString(EntityViewModel viewModel, string nullName = "null",
             string isNullName = "isnull");
+
+
+        /// <summary>
+        /// Get pagination query with filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        public abstract string GetPaginationByFilters(EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null);
+
+        /// <summary>
+        /// Get count by filters
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <param name="queryString"></param>
+        /// <returns></returns>
+        public abstract string CountByFilters(EntityViewModel viewModel, string queryString = null);
     }
 }

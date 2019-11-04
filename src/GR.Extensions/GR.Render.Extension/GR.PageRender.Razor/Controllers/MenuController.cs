@@ -11,11 +11,11 @@ using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions.Enums;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
+using GR.Core.Helpers.Filters;
+using GR.Core.Helpers.Filters.Enums;
 using GR.PageRender.Abstractions;
+using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
-using GR.PageRender.Razor.Services;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -184,7 +184,7 @@ namespace GR.PageRender.Razor.Controllers
                     x.ParentMenuItemId == model.ParentMenuItemId);
                 if (data.IsSuccess && data.Result.Any())
                 {
-                    model.Order = data.Result?.Max(x => x.Order) + 1 ?? 1;
+                    model.Order = (int) (data.Result?.Max(x => x.Order) + 1);
                 }
                 else model.Order = 1;
 

@@ -57,21 +57,6 @@ namespace GR.ECommerce.Abstractions
         DbSet<ProductPrice> ProductPrices { get; set; }
 
         /// <summary>
-        /// Product orders
-        /// </summary>
-        DbSet<ProductOrder> ProductOrders { get; set; }
-
-        /// <summary>
-        /// Product orders
-        /// </summary>
-        DbSet<Order> Orders { get; set; }
-
-        /// <summary>
-        /// Shipment Addresses
-        /// </summary>
-        DbSet<ShipmentAddress> ShipmentAddresses { get; set; }
-
-        /// <summary>
         /// Product attributes
         /// </summary>
         DbSet<ProductAttribute> ProductAttribute { get; set; }
@@ -85,5 +70,30 @@ namespace GR.ECommerce.Abstractions
         /// Product attributes
         /// </summary>
         DbSet<ProductAttributes> ProductAttributes { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        DbSet<ProductVariation> ProductVariations { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        DbSet<ProductVariationDetail> ProductVariationDetails { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        DbSet<ProductOption> ProductOption { get; set; }
+
+        /// <summary>
+        /// Carts
+        /// </summary>
+        DbSet<Cart> Carts { get; set; }
+
+        /// <summary>
+        /// Cart Items
+        /// </summary>
+        DbSet<CartItem> CartItems { get; set; }
     }
 }

@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap-daterangepicker@3.0.5",
+      "destination": "wwwroot/lib/bootstrap-daterangepicker/",
+      "files": [
+        "daterangepicker.min.js",
+        "daterangepicker.min.css"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "xzoom@1.0.14",
+      "destination": "wwwroot/lib/xzoom/",
+      "files": [
+        "dist/xzoom.min.css",
+        "dist/xzoom.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "jquery-hammerjs@2.0.0",
+      "destination": "wwwroot/lib/jquery-hammerjs/",
+      "files": [
+        "jquery.hammer.min.js"
+      ]
+    }
+  ]
+}

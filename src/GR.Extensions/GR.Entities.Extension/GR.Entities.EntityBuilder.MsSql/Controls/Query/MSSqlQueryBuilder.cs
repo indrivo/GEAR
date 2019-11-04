@@ -170,6 +170,15 @@ namespace GR.Entities.EntityBuilder.MsSql.Controls.Query
             return sql.ToString();
         }
 
+        public override string GetPaginationByFilters(EntityViewModel viewModel, uint page, uint perPage = 10, string queryString = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string CountByFilters(EntityViewModel viewModel, string queryString = null)
+        {
+            throw new NotImplementedException();
+        }
 
         public override string GetByColumnParameterQuery(EntityViewModel viewModel,
             Dictionary<string, object> parameters)

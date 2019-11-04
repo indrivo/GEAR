@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
+using GR.Core.Helpers.Filters;
 using GR.DynamicEntityStorage.Abstractions.Helpers;
 
 namespace GR.DynamicEntityStorage.Abstractions.Extensions
@@ -129,7 +130,7 @@ namespace GR.DynamicEntityStorage.Abstractions.Extensions
         /// <param name="predicate"></param>
         /// <param name="filters"></param>
         /// <returns></returns>
-        public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<ListFilter> filters = null)
+        public static async Task<(List<object>, int)> Filter(this DynamicObject context, string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<Filter> filters = null)
         {
             var data = await context.Service.Table(entity).GetAllWithInclude(predicate?.Compile(), filters: filters);
             if (!data.IsSuccess) return default;

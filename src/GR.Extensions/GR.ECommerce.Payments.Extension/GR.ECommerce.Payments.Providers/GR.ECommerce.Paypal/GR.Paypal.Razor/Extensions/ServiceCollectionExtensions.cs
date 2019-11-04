@@ -1,5 +1,5 @@
 ﻿using GR.Core.Extensions;
-using GR.ECommerce.Paypal.Models;
+using GR.Paypal.Models;
 using GR.Paypal.Razor.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

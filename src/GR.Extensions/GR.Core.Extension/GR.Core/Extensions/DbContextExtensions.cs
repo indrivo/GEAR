@@ -12,6 +12,16 @@ namespace GR.Core.Extensions
     public static class DbContextExtensions
     {
         /// <summary>
+        /// Get db context
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static DbContext GetContext(this IDbContext context)
+        {
+            return (DbContext)context;
+        }
+
+        /// <summary>
         /// Check if context is disposed
         /// </summary>
         /// <param name="context"></param>

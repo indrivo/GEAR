@@ -26,8 +26,7 @@ namespace GR.Identity.IdentityServer4.Seeders
             var clientUrls = new Dictionary<string, string>
             {
                 ["CORE"] = GetClientUrl(env, configuration, "CORE"),
-                ["BPMApi"] = GetClientUrl(env, configuration, "BPMApi"),
-                ["eCommerce"] = GetClientUrl(env, configuration, "eCommerce")
+                ["BPMApi"] = GetClientUrl(env, configuration, "BPMApi")
             };
 
             //Seed clients
