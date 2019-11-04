@@ -44,6 +44,7 @@ namespace GR.ECommerce.Razor.Controllers
             var cart = _cartService.GetCartByUserAsync().Result;
             var result = cart.Result.Adapt<AddToCartViewModel>();
 
+            
             return View(result);
         }
 

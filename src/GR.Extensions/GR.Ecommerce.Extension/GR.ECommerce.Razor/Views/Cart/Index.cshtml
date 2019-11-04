@@ -19,7 +19,7 @@
 
 				<div class="col-12 row">
 					<div class="col-6">TotalPrice: </div>
-					<div class="col-6 text-right" id="TotalPrice"> @Model.CartItems.Sum(s => s.Product?.PriceWithoutDiscount ?? 0 * s.Amount) </div>
+					<div class="col-6 text-right" id="TotalPrice"> @Model.CartItems.Sum(s => (s.Product?.PriceWithoutDiscount  * s.Amount)) </div>
 				</div>
 
 				<hr class="style1">
