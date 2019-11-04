@@ -9,6 +9,23 @@
         "daterangepicker.min.js",
         "daterangepicker.min.css"
       ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "xzoom@1.0.14",
+      "destination": "wwwroot/lib/xzoom/",
+      "files": [
+        "dist/xzoom.min.css",
+        "dist/xzoom.min.js"
+      ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "jquery-hammerjs@2.0.0",
+      "destination": "wwwroot/lib/jquery-hammerjs/",
+      "files": [
+        "jquery.hammer.min.js"
+      ]
     }
   ]
 }

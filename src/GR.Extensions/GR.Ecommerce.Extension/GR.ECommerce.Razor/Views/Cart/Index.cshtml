@@ -5,26 +5,30 @@
 	ViewData["Title"] = "Cart";
 }
 
-<div class="row">
+<div class="card">
+	<div class="card-body">
+		<div class="row">
 	
-		<div class="col-8">
-			<partial name="_TableCartItems" model="@Model" />
-			<textarea class="form-control" id="OrderNotes" rows="3" placeholder="Enter order note"></textarea>
-		</div>
-		<div class="col-3 m-2 border border-light">
-			<p>Order summary</p>
-			<hr class="style1">
-
-			<div class="col-12 row">
-				<div class="col-6">TotalPrice: </div>
-				<div class="col-6 text-right" id="TotalPrice"> @Model.CartItems.Sum(s => s.Product?.PriceWithoutDiscount ?? 0 * s.Amount) </div>
+			<div class="col-8">
+				<partial name="_TableCartItems" model="@Model" />
+				<textarea class="form-control" id="OrderNotes" rows="3" placeholder="Enter order note"></textarea>
 			</div>
+			<div class="col-3 m-2 border border-light">
+				<p>Order summary</p>
+				<hr class="style1">
 
-			<hr class="style1">
+				<div class="col-12 row">
+					<div class="col-6">TotalPrice: </div>
+					<div class="col-6 text-right" id="TotalPrice"> @Model.CartItems.Sum(s => s.Product?.PriceWithoutDiscount ?? 0 * s.Amount) </div>
+				</div>
 
-			<button class="btn btn-success" id="checkout">Process to checkout</button>
-		</div>
+				<hr class="style1">
+
+				<button @(!Model?.CartItems.Any() ?? false ? "disabled": "") class="btn btn-success" id="checkout">Process to checkout</button>
+			</div>
 	
+		</div>
+	</div>
 </div>
 
 

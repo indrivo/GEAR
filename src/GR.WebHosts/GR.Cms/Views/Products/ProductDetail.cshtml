@@ -4,162 +4,184 @@
 
 
 
-<style>
-	.activVariation {
-		border: 1px solid #9c9b9b;
-		cursor: pointer;
+@section Styles
+{
+	<style>
+		.activVariation {
+			border: 1px solid #9c9b9b;
+			cursor: pointer;
+		}
 
-	}
-	.selectVariation {
-		border: 1px solid #003d92;
-		cursor: pointer;
-	}
-	.disableVariation {
-		border: 1px dashed #9c9c9c;
-		opacity: 0.5;
-		pointer-events: none;
-		cursor: none;
-	}
-</style>
- 
+		.selectVariation {
+			border: 1px solid #003d92;
+			cursor: pointer;
+		}
+
+		.disableVariation {
+			border: 1px dashed #9c9c9c;
+			opacity: 0.5;
+			pointer-events: none;
+			cursor: none;
+		}
+	</style>
+	<link rel="stylesheet" href="~/lib/xzoom/dist/xzoom.min.css" />
+}
+
 <div class="container">
-    <div class="row">
+	<div class="row">
 
-        <div class="col-lg-5 order-lg-2 order-1">
-            @*<div class="image_selected"><img src="images/single_4.jpg" alt=""></div>*@
+		<div class="col-lg-5 order-lg-2 order-1">
+			<div class="col-lg-5 order-lg-2 order-1">
+				<div class="row">
+					<div class="large-12 column"><h3>Default options</h3></div>
+					<div class="large-5 column">
+						<div class="xzoom-container">
+							<img class="xzoom" id="xzoom-default" src="images/gallery/preview/01_b_car.jpg" xoriginal="images/gallery/original/01_b_car.jpg" />
+							<div class="xzoom-thumbs">
+								<a href="images/gallery/original/01_b_car.jpg"><img class="xzoom-gallery" width="80" src="images/gallery/thumbs/01_b_car.jpg" xpreview="images/gallery/preview/01_b_car.jpg" title="The description goes here"></a>
+								<a href="images/gallery/original/02_o_car.jpg"><img class="xzoom-gallery" width="80" src="images/gallery/preview/02_o_car.jpg" title="The description goes here"></a>
+								<a href="images/gallery/original/03_r_car.jpg"><img class="xzoom-gallery" width="80" src="images/gallery/preview/03_r_car.jpg" title="The description goes here"></a>
+								<a href="images/gallery/original/04_g_car.jpg"><img class="xzoom-gallery" width="80" src="images/gallery/preview/04_g_car.jpg" title="The description goes here"></a>
+							</div>
+						</div>
+					</div>
+					<div class="large-7 column"></div>
+				</div>
+			</div>
 
-        </div>
+		</div>
 
-        <!-- Description -->
-        <div class="col-lg-5 order-3">
-            <div class="product_description">
-                <div class="product_name">@Model.Name</div>
-	 		
-                <div class="product_shortDescription"><p>@Html.Raw(Model.ShortDescription)</p></div>
-                <div class="order_info d-flex flex-row">
-                    <form action="#">
-                        <div class="clearfix" style="z-index: 1000;">
+		<!-- Description -->
+		<div class="col-lg-5 order-3">
+			<div class="product_description">
+				<div class="product_name">@Model.Name</div>
 
-                            <!-- Product Quantity -->
-                            <div class="product_quantity clearfix">
-                                <span>Quantity: </span>
-                                <div class="btn btn-light" onclick="decreasesQuantity()">-</div>
-                                <input class="col-2" id="quantity_input" type="text" pattern="[0-9]*" value="1" disabled>
-                                <div class="btn btn-light" onclick="addQuantity()">+</div>
-                            </div>
+				<div class="product_shortDescription"><p>@Html.Raw(Model.ShortDescription)</p></div>
+				<div class="order_info d-flex flex-row">
+					<form action="#">
+						<div class="clearfix" style="z-index: 1000;">
 
-                            <!-- Product Variation -->
+							<!-- Product Quantity -->
+							<div class="product_quantity clearfix">
+								<span>Quantity: </span>
+								<div class="btn btn-light" onclick="decreasesQuantity()">-</div>
+								<input class="col-2" id="quantity_input" type="text" pattern="[0-9]*" value="1" disabled>
+								<div class="btn btn-light" onclick="addQuantity()">+</div>
+							</div>
 
-                            <div class="mt-3">
-                                <p>Product variation</p>
-                                <ul class="list-group">
-                                    @foreach (var productOption in Model.ProductOption)
-                                    {
-                                        <li class="list-group-item col-12" id="@productOption.Value">
-                                            <p class="mb-2">@productOption.Text: </p>
-                                            @foreach (var variatioDetail in Model.ProductVariationDetails.Where(x=> x.ProductOptionId.ToString() == productOption.Value))
-                                            {
-                                                <div class="variationDetails form-check p-2 form-check-inline activVariation" onclick="chengeStatus('@productOption.Value','@variatioDetail.Id')" id="@variatioDetail.Id">
-                                                    @variatioDetail.Value
-                                                </div>
-                                            }
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
+							<!-- Product Variation -->
 
-                        <div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span></div>
-                        <div>
-                            <button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
-                        </div>
+							<div class="mt-3">
+								<p>Product variation</p>
+								<ul class="list-group">
+									@foreach (var productOption in Model.ProductOption)
+									{
+										<li class="list-group-item col-12" id="@productOption.Value">
+											<p class="mb-2">@productOption.Text: </p>
+											@foreach (var variatioDetail in Model.ProductVariationDetails.Where(x => x.ProductOptionId.ToString() == productOption.Value))
+											{
+												<div class="variationDetails form-check p-2 form-check-inline activVariation" onclick="chengeStatus('@productOption.Value','@variatioDetail.Id')" id="@variatioDetail.Id">
+													@variatioDetail.Value
+												</div>
+											}
+										</li>
+									}
+								</ul>
+							</div>
+						</div>
 
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+						<div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span></div>
+						<div>
+							<button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
+						</div>
 
-    <div class="mt-2 col-12 row">
-        <h3 class="col-12">Specifications</h3>
-        <table class="table  col-12 col-md-6">
-            <tr class="table-dark">
-                <th>Atribut</th>
-                <th>Value</th>
-            </tr>
-			
-            @foreach(var atribut in Model.ProductAttributes)
-            {
-                <tr>
-                    <td>@atribut.ProductAttribute?.Name</td>
-                    <td>@atribut.Value</td>
-                </tr>
-            }
-			
-        </table>
-    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <div class="mt-2 col-12">
-        <h3>Description</h3>
+	<div class="mt-2 col-12 row">
+		<h3 class="col-12">Specifications</h3>
+		<table class="table  col-12 col-md-6">
+			<tr class="table-dark">
+				<th>Atribut</th>
+				<th>Value</th>
+			</tr>
 
-        @Html.Raw(Model.Description)
-    </div>
+			@foreach (var atribut in Model.ProductAttributes)
+			{
+				<tr>
+					<td>@atribut.ProductAttribute?.Name</td>
+					<td>@atribut.Value</td>
+				</tr>
+			}
+
+		</table>
+	</div>
+
+	<div class="mt-2 col-12">
+		<h3>Description</h3>
+
+		@Html.Raw(Model.Description)
+	</div>
 
 </div>
 
 
 
 <div id="productModal" class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-	        <div class="modal-body">
-		        <div class="card">
-			        <div class="card-body">
-                       
-				        <div class="col-12">
-					        <p>Product is add to card</p>
-				        </div>
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Add Variation</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="card">
+					<div class="card-body">
 
-				        <div class="row col-12">
-					        <div class="col-3">
-						        Iamge
-					        </div>
+						<div class="col-12">
+							<p>Product is add to card</p>
+						</div>
 
-					        <div class="col-6">
-						        @Model.Name
-					        </div>
-					        <div alignclass="col-3">
-						        <span id="cartQuantity"> 1 </span> x @Model.PriceWithoutDiscount
-					        </div>
-				        </div>
+						<div class="row col-12">
+							<div class="col-3">
+								Iamge
+							</div>
 
-				        <div class="mt-2 col-12 row">
-					        <div class="col-8"></div>
-					        <div class="col-4">
-						        total sum: <span id="cartTotalPrice">1</span>
-					        </div>
-				        </div>
-			        </div>
-		        </div>
-	        </div>
-	        <div class="modal-footer">
-		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue</button>
-		        <button type="button" class="btn btn-primary" onclick="redirectToCart()">Go to cart</button>
-	        </div>
-        </div>
-    </div>
+							<div class="col-6">
+								@Model.Name
+							</div>
+							<div alignclass="col-3">
+								<span id="cartQuantity"> 1 </span> x @Model.PriceWithoutDiscount
+							</div>
+						</div>
+
+						<div class="mt-2 col-12 row">
+							<div class="col-8"></div>
+							<div class="col-4">
+								total sum: <span id="cartTotalPrice">1</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Continue</button>
+				<button type="button" class="btn btn-primary" onclick="redirectToCart()">Go to cart</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 
 
-
-<script type="text/javascript">
+@section Scripts
+{
+	<script type="text/javascript">
 
 	function chengeStatus(optionId, variationId) {
 
@@ -177,7 +199,7 @@
 			if (controlSelectVariation)
 			{
 				$("#" + optionId).find(".variationDetails").each(function (index, element) {
-					
+
 						$(element).removeClass("selectVariation");
 						$(element).addClass("activVariation");
 				});
@@ -283,4 +305,44 @@
     }
 
 
-</script>
+	</script>
+	<script src="~/lib/xzoom/dist/xzoom.min.js"></script>
+	<script src="~/lib/jquery-hammerjs/jquery.hammer.min.js"></script>
+	<script src="~/lib/"></script>
+	<script>
+		$(document).ready(function () {
+			$('.xzoom, .xzoom-gallery').xzoom({ zoomWidth: 400, title: true, tint: '#333', Xoffset: 15 });
+
+
+			$('.xzoom').each(function () {
+				var xzoom = $(this).data('xzoom');
+				xzoom.eventunbind();
+			});
+
+			$('.xzoom, .xzoom2, .xzoom3').each(function () {
+				var xzoom = $(this).data('xzoom');
+				$(this).hammer().on("tap", function (event) {
+					event.pageX = event.gesture.center.pageX;
+					event.pageY = event.gesture.center.pageY;
+					var s = 1, ls;
+
+					xzoom.eventmove = function (element) {
+						element.hammer().on('drag', function (event) {
+							event.pageX = event.gesture.center.pageX;
+							event.pageY = event.gesture.center.pageY;
+							xzoom.movezoom(event);
+							event.gesture.preventDefault();
+						});
+					}
+
+					xzoom.eventleave = function (element) {
+						element.hammer().on('tap', function (event) {
+							xzoom.closezoom();
+						});
+					}
+					xzoom.openzoom(event);
+				});
+			});
+		});
+	</script>
+}
