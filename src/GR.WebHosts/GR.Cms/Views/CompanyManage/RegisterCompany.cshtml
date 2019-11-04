@@ -120,7 +120,7 @@
 				<div class="logo-image"></div>
 			</a>
 			<h2 class="mt-5 mb-3 fw-600">@Localizer["system_multitenant_register_new"]</h2>
-			<div class="form-horizontal h-100 position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+			<div class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
 				<form class="h-100" id="register-company" asp-action="RegisterCompany" role="form" enctype="multipart/form-data">
 					<div class="form-content pr-1">
 						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -219,12 +219,12 @@
 					</div>
 					<div class="form-progress mt-3 w-100 d-flex justify-content-between align-items-center">
 						<div class="step-buttons">
-							<button class="btn btn-primary" type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-							<button class="btn btn-primary" type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+							<button class="btn btn-primary" type="button" id="prevBtn" onclick="nextPrev(-1)" translate="iso_previous">Previous</button>
+							<button class="btn btn-primary" type="button" id="nextBtn" onclick="nextPrev(1)" translate="iso_next">Next</button>
 						</div>
 						<div class="step-progress text-muted">
 							<span class="step"></span>
-							<span>/3 Step</span>
+							<span>/3 <span translate="iso_step">Step</step></span>
 						</div>
 					</div>
 				</form>
@@ -272,12 +272,13 @@
 				document.getElementById("prevBtn").style.display = "inline";
 			}
 			if (n == (x.length - 1)) {
-				document.getElementById("nextBtn").innerHTML = "Register";
+				$('#nextBtn').html('Register').attr('translate', 'iso_register').removeAttr('translated');
 			} else {
-				document.getElementById("nextBtn").innerHTML = "Next";
+				$('#nextBtn').attr('translate', 'iso_next').removeAttr('translated');
 			}
 			//... and run a function that will display the correct step indicator:
-			fixStepIndicator(n)
+			fixStepIndicator(n);
+			window.forceTranslate('#register-company');
 		}
 
 		function nextPrev(n) {
