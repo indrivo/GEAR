@@ -42,8 +42,7 @@
 
             <h2 class="mt-5 pt-5 fw-600">@Localizer["system_auth_welcome_back"]</h2>
             <form class="form-horizontal position-relative" id="loginform" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" style="height: calc(100% - 170px);">
-                <div>
-
+                <div class="form-content px-2">
                     <div class="form-group mt-5">
                         <label for="username">@Localizer["system_auth_username"]</label>
                         <input id="username" class="form-control" asp-for="Email" placeholder="Ex: John">
