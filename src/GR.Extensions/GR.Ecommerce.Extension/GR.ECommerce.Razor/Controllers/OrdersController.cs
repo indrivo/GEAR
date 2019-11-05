@@ -50,6 +50,13 @@ namespace GR.ECommerce.Razor.Controllers
         public IActionResult MyOrders() => View();
 
         /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        public IActionResult AllOrders() => View();
+
+        /// <summary>
         /// Get order details
         /// </summary>
         /// <param name="orderId"></param>
@@ -114,6 +121,15 @@ namespace GR.ECommerce.Razor.Controllers
         public virtual async Task<JsonResult> GetMyOrdersWithPagination(DTParameters param)
             => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param));
 
+        /// <summary>
+        /// Get orders with pagination
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]"), Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        [Produces("application/json", Type = typeof(DTResult<Order>))]
+        public virtual async Task<JsonResult> GetAllOrdersWithPagination(DTParameters param)
+            => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param));
 
 
         /// <summary>
