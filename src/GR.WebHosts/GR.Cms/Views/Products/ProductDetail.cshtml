@@ -6,7 +6,7 @@
 
 @section Styles
 {
-	<style>
+	@*<style>
 		.activVariation {
 			border: 1px solid #9c9b9b;
 			cursor: pointer;
@@ -24,14 +24,14 @@
 			cursor: none;
 		}
 	</style>
-	<link rel="stylesheet" href="~/lib/xzoom/dist/xzoom.min.css" />
+	<link rel="stylesheet" href="~/lib/xzoom/dist/xzoom.min.css" />*@
 }
 
 <div class="container">
 	<div class="row">
 
 		<div class="col-lg-5 order-lg-2 order-1">
-			<div class="col-lg-5 order-lg-2 order-1">
+			@*<div class="col-lg-5 order-lg-2 order-1">
 				<div class="row">
 					<div class="large-12 column"><h3>Default options</h3></div>
 					<div class="large-5 column">
@@ -47,7 +47,7 @@
 					</div>
 					<div class="large-7 column"></div>
 				</div>
-			</div>
+			</div>*@
 
 		</div>
 
@@ -71,9 +71,9 @@
 
 							<!-- Product Variation -->
 
-							<div class="mt-3">
+							<div class="mt-3 mb-3">
 								<p>Product variation</p>
-								<ul class="list-group">
+								@*<ul class="list-group">
 									@foreach (var productOption in Model.ProductOption)
 									{
 										<li class="list-group-item col-12" id="@productOption.Value">
@@ -86,11 +86,26 @@
 											}
 										</li>
 									}
-								</ul>
+								</ul>*@
+
+
+								@foreach (var productVariation in Model.ProductVariationList)
+								{
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="productVariation" id="variation_@productVariation.Id" value="@productVariation.Id">
+										<label class="form-check-label" for="exampleRadios1">
+											@foreach (var variationDetail in productVariation.ProductVariationDetails)
+											{
+												<span>@variationDetail.ProductOption.Name:  @variationDetail.Value</span>
+											}
+										</label>
+									</div>
+								}
+								
 							</div>
 						</div>
 
-						<div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span></div>
+						<div class="product_price">Price: <span id="productPrice">@Model.PriceWithoutDiscount</span> $</div>
 						<div>
 							<button type="button" class="btn btn-success" onclick="AddProductToCart()">Add to Cart</button>
 						</div>
@@ -122,7 +137,6 @@
 
 	<div class="mt-2 col-12">
 		<h3>Description</h3>
-
 		@Html.Raw(Model.Description)
 	</div>
 
@@ -183,130 +197,142 @@
 {
 	<script type="text/javascript">
 
-	function chengeStatus(optionId, variationId) {
 
-		var controlSelectVariation = true;
-
-		if (!$("#" + variationId).hasClass("disableVariation"))
-		{
-			if ($("#" + variationId).hasClass("selectVariation"))
-			{
-				$("#" + variationId).removeClass("selectVariation");
-				$("#" + variationId).addClass("activVariation");
-				controlSelectVariation = false;
-			}
-
-			if (controlSelectVariation)
-			{
-				$("#" + optionId).find(".variationDetails").each(function (index, element) {
-
-						$(element).removeClass("selectVariation");
-						$(element).addClass("activVariation");
-				});
-
-				$("#" + variationId).removeClass("activVariation");
-				$("#" + variationId).addClass("selectVariation");
-			}
-
-			getPriceByVariation(optionId);
-		}
-	}
-
-	function getPriceByVariation(optionId) {
-
-		var variationDetailsId = [];
-
-		$(".variationDetails").each(function(index, element) {
-			if ($(element).hasClass("selectVariation"))
-				variationDetailsId.push($(element).attr("id"));
-		});
-
-		const model = {
-			ProductId: '@Model.Id',
-			ListVariationDetailsId: variationDetailsId,
-			optionId: optionId
-		}
-
-		console.log(model);
-
-		$.ajax({
-			url: '@Url.Action("GetPriceByVariation")',
-            method: 'post',
-            data: model,
-            success: function(data) {
-
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-    }
-
-	function addQuantity() {
-        var curentQuantity = parseInt($("#quantity_input").val());
-        curentQuantity += 1;
-		$("#quantity_input").val(curentQuantity);
-        newProductPrice(curentQuantity);
-
-	}
-
-	function decreasesQuantity() {
-		var curentQuantity = parseInt($("#quantity_input").val());
-		if (curentQuantity > 1) {
-            curentQuantity -= 1;
-            newProductPrice(curentQuantity);
-		}
-
-	}
-
-	function newProductPrice(curentQuantity) {
-		$("#quantity_input").val(curentQuantity);
-
-		var productPrice = @Model.PriceWithoutDiscount;
-		$("#productPrice").empty();
-		$("#productPrice").append(productPrice * curentQuantity);
-	}
-
-
-	function AddProductToCart() {
-
-		const model = {
-			ProductId: '@Model.Id',
-			Quantity: $("#quantity_input").val()
-		}
-
-		$.ajax({
-			url: '@Url.Action("AddToCard", "Cart")',
-			method: 'post',
-			data: model,
-			success: function(data) {
-
-				if (data.is_success) {
-					$("#cartQuantity").empty();
-					$("#cartQuantity").append(model.Quantity);
-
-					var productPrice = @Model.PriceWithoutDiscount;
-
-					$("#cartTotalPrice").empty();
-					$("#cartTotalPrice").append(model.Quantity * productPrice);
-
-					$('#productModal').modal('show');
+		$(document).ready(function() {
+			$('input:radio[name="productVariation"]').change(function() {
+				if ($(this).is(':checked')) {
+					getPriceByVariation();
 				}
-			},
-			error: function(error) {
-				console.log(error);
-			}
+			});
 		});
-	}
 
 
-    function redirectToCart() {
-	    window.location.replace('@Url.Action("Index", "Cart")');
-    }
+		//function chengeStatus(optionId, variationId) {
+
+		//	var controlSelectVariation = true;
+
+		//	if (!$("#" + variationId).hasClass("disableVariation"))
+		//	{
+		//		if ($("#" + variationId).hasClass("selectVariation"))
+		//		{
+		//			$("#" + variationId).removeClass("selectVariation");
+		//			$("#" + variationId).addClass("activVariation");
+		//			controlSelectVariation = false;
+		//		}
+
+		//		if (controlSelectVariation)
+		//		{
+		//			$("#" + optionId).find(".variationDetails").each(function (index, element) {
+
+		//					$(element).removeClass("selectVariation");
+		//					$(element).addClass("activVariation");
+		//			});
+
+		//			$("#" + variationId).removeClass("activVariation");
+		//			$("#" + variationId).addClass("selectVariation");
+		//		}
+
+		//		getPriceByVariation(optionId);
+		//	}
+		//}
+
+
+		function getPriceByVariation() {
+
+			var variationId = $("input[name='productVariation']:checked").val();
+
+			const model = {
+				productId: '@Model.Id',
+				variationId: variationId,
+				quantity: $("#quantity_input").val()
+			}
+
+			console.log(model);
+
+			$.ajax({
+				url: '@Url.Action("GetPriceByVariation")',
+				method: 'post',
+				data: model,
+				success: function (data)
+				{
+					if (data.is_success)
+					{
+						$("#productPrice").empty();
+						$("#productPrice").append(data.result.price);
+
+						console.log(data);
+					}
+				},
+				error: function(error) {
+					console.log(error);
+				}
+			});
+		}
+
+		function addQuantity() {
+			var curentQuantity = parseInt($("#quantity_input").val());
+			curentQuantity += 1;
+			$("#quantity_input").val(curentQuantity);
+			getPriceByVariation(null);
+
+		}
+
+		function decreasesQuantity() {
+			var curentQuantity = parseInt($("#quantity_input").val());
+			if (curentQuantity > 1)
+			{
+				curentQuantity -= 1;
+				$("#quantity_input").val(curentQuantity);
+				getPriceByVariation(null);
+			}
+
+		}
+
+		function AddProductToCart() {
+
+			const model = {
+				ProductId: '@Model.Id',
+				Quantity: $("#quantity_input").val(),
+				variationId: $("input[name='productVariation']:checked").val()
+			}
+
+			$.ajax({
+				url: '@Url.Action("AddToCard", "Cart")',
+				method: 'post',
+				data: model,
+				success: function(data) {
+
+					if (data.is_success) {
+
+						var amount = data.result.amount;
+
+						$("#cartQuantity").empty();
+						$("#cartQuantity").append(amount);
+
+						var productPrice = 10 * amount;  // data.result.product.
+
+						$("#cartTotalPrice").empty();
+						$("#cartTotalPrice").append(productPrice);
+
+						$('#productModal').modal('show');
+
+						console.log(amount);
+					}
+				},
+				error: function(error) {
+					console.log(error);
+				}
+			});
+		}
+
+
+		function redirectToCart() {
+			window.location.replace('@Url.Action("Index", "Cart")');
+		}
 
 
 	</script>
-	<script src="~/lib/xzoom/dist/xzoom.min.js"></script>
+	@*<script src="~/lib/xzoom/dist/xzoom.min.js"></script>
 	<script src="~/lib/jquery-hammerjs/jquery.hammer.min.js"></script>
 	<script src="~/lib/"></script>
 	<script>
@@ -344,5 +370,5 @@
 				});
 			});
 		});
-	</script>
+	</script>*@
 }

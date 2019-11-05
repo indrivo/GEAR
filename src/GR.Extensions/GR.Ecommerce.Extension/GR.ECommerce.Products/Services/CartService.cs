@@ -67,6 +67,40 @@ namespace GR.ECommerce.Products.Services
             return response;
         }
 
+
+        /// <summary>
+        /// get cartItem by Id
+        /// </summary>
+        /// <param name="cartItemId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<CartItem>> GetCartItemByIdAsync(Guid? cartItemId)
+        {
+            var response = new ResultModel<CartItem>();
+            if (cartItemId == null)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Cart Item not found!"));
+                return response;
+            }
+
+            var cart = await _context.CartItems
+                .Include(x => x.Cart)
+                .Include(x => x.Product)
+                .ThenInclude(x => x.ProductPrices)
+                .Include(x => x.ProductVariation)
+                .FirstOrDefaultAsync(x => x.Id.Equals(cartItemId));
+
+            if (cart == null)
+            {
+                response.Errors.Add(new ErrorModel(string.Empty, "Cart not found!"));
+                return response;
+            }
+
+            response.IsSuccess = true;
+            response.Result = cart;
+            return response;
+        }
+
+
         /// <summary>
         /// Get cart by login user
         /// </summary>
@@ -99,9 +133,9 @@ namespace GR.ECommerce.Products.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> AddToCardAsync(AddToCartViewModel model)
+        public async Task<ResultModel<CartItem>> AddToCardAsync(AddToCartViewModel model)
         {
-            var resultModel = new ResultModel();
+            var resultModel = new ResultModel<CartItem>();
             var product = _context.Products.FirstOrDefault(x => x.Id == model.ProductId);
             var user = _userManager.GetCurrentUserAsync();
 
@@ -111,11 +145,7 @@ namespace GR.ECommerce.Products.Services
 
                 if (cart == null)
                 {
-                    cart = new Cart
-                    {
-                        UserId = user.Result.Result.Id.ToGuid(),
-                    };
-
+                    cart = new Cart{ UserId = user.Result.Result.Id.ToGuid() };
                     await _context.Carts.AddAsync(cart);
                 }
 
@@ -128,6 +158,7 @@ namespace GR.ECommerce.Products.Services
                         ProductId = model.ProductId,
                         Amount = model.Quantity,
                         CartId = cart.Id,
+                        ProductVariationId = model.VariationId,
                     };
 
                     await _context.CartItems.AddAsync(cartItem);
@@ -135,16 +166,13 @@ namespace GR.ECommerce.Products.Services
                 else
                 {
                     cartItem.Amount += model.Quantity;
-                    _context.CartItems.Update(cartItem);
-                }
+                    cartItem.ProductVariationId = model.VariationId;
+                    _context.CartItems.Update(cartItem);}
 
-                var result = await _context.SaveChangesAsync();
-                resultModel.IsSuccess = true;
-                resultModel.Result = result;
-                return resultModel;
+                var dbResult = await _context.PushAsync();
+                return dbResult.Map((await  GetCartItemByIdAsync(cartItem.Id)).Result);
             }
             return resultModel;
-
         }
 
 
