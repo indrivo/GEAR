@@ -8647,18 +8647,18 @@ File: scss
 			line-height: 100px;
 		}
 
-	.login-register {
+	/*.login-register {
 		position: relative;
 		overflow: hidden;
-	}
+	}*/
 
 	.login-box {
 		width: 90%;
 	}
 
-	.login-sidebar {
+	/*.login-sidebar {
 		padding: 10% 0;
-	}
+	}*/
 
 		.login-sidebar .login-box {
 			position: relative;
@@ -8754,4 +8754,11 @@ File: scss
 .bottom-buttons {
 	bottom: 0;
 	width: 100%;
+}
+
+
+#loginform .form-content,
+#register-company .form-content {
+	overflow-y: auto;
+	height: calc(100% - 50px);
 }
