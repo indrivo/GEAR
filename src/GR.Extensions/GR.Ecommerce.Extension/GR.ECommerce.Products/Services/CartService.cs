@@ -243,8 +243,6 @@ namespace GR.ECommerce.Products.Services
             var cart = _context.Carts
                 .Include(i => i.CartItems)
                 .ThenInclude(i=>i.ProductVariation)
-                .ThenInclude(i => i.Product)
-                .ThenInclude(i=>i.ProductPrices)
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.Product)
                 .ThenInclude(i=> i.ProductPrices)
