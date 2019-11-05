@@ -122,7 +122,6 @@ class TBuilderInstance {
 }
 
 window.TableBuilderInstances = new TBuilderInstance();
-
 class TableBuilder {
     constructor(configuration) {
         this.showActionsColumn = true;
@@ -134,6 +133,7 @@ class TableBuilder {
             "data": function (config) {
                 Object.assign(config, scope.configurations.ajaxParameters);
                 config.filters = scope.filters;
+                config.viewModelId = scope.configurations.viewmodelId;
                 return config;
             }
         };
@@ -144,7 +144,8 @@ class TableBuilder {
             table: undefined,
             ajaxParameters: {
                 viewModelId: undefined
-            }
+            },
+			initialFilters : []
         };
         Object.assign(this, configuration);
         this.filters = [];
@@ -382,27 +383,28 @@ class TableBuilder {
                     break;
                 case "uniqueidentifier":
                     {
-                        filterEl.on('click', function (event) {
-                            const item = $.Iso.dynamicFilter('list',
-                                event.target,
-                                [
-                                    {
-                                        id: '1',
-                                        value: 'First Option'
-                                    }
-                                ],
-                                null);
+                        filterEl.remove();
+                        //filterEl.on('click', function (event) {
+                        //    const item = $.Iso.dynamicFilter('list',
+                        //        event.target,
+                        //        [
+                        //            {
+                        //                id: '1',
+                        //                value: 'First Option'
+                        //            }
+                        //        ],
+                        //        null);
 
-                            $(item.container).on('selectValueChange',
-                                (event, arg) => {
+                        //    $(item.container).on('selectValueChange',
+                        //        (event, arg) => {
 
-                                });
-                        });
+                        //        });
+                        //});
                     }
                     break;
                 case "bool":
                     {
-
+                        filterEl.remove();
                     }
                     break;
                 case "datetime":
