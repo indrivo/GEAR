@@ -24,7 +24,6 @@ namespace GR.Cache.Services
         {
             if (redisConnectionOptions.Value == null) throw new InternalExceptions.InvalidCacheConfigurationException();
             _preKey = $"{systemOptions.Value.MachineIdentifier}.{environment.EnvironmentName}@";
-            //_host = "127.0.0.1:6379";
             var host = $"{redisConnectionOptions.Value.Host}:{redisConnectionOptions.Value.Port}";
             var options = ConfigurationOptions.Parse(host);
             _redisConnection = ConnectionMultiplexer.Connect(options);

@@ -167,8 +167,8 @@ namespace GR.Identity.Razor.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(20),
                 IsPersistent = true
             };
-            var reqId = _cache.GetString(MpassRequestSessionKey);
-            var returnUrl = _cache.GetString($"{reqId}_return_url");
+            var reqId = await _cache.GetStringAsync(MpassRequestSessionKey);
+            var returnUrl = await _cache.GetStringAsync($"{reqId}_return_url");
 
             if (existingUser == null)
                 return !string.IsNullOrEmpty(returnUrl)
@@ -325,9 +325,9 @@ namespace GR.Identity.Razor.Controllers
                 _mpassSigningCredentialStore.GetMPassCredentials().ServiceProviderCertificate);
             samlRequest = SamlMessage.Encode(samlRequest);
 
-            _cache.SetString(MpassRequestSessionKey, requestId);
+            await _cache.SetStringAsync(MpassRequestSessionKey, requestId);
             if (!string.IsNullOrEmpty(returnUrl))
-                _cache.SetString($"{requestId}_return_url", returnUrl);
+                await _cache.SetStringAsync($"{requestId}_return_url", returnUrl);
 
             ViewData[SamlRequest] = samlRequest;
             ViewData[ReturnUrl] = returnUrl;

@@ -40,9 +40,11 @@ namespace GR.Cache.Extensions
             {
                 opts.Configuration = redisConfig.Host;
                 opts.InstanceName = $"{customSystemIdentifier}.{environment.EnvironmentName}@";
+                //opts.ConfigurationOptions.SyncTimeout = 10000;
             });
+
             services.AddTransient<ICacheService, CacheService>();
-            services.AddTransient<IRedisConnection, RedisConnection>();
+            services.AddSingleton<IRedisConnection, RedisConnection>();
             IoC.RegisterTransientService<ICacheService, CacheService>();
             IoC.RegisterTransientService<IRedisConnection, RedisConnection>();
             return services;
