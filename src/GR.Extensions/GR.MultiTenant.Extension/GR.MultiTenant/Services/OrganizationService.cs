@@ -540,6 +540,17 @@ namespace GR.MultiTenant.Services
             return finalResult;
         }
 
+        /// <summary>
+        /// Check if tenant name use by another company
+        /// </summary>
+        /// <param name="tenantName"></param>
+        /// <returns></returns>
+        public async Task<bool> IsTenantNameUsedAsync(string tenantName)
+        {
+            var tenantMachineName = TenantUtils.GetTenantMachineName(tenantName).ToLowerInvariant();
+            return await _context.Tenants.AnyAsync(x => x.MachineName.ToLowerInvariant().Equals(tenantMachineName));
+        }
+
         #region Validation
 
         /// <summary>

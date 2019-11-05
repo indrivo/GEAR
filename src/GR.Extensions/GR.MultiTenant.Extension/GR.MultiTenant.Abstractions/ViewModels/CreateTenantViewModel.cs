@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using GR.Core.Attributes;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.MultiTenant.Abstractions.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GR.MultiTenant.Abstractions.ViewModels
 {
@@ -68,6 +69,12 @@ namespace GR.MultiTenant.Abstractions.ViewModels
             TenantId = TenantId,
             Version = Version
         };
+
+        [Required]
+        [DisplayTranslate(Key = "iso_company_name")]
+        [Remote("CheckTenantIfExist", "CompanyManage")]
+        public override string Name { get; set; }
+
         /// <summary>
         /// Country list
         /// </summary>

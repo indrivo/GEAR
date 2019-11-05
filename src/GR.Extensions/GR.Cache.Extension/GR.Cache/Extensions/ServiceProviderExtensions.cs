@@ -43,7 +43,7 @@ namespace GR.Cache.Extensions
                 //opts.ConfigurationOptions.SyncTimeout = 10000;
             });
 
-            services.AddTransient<ICacheService, CacheService>();
+            services.AddSingleton<ICacheService, CacheService>();
             services.AddSingleton<IRedisConnection, RedisConnection>();
             IoC.RegisterTransientService<ICacheService, CacheService>();
             IoC.RegisterTransientService<IRedisConnection, RedisConnection>();

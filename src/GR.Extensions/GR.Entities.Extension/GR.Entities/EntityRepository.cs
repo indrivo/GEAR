@@ -203,16 +203,18 @@ namespace GR.Entities
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
                 .Where(x => !x.IsCommon && !x.IsPartOfDbContext && x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA))
+                .AsNoTracking()
                 .ToListAsync();
             var syncModels = new List<SynchronizeTableViewModel>();
             foreach (var item in entities)
             {
-                item.EntityType = schemaName;
-                var tableConfig = await GetTableConfiguration(item.Id, item);
-                if (!tableConfig.IsSuccess) return;
+                var vEntity = item;
+                vEntity.EntityType = schemaName;
+                var tableConfig = await GetTableConfiguration(vEntity.Id, vEntity);
+                if (!tableConfig.IsSuccess) continue;
                 var entity = tableConfig.Result;
                 entity.Schema = schemaName;
-                if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == entity.Name && s.TenantId == tenantId))
+                if (!await _context.Table.AnyAsync(s => s.Name == entity.Name && s.TenantId == tenantId))
                 {
                     syncModels.Add(entity);
                 }
@@ -239,6 +241,7 @@ namespace GR.Entities
                 .ThenInclude(x => x.TableFieldConfig)
                 .Include(x => x.TableFields)
                 .ThenInclude(x => x.TableFieldType)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id.Equals(tableId));
             if (table == null)
             {
