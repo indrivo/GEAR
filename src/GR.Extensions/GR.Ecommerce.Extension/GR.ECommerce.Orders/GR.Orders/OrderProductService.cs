@@ -182,10 +182,13 @@ namespace GR.Orders
         /// <returns></returns>
         public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId)
         {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
             var productRequest = await _productService.GetProductByIdAsync(productId);
             if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
             var product = productRequest.Result;
             var order = OrderMapper.Map(product);
+            order.UserId = userRequest.Result.Id.ToGuid();
             await _orderDbContext.Orders.AddAsync(order);
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)

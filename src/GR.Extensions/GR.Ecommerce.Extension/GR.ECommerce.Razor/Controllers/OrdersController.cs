@@ -80,6 +80,18 @@ namespace GR.ECommerce.Razor.Controllers
         }
 
         /// <summary>
+        /// Create order
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
+        public async Task<IActionResult> CreateOrderFromPlan([Required]Guid? productId)
+        {
+            var createOrderRequest = await _orderProductService.CreateOrderAsync(productId);
+            return Json(createOrderRequest);
+        }
+
+        /// <summary>
         /// Cancel order
         /// </summary>
         /// <param name="orderId"></param>
