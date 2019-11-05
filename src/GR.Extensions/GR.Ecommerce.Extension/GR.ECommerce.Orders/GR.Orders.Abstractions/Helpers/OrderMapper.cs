@@ -59,7 +59,7 @@ namespace GR.Orders.Abstractions.Helpers
                 {
                     new ProductOrder
                     {
-                        Product = product,
+                        ProductId = product.Id,
                         Amount = amount,
                         PriceWithOutDiscount = product.PriceWithoutDiscount
                     }

@@ -2,7 +2,7 @@ const localizer = new Localizer();
 
 $("#headerContainer").replaceWith($(".headContainer"));
 
-const menuBlock = $("#navbarNavAltMarkup div:first-child");
+const menuBlock = $("#navbarNavAltMarkup .main-nav");
 loadAsync("/PageRender/GetMenus?menuId=b02f6702-1bfe-4fdb-8f7a-a86447620b7e").then(menus => {
 	if (menus.is_success) {
 		//<span class="sr-only">(current)</span>
@@ -109,10 +109,11 @@ $(function () {
 		}
 		if ($(window).scrollTop() > 80) {
 			$('.page-header').addClass('no-padding');
-			$('.sponsors').addClass('slideup');
+			$('.sponsors-collapse').addClass('slideup');
+			$('.navbar-collapse').collapse('hide');
 		} else {
 			$('.page-header').removeClass('no-padding');
-			$('.sponsors').removeClass('slideup');
+			$('.sponsors-collapse').removeClass('slideup');
 		}
 	});
 
