@@ -128,9 +128,8 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]"), Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         [Produces("application/json", Type = typeof(DTResult<Order>))]
-        public virtual async Task<JsonResult> GetAllOrdersWithPagination(DTParameters param)
-            => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param));
-
+        public virtual JsonResult GetAllOrdersWithPagination(DTParameters param)
+            => Json(_orderProductService.GetAllOrdersWithPaginationWay(param));
 
         /// <summary>
         /// Get orders count

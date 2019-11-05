@@ -96,5 +96,12 @@ namespace GR.Orders.Abstractions
         /// <param name="productId"></param>
         /// <returns></returns>
         Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId);
+
+        /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param);
     }
 }

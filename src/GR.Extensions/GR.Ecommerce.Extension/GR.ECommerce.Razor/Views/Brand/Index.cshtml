@@ -1,9 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Brands";
+    ViewData["Title"] = Localizer["system_commerce_brands"];
     var conf = new ListTagHelperModel
     {
-        Title = "Brand",
-        SubTitle = "List of brands",
+        Title = Localizer["system_commerce_brands"],
         ListIdentifier = "brands",
         Api = new ListApiConfigurationViewModel
         {

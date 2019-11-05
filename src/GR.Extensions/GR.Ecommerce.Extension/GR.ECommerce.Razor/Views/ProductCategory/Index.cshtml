@@ -1,8 +1,8 @@
 ﻿@{
+    ViewData["Title"] = Localizer["system_commerce_category"];
     var conf = new ListTagHelperModel
     {
-        Title = "Categories",
-        SubTitle = "List of product categories",
+        Title = Localizer["system_commerce_category"],
         ListIdentifier = "product_categories",
         Api = new ListApiConfigurationViewModel
         {

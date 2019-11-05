@@ -217,23 +217,25 @@ namespace GR.Orders
         }
 
         /// <summary>
-        /// Get my orders
+        /// Get all orders
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        public virtual async Task<DTResult<GetOrdersViewModel>> GetAllOrdersWithPaginationWayAsync(DTParameters param)
+        public virtual DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param)
         {
             if (param == null) return new DTResult<GetOrdersViewModel>();
             var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount, x => x.UserId.Equals(userId)).ToList();
+                out var totalCount).ToList();
 
-            var list = filtered.Select(x =>
+            var list = filtered.Select(async x =>
             {
                 var map = x.Adapt<GetOrdersViewModel>();
-                map.ProductOrders = _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id));
+                map.ProductOrders =
+                    await _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id)).ToListAsync();
+                map.User = _userManager.UserManager.Users.FirstOrDefault(y => y.Id.ToGuid().Equals(x.UserId));
                 return map;
-            });
+            }).Select(x => x.Result);
 
             return new DTResult<GetOrdersViewModel>
             {

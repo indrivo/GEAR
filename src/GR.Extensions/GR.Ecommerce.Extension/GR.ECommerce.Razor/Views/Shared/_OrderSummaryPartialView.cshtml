@@ -1,0 +1,47 @@
+﻿@model GR.Orders.Abstractions.Models.Order
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@Localizer["system_commerce_order_summary"]</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Localizer["system_product"]</th>
+                    <th>@Localizer["system_commerce_quantity"]</th>
+                    <th>@Localizer["system_price"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var prOrder in Model.ProductOrders)
+                {
+                    <tr>
+                        <td>@prOrder.Product?.Name</td>
+                        <td>@prOrder.Amount</td>
+                        <td>$@prOrder.AmountFinalPriceWithOutDiscount.ToString("N2")</td>
+                    </tr>
+                }
+                <tr>
+                    <td>@Localizer["system_order_note"]</td>
+                    <td colspan="2">
+                        @Model.Notes
+                    </td>
+                </tr>
+                <tr>
+                    <td>Subtotal</td>
+                    <td></td>
+                    <td>$@Model.SubTotal.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <td>@Localizer["system_commerce_discount"]</td>
+                    <td></td>
+                    <td>$@Model.DiscountTotal.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <td>@Localizer["system_commerce_order_total"]</td>
+                    <td></td>
+                    <td>$@Model.Total.ToString("N2")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
