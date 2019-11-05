@@ -158,5 +158,12 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="user"></param>
         /// <returns></returns>
         Task SendConfirmEmailRequest(ApplicationUser user);
+
+        /// <summary>
+        /// Check if tenant name is used
+        /// </summary>
+        /// <param name="tenantName"></param>
+        /// <returns></returns>
+        Task<bool> IsTenantNameUsedAsync(string tenantName);
     }
 }

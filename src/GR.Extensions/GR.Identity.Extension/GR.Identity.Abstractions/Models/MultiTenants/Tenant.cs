@@ -14,7 +14,7 @@ namespace GR.Identity.Abstractions.Models.MultiTenants
         /// </summary>
         [Required]
         [DisplayTranslate(Key = "iso_company_name")]
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// Name for system

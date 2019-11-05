@@ -19,6 +19,7 @@ using GR.Core.Helpers;
 using GR.Entities.Abstractions;
 using GR.Entities.Data;
 using GR.Identity.Abstractions.Enums;
+using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
 using GR.MultiTenant.Abstractions.Events;
@@ -175,10 +176,36 @@ namespace GR.MultiTenant.Razor.Controllers
             var userNameExist = await _userManager.UserManager.FindByNameAsync(data.UserName);
             var userEmailExist = await _userManager.UserManager.FindByEmailAsync(data.Email);
 
-            if (userEmailExist != null || userNameExist != null)
+            if (userEmailExist != null)
             {
                 data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
-                ModelState.AddModelError(string.Empty, "User or email are used!");
+                ModelState.AddModelError(string.Empty, "Email address is used!");
+                return View(data);
+            }
+
+            if (userNameExist != null)
+            {
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
+                ModelState.AddModelError(string.Empty, "UserName is used!");
+                return View(data);
+            }
+            var newCompanyOwner = new ApplicationUser
+            {
+                Email = data.Email,
+                UserName = data.UserName,
+                UserFirstName = data.FirstName,
+                UserLastName = data.LastName,
+                AuthenticationType = AuthenticationType.Local,
+                EmailConfirmed = false,
+                IsEditable = true
+            };
+
+            //create new user
+            var usrReq = await _userManager.UserManager.CreateAsync(newCompanyOwner, data.Password);
+            if (!usrReq.Succeeded)
+            {
+                ModelState.AppendIdentityResult(usrReq);
+                data.CountrySelectListItems = await _organizationService.GetCountrySelectList();
                 return View(data);
             }
 
@@ -186,28 +213,9 @@ namespace GR.MultiTenant.Razor.Controllers
 
             if (reqTenant.IsSuccess)
             {
-                var newCompanyOwner = new ApplicationUser
-                {
-                    Email = data.Email,
-                    UserName = data.UserName,
-                    UserFirstName = data.FirstName,
-                    UserLastName = data.LastName,
-                    AuthenticationType = AuthenticationType.Local,
-                    EmailConfirmed = false,
-                    TenantId = reqTenant.Result.Id,
-                    IsEditable = true
-                };
-
-                //create new user
-                var usrReq = await _userManager.UserManager.CreateAsync(newCompanyOwner, data.Password);
-                if (!usrReq.Succeeded)
-                {
-                    ModelState.AddModelError(string.Empty, "Fail to create user!");
-                    return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
-                }
-
                 var claim = new Claim(nameof(Tenant).ToLowerInvariant(), newCompanyOwner.TenantId.ToString());
-
+                newCompanyOwner.TenantId = reqTenant.Result.Id;
+                await _userManager.UserManager.UpdateAsync(newCompanyOwner);
                 await _userManager.UserManager.AddClaimAsync(newCompanyOwner, claim);
 
                 var generateResult = await _service.GenerateTablesForTenantAsync(reqTenant.Result);
@@ -251,9 +259,48 @@ namespace GR.MultiTenant.Razor.Controllers
                 return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
             }
 
+            await _userManager.UserManager.DeleteAsync(newCompanyOwner);
+
             ModelState.AppendResultModelErrors(reqTenant.Errors);
 
             return View(reqTenant.Result.Adapt<RegisterCompanyViewModel>());
+        }
+
+        /// <summary>
+        /// Check user name if exist
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [AcceptVerbs("Get", "Post"), AllowAnonymous]
+        public async Task<IActionResult> CheckUserNameIfExist(string userName)
+        {
+            if (userName.IsNullOrEmpty()) return Json(false);
+            var userNameExist = await _userManager.UserManager.FindByNameAsync(userName);
+            return userNameExist != null ? Json($"The username {userName} is already used") : Json(true);
+        }
+
+        /// <summary>
+        /// Check email if exist
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [AcceptVerbs("Get", "Post"), AllowAnonymous]
+        public async Task<IActionResult> CheckEmailIfExist(string email)
+        {
+            var userNameExist = await _userManager.UserManager.FindByEmailAsync(email);
+            return userNameExist != null ? Json($"The email {email} is already used") : Json(true);
+        }
+
+        /// <summary>
+        /// Check if tenant name is used
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        [AcceptVerbs("Get", "Post"), AllowAnonymous]
+        public async Task<IActionResult> CheckTenantIfExist(string name)
+        {
+            var isUsed = await _organizationService.IsTenantNameUsedAsync(name);
+            return !isUsed ? Json(true) : Json($"The company name {name} is already used");
         }
 
         /// <summary>

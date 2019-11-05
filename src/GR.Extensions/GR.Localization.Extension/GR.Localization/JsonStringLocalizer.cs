@@ -10,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using GR.Core.Extensions;
 
 namespace GR.Localization
 {
@@ -90,17 +91,6 @@ namespace GR.Localization
                 {
                     return new LocalizedString(name, cacheTranslated, false);
                 }
-                
-                //using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                //using (StreamReader sReader = new StreamReader(stream))
-                //using (JsonTextReader reader = new JsonTextReader(sReader))
-                //{
-                //    reader.SupportMultipleContent = true;
-                //    JObject obj = JObject.Load(reader);
-                //    JToken token = obj[name];
-                //    string translated = token?.Value<string>();
-                //    return new LocalizedString(name, translated ?? $"[{name}]", token == null);
-                //}
             }
         }
 
