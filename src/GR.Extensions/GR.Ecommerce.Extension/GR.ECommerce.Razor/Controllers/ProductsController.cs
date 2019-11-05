@@ -17,6 +17,7 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace GR.ECommerce.Razor.Controllers
 {
@@ -29,6 +30,15 @@ namespace GR.ECommerce.Razor.Controllers
         /// Inject product service
         /// </summary>
         private readonly IProductService<Product> _productService;
+        #endregion
+
+        #region Helpers
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
         #endregion
 
         public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService) : base(context, dataFilter)
@@ -112,32 +122,26 @@ namespace GR.ECommerce.Razor.Controllers
                     resultModel.Result = new { Price = prod.PriceWithDiscount * model.Quantity };
                     return Json(resultModel);
                 }
-                else
+
+                var productVariation = Context.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
+
+                if (productVariation is null)
                 {
-                    var productVariation = Context.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
-
-                    if (productVariation is null)
-                    {
-                        resultModel.IsSuccess = false;
-                        resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-                        return Json(resultModel);
-                    }
-                    else
-                    {
-                        resultModel.IsSuccess = true;
-                        resultModel.Result = new { Price = productVariation.Price * model.Quantity };
-                        return Json(resultModel);
-                    }
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                    return Json(resultModel);
                 }
-            }
-            else
-            {
-                resultModel.IsSuccess = false;
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+
+                resultModel.IsSuccess = true;
+                resultModel.Result = new { Price = productVariation.Price * model.Quantity };
+                return Json(resultModel);
             }
 
+            resultModel.IsSuccess = false;
+            resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
 
-            return Json(resultModel);
+
+            return Json(resultModel, SerializerSettings);
         }
 
         /// <inheritdoc />
@@ -566,6 +570,6 @@ namespace GR.ECommerce.Razor.Controllers
         [HttpGet, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Product>>))]
         public async Task<JsonResult> GetSubscriptionPlans() =>
-            Json(await _productService.GetSubscriptionPlansAsync());
+            Json(await _productService.GetSubscriptionPlansAsync(), SerializerSettings);
     }
 }
