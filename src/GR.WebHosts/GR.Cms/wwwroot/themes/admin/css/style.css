@@ -6390,26 +6390,19 @@ Login register and recover password Page
 
 	.login-register .image-area {
 		background-size: cover;
+		background-position: center;
 	}
 
-.login-box {
-	margin: 0 auto;
-	padding-top: 100px;
-	padding-bottom: 100px;
-	padding-left: 200px;
-	padding-right: 200px;
+.login-box .footer {
+	width: 100%;
+	left: 0px;
+	right: 0px;
 }
 
-	.login-box .footer {
-		width: 100%;
-		left: 0px;
-		right: 0px;
-	}
-
-	.login-box .social {
-		display: block;
-		margin-bottom: 30px;
-	}
+.login-box .social {
+	display: block;
+	margin-bottom: 30px;
+}
 
 #recoverform {
 	display: none;
@@ -8462,6 +8455,10 @@ File: scss
 		-webkit-column-count: 3;
 		column-count: 3;
 	}
+	.login-box {
+		padding-left: 200px !important;
+		padding-right: 200px !important;
+	}
 }
 
 /*==============================================================
@@ -8484,6 +8481,11 @@ File: scss
 
 	.footer {
 		left: 240px;
+	}
+
+	.login-box {
+		padding-left: 100px !important;
+		padding-right: 100px !important;
 	}
 }
 
