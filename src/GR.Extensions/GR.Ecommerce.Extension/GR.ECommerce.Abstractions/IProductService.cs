@@ -21,5 +21,11 @@ namespace GR.ECommerce.Abstractions
         /// <param name="productId"></param>
         /// <returns></returns>
         Task<ResultModel<Product>> GetProductByIdAsync(Guid? productId);
+
+        /// <summary>
+        /// Get subscription plans
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Product>>> GetSubscriptionPlansAsync();
     }
 }

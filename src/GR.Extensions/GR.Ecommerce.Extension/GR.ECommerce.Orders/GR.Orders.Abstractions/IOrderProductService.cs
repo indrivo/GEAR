@@ -89,5 +89,12 @@ namespace GR.Orders.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<Dictionary<string, int>>> GetOrdersCountForOrderStatesAsync();
+
+        /// <summary>
+        /// Create order
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId);
     }
 }

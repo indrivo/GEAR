@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -62,6 +63,32 @@ namespace GR.ECommerce.Products.Services
             {
                 IsSuccess = true,
                 Result = product
+            };
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get subscription plans
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Product>>> GetSubscriptionPlansAsync()
+        {
+            var products = await _commerceContext.Products
+                .Include(x => x.ProductType)
+                .Include(x => x.Brand)
+                .Include(x => x.ProductAttributes)
+                .ThenInclude(x => x.ProductAttribute)
+                .Include(x => x.ProductCategories)
+                .ThenInclude(x => x.Category)
+                .Include(x => x.ProductPrices)
+                .Where(x => x.ProductTypeId.Equals(ProductTypes.SubscriptionPlan)
+                            && x.IsPublished)
+                .ToListAsync();
+            var response = new ResultModel<IEnumerable<Product>>
+            {
+                IsSuccess = true,
+                Result = products
             };
 
             return response;

@@ -271,7 +271,10 @@ namespace GR.Cms
 				.AddIdentityModuleEvents()
 				.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat; });
+				.AddJsonOptions(x =>
+				{
+					x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
+				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()

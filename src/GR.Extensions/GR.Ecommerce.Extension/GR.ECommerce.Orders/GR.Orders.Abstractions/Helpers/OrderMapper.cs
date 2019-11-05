@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
@@ -39,6 +40,31 @@ namespace GR.Orders.Abstractions.Helpers
             });
 
             order.ProductOrders = orderItems.ToList();
+
+            return order;
+        }
+
+        /// <summary>
+        /// Map product to order
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public static Order Map(Product product, int amount = 1)
+        {
+            var order = new Order
+            {
+                OrderState = OrderState.New,
+                ProductOrders = new List<ProductOrder>
+                {
+                    new ProductOrder
+                    {
+                        Product = product,
+                        Amount = amount,
+                        PriceWithOutDiscount = product.PriceWithoutDiscount
+                    }
+                }
+            };
 
             return order;
         }
