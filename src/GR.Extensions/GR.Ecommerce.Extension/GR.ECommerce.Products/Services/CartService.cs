@@ -8,6 +8,7 @@ using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
 using GR.Identity.Abstractions;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.Products.Services
@@ -105,15 +106,17 @@ namespace GR.ECommerce.Products.Services
         /// Get cart by login user
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<Cart>> GetCartByUserAsync()
+        public async Task<ResultModel<AddToCartViewModel>> GetCartByUserAsync()
         {
-            var response = new ResultModel<Cart>();
+            var response = new ResultModel<AddToCartViewModel>();
 
             var user = _userManager.GetCurrentUserAsync();
             var cart = await _context.Carts
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.Product)
                 .ThenInclude(i=> i.ProductPrices)
+                .Include(i=> i.CartItems)
+                .ThenInclude(i => i.ProductVariation)
                 .FirstOrDefaultAsync(x => x.UserId == user.Result.Result.Id.ToGuid());
 
             if (cart == null)
@@ -122,8 +125,12 @@ namespace GR.ECommerce.Products.Services
                 return response;
             }
 
+            var result = cart.Adapt<AddToCartViewModel>();
+
+            result.TotalPrice = GetTotalPrice(result.Id);
+                
             response.IsSuccess = true;
-            response.Result = cart;
+            response.Result = result;
             return response;
         }
 
@@ -233,14 +240,34 @@ namespace GR.ECommerce.Products.Services
         /// <returns></returns>
         private decimal GetTotalPrice(Guid cartId)
         {
-            var cart = _context.Carts.Include(i => i.CartItems).ThenInclude(i => i.Product).ThenInclude(i=>i.ProductPrices).FirstOrDefault(x => x.Id == cartId);
+            var cart = _context.Carts
+                .Include(i => i.CartItems)
+                .ThenInclude(i=>i.ProductVariation)
+                .ThenInclude(i => i.Product)
+                .ThenInclude(i=>i.ProductPrices)
+                .Include(i => i.CartItems)
+                .ThenInclude(i => i.Product)
+                .ThenInclude(i=> i.ProductPrices)
+                .FirstOrDefault(x => x.Id == cartId);
+
+            decimal totalPrice = 0;
 
             if (cart != null)
             {
-                return cart.CartItems.Sum(s => s.Product?.PriceWithDiscount * s.Amount) ?? 0;
+                foreach (var cartItem in cart.CartItems)
+                {
+                    if (cartItem.ProductVariation is null)
+                    {
+                        totalPrice += cartItem.Product.PriceWithDiscount * cartItem.Amount;
+                    }
+                    else
+                    {
+                        totalPrice += (decimal)cartItem.ProductVariation?.Price  * cartItem.Amount;
+                    }
+                }
             }
 
-            return 0;
+            return totalPrice;
         }
     }
 }

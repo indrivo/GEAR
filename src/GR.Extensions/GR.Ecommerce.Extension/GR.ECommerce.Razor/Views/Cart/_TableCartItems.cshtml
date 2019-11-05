@@ -23,14 +23,17 @@
 		{
 			<tr>
 				<td>@cartItem.Product?.Name</td>
-				<td>@cartItem.Product?.PriceWithoutDiscount</td>
+				<td>
+					@{var productPriceWithoutDiscount = cartItem.ProductVariation == null ? cartItem.Product?.PriceWithoutDiscount : (decimal) cartItem.ProductVariation.Price;}
+					@productPriceWithoutDiscount
+				</td>
 				<td>
 					<button class="btn btn-light" onclick="decreasesQuantity('@cartItem.Id')">-</button>
 					<input id="quantyty_@cartItem.Id" class="" value="@cartItem.Amount" readonly />
 					<button class="btn btn-light" onclick="addQuantity('@cartItem.Id')">+</button>
 				</td>
 				<td>
-					<button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')"> <span fa fa-close></span></button>
+					<button class="btn btn-light" onclick="deleteCartItem('@cartItem.Id')"> <span fa fa-close>X</span></button>
 				</td>
 			</tr>
 		}

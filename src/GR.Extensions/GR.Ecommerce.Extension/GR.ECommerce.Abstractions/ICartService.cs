@@ -19,7 +19,7 @@ namespace GR.ECommerce.Abstractions
         /// get cart by user login
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<Cart>> GetCartByUserAsync();
+        Task<ResultModel<AddToCartViewModel>> GetCartByUserAsync();
 
         /// <summary>
         /// get cartItem by id
@@ -27,6 +27,7 @@ namespace GR.ECommerce.Abstractions
         /// <param name="cartItemId"></param>
         /// <returns></returns>
         Task<ResultModel<CartItem>> GetCartItemByIdAsync(Guid? cartItemId);
+
         /// <summary>
         /// add new cart
         /// </summary>

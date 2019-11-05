@@ -12,5 +12,6 @@ namespace GR.ECommerce.Abstractions.ViewModels.CartViewModels
         public virtual int Quantity { get; set; }
       
         public virtual Guid? VariationId { get; set; }
+        public virtual decimal TotalPrice { get; set; }
     }
 }
