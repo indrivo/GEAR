@@ -13,6 +13,9 @@ if (typeof jQuery === "undefined") {
     throw new Error("Data Table plugin require JQuery");
 }
 
+//Find and generate tables or generate manually
+window.DisableAutoGenerateTableBuilder = false;
+
 //------------------------------------------------------------------------------------//
 //								Table select multiple
 //------------------------------------------------------------------------------------//
@@ -126,14 +129,14 @@ class TableBuilder {
     constructor(configuration) {
         this.showActionsColumn = true;
         this.enableColumnFilters = true;
+        this.initialFilters = [];
         const scope = this;
         this.ajax = {
             "url": "/PageRender/LoadPagedData",
             "type": "POST",
             "data": function (config) {
                 Object.assign(config, scope.configurations.ajaxParameters);
-                config.filters = scope.filters;
-                config.viewModelId = scope.configurations.viewmodelId;
+                config.filters = scope.initialFilters.concat(scope.filters);
                 return config;
             }
         };
@@ -144,8 +147,7 @@ class TableBuilder {
             table: undefined,
             ajaxParameters: {
                 viewModelId: undefined
-            },
-			initialFilters : []
+            }
         };
         Object.assign(this, configuration);
         this.filters = [];
@@ -333,6 +335,9 @@ class TableBuilder {
         $.each(this.configurations.viewmodelData.viewModelFields, (i, vField) => {
             rowFilters.append(scope.pushFilterColumn(vField));
         });
+        if (scope.showActionsColumn) {
+            rowFilters.append(scope.pushFilterColumn({}));
+        }
         columnsEl.append(rowFilters);
         $(".sorting").off();
     }
@@ -421,7 +426,7 @@ class TableBuilder {
 
                             // bind to date change
                             $(picker).on('rangeChangeDate', (event) => {
-                               
+
                             });
 
                             // bind to closing datepicker
@@ -898,6 +903,7 @@ TableBuilder.prototype.appendColumnsBeforeActions = function () {
 };
 
 $(document).ready(function () {
+    if (window.DisableAutoGenerateTableBuilder) return;
     const tables = Array.prototype.filter.call(
         document.getElementsByTagName("table"),
         function (el) {
@@ -910,6 +916,8 @@ $(document).ready(function () {
             const conf = {
                 showActionsColumn: false
             };
-            new TableBuilder(conf).init(tableEl);
+            const builder = new TableBuilder(conf);
+
+            builder.init(tableEl);
         });
 });
