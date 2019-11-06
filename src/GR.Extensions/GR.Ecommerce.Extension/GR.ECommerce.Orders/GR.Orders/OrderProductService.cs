@@ -217,6 +217,36 @@ namespace GR.Orders
         }
 
         /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public virtual DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param)
+        {
+            if (param == null) return new DTResult<GetOrdersViewModel>();
+            var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
+                param.Length,
+                out var totalCount).ToList();
+
+            var list = filtered.Select(async x =>
+            {
+                var map = x.Adapt<GetOrdersViewModel>();
+                map.ProductOrders =
+                    await _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id)).ToListAsync();
+                map.User = _userManager.UserManager.Users.FirstOrDefault(y => y.Id.ToGuid().Equals(x.UserId));
+                return map;
+            }).Select(x => x.Result);
+
+            return new DTResult<GetOrdersViewModel>
+            {
+                Draw = param.Draw,
+                Data = list.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
+            };
+        }
+
+        /// <summary>
         /// Cancel order
         /// </summary>
         /// <param name="orderId"></param>

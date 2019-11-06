@@ -1,17 +1,18 @@
 ﻿@{
-    ViewData["Title"] = Localizer["system_commerce_my_orders"];
+    ViewData["Title"] = Localizer["system_commerce_all_orders"];
     var conf = new ListTagHelperModel
     {
-        Title = Localizer["system_commerce_my_orders"],
-        ListIdentifier = "my_orders",
+        Title = Localizer["system_commerce_all_orders"],
+        ListIdentifier = "all_orders",
         Api = new ListApiConfigurationViewModel
         {
-            Url = Url.Action("GetMyOrdersWithPagination", "Orders")
+            Url = Url.Action("GetAllOrdersWithPagination", "Orders")
         },
         RenderColumns = new List<ListRenderColumn>
         {
             new ListRenderColumn("Id", "id"),
             new ListRenderColumn(Localizer["system_payment_status"], "state"),
+            new ListRenderColumn(Localizer["user"], "user.userName"),
             new ListRenderColumn(Localizer["system_commerce_order_total"], "formattedTotal"),
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed")

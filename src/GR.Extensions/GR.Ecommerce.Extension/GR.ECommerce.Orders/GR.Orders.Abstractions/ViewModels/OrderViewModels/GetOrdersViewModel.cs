@@ -1,4 +1,5 @@
-﻿using GR.Orders.Abstractions.Models;
+﻿using GR.Identity.Abstractions;
+using GR.Orders.Abstractions.Models;
 
 namespace GR.Orders.Abstractions.ViewModels.OrderViewModels
 {
@@ -13,5 +14,10 @@ namespace GR.Orders.Abstractions.ViewModels.OrderViewModels
         /// Text
         /// </summary>
         public string FormattedTotal => "$" + Total.ToString("N2");
+
+        /// <summary>
+        /// User
+        /// </summary>
+        public ApplicationUser User { get; set; }
     }
 }
