@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions;
-using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Abstractions;
 using GR.Core.BaseControllers;
@@ -67,10 +66,10 @@ namespace GR.MultiTenant.Razor.Controllers
         #endregion
 
         public CompanyManageController(UserManager<ApplicationUser> userManager,
-            RoleManager<ApplicationRole> roleManager, ICacheService cacheService,
+            RoleManager<ApplicationRole> roleManager,
             ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
             IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<ApplicationUser> userManager1, SignInManager<ApplicationUser> signInManager) :
-            base(userManager, roleManager, cacheService, applicationDbContext, context, notify, dataFilter, localizer)
+            base(userManager, roleManager, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
             _service = service;

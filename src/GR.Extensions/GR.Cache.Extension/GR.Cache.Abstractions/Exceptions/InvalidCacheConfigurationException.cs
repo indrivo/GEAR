@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GR.Cache.Exceptions
+namespace GR.Cache.Abstractions.Exceptions
 {
     public class InvalidCacheConfigurationException : Exception
     {

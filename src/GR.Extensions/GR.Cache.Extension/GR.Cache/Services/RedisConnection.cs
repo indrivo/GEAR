@@ -5,30 +5,88 @@ using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using GR.Cache.Abstractions;
+using GR.Cache.Abstractions.Exceptions;
 using GR.Core;
 using StackExchange.Redis;
-using InternalExceptions = GR.Cache.Exceptions;
 
 namespace GR.Cache.Services
 {
     public class RedisConnection : IRedisConnection
     {
         /// <summary>
-        /// Redis connection
+        /// Redis connection instance
         /// </summary>
-        private readonly ConnectionMultiplexer _redisConnection;
+        private static ConnectionMultiplexer RedisConnectionInstance { get; set; }
 
+        /// <summary>
+        /// Options
+        /// </summary>
+        private readonly IOptions<RedisConnectionConfig> _redisConnectionOptions;
+
+        /// <summary>
+        /// Connection
+        /// </summary>
+        private ConnectionMultiplexer Connection => GetConnection();
+
+        /// <summary>
+        /// Prefix key
+        /// </summary>
         private readonly string _preKey;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="systemOptions"></param>
+        /// <param name="environment"></param>
+        /// <param name="redisConnectionOptions"></param>
         public RedisConnection(IOptions<SystemConfig> systemOptions, IHostingEnvironment environment, IOptions<RedisConnectionConfig> redisConnectionOptions)
         {
-            if (redisConnectionOptions.Value == null) throw new InternalExceptions.InvalidCacheConfigurationException();
+            if (redisConnectionOptions.Value == null) throw new InvalidCacheConfigurationException();
             _preKey = $"{systemOptions.Value.MachineIdentifier}.{environment.EnvironmentName}@";
-            var host = $"{redisConnectionOptions.Value.Host}:{redisConnectionOptions.Value.Port}";
+            _redisConnectionOptions = redisConnectionOptions;
+        }
+
+        /// <summary>
+        /// Get conf options
+        /// </summary>
+        /// <returns></returns>
+        private ConfigurationOptions GetConfigurationOptions()
+        {
+            var host = $"{_redisConnectionOptions.Value.Host}:{_redisConnectionOptions.Value.Port}";
             var options = ConfigurationOptions.Parse(host);
-            _redisConnection = ConnectionMultiplexer.Connect(options);
-            if (!_redisConnection.IsConnected)
-                throw new InternalExceptions.RedisConnectionException("Fail to connect with redis server");
+            return options;
+        }
+
+        /// <summary>
+        /// Get instance
+        /// </summary>
+        /// <returns></returns>
+        private ConnectionMultiplexer GetConnection()
+        {
+            if (RedisConnectionInstance != null)
+            {
+                if (RedisConnectionInstance.IsConnected)
+                    return RedisConnectionInstance;
+            }
+
+            RedisConnectionInstance = CreateConnection();
+
+            RedisConnectionInstance.ConnectionFailed += (sender, args) =>
+                {
+                    RedisConnectionInstance = CreateConnection();
+                };
+
+            return RedisConnectionInstance;
+        }
+
+        /// <summary>
+        /// Create connection
+        /// </summary>
+        /// <returns></returns>
+        private ConnectionMultiplexer CreateConnection()
+        {
+            var options = GetConfigurationOptions();
+            return ConnectionMultiplexer.Connect(options);
         }
 
         /// <summary>
@@ -37,7 +95,7 @@ namespace GR.Cache.Services
         /// <returns></returns>
         private EndPoint GetEndPoint()
         {
-            var endPoint = _redisConnection.GetEndPoints().FirstOrDefault();
+            var endPoint = Connection.GetEndPoints().FirstOrDefault();
             return endPoint;
         }
 
@@ -47,7 +105,7 @@ namespace GR.Cache.Services
         /// <returns></returns>
         public bool IsConnected()
         {
-            return _redisConnection.IsConnected;
+            return Connection.IsConnected;
         }
 
         /// <summary>
@@ -58,7 +116,7 @@ namespace GR.Cache.Services
         {
             var endPoint = GetEndPoint();
             if (endPoint == null) return new Collection<RedisKey>();
-            return _redisConnection.GetServer(endPoint).Keys(pattern: $"{_preKey}*").ToList();
+            return Connection.GetServer(endPoint).Keys(pattern: $"{_preKey}*").ToList();
         }
 
         /// <summary>
@@ -70,7 +128,7 @@ namespace GR.Cache.Services
         {
             var endPoint = GetEndPoint();
             if (endPoint == null) return new Collection<RedisKey>();
-            return _redisConnection.GetServer(endPoint).Keys(pattern: $"{_preKey}{filterPattern}").ToList();
+            return Connection.GetServer(endPoint).Keys(pattern: $"{_preKey}{filterPattern}").ToList();
         }
 
         /// <summary>
@@ -81,7 +139,7 @@ namespace GR.Cache.Services
             var keys = GetAll().ToList();
             foreach (var key in keys)
             {
-                _redisConnection.GetDatabase().KeyDelete(key);
+                Connection.GetDatabase().KeyDelete(key);
             }
         }
     }

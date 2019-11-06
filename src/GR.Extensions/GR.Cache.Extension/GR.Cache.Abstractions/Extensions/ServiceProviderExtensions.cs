@@ -1,15 +1,13 @@
 ﻿using System;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using GR.Cache.Abstractions;
-using GR.Cache.Exceptions;
-using GR.Cache.Services;
+using GR.Cache.Abstractions.Exceptions;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace GR.Cache.Extensions
+namespace GR.Cache.Abstractions.Extensions
 {
     public static class ServiceProviderExtensions
     {
@@ -21,7 +19,9 @@ namespace GR.Cache.Extensions
         /// <param name="configuration"></param>
         /// <param name="customSystemIdentifier"></param>
         /// <returns></returns>
-        public static IServiceCollection AddCacheModule(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
+        public static IServiceCollection AddCacheModule<TCacheService, TRedisConnection>(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
+            where TCacheService : class, ICacheService
+            where TRedisConnection : class, IRedisConnection
         {
             if (customSystemIdentifier == null)
             {
@@ -40,13 +40,12 @@ namespace GR.Cache.Extensions
             {
                 opts.Configuration = redisConfig.Host;
                 opts.InstanceName = $"{customSystemIdentifier}.{environment.EnvironmentName}@";
-                //opts.ConfigurationOptions.SyncTimeout = 10000;
             });
 
-            services.AddSingleton<ICacheService, CacheService>();
-            services.AddSingleton<IRedisConnection, RedisConnection>();
-            IoC.RegisterTransientService<ICacheService, CacheService>();
-            IoC.RegisterTransientService<IRedisConnection, RedisConnection>();
+            services.AddSingleton<ICacheService, TCacheService>();
+            services.AddSingleton<IRedisConnection, TRedisConnection>();
+            IoC.RegisterSingletonService<ICacheService, TCacheService>();
+            IoC.RegisterSingletonService<IRedisConnection, TRedisConnection>();
             return services;
         }
     }

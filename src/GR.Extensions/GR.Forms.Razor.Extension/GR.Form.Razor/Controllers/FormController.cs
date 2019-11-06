@@ -61,11 +61,17 @@ namespace GR.Forms.Razor.Controllers
         /// Inject dynamic service
         /// </summary>
         private readonly IDynamicService _service;
+
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
         #endregion
 
 
-        public FormController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicService service, IFormService formService, IFormContext formContext, IEntityContext entityContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public FormController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicService service, IFormService formService, IFormContext formContext, IEntityContext entityContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
+            _cacheService = cacheService;
             _service = service;
             FormService = formService;
             _formContext = formContext;
@@ -442,7 +448,7 @@ namespace GR.Forms.Razor.Controllers
         /// Get system field validations
         /// </summary>
         private Collection<FormValidation> SystemFieldValidations =>
-            CacheService
+            _cacheService
                 .Get<Collection<FormValidation>>("_fieldValidations").GetAwaiter().GetResult()
             ?? GetOrUpdateForm().GetAwaiter().GetResult();
 
@@ -523,7 +529,7 @@ namespace GR.Forms.Razor.Controllers
 
             if (systemValidations != null)
             {
-                await CacheService
+                await _cacheService
                     .Set("_fieldValidations", systemValidations);
             }
             return systemValidations;

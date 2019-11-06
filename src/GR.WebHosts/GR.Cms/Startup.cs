@@ -13,7 +13,6 @@ using GR.Application;
 using GR.Backup.Abstractions.BackgroundServices;
 using GR.Backup.Abstractions.Extensions;
 using GR.Backup.PostGresSql;
-using GR.Cache.Extensions;
 using GR.Cms.Services.Abstractions;
 using GR.Core;
 using GR.Core.Extensions;
@@ -77,6 +76,8 @@ using GR.Application.Middleware.Extensions;
 using GR.Application.Middleware.Server;
 using GR.Audit;
 using GR.Audit.Abstractions.Extensions;
+using GR.Cache.Abstractions.Extensions;
+using GR.Cache.Services;
 using GR.Calendar;
 using GR.Calendar.Abstractions.Extensions;
 using GR.Calendar.Abstractions.ExternalProviders;
@@ -251,7 +252,7 @@ namespace GR.Cms
 			});
 
 			//---------------------------------Custom cache Module-------------------------------------
-			services.AddCacheModule(HostingEnvironment, Configuration);
+			services.AddCacheModule<CacheService, RedisConnection>(HostingEnvironment, Configuration);
 
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();

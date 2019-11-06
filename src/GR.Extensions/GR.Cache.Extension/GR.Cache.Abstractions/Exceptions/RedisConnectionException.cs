@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace GR.Cache.Exceptions
+namespace GR.Cache.Abstractions.Exceptions
 {
-    internal class RedisConnectionException : Exception
+    public class RedisConnectionException : Exception
     {
         public RedisConnectionException(string exception) : base(exception)
         {

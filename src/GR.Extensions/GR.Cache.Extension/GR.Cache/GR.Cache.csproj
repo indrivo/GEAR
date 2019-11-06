@@ -3,17 +3,20 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
+    <Version>1.0.1</Version>
+    <Company>Indrivo</Company>
+    <Authors>Lupei Nicolae</Authors>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageReleaseNotes>-Fix redis timeout exception</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
   </ItemGroup>
 
