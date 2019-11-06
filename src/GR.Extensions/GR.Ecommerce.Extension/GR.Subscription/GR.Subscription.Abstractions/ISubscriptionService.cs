@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using GR.Subscription.Abstractions.ViewModels;
+using GR.Subscriptions.Abstractions.ViewModels;
+using GR.Subscriptions.Abstractions.Models;
 
-namespace GR.Subscription.Abstractions
+namespace GR.Subscriptions.Abstractions
 {
     public interface ISubscriptionService
     {
@@ -15,14 +16,14 @@ namespace GR.Subscription.Abstractions
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Models.Subscription>>> GetSubscriptionByUserAsync();
+        Task<ResultModel<IEnumerable<Subscription>>> GetSubscriptionByUserAsync();
 
         /// <summary>
         /// Get subscription by Id
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<ResultModel<Models.Subscription>> GetSubscriptionByIdAsync(Guid? orderId);
+        Task<ResultModel<Subscription>> GetSubscriptionByIdAsync(Guid? subscriptionId);
 
 
         /// <summary>
@@ -31,5 +32,11 @@ namespace GR.Subscription.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel<Guid>> CreateSubscriptionAsync(SubscriptionViewModel model);
+
+        /// <summary>
+        /// Has valids subscription
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<bool>> HasValidsSubscription();
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GR.Subscription.Abstractions.Helpers
+namespace GR.Subscriptions.Abstractions.Helpers
 {
     public enum Periods
     {

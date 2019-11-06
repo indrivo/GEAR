@@ -7,11 +7,13 @@ using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
+using GR.Subscriptions.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using GR.Subscriptions.Abstractions.Models;
 
 namespace GR.ECommerce.BaseImplementations.Data
 {
-    public class CommerceDbContext : TrackerDbContext, ICommerceContext, IOrderDbContext, IPaymentContext
+    public class CommerceDbContext : TrackerDbContext, ICommerceContext, IOrderDbContext, IPaymentContext, ISubscriptionDbContext
     {
         /// <summary>
         /// Schema
@@ -52,7 +54,7 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<OrderHistory> OrderHistories { get; set; }
-
+        public virtual DbSet<Subscription> Subscription { get; set; }
         #endregion
 
         /// <summary>

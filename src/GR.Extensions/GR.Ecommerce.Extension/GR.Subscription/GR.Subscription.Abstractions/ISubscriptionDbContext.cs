@@ -1,15 +1,15 @@
 ﻿using GR.Core.Abstractions;
 using Microsoft.EntityFrameworkCore;
-using GR.Subscription.Abstractions.Models;
+using GR.Subscriptions.Abstractions.Models;
 
 
-namespace GR.Subscription.Abstractions
+namespace GR.Subscriptions.Abstractions
 {
     public interface ISubscriptionDbContext : IDbContext
     {
         /// <summary>
         /// Subscription
         /// </summary>
-        DbSet<Models.Subscription> Subscription { get; set; }
+        DbSet<Subscription> Subscription { get; set; }
     }
 }

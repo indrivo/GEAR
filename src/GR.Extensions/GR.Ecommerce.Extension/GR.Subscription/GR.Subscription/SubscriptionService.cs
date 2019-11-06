@@ -1,23 +1,20 @@
-﻿
-using GR.Subscription.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
-using GR.Core.Abstractions;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
-using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions;
-using GR.Orders.Abstractions;
-using GR.Subscription.Abstractions.ViewModels;
+using GR.Subscriptions.Abstractions;
+using GR.Subscriptions.Abstractions.Models;
+using GR.Subscriptions.Abstractions.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace GR.Subscription
+namespace GR.Subscriptions
 {
-    class SubscriptionService : ISubscriptionService
+   public class SubscriptionService : ISubscriptionService
     {
         #region Injectable
         /// <summary>
@@ -46,19 +43,24 @@ namespace GR.Subscription
 
 
         }
-
-
-        public async Task<ResultModel<IEnumerable<Abstractions.Models.Subscription>>> GetSubscriptionByUserAsync()
+        
+        /// <summary>
+        /// Get subscription by User
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Subscription>>> GetSubscriptionByUserAsync()
         {
-            var response = new ResultModel<IEnumerable<Abstractions.Models.Subscription>>();
+            var response = new ResultModel<IEnumerable<Subscription>>();
             var user = (await _userManager.GetCurrentUserAsync()).Result;
 
             if (user is null)
             {
-                return new InvalidParametersResultModel<IEnumerable<Abstractions.Models.Subscription>>();
+                return new NotFoundResultModel<IEnumerable<Subscription>>();
             }
 
-            var listSubscription = _subscriptionDbContext.Subscription.Include(i => i.Order).ThenInclude(i=>i.ProductOrders);
+            var listSubscription = await _subscriptionDbContext.Subscription
+                .Include(i => i.Order)
+                .ThenInclude(i=>i.ProductOrders).ToListAsync();
 
             response.IsSuccess = true;
             response.Result = listSubscription;
@@ -66,18 +68,72 @@ namespace GR.Subscription
             return response;
         }
 
-        public async Task<ResultModel<Abstractions.Models.Subscription>> GetSubscriptionByIdAsync(Guid? orderId)
+        /// <summary>
+        /// Get subscription by Id
+        /// </summary>
+        /// <param name="subscriptionId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Subscription>> GetSubscriptionByIdAsync(Guid? subscriptionId)
         {
-            var response = new ResultModel<Abstractions.Models.Subscription>();
+            var response = new ResultModel<Subscription>();
 
+            if(subscriptionId is null)
+                return new InvalidParametersResultModel<Subscription>();
+
+            var subscription = await _subscriptionDbContext.Subscription
+                .Include(i => i.Order)
+                .ThenInclude(i => i.ProductOrders)
+                .FirstOrDefaultAsync(x=> x.Id == subscriptionId);
+
+            if(subscription is null) new NotFoundResultModel<Subscription>();
+
+            response.IsSuccess = true;
+            response.Result = subscription;
             return response;
         }
 
+        /// <summary>
+        /// Create subscription
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async Task<ResultModel<Guid>> CreateSubscriptionAsync(SubscriptionViewModel model)
         {
-            var response = new ResultModel<Guid>();
+            if (model == null) throw new NullReferenceException();
+            var user = (await _userManager.GetCurrentUserAsync()).Result;
+            if (user == null) return new NotFoundResultModel<Guid>();
 
-            return response;
+            var subscription = new Subscription
+            {
+                UserId = user.Id.ToGuid(),
+                StartDate = model.StartDate,
+                Valability = model.Valability,
+                OrderId = model.OrderId
+            };
+            
+            await _subscriptionDbContext.Subscription.AddAsync(subscription);
+            var dbRequest =  await _commerceContext.PushAsync();
+
+            return dbRequest.Map(subscription.Id);
+        }
+
+        /// <summary>
+        /// Has valids subscription
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<bool>> HasValidsSubscription()
+        {
+            var toReturn = new ResultModel<bool>();
+            var user = (await _userManager.GetCurrentUserAsync()).Result;
+
+            if (user is null) return new NotFoundResultModel<bool>();
+
+            var listSubscription = (await GetSubscriptionByUserAsync()).Result;
+
+            toReturn.IsSuccess = true;
+            toReturn.Result =  listSubscription.Where(x => x.IsValid).Count() > 0;
+
+            return toReturn;
         }
     }
 }
