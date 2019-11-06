@@ -131,7 +131,7 @@ namespace GR.Subscriptions
             var listSubscription = (await GetSubscriptionByUserAsync()).Result;
 
             toReturn.IsSuccess = true;
-            toReturn.Result =  listSubscription.Where(x => x.IsValid).Count() > 0;
+            toReturn.Result =  listSubscription.Any(x => x.IsValid);
 
             return toReturn;
         }
