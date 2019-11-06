@@ -10591,19 +10591,6 @@ html, body {
   flex-direction: column;
   overflow: hidden;
 }
-/* line 42, ../../scss/basestyle/style.scss */
-.header-jumbotron:before {
-  background: url("../../images/backgrounds/home-jumbotron-bg.png") top right;
-  background-size: contain;
-  background-repeat: no-repeat;
-  height: 900px;
-  position: absolute;
-  right: 0px;
-  width: 70%;
-  content: '';
-  display: block;
-  z-index: -1;
-}
 
 /* line 57, ../../scss/basestyle/style.scss */
 .navbar-dark .navbar-nav .nav-link, .navbar-dark .navbar-toggler {
@@ -10790,19 +10777,6 @@ html, body {
   display: flex;
   flex-direction: column;
 }
-/* line 260, ../../scss/basestyle/style.scss */
-.features-section:before {
-  background: url("../../images/backgrounds/features-bg.png") top center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  height: 1486px;
-  position: absolute;
-  top: -450px;
-  width: 100%;
-  content: '';
-  display: block;
-  z-index: -1;
-}
 
 /* line 280, ../../scss/basestyle/style.scss */
 .footer {
@@ -10819,8 +10793,7 @@ html, body {
 }
 /* line 291, ../../scss/basestyle/style.scss */
 .footer:before {
-  background: url("../../images/backgrounds/footer-bg.png") top center;
-  background-size: cover;
+	background-size: cover;
   background-repeat: no-repeat;
   height: 853px;
   position: absolute;
