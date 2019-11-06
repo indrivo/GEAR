@@ -772,5 +772,6 @@
   "system_payment_method": "お支払い方法",
   "system_transaction_id": "取引ID",
   "system_payments": "支払",
-  "system_order_details": "注文内容に間違いがなければ "
+  "system_order_details": "注文内容に間違いがなければ ",
+  "system_back_to_home": "ホームページへ戻る"
 }

@@ -772,5 +772,6 @@
   "system_payment_method": "Способ оплаты",
   "system_transaction_id": "ID транзакции",
   "system_payments": "Платежи",
-  "system_order_details": "Детали заказа "
+  "system_order_details": "Детали заказа ",
+  "system_back_to_home": "Обратно домой"
 }

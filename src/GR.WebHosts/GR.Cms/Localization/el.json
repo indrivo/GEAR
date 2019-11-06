@@ -772,5 +772,6 @@
   "system_payment_method": "Τρόπος πληρωμής",
   "system_transaction_id": "ID συναλλαγής",
   "system_payments": "Πληρωμές",
-  "system_order_details": "Λεπτομέρειες διαταγής "
+  "system_order_details": "Λεπτομέρειες διαταγής ",
+  "system_back_to_home": "Πίσω στο σπίτι"
 }

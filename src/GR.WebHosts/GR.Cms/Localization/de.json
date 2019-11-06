@@ -772,5 +772,6 @@
   "system_payment_method": "Zahlungsart",
   "system_transaction_id": "ID der Transaktion",
   "system_payments": "Zahlungen",
-  "system_order_details": "Die Details der Bestellung "
+  "system_order_details": "Die Details der Bestellung ",
+  "system_back_to_home": "Zurück zu home"
 }

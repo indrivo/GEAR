@@ -772,5 +772,6 @@
   "system_payment_method": "Payment method",
   "system_transaction_id": "Transaction ID",
   "system_payments": "Payments",
-  "system_order_details": "Order details "
+  "system_order_details": "Order details ",
+  "system_back_to_home": "Back to home"
 }
