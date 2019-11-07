@@ -271,6 +271,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions.Abstractio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscriptions.csproj", "{D8434B44-FA8C-4C8E-93AC-839F78404AA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Subscriptions.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscriptions.Razor\GR.Subscriptions.Razor.csproj", "{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -848,6 +850,12 @@ Global
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -984,6 +992,7 @@ Global
 		{7114D34C-C974-418C-B756-6C95E8567093} = {4ADAD96E-E01B-47C5-9589-7C6DEF589D66}
 		{939BBAF7-5BFC-47EB-BED4-386221850E49} = {7114D34C-C974-418C-B756-6C95E8567093}
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3} = {7114D34C-C974-418C-B756-6C95E8567093}
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B} = {7114D34C-C974-418C-B756-6C95E8567093}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

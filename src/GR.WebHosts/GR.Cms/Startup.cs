@@ -121,6 +121,9 @@ using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 using GR.ECommerce.Razor.Extensions;
+using GR.Subscriptions.Abstractions.Models;
+using GR.Subscriptions;
+using GR.Subscriptions.Abstractions.Extensions;
 
 #endregion
 
@@ -488,9 +491,11 @@ namespace GR.Cms
 				.RegisterPaypalProvider<PaypalPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
 				.RegisterPayments<PaymentService>()
 				.RegisterCartService<CartService>()
 				.RegisterOrdersStorage<CommerceDbContext>()
+				.RegisterSubscriptionStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
 				.AddCommerceRazorUIModule();

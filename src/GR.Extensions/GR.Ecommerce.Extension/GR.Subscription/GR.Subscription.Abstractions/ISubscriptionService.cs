@@ -8,7 +8,7 @@ using GR.Subscriptions.Abstractions.Models;
 
 namespace GR.Subscriptions.Abstractions
 {
-    public interface ISubscriptionService
+    public interface ISubscriptionService<TSubscriptionEntity> where TSubscriptionEntity : Subscription
     {
 
         /// <summary>
@@ -16,14 +16,14 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Subscription>>> GetSubscriptionByUserAsync();
+        Task<ResultModel<IEnumerable<TSubscriptionEntity>>> GetSubscriptionByUserAsync();
 
         /// <summary>
         /// Get subscription by Id
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<ResultModel<Subscription>> GetSubscriptionByIdAsync(Guid? subscriptionId);
+        Task<ResultModel<TSubscriptionEntity>> GetSubscriptionByIdAsync(Guid? subscriptionId);
 
 
         /// <summary>

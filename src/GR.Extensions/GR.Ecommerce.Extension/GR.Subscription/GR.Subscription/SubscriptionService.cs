@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.Subscriptions
 {
-   public class SubscriptionService : ISubscriptionService
+   public class SubscriptionService : ISubscriptionService<Subscription>
     {
         #region Injectable
         /// <summary>
