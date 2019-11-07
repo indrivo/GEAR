@@ -37,10 +37,6 @@ namespace GR.PageRender.Razor.Controllers
     public class PageRenderController : Controller
     {
         #region InjectRegion
-        /// <summary>
-        /// Inject role access manager
-        /// </summary>
-        private readonly IEntityRoleAccessManager _entityRoleAccessManager;
 
         /// <summary>
         /// Inject page context
@@ -89,11 +85,10 @@ namespace GR.PageRender.Razor.Controllers
         /// <param name="userManager"></param>
         /// <param name="formContext"></param>
         /// <param name="pagesContext"></param>
-        /// <param name="entityRoleAccessManager"></param>
         public PageRenderController(ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext, IEntityRoleAccessManager entityRoleAccessManager)
+            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext)
         {
             _appContext = appContext;
             _service = service;
@@ -101,7 +96,6 @@ namespace GR.PageRender.Razor.Controllers
             _userManager = userManager;
             _formContext = formContext;
             _pagesContext = pagesContext;
-            _entityRoleAccessManager = entityRoleAccessManager;
             _pageRender = pageRender;
         }
 

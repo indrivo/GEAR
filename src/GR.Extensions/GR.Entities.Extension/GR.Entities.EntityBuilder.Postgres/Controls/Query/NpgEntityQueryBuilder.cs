@@ -213,9 +213,28 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
                             filterBuilder.AppendFormat("\"{0}\" BETWEEN '{1}' AND '{2}' ", filter.Parameter, dates[0], dates[1]);
                         }
                         break;
+                    case Criteria.AtLeastOne:
+                        var searchList = filter.SearchValue.Deserialize<IEnumerable<string>>()?.ToList() ?? new List<string>();
+                        if (searchList.Any())
+                        {
+                            var atLeaStringBuilder = new StringBuilder();
+                            atLeaStringBuilder.Append(" (");
+                            foreach (var item in searchList)
+                            {
+                                atLeaStringBuilder.AppendFormat(" \"{0}\"='{1}' ", filter.Parameter, item);
+                                if (!searchList.IsLast(item)) atLeaStringBuilder.Append(" OR ");
+                            }
+
+                            atLeaStringBuilder.Append(") ");
+                            filterBuilder.Append(atLeaStringBuilder);
+                        }
+                        else filterBuilder.AppendFormat("\"{0}\"='{1}' ", filter.Parameter, filter.SearchValue);
+                        break;
                 }
 
-                filterBuilder.Append(!viewModel.Filters.IsLast(filter) ? " AND " : " ");
+                var nextOperator = filter.NextOperator.ToString().ToUpperInvariant();
+
+                filterBuilder.Append(!viewModel.Filters.IsLast(filter) ? $" {nextOperator} " : " ");
             }
 
             return filterBuilder.ToString();

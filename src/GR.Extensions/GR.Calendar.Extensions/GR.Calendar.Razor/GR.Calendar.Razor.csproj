@@ -9,7 +9,7 @@
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Version>1.0.2</Version>
     <PackageReleaseNotes>- Add remind notification before event minutes to remind set
-- Remove organizer parameter from</PackageReleaseNotes>
+    - Remove organizer parameter from</PackageReleaseNotes>
     <PackageTags>calendar .net core c# ui full calendar</PackageTags>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Razor</RepositoryUrl>
     <AssemblyVersion>1.0.2.1</AssemblyVersion>

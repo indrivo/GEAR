@@ -10,9 +10,8 @@ namespace GR.ECommerce.Razor.ViewModels
     {
         [Required]
         public Guid ProductId { get; set; }
-        [Required]
-        public Guid OptionId { get; set; }
-        [Required]
-        public IEnumerable<Guid> ListVariationDetailsId { get; set; }
+       
+        public Guid? VariationId { get; set; }
+        [Required] public int Quantity { get; set; } = 0;
     }
 }

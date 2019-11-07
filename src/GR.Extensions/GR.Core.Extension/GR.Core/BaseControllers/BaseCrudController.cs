@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using GR.Cache.Abstractions;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
 
@@ -28,7 +27,7 @@ namespace GR.Core.BaseControllers
         /// </summary>
         protected readonly IStringLocalizer Localizer;
 
-        protected BaseCrudController(UserManager<TUser> userManager, RoleManager<TRole> roleManager, ICacheService cacheService, TIdentityContext applicationDbContext, TEntityContext context, TNotify notify, IDataFilter dataFilter, IStringLocalizer localizer) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        protected BaseCrudController(UserManager<TUser> userManager, RoleManager<TRole> roleManager, TIdentityContext applicationDbContext, TEntityContext context, TNotify notify, IDataFilter dataFilter, IStringLocalizer localizer) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             DataFilter = dataFilter;
             Localizer = localizer;

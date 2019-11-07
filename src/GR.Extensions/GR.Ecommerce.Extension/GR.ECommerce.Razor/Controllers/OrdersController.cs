@@ -35,6 +35,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// Constructor
         /// </summary>
         /// <param name="orderProductService"></param>
+        /// <param name="paymentService"></param>
         public OrdersController(IOrderProductService<Order> orderProductService, IPaymentService paymentService)
         {
             _orderProductService = orderProductService;
@@ -47,6 +48,13 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         public IActionResult MyOrders() => View();
+
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        public IActionResult AllOrders() => View();
 
         /// <summary>
         /// Get order details
@@ -79,6 +87,18 @@ namespace GR.ECommerce.Razor.Controllers
         }
 
         /// <summary>
+        /// Create order
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Guid>))]
+        public async Task<IActionResult> CreateOrderFromPlan([Required]Guid? productId)
+        {
+            var createOrderRequest = await _orderProductService.CreateOrderAsync(productId);
+            return Json(createOrderRequest);
+        }
+
+        /// <summary>
         /// Cancel order
         /// </summary>
         /// <param name="orderId"></param>
@@ -101,7 +121,15 @@ namespace GR.ECommerce.Razor.Controllers
         public virtual async Task<JsonResult> GetMyOrdersWithPagination(DTParameters param)
             => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param));
 
-
+        /// <summary>
+        /// Get orders with pagination
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]"), Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        [Produces("application/json", Type = typeof(DTResult<Order>))]
+        public virtual JsonResult GetAllOrdersWithPagination(DTParameters param)
+            => Json(_orderProductService.GetAllOrdersWithPaginationWay(param));
 
         /// <summary>
         /// Get orders count

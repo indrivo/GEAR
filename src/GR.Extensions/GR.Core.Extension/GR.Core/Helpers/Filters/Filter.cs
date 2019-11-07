@@ -19,6 +19,7 @@ namespace GR.Core.Helpers.Filters
         }
 
         public Criteria Criteria { get; set; } = Criteria.Equals;
+        public FilterNextOperator NextOperator { get; set; } = FilterNextOperator.And;
         public string Parameter { get; set; }
         public object Value { get; set; }
         public string SearchValue { get; set; }

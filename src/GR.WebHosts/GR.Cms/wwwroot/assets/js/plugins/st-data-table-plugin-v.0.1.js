@@ -13,6 +13,9 @@ if (typeof jQuery === "undefined") {
     throw new Error("Data Table plugin require JQuery");
 }
 
+//Find and generate tables or generate manually
+window.DisableAutoGenerateTableBuilder = false;
+
 //------------------------------------------------------------------------------------//
 //								Table select multiple
 //------------------------------------------------------------------------------------//
@@ -122,18 +125,18 @@ class TBuilderInstance {
 }
 
 window.TableBuilderInstances = new TBuilderInstance();
-
 class TableBuilder {
     constructor(configuration) {
         this.showActionsColumn = true;
         this.enableColumnFilters = true;
+        this.initialFilters = [];
         const scope = this;
         this.ajax = {
             "url": "/PageRender/LoadPagedData",
             "type": "POST",
             "data": function (config) {
                 Object.assign(config, scope.configurations.ajaxParameters);
-                config.filters = scope.filters;
+                config.filters = scope.initialFilters.concat(scope.filters);
                 return config;
             }
         };
@@ -332,6 +335,9 @@ class TableBuilder {
         $.each(this.configurations.viewmodelData.viewModelFields, (i, vField) => {
             rowFilters.append(scope.pushFilterColumn(vField));
         });
+        if (scope.showActionsColumn) {
+            rowFilters.append(scope.pushFilterColumn({}));
+        }
         columnsEl.append(rowFilters);
         $(".sorting").off();
     }
@@ -382,27 +388,28 @@ class TableBuilder {
                     break;
                 case "uniqueidentifier":
                     {
-                        filterEl.on('click', function (event) {
-                            const item = $.Iso.dynamicFilter('list',
-                                event.target,
-                                [
-                                    {
-                                        id: '1',
-                                        value: 'First Option'
-                                    }
-                                ],
-                                null);
+                        filterEl.remove();
+                        //filterEl.on('click', function (event) {
+                        //    const item = $.Iso.dynamicFilter('list',
+                        //        event.target,
+                        //        [
+                        //            {
+                        //                id: '1',
+                        //                value: 'First Option'
+                        //            }
+                        //        ],
+                        //        null);
 
-                            $(item.container).on('selectValueChange',
-                                (event, arg) => {
+                        //    $(item.container).on('selectValueChange',
+                        //        (event, arg) => {
 
-                                });
-                        });
+                        //        });
+                        //});
                     }
                     break;
                 case "bool":
                     {
-
+                        filterEl.remove();
                     }
                     break;
                 case "datetime":
@@ -419,7 +426,7 @@ class TableBuilder {
 
                             // bind to date change
                             $(picker).on('rangeChangeDate', (event) => {
-                               
+
                             });
 
                             // bind to closing datepicker
@@ -896,6 +903,7 @@ TableBuilder.prototype.appendColumnsBeforeActions = function () {
 };
 
 $(document).ready(function () {
+    if (window.DisableAutoGenerateTableBuilder) return;
     const tables = Array.prototype.filter.call(
         document.getElementsByTagName("table"),
         function (el) {
@@ -908,6 +916,8 @@ $(document).ready(function () {
             const conf = {
                 showActionsColumn: false
             };
-            new TableBuilder(conf).init(tableEl);
+            const builder = new TableBuilder(conf);
+
+            builder.init(tableEl);
         });
 });

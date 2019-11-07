@@ -1,8 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "My orders";
+    ViewData["Title"] = Localizer["system_commerce_my_orders"];
     var conf = new ListTagHelperModel
     {
-        Title = "Orders",
+        Title = Localizer["system_commerce_my_orders"],
         ListIdentifier = "my_orders",
         Api = new ListApiConfigurationViewModel
         {
@@ -11,8 +11,8 @@
         RenderColumns = new List<ListRenderColumn>
         {
             new ListRenderColumn("Id", "id"),
-            new ListRenderColumn("State", "state"),
-            new ListRenderColumn("Total", "formattedTotal"),
+            new ListRenderColumn(Localizer["system_payment_status"], "state"),
+            new ListRenderColumn(Localizer["system_commerce_order_total"], "formattedTotal"),
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed")
         },
@@ -23,7 +23,7 @@
             new ListActionViewModel
             {
                 HasIcon = false,
-                Name = "Details",
+                Name = Localizer["system_view_details"],
                 Url = Url.Action("Details", "Orders"),
                 ButtonType = BootstrapButton.Info,
                 ActionParameters = new List<ActionParameter>

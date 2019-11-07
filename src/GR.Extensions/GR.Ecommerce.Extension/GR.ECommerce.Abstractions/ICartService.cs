@@ -19,13 +19,21 @@ namespace GR.ECommerce.Abstractions
         /// get cart by user login
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<Cart>> GetCartByUserAsync();
+        Task<ResultModel<AddToCartViewModel>> GetCartByUserAsync();
+
+        /// <summary>
+        /// get cartItem by id
+        /// </summary>
+        /// <param name="cartItemId"></param>
+        /// <returns></returns>
+        Task<ResultModel<CartItem>> GetCartItemByIdAsync(Guid? cartItemId);
+
         /// <summary>
         /// add new cart
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel> AddToCardAsync(AddToCartViewModel model);
+        Task<ResultModel<CartItem>> AddToCardAsync(AddToCartViewModel model);
         /// <summary>
         /// delete cart items
         /// </summary>

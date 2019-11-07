@@ -11,6 +11,7 @@ using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Events;
 using GR.ECommerce.Abstractions.Events.EventArgs.OrderEventArgs;
+using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Responses;
@@ -26,6 +27,11 @@ namespace GR.Orders
     public class OrderProductService : IOrderProductService<Order>
     {
         #region Injectable
+
+        /// <summary>
+        /// Inject product service
+        /// </summary>
+        private readonly IProductService<Product> _productService;
 
         /// <summary>
         /// Inject db context
@@ -54,13 +60,14 @@ namespace GR.Orders
 
         #endregion
 
-        public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<ApplicationUser> userManager, ICartService cartService, IOrderDbContext orderDbContext)
+        public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<ApplicationUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
         {
             _commerceContext = commerceContext;
             _dataFilter = dataFilter;
             _userManager = userManager;
             _cartService = cartService;
             _orderDbContext = orderDbContext;
+            _productService = productService;
         }
 
         /// <summary>
@@ -169,6 +176,36 @@ namespace GR.Orders
         }
 
         /// <summary>
+        /// Create order
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId)
+        {
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
+            var productRequest = await _productService.GetProductByIdAsync(productId);
+            if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
+            var product = productRequest.Result;
+            var order = OrderMapper.Map(product);
+            order.UserId = userRequest.Result.Id.ToGuid();
+            await _orderDbContext.Orders.AddAsync(order);
+            var dbRequest = await _orderDbContext.PushAsync();
+            if (dbRequest.IsSuccess)
+            {
+                CommerceEvents.Orders.OrderCreated(new AddOrderEventArgs
+                {
+                    Id = order.Id,
+                    OrderStatus = order.OrderState.ToString()
+                });
+            }
+
+            await _commerceContext.PushAsync();
+
+            return dbRequest.Map(order.Id);
+        }
+
+        /// <summary>
         /// Get my orders
         /// </summary>
         /// <param name="param"></param>
@@ -177,6 +214,36 @@ namespace GR.Orders
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
             return !userRequest.IsSuccess ? new DTResult<GetOrdersViewModel>() : GetPaginatedOrdersByUserId(param, userRequest.Result.Id.ToGuid());
+        }
+
+        /// <summary>
+        /// Get all orders
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public virtual DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param)
+        {
+            if (param == null) return new DTResult<GetOrdersViewModel>();
+            var filtered = _dataFilter.FilterAbstractEntity<Order, ICommerceContext>(_commerceContext, param.Search.Value, param.SortOrder, param.Start,
+                param.Length,
+                out var totalCount).ToList();
+
+            var list = filtered.Select(async x =>
+            {
+                var map = x.Adapt<GetOrdersViewModel>();
+                map.ProductOrders =
+                    await _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id)).ToListAsync();
+                map.User = _userManager.UserManager.Users.FirstOrDefault(y => y.Id.ToGuid().Equals(x.UserId));
+                return map;
+            }).Select(x => x.Result);
+
+            return new DTResult<GetOrdersViewModel>
+            {
+                Draw = param.Draw,
+                Data = list.ToList(),
+                RecordsFiltered = totalCount,
+                RecordsTotal = filtered.Count
+            };
         }
 
         /// <summary>

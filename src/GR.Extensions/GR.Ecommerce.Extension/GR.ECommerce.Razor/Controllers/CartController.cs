@@ -17,6 +17,7 @@ using GR.Identity.Abstractions;
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,6 +34,15 @@ namespace GR.ECommerce.Razor.Controllers
 
         #endregion
 
+        #region Helpers
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        #endregion
+
         public CartController(ICommerceContext context, IDataFilter dataFilter, ICartService cartService) : base(context, dataFilter)
         {
             _cartService = cartService;
@@ -41,10 +51,8 @@ namespace GR.ECommerce.Razor.Controllers
         public override IActionResult Index()
         {
 
-            var cart = _cartService.GetCartByUserAsync().Result;
-            var result = cart.Result.Adapt<AddToCartViewModel>();
-
-            return View(result);
+            var result = _cartService.GetCartByUserAsync().Result;
+            return View(result.Result);
         }
 
         [HttpPost]
@@ -57,7 +65,7 @@ namespace GR.ECommerce.Razor.Controllers
             }
             var result = await _cartService.AddToCardAsync(model);
          
-            return Json(result);
+            return Json(result, SerializerSettings);
         }
        
 

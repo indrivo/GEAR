@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using GR.Cache.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Entities.Data;
 using GR.Identity.Data;
@@ -23,7 +22,7 @@ namespace GR.PageRender.Razor.Controllers
     {
         private readonly IDynamicPagesContext _pagesContext;
 
-        public BlockCategoryController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public BlockCategoryController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _pagesContext = pagesContext;
         }
