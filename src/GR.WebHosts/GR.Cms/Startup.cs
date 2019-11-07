@@ -112,16 +112,18 @@ using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
+using GR.ECommerce.Razor.Extensions;
 using GR.Entities.Extensions;
 using GR.Localization;
 using GR.Orders;
-using GR.Orders.Abstractions.Extensions;
 using GR.Orders.Abstractions.Models;
 using GR.PageRender;
 using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
+using GR.MobilPay;
+using GR.MobilPay.Abstractions.Extensions;
+using GR.Orders.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
-using GR.ECommerce.Razor.Extensions;
 
 #endregion
 
@@ -487,6 +489,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.RegisterPaypalProvider<PaypalPaymentMethodService>()
+				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
 				.RegisterPayments<PaymentService>()

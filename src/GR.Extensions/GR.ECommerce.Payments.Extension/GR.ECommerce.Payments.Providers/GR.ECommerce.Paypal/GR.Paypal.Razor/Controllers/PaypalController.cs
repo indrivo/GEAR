@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.ViewModels;
@@ -44,7 +45,7 @@ namespace GR.Paypal.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePayment(Guid? orderId)
         {
-            var hostingDomain = Request.Host.Value;
+            var hostingDomain = Request.HttpContext.GetAppBaseUrl();
 
             var response = await _paymentMethodManager.CreatePayment(hostingDomain, orderId);
             if (response.IsSuccess)
