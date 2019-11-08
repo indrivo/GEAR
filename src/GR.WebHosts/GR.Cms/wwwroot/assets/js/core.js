@@ -277,9 +277,9 @@ TemplateManager.prototype.registerTemplate = function (identifier) {
  * @param {any} identifier
  */
 TemplateManager.prototype.registerTemplateAsync = function (identifier) {
-	return this.getTemplateAsync(identifier).then(x => {
-		$.templates(identifier, x);
-	});
+    return this.getTemplateAsync(identifier).then(x => {
+        $.templates(identifier, x);
+    }).catch(e => console.warn(e));
 }
 
 /**
@@ -291,6 +291,13 @@ TemplateManager.prototype.render = function (identifier, data, helpers) {
 	$.views.settings.allowCode(true);
 	this.registerTemplate(identifier);
 	return $.render[identifier](data, helpers);
+}
+
+TemplateManager.prototype.renderAsync = function (identifier, data, helpers) {
+    $.views.settings.allowCode(true);
+    return this.registerTemplateAsync(identifier).then(() => {
+        return $.render[identifier](data, helpers);
+    });
 }
 
 //------------------------------------------------------------------------------------//
