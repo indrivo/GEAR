@@ -124,8 +124,8 @@ namespace GR.Paypal
                     },
                     redirect_urls = new Redirect_Urls
                     {
-                        cancel_url = $"http://{hostingDomain}/Paypal/Cancel",
-                        return_url = $"http://{hostingDomain}/Paypal/Success"
+                        cancel_url = $"{hostingDomain}/Paypal/Cancel",
+                        return_url = $"{hostingDomain}/Paypal/Success"
                     }
                 };
 

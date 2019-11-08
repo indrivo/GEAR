@@ -17,6 +17,7 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
 using System.ComponentModel.DataAnnotations;
+using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
@@ -569,7 +570,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Product>>))]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
         public async Task<JsonResult> GetSubscriptionPlans() =>
             Json(await _productService.GetSubscriptionPlansAsync(), SerializerSettings);
     }
