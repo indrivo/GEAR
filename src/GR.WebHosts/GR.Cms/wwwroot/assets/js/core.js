@@ -226,6 +226,36 @@ TemplateManager.prototype.getTemplate = function (identifierName) {
 }
 
 /**
+ * Get template from server
+ * @param {any} identifierName
+ */
+TemplateManager.prototype.getTemplateAsync = function (identifierName) {
+    //in memory version
+    const inMemory = window.htmlTemplates.find(x => x.id === identifierName);
+    if (inMemory) return inMemory.value;
+
+    loadAsync("/Templates/GetTemplateByIdentifier",
+        {
+            identifier: identifierName
+        }).then(serverTemplate => {
+            if (serverTemplate) {
+                if (serverTemplate.is_success) {
+                    const temp = serverTemplate.result;
+                    localStorage.setItem(identifierName, temp);
+                    window.htmlTemplates.push({
+                        id: identifierName,
+                        value: temp
+                    });
+                    return temp;
+                } else {
+                    console.log(serverTemplate);
+                }
+            } else return "";
+
+        });
+}
+
+/**
  * Remove template from storage by template identifier
  * @param {any} identifier
  */
@@ -239,6 +269,16 @@ TemplateManager.prototype.removeTemplate = function (identifier) {
  */
 TemplateManager.prototype.registerTemplate = function (identifier) {
     $.templates(identifier, this.getTemplate(identifier));
+}
+
+/**
+ * Register template
+ * @param {any} identifier
+ */
+TemplateManager.prototype.registerTemplateAsync = function (identifier) {
+    return this.getTemplateAsync(identifier).then(x => {
+        $.templates(identifier, x);
+    });
 }
 
 /**
