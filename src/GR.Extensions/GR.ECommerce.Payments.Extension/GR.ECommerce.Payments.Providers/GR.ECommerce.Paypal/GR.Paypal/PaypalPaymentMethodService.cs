@@ -51,7 +51,6 @@ namespace GR.Paypal
 
         #endregion
 
-
         public PaypalPaymentMethodService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<ApplicationUser> userManager)
         {
             _httpClientFactory = httpClientFactory;
@@ -67,7 +66,7 @@ namespace GR.Paypal
         /// <param name="hostingDomain"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<ResponsePaypal> CreatePayment(string hostingDomain, Guid? orderId)
+        public async Task<ResponsePaypal> CreatePaymentAsync(string hostingDomain, Guid? orderId)
         {
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess)
@@ -92,7 +91,7 @@ namespace GR.Paypal
 
             using (var httpClient = new HttpClient())
             {
-                var experienceProfileId = await CreateExperienceProfile(accessToken);
+                var experienceProfileId = await CreateExperienceProfileAsync(accessToken);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 var paymentCreateRequest = new PaymentCreateRequest
                 {
@@ -151,7 +150,7 @@ namespace GR.Paypal
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResponsePaypal> ExecutePayment(PaymentExecuteVm model)
+        public async Task<ResponsePaypal> ExecutePaymentAsync(PaymentExecuteVm model)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess)
@@ -237,7 +236,7 @@ namespace GR.Paypal
         /// </summary>
         /// <param name="accessToken"></param>
         /// <returns></returns>
-        private async Task<string> CreateExperienceProfile(string accessToken)
+        private async Task<string> CreateExperienceProfileAsync(string accessToken)
         {
             using (var httpClient = new HttpClient())
             {

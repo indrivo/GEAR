@@ -1,10 +1,13 @@
-﻿using GR.Core.Abstractions;
+﻿using GR.Core;
+using GR.Core.Abstractions;
 using GR.Paypal.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GR.Paypal.Razor.Controllers
 {
     [AutoValidateAntiforgeryToken]
+    [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     public class PaypalSettingsController : Controller
     {
         private readonly IWritableOptions<PaypalExpressConfigForm> _payPalOptions;

@@ -13,13 +13,13 @@ namespace GR.Paypal.Abstractions
         /// <param name="hostingDomain"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<ResponsePaypal> CreatePayment(string hostingDomain, Guid? orderId);
+        Task<ResponsePaypal> CreatePaymentAsync(string hostingDomain, Guid? orderId);
 
         /// <summary>
         /// Execute payment
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResponsePaypal> ExecutePayment(PaymentExecuteVm model);
+        Task<ResponsePaypal> ExecutePaymentAsync(PaymentExecuteVm model);
     }
 }

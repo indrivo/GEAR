@@ -1,1 +1,5 @@
-﻿<h1>MobilPay</h1>
+﻿@model Guid
+
+<a asp-action="RequestInvoice" asp-controller="MobilPay" asp-route-orderId="@Model">
+    <img src="~/assets/images/mobilPay.jpg" />  mobilPay
+</a>

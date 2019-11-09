@@ -1,30 +1,35 @@
-﻿namespace GR.MobilPay.Abstractions.Models
+﻿using System.ComponentModel.DataAnnotations;
+using GR.Core.Attributes;
+
+namespace GR.MobilPay.Abstractions.Models
 {
-    public sealed class MobilPayConfiguration
+    public class MobilPayConfiguration
     {
         /// <summary>
         /// Is testing mode
         /// </summary>
-        public bool IsSandbox { get; set; }
+        public virtual bool IsSandbox { get; set; }
 
         /// <summary>
         /// Service url
         /// </summary>
-        public string MobilPayUrl => IsSandbox ? "http://sandboxsecure.mobilpay.ro" : "https://secure.mobilpay.ro/";
+        public virtual string MobilPayUrl => IsSandbox ? "http://sandboxsecure.mobilpay.ro" : "https://secure.mobilpay.ro/";
 
         /// <summary>
         /// Signature
         /// </summary>
-        public string Signature { get; set; }
+        [Required]
+        [DisplayTranslate(Key = "system_signature")]
+        public virtual string Signature { get; set; }
 
         /// <summary>
         /// path to private key
         /// </summary>
-        public string PathToPrivateKey { get; set; }
+        public virtual string PathToPrivateKey { get; set; }
 
         /// <summary>
         /// Path to public key
         /// </summary>
-        public string PathToCertificate { get; set; }
+        public virtual string PathToCertificate { get; set; }
     }
 }

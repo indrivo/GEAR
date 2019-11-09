@@ -773,5 +773,11 @@
   "system_transaction_id": "ID transakcji",
   "system_payments": "Płatności",
   "system_order_details": "Szczegóły zamówienia ",
-  "system_back_to_home": "Z powrotem do domu"
+  "system_back_to_home": "Z powrotem do domu",
+  "commerce_mobilPay_Settings": "Parametry MobilPay ",
+  "eCommerce_Paypal_Settings": "Ustawienia systemu PayPal ",
+  "system_signature": "Podpis",
+  "system_public_key": "Klucz publiczny",
+  "system_private_key": "Klucz prywatny",
+  "system_payment_methods": "Sposoby płatności "
 }

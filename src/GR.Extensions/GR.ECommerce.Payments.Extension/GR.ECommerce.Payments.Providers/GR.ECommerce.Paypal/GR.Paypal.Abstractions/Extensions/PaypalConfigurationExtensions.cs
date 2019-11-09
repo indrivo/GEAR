@@ -34,7 +34,7 @@ namespace GR.Paypal.Abstractions.Extensions
                 var paymentMethod = new PaymentMethod
                 {
                     Name = "Paypal",
-                    IsEnabled = true
+                    IsEnabled = false
                 };
                 await context.PaymentMethods.AddAsync(paymentMethod);
                 await context.PushAsync();

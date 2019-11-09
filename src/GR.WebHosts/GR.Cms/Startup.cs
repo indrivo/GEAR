@@ -122,6 +122,7 @@ using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
+using GR.MobilPay.Razor.Extensions;
 using GR.Orders.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 
@@ -497,6 +498,7 @@ namespace GR.Cms
 				.RegisterOrdersStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
+				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
