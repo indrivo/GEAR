@@ -1,10 +1,13 @@
-﻿using System.Text;
+﻿using System;
+using System.Dynamic;
+using System.Text;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions;
 using GR.Dashboard.Abstractions.Helpers.Compilers;
 using GR.Dashboard.Abstractions.Helpers.Enums;
 using GR.Dashboard.Abstractions.Models.WidgetTypes;
+using GR.Identity.Abstractions;
 
 namespace GR.Dashboard.Renders
 {
@@ -18,24 +21,43 @@ namespace GR.Dashboard.Renders
         /// <returns></returns>
         public string Render(CustomWidget widget)
         {
+            const string errorTemplateMessage = "<h2 style='color: red;'>Something didn't work</h2>";
             Arg.NotNull(widget, nameof(ReportWidgetRender));
             var builder = new StringBuilder();
             if (widget.WidgetTemplateType.Equals(WidgetTemplateType.Razor))
             {
+                var services = IoC.Container;
                 if (widget.AllowCache)
                 {
-                    var cacheResult = RazorCompilerEngine.Compiler.TemplateCache.RetrieveTemplate(widget.Id.ToString());
-                    var htmlTemplate = cacheResult.Success
-                        ? RazorCompilerEngine.Compiler.RenderTemplateAsync(cacheResult.Template.TemplatePageFactory(), widget).ExecuteAsync()
-                        : RazorCompilerEngine.Compiler.CompileRenderAsync(widget.Id.ToString(),
-                            widget.Template, widget).ExecuteAsync();
-                    builder.AppendLine(htmlTemplate);
+                    try
+                    {
+                        var cacheResult = RazorCompilerEngine.Compiler.TemplateCache.RetrieveTemplate(widget.Id.ToString());
+                        var htmlTemplate = cacheResult.Success
+                            ? RazorCompilerEngine.Compiler.RenderTemplateAsync(cacheResult.Template.TemplatePageFactory(), services).ExecuteAsync()
+                            : RazorCompilerEngine.Compiler.CompileRenderAsync(widget.Id.ToString(),
+                                widget.Template, services).ExecuteAsync();
+                        builder.AppendLine(htmlTemplate);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        builder.AppendLine(errorTemplateMessage);
+                    }
                 }
                 else
                 {
-                    var htmlTemplate = RazorCompilerEngine.Compiler.CompileRenderAsync(widget.Id.ToString(),
-                        widget.Template, widget).ExecuteAsync();
-                    builder.AppendLine(htmlTemplate);
+                    try
+                    {
+                        RazorCompilerEngine.Compiler.TemplateCache.Remove(widget.Id.ToString());
+                        var htmlTemplate = RazorCompilerEngine.Compiler.CompileRenderAsync(widget.Id.ToString(),
+                            widget.Template, services).ExecuteAsync();
+                        builder.AppendLine(htmlTemplate);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        builder.AppendLine(errorTemplateMessage);
+                    }
                 }
             }
             else

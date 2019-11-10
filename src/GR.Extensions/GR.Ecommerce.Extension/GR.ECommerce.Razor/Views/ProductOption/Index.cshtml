@@ -1,0 +1,62 @@
+﻿@{
+    var conf = new ListTagHelperModel
+    {
+        Title = "Product Option",
+        SubTitle = "List of Product Option",
+        ListIdentifier = "product_option",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("OrderedList", "ProductOption")
+        },
+        RenderColumns = new List<ListRenderColumn>
+{
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn("Is publish", "isPublish"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+        {
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "ProductOption",
+                ButtonName = "Add new product option",
+                Description = "New option will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+        {
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["edit"],
+                Url = Url.Action("Edit", "ProductOption"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["delete"],
+                IsJsEvent = true,
+                ButtonEvent = new JsActionButtonEvent
+                {
+                    JsEvent = JsEvent.OnClick,
+                    JsEventHandler = "createAlert('${row.id}');"
+                },
+                ButtonType = BootstrapButton.Danger
+            },
+        },
+        Documentation = "This tab allow to manage your product option"
+    };
+
+}
+
+<JList asp-for="@conf"></JList>

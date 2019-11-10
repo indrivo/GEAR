@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+    <ProjectReference Include="..\..\GR.Ecommerce.Extension\GR.ECommerce.Orders\GR.Orders.Abstractions\GR.Orders.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

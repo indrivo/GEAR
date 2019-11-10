@@ -14,6 +14,8 @@ using GR.Cms.Services.Abstractions;
 using GR.Cms.ViewModels.TreeISOViewModels;
 using GR.Core;
 using GR.Core.Helpers.Comparers;
+using GR.Core.Helpers.Filters;
+
 // ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local

@@ -1245,15 +1245,15 @@ Buttons
 
 .btn-primary,
 .btn-primary.disabled {
-	background: #7460ee;
-	border: 1px solid #7460ee;
+	background: #0848C8;
+	border: 1px solid #0848C8;
 }
 
 	.btn-primary:hover,
 	.btn-primary.disabled:hover {
-		background: #7460ee;
+		background: #093ea9;
 		opacity: 0.7;
-		border: 1px solid #7460ee;
+		border: 1px solid #093ea9;
 	}
 
 	.btn-primary.active, .btn-primary:focus,
@@ -1411,15 +1411,15 @@ Buttons
 	}
 
 .btn-outline-primary {
-	color: #7460ee;
+	color: #0848C8;
 	background-color: #ffffff;
-	border-color: #7460ee;
+	border-color: #0848C8;
 }
 
 	.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary.focus {
-		background: #7460ee;
+		background: #0848C8;
 		color: #ffffff;
-		border-color: #7460ee;
+		border-color: #0848C8;
 	}
 
 .btn-outline-success {
@@ -2565,6 +2565,14 @@ File: scss
 	margin: 0 auto;
 }
 
+
+.logo-image {
+	background-image: url(../../../images/logo.svg);
+	width: 150px;
+	height: 41px;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
 /*******************
  Breadcrumb and page title
 *******************/
@@ -6257,7 +6265,7 @@ Error Page
 .error-box {
 	height: 100%;
 	position: fixed;
-	background: url(../../assets/images/background/error-bg.jpg) no-repeat center center #fff;
+	background: url(../../../images/background/error-bg.jpg) no-repeat center center #fff;
 	width: 100%;
 }
 
@@ -6380,21 +6388,21 @@ Login register and recover password Page
 	position: fixed;
 }
 
-.login-box {
-	width: 400px;
-	margin: 0 auto;
+	.login-register .image-area {
+		background-size: cover;
+		background-position: center;
+	}
+
+.login-box .footer {
+	width: 100%;
+	left: 0px;
+	right: 0px;
 }
 
-	.login-box .footer {
-		width: 100%;
-		left: 0px;
-		right: 0px;
-	}
-
-	.login-box .social {
-		display: block;
-		margin-bottom: 30px;
-	}
+.login-box .social {
+	display: block;
+	margin-bottom: 30px;
+}
 
 #recoverform {
 	display: none;
@@ -6406,8 +6414,6 @@ Login register and recover password Page
 }
 
 	.login-sidebar .login-box {
-		right: 0px;
-		position: absolute;
 		height: 100%;
 	}
 
@@ -7941,13 +7947,13 @@ File: scss
 	margin-bottom: 96px;
 }
 
-	.social-profile-firGR.bg-over {
-		background: rgba(56, 83, 161, 0.7);
-	}
+.social-profile-firGR.bg-over {
+	background: rgba(56, 83, 161, 0.7);
+}
 
-	.social-profile-first .middle {
-		vertical-align: middle;
-	}
+.social-profile-first .middle {
+	vertical-align: middle;
+}
 
 /*******************/
 /*country-state*/
@@ -8449,6 +8455,10 @@ File: scss
 		-webkit-column-count: 3;
 		column-count: 3;
 	}
+	.login-box {
+		padding-left: 200px !important;
+		padding-right: 200px !important;
+	}
 }
 
 /*==============================================================
@@ -8471,6 +8481,11 @@ File: scss
 
 	.footer {
 		left: 240px;
+	}
+
+	.login-box {
+		padding-left: 100px !important;
+		padding-right: 100px !important;
 	}
 }
 
@@ -8632,18 +8647,18 @@ File: scss
 			line-height: 100px;
 		}
 
-	.login-register {
+	/*.login-register {
 		position: relative;
 		overflow: hidden;
-	}
+	}*/
 
 	.login-box {
 		width: 90%;
 	}
 
-	.login-sidebar {
+	/*.login-sidebar {
 		padding: 10% 0;
-	}
+	}*/
 
 		.login-sidebar .login-box {
 			position: relative;
@@ -8729,4 +8744,21 @@ File: scss
 		.dataTables_wrapper .dataTables_paginate .paginate_button {
 			padding: 0.5rem 0.5rem;
 		}
+}
+
+.fw-600 {
+	font-weight: 600;
+}
+
+
+.bottom-buttons {
+	bottom: 0;
+	width: 100%;
+}
+
+
+#loginform .form-content,
+#register-company .form-content {
+	overflow-y: auto;
+	height: calc(100% - 50px);
 }

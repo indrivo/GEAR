@@ -1,4 +1,5 @@
 ﻿using GR.ECommerce.Abstractions.Events.EventArgs;
+using GR.ECommerce.Abstractions.Events.EventArgs.ProductsEventArgs;
 
 namespace GR.ECommerce.Abstractions.Events
 {

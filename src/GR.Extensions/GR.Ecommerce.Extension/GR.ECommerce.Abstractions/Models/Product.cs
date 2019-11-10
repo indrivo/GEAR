@@ -59,7 +59,12 @@ namespace GR.ECommerce.Abstractions.Models
         /// <summary>
         /// Product attributes
         /// </summary>
-        public virtual IEnumerable<ProductAttribute> ProductAttributes { get; set; }
+        public virtual IEnumerable<ProductAttributes> ProductAttributes { get; set; }
+
+        /// <summary>
+        /// Product attributes
+        /// </summary>
+        public virtual IEnumerable<ProductVariation> ProductVariations { get; set; }
 
         /// <summary>
         /// Product prices
@@ -72,9 +77,24 @@ namespace GR.ECommerce.Abstractions.Models
         public virtual IEnumerable<ProductCategory> ProductCategories { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public ProductDiscount ProductDiscount { get; set; }
+
+        /// <summary>
+        /// Discount price
+        /// </summary>
+        public decimal DiscountPrice => (PriceWithoutDiscount * ProductDiscount?.Discount?.Percentage ?? 0) / 100;
+
+        /// <summary>
         /// Current price
         /// </summary>
-        public virtual double CurrentPrice => ProductPrices?.OrderBy(x => x.Created).LastOrDefault()?.Price ?? 0;
+        public virtual decimal PriceWithoutDiscount => ProductPrices?.OrderBy(x => x.Created).LastOrDefault()?.Price ?? 0;
+
+        /// <summary>
+        /// Final price with discount
+        /// </summary>
+        public virtual decimal PriceWithDiscount => PriceWithoutDiscount - DiscountPrice;
 
         /// <summary>
         /// Publish state of product

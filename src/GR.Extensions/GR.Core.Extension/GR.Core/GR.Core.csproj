@@ -5,13 +5,14 @@
     <LangVersion>7.3</LangVersion>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Description>This package is a core to the Gear Cms</Description>
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core</RepositoryUrl>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core</PackageProjectUrl>
-    <PackageReleaseNotes>- Add extensions for http client</PackageReleaseNotes>
+    <PackageReleaseNotes>- Add extensions
+- Exclude Cache project</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,9 +33,5 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache.Abstractions\GR.Cache.Abstractions.csproj" />
   </ItemGroup>
 </Project>

@@ -228,7 +228,7 @@
 			const script = document.createElement("li");
 			const first = $("#columns li:first-child");
 			const order = $("#columns").children().length;
-			const viewModelId = firGR.attr("viewModelId");
+			const viewModelId = first.attr("viewModelId");
 			script.setAttribute("class", "list-group-item column");
 			script.setAttribute("order", order);
 			script.setAttribute("dataId", "@Guid.Empty");

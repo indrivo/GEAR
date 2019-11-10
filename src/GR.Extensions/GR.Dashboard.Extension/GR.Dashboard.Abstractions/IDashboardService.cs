@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions.Models;
+using GR.Dashboard.Abstractions.Models.Permissions;
 using GR.Dashboard.Abstractions.Models.ViewModels;
 
 namespace GR.Dashboard.Abstractions
@@ -98,5 +99,47 @@ namespace GR.Dashboard.Abstractions
         /// <param name="widgetId"></param>
         /// <returns></returns>
         Task<ResultModel> DeleteMappedWidgetToRowAsync(Guid? rowId, Guid? widgetId);
+
+        /// <summary>
+        /// Get configuration for widget
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<RowWidgetAcl>>> GetRowWidgetAclInfoAsync(Guid? widgetId, Guid? rowId);
+
+        /// <summary>
+        /// Update acl for widget
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateAclAsync(Guid? widgetId, Guid? rowId, IEnumerable<RowWidgetAclBase> configuration);
+
+        /// <summary>
+        /// Check access
+        /// </summary>
+        /// <param name="rowId"></param>
+        /// <param name="widgetId"></param>
+        /// <returns></returns>
+        Task<bool> HasAccess(Guid? rowId, Guid? widgetId);
+
+        /// <summary>
+        /// Get ui settings
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <returns></returns>
+        Task<ResultModel<WidgetUISettings>> GetUISettingsForWidgetAsync(Guid? widgetId, Guid? rowId);
+
+        /// <summary>
+        /// Change ui settings for mapped widget
+        /// </summary>
+        /// <param name="widgetId"></param>
+        /// <param name="rowId"></param>
+        /// <param name="uiSettings"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateUISettingsAsync(Guid? widgetId, Guid? rowId, WidgetUISettings uiSettings);
     }
 }

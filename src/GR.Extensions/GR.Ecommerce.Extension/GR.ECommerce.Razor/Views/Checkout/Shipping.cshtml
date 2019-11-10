@@ -1,0 +1,101 @@
+﻿@model GR.Orders.Abstractions.ViewModels.CheckoutViewModels.CheckoutShippingViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+
+    Guid? defaultAddress = null;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Billing Address</h2>
+                <ul class="list-group">
+                    @foreach (var address in Model.Addresses)
+                    {
+                        if (address.IsDefault)
+                        {
+                            defaultAddress = address.Id;
+                        }
+
+                        <li class="list-group-item">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id">
+                                <label class="custom-control-label mt-2 ml-2" for="a_@address.Id">@address.ContactName</label>
+                            </div>
+
+                            <address>
+                                @address.AddressLine1
+                                @address.AddressLine2 <br />
+                                Phone: @address.Phone <br />
+                                Postal code: @address.ZipCode <br />
+                            </address>
+                        </li>
+                    }
+                </ul>
+
+                <form asp-action="Shipping">
+                    @Html.HiddenFor(x => x.Order.Id)
+                    <input asp-for="BillingAddressId" type="hidden" value="@defaultAddress" />
+                    <input asp-for="ShipmentAddress" type="hidden" value="@defaultAddress" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row button-group p-2">
+                        <div class="col-lg-2 col-md-3">
+                            <a id="cancel-order" href="#" class="btn btn-block btn-inverse"> Cancel order</a>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <button type="submit" class="btn btn-block  btn-success"> Payment</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <partial name="_OrderSummaryPartialView" model="@Model.Order" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+		$(document).ready(function () {
+			const toast = new ToastNotifier();
+			$("#cancel-order").on("click", function () {
+                $.ajax({
+                    method: "delete",
+					url: "/api/Orders/CancelOrder",
+					data: {
+						orderId: "@Model.Order.Id"
+					},
+					success: function (response) {
+						if (response.is_success) {
+							toast.notifySuccess("Info", "Order was canceled");
+							setTimeout(function () {
+								location.href = "/Orders/MyOrders";
+							}, 300);
+						} else {
+							toast.notifyErrorList(response.error_keys);
+						}
+					},
+					error: function () {
+						toast.notifyErrorList("Error");
+					}
+				});
+            });
+
+            $(".billing-address").on("change", function () {
+                $("#BillingAddressId").val($(this).val());
+                $("#ShipmentAddress").val($(this).val());
+            });
+		});
+    </script>
+}
+
+@section Styles
+{
+
+}

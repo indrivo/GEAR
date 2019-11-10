@@ -32,10 +32,16 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#productVariations" role="tab">
+                    <span class="hidden-sm-up"></span> <span class="hidden-xs-down">Product Variations</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#categoryMapping" role="tab">
                     <span class="hidden-sm-up"></span> <span class="hidden-xs-down">Category Mapping</span>
                 </a>
             </li>
+
 
         </ul>
         <div class="tab-content">
@@ -47,6 +53,9 @@
             </div>
             <div class="tab-pane" id="categoryMapping">
                 @await Html.PartialAsync("Tabs/_CategoryMapping", Model)
+            </div>
+            <div class="tab-pane" id="productVariations">
+                @await Html.PartialAsync("Tabs/_ProductVariations", Model)
             </div>
         </div>
     </div>

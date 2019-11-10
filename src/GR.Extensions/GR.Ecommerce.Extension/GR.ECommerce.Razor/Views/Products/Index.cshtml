@@ -1,8 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = Localizer["system_commerce_products"];
     var conf = new ListTagHelperModel
     {
-        Title = "Products",
+        Title = Localizer["system_commerce_products"],
         ListIdentifier = "products",
         Api = new ListApiConfigurationViewModel
         {
@@ -51,6 +51,17 @@
                     JsEventHandler = "createAlert('${row.id}');"
                 },
                 ButtonType = BootstrapButton.Danger
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = "Details",
+                Url = Url.Action("ProductDetail", "Products"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("productId", "id")
+                }
             },
         },
         Documentation = "This tan allow to manage your products"

@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using GR.Cache.Abstractions;
 using GR.Entities.Data;
 using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
@@ -43,9 +42,9 @@ namespace GR.Identity.Razor.Users.Controllers
         #region Injections
 
         public UsersController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager,
-            ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context,
+            ApplicationDbContext applicationDbContext, EntitiesDbContext context,
             INotify<ApplicationRole> notify, BaseLdapUserManager<ApplicationUser> ldapUserManager,
-            ILogger<UsersController> logger, IStringLocalizer localizer) : base(userManager, roleManager, cacheService,
+            ILogger<UsersController> logger, IStringLocalizer localizer) : base(userManager, roleManager,
             applicationDbContext,
             context, notify)
         {
@@ -666,7 +665,7 @@ namespace GR.Identity.Razor.Users.Controllers
                 return Json(resultModel);
             }
 
-            currentUser.UserLastName = model.UserFirstName;
+            currentUser.UserFirstName = model.UserFirstName;
             currentUser.UserLastName = model.UserLastName;
             currentUser.Birthday = model.Birthday;
             currentUser.AboutMe = model.AboutMe;

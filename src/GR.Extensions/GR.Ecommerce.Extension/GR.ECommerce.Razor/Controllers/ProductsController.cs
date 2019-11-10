@@ -16,13 +16,36 @@ using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
+using System.ComponentModel.DataAnnotations;
+using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace GR.ECommerce.Razor.Controllers
 {
+
     public class ProductsController : CommerceBaseController<Product, ProductViewModel>
     {
-        public ProductsController(ICommerceContext context, IDataFilter dataFilter) : base(context, dataFilter)
+        #region Injectable
+
+        /// <summary>
+        /// Inject product service
+        /// </summary>
+        private readonly IProductService<Product> _productService;
+        #endregion
+
+        #region Helpers
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        #endregion
+
+        public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService) : base(context, dataFilter)
+        {
+            _productService = productService;
         }
 
         /// <inheritdoc />
@@ -34,6 +57,93 @@ namespace GR.ECommerce.Razor.Controllers
         public override IActionResult Index()
         {
             return View();
+        }
+
+        /// <summary>
+        /// Dashboard
+        /// </summary>
+        [HttpGet]
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Index page
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ProductDetail(Guid? productId)
+        {
+            if (productId == null) return NotFound();
+
+            var productBd = await Context.Products
+                .Include(i => i.ProductPrices)
+                .Include(i => i.ProductImages)
+                .Include(i => i.ProductAttributes)
+                .ThenInclude(i => i.ProductAttribute)
+                .Include(i => i.ProductVariations)
+                .ThenInclude(i => i.ProductVariationDetails)
+                .ThenInclude(i => i.ProductOption)
+                .FirstOrDefaultAsync(x => x.Id == productId);
+
+            if (productBd is null) return NotFound();
+
+            var result = productBd.Adapt<ProductViewModel>();
+            result.ProductOption = GetProdOptionByVariation(result.Id);
+            result.ProductVariationList = GetProdVariationList(result.Id);
+
+            return View(result);
+        }
+
+
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public JsonResult GetPriceByVariation(ProductPriceVariationViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
+                return Json(model);
+            }
+
+            var resultModel = new ResultModel();
+
+            var prod = Context.Products.Include(i => i.ProductPrices).FirstOrDefault(x => x.Id == model.ProductId);
+
+            if (prod != null)
+            {
+                if (model.VariationId is null)
+                {
+                    resultModel.IsSuccess = true;
+                    resultModel.Result = new { Price = prod.PriceWithDiscount * model.Quantity };
+                    return Json(resultModel);
+                }
+
+                var productVariation = Context.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
+
+                if (productVariation is null)
+                {
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                    return Json(resultModel);
+                }
+
+                resultModel.IsSuccess = true;
+                resultModel.Result = new { Price = productVariation.Price * model.Quantity };
+                return Json(resultModel);
+            }
+
+            resultModel.IsSuccess = false;
+            resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+
+
+            return Json(resultModel, SerializerSettings);
         }
 
         /// <inheritdoc />
@@ -116,7 +226,9 @@ namespace GR.ECommerce.Razor.Controllers
             result.ProductAttributesList = new Dictionary<string, IEnumerable<SelectListItem>>();
             result.ProductCategoryList = new List<ProductCategoryDto>();
             result.ProductTypeList = new List<SelectListItem>();
-            result.Price = result.CurrentPrice;
+            result.Price = result.PriceWithoutDiscount;
+            result.ProductOption = new List<SelectListItem>();
+
 
             return View(GetDropdownItems(result));
         }
@@ -164,7 +276,7 @@ namespace GR.ECommerce.Razor.Controllers
                 }).ToList();
             }
 
-            if (model.Price.AreEqual(dbModel.CurrentPrice).Negate())
+            if (model.Price.Equals(dbModel.PriceWithoutDiscount).Negate())
             {
                 Context.ProductPrices.Add(new ProductPrice
                 {
@@ -204,8 +316,15 @@ namespace GR.ECommerce.Razor.Controllers
                 .ToDictionary(grouping => grouping.Key, x => x.ToList().Select(w => new SelectListItem
                 {
                     Text = w.Name,
-                    Value = w.Id.ToString()
+                    Value = w.Id.ToString(),
                 }));
+
+            model.ProductOption = Context.ProductOption.ToList().Select(s => new SelectListItem
+            {
+                Text = s.Name,
+                Value = s.Id.ToString(),
+            }).ToList();
+
 
             model.ProductCategoryList = Context.Categories.Select(x => new ProductCategoryDto
             {
@@ -221,7 +340,30 @@ namespace GR.ECommerce.Razor.Controllers
                     Text = x.Name,
                     Value = x.Id.ToString()
                 }));
+
+
             return model;
+        }
+
+
+        public List<SelectListItem> GetProdOptionByVariation(Guid productId)
+        {
+            return Context.ProductVariationDetails.Where(x => x.ProductVariation.ProductId == productId).Select(s => new SelectListItem
+            {
+                Text = s.ProductOption.Name,
+                Value = s.ProductOptionId.ToString(),
+            }).AsEnumerable().DistinctBy(d => d.Value).ToList();
+        }
+
+        public List<ProductVariation> GetProdVariationList(Guid productId)
+        {
+
+            var listVariation = Context.ProductVariations
+                .Include(i => i.ProductVariationDetails)
+                .ThenInclude(i => i.ProductOption)
+                .Where(x => x.ProductId == productId).ToList();
+
+            return listVariation;
         }
 
 
@@ -245,6 +387,113 @@ namespace GR.ECommerce.Razor.Controllers
             var dbResult = await Context.PushAsync();
             return Json(dbResult);
         }
+
+
+        [HttpPost]
+        public async Task<JsonResult> SaveProductVariation([FromBody] ProductVariationViewModel model)
+        {
+            var response = new ResultModel();
+
+            if (!ModelState.IsValid)
+            {
+                response.Errors = ModelState.ToResultModelErrors().ToList();
+                return Json(response);
+            }
+
+            var prod = await Context.Products.FirstOrDefaultAsync(i => i.Id == model.ProductId);
+
+            if (prod != null)
+            {
+                var variation = await Context.ProductVariations
+                    .FirstOrDefaultAsync(i => i.Id == model.VariationId && i.ProductId == model.ProductId);
+
+
+                if (variation != null)
+                {
+                    variation.Price = model.Price;
+                    Context.ProductVariations.Update(variation);
+
+                    var listProductVariationDetails =
+                        Context.ProductVariationDetails.Where(x => x.ProductVariationId == variation.Id);
+
+                    Context.ProductVariationDetails.RemoveRange(listProductVariationDetails);
+                }
+                else
+                {
+                    variation = new ProductVariation
+                    {
+                        ProductId = model.ProductId,
+                        Price = model.Price,
+                    };
+
+                    Context.ProductVariations.Add(variation);
+                }
+
+                var variationDetails = model.ProductVariationDetails.Select(x => new ProductVariationDetail()
+                {
+                    ProductVariationId = variation.Id,
+                    Value = x.Value,
+                    ProductOptionId = x.ProductOptionId
+                });
+
+                await Context.ProductVariationDetails.AddRangeAsync(variationDetails);
+            }
+
+            var dbResult = await Context.PushAsync();
+            return Json(dbResult);
+        }
+
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveOptione([Required]Guid? productId, [Required]Guid? variationId)
+        {
+            var resultModel = new ResultModel();
+            if (productId is null || variationId is null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return Json(resultModel);
+            }
+
+            var result = Context.ProductVariations
+                .FirstOrDefault(x => x.Id == variationId && x.ProductId == productId);
+
+            if (result == null) return Json(resultModel);
+            Context.ProductVariations.Remove(result);
+            var dbResult = await Context.PushAsync();
+            return Json(dbResult);
+        }
+
+
+        [HttpGet]
+        public JsonResult GetProductVariation(string productId) => Json(Context.ProductVariations
+            .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
+            .Where(x => x.ProductId == productId.ToGuid())
+            .Select(x => new
+            {
+                VariationId = x.Id,
+                x.Price,
+                VariationDetails = x.ProductVariationDetails.Select(s => new { s.Value, Option = s.ProductOption.Name })
+            }));
+
+
+        [HttpGet]
+        public JsonResult GetProductVariationById(string productId, string variationId) => Json(Context
+            .ProductVariations
+            .Include(x => x.ProductVariationDetails).ThenInclude(x => x.ProductOption)
+            .Where(x => x.ProductId == productId.ToGuid() && x.Id == variationId.ToGuid())
+            .Select(x => new
+            {
+                x.ProductId,
+                VariationId = x.Id,
+                x.Price,
+                VariationDetails = x.ProductVariationDetails.Select(s => new { s.Value, Option = s.ProductOption.Name, optionId = s.ProductOptionId })
+            }).FirstOrDefault());
 
 
         [HttpGet]
@@ -315,5 +564,14 @@ namespace GR.ECommerce.Razor.Controllers
         {
             return Json(Context.ProductCategories.Where(x => x.ProductId == productId));
         }
+
+        /// <summary>
+        /// Get subscription plans
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
+        public async Task<JsonResult> GetSubscriptionPlans() =>
+            Json(await _productService.GetSubscriptionPlansAsync(), SerializerSettings);
     }
 }

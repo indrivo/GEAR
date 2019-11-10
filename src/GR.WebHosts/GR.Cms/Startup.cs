@@ -13,7 +13,6 @@ using GR.Application;
 using GR.Backup.Abstractions.BackgroundServices;
 using GR.Backup.Abstractions.Extensions;
 using GR.Backup.PostGresSql;
-using GR.Cache.Extensions;
 using GR.Cms.Services.Abstractions;
 using GR.Core;
 using GR.Core.Extensions;
@@ -21,8 +20,6 @@ using GR.Core.Razor.Extensions;
 using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.BaseImplementations.Data;
-using GR.ECommerce.BaseImplementations.Repositories;
 using GR.Email;
 using GR.Email.Abstractions.Extensions;
 using GR.Entities;
@@ -79,6 +76,8 @@ using GR.Application.Middleware.Extensions;
 using GR.Application.Middleware.Server;
 using GR.Audit;
 using GR.Audit.Abstractions.Extensions;
+using GR.Cache.Abstractions.Extensions;
+using GR.Cache.Services;
 using GR.Calendar;
 using GR.Calendar.Abstractions.Extensions;
 using GR.Calendar.Abstractions.ExternalProviders;
@@ -109,9 +108,21 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
-using GR.ECommerce.Paypal;
+using GR.DynamicEntityStorage.Abstractions;
+using GR.ECommerce.BaseImplementations.Data;
+using GR.ECommerce.Payments.Abstractions.Extensions;
+using GR.ECommerce.Products.Services;
+using GR.ECommerce.Razor.Extensions;
+using GR.Entities.Extensions;
 using GR.Localization;
+using GR.Orders;
+using GR.Orders.Abstractions.Models;
+using GR.PageRender;
+using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
+using GR.MobilPay;
+using GR.MobilPay.Abstractions.Extensions;
+using GR.Orders.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 
 #endregion
@@ -157,7 +168,7 @@ namespace GR.Cms
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (CoreApp.IsHostedOnLinux())
+			if (GearApplication.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -213,7 +224,7 @@ namespace GR.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() => { CoreApp.ApplicationStarted(app); });
+			lifetime.ApplicationStarted.Register(() => { GearApplication.ApplicationStarted(app); });
 
 			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 
@@ -243,7 +254,7 @@ namespace GR.Cms
 			});
 
 			//---------------------------------Custom cache Module-------------------------------------
-			services.AddCacheModule(HostingEnvironment, Configuration);
+			services.AddCacheModule<CacheService, RedisConnection>(HostingEnvironment, Configuration);
 
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
@@ -263,7 +274,10 @@ namespace GR.Cms
 				.AddIdentityModuleEvents()
 				.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-				.AddJsonOptions(x => { x.SerializerSettings.DateFormatString = Settings.Date.DateFormat; });
+				.AddJsonOptions(x =>
+				{
+					x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
+				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
@@ -294,6 +308,7 @@ namespace GR.Cms
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
 			});
+
 			//---------------------------------------Entity Module-------------------------------------
 			services.AddEntityModule<EntitiesDbContext, EntityRepository>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
@@ -303,6 +318,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.AddEntityModuleEvents()
+				.RegisterEntityBuilderJob()
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
@@ -359,9 +375,6 @@ namespace GR.Cms
 			//------------------------------Database backup Module-------------------------------------
 			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
-
-			//------------------------------------Page render Module-------------------------------------
-			services.AddPageRenderUiModule();
 
 			//------------------------------------Processes Module-------------------------------------
 			services.AddProcessesModule();
@@ -431,7 +444,10 @@ namespace GR.Cms
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.AddPageRenderUIModule<PageRender.PageRender>()
+				.AddMenuService<MenuService<IDynamicService>>()
+				.AddPageAclService<PageAclService>();
 
 
 			//---------------------------------------Report Module-------------------------------------
@@ -451,7 +467,7 @@ namespace GR.Cms
 				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
-			if (CoreApp.IsHostedOnLinux())
+			if (GearApplication.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{
@@ -466,15 +482,22 @@ namespace GR.Cms
 
 			//-------------------------------------Commerce module-------------------------------------
 			services.RegisterCommerceModule<CommerceDbContext>()
-				.RegisterCommerceProductRepository<ProductRepository, Product>()
+				.RegisterCommerceProductRepository<ProductService, Product>()
 				.RegisterCommerceStorage<CommerceDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-				.RegisterPaypalProvider<PaypalPaymentService>()
+				.RegisterPaypalProvider<PaypalPaymentMethodService>()
+				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
-				.RegisterCommerceEvents();
+				.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterPayments<PaymentService>()
+				.RegisterCartService<CartService>()
+				.RegisterOrdersStorage<CommerceDbContext>()
+				.RegisterPaymentStorage<CommerceDbContext>()
+				.RegisterCommerceEvents()
+				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
 			services.AddTenantModule<OrganizationService, Tenant>()

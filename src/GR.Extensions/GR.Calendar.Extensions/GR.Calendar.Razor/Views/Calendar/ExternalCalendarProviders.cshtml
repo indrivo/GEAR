@@ -8,7 +8,7 @@
 {
     <link rel="stylesheet" href="~/lib/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css" />
 }
-
+@inject IStringLocalizer Localizer
 
 <div class="card">
     <div class="card-body">
@@ -60,7 +60,10 @@
         </div>
     </div>
 </div>
-
+<a class="btn btn-primary mt-4 d-flex align-items-center pull-left" href="/calendar">
+    <i style="font-size:15px" class="material-icons text-white">arrow_back_ios</i>
+    @Localizer["system_calendar_back"]
+</a>
 
 @section Scripts
 {

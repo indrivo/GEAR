@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using GR.Core.Attributes;
 using GR.Identity.Abstractions.Helpers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GR.MultiTenant.Abstractions.ViewModels
 {
@@ -29,6 +30,7 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         [MaxLength(30)]
         [RegularExpression(@"^\S*$", ErrorMessage = "No white space allowed")]
         [DisplayTranslate(Key = "system_auth_username")]
+        [Remote("CheckUserNameIfExist", "CompanyManage")]
         public string UserName { get; set; }
 
         /// <summary>
@@ -37,6 +39,7 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         [Required, DataType(DataType.EmailAddress)]
         [DisplayTranslate(Key = "email")]
         [EmailAddress]
+        [Remote("CheckEmailIfExist", "CompanyManage")]
         public string Email { get; set; }
 
         /// <summary>

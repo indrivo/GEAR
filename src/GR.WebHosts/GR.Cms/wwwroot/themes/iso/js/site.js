@@ -422,14 +422,12 @@ function changeTextCellPosition() {
 	const textareaWidth = $(expandCell).innerWidth();
 
 	const navBarWidth = $(".navigation").width();
-	console.log(navBarWidth + 'navBarWidth');
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
 	//const diffW = docWidth - pos.left;
 
 	if (hPercent > 72 && hPercent < 75) {
 		expandCell.css("top", `${pos.top - diffH}px`);
-		console.log(hPercent + 'hPercent');
 	} else if (hPercent > 80) {
 		expandCell.css("top", `${pos.top - diffH 
 			// - 240
@@ -440,7 +438,6 @@ function changeTextCellPosition() {
 		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth 
 			// * 2
 		}px`);
-		console.log(wPercent + 'wPercent');
 	}
 }
 
@@ -1624,14 +1621,14 @@ if (typeof Notificator !== "undefined") {
 		this.registerOpenNotificationEvent();
 	}
 
-	Notificator.prototype.createNotificationBodyContainer = function (n) {
+    Notificator.prototype.createNotificationBodyContainer = function (n) {
 		const block = `
-		<a data-notification-id="${n.id
-			}" href="javascript:void(0)" class="notification-item dropdown-item py-3 border-bottom">
+		<div data-notification-id="${n.id
+			}" class="notification-item dropdown-item py-3 border-bottom">
             <p><small>${n.subject}</small></p>
             <p class="text-muted mb-1"><small>${n.content}</small></p>
             <p class="text-muted mb-1"><small>${n.created}</small></p>
-		</a>`;
+		</div>`;
 		return block;
 	}
 }
@@ -1791,7 +1788,9 @@ $(document).ready(function () {
 
 	Promise.all([loadMenusPromise, localizationPromise]).then(function (values) {
 		window.forceTranslate();
-	});
+    });
+
+    $("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
 });
 
 

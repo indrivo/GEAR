@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Abstractions;
 using GR.Core.BaseControllers;
@@ -77,7 +76,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _logger = logger;
             Queue = queue;
@@ -166,7 +165,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         {
             var filtered = Context.Filter<TableModel>(param.Search.Value, param.SortOrder, param.Start,
                 param.Length,
-                out var totalCount, x => x.IsPartOfDbContext || x.EntityType == Settings.DEFAULT_ENTITY_SCHEMA);
+                out var totalCount, x => x.IsPartOfDbContext || x.EntityType == GearSettings.DEFAULT_ENTITY_SCHEMA);
 
             var orderList = filtered.Select(o => new TableModel
             {
@@ -302,7 +301,7 @@ namespace GR.Entities.Razor.Controllers.Entity
                 var isDynamic = true;
                 var isReference = false;
                 var referenceIsCommon = true;
-                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
+                var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != GearSettings.DEFAULT_ENTITY_SCHEMA).ToList();
                 if (field.Parameter == FieldType.EntityReference)
                 {
                     isReference = true;
@@ -312,7 +311,7 @@ namespace GR.Entities.Razor.Controllers.Entity
                     if (!referenceTableName.IsNullOrEmpty())
                     {
                         var refTable = await Context.Table.FirstOrDefaultAsync(x =>
-                            x.Name.Equals(referenceTableName) && x.EntityType.Equals(Settings.DEFAULT_ENTITY_SCHEMA));
+                            x.Name.Equals(referenceTableName) && x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA));
                         if (refTable.IsPartOfDbContext) isDynamic = false;
                         else if (!refTable.IsCommon) referenceIsCommon = false;
                     }
@@ -569,7 +568,7 @@ namespace GR.Entities.Razor.Controllers.Entity
             }
 
             var tenants = _organizationService.GetAllTenants()
-                .Where(x => x.MachineName != Settings.DEFAULT_ENTITY_SCHEMA).ToList();
+                .Where(x => x.MachineName != GearSettings.DEFAULT_ENTITY_SCHEMA).ToList();
 
             if (field.TableFieldTypeId == fieldType.Id)
             {

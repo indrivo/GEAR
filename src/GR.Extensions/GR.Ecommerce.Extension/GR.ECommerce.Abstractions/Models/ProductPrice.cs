@@ -7,6 +7,6 @@ namespace GR.ECommerce.Abstractions.Models
     {
         public virtual Product Product { get; set; }
         public virtual Guid ProductId { get; set; }
-        public virtual double Price { get; set; } = 0;
+        public virtual decimal Price { get; set; } = 0;
     }
 }

@@ -25,26 +25,32 @@ using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Events;
 using GR.PageRender.Abstractions.Events.EventArgs;
+using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Abstractions.Models.PagesACL;
-using GR.PageRender.Razor.Helpers;
 
 namespace GR.PageRender.Razor.Controllers
 {
     public class PageController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
+        #region Injectable
         /// <summary>
         /// Inject  page render
         /// </summary>
         private readonly IPageRender _pageRender;
         private readonly IFormService _formService;
         private readonly IDynamicPagesContext _pagesContext;
-        private readonly RoleManager<ApplicationRole> _roleManager;
+
+        /// <summary>
+        /// Inject cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+        #endregion
 
 
-        public PageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public PageController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
-            _roleManager = roleManager;
+            _cacheService = cacheService;
             _pageRender = pageRender;
             _formService = formService;
             _pagesContext = pagesContext;
@@ -204,7 +210,7 @@ namespace GR.PageRender.Razor.Controllers
             {
                 _pagesContext.Pages.Update(page);
                 _pagesContext.SaveChanges();
-                await CacheService.RemoveAsync($"_page_dynamic_{page.Id}");
+                await _cacheService.RemoveAsync($"_page_dynamic_{page.Id}");
                 //return RedirectToAction(page.IsLayout ? "Layouts" : "Index");
                 return RedirectToAction("GetCode", new { type = model.Type, id = model.PageId });
             }
@@ -659,7 +665,7 @@ namespace GR.PageRender.Razor.Controllers
                 .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id == pageId);
             if (page == null) return NotFound();
-            var roles = _roleManager.Roles.Where(x => !x.IsDeleted).ToList();
+            var roles = RoleManager.Roles.Where(x => !x.IsDeleted).ToList();
             ViewBag.Roles = roles;
             var rolesAcl = roles.ToDictionary(x => x, x => page.RolePagesAcls.FirstOrDefault(y => y.RoleId == Guid.Parse(x.Id)));
             ViewBag.ACL = rolesAcl;
@@ -710,7 +716,7 @@ namespace GR.PageRender.Razor.Controllers
         [NonAction]
         private async void RemovePageFromCache(Guid pageId)
         {
-            await CacheService.RemoveAsync($"_page_dynamic_{pageId}");
+            await _cacheService.RemoveAsync($"_page_dynamic_{pageId}");
         }
 
         /// <summary>
