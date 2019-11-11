@@ -20,6 +20,7 @@ using System.ComponentModel.DataAnnotations;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GR.ECommerce.Razor.Controllers
 {
@@ -38,7 +39,8 @@ namespace GR.ECommerce.Razor.Controllers
 
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
         #endregion
