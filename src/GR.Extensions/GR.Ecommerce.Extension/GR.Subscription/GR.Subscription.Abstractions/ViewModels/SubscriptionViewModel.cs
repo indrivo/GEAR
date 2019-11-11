@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GR.Subscriptions.Abstractions.Models;
 
-namespace GR.Subscription.Abstractions.ViewModels
+namespace GR.Subscriptions.Abstractions.ViewModels
 {
-    public class SubscriptionViewModel: Models.Subscription
+    public class SubscriptionViewModel: Subscription
     {
     }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 using GR.Core;
-using GR.Core.Extensions;
 using GR.Orders.Abstractions.Models;
 
-namespace GR.Subscription.Abstractions.Models
+namespace GR.Subscriptions.Abstractions.Models
 {
     public class Subscription: BaseModel
     {
@@ -24,17 +21,26 @@ namespace GR.Subscription.Abstractions.Models
         /// <summary>
         /// valability day
         /// </summary>
-        public int Valability { get; set; }
+        public virtual int Valability { get; set; }
 
         /// <summary>
         /// Order id
         /// </summary>
-        public Guid OrderId { get; set; }
+        public virtual Guid OrderId { get; set; }
 
         /// <summary>
         /// Order
         /// </summary>
-        public Order Order { get; set; }
+        public virtual Order Order { get; set; }
 
+        /// <summary>
+        /// Is valid subscription
+        /// </summary>
+        public virtual bool IsValid => StartDate.AddDays(Valability) < DateTime.Now;
+
+        /// <summary>
+        /// Remaining days subscription
+        /// </summary>
+        public virtual int RemainingDays => IsValid ? (StartDate.AddDays(Valability) - DateTime.Now).Days : 0;
     }
 }

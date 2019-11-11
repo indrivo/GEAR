@@ -89,6 +89,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Orders\GR.Orders\GR.Orders.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Products\GR.ECommerce.Products.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Razor\GR.ECommerce.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscriptions.Razor\GR.Subscriptions.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscriptions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj" />

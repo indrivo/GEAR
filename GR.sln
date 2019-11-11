@@ -267,9 +267,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.MobilPay", "GR
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Ecomerce.Subscription", "GR.Ecomerce.Subscription", "{7114D34C-C974-418C-B756-6C95E8567093}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscription.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription.Abstractions\GR.Subscription.Abstractions.csproj", "{939BBAF7-5BFC-47EB-BED4-386221850E49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj", "{939BBAF7-5BFC-47EB-BED4-386221850E49}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscription", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscription.csproj", "{D8434B44-FA8C-4C8E-93AC-839F78404AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscriptions.csproj", "{D8434B44-FA8C-4C8E-93AC-839F78404AA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Subscriptions.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscriptions.Razor\GR.Subscriptions.Razor.csproj", "{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.MobilPay.Abstractions", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj", "{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}"
 EndProject
@@ -854,6 +856,12 @@ Global
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Stage|Any CPU.Build.0 = Debug|Any CPU
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1008,6 +1016,7 @@ Global
 		{7114D34C-C974-418C-B756-6C95E8567093} = {4ADAD96E-E01B-47C5-9589-7C6DEF589D66}
 		{939BBAF7-5BFC-47EB-BED4-386221850E49} = {7114D34C-C974-418C-B756-6C95E8567093}
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3} = {7114D34C-C974-418C-B756-6C95E8567093}
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B} = {7114D34C-C974-418C-B756-6C95E8567093}
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18} = {43B734C2-ECED-4C2C-97DA-D273A51326D9}
 		{7F987A82-DE22-47E2-AD70-F95075CC6922} = {43B734C2-ECED-4C2C-97DA-D273A51326D9}
 		{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29} = {43B734C2-ECED-4C2C-97DA-D273A51326D9}
