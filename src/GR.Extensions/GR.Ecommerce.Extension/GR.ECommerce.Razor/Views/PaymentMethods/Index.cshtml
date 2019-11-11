@@ -1,0 +1,31 @@
+﻿@model IEnumerable<GR.ECommerce.Payments.Abstractions.Models.PaymentMethod>
+
+@{
+    ViewData["Title"] = Localizer["system_payment_methods"];
+}
+
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Localizer["system_payment_method"]</th>
+                    <th>Enabled</th>
+                    <th>@Localizer["list_actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var method in Model)
+                {
+                    <tr>
+                        <td>@method.Name</td>
+                        <td>@method.IsEnabled</td>
+                        <td>
+                            <a class="btn btn-warning" href="/@(method.Name)Settings">@Localizer["settings"]</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

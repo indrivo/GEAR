@@ -1,40 +1,54 @@
 @model GR.Paypal.Models.PaypalExpressConfigForm
 @{
-	ViewData["Title"] = Localizer["eCommerce_Paypal_Settings"];
+    ViewData["Title"] = Localizer["eCommerce_Paypal_Settings"];
 }
 
 <div class="card mb-4">
-	<div class="card-header text-capitalize">@Localizer["eCommerce_Paypal_Settings"]</div>
-	<div class="card-body">
-		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-		@if (ViewData["isSuccess"] != null)
-		{
-			<div class="alert alert-success" role="alert">
-				@Localizer["system_inline_saved"]
-			</div>
-		}
-		<form asp-action="Config" asp-controller="PaypalSettings" method="post" autocomplete="off">
-			<div class="form-group row">
-				<JTranslateLabel asp-for="ClientId" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
-				<div class="col-sm-10">
-					<input asp-for="ClientId" class="form-control">
-					<span class="text-danger" asp-validation-for="ClientId"></span>
-				</div>
-			</div>
-			<hr class="my-4 dashed">
-			<div class="form-group row">
-				<JTranslateLabel asp-for="ClientSecret" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
-				<div class="col-sm-10">
-					<input asp-for="ClientSecret" class="form-control">
-					<span asp-validation-for="ClientSecret" class="text-danger"></span>
-				</div>
-			</div>
-			<div class="custom-control mb-4 custom-checkbox">
-				<input type="checkbox" asp-for="IsSandbox" class="custom-control-input">
-				<label class="custom-control-label" asp-for="IsSandbox"></label>
-			</div>
-			<button type="submit" class="btn text-white btn-success">
-				<i class="fa fa-check"></i> @Localizer["save"]</button>
-		</form>
-	</div>
+    <div class="card-header text-capitalize">@Localizer["eCommerce_Paypal_Settings"]</div>
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (ViewData["isSuccess"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @Localizer["system_inline_saved"]
+            </div>
+        }
+        <form asp-action="Config" asp-controller="PaypalSettings" method="post" autocomplete="off">
+            <div class="form-group row">
+                <JTranslateLabel asp-for="ClientId" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="ClientId" class="form-control">
+                    <span class="text-danger" asp-validation-for="ClientId"></span>
+                </div>
+            </div>
+            <hr class="my-4 dashed">
+            <div class="form-group row">
+                <JTranslateLabel asp-for="ClientSecret" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="ClientSecret" class="form-control">
+                    <span asp-validation-for="ClientSecret" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="custom-control mb-4 custom-checkbox">
+                <input type="checkbox" asp-for="IsSandbox" class="custom-control-input">
+                <label class="custom-control-label" asp-for="IsSandbox"></label>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a href="/PaymentMethods" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

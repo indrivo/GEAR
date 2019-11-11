@@ -773,5 +773,11 @@
   "system_transaction_id": "ID-ul de tranzacție",
   "system_payments": "Plățile",
   "system_order_details": "Detaliile comenzii ",
-  "system_back_to_home": "Înapoi la domiciliu"
+  "system_back_to_home": "Înapoi la domiciliu",
+  "commerce_mobilPay_Settings": "MobilPay setări",
+  "eCommerce_Paypal_Settings": "Paypal setări",
+  "system_signature": "Semnătura",
+  "system_public_key": "Cheie publică",
+  "system_private_key": "Cheia privată",
+  "system_payment_methods": "Metode de plată"
 }

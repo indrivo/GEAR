@@ -133,7 +133,19 @@ namespace GR.Entities.Razor.Controllers.Entity
             {
                 var response = _tablesService.CreateSqlTable(table, ConnectionString);
                 if (response.Result)
+                {
+                    if (!table.IsCommon)
+                    {
+                        var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != GearSettings.DEFAULT_ENTITY_SCHEMA).ToList();
+                        foreach (var tenant in tenants)
+                        {
+                            var tenantConfTable = table;
+                            tenantConfTable.EntityType = tenant.MachineName;
+                            _tablesService.CreateSqlTable(tenantConfTable, ConnectionString);
+                        }
+                    }
                     return RedirectToAction("Edit", "Table", new { id = table.Id, tab = "one" });
+                }
             }
             else
             {

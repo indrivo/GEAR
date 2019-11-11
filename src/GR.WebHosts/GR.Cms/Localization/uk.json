@@ -773,5 +773,11 @@
   "system_transaction_id": "ID транзакції",
   "system_payments": "Платежі",
   "system_order_details": "Деталі замовлення ",
-  "system_back_to_home": "Назад додому"
+  "system_back_to_home": "Назад додому",
+  "commerce_mobilPay_Settings": "Параметри MobilPay ",
+  "eCommerce_Paypal_Settings": "Налаштування системи PayPal ",
+  "system_signature": "Підпис",
+  "system_public_key": "Відкритий ключ",
+  "system_private_key": "Закритий ключ",
+  "system_payment_methods": "Способи оплати "
 }

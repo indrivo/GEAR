@@ -45,7 +45,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// Refresh cache
         /// </summary>
         /// <returns></returns>
-        Task RefreshCache();
+        Task<Dictionary<string, IEnumerable<string>>> RefreshCache();
         /// <summary>
         /// Check if user have permission
         /// </summary>

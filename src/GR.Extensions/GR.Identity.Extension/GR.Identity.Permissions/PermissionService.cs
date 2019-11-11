@@ -124,11 +124,12 @@ namespace GR.Identity.Permissions
         /// Refresh Permission for roles
         /// </summary>
         /// <returns></returns>
-        public async Task RefreshCache()
+        public async Task<Dictionary<string, IEnumerable<string>>> RefreshCache()
         {
             var roles = await RolesPermissionsAsync();
             var store = roles.ToDictionary(role => role.Name, role => role.Permissions.Select(x => x.PermissionKey));
             await _cache.Set(CacheKeyName, store);
+            return store;
         }
 
 
@@ -190,8 +191,7 @@ namespace GR.Identity.Permissions
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
-            var data = await _cache.Get<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
-
+            var data = await _cache.Get<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await RefreshCache();
             try
             {
                 foreach (var role in data)

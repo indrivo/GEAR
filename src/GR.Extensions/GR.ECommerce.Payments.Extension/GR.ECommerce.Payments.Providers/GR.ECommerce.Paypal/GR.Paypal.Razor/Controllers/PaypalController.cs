@@ -47,7 +47,7 @@ namespace GR.Paypal.Razor.Controllers
         {
             var hostingDomain = Request.HttpContext.GetAppBaseUrl();
 
-            var response = await _paymentMethodManager.CreatePayment(hostingDomain, orderId);
+            var response = await _paymentMethodManager.CreatePaymentAsync(hostingDomain, orderId);
             if (response.IsSuccess)
             {
                 var paymentId = response.Message;
@@ -65,7 +65,7 @@ namespace GR.Paypal.Razor.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ExecutePayment(PaymentExecuteVm model)
         {
-            var response = await _paymentMethodManager.ExecutePayment(model);
+            var response = await _paymentMethodManager.ExecutePaymentAsync(model);
 
             if (response.IsSuccess)
             {
