@@ -3,14 +3,6 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "bootstrap-datepicker@1.8.0",
-      "destination": "wwwroot/lib/bootstrap-datepicker/"
-    },
-    {
-      "library": "moment.js@2.24.0",
-      "destination": "wwwroot/lib/moment.js/"
-    },
-    {
       "library": "grapesjs@0.14.57",
       "destination": "wwwroot/lib/grapesjs/"
     },
@@ -33,6 +25,21 @@
       "files": [
         "js/bootstrap-switch.min.js",
         "css/bootstrap3/bootstrap-switch.min.css"
+      ]
+    },
+    {
+      "library": "moment.js@2.24.0",
+      "destination": "wwwroot/lib/moment.js/",
+      "files": [
+        "moment.min.js"
+      ]
+    },
+    {
+      "library": "bootstrap-datepicker@1.9.0",
+      "destination": "wwwroot/lib/bootstrap-datepicker/",
+      "files": [
+        "js/bootstrap-datepicker.min.js",
+        "css/bootstrap-datepicker.min.css"
       ]
     }
   ]

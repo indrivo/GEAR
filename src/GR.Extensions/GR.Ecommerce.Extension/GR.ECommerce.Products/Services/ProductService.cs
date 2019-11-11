@@ -7,6 +7,7 @@ using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.Products.Services
@@ -72,23 +73,23 @@ namespace GR.ECommerce.Products.Services
         /// Get subscription plans
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Product>>> GetSubscriptionPlansAsync()
+        public async Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync()
         {
             var products = await _commerceContext.Products
-                .Include(x => x.ProductType)
-                .Include(x => x.Brand)
                 .Include(x => x.ProductAttributes)
                 .ThenInclude(x => x.ProductAttribute)
-                .Include(x => x.ProductCategories)
-                .ThenInclude(x => x.Category)
                 .Include(x => x.ProductPrices)
+                .Include(x => x.ProductVariations)
+                .ThenInclude(x => x.ProductVariationDetails)
+                .ThenInclude(x => x.ProductOption)
                 .Where(x => x.ProductTypeId.Equals(ProductTypes.SubscriptionPlan)
                             && x.IsPublished)
                 .ToListAsync();
-            var response = new ResultModel<IEnumerable<Product>>
+
+            var response = new ResultModel<IEnumerable<SubscriptionPlanViewModel>>
             {
                 IsSuccess = true,
-                Result = products
+                Result = products.Select(ProductMapper.Map)
             };
 
             return response;

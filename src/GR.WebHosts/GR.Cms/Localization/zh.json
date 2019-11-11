@@ -772,5 +772,12 @@
   "system_payment_method": "支付的方法",
   "system_transaction_id": "交易ID",
   "system_payments": "付款",
-  "system_order_details": "订单的详细信息 "
+  "system_order_details": "订单的详细信息 ",
+  "system_back_to_home": "回到家",
+  "commerce_mobilPay_Settings": "MobilPay设置",
+  "eCommerce_Paypal_Settings": "贝宝设置",
+  "system_signature": "签名",
+  "system_public_key": "公共密钥",
+  "system_private_key": "私人钥匙",
+  "system_payment_methods": "支付方式"
 }

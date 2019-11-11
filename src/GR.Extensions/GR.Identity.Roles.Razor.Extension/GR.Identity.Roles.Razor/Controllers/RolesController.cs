@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.BaseControllers;
 using GR.Entities.Data;
@@ -32,7 +31,7 @@ namespace GR.Identity.Roles.Razor.Controllers
     {
         #region Inject
 
-        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _signInManager = signInManager;
             _logger = logger;

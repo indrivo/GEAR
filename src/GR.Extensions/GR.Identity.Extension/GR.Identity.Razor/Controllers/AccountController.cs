@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
@@ -65,6 +66,8 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly IOptions<MPassOptions> _mpassOptions;
 
+        private readonly RoleManager<ApplicationRole> _roleManager;
+
         /// <summary>
         /// Inject M pass dataService
         /// </summary>
@@ -107,12 +110,13 @@ namespace GR.Identity.Razor.Controllers
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
             IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor,
-            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
+            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext, RoleManager<ApplicationRole> roleManager)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
             _ldapUserManager = ldapUserManager;
             _applicationDbContext = applicationDbContext;
+            _roleManager = roleManager;
             _manager = manager;
             _mpassOptions = mpassOptions;
             _mpassSigningCredentialStore = mpassSigningCredentialStore;
@@ -350,8 +354,6 @@ namespace GR.Identity.Razor.Controllers
                 : returnUrl;
 
             if (!ModelState.IsValid) return View(model);
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
             var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Email);
             if (user != null)
@@ -362,7 +364,7 @@ namespace GR.Identity.Razor.Controllers
                     return View(model);
                 }
 
-                if (user.IsPasswordExpired())
+                if (user.IsPasswordExpired() && !await _userManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
                 {
                     ModelState.AddModelError(string.Empty,
                         "Password has been expired, you need to change the password");

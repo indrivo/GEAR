@@ -772,5 +772,12 @@
   "system_payment_method": "Τρόπος πληρωμής",
   "system_transaction_id": "ID συναλλαγής",
   "system_payments": "Πληρωμές",
-  "system_order_details": "Λεπτομέρειες διαταγής "
+  "system_order_details": "Λεπτομέρειες διαταγής ",
+  "system_back_to_home": "Πίσω στο σπίτι",
+  "commerce_mobilPay_Settings": "MobilPay ρυθμίσεις",
+  "eCommerce_Paypal_Settings": "Paypal ρυθμίσεις",
+  "system_signature": "Υπογραφή",
+  "system_public_key": "Δημόσιο κλειδί",
+  "system_private_key": "Το ιδιωτικό κλειδί",
+  "system_payment_methods": "Μέθοδοι πληρωμής"
 }

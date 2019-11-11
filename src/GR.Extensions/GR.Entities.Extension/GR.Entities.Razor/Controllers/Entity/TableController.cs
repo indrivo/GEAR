@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using GR.Cache.Abstractions;
 using GR.Core;
 using GR.Core.Abstractions;
 using GR.Core.BaseControllers;
@@ -77,7 +76,7 @@ namespace GR.Entities.Razor.Controllers.Entity
         /// </summary>
         private string ConnectionString { get; set; }
 
-        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, cacheService, applicationDbContext, context, notify)
+        public TableController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, ILogger<TableController> logger, IConfiguration configuration, IBackgroundTaskQueue queue, IFormContext formContext, IEntityRepository entityRepository, ITablesService tablesService, IOrganizationService<Tenant> organizationService) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _logger = logger;
             Queue = queue;
@@ -134,7 +133,19 @@ namespace GR.Entities.Razor.Controllers.Entity
             {
                 var response = _tablesService.CreateSqlTable(table, ConnectionString);
                 if (response.Result)
+                {
+                    if (!table.IsCommon)
+                    {
+                        var tenants = _organizationService.GetAllTenants().Where(x => x.MachineName != GearSettings.DEFAULT_ENTITY_SCHEMA).ToList();
+                        foreach (var tenant in tenants)
+                        {
+                            var tenantConfTable = table;
+                            tenantConfTable.EntityType = tenant.MachineName;
+                            _tablesService.CreateSqlTable(tenantConfTable, ConnectionString);
+                        }
+                    }
                     return RedirectToAction("Edit", "Table", new { id = table.Id, tab = "one" });
+                }
             }
             else
             {

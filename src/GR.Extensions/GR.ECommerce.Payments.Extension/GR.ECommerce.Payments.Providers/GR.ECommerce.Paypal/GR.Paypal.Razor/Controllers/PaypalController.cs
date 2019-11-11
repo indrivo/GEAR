@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Paypal.Abstractions;
 using GR.Paypal.Abstractions.ViewModels;
@@ -44,9 +45,9 @@ namespace GR.Paypal.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePayment(Guid? orderId)
         {
-            var hostingDomain = Request.Host.Value;
+            var hostingDomain = Request.HttpContext.GetAppBaseUrl();
 
-            var response = await _paymentMethodManager.CreatePayment(hostingDomain, orderId);
+            var response = await _paymentMethodManager.CreatePaymentAsync(hostingDomain, orderId);
             if (response.IsSuccess)
             {
                 var paymentId = response.Message;
@@ -64,7 +65,7 @@ namespace GR.Paypal.Razor.Controllers
         /// <returns></returns>
         public async Task<IActionResult> ExecutePayment(PaymentExecuteVm model)
         {
-            var response = await _paymentMethodManager.ExecutePayment(model);
+            var response = await _paymentMethodManager.ExecutePaymentAsync(model);
 
             if (response.IsSuccess)
             {

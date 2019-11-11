@@ -772,5 +772,12 @@
   "system_payment_method": "Betaalmethode",
   "system_transaction_id": "Transactie ID",
   "system_payments": "Betalingen",
-  "system_order_details": "Details van de bestelling "
+  "system_order_details": "Details van de bestelling ",
+  "system_back_to_home": "Terug naar home",
+  "commerce_mobilPay_Settings": "MobilPay instellingen",
+  "eCommerce_Paypal_Settings": "Paypal-instellingen",
+  "system_signature": "Handtekening",
+  "system_public_key": "Publieke sleutel",
+  "system_private_key": "Eigen sleutel",
+  "system_payment_methods": "Betaalmethoden"
 }

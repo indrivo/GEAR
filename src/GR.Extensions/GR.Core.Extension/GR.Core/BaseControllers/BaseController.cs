@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GR.Cache.Abstractions;
 using GR.Core.Abstractions;
 using GR.Core.Extensions;
 
@@ -45,18 +44,12 @@ namespace GR.Core.BaseControllers
         /// </summary>
         protected readonly RoleManager<TRole> RoleManager;
 
-        /// <summary>
-        /// Cache Service
-        /// </summary>
-        protected readonly ICacheService CacheService;
 
-
-        protected BaseController(UserManager<TUser> userManager, RoleManager<TRole> roleManager, ICacheService cacheService,
+        protected BaseController(UserManager<TUser> userManager, RoleManager<TRole> roleManager,
             TIdentityContext applicationDbContext, TEntityContext context, TNotify notify)
         {
             UserManager = userManager;
             RoleManager = roleManager;
-            CacheService = cacheService;
             ApplicationDbContext = applicationDbContext;
             Context = context;
             Notify = notify;

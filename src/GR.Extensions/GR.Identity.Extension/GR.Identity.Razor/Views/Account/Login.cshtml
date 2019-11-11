@@ -17,7 +17,7 @@
     <meta name="viewport" content="width=device-width" />
     <title>@Localizer["system_log_in"]</title>
 
-    <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/twitter-bootstrap/css/bootstrap.bundle.min.css" />
     <link rel="stylesheet" type="text/css" href="~/lib/jquery-toast-plugin/jquery.toast.min.css" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/style.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="~/themes/admin/css/colors/green.css" />
@@ -169,7 +169,7 @@
 
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/tether/js/tether.min.js"></script>
-    <script src="~/lib/twitter-bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jQuery-slimScroll/jquery.slimscroll.min.js"></script>
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/lib/sticky-kit/sticky-kit.min.js"></script>
@@ -177,46 +177,17 @@
     <script src="~/lib/jquery-toast-plugin/jquery.toast.min.js"></script>
     <script src="~/assets/js/core.js" asp-append-version="true"></script>
     <script>
-        function getIdentifier(idt) {
-            switch (idt) {
-                case "en":
-                    {
-                        idt = "gb";
-                    }
-                    break;
-                case "ja":
-                    {
-                        idt = "jp";
-                    }
-                    break;
-                case "zh":
-                    {
-                        idt = "cn";
-                    }
-                    break;
-                case "uk":
-                    {
-                        idt = "ua";
-                    }
-                    break;
-                case "el":
-                    {
-                        idt = "gr";
-                    }
-                    break;
-            }
-            return idt;
-        }
 
         $(document).ready(() => {
+            const localizer = new Localizer();
             window.loadAsync("/Localization/GetLanguagesAsJson").then(x => {
                 var langBlock = $("#languages");
                 $.each(x,
                     function (index, item) {
                         langBlock.append(`<li style="list-style-type: none;">
-                                    <i class="flag-icon flag-icon-${getIdentifier(item.identifier)}"></i>
-                                    <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
-                                </li>`);
+                                        <i class="flag-icon flag-icon-${localizer.adaptIdentifier(item.identifier)}"></i>
+                                        <a href="/Localization/ChangeLanguage?identifier=${item.identifier}">${item.name}</a>
+                                    </li>`);
                     });
                 langBlock.find("li a").on("click",
                     function () {

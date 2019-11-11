@@ -772,5 +772,12 @@
   "system_payment_method": "Metodo di pagamento",
   "system_transaction_id": "ID transazione",
   "system_payments": "Pagamenti",
-  "system_order_details": "I dettagli dell'ordine "
+  "system_order_details": "I dettagli dell'ordine ",
+  "system_back_to_home": "Torna alla home",
+  "commerce_mobilPay_Settings": "MobilPay impostazioni",
+  "eCommerce_Paypal_Settings": "Paypal impostazioni",
+  "system_signature": "Firma",
+  "system_public_key": "Chiave pubblica",
+  "system_private_key": "Chiave privata",
+  "system_payment_methods": "Metodi di pagamento"
 }

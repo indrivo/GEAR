@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 
 namespace GR.ECommerce.Abstractions
 {
@@ -26,6 +27,6 @@ namespace GR.ECommerce.Abstractions
         /// Get subscription plans
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Product>>> GetSubscriptionPlansAsync();
+        Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync();
     }
 }

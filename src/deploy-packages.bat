@@ -19,6 +19,8 @@ dotnet pack ./GR.Extensions/GR.Core.Extension/GR.Core.Razor/GR.Core.Razor.csproj
 
 ::Pack cache modules
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Abstractions/GR.Cache.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache/GR.Cache.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Razor/GR.Cache.Razor.csproj -o ../../../nupkgs
 
 ::Pack calendar modules
 dotnet pack ./GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Abstraction/GR.Calendar.Abstractions.csproj -o ../../../nupkgs
@@ -80,6 +82,8 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Core.Razor*
 
 :: Push cache modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Razor*
 
 
 :: Push calendar modules

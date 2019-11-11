@@ -772,5 +772,12 @@
   "system_payment_method": "お支払い方法",
   "system_transaction_id": "取引ID",
   "system_payments": "支払",
-  "system_order_details": "注文内容に間違いがなければ "
+  "system_order_details": "注文内容に間違いがなければ ",
+  "system_back_to_home": "ホームページへ戻る",
+  "commerce_mobilPay_Settings": "MobilPay設定",
+  "eCommerce_Paypal_Settings": "Paypalの設定",
+  "system_signature": "署名",
+  "system_public_key": "公開鍵",
+  "system_private_key": "鍵",
+  "system_payment_methods": "お支払い方法"
 }

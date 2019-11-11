@@ -13,7 +13,6 @@ using GR.Application;
 using GR.Backup.Abstractions.BackgroundServices;
 using GR.Backup.Abstractions.Extensions;
 using GR.Backup.PostGresSql;
-using GR.Cache.Extensions;
 using GR.Cms.Services.Abstractions;
 using GR.Core;
 using GR.Core.Extensions;
@@ -77,6 +76,8 @@ using GR.Application.Middleware.Extensions;
 using GR.Application.Middleware.Server;
 using GR.Audit;
 using GR.Audit.Abstractions.Extensions;
+using GR.Cache.Abstractions.Extensions;
+using GR.Cache.Services;
 using GR.Calendar;
 using GR.Calendar.Abstractions.Extensions;
 using GR.Calendar.Abstractions.ExternalProviders;
@@ -111,14 +112,18 @@ using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
+using GR.ECommerce.Razor.Extensions;
 using GR.Entities.Extensions;
 using GR.Localization;
 using GR.Orders;
-using GR.Orders.Abstractions.Extensions;
 using GR.Orders.Abstractions.Models;
 using GR.PageRender;
 using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
+using GR.MobilPay;
+using GR.MobilPay.Abstractions.Extensions;
+using GR.MobilPay.Razor.Extensions;
+using GR.Orders.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
 using GR.ECommerce.Razor.Extensions;
 using GR.Subscriptions.Abstractions.Models;
@@ -254,7 +259,7 @@ namespace GR.Cms
 			});
 
 			//---------------------------------Custom cache Module-------------------------------------
-			services.AddCacheModule(HostingEnvironment, Configuration);
+			services.AddCacheModule<CacheService, RedisConnection>(HostingEnvironment, Configuration);
 
 			//--------------------------------------Cors origin Module-------------------------------------
 			services.AddOriginCorsModule();
@@ -489,6 +494,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				})
 				.RegisterPaypalProvider<PaypalPaymentMethodService>()
+				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
 				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
@@ -498,6 +504,7 @@ namespace GR.Cms
 				.RegisterSubscriptionStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
+				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
