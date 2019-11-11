@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using GR.Core.Helpers;
 using GR.ECommerce.Payments.Abstractions;
 using GR.MobilPay.Abstractions.Models;
 using MobilpayEncryptDecrypt;
@@ -14,7 +16,7 @@ namespace GR.MobilPay.Abstractions
         /// <param name="hostingDomain"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task RequestInvoicePaymentAsync(string hostingDomain, Guid? orderId);
+        Task<ResultModel<Dictionary<string, string>>> RequestInvoicePaymentAsync(string hostingDomain, Guid? orderId);
 
         /// <summary>
         /// Create payment
@@ -22,15 +24,14 @@ namespace GR.MobilPay.Abstractions
         /// <param name="hostingDomain"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<MobilpayEncrypt> CreatePaymentAsync(string hostingDomain, Guid? orderId);
+        Task<ResultModel<MobilpayEncrypt>> CreatePaymentAsync(string hostingDomain, Guid? orderId);
 
         /// <summary>
         /// Confirm payment
         /// </summary>
         /// <param name="textXml"></param>
         /// <param name="envKey"></param>
-        /// <param name="orderId"></param>
         /// <returns></returns>
-        Task<MobilPayPaymentResponse> ConfirmPaymentAsync(string textXml, string envKey, Guid? orderId);
+        Task<MobilPayPaymentResponse> ConfirmPaymentAsync(string textXml, string envKey);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
@@ -21,16 +21,14 @@ namespace GR.MobilPay
 {
     public class MobilPayPaymentMethodService : IMobilPayPaymentMethod
     {
-        private readonly string _yourCurrency = "RON";
+        private readonly string _yourCurrency = "USD";
 
+        /// <summary>
+        /// Configuration
+        /// </summary>
         private readonly MobilPayConfiguration _configuration;
 
         #region Injectable
-
-        /// <summary>
-        /// Inject http client
-        /// </summary>
-        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Inject order service
@@ -49,12 +47,11 @@ namespace GR.MobilPay
         #endregion
 
 
-        public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<ApplicationUser> userManager, IOptions<MobilPayConfiguration> options, HttpClient httpClient)
+        public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<ApplicationUser> userManager, IOptions<MobilPayConfiguration> options)
         {
             _orderProductService = orderProductService;
             _paymentService = paymentService;
             _userManager = userManager;
-            _httpClient = httpClient;
             _configuration = options.Value;
         }
 
@@ -64,16 +61,15 @@ namespace GR.MobilPay
         /// <param name="hostingDomain"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task RequestInvoicePaymentAsync(string hostingDomain, Guid? orderId)
+        public async Task<ResultModel<Dictionary<string, string>>> RequestInvoicePaymentAsync(string hostingDomain, Guid? orderId)
         {
-            var encrypt = await CreatePaymentAsync(hostingDomain, orderId);
-            var content = new FormUrlEncodedContent(new[]
+            var encryptRequest = await CreatePaymentAsync(hostingDomain, orderId);
+            if (!encryptRequest.IsSuccess) return encryptRequest.Map(new Dictionary<string, string>());
+            return encryptRequest.Map(new Dictionary<string, string>
             {
-                new KeyValuePair<string, string>("data", encrypt.EncryptedData),
-                new KeyValuePair<string, string>("env_key", encrypt.EnvelopeKey)
+                { "data", encryptRequest.Result.EncryptedData },
+                { "env_key", encryptRequest.Result.EnvelopeKey}
             });
-
-            await _httpClient.PostAsync(_configuration.MobilPayUrl, content);
         }
 
         /// <summary>
@@ -82,15 +78,16 @@ namespace GR.MobilPay
         /// <param name="hostingDomain"></param>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<MobilpayEncrypt> CreatePaymentAsync(string hostingDomain, Guid? orderId)
+        public async Task<ResultModel<MobilpayEncrypt>> CreatePaymentAsync(string hostingDomain, Guid? orderId)
         {
+            var response = new ResultModel<MobilpayEncrypt>();
             var encrypt = new MobilpayEncrypt();
             var encDec = new MobilpayEncryptDecrypt.MobilpayEncryptDecrypt();
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
-            if (!orderRequest.IsSuccess) return encrypt;
+            if (!orderRequest.IsSuccess) return response;
 
             var isPayedRequest = await _paymentService.IsOrderPayedAsync(orderId);
-            if (isPayedRequest.IsSuccess) return encrypt;
+            if (isPayedRequest.IsSuccess) return response;
 
             var order = orderRequest.Result;
 
@@ -111,9 +108,21 @@ namespace GR.MobilPay
                 url.ReturnUrl = $"{hostingDomain}/MobilPay/ReturnCard";
                 card.Url = url;
                 card.TimeStamp = DateTime.Now.ToString("yyyyMMddhhmmss");
-                invoice.Amount = 1;
+                invoice.Amount = order.Total;
                 invoice.Currency = _yourCurrency;
-                invoice.Details = "Product name";
+                invoice.Details = $"#{orderId}";
+                var items = new Mobilpay_Payment_ItemCollection();
+                foreach (var orderItem in order.ProductOrders)
+                {
+                    items.Add(new Mobilpay_Payment_Invoice_Item
+                    {
+                        Name = orderItem.Product.Name,
+                        Price = orderItem.AmountFinalPrice,
+                        Quantity = orderItem.Amount
+                    });
+                }
+                //invoice.Items = items;
+
 
                 contactInfo.Billing = billing;
                 shipping.Sameasbilling = "1";
@@ -124,40 +133,26 @@ namespace GR.MobilPay
                 encrypt.X509CertificateFilePath = GetPathToCertificate();
                 encDec.EncryptWithCng(encrypt);
                 await _orderProductService.ChangeOrderStateAsync(orderId, OrderState.PendingPayment);
-                return encrypt;
+                response.IsSuccess = true;
+                response.Result = encrypt;
+                return response;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                response.Errors.Add(new ErrorModel(string.Empty, ex.Message));
             }
 
-            return encrypt;
+            return response;
         }
-
 
         /// <summary>
         /// Confirm payment
         /// </summary>
         /// <param name="textXml"></param>
         /// <param name="envKey"></param>
-        /// <param name="orderId"></param>
         /// <returns></returns>
-        public async Task<MobilPayPaymentResponse> ConfirmPaymentAsync(string textXml, string envKey, Guid? orderId)
+        public async Task<MobilPayPaymentResponse> ConfirmPaymentAsync(string textXml, string envKey)
         {
-            var userRequest = await _userManager.GetCurrentUserAsync();
-            if (!userRequest.IsSuccess)
-            {
-
-            }
-
-            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
-            if (!orderRequest.IsSuccess)
-            {
-
-            }
-
-            var order = orderRequest.Result;
-
             var rootPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var filePath = Path.GetFullPath(Path.Combine(rootPath, _configuration.PathToPrivateKey));
 
@@ -173,13 +168,26 @@ namespace GR.MobilPay
 
             encryptDecrypt.Decrypt(decrypt);
             var card = encryptDecrypt.GetCard(decrypt.DecryptedData);
+            var orderId = card.OrderId.ToGuid();
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess)
+            {
+                return new MobilPayPaymentResponse
+                {
+                    ErrorType = "0x02",
+                    ErrorCode = "0x300000f6",
+                    ErrorMessage = "mobilpay_refference_action paramaters is invalid"
+                };
+            }
+
+            var order = orderRequest.Result;
             var payment = new Payment
             {
                 PaymentMethodId = "MobilPay",
                 GatewayTransactionId = "",
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
-                UserId = userRequest.Result.Id.ToGuid()
+                UserId = order.UserId
             };
 
             switch (card.Confirm.Action)

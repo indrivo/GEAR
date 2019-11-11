@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
@@ -6,8 +7,10 @@ using GR.Core.Helpers;
 using GR.MobilPay.Abstractions;
 using GR.MobilPay.Abstractions.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 
 namespace GR.MobilPay.Razor.Controllers
 {
@@ -34,31 +37,85 @@ namespace GR.MobilPay.Razor.Controllers
             _paymentMethod = paymentMethod;
         }
 
-
         /// <summary>
         /// Get invoice
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task RequestInvoice(Guid? orderId)
+        [HttpGet, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, string>>))]
+        public async Task<JsonResult> RequestInvoiceData(Guid? orderId)
         {
             var hostingUrl = Request.HttpContext.GetAppBaseUrl();
-            await _paymentMethod.RequestInvoicePaymentAsync(hostingUrl, orderId);
+            var data = await _paymentMethod.RequestInvoicePaymentAsync(hostingUrl, orderId);
+            return Json(data);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> ConfirmCard(string value)
+        /// <summary>
+        /// Get configuration
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(MobilPayConfiguration))]
+        public JsonResult GetConfiguration() => Json(_options.Value);
+
+        /// <summary>
+        /// Confirm card
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET", "POST"), AllowAnonymous]
+        public async Task ConfirmCard()
         {
-            var rootPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var keypath = Path.Combine(rootPath, _options.Value.PathToPrivateKey);
-            return Ok();
+            var errorCode = "0";
+            var errorMessage = "";
+            var errorType = "";
+
+            if ((HttpContext.Request.Form.ContainsKey("data") == false
+                 || HttpContext.Request.Form["data"] == "")
+                & (HttpContext.Request.Form.ContainsKey("env_key") == false
+                   || HttpContext.Request.Form["env_key"] == ""))
+            {
+
+                errorType = "0x02";
+                errorCode = "0x300000f5";
+                errorMessage = "mobilpay.ro posted invalid parameters";
+            }
+
+            var textXml = HttpContext.Request.Form["data"].ToString();
+            var envKey = HttpContext.Request.Form["env_key"].ToString();
+            var result = await _paymentMethod.ConfirmPaymentAsync(textXml, envKey);
+
+            errorType = result.ErrorType;
+            errorCode = result.ErrorCode;
+            errorMessage = result.ErrorMessage;
+
+
+            Response.ContentType = "text/xml";
+            var message = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+            if (errorCode == "0")
+            {
+                message = message + "<crc>" + errorMessage + "</crc>";
+            }
+            else
+            {
+                message = message + "<crc error_type=\"" + errorType + "\" error_code=\"" + errorCode + "\"> " + errorMessage + "</crc>";
+            }
+
+            await Response.WriteAsync(message);
         }
 
-        [HttpGet]
-        public IActionResult ReturnCard()
+        /// <summary>
+        /// Confirm 
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public IActionResult ReturnCard(Guid? orderId)
         {
-            return Ok();
+            return RedirectToAction("Success", "Checkout", new
+            {
+                OrderId = orderId
+            });
         }
     }
 }
