@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.Models.Currencies;
 
 namespace GR.ECommerce.Abstractions
 {
@@ -95,5 +96,10 @@ namespace GR.ECommerce.Abstractions
         /// Cart Items
         /// </summary>
         DbSet<CartItem> CartItems { get; set; }
+
+        /// <summary>
+        /// Currencies
+        /// </summary>
+        DbSet<Currency> Currencies { get; set; }
     }
 }
