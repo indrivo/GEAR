@@ -156,7 +156,10 @@ namespace GR.MobilPay
             var rootPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var filePath = Path.GetFullPath(Path.Combine(rootPath, _configuration.PathToPrivateKey));
 
-            var result = new MobilPayPaymentResponse();
+            var result = new MobilPayPaymentResponse
+            {
+                ErrorCode = "0"
+            };
 
             var encryptDecrypt = new MobilpayEncryptDecrypt.MobilpayEncryptDecrypt();
             var decrypt = new MobilpayDecrypt
@@ -184,12 +187,12 @@ namespace GR.MobilPay
             var payment = new Payment
             {
                 PaymentMethodId = "MobilPay",
-                GatewayTransactionId = "",
+                GatewayTransactionId = orderId.ToString(),
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
                 UserId = order.UserId
             };
-
+            var orderState = order.OrderState;
             switch (card.Confirm.Action)
             {
                 case "confirmed":
@@ -200,6 +203,7 @@ namespace GR.MobilPay
                         if (card.Confirm.Action == "confirmed" && card.Confirm.Error.Code == "0")
                         {
                             payment.PaymentStatus = PaymentStatus.Succeeded;
+                            orderState = OrderState.PaymentReceived;
                         }
                         break;
                     }
@@ -208,11 +212,14 @@ namespace GR.MobilPay
                         result.ErrorType = "0x02";
                         result.ErrorCode = "0x300000f6";
                         result.ErrorMessage = "mobilpay_refference_action paramaters is invalid";
+                        orderState = OrderState.PaymentFailed;
+                        payment.FailureMessage = card.Confirm.Serialize();
                         break;
                     }
             }
 
             await _paymentService.AddPaymentAsync(orderId, payment);
+            await _orderProductService.ChangeOrderStateAsync(orderId, orderState);
 
             return result;
         }

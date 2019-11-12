@@ -109,14 +109,18 @@ namespace GR.ECommerce.Razor.Controllers
         }
 
         /// <summary>
-        /// Cancel
+        /// Success
         /// </summary>
+        /// <param name="orderId"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Cancel()
+        public async Task<IActionResult> Success(Guid? orderId)
         {
-            return View();
+            var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
+            if (!orderRequest.IsSuccess) return NotFound();
+            return View(orderRequest.Result);
         }
+
 
         /// <summary>
         /// Success
@@ -124,7 +128,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <param name="orderId"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Success(Guid? orderId)
+        public async Task<IActionResult> Fail(Guid? orderId)
         {
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
