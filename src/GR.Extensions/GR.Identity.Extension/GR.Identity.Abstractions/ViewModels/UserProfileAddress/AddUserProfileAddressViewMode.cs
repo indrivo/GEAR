@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using GR.Core.Attributes;
 using GR.Identity.Abstractions.Helpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress
+namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 {
     public class AddUserProfileAddressViewModel
     {

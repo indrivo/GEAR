@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress
+namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 {
     public class EditUserProfileAddressViewModel : AddUserProfileAddressViewModel
     {
