@@ -6,7 +6,6 @@ using System.Text;
 using GR.Core.Abstractions;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Models;
-using GR.Subscriptions.Abstractions.Models;
 
 namespace GR.Documents.Data
 {
@@ -18,7 +17,7 @@ namespace GR.Documents.Data
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        protected DocumentsDbContext(DbContextOptions options) : base(options)
+        public DocumentsDbContext(DbContextOptions<DocumentsDbContext> options) : base(options)
         {
             //Enable tracking
             //this.EnableTracking();

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Transactions;
 using GR.Core;
 using GR.Files.Abstraction.Models;
 
-
-namespace GR.Subscriptions.Abstractions.Models
+namespace GR.Documents.Abstractions.Models
 {
     public class DocumentVersion: BaseModel
     {
@@ -17,60 +12,70 @@ namespace GR.Subscriptions.Abstractions.Models
         /// Document Id
         /// </summary>
         [Required]
-        public Guid DocumentId { get; set; }
+        public virtual Guid DocumentId { get; set; }
 
         /// <summary>
         /// Document
         /// </summary>
-        public Document Document { get; set; }
+        public virtual Document Document { get; set; }
 
 
         /// <summary>
         /// File Id
         /// </summary>
-        public Guid FileStorageId { get; set; }
+        public virtual Guid FileStorageId { get; set; }
 
 
         /// <summary>
         /// File
         /// </summary>
-        public FileStorage FileStorage { get; set; }
+        public virtual FileStorage FileStorage { get; set; }
 
         /// <summary>
         /// URL
         /// </summary>
-        public string Url { get; set; }
+        public virtual string Url { get; set; }
 
 
         /// <summary>
         /// Version number
         /// </summary>
         [Required]
-        public double VersionNumber { get; set; }
+        public virtual double VersionNumber { get; set; }
 
         /// <summary>
         /// Is arhiv
         /// </summary>
         [Required]
-        public bool IsArhiv { get; set; }
+        public virtual bool IsArhive { get; set; }
 
 
         /// <summary>
-        /// Coments
+        /// Comments
         /// </summary>
-        public string Coments { get; set; }
+        public virtual string Comments { get; set; }
+
+        /// <summary>
+        ///  Previous version id
+        /// </summary>
+        public virtual Guid? PreviousVersionId { get; set; }
 
         /// <summary>
         /// Previous version
         /// </summary>
-        public DocumentVersion PreviousVersion { get; set; }
+        public virtual DocumentVersion PreviousVersion { get; set; }
 
 
         /// <summary>
         /// Major version
         /// </summary>
         [Required]
-        public bool IsMajorVersion { get; set; }
+        public virtual bool IsMajorVersion { get; set; }
+
+        /// <summary>
+        /// Owner id
+        /// </summary>
+        public virtual Guid OwnerId { get; set; }
 
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using GR.Subscriptions.Abstractions.Models;
 
 namespace GR.Documents.Abstractions
 {
@@ -19,6 +18,7 @@ namespace GR.Documents.Abstractions
         /// Document types
         /// </summary>
         DbSet<DocumentType> DocumentTypes { get; set; }
+
 
         /// <summary>
         /// Document versions

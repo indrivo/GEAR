@@ -1,6 +1,7 @@
 ﻿using GR.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace GR.Documents.Abstractions.Models
@@ -10,17 +11,19 @@ namespace GR.Documents.Abstractions.Models
         /// <summary>
         /// Name document type
         /// </summary>
-        public string Name { get; set; }
+        [Required]
+        public virtual string Name { get; set; }
 
         /// <summary>
-        /// Type document
+        /// Document code 
         /// </summary>
-        public int Type { get; set; }
+        public virtual int Code { get; set; }
 
         /// <summary>
         /// Is system
         /// </summary>
-        public bool IsSystem { get; set; }
+        [Required]
+        public virtual bool IsSystem { get; set; }
 
     }
 }
