@@ -1,8 +1,12 @@
-﻿using GR.Audit.Contexts;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using GR.Audit.Contexts;
 using GR.Core.Abstractions;
+using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
-using GR.ECommerce.BaseImplementations.Data.Extensions;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Orders.Abstractions;
@@ -10,6 +14,10 @@ using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using GR.Subscriptions.Abstractions.Models;
+using GR.ECommerce.Abstractions.Models.Currencies;
+using GR.ECommerce.Abstractions.ViewModels.CurrencyViewModels;
+using GR.ECommerce.Products.Extensions;
+using Mapster;
 
 namespace GR.ECommerce.BaseImplementations.Data
 {
@@ -55,6 +63,7 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<OrderHistory> OrderHistories { get; set; }
         public virtual DbSet<Subscription> Subscription { get; set; }
+        public virtual DbSet<Currency> Currencies { get; set; }
         #endregion
 
         /// <summary>
@@ -71,6 +80,12 @@ namespace GR.ECommerce.BaseImplementations.Data
             builder.Entity<ProductOrder>().HasKey(x => new { x.OrderId, x.ProductId });
             builder.Entity<ProductAttributes>().HasKey(x => new { x.ProductAttributeId, x.ProductId });
 
+            builder.Entity<Currency>().HasKey(x => x.Code);
+            var currenciesFilePath = Path.Combine(AppContext.BaseDirectory, "Configuration/currencies.json");
+            var currencies = JsonParser
+                .ReadObjectDataFromJsonFile<Dictionary<string, CurrencyViewModel>>(currenciesFilePath)
+                .Select(x => x.Value.Adapt<Currency>()).ToList();
+            builder.Entity<Currency>().HasData(currencies);
             builder.Entity<PaymentMethod>().HasKey(x => x.Name);
         }
 
