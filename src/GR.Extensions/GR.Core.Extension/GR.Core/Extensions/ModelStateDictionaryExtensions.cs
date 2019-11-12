@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using GR.Core.Helpers;
 
@@ -34,6 +35,20 @@ namespace GR.Core.Extensions
                     yield return new ErrorModel(string.Empty, error.ErrorMessage);
                 }
             }
+        }
+
+        /// <summary>
+        /// Attach model state
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="self"></param>
+        /// <param name="modelState"></param>
+        /// <returns></returns>
+        public static ResultModel<T> AttachModelState<T>(this ResultModel<T> self, ModelStateDictionary modelState)
+        {
+            if (self == null) self = new ResultModel<T>();
+            self.Errors = modelState.ToResultModelErrors().ToList();
+            return self;
         }
     }
 }

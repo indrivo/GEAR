@@ -125,7 +125,6 @@ using GR.MobilPay.Abstractions.Extensions;
 using GR.MobilPay.Razor.Extensions;
 using GR.Orders.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
-using GR.ECommerce.Razor.Extensions;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions;
 using GR.Subscriptions.Abstractions.Extensions;
@@ -276,6 +275,7 @@ namespace GR.Cms
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
+				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
 				.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

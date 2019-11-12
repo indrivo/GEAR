@@ -28,10 +28,10 @@ using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.LdapAuth.Abstractions;
 using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels;
-using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress;
 using UserProfileViewModel = GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel;
 
 namespace GR.Identity.Razor.Users.Controllers

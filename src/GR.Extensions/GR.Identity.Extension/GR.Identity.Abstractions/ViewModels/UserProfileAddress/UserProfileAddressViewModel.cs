@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress
+namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 {
    public class UserProfileAddressViewModel
     {
