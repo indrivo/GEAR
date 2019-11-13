@@ -138,7 +138,7 @@ namespace GR.Identity.Services
                 Phone = model.Phone,
                 CountryId = model.CountryId,
                 StateOrProvinceId = model.CityId,
-                ApplicationUser = user,
+                ApplicationUserId = user.Id,
                 IsDefault = model.IsDefault
             };
 
