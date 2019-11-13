@@ -529,7 +529,8 @@ namespace GR.Cms
 				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
 			})
-			.RegisterDocumentTypeServices<DocumentTypeService>();
+			.RegisterDocumentTypeServices<DocumentTypeService>()
+			.RegisterDocumentServices<DocumentService>();
 
 			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();

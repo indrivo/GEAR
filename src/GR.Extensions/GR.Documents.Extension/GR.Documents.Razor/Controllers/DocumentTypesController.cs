@@ -5,12 +5,14 @@ using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Helpers;
 using GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace GR.Documents.Razor.Controllers
 {
+    [Authorize]
     public class DocumentTypesController : Controller
     {
 
@@ -50,7 +52,7 @@ namespace GR.Documents.Razor.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create(DocumentTypeViewModel model)
+        public async Task<IActionResult> Create(DocumentTypeViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -58,18 +60,44 @@ namespace GR.Documents.Razor.Controllers
                 return View(model);
             }
 
-            var result = _documentTypeService.SaveDocumentTypeAsync(model);
+            var result = await _documentTypeService.SaveDocumentTypeAsync(model);
 
 
-            return View(model);
+            return View(result.Result);
+        }
+
+        /// <summary>
+        /// Get edit document type by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid? id)
+        {
+            return View((await _documentTypeService.GetDocumentTypeByIdAsync(id)).Result);
+        }
+
+        public async Task<IActionResult> Edit(DocumentTypeViewModel model)
+        {
+            var result = await _documentTypeService.EditDocumentTypeAsync(model);
+
+
+            return RedirectToAction("Edit", new {id = result.Result.Id});
+
+            //return View(result.Result);
         }
 
 
-        public JsonResult Delete(Guid id)
+        /// <summary>
+        /// Delete document type by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Delete(Guid? id)
         {
+            var result = await _documentTypeService.DeleteDocumentTypeAsync(id);
 
-
-            return Json("");
+           return  RedirectToAction("Index");
         }
     }
 }

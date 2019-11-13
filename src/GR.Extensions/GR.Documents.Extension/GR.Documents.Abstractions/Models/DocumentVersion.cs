@@ -23,7 +23,7 @@ namespace GR.Documents.Abstractions.Models
         /// <summary>
         /// File Id
         /// </summary>
-        public virtual Guid FileStorageId { get; set; }
+        public virtual Guid? FileStorageId { get; set; }
 
 
         /// <summary>

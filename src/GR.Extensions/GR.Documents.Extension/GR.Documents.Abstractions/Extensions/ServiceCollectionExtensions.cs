@@ -20,14 +20,28 @@ namespace GR.Documents.Abstractions.Extensions
 
             return services;
         }
-        
-       /// <summary>
-       /// Register documents context
-       /// </summary>
-       /// <typeparam name="TDocumentContext"></typeparam>
-       /// <param name="services"></param>
-       /// <param name="storageOptions"></param>
-       /// <returns></returns>
+
+        /// <summary>
+        /// Register Document  service
+        /// </summary>
+        /// <typeparam name="TDocumentTypeService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterDocumentServices<TDocumentService>(this IServiceCollection services)
+            where TDocumentService : class, IDocumentService
+        {
+            IoC.RegisterTransientService<IDocumentService, TDocumentService>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Register documents context
+        /// </summary>
+        /// <typeparam name="TDocumentContext"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="storageOptions"></param>
+        /// <returns></returns>
         public static IServiceCollection RegisterDocumentStorage<TDocumentContext>(this IServiceCollection services,
             Action<DbContextOptionsBuilder> storageOptions)
             where TDocumentContext : DbContext, IDocumentContext

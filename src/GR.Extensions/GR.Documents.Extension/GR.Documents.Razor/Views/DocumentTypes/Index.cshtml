@@ -35,7 +35,7 @@
             {
                 HasIcon = false,
                 Name = Localizer["edit"],
-                Url = Url.Action("Create", "DocumentTypes"),
+                Url = Url.Action("Edit", "DocumentTypes"),
                 ButtonType = BootstrapButton.Info,
                 ActionParameters = new List<ActionParameter>
                 {
@@ -53,7 +53,11 @@
                     JsEvent = JsEvent.OnClick,
                     JsEventHandler = "createAlert('${row.id}');"
                 },
-                ButtonType = BootstrapButton.Danger
+                ButtonType = BootstrapButton.Danger,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id")
+                }
             },
         },
         Documentation = "This tab allow to manage your document type"
