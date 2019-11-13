@@ -2,29 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
-using GR.Identity.Permissions.Abstractions.Events.EventArgs;
 using Activator = System.Activator;
 
 namespace GR.Identity.Permissions.Abstractions.Configurators
 {
     public abstract class DefaultPermissionsConfigurator<TPermissionsConstants> where TPermissionsConstants : class
     {
-        /// <summary>
-        /// Executed handlers
-        /// </summary>
-        private long _executedHandlers = 0;
+        public static IList<Func<IEnumerable<string>, Guid?, Task<bool>>> CustomRules;
 
         protected DefaultPermissionsConfigurator()
         {
-            AttachHandler((sender, args) => { ++_executedHandlers; });
-        }
+            CustomRules.Add(async (permissions, userId) =>
+            {
+                if (permissions.Contains("InviteUser"))
+                {
+                    //check here
+                    return true;
+                }
+                return false;
+            });
 
-        /// <summary>
-        /// On permission request
-        /// </summary>
-        public virtual event EventHandler<PermissionRequestEventArgs> OnPermissionRequest;
+            var haveAccess = CustomRules.Select(async rule => await rule(new List<string> { "permName" }, Guid.Empty))
+                .Select(x => x.Result)
+                .All(x => x);
+        }
 
         /// <summary>
         /// Inject identity context
@@ -43,21 +47,8 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
             return permissions;
         }
 
-        public void AttachHandler(EventHandler<PermissionRequestEventArgs> handler)
-        {
-            OnPermissionRequest += handler;
-        }
-
         public bool HasPermission(string permissionName)
         {
-            OnPermissionRequest?.Invoke(this, new PermissionRequestEventArgs
-            {
-                PermissionName = permissionName
-            });
-
-            var handlersCount = OnPermissionRequest?.GetInvocationList().Length ?? 0;
-            while (handlersCount != _executedHandlers) { }
-
             return true;
         }
     }
