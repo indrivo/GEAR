@@ -124,7 +124,7 @@ namespace GR.Identity.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> AddAddressAsync(AddUserProfileAddressViewModel model)
+        public async Task<ResultModel<Guid>> AddAddressAsync(AddNewAddressViewModel model)
         {
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map(Guid.Empty);
@@ -136,8 +136,8 @@ namespace GR.Identity.Services
                 ContactName = model.ContactName,
                 ZipCode = model.ZipCode,
                 Phone = model.Phone,
-                CountryId = model.SelectedCountryId,
-                StateOrProvinceId = model.SelectedStateOrProvinceId,
+                CountryId = model.CountryId,
+                StateOrProvinceId = model.CityId,
                 ApplicationUser = user,
                 IsDefault = model.IsDefault
             };

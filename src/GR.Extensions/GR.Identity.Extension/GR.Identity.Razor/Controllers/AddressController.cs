@@ -43,7 +43,7 @@ namespace GR.Identity.Razor.Controllers
         /// <returns></returns>
         [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Country>>))]
-        public async Task<JsonResult> GetCitiesByCityId(string cityId) => Json(await _addressService.GetCitiesByCountryIdAsync(cityId));
+        public async Task<JsonResult> GetCitiesByCountryId(string cityId) => Json(await _addressService.GetCitiesByCountryIdAsync(cityId));
 
         /// <summary>
         /// Get user addresses
@@ -59,9 +59,9 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]")]
+        [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
-        public async Task<JsonResult> AddNewAddress(AddUserProfileAddressViewModel model)
+        public async Task<JsonResult> AddNewAddress(AddNewAddressViewModel model)
         {
             return !ModelState.IsValid ? Json(new ResultModel<Guid>().AttachModelState(ModelState))
                 : Json(await _addressService.AddAddressAsync(model));
