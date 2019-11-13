@@ -114,6 +114,7 @@ using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
 using GR.ECommerce.Razor.Extensions;
 using GR.Entities.Extensions;
+using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Localization;
 using GR.Orders;
 using GR.Orders.Abstractions.Models;
@@ -518,6 +519,11 @@ namespace GR.Cms
 
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
+
+			PermissionCustomRules.RegisterCustomRule(async (permissions, roles, tenant, userId) =>
+			{
+				return true;
+			});
 
 			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();
