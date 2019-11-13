@@ -20,13 +20,13 @@
                         <td>$@prOrder.AmountFinalPriceWithOutDiscount.ToString("N2")</td>
                     </tr>
                 }
-                <tr>
+                <tr class="border-top-row mt-3 pt-3 weight-600">
                     <td>@Localizer["system_order_note"]</td>
                     <td colspan="2">
                         @Model.Notes
                     </td>
                 </tr>
-                <tr>
+                <tr class="border-top-row mt-3 pt-3 weight-600">
                     <td>Subtotal</td>
                     <td></td>
                     <td>$@Model.SubTotal.ToString("N2")</td>
@@ -36,7 +36,7 @@
                     <td></td>
                     <td>$@Model.DiscountTotal.ToString("N2")</td>
                 </tr>
-                <tr>
+                <tr class="border-top-row mt-3 pt-3 weight-600">
                     <td>@Localizer["system_commerce_order_total"]</td>
                     <td></td>
                     <td>$@Model.Total.ToString("N2")</td>

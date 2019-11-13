@@ -779,5 +779,9 @@
   "system_signature": "Υπογραφή",
   "system_public_key": "Δημόσιο κλειδί",
   "system_private_key": "Το ιδιωτικό κλειδί",
-  "system_payment_methods": "Μέθοδοι πληρωμής"
+  "system_payment_methods": "Μέθοδοι πληρωμής",
+  "user_postal_code": "Ταχυδρομικός κώδικας",
+  "system_cancel_order": "Ακύρωση παραγγελίας",
+  "system_payment": "Πληρωμή",
+  "system_billing_address": "Διεύθυνση Χρέωσης"
 }

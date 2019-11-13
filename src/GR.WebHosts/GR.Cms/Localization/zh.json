@@ -779,5 +779,9 @@
   "system_signature": "签名",
   "system_public_key": "公共密钥",
   "system_private_key": "私人钥匙",
-  "system_payment_methods": "支付方式"
+  "system_payment_methods": "支付方式",
+  "user_postal_code": "邮政编码",
+  "system_cancel_order": "取消订单",
+  "system_payment": "付款",
+  "system_billing_address": "帐单的地址"
 }

@@ -779,5 +779,9 @@
   "system_signature": "Handtekening",
   "system_public_key": "Publieke sleutel",
   "system_private_key": "Eigen sleutel",
-  "system_payment_methods": "Betaalmethoden"
+  "system_payment_methods": "Betaalmethoden",
+  "user_postal_code": "Postcode",
+  "system_cancel_order": "Bestelling annuleren",
+  "system_payment": "Betaling",
+  "system_billing_address": "Facturatie Adres"
 }

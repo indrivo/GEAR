@@ -779,5 +779,9 @@
   "system_signature": "Podpis",
   "system_public_key": "Klucz publiczny",
   "system_private_key": "Klucz prywatny",
-  "system_payment_methods": "Sposoby płatności "
+  "system_payment_methods": "Sposoby płatności ",
+  "user_postal_code": "Kod pocztowy",
+  "system_cancel_order": "Anulowanie zamówienia",
+  "system_payment": "Płatność",
+  "system_billing_address": "Adres Rozliczeniowy"
 }

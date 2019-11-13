@@ -779,5 +779,9 @@
   "system_signature": "Semnătura",
   "system_public_key": "Cheie publică",
   "system_private_key": "Cheia privată",
-  "system_payment_methods": "Metode de plată"
+  "system_payment_methods": "Metode de plată",
+  "user_postal_code": "Cod Postal",
+  "system_cancel_order": "Anula comanda",
+  "system_payment": "Plata",
+  "system_billing_address": "Adresa De Facturare"
 }

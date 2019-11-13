@@ -1,0 +1,49 @@
+@using GR.Core.Extensions
+
+@model GR.Orders.Abstractions.Models.Order
+
+<div class="row">
+	<div class="col-md-12">
+		<h2>@Localizer["system_commerce_order_summary"]</h2>
+		<table class="table mt-38px">
+			<thead class="weight-600 fz-16">
+				<tr>
+					<th>@Localizer["system_product"]</th>
+					<th>@Localizer["system_commerce_quantity"]</th>
+					<th>@Localizer["system_price"]</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var prOrder in Model.ProductOrders)
+				{
+					<tr class="product-item">
+						<td class=" @(Model.ProductOrders.IsLast(prOrder) ? "pb-4": "")">@prOrder.Product?.Name</td>
+						<td>@prOrder.Amount</td>
+						<td>$@prOrder.AmountFinalPriceWithOutDiscount.ToString("N2")</td>
+					</tr>
+				}
+				<tr class="border-top-row weight-600 fz-16">
+					<td class="pt-4">@Localizer["system_order_note"]</td>
+					<td colspan="2">
+						@Model.Notes
+					</td>
+				</tr>
+				<tr>
+					<td>Subtotal</td>
+					<td></td>
+					<td>$@Model.SubTotal.ToString("N2")</td>
+				</tr>
+				<tr>
+					<td class="pb-4">@Localizer["system_commerce_discount"]</td>
+					<td></td>
+					<td>$@Model.DiscountTotal.ToString("N2")</td>
+				</tr>
+				<tr class="border-top-row weight-600 fz-16">
+					<td class="pt-4">@Localizer["system_commerce_order_total"]</td>
+					<td></td>
+					<td>$@Model.Total.ToString("N2")</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
