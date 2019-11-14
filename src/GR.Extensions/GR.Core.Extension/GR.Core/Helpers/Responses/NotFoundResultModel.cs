@@ -4,15 +4,9 @@ namespace GR.Core.Helpers.Responses
 {
     public class NotFoundResultModel<T> : ResultModel<T>
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public NotFoundResultModel()
+        public override ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>
         {
-            Errors = new List<IErrorModel>
-            {
-                new ErrorModel(string.Empty, "Entry not found")
-            };
-        }
+            new ErrorModel(string.Empty, "Entry not found")
+        };
     }
 }
