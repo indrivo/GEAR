@@ -41,11 +41,9 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Data;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.LdapAuth;
 using GR.Identity.LdapAuth.Abstractions.Extensions;
 using GR.Identity.Permissions;
-using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Identity.Services;
 using GR.Identity.Versioning;
 using GR.Install.Abstractions.Extensions;
@@ -132,6 +130,8 @@ using GR.Subscriptions;
 using GR.Subscriptions.Abstractions.Extensions;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Data;
+using GR.Identity.IdentityServer4.Extensions;
+using GR.Identity.Permissions.Abstractions.Extensions;
 
 #endregion
 
@@ -289,7 +289,7 @@ namespace GR.Cms
 				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
+				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
 				.AddHealthChecks(checks =>
