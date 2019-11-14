@@ -523,12 +523,7 @@ namespace GR.Cms
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
 
-			PermissionCustomRules.RegisterCustomRule(async (permissions, roles, tenant, userId) =>
-			{
-				return false;
-			});
-
-            //------------------------------------ Documents Module -----------------------------------
+			//------------------------------------ Documents Module -----------------------------------
 
 			services.RegisterDocumentStorage<DocumentsDbContext>(options =>
 			{
