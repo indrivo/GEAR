@@ -10,7 +10,7 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// <summary>
         /// Custom rules
         /// </summary>
-        private static List<Func<IEnumerable<string>, IEnumerable<string>, Guid?, Guid?, Task<bool>>> _customRules = new List<Func<IEnumerable<string>, IEnumerable<string>, Guid?, Guid?, Task<bool>>>();
+        private static readonly List<Func<IEnumerable<string>, IEnumerable<string>, Guid?, Guid?, Task<bool>>> CustomRules = new List<Func<IEnumerable<string>, IEnumerable<string>, Guid?, Guid?, Task<bool>>>();
 
         /// <summary>
         /// Rule
@@ -19,7 +19,7 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         public static void RegisterCustomRule(Func<IEnumerable<string>, IEnumerable<string>, Guid?, Guid?, Task<bool>> rule)
         {
             if (rule != null)
-                _customRules.Add(rule);
+                CustomRules.Add(rule);
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         /// <returns></returns>
         public static bool ExecuteRulesAndCheckAccess(IEnumerable<string> permissions, IEnumerable<string> roles, Guid? tenantId, Guid? userId)
         {
-            if (!_customRules.Any()) return true;
-            var haveAccess = _customRules.Select(async rule => await rule(permissions, roles, tenantId, userId))
+            if (!CustomRules.Any()) return true;
+            var haveAccess = CustomRules.Select(async rule => await rule(permissions, roles, tenantId, userId))
                 .Select(x => x.Result)
                 .All(x => x);
 

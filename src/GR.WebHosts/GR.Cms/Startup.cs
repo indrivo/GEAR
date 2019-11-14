@@ -108,6 +108,7 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
+using GR.Documents;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
@@ -129,6 +130,8 @@ using GR.Paypal.Razor.Extensions;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions;
 using GR.Subscriptions.Abstractions.Extensions;
+using GR.Documents.Abstractions.Extensions;
+using GR.Documents.Data;
 
 #endregion
 
@@ -522,10 +525,20 @@ namespace GR.Cms
 
 			PermissionCustomRules.RegisterCustomRule(async (permissions, roles, tenant, userId) =>
 			{
-				return true;
+				return false;
 			});
 
-			//--------------------------Custom dependency injection-------------------------------------
+            //------------------------------------ Documents Module -----------------------------------
+
+			services.RegisterDocumentStorage<DocumentsDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			})
+			.RegisterDocumentTypeServices<DocumentTypeService>()
+			.RegisterDocumentServices<DocumentService>();
+
+            //--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();
 		}
 	}

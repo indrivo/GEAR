@@ -1,0 +1,68 @@
+﻿@{
+    var conf = new ListTagHelperModel
+    {
+        Title = "Document Type",
+        SubTitle = "List of document types",
+        ListIdentifier = "document_type",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("ListDocumentTypes", "DocumentTypes")
+        },
+        RenderColumns = new List<ListRenderColumn>
+        {
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn("Is system", "isSystem"),
+            new ListRenderColumn("Code", "code"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+        {
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "DocumentTypes",
+                ButtonName = "Add new document type",
+                Description = "New document type will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+        {
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["edit"],
+                Url = Url.Action("Edit", "DocumentTypes"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["delete"],
+                Url = Url.Action("Delete", "DocumentTypes"),
+                IsJsEvent = true,
+                ButtonEvent = new JsActionButtonEvent
+                {
+                    JsEvent = JsEvent.OnClick,
+                    JsEventHandler = "createAlert('${row.id}');"
+                },
+                ButtonType = BootstrapButton.Danger,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id")
+                }
+            },
+        },
+        Documentation = "This tab allow to manage your document type"
+    };
+
+}
+
+<JList asp-for="@conf"></JList>

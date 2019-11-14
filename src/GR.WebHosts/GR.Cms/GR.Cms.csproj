@@ -86,6 +86,9 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar\GR.Calendar.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard.Razor\GR.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard\GR.Dashboard.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Razor\GR.Documents.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents\GR.Documents.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Orders\GR.Orders\GR.Orders.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Products\GR.ECommerce.Products.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Razor\GR.ECommerce.Razor.csproj" />
