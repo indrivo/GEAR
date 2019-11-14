@@ -1,7 +1,7 @@
 ﻿@model Guid
 
-<label>Paypal Express </label>
-<div id="paypal-button"></div>
+<div id="paypal-button" class="display-none"></div>
+<div class="card paypal-button-simulation payment-method-button"></div>
 <p style="display: none; color: red" id="paypalPaymentError"></p>
 
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
@@ -39,4 +39,10 @@
 			}
 		},
 		'#paypal-button');
+
+	$(document).ready(function () {
+		$('.paypal-button-simulation').click(function () {
+			$('.paypal-button').click();
+		});
+	});
 </script>
