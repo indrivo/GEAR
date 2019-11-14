@@ -783,5 +783,8 @@
   "user_postal_code": "Codice postale",
   "system_cancel_order": "Annullare l'ordine",
   "system_payment": "Pagamento",
-  "system_billing_address": "Indirizzo Di Fatturazione"
+  "system_billing_address": "Indirizzo Di Fatturazione",
+  "system_commerce_retry": "Riprova",
+  "system_commerce_payment_failed": "Pagamento non riuscito!",
+  "system_commerce_amount_paid": "Importo pagato"
 }

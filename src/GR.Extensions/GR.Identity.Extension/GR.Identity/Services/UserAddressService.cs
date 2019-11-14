@@ -113,8 +113,7 @@ namespace GR.Identity.Services
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
                 return resultModel;
             }
-
-            currentAddress.IsDeleted = true;
+            _context.Addresses.Remove(currentAddress);
             var dbResult = await _context.PushAsync();
             return dbResult;
         }

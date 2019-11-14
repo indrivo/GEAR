@@ -133,6 +133,9 @@
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
+	<Content Update="Views\Checkout\Fail.cshtml">
+	  <Pack>false</Pack>
+	</Content>
 	<Content Update="Views\Checkout\Payment.cshtml">
 	  <Pack>false</Pack>
 	</Content>
@@ -142,7 +145,16 @@
 	<Content Update="Views\Checkout\Success.cshtml">
 	  <Pack>false</Pack>
 	</Content>
+	<Content Update="Views\Shared\_MobilPay_PaymentMethodPartialView.cshtml">
+	  <Pack>false</Pack>
+	</Content>
 	<Content Update="Views\Shared\_OrderSummaryPartialView.cshtml">
+	  <Pack>false</Pack>
+	</Content>
+	<Content Update="Views\Shared\_Paypal_PaymentMethodPartialView.cshtml">
+	  <Pack>false</Pack>
+	</Content>
+	<Content Update="Views\TaskManager\Index.cshtml">
 	  <Pack>false</Pack>
 	</Content>
   </ItemGroup>

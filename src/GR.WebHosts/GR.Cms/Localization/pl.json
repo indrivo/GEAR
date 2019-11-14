@@ -783,5 +783,8 @@
   "user_postal_code": "Kod pocztowy",
   "system_cancel_order": "Anulowanie zamówienia",
   "system_payment": "Płatność",
-  "system_billing_address": "Adres Rozliczeniowy"
+  "system_billing_address": "Adres Rozliczeniowy",
+  "system_commerce_retry": "Powtórzyć",
+  "system_commerce_payment_failed": "Płatności nie minął!",
+  "system_commerce_amount_paid": "Kwota wypłacona"
 }

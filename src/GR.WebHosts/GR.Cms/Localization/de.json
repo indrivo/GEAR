@@ -783,5 +783,8 @@
   "user_postal_code": "PLZ",
   "system_cancel_order": "Bestellung stornieren",
   "system_payment": "Zahlung",
-  "system_billing_address": "Rechnungsadresse"
+  "system_billing_address": "Rechnungsadresse",
+  "system_commerce_retry": "Wiederholen",
+  "system_commerce_payment_failed": "Zahlung fehlgeschlagen!",
+  "system_commerce_amount_paid": "Betrag"
 }

@@ -783,5 +783,8 @@
   "user_postal_code": "Postcode",
   "system_cancel_order": "Bestelling annuleren",
   "system_payment": "Betaling",
-  "system_billing_address": "Facturatie Adres"
+  "system_billing_address": "Facturatie Adres",
+  "system_commerce_retry": "Probeer opnieuw",
+  "system_commerce_payment_failed": "De betaling is mislukt!",
+  "system_commerce_amount_paid": "Bedrag"
 }
