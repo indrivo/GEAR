@@ -3,15 +3,17 @@ using System;
 using GR.Documents.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GR.Documents.Migrations
 {
     [DbContext(typeof(DocumentsDbContext))]
-    partial class DocumentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191113154951_DocumentsDbContext_newDataSchema")]
+    partial class DocumentsDbContext_newDataSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,9 +199,43 @@ namespace GR.Documents.Migrations
 
                     b.HasIndex("DocumentId");
 
+                    b.HasIndex("FileStorageId");
+
                     b.HasIndex("PreviousVersionId");
 
                     b.ToTable("DocumentVersions");
+                });
+
+            modelBuilder.Entity("GR.Files.Abstraction.Models.FileStorage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("FileExtension");
+
+                    b.Property<byte[]>("Hash");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
+
+                    b.Property<long>("Size");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileStorage");
                 });
 
             modelBuilder.Entity("GR.Audit.Abstractions.Models.TrackAuditDetails", b =>
@@ -224,6 +260,10 @@ namespace GR.Documents.Migrations
                         .WithMany("DocumentVersions")
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GR.Files.Abstraction.Models.FileStorage", "FileStorage")
+                        .WithMany()
+                        .HasForeignKey("FileStorageId");
 
                     b.HasOne("GR.Documents.Abstractions.Models.DocumentVersion", "PreviousVersion")
                         .WithMany()

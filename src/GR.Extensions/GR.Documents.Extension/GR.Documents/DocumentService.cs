@@ -51,7 +51,6 @@ namespace GR.Documents
             var listDocuments = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .ThenInclude(i => i.FileStorage)
                 .ToListAsync();
 
             if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
@@ -77,7 +76,6 @@ namespace GR.Documents
             var document = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .ThenInclude(i => i.FileStorage)
                 .FirstOrDefaultAsync(x => x.Id == documentId);
 
             if (document is null) new NotFoundResultModel<Document>();
@@ -105,7 +103,6 @@ namespace GR.Documents
             var listDocuments = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .ThenInclude(i => i.FileStorage)
                 .Where(x => x.UserId == user.Result.Id.ToGuid()).ToListAsync();
 
             if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
@@ -131,7 +128,6 @@ namespace GR.Documents
 
             var listDocumentVersion = await _context.DocumentVersions
                 .Include(i => i.Document)
-                .Include(i => i.FileStorage)
                 .Where(x => x.DocumentId == documentId).ToListAsync();
 
             if (listDocumentVersion is null || !listDocumentVersion.Any()) return new NotFoundResultModel<IEnumerable<DocumentVersion>>();
@@ -178,13 +174,91 @@ namespace GR.Documents
             };
 
             await _context.Documents.AddAsync(newDocument);
-            
-            var fileId =  _fileManager.AddFile(new UploadFileViewModel {File = model.File}, user.Result.Id.ToGuid()).Result;
 
-            var newDocumentVersion =  new DocumentVersion { };
+            Guid? fileId = null;
 
+            if(model.File != null)
+                fileId =  _fileManager.AddFile(new UploadFileViewModel {File = model.File}, user.Result.Id.ToGuid()).Result;
+
+            var newDocumentVersion =  new DocumentVersion
+            {
+                DocumentId =  newDocument.Id,
+                FileStorageId = fileId,
+                VersionNumber = 1,
+                IsArhive =  false,
+                Comments = model.Comments,
+                OwnerId = user.Result.Id.ToGuid(),
+                IsMajorVersion = true,
+                Url = model.Url,
+            };
+
+            await _context.DocumentVersions.AddAsync(newDocumentVersion);
+            result = await _context.PushAsync();
 
             return result;
+        }
+
+        /// <summary>
+        /// Add new document version
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> AddNewDocumentVersion(AddNewVersionDocumentViewModel model)
+        {
+            var result = new ResultModel();
+            var user = await _userManager.GetCurrentUserAsync();
+
+            if (user is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "user not fount" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            Guid? fileId = null;
+
+            if (model.File != null)
+                fileId = _fileManager.AddFile(new UploadFileViewModel { File = model.File }, user.Result.Id.ToGuid()).Result;
+
+            var newDocumentVersion = new DocumentVersion
+            {
+                DocumentId = model.DocumentId,
+                FileStorageId = fileId,
+                IsArhive = false,
+                Comments = model.Comments,
+                OwnerId = user.Result.Id.ToGuid(),
+                IsMajorVersion = model.IsMajorVersion,
+                Url = model.Url,
+            };
+
+            var lastVersion = await GetLastDocVersion(model.DocumentId);
+
+            if (model.IsMajorVersion)
+                newDocumentVersion.VersionNumber = (int) lastVersion + 1;
+            else
+                newDocumentVersion.VersionNumber = lastVersion + 0.1;
+
+            await _context.DocumentVersions.AddAsync(newDocumentVersion);
+            result = await _context.PushAsync();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get last document version
+        /// </summary>
+        /// <param name="documentId"></param>
+        /// <returns></returns>
+        private async Task<double> GetLastDocVersion(Guid documentId)
+        {
+            var listDocumntVersions = _context.DocumentVersions.Where(x => x.DocumentId == documentId);
+
+            if (!listDocumntVersions.Any())
+                return 0;
+
+            var lastVersion = await listDocumntVersions.OrderBy(o => o.VersionNumber).LastOrDefaultAsync();
+
+            return lastVersion.VersionNumber;
         }
 
     }

@@ -11,16 +11,15 @@ namespace GR.Documents.Data
 {
     public class DocumentsDbContext: TrackerDbContext, IDocumentContext
     {
-
-        /// <inheritdoc />
         /// <summary>
-        /// Constructor
+        /// Schema
+        /// Do not remove this, is used on audit 
         /// </summary>
-        /// <param name="options"></param>
+        // ReSharper disable once MemberCanBePrivate.Global
+        public const string Schema = "Documents";
         public DocumentsDbContext(DbContextOptions<DocumentsDbContext> options) : base(options)
         {
-            //Enable tracking
-            //this.EnableTracking();
+            
         }
 
         /// <summary>
@@ -37,6 +36,18 @@ namespace GR.Documents.Data
         /// Document versions
         /// </summary>
         public DbSet<DocumentVersion> DocumentVersions { get; set; }
+
+
+        /// <summary>
+        /// On model creating
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.HasDefaultSchema(Schema);
+        }
+
 
         /// <inheritdoc />
         /// <summary>

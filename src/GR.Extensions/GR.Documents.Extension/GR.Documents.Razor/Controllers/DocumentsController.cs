@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Helpers;
 using GR.Documents.Abstractions;
+using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +27,15 @@ namespace GR.Documents.Razor.Controllers
 
         #endregion
 
+        #region Helpers
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        #endregion
 
         public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService)
         {
@@ -39,6 +52,13 @@ namespace GR.Documents.Razor.Controllers
             var listResult = listDocuments.Result.Adapt<IEnumerable<DocumentViewModel>>();
 
             return View(listResult);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetAllDocuments()
+        {
+            var result =   await _documentService.GetAllDocumentsAsync();
+            return Json(result, SerializerSettings);
         }
 
 
