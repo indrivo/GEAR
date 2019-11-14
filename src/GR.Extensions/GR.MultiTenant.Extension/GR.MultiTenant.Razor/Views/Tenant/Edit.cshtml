@@ -1,0 +1,34 @@
+@model GR.MultiTenant.Abstractions.ViewModels.EditTenantViewModel
+@inject IStringLocalizer Localizer
+@{
+    ViewData["Title"] = $"Edit {Model.Name} organization";
+    ViewData["TenantCallBackUrl"] = null;
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/css/dropify.min.css">
+}
+
+
+<div class="card card-outline-primary">
+    <div class="card-header">
+        <h4 class="mb-0 text-white">Edit tenant @Model.Name</h4>
+    </div>
+    <div class="card-body">
+       <partial name="Partial/_EditTenantDataPartialView" model="@Model" view-data="@ViewData"/>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
+    <script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
+    @if (!string.IsNullOrEmpty(Model.CountryId))
+   {
+    <script>
+        loadCitiesByCountryId("@Model.CountryId", "@Model.CityId");
+    </script>
+   }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

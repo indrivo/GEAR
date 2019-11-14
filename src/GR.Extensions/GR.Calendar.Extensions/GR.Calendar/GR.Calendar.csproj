@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageReleaseNotes>- Send notifications on  event manipulation to invited members</PackageReleaseNotes>
+    <Version>1.0.7</Version>
+    <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Calendar.Extensions/GR.Calendar</PackageProjectUrl>
+    <Description>Implementation of calendar repository with Entity framework</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DataSourceServices\**" />
+    <EmbeddedResource Remove="DataSourceServices\**" />
+    <None Remove="DataSourceServices\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Calendar.Abstraction\GR.Calendar.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

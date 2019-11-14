@@ -1,0 +1,117 @@
+@model GR.ECommerce.Abstractions.ViewModels.CartViewModels.AddToCartViewModel
+
+
+@{
+	ViewData["Title"] = "Cart";
+}
+
+<div class="card">
+	<div class="card-body">
+		<div class="row">
+	
+			<div class="col-8">
+				<partial name="_TableCartItems" model="@Model" />
+				<textarea class="form-control" id="OrderNotes" rows="3" placeholder="Enter order note"></textarea>
+			</div>
+			<div class="col-3 m-2 border border-light">
+				<p>Order summary</p>
+				<hr class="style1">
+
+				<div class="col-12 row">
+					<div class="col-6">TotalPrice: </div>
+					<div class="col-6 text-right" id="TotalPrice"> @Model.TotalPrice </div>
+				</div>
+
+				<hr class="style1">
+				<button @(!Model?.CartItems.Any() ?? false ? "disabled": "") class="btn btn-success" id="checkout">Process to checkout</button>
+			</div>
+	
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		const toast = new ToastNotifier();
+		$("#checkout").on("click", function () {
+			const model = {
+            cartId: '@Model.Id',
+            notes: $("#OrderNotes").val(),
+		}
+
+		$.ajax({
+			url: '@Url.Action("CreateOrder","Orders")',
+			method: 'post',
+			data: model,
+			success: function(data) {
+				if (data.is_success) {
+					toast.notifySuccess("Info", "Order was created");
+					setTimeout(function () {
+						location.href = `/Checkout/Shipping?orderId=${data.result}`;
+					}, 500);
+				} else {
+					toast.notifyErrorList(data.error_keys);
+				}
+			},
+			error: function(error) {
+				console.log(error);
+			}
+		});
+		});
+	});
+
+	function deleteCartItem(id) {
+		$.ajax({
+			url: '@Url.Action("DeleteCartItem", "Cart")',
+			method: 'post',
+			data: {
+				cartItemId: id
+			},
+			success: function(data) {
+				if (data.is_success)
+					location.reload();
+			},
+			error: function(error) {
+				console.log(error);
+			}
+		});
+	}
+
+	function addQuantity(id) {
+		var curentQuantity = parseInt($("#quantyty_" + id).val());
+        $("#quantyty_" + id).val(curentQuantity + 1);
+		setNewQuantity(id);
+	}
+
+	function decreasesQuantity(id) {
+		var curentQuantity = parseInt($("#quantyty_" + id).val());
+		if (curentQuantity > 1)
+            $("#quantyty_" + id).val(curentQuantity - 1);
+		setNewQuantity(id);
+	}
+
+
+	function setNewQuantity(id) {
+
+		$.ajax({
+			url: '@Url.Action("SetQuantity", "Cart")',
+			method: 'post',
+            data: {
+                quantity: $("#quantyty_" + id).val(),
+				cartItemId: id
+			},
+			success: function(data) {
+				
+                if (data.is_success) {
+
+                    $("#TotalPrice").empty();
+                    $("#TotalPrice").append(data.result.totalPrice);
+                }
+			},
+			error: function(error) {
+				console.log(error);
+			}
+		});
+	}
+</script>

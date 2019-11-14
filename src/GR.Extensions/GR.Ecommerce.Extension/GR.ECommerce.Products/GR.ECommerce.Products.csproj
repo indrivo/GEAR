@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Configuration\currencies.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\currencies.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
+    <ProjectReference Include="..\..\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.ECommerce.Abstractions\GR.ECommerce.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.ECommerce.Orders\GR.Orders.Abstractions\GR.Orders.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.Subscription\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -190,7 +190,6 @@ ClientBin/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
-*.pfx
 *.publishsettings
 node_modules/
 orleans.codegen.cs
@@ -258,3 +257,6 @@ paket-files/
 .eslintrc.js
 package-lock.json
 package.json
+
+# Bower Libraries
+wwwroot/lib/

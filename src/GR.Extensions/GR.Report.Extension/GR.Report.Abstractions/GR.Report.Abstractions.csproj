@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.1</Version>
+    <Authors>Alexandru Donici</Authors>
+    <Company>Indrivo</Company>
+    <Description>Gear report builder abstractions</Description>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageTags>report builder gear .net core</PackageTags>
+    <PackageReleaseNotes />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+    <Folder Include="Models\Constants\" />
+    <Folder Include="Models\Dto\" />
+    <Folder Include="Models\Enums\" />
+    <Folder Include="Models\ViewModels\" />
+  </ItemGroup>
+
+</Project>

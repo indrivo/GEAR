@@ -1,0 +1,77 @@
+﻿@using GR.Core.Extensions
+@model GR.MobilPay.Razor.ViewModels.MobilPayConfigurationViewModel
+
+@{
+    ViewData["Title"] = Localizer["commerce_mobilPay_Settings"];
+}
+
+<div class="card mb-4">
+    <div class="card-header text-capitalize">@Localizer["commerce_mobilPay_Settings"]</div>
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (ViewData["isSuccess"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @Localizer["system_inline_saved"]
+            </div>
+        }
+        <form asp-action="Index" asp-controller="MobilPaySettings" method="post" autocomplete="off" enctype="multipart/form-data">
+            @Html.HiddenFor(x => x.PathToCertificate)
+            @Html.HiddenFor(x => x.PathToPrivateKey)
+
+
+            @if (!Model.PathToCertificate.IsNullOrEmpty() && !Model.PathToPrivateKey.IsNullOrEmpty())
+            {
+                <p>
+                    <b>@Localizer["system_public_key"]</b> : <span>@Model.PathToCertificate</span> <br />
+                </p>
+                <p>
+                    <b>@Localizer["system_private_key"]</b> : <span>@Model.PathToPrivateKey</span> <br />
+                </p>
+            }
+
+            <hr class="my-4 dashed">
+            <div class="custom-control mb-4 custom-checkbox">
+                <input type="checkbox" asp-for="IsSandbox" class="custom-control-input">
+                <label class="custom-control-label" asp-for="IsSandbox"></label>
+            </div>
+            <div class="form-group">
+                <JTranslateLabel asp-for="Signature" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="Signature" class="form-control">
+                    <span asp-validation-for="Signature" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <JTranslateLabel asp-for="PublicCertificate" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="PublicCertificate" class="form-control" />
+                    <span asp-validation-for="PublicCertificate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <JTranslateLabel asp-for="PrivateCertificate" class="col-sm-2 col-form-label text-capitalize"></JTranslateLabel>
+                <div class="col-sm-10">
+                    <input asp-for="PrivateCertificate" class="form-control" />
+                    <span asp-validation-for="PrivateCertificate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a href="/PaymentMethods" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

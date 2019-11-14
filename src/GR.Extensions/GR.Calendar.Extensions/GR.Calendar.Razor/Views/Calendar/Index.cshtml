@@ -1,0 +1,321 @@
+﻿@{
+    ViewData["Title"] = Localizer["system_calendar"];
+}
+
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="~/lib/clockpicker/bootstrap-clockpicker.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/calendar/css/fullcalendar-rewrite.css" />
+    <link rel="stylesheet" type="text/css" href="~/calendar/css/calendar.css" />
+}
+@inject IStringLocalizer Localizer
+
+<div class="row">
+    <div class="col calendar-controls">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Drag and Drop Your Event</h4>
+                <div class="row">
+                    <div class="col">
+                        <div id="calendar-events" class="m-t-20">
+                        </div>
+                    </div>
+                </div>
+                <div class="add-new-draft-item-btn">
+                    <button id="toggle-forms" class="btn btn-primary w-100">@Localizer["system_calendar_add_new_event"]</button>
+                </div>
+                <div class="add-event-region">
+                    <form id="add-event">
+                        <div class="form-group">
+                            <label for="add-event-title">@Localizer["system_calendar_event_title"]</label>
+                            <input type="text" id="add-event-title" name="title" class="form-control event-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-event-details">@Localizer["system_calendar_event_details"]</label>
+                            <textarea id="add-event-details" name="details" class="form-control event-details"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-event-location">@Localizer["system_calendar_event_location"]</label>
+                            <input type="text" id="add-event-location" name="location" class="form-control event-location">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-event-priority">@Localizer["system_calendar_event_priority"]</label>
+                            <select id="add-event-priority" name="priority" class="form-control event-priority"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-event-members">@Localizer["system_calendar_event_members"]</label>
+                            <select id="add-event-members" name="members" class="form-control event-members" multiple></select>
+                        </div>
+                        <button id="add-form-submit" type="submit" class="btn btn-outline-primary w-100">
+                            @Localizer["save"]
+                        </button>
+                    </form>
+                    <form id="edit-event">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 calendar-grid">
+        <div class="card">
+            <div class="card-block">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="sync-link">
+    <a href="/calendar/externalcalendarproviders"><i class="material-icons">sync</i></a>
+</div>
+
+<!-- Event popper-->
+<div class="popper details-popup">
+</div>
+
+@section Scripts
+{
+
+    <script id="eventTemplate" type="text/x-jsrender">
+        <div class="fc-content"
+             data-event-id="{{:id}}"
+             title="{{:title}}"
+             data-toggle="tooltip"
+             data-placement="top"
+             data-event-editable="{{:editable}}">
+            <span class="fc-time">{{:time}}</span>
+            <span class="fc-title">{{:title}}</span>
+        </div>
+    </script>
+
+    <script id="teamMember" type="text/x-jsrender">
+        <div class="event-member mt-2" data-member-id="{{:id}}">
+            <div class="d-flex align-items-center">
+                <span class="member-acceptance acceptance-{{:acceptance}}">
+                    <i class="material-icons">{{:~acceptanceIcon}}</i>
+                </span>
+                <div class="member-name">{{:~outputName}}</div>
+            </div>
+        </div>
+    </script>
+
+    <script id="teamMemberEdit" type="text/x-jsrender">
+        <div class="event-member mt-2" data-member-id="{{:id}}">
+            <div class="d-flex align-items-center">
+                <span class="member-acceptance acceptance-{{:acceptance}}">
+                    <i class="material-icons">{{:~acceptanceIcon}}</i>
+                </span>
+                <div class="member-name"><span>{{:~outputName}}</span></div>
+                <i class="ml-auto material-icons member-dismiss text-danger">close</i>
+            </div>
+        </div>
+    </script>
+
+    <script id="eventPopup" type="text/x-jsrender">
+        <div class="popup-content">
+            <div class="details-popup-section details-popup-header">
+                <div class="details-popup-title">{{:title}}</div>
+                <div class="details-popup-priority">
+                    <span class="event-priority-bullet priority-{{:priority}}"></span>
+                    {{:~priority}}
+                </div>
+                {{if ~editable}}
+                <div class="details-popup-actions dropright">
+                    <div class="cursor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="material-icons">more_vert</i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item event-edit" data-event-id="{{:id}}">
+                            <i class="material-icons">edit</i>
+                        </a>
+                        <a class="dropdown-item event-delete" data-event-id="{{:id}}">
+                            <i class="material-icons">delete_outline</i>
+                        </a>
+                        <div class="dropdown-arrow"></div>
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+            <div class="details-popup-section details-popup-date">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="details-popup-date">{{:~startDate}}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex">
+                            <div class="details-popup-time mr-2">{{:~startTime}}</div>
+                            <span>@Localizer["system_calendar_time_tosystem_casystem_ca"]</span>
+                            <div class="details-popup-time ml-2">{{:~endTime}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="details-popup-section details-popup-members">
+                <div class="details-popup-members-list">
+
+                </div>
+            </div>
+            <div class="details-popup-section details-popup-description">
+                <p>
+                    {{:details}}
+                </p>
+            </div>
+            {{if !~editable}}
+            <div class="d-flex w-100 pt-2 pl-2 pr-2 justify-content-between">
+                <button type="button"
+                        class="respond-event btn btn-outline-success"
+                        data-acceptance="0"
+                        data-event-id="{{:id}}">
+                    @Localizer["system_calendar_accept"]
+                </button>
+                <button type="button"
+                        class="respond-event btn btn-outline-info"
+                        data-acceptance="1"
+                        data-event-id="{{:id}}">
+                    @Localizer["system_calendar_tentative"]
+                </button>
+                <button type="button"
+                        class="respond-event btn btn-outline-danger"
+                        data-acceptance="2"
+                        data-event-id="{{:id}}">
+                    @Localizer["system_calendar_decline"]
+                </button>
+            </div>
+            {{/if}}
+        </div>
+        <div class="popper__arrow" x-arrow></div>
+    </script>
+
+    <script id="eventPopupEdit" type="text/x-jsrender">
+        <div class="popup-content bg-popup-gray">
+            <form id="edit-event">
+                <div class="details-popup-section details-popup-header">
+                    <div class="details-popup-title">
+                        <input type="text" class="input-inline-editing event-title" value="{{:title}}">
+                    </div>
+                    <div class="details-popup-priority d-flex align-items-center mt-2 position-relative">
+                        <span class="event-priority-bullet mr-2 priority-{{:priority}}"></span>
+                        <select class="select-inline-editing event-priority"></select>
+                        <i class="material-icons position-absolute">keyboard_arrow_down</i>
+                    </div>
+                </div>
+                <div class="details-popup-section details-popup-date">
+                    <div class="details-popup-start-date d-flex">
+                        <div class="details-popup-date-label">@Localizer["system_calendar_starts"]:</div>
+                        <div class="date-time">
+                            <input type="text"
+                                   class="date-inline-editing event-start-date"
+                                   data-date-autoclose="true"
+                                   data-date-format="M d, yyyy"
+                                   data-date-week-start="1"
+                                   data-date-today-highlight="true"
+                                   required
+                                   value="{{:~startDateEdit}}">
+                            <input type="text"
+                                   class="time-inline-editing event-start-time"
+                                   data-autoclose="true"
+                                   value="{{:~startTime}}">
+                        </div>
+                    </div>
+                    <div class="details-popup-end-date d-flex">
+                        <div class="details-popup-date-label">@Localizer["system_calendar_ends"]:</div>
+                        <div class="date-time">
+                            <input type="text"
+                                   class="date-inline-editing event-end-date"
+                                   required
+                                   value="{{:~endDateEdit}}">
+                            <input type="text"
+                                   class="time-inline-editing event-end-time"
+                                   data-autoclose="true"
+                                   value="{{:~endTime}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="details-popup-section details-popup-members">
+                    <div class="details-popup-members-list">
+                    </div>
+                    <div class="mt-2 d-flex">
+                        <label for="edit-event-members"><i class="material-icons">add_circle_outline</i></label>
+                        <select id="edit-event-members"
+                                name="members"
+                                class="form-control event-members">
+                        </select>
+                    </div>
+                </div>
+                <div class="details-popup-section details-popup-description">
+                    <textarea class="textarea-inline-editing event-details">{{:details}}</textarea>
+                </div>
+                <div class="d-flex w-100 pt-2 pr-2">
+                    <button type="submit"
+                            class="ml-auto submit-edit-event btn btn-success text-white"
+                            form="edit-event"
+                            data-event-id="{{:id}}">
+                        @Localizer["save"]
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="popper__arrow" x-arrow></div>
+    </script>
+
+    <script id="eventDraftList" type="text/x-jsrender">
+        <div class="calendar-events ui-draggable ui-draggable-handle d-flex align-items-center"
+             data-event-title="{{:title}}"
+             data-event-details="{{:details}}"
+             data-event-location="{{:location}}"
+             data-event-priority="{{:priority}}"
+             data-event-members="{{:members}}"
+             data-draftid="{{:draftId}}">
+            <i class="fa fa-square mr-3 event-priority-bullet-color priority-{{:priority}}"></i>
+            <span class="draft-event-title">{{:title}}</span>
+            <div class="draft-event-actions ml-auto">
+                <span class="draft-event-actions-more">
+                    <i class="material-icons more-icon">more_vert</i>
+                </span>
+                <span class="draft-event-actions-expandable">
+                    <a class="draft-event-edit ml-3">
+                        <i class="material-icons">edit</i>
+                    </a>
+                    <a class="draft-event-delete">
+                        <i class="material-icons">delete_outline</i>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </script>
+
+    <script id="editDraftEvent" type="text/x-jsrender">
+        <div class="form-group">
+            <label for="add-event-title">@Localizer["system_calendar_event_title"]</label>
+            <input type="text" id="add-event-title" name="title" class="form-control event-title" required value="{{:title}}">
+        </div>
+        <div class="form-group">
+            <label for="add-event-details">@Localizer["system_calendar_event_details"]</label>
+            <textarea id="add-event-details" name="details" class="form-control event-details">{{:details}}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="add-event-location">@Localizer["system_calendar_event_location"]</label>
+            <input type="text" id="add-event-location" name="location" class="form-control event-location" value="{{:location}}">
+        </div>
+        <div class="form-group">
+            <label for="add-event-priority">@Localizer["system_calendar_event_priority"]</label>
+            <select id="add-event-priority" name="priority" class="form-control event-priority"></select>
+        </div>
+        <div class="form-group">
+            <label for="add-event-members">@Localizer["system_calendar_event_members"]</label>
+            <select id="add-event-members" name="members" class="form-control event-members" multiple></select>
+        </div>
+        <button id="edit-form-submit" type="submit" class="btn btn-outline-primary w-100" data-draftid="{{:draftId}}">
+            @Localizer["system_calendar_update"]
+        </button>
+    </script>
+
+    <script src="~/lib/moment.js/moment.min.js"></script>
+    <script src="~/lib/fullcalendar/fullcalendar.js"></script>
+    <script src="~/lib/clockpicker/bootstrap-clockpicker.min.js"></script>
+    <script src="~/calendar/js/internal-calendar-plugin-v1.js"></script>
+    <script src="~/calendar/js/calendar.js"></script>
+}

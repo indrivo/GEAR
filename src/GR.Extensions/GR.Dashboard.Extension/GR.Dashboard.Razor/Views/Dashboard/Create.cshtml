@@ -1,0 +1,52 @@
+﻿@model GR.Dashboard.Abstractions.Models.DashBoard
+
+@{
+    ViewData["Title"] = "Add dashboard";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-outline-info">
+            <div class="card-header">
+                <h4 class="m-b-0 text-white">Add dashboard</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" role="form">
+                    <div class="form-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="row p-t-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label asp-for="Name"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div style="margin-bottom: 1em;" class="custom-control custom-checkbox">
+                                    <input asp-for="IsActive" type="checkbox" class="custom-control-input vis-check">
+                                    <label class="custom-control-label" asp-for="IsActive"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row button-group">
+                        <div class="col-lg-2 col-md-3">
+                            <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

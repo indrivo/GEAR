@@ -1,0 +1,62 @@
+@model GR.Entities.Abstractions.ViewModels.TableTypes.EntityTypeUpdateViewModel
+@inject IStringLocalizer Localizer
+
+@{
+	ViewData["Title"] = "Edit";
+}
+
+<div class="card card-outline-primary">
+	<div class="card-header">
+		<h4 class="mb-0 text-white">Edit schema</h4>
+	</div>
+	<div class="card-body">
+		<form asp-action="Edit" role="form">
+			<div class="form-body">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="row pt-2">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label asp-for="Name" class="control-label"></label>
+							<input asp-for="Name" class="form-control"/>
+							<span asp-validation-for="Name" class="text-danger"></span><br/>
+							<small>Set name of this schema. Example: "Entity", "Table"</small>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label asp-for="MachineName" class="control-label"></label>
+							<input asp-for="MachineName" class="form-control"/>
+							<span asp-validation-for="MachineName" class="text-danger"></span><br/>
+							<small>Set name of this schema. Example: "Entity", "Table"</small>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label asp-for="Description" class="control-label"></label>
+							<textarea asp-for="Description" rows="5" class="form-control"></textarea>
+							<span asp-validation-for="Description" class="text-danger"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row button-group">
+				<div class="col-lg-2 col-md-3">
+					<button type="submit" class="btn btn-block btn-success">
+						<i class="fa fa-check"></i> @Localizer["save"]</button>
+				</div>
+				<div class="col-lg-2 col-md-3">
+					<button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+				</div>
+				<div class="col-lg-2 col-md-3">
+					<a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

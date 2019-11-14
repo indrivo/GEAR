@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GR.Application.Extension\GR.Application\GR.Application.csproj" />
+    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.EntityBuilder.MsSql\GR.Entities.EntityBuilder.MsSql.csproj" />
+    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.EntityBuilder.Postgres\GR.Entities.EntityBuilder.Postgres.csproj" />
+    <ProjectReference Include="..\GR.Install.Abstractions\GR.Install.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\_ViewImports.cshtml">
+      <Pack>false</Pack>
+    </Content>
+    <Content Update="Views\_ViewStart.cshtml">
+      <Pack>false</Pack>
+    </Content>
+  </ItemGroup>
+</Project>

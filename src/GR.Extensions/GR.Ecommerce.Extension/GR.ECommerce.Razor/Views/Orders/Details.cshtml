@@ -1,0 +1,47 @@
+﻿@using GR.Orders.Abstractions.Models
+@model GR.ECommerce.Razor.ViewModels.OrderViewModels.OrderViewModel
+
+@{
+    ViewData["Title"] = Localizer["system_order_details"];
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <partial name="_OrderSummaryPartialView" model="@Model.Order" />
+            </div>
+            <div class="col-md-6">
+                <h2>@Localizer["system_payments"]</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["system_payment_method"]</th>
+                            <th>@Localizer["system_payment_status"]</th>
+                            <th>@Localizer["system_transaction_id"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Payments.Any())
+                        {
+                            <tr>
+                                <td colspan="3">
+                                  @Localizer["system_commerce_no_payments"]
+                                </td>
+                            </tr>
+                        }
+
+                        @foreach (var payment in Model.Payments)
+                        {
+                            <tr>
+                                <td>@payment.PaymentMethodId</td>
+                                <td>@payment.PaymentStatus.ToString()</td>
+                                <td>@payment.GatewayTransactionId</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = Localizer["system_commerce_category"];
+    var conf = new ListTagHelperModel
+    {
+        Title = Localizer["system_commerce_category"],
+        ListIdentifier = "product_categories",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("OrderedList", "ProductCategory")
+        },
+        RenderColumns = new List<ListRenderColumn>
+        {
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn("Display Name", "displayName"),
+            new ListRenderColumn("Parent Category", "categoryParentName"),
+            new ListRenderColumn("Is Published", "isPublished"),
+            new ListRenderColumn(Localizer["created"], "created"),
+            new ListRenderColumn(Localizer["changed"], "changed"),
+            new ListRenderColumn(Localizer["author"], "author"),
+            new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+        },
+        HeadButtons = new List<UrlTagHelperViewModel>
+        {
+            new UrlTagHelperViewModel
+            {
+                AspAction = "Create",
+                AspController = "ProductCategory",
+                ButtonName = "Add new category",
+                Description = "New product category will be added"
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+        {
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["edit"],
+                Url = Url.Action("Edit", "ProductCategory"),
+                ButtonType = BootstrapButton.Info,
+                ActionParameters = new List<ActionParameter>
+                {
+                    new ActionParameter("id", "id")
+                }
+            },
+            new ListActionViewModel
+            {
+                HasIcon = false,
+                Name = Localizer["delete"],
+                IsJsEvent = true,
+                ButtonEvent = new JsActionButtonEvent
+                {
+                    JsEvent = JsEvent.OnClick,
+                    JsEventHandler = "createAlert('${row.id}');"
+                },
+                ButtonType = BootstrapButton.Danger
+            },
+        },
+        Documentation = "This tan allow to manage your product categories"
+    };
+}
+
+<JList asp-for="@conf"></JList>

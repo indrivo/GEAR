@@ -1,0 +1,165 @@
+@model GR.Orders.Abstractions.Models.Order
+
+@using GR.ECommerce.Payments.Abstractions.Storage
+
+@{
+	ViewData["Title"] = "Payments";
+
+	var providers = PaymentProviders.GetProviders().ToList();
+}
+
+@section Styles {
+	<style>
+		.weight-600 {
+			font-weight: 600;
+		}
+
+		.fz-16 {
+			font-size: 16px;
+		}
+
+		thead {
+			background-color: white;
+		}
+
+		.table tbody tr td,
+		.table thead tr th {
+			color: #081018;
+			padding: 0 !important;
+			padding-top: 7px !important;
+			border: 0;
+		}
+
+			.table tbody tr td.pt-4 {
+				padding-top: 1em !important;
+			}
+
+		.table tbody .product-item:last-child td {
+			padding-bottom: 1em !important;
+		}
+
+		.table tbody tr td.pb-4 {
+			padding-bottom: 1em !important;
+		}
+
+		.payment-actions {
+			bottom: 0;
+			left: 0px;
+			width: 100vw;
+			padding-left: 60px;
+			background-color: white;
+		}
+
+		.button-border {
+			border: 1px solid #D3D4D7;
+			border-radius: 4px;
+		}
+
+		.btn-cancel-order {
+			color: #707070;
+		}
+
+		.btn-payment,
+		.btn-cancel-order {
+			font-size: 1rem;
+		}
+
+		.payment-method-button {
+			width: 130px;
+			height: 76px;
+			border-radius: 4px;
+			border-color: #D8DCE0;
+			background-position: center;
+			transition: all 0.3s cubic-bezier(0.77, 0, 0.18, 1);
+			background-repeat: no-repeat;
+		}
+
+			.payment-method-button:hover {
+				transition: all 0.3s cubic-bezier(0.77, 0, 0.18, 1);
+				cursor: pointer;
+			}
+
+		.paypal-button-simulation {
+			background-image: url(/images/payment_methods/paypal_grey.svg);
+		}
+
+			.paypal-button-simulation:hover {
+				background-image: url(/images/payment_methods/paypal.svg);
+			}
+
+		.mobilpay-button {
+			background-image: url(/images/payment_methods/mobilPay_grey.svg);
+		}
+
+			.mobilpay-button:hover {
+				background-image: url(/images/payment_methods/mobilPay.svg);
+			}
+	</style>
+}
+
+<div class="row">
+	<div class="col-md-5">
+		<div class="card h-100 p-4">
+			<h2>@Localizer["system_payment_methods"]</h2>
+			<div class="d-flex justify-content-center">
+				@if (providers.Any())
+				{
+					@foreach (var provider in providers)
+					{
+						var partialViewName = $"_{provider}_PaymentMethodPartialView";
+						<partial name="@partialViewName" model="@Model.Id" />
+					}
+				}
+				else
+				{
+					<h2>No payment providers registered!</h2>
+				}
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="card p-4">
+			<partial name="_OrderSummaryPartialView" model="@Model" />
+		</div>
+	</div>
+</div>
+
+<div class="position-fixed payment-actions py-2">
+	<div class="pull-left d-flex h-100 pl-3 py-2">
+		<a id="cancel-order" href="#" class="btn-cancel-order btn btn-block btn-inverse button-border d-flex align-items-center py-2 px-3">
+			<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14">
+				<path id="Icon" d="M245,3448a7,7,0,1,1,7-7A7.008,7.008,0,0,1,245,3448Zm0-12.6a5.6,5.6,0,1,0,5.6,5.6A5.606,5.606,0,0,0,245,3435.4Zm-2.513,9.1h0l-.986-.987,2.513-2.513-2.513-2.513.987-.987,2.513,2.513,2.512-2.513.987.987L245.986,3441l2.513,2.513-.987.987L245,3441.986l-2.513,2.513Z" transform="translate(-238 -3434)" fill="rgba(0,0,0,0.6)" />
+			</svg>
+			@Localizer["system_cancel_order"]
+		</a>
+	</div>
+</div>
+
+@section Scripts
+{
+	<script>
+        const toast = new ToastNotifier();
+        $("#cancel-order").on("click", function () {
+            $.ajax({
+                method: "delete",
+                url: "/api/Orders/CancelOrder",
+                data: {
+                    orderId: "@Model.Id"
+                },
+                success: function (response) {
+                    if (response.is_success) {
+                        toast.notifySuccess("Info", "Order was canceled");
+                        setTimeout(function () {
+                            location.href = "/Orders/MyOrders";
+                        }, 300);
+                    } else {
+                        toast.notifyErrorList(response.error_keys);
+                    }
+                },
+                error: function () {
+                    toast.notifyErrorList("Error");
+                }
+            });
+        });
+	</script>
+}

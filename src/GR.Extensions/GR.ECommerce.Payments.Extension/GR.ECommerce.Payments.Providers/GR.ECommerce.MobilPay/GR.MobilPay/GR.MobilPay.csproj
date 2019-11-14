@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MobilpayEncryptDecrypt">
+      <HintPath>..\GR.MobilPay.Abstractions\Assemblies\MobilpayEncryptDecrypt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

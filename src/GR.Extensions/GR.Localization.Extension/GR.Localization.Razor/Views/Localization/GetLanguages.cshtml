@@ -1,0 +1,57 @@
+@using GR.Localization.Abstractions.ViewModels.LocalizationViewModels
+@using GR.Core.Razor.Enums
+@using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
+@using GR.Core.Razor.TagHelpersStructures
+
+@inject IStringLocalizer Localizer
+@inject IOptionsSnapshot<LocalizationConfigModel> LocalizationConfig
+
+@{
+    ViewData["Title"] = Localizer["get_languages"];
+
+    var conf = new ListTagHelperModel
+    {
+        Title = Localizer["get_languages"],
+        ListIdentifier = "languages",
+        Api = new ListApiConfigurationViewModel
+        {
+            Url = Url.Action("LanguageList")
+        },
+        RenderColumns = new List<ListRenderColumn>
+{
+            new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn("Identifier", "identifier"),
+            new ListRenderColumn("Is disabled", "isDisabled")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            }
+},
+        HeadButtons = new List<UrlTagHelperViewModel>
+{
+            new UrlTagHelperViewModel
+            {
+                AspAction = "AddLanguage",
+                AspController = "Localization",
+                ButtonName = Localizer["add_language"],
+                Description = Localizer["add_language_info"]
+            }
+        },
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
+{
+            new ListActionViewModel
+            {
+                Name = "Change state",
+                ButtonType = BootstrapButton.Warning,
+                Url = Url.Action("ChangeStatus"),
+                ActionParameters = new List<ActionParameter>
+{
+                    new ActionParameter("key", "identifier")
+                }
+            }
+},
+        Documentation = "This tan allow to manage your dashboards"
+    };
+}
+
+<JList asp-for="@conf"></JList>

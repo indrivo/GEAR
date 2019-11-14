@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "fullcalendar@3.10.0",
+      "destination": "wwwroot/lib/fullcalendar/"
+    },
+    {
+      "library": "clockpicker@0.0.7",
+      "destination": "wwwroot/lib/clockpicker/",
+      "files": [
+        "bootstrap-clockpicker.min.css",
+        "bootstrap-clockpicker.min.js"
+      ]
+    },
+    {
+      "library": "tooltip.js@1.3.2",
+      "destination": "wwwroot/lib/tooltip.js/"
+    }
+  ]
+}

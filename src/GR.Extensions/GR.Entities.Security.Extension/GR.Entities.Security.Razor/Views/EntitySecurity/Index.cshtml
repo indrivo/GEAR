@@ -1,0 +1,79 @@
+﻿@using GR.Core.Extensions
+@using GR.Entities.Security.Abstractions
+@using GR.Entities.Security.Abstractions.Enums
+@inject IEntityRoleAccessManager AccessManager
+
+@{
+    ViewData["Title"] = "Entity Role access management";
+    var roles = AccessManager.Roles.ToList();
+    var tables = AccessManager.Tables.OrderBy(x => x.Name).ToList();
+    var configuration = AccessManager.GetAllForView();
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="form-group">
+            <label>Search:</label>
+            <input id="searchEntity" class="form-control" />
+        </div>
+        <div class="accordion">
+            @foreach (var table in tables)
+            {
+                var index = tables.IndexOf(table);
+                var tableConf = configuration.FirstOrDefault(x => x.Key.Equals(table.Id));
+                <div data-search="@table.Name" class="card card-search">
+                    <div class="card-header" id="head_@table.Id">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#@table.Id" aria-expanded="true" aria-controls="collapseOne">
+                                <code>@table.Name</code>
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="@table.Id" class="collapse @(index == 0 ? "show" : "")" aria-labelledby="head_@table.Id">
+                        <div class="card-body">
+                            @foreach (var role in roles)
+                            {
+                                var normalizedName = role.Name.Replace(" ", "");
+                                var identifier = $"collapse_{table.Name}_{normalizedName}";
+                                var rolePermissions = tableConf.IsNull() ? new List<string>()
+                                    : tableConf.Value?.FirstOrDefault(x => x.Key.Equals(role.Id.ToGuid())).Value?.ToList();
+                                var haveFullControl = rolePermissions?.Any(x => x.Equals(nameof(EntityAccessType.FullControl))) ?? false;
+                                <div>
+                                    <a class="btn" data-toggle="collapse" href="#@identifier" role="button" aria-expanded="false" aria-controls="@identifier">
+                                        @role.Name
+                                    </a>
+                                </div>
+                                <div class="grantSection collapse" id="@identifier" data-role="@role.Id" data-entity="@table.Id">
+                                    <div class="card card-body">
+                                        @foreach (var grant in Enum.GetValues(typeof(EntityAccessType)))
+                                        {
+                                            var check = rolePermissions?.Contains(grant.ToString()) ?? false;
+                                            var checkIdentifier = $"_{grant}_check_{table.Name}_{normalizedName}";
+                                            var fullControl = grant.ToString().Equals(nameof(EntityAccessType.FullControl));
+                                            var isCheckedFullControl = !fullControl && haveFullControl;
+                                            <div class="custom-control custom-checkbox" style="padding-bottom: 1em;">
+                                                <input @(isCheckedFullControl ? "disabled=''" : "") @(check ? "checked=''" : "") type="checkbox" id="@checkIdentifier" class="custom-control-input vis-check @(fullControl ? " fullControl" : " permission ")" data-permission="@grant">
+                                                <label class="custom-control-label" for="@checkIdentifier">@grant</label>
+                                            </div>
+                                        }
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <a href="javascript:void(0)" class="saveConfig btn btn-primary mb-4 mr-4">@Localizer["save"]</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/assets/EntitySecurityPlugins/entity-role-permission-mapper.js" asp-append-version="true"></script>
+}

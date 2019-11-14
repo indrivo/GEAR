@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "grapesjs@0.14.57",
+      "destination": "wwwroot/lib/grapesjs/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "grapesjs-preset-webpage@0.1.11",
+      "destination": "wwwroot/lib/grapesjs-preset-webpage/"
+    },
+    {
+      "library": "jqtree@1.4.10",
+      "destination": "wwwroot/lib/jqtree/",
+      "files": [
+        "tree.jquery.js",
+        "jqtree.css"
+      ]
+    },
+    {
+      "library": "bootstrap-switch@3.3.4",
+      "destination": "wwwroot/lib/bootstrap-switch/",
+      "files": [
+        "js/bootstrap-switch.min.js",
+        "css/bootstrap3/bootstrap-switch.min.css"
+      ]
+    },
+    {
+      "library": "moment.js@2.24.0",
+      "destination": "wwwroot/lib/moment.js/",
+      "files": [
+        "moment.min.js"
+      ]
+    },
+    {
+      "library": "bootstrap-datepicker@1.9.0",
+      "destination": "wwwroot/lib/bootstrap-datepicker/",
+      "files": [
+        "js/bootstrap-datepicker.min.js",
+        "css/bootstrap-datepicker.min.css"
+      ]
+    }
+  ]
+}

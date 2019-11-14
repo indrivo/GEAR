@@ -1,0 +1,271 @@
+@using GR.PageRender.Abstractions.Models.ViewModels
+@model IList<ViewModelFields>
+
+@{
+    ViewData["Title"] = Localizer["order_viewmodel_fields"];
+    var viewModel = (ViewModel)ViewBag.ViewModel;
+}
+
+<style>
+    .delEvt:hover {
+        color: red;
+        cursor: pointer;
+    }
+
+    .edit:hover {
+        color: orange;
+        cursor: pointer;
+    }
+
+    .delEvt, .edit, .float {
+        font-size: 1em;
+        padding-left: 1em;
+        float: right;
+    }
+
+        .float:hover, .translate:hover {
+            cursor: pointer;
+        }
+
+    .save {
+        margin: 1em;
+        width: 7em;
+    }
+
+    .list-group-item:hover {
+        border: 1px solid green;
+    }
+</style>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Localizer["viewmodel_fields"]  <code>@viewModel.Name</code></h4>
+        <h6 class="card-subtitle">@Localizer["viewmodel_fields_subtitle"]</h6>
+        <div class="table-responsive">
+            <div class="mt-2">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <div class="form-group">
+                            <a href="javascript:void(0)" id="addScript" class="btn btn-primary btn-sm">
+                                <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_new_field_into_viewmodel"]
+                            </a>
+                            <small>@Localizer["add_new_field_into_viewmodel_info"]</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="list-group" id="columns">
+                @foreach (var item in Model)
+                {
+                    <li class="list-group-item column" dataId="@item.Id" viewModelId="@item.ViewModelId" order="@item.Order" draggable="true">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="grouped_input_@item.Id">
+                                    <i class="fa fa-arrows"></i>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" value="@item.Name" placeholder="" aria-describedby="grouped_input_@item.Id" />
+                        </div>
+                        <div class="is-translate-section float-left">
+                            <span>@Localizer["system_is_translated"]: </span>
+                            @if (!string.IsNullOrEmpty(item.Translate))
+                            {
+                                <span style="color: green;" class="is-translated-state fa fa-check"></span>
+                                <span>    @Localizer["system_current_translation_key"]: </span> <span class="current-translation-key">@item.Translate </span>
+                            }
+                            else
+                            {
+                                <span style="color: red;" class="is-translated-state fa fa-close"></span>
+                                <span>    @Localizer["system_current_translation_key"]: </span> <span class="current-translation-key"> @Localizer["system_not_translated"]</span>
+                            }
+                        </div>
+                        <span class="fa fa-close delEvt"> @Localizer["delete"]</span>
+                        <div class="float display_format" data-id="@item.Id">
+                            <span class="fa fa-pencil"></span> @Localizer["viewmodel_display_format"]
+                        </div>
+                        <div class="float translate" data-key="@item.Translate" data-id="@item.Id" data-name="@item.Name">
+                            <span class="mdi mdi-transcribe"></span> @Localizer["translate"]
+                        </div>
+                    </li>
+                }
+            </ul>
+            <button id="update" class="save btn btn-success">@Localizer["save"]</button>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/assets/js/builder/drag-and-drop-list.js"></script>
+    <script>
+            const translations = load("/Localization/GetTranslationsForCurrentLanguage");
+		function removeItem() {
+			document.getElementById("columns").removeChild($(this).parent()[0]);
+		}
+
+		$(".delEvt").on("click", removeItem);
+
+		$("#update").on("click", function () {
+			const columns = $("#columns").children();
+			var data = [];
+			$.each(columns, function (index, col) {
+				var script = $($(col).children().find("input")).val();
+				data.push({
+					order: $(col).attr("order"),
+					name: script,
+					viewModelId: $(col).attr("viewModelId"),
+					id: $(col).attr("dataId")
+				});
+			});
+
+			$.ajax({
+				url: "@Url.Action("UpdateViewModelFields")",
+				data: {
+					items: data
+				},
+				type: "post",
+				success: function (data) {
+					if (data.is_success) {
+						location.reload();
+					}
+					else {
+						alert("Fail to save data!");
+					}
+				},
+				error: function (err) {
+					console.log(err);
+					alert("Fail to save data!");
+				}
+			});
+		});
+
+		$(".display_format").on("click", function () {
+			var id = $(this).attr("data-id");
+			location.href = `/ViewModel/TemplateEdit?id=${id}`;
+        });
+
+        //Get short version of translated text
+        const getShortNameTranslations = data => {
+            Object.keys(data).forEach(key => {
+                let value = data[key];
+                if (value.length > 50)
+                {
+                   data[key] = `${value.substr(0, 50)} ...`;
+                }
+            });
+            Object.assign(data, { "" : "None" });
+            return data;
+        };
+
+        $(".translate").on("click", function () {
+            const ctx = $(this);
+            const current = ctx.data("key");
+            const name = ctx.data("name");
+            const id = ctx.data("id");
+            swal({
+                title: `${window.translate("order_fields_select_translate_text")} ${name}`,
+                input: 'select',
+                inputOptions: getShortNameTranslations(translations),
+                inputValue: current,
+                inputPlaceholder: window.translate("select"),
+                showCancelButton: true,
+                inputValidator: function (value) {
+                    return new Promise(function (resolve, reject) {
+                        if (value) {
+                            resolve()
+                        } else {
+                            reject(window.translate("order_fields_select_translate_reject_text"))
+                        }
+                    });
+                }
+            }).then(function (result) {
+                if (result.value) {
+                    const saveTranslation = new Promise(function (resolve, reject) {
+                        $.ajax({
+                            url: "@Url.Action("ChangeViewModelFieldTranslateText")",
+                            data: {
+                                fieldId: id,
+                                translatedKey: result.value
+                            },
+                            method: "post",
+                            success: function (data) {
+                                if (data.is_success) resolve(data);
+                                else reject(data);
+                            }
+                        });
+                    });
+
+                    saveTranslation.then(data => {
+                        ctx.data("key", result.value);
+                        const trSection = ctx.closest("li").find(".is-translate-section");
+                        const translateState = trSection.find(".is-translated-state");
+                        translateState.removeClass("fa-close");
+                        translateState.addClass("fa-check");
+                        translateState.css("color", "green");
+                        trSection.find(".current-translation-key").html(result.value);
+                        swal({
+                            type: 'success',
+                            title: "Value was saved!"
+                        });
+                    });
+                } else {
+                    swal({
+                        type: 'warning',
+                        title: "Selected item not saved!"
+                    });
+                }
+            }).catch(err => {
+                    swal({
+                        type: 'warning',
+                        title: err
+                    });
+            });
+        });
+
+        $("#addScript").on("click", function () {
+            const st = new ST();
+			const script = document.createElement("li");
+			const first = $("#columns li:first-child");
+			const order = $("#columns").children().length;
+			const viewModelId = first.attr("viewModelId");
+			script.setAttribute("class", "list-group-item column");
+			script.setAttribute("order", order);
+			script.setAttribute("dataId", "@Guid.Empty");
+			script.setAttribute("viewModelId", viewModelId);
+
+            const container = document.createElement("div");
+            container.setAttribute("class", "input-group mb-3");
+            //container.setAttribute("style", "width: 60%;");
+
+            const prependContainer = document.createElement("div");
+            prependContainer.setAttribute("class", "input-group-text");
+
+            const newId = st.newGuid();
+            const preSpan = document.createElement("span");
+            preSpan.setAttribute("class", "input-group-text");
+            preSpan.setAttribute("id", `grouped_input_${newId}`);
+
+            const preI = document.createElement("i");
+            preI.setAttribute("class", "fa fa-arrows");
+            preSpan.appendChild(preI);
+            prependContainer.appendChild(preSpan);
+            container.appendChild(prependContainer);
+
+			const input = document.createElement("input");
+			input.setAttribute("type", "text");
+			input.setAttribute("class", "form-control");
+            input.setAttribute("value", "");
+            input.setAttribute("aria-describedby", `grouped_input_${newId}`);
+            container.appendChild(input);
+            script.appendChild(container);
+
+			const span = document.createElement("span");
+			span.setAttribute("class", "fa fa-close delEvt");
+			span.addEventListener("click", removeItem);
+			script.appendChild(span);
+			document.querySelector("#columns").appendChild(script);
+		 });
+
+    </script>
+}

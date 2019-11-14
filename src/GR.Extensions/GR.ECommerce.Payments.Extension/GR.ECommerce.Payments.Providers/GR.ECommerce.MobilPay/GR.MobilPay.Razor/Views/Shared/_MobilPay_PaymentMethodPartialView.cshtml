@@ -1,0 +1,19 @@
+﻿@model Guid
+
+<div class="mobilPay-container ml-3">
+    <div id="mobilPayBtn" class="payment-method-button card mobilpay-button">
+        <div id="mobilPayForm"></div>
+    </div>
+</div>
+
+<script src="~/assets/js/mobilPay-plugin.js" asp-append-version="true"></script>
+<script async>
+    const plugin = new MobilPayPlugin("@Model");
+    $(document).ready(function () {
+        $("#mobilPayBtn").on("click", async function () {
+            const form = await plugin.generateForm();
+            $("#mobilPayForm").html(form);
+            form.submit();
+        });
+    });
+</script>
