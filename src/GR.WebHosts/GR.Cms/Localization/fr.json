@@ -779,5 +779,12 @@
   "system_signature": "Signature",
   "system_public_key": "La clé publique",
   "system_private_key": "La clé privée",
-  "system_payment_methods": "Les méthodes de paiement"
+  "system_payment_methods": "Les méthodes de paiement",
+  "user_postal_code": "Code Postal",
+  "system_cancel_order": "Annuler la commande",
+  "system_payment": "Paiement",
+  "system_billing_address": "Adresse De Facturation",
+  "system_commerce_retry": "Réessayer",
+  "system_commerce_payment_failed": "Le paiement a échoué!",
+  "system_commerce_amount_paid": "Montant payé"
 }

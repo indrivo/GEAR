@@ -779,5 +779,12 @@
   "system_signature": "Підпис",
   "system_public_key": "Відкритий ключ",
   "system_private_key": "Закритий ключ",
-  "system_payment_methods": "Способи оплати "
+  "system_payment_methods": "Способи оплати ",
+  "user_postal_code": "Поштовий індекс",
+  "system_cancel_order": "Скасування замовлення",
+  "system_payment": "Оплата",
+  "system_billing_address": "Платіжний Адреса",
+  "system_commerce_retry": "Повторити",
+  "system_commerce_payment_failed": "Платіж не пройшов!",
+  "system_commerce_amount_paid": "Сума, сплачена"
 }

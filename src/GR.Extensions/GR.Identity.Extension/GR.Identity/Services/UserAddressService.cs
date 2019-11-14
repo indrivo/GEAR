@@ -113,8 +113,7 @@ namespace GR.Identity.Services
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Address not found"));
                 return resultModel;
             }
-
-            currentAddress.IsDeleted = true;
+            _context.Addresses.Remove(currentAddress);
             var dbResult = await _context.PushAsync();
             return dbResult;
         }
@@ -124,7 +123,7 @@ namespace GR.Identity.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> AddAddressAsync(AddUserProfileAddressViewModel model)
+        public async Task<ResultModel<Guid>> AddAddressAsync(AddNewAddressViewModel model)
         {
             var currentUserRequest = await _userManager.GetCurrentUserAsync();
             if (!currentUserRequest.IsSuccess) return currentUserRequest.Map(Guid.Empty);
@@ -136,9 +135,9 @@ namespace GR.Identity.Services
                 ContactName = model.ContactName,
                 ZipCode = model.ZipCode,
                 Phone = model.Phone,
-                CountryId = model.SelectedCountryId,
-                StateOrProvinceId = model.SelectedStateOrProvinceId,
-                ApplicationUser = user,
+                CountryId = model.CountryId,
+                StateOrProvinceId = model.CityId,
+                ApplicationUserId = user.Id,
                 IsDefault = model.IsDefault
             };
 
