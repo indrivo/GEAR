@@ -11,6 +11,8 @@ using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using GR.Files.Abstraction;
 using GR.Files.Abstraction.Models.ViewModels;
 using GR.Identity.Abstractions;
+using Mapster;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Documents
@@ -190,11 +192,12 @@ namespace GR.Documents
                 OwnerId = user.Result.Id.ToGuid(),
                 IsMajorVersion = true,
                 Url = model.Url,
+                FileName = model.File?.FileName ?? ""
             };
 
             await _context.DocumentVersions.AddAsync(newDocumentVersion);
             result = await _context.PushAsync();
-
+            result.Result = newDocument.Id;
             return result;
         }
 
@@ -259,6 +262,11 @@ namespace GR.Documents
             var lastVersion = await listDocumntVersions.OrderBy(o => o.VersionNumber).LastOrDefaultAsync();
 
             return lastVersion.VersionNumber;
+        }
+
+        private ResultModel<DownloadFileViewModel> getLastFile(Guid fileId)
+        {
+            return _fileManager.GetFileById(fileId);
         }
 
     }

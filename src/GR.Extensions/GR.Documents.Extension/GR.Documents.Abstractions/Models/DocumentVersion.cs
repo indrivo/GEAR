@@ -28,7 +28,7 @@ namespace GR.Documents.Abstractions.Models
         ///// <summary>
         ///// File
         ///// </summary>
-        //public virtual FileStorage FileStorage { get; set; }
+         public virtual string FileName { get; set; }
 
         /// <summary>
         /// URL

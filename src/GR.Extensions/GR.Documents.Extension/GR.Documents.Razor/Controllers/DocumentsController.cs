@@ -77,15 +77,28 @@ namespace GR.Documents.Razor.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(AddDocumentViewModel model)
+        public async Task<JsonResult> Create(AddDocumentViewModel model)
         {
+            var result = new ResultModel();
 
-            if(!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid)
+            {
+                result.IsSuccess = false;
+                result.Result = model;
 
-            var result = await _documentService.AddDocumentAsync(model);
+                return Json(result);
+            }
 
-            return RedirectToAction("Index");
+            result = await _documentService.AddDocumentAsync(model);
+
+            return Json(result);
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetAllDocumentVersion(Guid? documentId)
+        {
+            return Json(await _documentService.GetAllDocumentVersionByIdAsync(documentId));
         }
     }
 }
