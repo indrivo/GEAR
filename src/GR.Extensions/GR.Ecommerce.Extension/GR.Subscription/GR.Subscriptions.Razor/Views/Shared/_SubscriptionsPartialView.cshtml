@@ -1,0 +1,35 @@
+﻿@using GR.Subscriptions.Abstractions
+@using GR.Subscriptions.Abstractions.Models
+
+@inject ISubscriptionService<Subscription> SubscriptionService
+
+@{
+    var subscriptions = (await SubscriptionService.GetSubscriptionsByUserAsync()).Result.ToList();
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Plan name</th>
+                    <th>Availability days</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var subscription in subscriptions)
+                {
+                    <tr>
+                        <td>
+                            @subscription.Name
+                        </td>
+                        <td>
+                            @subscription.Availability
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

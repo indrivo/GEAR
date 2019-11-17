@@ -786,5 +786,6 @@
   "system_billing_address": "Διεύθυνση Χρέωσης",
   "system_commerce_retry": "Επαναλάβετε",
   "system_commerce_payment_failed": "Η πληρωμή απέτυχε!",
-  "system_commerce_amount_paid": "Ποσό που καταβάλλεται"
+  "system_commerce_amount_paid": "Ποσό που καταβάλλεται",
+  "commerce_no_registered_payment_providers": "Δεν υπήρχε καμία καταγραφή της πληρωμής παροχής υπηρεσιών"
 }

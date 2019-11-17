@@ -786,5 +786,6 @@
   "system_billing_address": "Facturatie Adres",
   "system_commerce_retry": "Probeer opnieuw",
   "system_commerce_payment_failed": "De betaling is mislukt!",
-  "system_commerce_amount_paid": "Bedrag"
+  "system_commerce_amount_paid": "Bedrag",
+  "commerce_no_registered_payment_providers": "Er was geen record van een payment provider"
 }

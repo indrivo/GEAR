@@ -10,4 +10,8 @@
     <ProjectReference Include="..\..\GR.ECommerce.Orders\GR.Orders.Abstractions\GR.Orders.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events\EventArgs\" />
+  </ItemGroup>
+
 </Project>

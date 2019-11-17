@@ -786,5 +786,6 @@
   "system_billing_address": "Adres Rozliczeniowy",
   "system_commerce_retry": "Powtórzyć",
   "system_commerce_payment_failed": "Płatności nie minął!",
-  "system_commerce_amount_paid": "Kwota wypłacona"
+  "system_commerce_amount_paid": "Kwota wypłacona",
+  "commerce_no_registered_payment_providers": "Nie odnotowano ani jednego dostawcy wypłaty"
 }

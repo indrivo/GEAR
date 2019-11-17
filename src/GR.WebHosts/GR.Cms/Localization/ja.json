@@ -786,5 +786,6 @@
   "system_billing_address": "請求先",
   "system_commerce_retry": "リトライ",
   "system_commerce_payment_failed": "お支払いした♪",
-  "system_commerce_amount_paid": "支給額"
+  "system_commerce_amount_paid": "支給額",
+  "commerce_no_registered_payment_providers": "ありませんでした記録決済サービス-プロバイダー"
 }

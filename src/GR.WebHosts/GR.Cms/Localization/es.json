@@ -786,5 +786,6 @@
   "system_billing_address": "La Dirección De Facturación",
   "system_commerce_retry": "Reintentar",
   "system_commerce_payment_failed": "Error en el pago!",
-  "system_commerce_amount_paid": "Importe pagado"
+  "system_commerce_amount_paid": "Importe pagado",
+  "commerce_no_registered_payment_providers": "No había ningún registro de un proveedor de servicios de pago"
 }

@@ -9,13 +9,13 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Enums;
-using GR.ECommerce.Abstractions.Events;
-using GR.ECommerce.Abstractions.Events.EventArgs.OrderEventArgs;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Orders.Abstractions;
+using GR.Orders.Abstractions.Events;
+using GR.Orders.Abstractions.Events.EventArgs.OrderEventArgs;
 using GR.Orders.Abstractions.Helpers;
 using GR.Orders.Abstractions.Models;
 using GR.Orders.Abstractions.ViewModels.OrderViewModels;
@@ -162,7 +162,7 @@ namespace GR.Orders
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
-                CommerceEvents.Orders.OrderCreated(new AddOrderEventArgs
+                OrderEvents.Orders.OrderCreated(new AddOrderEventArgs
                 {
                     Id = order.Id,
                     OrderStatus = order.OrderState.ToString()
@@ -193,7 +193,40 @@ namespace GR.Orders
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
-                CommerceEvents.Orders.OrderCreated(new AddOrderEventArgs
+                OrderEvents.Orders.OrderCreated(new AddOrderEventArgs
+                {
+                    Id = order.Id,
+                    OrderStatus = order.OrderState.ToString()
+                });
+            }
+
+            await _commerceContext.PushAsync();
+
+            return dbRequest.Map(order.Id);
+        }
+
+        /// <summary>
+        /// Create order
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId)
+        {
+            if (productId == null || variationId == null) return new InvalidParametersResultModel<Guid>();
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
+            var productRequest = await _productService.GetProductByIdAsync(productId);
+            if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
+            var product = productRequest.Result;
+            var variation = product.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
+            var order = OrderMapper.Map(product, variation);
+            order.UserId = userRequest.Result.Id.ToGuid();
+            await _orderDbContext.Orders.AddAsync(order);
+            var dbRequest = await _orderDbContext.PushAsync();
+            if (dbRequest.IsSuccess)
+            {
+                OrderEvents.Orders.OrderCreated(new AddOrderEventArgs
                 {
                     Id = order.Id,
                     OrderStatus = order.OrderState.ToString()
@@ -284,14 +317,48 @@ namespace GR.Orders
             var oldState = order.OrderState;
             order.OrderState = orderState;
             _orderDbContext.Orders.Update(order);
+
+            //Save history
+            await _orderDbContext.OrderHistories.AddAsync(new OrderHistory
+            {
+                Notes = string.Empty,
+                OrderState = oldState,
+                OrderId = order.Id
+            });
+
             var dbRequest = await _orderDbContext.PushAsync();
-            if (dbRequest.IsSuccess)
-                await _orderDbContext.OrderHistories.AddAsync(new OrderHistory
-                {
-                    Notes = string.Empty,
-                    OrderState = oldState,
-                    OrderId = order.Id
-                });
+            if (!dbRequest.IsSuccess) return dbRequest;
+            switch (order.OrderState)
+            {
+                case OrderState.New:
+                    break;
+                case OrderState.OnHold:
+                    break;
+                case OrderState.PendingPayment:
+                    break;
+                case OrderState.PaymentReceived:
+                    OrderEvents.Orders.PaymentReceived(new PaymentReceivedEventArgs
+                    {
+                        OrderId = order.Id
+                    });
+                    break;
+                case OrderState.PaymentFailed:
+                    break;
+                case OrderState.Invoiced:
+                    break;
+                case OrderState.Shipping:
+                    break;
+                case OrderState.Shipped:
+                    break;
+                case OrderState.Complete:
+                    break;
+                case OrderState.Canceled:
+                    break;
+                case OrderState.Refunded:
+                    break;
+                case OrderState.Closed:
+                    break;
+            }
             return dbRequest;
         }
 

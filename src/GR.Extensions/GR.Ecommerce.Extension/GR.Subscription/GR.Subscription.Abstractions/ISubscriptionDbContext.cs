@@ -11,5 +11,10 @@ namespace GR.Subscriptions.Abstractions
         /// Subscription
         /// </summary>
         DbSet<Subscription> Subscription { get; set; }
+
+        /// <summary>
+        /// Subscription
+        /// </summary>
+        DbSet<SubscriptionPermission> SubscriptionPermissions { get; set; }
     }
 }

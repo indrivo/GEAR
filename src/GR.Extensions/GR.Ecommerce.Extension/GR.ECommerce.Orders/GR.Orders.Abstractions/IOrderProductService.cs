@@ -98,6 +98,14 @@ namespace GR.Orders.Abstractions
         Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId);
 
         /// <summary>
+        /// Create order 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId);
+
+        /// <summary>
         /// Get all orders
         /// </summary>
         /// <param name="param"></param>

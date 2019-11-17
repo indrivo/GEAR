@@ -21,4 +21,8 @@
       <Pack>false</Pack>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Shared\" />
+  </ItemGroup>
 </Project>

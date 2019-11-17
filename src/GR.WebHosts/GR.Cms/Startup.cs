@@ -508,6 +508,8 @@ namespace GR.Cms
 				.RegisterSubscriptionStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
+				.RegisterOrderEvents()
+				.RegisterSubscriptionEvents()
 				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
@@ -533,7 +535,7 @@ namespace GR.Cms
 			.RegisterDocumentTypeServices<DocumentTypeService>()
 			.RegisterDocumentServices<DocumentService>();
 
-            //--------------------------Custom dependency injection-------------------------------------
+			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();
 		}
 	}

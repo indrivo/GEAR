@@ -786,5 +786,6 @@
   "system_billing_address": "Adresa De Facturare",
   "system_commerce_retry": "Încercați din nou",
   "system_commerce_payment_failed": "Plata nu a reușit!",
-  "system_commerce_amount_paid": "Suma plătită"
+  "system_commerce_amount_paid": "Suma plătită",
+  "commerce_no_registered_payment_providers": "Nu a fost înregistrat niciun furnizor de plăți"
 }

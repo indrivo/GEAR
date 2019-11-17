@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Core.Helpers;
+using GR.ECommerce.Abstractions.Events;
+using GR.Subscriptions.Abstractions.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Subscriptions.Abstractions.Extensions
@@ -14,15 +13,15 @@ namespace GR.Subscriptions.Abstractions.Extensions
         /// <summary>
         /// Register subscription services
         /// </summary>
-        /// <typeparam name="TSubsctiption"></typeparam>
+        /// <typeparam name="TSubscription"></typeparam>
         /// <typeparam name="TSubscriptionService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection RegisterSubscriptionServices<TSubsctiption, TSubscriptionService>(this IServiceCollection services)
-            where TSubscriptionService : class, ISubscriptionService<TSubsctiption>
-            where TSubsctiption : Subscription
+        public static IServiceCollection RegisterSubscriptionServices<TSubscription, TSubscriptionService>(this IServiceCollection services)
+            where TSubscriptionService : class, ISubscriptionService<TSubscription>
+            where TSubscription : Subscription
         {
-            IoC.RegisterTransientService<ISubscriptionService<TSubsctiption>, TSubscriptionService>();
+            IoC.RegisterTransientService<ISubscriptionService<TSubscription>, TSubscriptionService>();
 
             return services;
         }
@@ -38,6 +37,17 @@ namespace GR.Subscriptions.Abstractions.Extensions
         {
             services.AddTransient<ISubscriptionDbContext, TContext>();
             IoC.RegisterService<ISubscriptionDbContext>(nameof(ISubscriptionDbContext), typeof(TContext));
+            return services;
+        }
+
+        /// <summary>
+        /// Register subscription events
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterSubscriptionEvents(this IServiceCollection services)
+        {
+            SubscriptionEvents.RegisterEvents();
             return services;
         }
     }
