@@ -58,6 +58,9 @@ namespace GR.ECommerce.Products.Services
                 .Include(x => x.ProductCategories)
                 .ThenInclude(x => x.Category)
                 .Include(x => x.ProductPrices)
+                .Include(x => x.ProductVariations)
+                .ThenInclude(x => x.ProductVariationDetails)
+                .ThenInclude(x => x.ProductOption)
                 .FirstOrDefaultAsync(x => x.Id.Equals(productId));
             if (product == null) return new NotFoundResultModel<Product>();
             var response = new ResultModel<Product>
