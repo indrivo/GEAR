@@ -788,5 +788,6 @@
   "system_commerce_payment_failed": "Платеж не прошел!",
   "system_commerce_amount_paid": "Сумма, уплаченная",
   "commerce_no_registered_payment_providers": "Не было зафиксировано ни одного поставщика выплаты",
-  "system_commerce_payment_success": "Успешной оплаты!"
+  "system_commerce_payment_success": "Успешной оплаты!",
+  "system_commerce_email_sent": "Письмо отправлено!"
 }

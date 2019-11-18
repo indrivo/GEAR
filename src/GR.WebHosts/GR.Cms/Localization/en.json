@@ -788,5 +788,6 @@
   "system_commerce_payment_failed": "Payment failed!",
   "system_commerce_amount_paid": "Amount paid",
   "commerce_no_registered_payment_providers": "There was no record of a payment provider",
-  "system_commerce_payment_success": "Payment successful!"
+  "system_commerce_payment_success": "Payment successful!",
+  "system_commerce_email_sent": "Email sent!"
 }
