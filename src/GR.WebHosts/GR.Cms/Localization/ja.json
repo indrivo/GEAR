@@ -787,5 +787,7 @@
   "system_commerce_retry": "リトライ",
   "system_commerce_payment_failed": "お支払いした♪",
   "system_commerce_amount_paid": "支給額",
-  "commerce_no_registered_payment_providers": "ありませんでした記録決済サービス-プロバイダー"
+  "commerce_no_registered_payment_providers": "ありませんでした記録決済サービス-プロバイダー",
+  "system_commerce_payment_success": "お支払い成功！",
+  "system_commerce_email_sent": "メール送!"
 }
