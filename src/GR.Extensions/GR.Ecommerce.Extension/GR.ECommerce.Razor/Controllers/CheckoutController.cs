@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.ECommerce.Abstractions.Enums;
-using GR.ECommerce.Abstractions.Models;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Orders.Abstractions;
@@ -52,10 +51,9 @@ namespace GR.ECommerce.Razor.Controllers
             if (!userRequest.IsSuccess) return NotFound();
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
-            if (orderRequest.Result.OrderState != OrderState.New)
-            {
-                return NotFound();
-            }
+
+            var wasInvoicedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.Invoiced);
+            if (wasInvoicedRequest.IsSuccess && wasInvoicedRequest.Result) return NotFound();
             var addressesRequest = await _userManager.GetUserAddressesAsync(userRequest.Result.Id.ToGuid());
             var model = new CheckoutShippingViewModel
             {
@@ -104,6 +102,9 @@ namespace GR.ECommerce.Razor.Controllers
         {
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess) return NotFound();
+            var wasInvoicedRequest = await _orderProductService.ItWasInTheStateAsync(orderId, OrderState.Invoiced);
+            if (!wasInvoicedRequest.IsSuccess || !wasInvoicedRequest.Result)
+                return RedirectToAction(nameof(Shipping), new { OrderId = orderId });
 
             return View(orderRequest.Result);
         }

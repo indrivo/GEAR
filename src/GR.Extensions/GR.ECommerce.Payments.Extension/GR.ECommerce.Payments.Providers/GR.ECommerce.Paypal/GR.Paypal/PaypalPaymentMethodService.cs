@@ -168,10 +168,10 @@ namespace GR.Paypal
                     },
                     Notes = order.Notes
                 };
-
-                var response = await httpClient.PostJsonAsync(
-                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment",
-                    paymentCreateRequest);
+                var serializedData = paymentCreateRequest.SerializeAsJson();
+                var content = new StringContent(serializedData, Encoding.UTF8, "application/json");
+                var response = await httpClient.PostAsync(
+                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment", content);
 
                 var responseBody = await response.Content.ReadAsStringAsync();
                 dynamic payment = JObject.Parse(responseBody);

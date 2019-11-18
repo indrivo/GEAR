@@ -28,7 +28,6 @@ using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Data;
 using GR.Procesess.Data;
 using GR.Report.Dynamic.Data;
-using Microsoft.AspNetCore.Http;
 
 namespace GR.Application
 {

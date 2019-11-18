@@ -206,7 +206,7 @@ namespace GR.MobilPay
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
                 UserId = order.UserId,
-                FailureMessage = card.Card.Serialize()
+                FailureMessage = card.Card.SerializeAsJson()
             };
             var orderState = order.OrderState;
             switch (card.Confirm.Action)

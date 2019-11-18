@@ -111,5 +111,13 @@ namespace GR.Orders.Abstractions
         /// <param name="param"></param>
         /// <returns></returns>
         DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param);
+
+        /// <summary>
+        /// Check if the order was in the x state
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="orderState"></param>
+        /// <returns></returns>
+        Task<ResultModel<bool>> ItWasInTheStateAsync(Guid? orderId, OrderState orderState);
     }
 }

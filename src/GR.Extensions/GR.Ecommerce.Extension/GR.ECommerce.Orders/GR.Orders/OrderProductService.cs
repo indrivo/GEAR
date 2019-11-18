@@ -377,7 +377,28 @@ namespace GR.Orders
             order.BillingAddress = billingAddress;
             order.ShipmentAddress = shipmentAddress;
             _orderDbContext.Orders.Update(order);
-            return await _orderDbContext.PushAsync();
+            var dbResult = await _orderDbContext.PushAsync();
+            if (dbResult.IsSuccess) await ChangeOrderStateAsync(orderId, OrderState.Invoiced);
+            return dbResult;
+        }
+
+        /// <summary>
+        /// Check if the order was in the x state
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="orderState"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<bool>> ItWasInTheStateAsync(Guid? orderId, OrderState orderState)
+        {
+            var response = new ResultModel<bool>();
+            if (orderId == null) return new InvalidParametersResultModel<bool>();
+            var check = await _orderDbContext.OrderHistories
+                .Include(x => x.Order)
+                .AnyAsync(x => x.OrderId.Equals(orderId)
+                               && (x.OrderState.Equals(orderState) || x.Order.OrderState.Equals(orderState)));
+            response.IsSuccess = true;
+            response.Result = check;
+            return response;
         }
 
         /// <summary>

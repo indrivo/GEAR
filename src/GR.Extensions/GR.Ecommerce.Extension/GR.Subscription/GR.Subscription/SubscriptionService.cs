@@ -7,8 +7,8 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
-using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Payments.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
@@ -43,14 +43,20 @@ namespace GR.Subscriptions
         /// </summary>
         private readonly IOrderProductService<Order> _orderService;
 
+        /// <summary>
+        /// Inject payment service
+        /// </summary>
+        private readonly IPaymentService _paymentService;
+
         #endregion
 
-        public SubscriptionService(ICommerceContext commerceContext, IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService)
+        public SubscriptionService(ICommerceContext commerceContext, IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService)
         {
             _commerceContext = commerceContext;
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
             _orderService = orderService;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -113,17 +119,24 @@ namespace GR.Subscriptions
             var orderRequest = await _orderService.GetOrderByIdAsync(model.OrderId);
             if (!orderRequest.IsSuccess) return new InvalidParametersResultModel<Guid>();
             var order = orderRequest.Result;
-            if (order.OrderState != OrderState.PaymentReceived) return new InvalidParametersResultModel<Guid>();
+            var isPayedRequest = await _paymentService.IsOrderPayedAsync(order.Id);
+            if (!isPayedRequest.IsSuccess) return new ResultModel<Guid>
+            {
+                Errors = new List<IErrorModel> { new ErrorModel(string.Empty, "Order was not paid") }
+            };
             var subscription = new Subscription
             {
+                Id = model.Id,
                 UserId = order.UserId,
                 StartDate = model.StartDate,
                 Availability = model.Availability,
-                OrderId = model.OrderId
+                OrderId = model.OrderId,
+                Name = model.Name,
+                SubscriptionPermissions = model.SubscriptionPermissions
             };
 
             await _subscriptionDbContext.Subscription.AddAsync(subscription);
-            var dbRequest = await _commerceContext.PushAsync();
+            var dbRequest = await _subscriptionDbContext.PushAsync();
 
             return dbRequest.Map(subscription.Id);
         }
