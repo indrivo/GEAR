@@ -25,6 +25,11 @@ namespace GR.Subscriptions.Razor.Controllers
             _subscriptionService = subscriptionService;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         /// <summary>
         /// Get subscription by Id
         /// </summary>

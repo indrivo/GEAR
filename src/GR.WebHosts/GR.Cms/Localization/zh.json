@@ -789,5 +789,6 @@
   "system_commerce_amount_paid": "支付的金额",
   "commerce_no_registered_payment_providers": "有没有记录的付款提供者",
   "system_commerce_payment_success": "支付成功的！",
-  "system_commerce_email_sent": "电子邮件发送！"
+  "system_commerce_email_sent": "电子邮件发送！",
+  "commerce_my_subscriptions": "我订阅"
 }

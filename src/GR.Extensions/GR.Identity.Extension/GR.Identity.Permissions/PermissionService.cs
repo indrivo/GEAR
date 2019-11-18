@@ -196,7 +196,7 @@ namespace GR.Identity.Permissions
         /// <param name="roles"></param>
         /// <param name="userPermissions"></param>
         /// <returns></returns>
-        public async Task<bool> HasPermission(IList<string> roles, IList<string> userPermissions)
+        public async Task<bool> HasPermissionAsync(IList<string> roles, IList<string> userPermissions)
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
@@ -227,6 +227,20 @@ namespace GR.Identity.Permissions
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Check for permissions
+        /// </summary>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public async Task<bool> HasPermissionAsync(IList<string> permissions)
+        {
+            if (!permissions.Any()) return false;
+            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess) return false;
+            var roles = await _userManager.UserManager.GetRolesAsync(currentUserRequest.Result);
+            return await HasPermissionAsync(roles, permissions);
         }
 
         /// <summary>

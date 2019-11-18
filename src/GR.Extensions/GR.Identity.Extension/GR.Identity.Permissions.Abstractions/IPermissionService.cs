@@ -52,7 +52,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// <param name="roles"></param>
         /// <param name="userPermissions"></param>
         /// <returns></returns>
-        Task<bool> HasPermission(IList<string> roles, IList<string> userPermissions);
+        Task<bool> HasPermissionAsync(IList<string> roles, IList<string> userPermissions);
 
         /// <summary>
         /// Refresh cache by role
@@ -61,5 +61,12 @@ namespace GR.Identity.Permissions.Abstractions
         /// <param name="delete"></param>
         /// <returns></returns>
         Task RefreshCacheByRole(string roleName, bool delete = false);
+
+        /// <summary>
+        /// Check for permissions
+        /// </summary>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        Task<bool> HasPermissionAsync(IList<string> permissions);
     }
 }

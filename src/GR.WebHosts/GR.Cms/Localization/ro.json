@@ -789,5 +789,6 @@
   "system_commerce_amount_paid": "Suma plătită",
   "commerce_no_registered_payment_providers": "Nu a fost înregistrat niciun furnizor de plăți",
   "system_commerce_payment_success": "Plată de succes!",
-  "system_commerce_email_sent": "E-mail trimis!"
+  "system_commerce_email_sent": "E-mail trimis!",
+  "commerce_my_subscriptions": "Abonamentele mele"
 }

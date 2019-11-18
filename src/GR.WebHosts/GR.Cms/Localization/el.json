@@ -789,5 +789,6 @@
   "system_commerce_amount_paid": "Ποσό που καταβάλλεται",
   "commerce_no_registered_payment_providers": "Δεν υπήρχε καμία καταγραφή της πληρωμής παροχής υπηρεσιών",
   "system_commerce_payment_success": "Πληρωμή επιτυχής!",
-  "system_commerce_email_sent": "Το Email που έστειλε!"
+  "system_commerce_email_sent": "Το Email που έστειλε!",
+  "commerce_my_subscriptions": "\"Οι συνδρομές μου\""
 }
