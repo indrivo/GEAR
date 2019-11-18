@@ -78,6 +78,7 @@ namespace GR.Documents
             var result = new  ResultModel<IEnumerable<DocumentType>>();
             var listDocumentTypes = await _context.DocumentTypes.ToListAsync();
 
+            result.IsSuccess = true; 
             result.Result = listDocumentTypes;
 
             return result;

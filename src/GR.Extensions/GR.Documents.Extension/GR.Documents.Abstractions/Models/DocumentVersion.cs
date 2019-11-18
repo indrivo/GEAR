@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
-using GR.Files.Abstraction.Models;
 
 namespace GR.Documents.Abstractions.Models
 {
@@ -26,10 +25,10 @@ namespace GR.Documents.Abstractions.Models
         public virtual Guid? FileStorageId { get; set; }
 
 
-        /// <summary>
-        /// File
-        /// </summary>
-        public virtual FileStorage FileStorage { get; set; }
+        ///// <summary>
+        ///// File
+        ///// </summary>
+         public virtual string FileName { get; set; }
 
         /// <summary>
         /// URL
@@ -75,6 +74,7 @@ namespace GR.Documents.Abstractions.Models
         /// <summary>
         /// Owner id
         /// </summary>
+         [Required]
         public virtual Guid OwnerId { get; set; }
 
     }

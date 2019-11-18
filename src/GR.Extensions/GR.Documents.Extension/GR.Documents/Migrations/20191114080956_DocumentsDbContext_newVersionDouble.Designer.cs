@@ -3,15 +3,17 @@ using System;
 using GR.Documents.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GR.Documents.Migrations
 {
     [DbContext(typeof(DocumentsDbContext))]
-    partial class DocumentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191114080956_DocumentsDbContext_newVersionDouble")]
+    partial class DocumentsDbContext_newVersionDouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,8 +172,6 @@ namespace GR.Documents.Migrations
                     b.Property<DateTime>("Created");
 
                     b.Property<Guid>("DocumentId");
-
-                    b.Property<string>("FileName");
 
                     b.Property<Guid?>("FileStorageId");
 

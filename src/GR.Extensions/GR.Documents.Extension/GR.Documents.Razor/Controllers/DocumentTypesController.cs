@@ -34,11 +34,27 @@ namespace GR.Documents.Razor.Controllers
             return View();
         }
 
+
+        /// <summary>
+        /// Get all Documet types from table model
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
         [HttpPost]
         public  JsonResult ListDocumentTypes(DTParameters param)
         {
             var list =  _documentTypeService.GetAllDocumentType(param);
             return Json(list);
+        }
+
+        /// <summary>
+        /// Get all document types async
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<JsonResult> GetAllDocumetTypesAsync()
+        {
+            return Json(await _documentTypeService.GetAllDocumentTypeAsync());
         }
 
         public IActionResult Create()

@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Helpers;
 using GR.Documents.Abstractions;
+using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,13 +27,21 @@ namespace GR.Documents.Razor.Controllers
 
         #endregion
 
+        #region Helpers
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        #endregion
 
         public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService)
         {
             _documentService = documentService;
             _documentTypeService = documentTypeService;
         }
-
 
         // GET: /<controller>/
         public async Task<IActionResult> Index()
@@ -39,6 +51,13 @@ namespace GR.Documents.Razor.Controllers
             var listResult = listDocuments.Result.Adapt<IEnumerable<DocumentViewModel>>();
 
             return View(listResult);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetAllDocuments()
+        {
+            var result =   await _documentService.GetAllDocumentsAsync();
+            return Json(result, SerializerSettings);
         }
 
 
@@ -57,15 +76,45 @@ namespace GR.Documents.Razor.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(AddDocumentViewModel model)
+        public async Task<JsonResult> Create(AddDocumentViewModel model)
         {
+            var result = new ResultModel();
 
-            if(!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid)
+            {
+                result.IsSuccess = false;
+                result.Result = model;
 
-            var result = await _documentService.AddDocumentAsync(model);
+                return Json(result);
+            }
 
-            return RedirectToAction("Index");
+            result = await _documentService.AddDocumentAsync(model);
+
+            return Json(result);
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetAllDocumentVersion(Guid? documentId)
+        {
+            return Json(await _documentService.GetAllDocumentVersionByIdAsync(documentId), SerializerSettings);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> AddNewDocumentVersion(AddNewVersionDocumentViewModel model)
+        {
+            var result = new ResultModel();
+
+            //if (!ModelState.IsValid)
+            //{
+            //    result.IsSuccess = false;
+            //    result.Result = model;
+            //    result.Errors.Add(new ErrorModel { Message = "model is not valid" });
+            //    return Json(result);
+            //}
+
+            result = await _documentService.AddNewDocumentVersionAsync(model);
+            return Json(result);
         }
     }
 }

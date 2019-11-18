@@ -42,5 +42,12 @@ namespace GR.Documents.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> AddDocumentAsync(AddDocumentViewModel model);
+
+        /// <summary>
+        /// Add new document version
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddNewDocumentVersionAsync(AddNewVersionDocumentViewModel model);
     }
 }

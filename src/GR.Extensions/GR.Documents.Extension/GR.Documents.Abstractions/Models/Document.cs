@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 using GR.Core;
 
@@ -51,5 +52,21 @@ namespace GR.Documents.Abstractions.Models
         /// </summary>
         [Required]
         public virtual Guid UserId { get; set; }
+
+
+        /// <summary>
+        /// last File Id
+        /// </summary>
+        public virtual Guid? LastFileId => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileStorageId;
+
+        /// <summary>
+        /// File name 
+        /// </summary>
+        public virtual string FileName => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileName;
+
+        /// <summary>
+        /// File url 
+        /// </summary>
+        public virtual string LastUrl => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Url;
     }
 }
