@@ -43,7 +43,6 @@ namespace GR.Documents.Razor.Controllers
             _documentTypeService = documentTypeService;
         }
 
-
         // GET: /<controller>/
         public async Task<IActionResult> Index()
         {
@@ -98,7 +97,24 @@ namespace GR.Documents.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAllDocumentVersion(Guid? documentId)
         {
-            return Json(await _documentService.GetAllDocumentVersionByIdAsync(documentId));
+            return Json(await _documentService.GetAllDocumentVersionByIdAsync(documentId), SerializerSettings);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> AddNewDocumentVersion(AddNewVersionDocumentViewModel model)
+        {
+            var result = new ResultModel();
+
+            //if (!ModelState.IsValid)
+            //{
+            //    result.IsSuccess = false;
+            //    result.Result = model;
+            //    result.Errors.Add(new ErrorModel { Message = "model is not valid" });
+            //    return Json(result);
+            //}
+
+            result = await _documentService.AddNewDocumentVersionAsync(model);
+            return Json(result);
         }
     }
 }

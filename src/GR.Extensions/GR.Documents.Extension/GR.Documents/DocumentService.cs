@@ -130,7 +130,7 @@ namespace GR.Documents
 
             var listDocumentVersion = await _context.DocumentVersions
                 .Include(i => i.Document)
-                .Where(x => x.DocumentId == documentId).ToListAsync();
+                .Where(x => x.DocumentId == documentId).OrderByDescending(o=> o.VersionNumber).ToListAsync();
 
             if (listDocumentVersion is null || !listDocumentVersion.Any()) return new NotFoundResultModel<IEnumerable<DocumentVersion>>();
 
@@ -206,7 +206,7 @@ namespace GR.Documents
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> AddNewDocumentVersion(AddNewVersionDocumentViewModel model)
+        public async Task<ResultModel> AddNewDocumentVersionAsync(AddNewVersionDocumentViewModel model)
         {
             var result = new ResultModel();
             var user = await _userManager.GetCurrentUserAsync();
@@ -217,6 +217,16 @@ namespace GR.Documents
                 result.IsSuccess = false;
                 return result;
             }
+
+            var document = await _context.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
+
+            if (document is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "document not fount" });
+                result.IsSuccess = false;
+                return result;
+            }
+
 
             Guid? fileId = null;
 
@@ -231,7 +241,7 @@ namespace GR.Documents
                 Comments = model.Comments,
                 OwnerId = user.Result.Id.ToGuid(),
                 IsMajorVersion = model.IsMajorVersion,
-                Url = model.Url,
+                FileName = model.File?.FileName ?? ""
             };
 
             var lastVersion = await GetLastDocVersion(model.DocumentId);
@@ -264,10 +274,10 @@ namespace GR.Documents
             return lastVersion.VersionNumber;
         }
 
-        private ResultModel<DownloadFileViewModel> getLastFile(Guid fileId)
-        {
-            return _fileManager.GetFileById(fileId);
-        }
+        //private ResultModel<DownloadFileViewModel> getLastFile(Guid fileId)
+        //{
+        //    return _fileManager.GetFileById(fileId);
+        //}
 
     }
 }
