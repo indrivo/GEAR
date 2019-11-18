@@ -787,5 +787,6 @@
   "system_commerce_retry": "Powtórzyć",
   "system_commerce_payment_failed": "Płatności nie minął!",
   "system_commerce_amount_paid": "Kwota wypłacona",
-  "commerce_no_registered_payment_providers": "Nie odnotowano ani jednego dostawcy wypłaty"
+  "commerce_no_registered_payment_providers": "Nie odnotowano ani jednego dostawcy wypłaty",
+  "system_commerce_payment_success": "Udanej płatności!"
 }
