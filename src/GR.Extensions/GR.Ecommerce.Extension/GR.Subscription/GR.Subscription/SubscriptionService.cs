@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
-using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions;
 using GR.Identity.Abstractions;
@@ -28,12 +27,6 @@ namespace GR.Subscriptions
         private readonly IUserManager<ApplicationUser> _userManager;
 
         /// <summary>
-        /// Inject db context
-        /// </summary>
-        private readonly ICommerceContext _commerceContext;
-
-
-        /// <summary>
         /// Inject subscription db context
         /// </summary>
         private readonly ISubscriptionDbContext _subscriptionDbContext;
@@ -50,9 +43,8 @@ namespace GR.Subscriptions
 
         #endregion
 
-        public SubscriptionService(ICommerceContext commerceContext, IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService)
+        public SubscriptionService(IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService)
         {
-            _commerceContext = commerceContext;
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
             _orderService = orderService;
@@ -75,7 +67,34 @@ namespace GR.Subscriptions
 
             var listSubscription = await _subscriptionDbContext.Subscription
                 .Include(i => i.Order)
-                .ThenInclude(i => i.ProductOrders).ToListAsync();
+                .ThenInclude(i => i.ProductOrders)
+                .Include(x => x.SubscriptionPermissions)
+                .ToListAsync();
+
+            response.IsSuccess = true;
+            response.Result = listSubscription;
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get valid subscriptions for user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Subscription>>> GetValidSubscriptionsForUserAsync(Guid? userId)
+        {
+            var response = new ResultModel<IEnumerable<Subscription>>();
+            if (userId == null) return new InvalidParametersResultModel<IEnumerable<Subscription>>();
+            var user = await _userManager.UserManager.FindByIdAsync(userId.ToString());
+            if (user == null) return new NotFoundResultModel<IEnumerable<Subscription>>();
+
+            var listSubscription = await _subscriptionDbContext.Subscription
+                .Include(i => i.Order)
+                .ThenInclude(i => i.ProductOrders)
+                .Include(x => x.SubscriptionPermissions)
+                .Where(x => x.UserId.Equals(userId) && x.IsValid)
+                .ToListAsync();
 
             response.IsSuccess = true;
             response.Result = listSubscription;

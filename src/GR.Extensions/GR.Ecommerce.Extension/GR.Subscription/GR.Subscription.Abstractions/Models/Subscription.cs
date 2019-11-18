@@ -42,7 +42,7 @@ namespace GR.Subscriptions.Abstractions.Models
         /// <summary>
         /// Is valid subscription
         /// </summary>
-        public virtual bool IsValid => StartDate.AddDays(Availability) < DateTime.Now;
+        public virtual bool IsValid => StartDate.AddDays(Availability) > DateTime.Now;
 
         /// <summary>
         /// Remaining days subscription

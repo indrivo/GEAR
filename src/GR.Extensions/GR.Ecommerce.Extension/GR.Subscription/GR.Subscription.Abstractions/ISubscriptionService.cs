@@ -45,5 +45,12 @@ namespace GR.Subscriptions.Abstractions
         /// <param name="variation"></param>
         /// <returns></returns>
         int GetSubscriptionDuration([Required] ProductVariation variation);
+
+        /// <summary>
+        /// Get valid subscriptions for user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Subscription>>> GetValidSubscriptionsForUserAsync(Guid? userId);
     }
 }

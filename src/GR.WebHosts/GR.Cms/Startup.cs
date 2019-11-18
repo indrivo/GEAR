@@ -510,6 +510,7 @@ namespace GR.Cms
 				.RegisterCommerceEvents()
 				.RegisterOrderEvents()
 				.RegisterSubscriptionEvents()
+				.RegisterSubscriptionRules()
 				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 

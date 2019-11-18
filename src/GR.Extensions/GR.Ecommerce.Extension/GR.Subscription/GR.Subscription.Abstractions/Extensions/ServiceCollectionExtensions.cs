@@ -3,6 +3,7 @@ using GR.Subscriptions.Abstractions.Models;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Events;
 using GR.Subscriptions.Abstractions.Events;
+using GR.Subscriptions.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Subscriptions.Abstractions.Extensions
@@ -48,6 +49,18 @@ namespace GR.Subscriptions.Abstractions.Extensions
         public static IServiceCollection RegisterSubscriptionEvents(this IServiceCollection services)
         {
             SubscriptionEvents.RegisterEvents();
+            return services;
+        }
+
+        /// <summary>
+        /// Register rules for company subscriptions
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterSubscriptionRules(this IServiceCollection services)
+        {
+            //Register limit users per company by subscription
+            SubscriptionRules.RegisterLimitNumberOfUsersRule();
             return services;
         }
     }
