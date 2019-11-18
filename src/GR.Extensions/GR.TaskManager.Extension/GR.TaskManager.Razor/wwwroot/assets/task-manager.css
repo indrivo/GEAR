@@ -1,9 +1,4 @@
-﻿.task .task-number,
-.task .task-label {
-    font-size: 18px;
-}
-
-.dropdown-item {
+﻿.dropdown-item {
     padding: 10px 20px;
 }
 
@@ -16,24 +11,13 @@
     display: inline-block;
 }
 
-.task-manager-task-list table th,
 .task-manager-task-list table tbody td {
     padding: .75rem 2rem !important;
+    border-color: #DEE2E6;
 }
 
     .task-manager-task-list table tbody td.task-actions {
         width: 100px;
-    }
-
-.task .status {
-    position: relative;
-    padding-left: 30px;
-}
-
-    .task .status i {
-        position: absolute;
-        left: 0;
-        top: 0;
     }
 
 .task-manager-loader {
@@ -67,10 +51,6 @@
 
 .priority-Critical .priority span {
     background-color: #EA585A;
-}
-
-.status-Completed {
-    color: #009010;
 }
 
 .task-item .custom-control-label {
@@ -126,6 +106,10 @@
     border: 1px solid #dddddd;
 }
 
+table thead {
+    background-color: #254258;
+}
+
 table th {
     position: relative;
 }
@@ -141,7 +125,7 @@ table th {
         right: 16px;
         font-size: 1rem;
         position: absolute;
-        bottom: .5em;
+        top: calc(50% - 8px);
         display: block;
         opacity: .3;
         color: white;
@@ -168,5 +152,13 @@ table th {
 }
 
 .select2-container {
-    width : 100% !important;
+    width: 100% !important;
+}
+
+.progress {
+    background-color: #8189994d;
+}
+
+.progress-bar {
+    background-color: #2862D6;
 }
