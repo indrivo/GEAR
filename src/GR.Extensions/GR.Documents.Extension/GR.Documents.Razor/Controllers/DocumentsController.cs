@@ -60,6 +60,14 @@ namespace GR.Documents.Razor.Controllers
             return Json(result, SerializerSettings);
         }
 
+        [HttpPost]
+        public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumetId)
+        {
+            var result = await _documentService.GetAllDocumentsByListId(listDocumetId);
+            return Json(result, SerializerSettings);
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
