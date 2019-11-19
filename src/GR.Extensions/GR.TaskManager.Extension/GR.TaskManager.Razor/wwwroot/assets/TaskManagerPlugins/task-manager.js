@@ -49,8 +49,10 @@ $(function () {
     });
 
     $('.task-manager .task-manager-items-per-page-control').on('change', function () {
-        tableProperties.pageSize = $(this).val();
-        loadTaskList(tableProperties);
+        const tablePropertiesLocal = tableProperties;
+        tablePropertiesLocal.pageSize = $(this).val();
+        tablePropertiesLocal.page = 1;
+        loadTaskList(tablePropertiesLocal);
     });
 
     $('.task-manager-add-new-task').on('click', function () {
@@ -127,6 +129,7 @@ $(function () {
 
     $('.task-manager .task-manager-task-types').on('change', function () {
         tableProperties.type = $(this).val();
+        tableProperties.page = 1;
         loadTaskList(tableProperties);
     });
 
@@ -160,8 +163,8 @@ $(function () {
     function addChangeFileInputEvent(type) {
         $('.task-files').off().on('change', function () {
             const scope = this;
-            const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
-            const files = getFilesFromInput($(this));
+            const wrapper = $(scope).closest('.form-group').find('.file-list');
+            const files = getFilesFromInput($(scope));
             if (type === 'add') {
                 wrapper.html('');
                 for (let i = 0; i < files.length; i++) {
@@ -358,7 +361,7 @@ $(function () {
             const taskId = $(this).data("id");
             const taskName = $(this).data("task-name");
             e.stopPropagation();
-            $('#deleteConfirmModal .modal-title .task-name').html(taskName);
+            $('#deleteConfirmModal .task-name').html(taskName);
             $('#deleteConfirmModal').modal('show');
 
             $('#deleteConfirmModal #submit-task-delete').off().on('click', function () {
@@ -401,6 +404,12 @@ $(function () {
             const scope = $(this);
             const taskId = scope.data('id');
             const assigned = scope.data('assigned');
+            if ($('.task-manager .task-manager-task-types').val() === 'deleted') {
+                $('.nav-tabs').hide();
+            }
+            else {
+                $('.nav-tabs').show();
+            }
             $('.initial-tab-click').trigger('click');
             viewTask(taskId, assigned).then(() => {
                 if (assigned) {
@@ -580,7 +589,7 @@ $(function () {
 
     function addTaskItem(taskId, taskItemName) {
         manager.createTaskItem({ TaskId: taskId, Name: taskItemName, IsDone: false }).then(result => {
-            const htmlOutput = taskItemsTemplate.render({ id: result, name: taskItemName, isDone: false });
+            const htmlOutput = taskItemsTemplate.render({ id: result, name: taskItemName, isDone: false }, { accessLevel: 'Author'});
             $("#task-items-tab .task-items").append(htmlOutput);
             addTaskItemsEvents(taskId);
             refreshTask(taskId).then(() => {
@@ -654,16 +663,27 @@ $(function () {
         if (pageCount > 1) {
             for (let i = 1; i <= pageCount; i++) {
                 if (page === i) {
-                    $('#task-list-pager').append(`<li class="page-item active"><a class="page-link" data-page="` + i + `">` + i + `</a></li>`);
+                    $('#task-list-pager').append(`<li class="page-item active"><a class="page-link" data-page="${i}">${i}</a></li>`);
                 }
                 else {
-                    $('#task-list-pager').append(`<li class="page-item"><a class="page-link" data-page="` + i + `">` + i + `</a></li>`);
+                    $('#task-list-pager').append(`<li class="page-item"><a class="page-link" data-page="${i}">${i}</a></li>`);
                 }
             }
+
+            if (page > 1) {
+                $('#task-list-pager').prepend(`<li class="page-item"><a class="page-link previous-page" data-page="${page - 1}"><i class="material-icons">keyboard_arrow_left</i></a></li>`);
+            }
+            else if (page < pageCount) {
+                $('#task-list-pager').append(`<li class="page-item"><a class="page-link previous-page" data-page="${page + 1}"><i class="material-icons">keyboard_arrow_right</i></a></li>`);
+            }
+            else {
+
+            }
+
             $('#task-list-pager .page-item').off().on('click', function (e) {
                 const linkPage = $(this).children('.page-link').data('page');
                 e.preventDefault();
-                let taskPropertiesLocal = taskPropertiesLocal;
+                let taskPropertiesLocal = tableProperties;
                 taskPropertiesLocal.page = linkPage;
                 loadTaskList(taskPropertiesLocal);
             });

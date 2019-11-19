@@ -162,3 +162,27 @@ table th {
 .progress-bar {
     background-color: #2862D6;
 }
+
+.pagination .page-item .page-link {
+    color: #818999;
+    border-color: #E4E4E4;
+    font-weight: 500;
+    padding: 0;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination .page-item .page-link i{
+    color: #818999;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #E4E4E4;
+}
+
+.modal-confirm-delete-task {
+    
+}
