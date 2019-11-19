@@ -7,8 +7,10 @@ using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GR.Cache.Abstractions;
+using GR.Core.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions;
+using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.Permissions.Abstractions.Models;
 
 namespace GR.Identity.Permissions
@@ -31,17 +33,24 @@ namespace GR.Identity.Permissions
         private readonly TContext _context;
 
         /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="signInManager"></param>
         /// <param name="cache"></param>
         /// <param name="context"></param>
+        /// <param name="userManager"></param>
         public PermissionService(SignInManager<ApplicationUser> signInManager, ICacheService cache,
-            TContext context)
+            TContext context, IUserManager<ApplicationUser> userManager)
         {
             _signInManager = signInManager;
             _cache = cache;
             _context = context;
+            _userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -187,7 +196,7 @@ namespace GR.Identity.Permissions
         /// <param name="roles"></param>
         /// <param name="userPermissions"></param>
         /// <returns></returns>
-        public async Task<bool> HasPermission(IList<string> roles, IList<string> userPermissions)
+        public async Task<bool> HasPermissionAsync(IList<string> roles, IList<string> userPermissions)
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
@@ -203,7 +212,13 @@ namespace GR.Identity.Permissions
                         if (!match.Contains(perm)) match.Add(perm);
                     }
 
-                    if (match.Count.Equals(userPermissions.Count)) return true;
+                    if (match.Count.Equals(userPermissions.Count))
+                    {
+                        var userRequest = await _userManager.GetCurrentUserAsync();
+                        if (!userRequest.IsSuccess) return true;
+                        var user = userRequest.Result;
+                        return PermissionCustomRules.ExecuteRulesAndCheckAccess(userPermissions, roles, user.TenantId, user.Id.ToGuid());
+                    }
                 }
             }
             catch (Exception e)
@@ -212,6 +227,20 @@ namespace GR.Identity.Permissions
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Check for permissions
+        /// </summary>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public async Task<bool> HasPermissionAsync(IList<string> permissions)
+        {
+            if (!permissions.Any()) return false;
+            var currentUserRequest = await _userManager.GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess) return false;
+            var roles = await _userManager.UserManager.GetRolesAsync(currentUserRequest.Result);
+            return await HasPermissionAsync(roles, permissions);
         }
 
         /// <summary>

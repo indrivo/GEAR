@@ -64,7 +64,7 @@ namespace GR.Identity.Permissions.Abstractions.Attributes
                     var roles = context.HttpContext.User.Claims.Where(x => x.Type.Equals("role") || x.Type.EndsWith("role")).Select(x => x.Value)
                         .ToList();
                     var permissions = _requiredPermissions.RequiredPermissions.ToList();
-                    var hasPermission = await _permissionService.HasPermission(roles, permissions);
+                    var hasPermission = await _permissionService.HasPermissionAsync(roles, permissions);
                     if (!hasPermission)
                     {
                         context.Result = new RedirectToActionResult("AccessDenied", "Account", null);

@@ -786,5 +786,9 @@
   "system_billing_address": "Платіжний Адреса",
   "system_commerce_retry": "Повторити",
   "system_commerce_payment_failed": "Платіж не пройшов!",
-  "system_commerce_amount_paid": "Сума, сплачена"
+  "system_commerce_amount_paid": "Сума, сплачена",
+  "commerce_no_registered_payment_providers": "Не було зафіксовано жодного постачальника виплати",
+  "system_commerce_payment_success": "Успішної оплати!",
+  "system_commerce_email_sent": "Лист відправлено!",
+  "commerce_my_subscriptions": "Мої підписки"
 }

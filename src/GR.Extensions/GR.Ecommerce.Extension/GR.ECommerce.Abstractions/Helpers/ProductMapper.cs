@@ -15,6 +15,7 @@ namespace GR.ECommerce.Abstractions.Helpers
         {
             var subscription = new SubscriptionPlanViewModel
             {
+                Id = product.Id,
                 DisplayName = product.DisplayName,
                 Description = product.Description,
                 ShortDescription = product.ShortDescription,
@@ -25,7 +26,8 @@ namespace GR.ECommerce.Abstractions.Helpers
                 }),
                 Variations = product.ProductVariations.Select(x => new VariationViewModel
                 {
-                    Price = (decimal)x.Price,
+                    Id = x.Id,
+                    Price = x.Price,
                     Options = x.ProductVariationDetails?.Select(y => new VariationItemViewModel
                     {
                         Name = y.ProductOption?.Name,

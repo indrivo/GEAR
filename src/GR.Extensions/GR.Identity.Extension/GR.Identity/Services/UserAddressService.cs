@@ -90,11 +90,25 @@ namespace GR.Identity.Services
         {
             if (countryId.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<StateOrProvince>>();
             var data = await _context.StateOrProvinces.Where(x => x.CountryId.Equals(countryId)).ToListAsync();
-            return new ResultModel<IEnumerable<StateOrProvince>>
-            {
-                IsSuccess = true,
-                Result = data
-            };
+            return new SuccessResultModel<IEnumerable<StateOrProvince>>(data);
+        }
+
+        /// <summary>
+        /// Get address by id
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Address>> GetAddressByIdAsync(Guid? addressId)
+        {
+            if (addressId == null) return new InvalidParametersResultModel<Address>();
+            var address = await _context.Addresses
+                .Include(x => x.ApplicationUser)
+                .Include(x => x.Country)
+                .Include(x => x.StateOrProvince)
+                .FirstOrDefaultAsync(x => x.Id.Equals(addressId));
+
+            if (address == null) return new NotFoundResultModel<Address>();
+            return new SuccessResultModel<Address>(address);
         }
 
         /// <summary>

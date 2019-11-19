@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using GR.Core.Helpers;
 using GR.ECommerce.Payments.Abstractions.Configurator;
-using GR.ECommerce.Payments.Abstractions.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -53,7 +52,6 @@ namespace GR.ECommerce.Payments.Abstractions.Extensions
             Arg.NotNull(config, nameof(RegisterPaymentProvider));
 
             IoC.RegisterService<IPaymentMethodService>(config.ProviderName, typeof(TProvider));
-            PaymentProviders.Register(config.DisplayName);
             return services;
         }
     }

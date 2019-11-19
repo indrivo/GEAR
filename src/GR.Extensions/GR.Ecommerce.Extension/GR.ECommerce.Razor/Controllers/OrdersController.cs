@@ -89,12 +89,14 @@ namespace GR.ECommerce.Razor.Controllers
         /// <summary>
         /// Create order
         /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
-        public async Task<IActionResult> CreateOrderFromPlan([Required]Guid? productId)
+        public async Task<IActionResult> CreateOrderForPlanSubscription([Required]Guid? productId, [Required]Guid? variationId)
         {
-            var createOrderRequest = await _orderProductService.CreateOrderAsync(productId);
+            var createOrderRequest = await _orderProductService.CreateOrderAsync(productId, variationId);
             return Json(createOrderRequest);
         }
 

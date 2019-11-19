@@ -98,10 +98,26 @@ namespace GR.Orders.Abstractions
         Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId);
 
         /// <summary>
+        /// Create order 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId);
+
+        /// <summary>
         /// Get all orders
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         DTResult<GetOrdersViewModel> GetAllOrdersWithPaginationWay(DTParameters param);
+
+        /// <summary>
+        /// Check if the order was in the x state
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="orderState"></param>
+        /// <returns></returns>
+        Task<ResultModel<bool>> ItWasInTheStateAsync(Guid? orderId, OrderState orderState);
     }
 }

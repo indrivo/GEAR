@@ -41,11 +41,9 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Data;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.LdapAuth;
 using GR.Identity.LdapAuth.Abstractions.Extensions;
 using GR.Identity.Permissions;
-using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Identity.Services;
 using GR.Identity.Versioning;
 using GR.Install.Abstractions.Extensions;
@@ -108,12 +106,14 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
+using GR.Documents;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
 using GR.ECommerce.Razor.Extensions;
 using GR.Entities.Extensions;
+using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Localization;
 using GR.Orders;
 using GR.Orders.Abstractions.Models;
@@ -128,6 +128,10 @@ using GR.Paypal.Razor.Extensions;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions;
 using GR.Subscriptions.Abstractions.Extensions;
+using GR.Documents.Abstractions.Extensions;
+using GR.Documents.Data;
+using GR.Identity.IdentityServer4.Extensions;
+using GR.Identity.Permissions.Abstractions.Extensions;
 
 #endregion
 
@@ -285,7 +289,7 @@ namespace GR.Cms
 				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
+				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
 				.AddHealthChecks(checks =>
@@ -504,6 +508,9 @@ namespace GR.Cms
 				.RegisterSubscriptionStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
+				.RegisterOrderEvents()
+				.RegisterSubscriptionEvents()
+				.RegisterSubscriptionRules()
 				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
@@ -518,6 +525,16 @@ namespace GR.Cms
 
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
+
+			//------------------------------------ Documents Module -----------------------------------
+
+			services.RegisterDocumentStorage<DocumentsDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			})
+			.RegisterDocumentTypeServices<DocumentTypeService>()
+			.RegisterDocumentServices<DocumentService>();
 
 			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();
