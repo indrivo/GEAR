@@ -212,7 +212,7 @@ namespace GR.PageRender.Razor.Controllers
         /// </summary>
         /// <param name="identifier"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> GetTemplateByIdentifier(string identifier)
         {
             var result = new ResultModel<string>();
