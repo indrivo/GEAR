@@ -76,6 +76,11 @@ dotnet pack ./GR.Extensions/GR.Email.Extension/GR.Email/GR.Email.csproj -o ../..
 dotnet pack ./GR.Extensions/GR.Email.Extension/GR.Email.Razor/GR.Email.Razor.csproj -o ../../../nupkgs
 
 
+:: Pack multi-tenant modules
+dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Abstractions/GR.MultiTenant.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant/GR.MultiTenant.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Razor/GR.MultiTenant.Razor.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -141,6 +146,11 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Email.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Email*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Email.Razor*
+
+::Push multi-tenant modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------
