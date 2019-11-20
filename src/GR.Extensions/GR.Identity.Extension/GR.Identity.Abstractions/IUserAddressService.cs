@@ -43,5 +43,12 @@ namespace GR.Identity.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel<Guid>> AddAddressAsync(AddNewAddressViewModel model);
+
+        /// <summary>
+        /// Get address by id
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Address>> GetAddressByIdAsync(Guid? addressId);
     }
 }

@@ -87,7 +87,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
                 var isValid = await IsValid(data.EntityName);
                 if (!isValid.IsSuccess)
                 {
-                    await responseBody.WriteAsync(isValid.Serialize());
+                    await responseBody.WriteAsync(isValid.SerializeAsJson());
                 }
                 else if (!await _entityRoleAccessManager.HaveAccessAsync(data.EntityName,
                     _authorizationRequirement.RequiredPermissions))
@@ -98,7 +98,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
                         {
                             new ErrorModel(nameof(GearSettings.ACCESS_DENIED_MESSAGE), GearSettings.ACCESS_DENIED_MESSAGE)
                         }
-                    }.Serialize());
+                    }.SerializeAsJson());
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace GR.Entities.Security.Abstractions.Attributes
                     {
                         new ErrorModel(nameof(BadRequestResult), nameof(BadRequestResult))
                     }
-                }.Serialize());
+                }.SerializeAsJson());
             }
         }
 

@@ -431,7 +431,7 @@ namespace GR.Calendar.Razor.Controllers
             {
                 ProviderName = "OutlookCalendarProvider",
                 UserId = gearUserId.GetValueOrDefault(),
-                Value = info.AuthenticationTokens.Serialize()
+                Value = info.AuthenticationTokens.SerializeAsJson()
             });
 
             return RedirectToAction(nameof(ExternalCalendarProviders));

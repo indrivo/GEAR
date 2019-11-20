@@ -63,6 +63,7 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<OrderHistory> OrderHistories { get; set; }
         public virtual DbSet<Subscription> Subscription { get; set; }
+        public virtual DbSet<SubscriptionPermission> SubscriptionPermissions { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         #endregion
 

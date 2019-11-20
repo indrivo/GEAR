@@ -786,5 +786,9 @@
   "system_billing_address": "Indirizzo Di Fatturazione",
   "system_commerce_retry": "Riprova",
   "system_commerce_payment_failed": "Pagamento non riuscito!",
-  "system_commerce_amount_paid": "Importo pagato"
+  "system_commerce_amount_paid": "Importo pagato",
+  "commerce_no_registered_payment_providers": "Non vi era alcuna traccia di un provider di pagamento",
+  "system_commerce_payment_success": "Pagamento di successo!",
+  "system_commerce_email_sent": "E-mail inviata!",
+  "commerce_my_subscriptions": "I miei abbonamenti"
 }

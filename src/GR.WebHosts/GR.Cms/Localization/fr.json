@@ -786,5 +786,9 @@
   "system_billing_address": "Adresse De Facturation",
   "system_commerce_retry": "Réessayer",
   "system_commerce_payment_failed": "Le paiement a échoué!",
-  "system_commerce_amount_paid": "Montant payé"
+  "system_commerce_amount_paid": "Montant payé",
+  "commerce_no_registered_payment_providers": "Il n'y a aucune trace d'un fournisseur de services de paiement",
+  "system_commerce_payment_success": "Le paiement de succès!",
+  "system_commerce_email_sent": "E-mail envoyé!",
+  "commerce_my_subscriptions": "Mes abonnements"
 }

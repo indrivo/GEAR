@@ -786,5 +786,9 @@
   "system_billing_address": "Rechnungsadresse",
   "system_commerce_retry": "Wiederholen",
   "system_commerce_payment_failed": "Zahlung fehlgeschlagen!",
-  "system_commerce_amount_paid": "Betrag"
+  "system_commerce_amount_paid": "Betrag",
+  "commerce_no_registered_payment_providers": "Es gab keine Aufzeichnungen über einen payment-Anbieter",
+  "system_commerce_payment_success": "Zahlung erfolgreich!",
+  "system_commerce_email_sent": "E-Mail gesendet!",
+  "commerce_my_subscriptions": "Meine Abonnements"
 }

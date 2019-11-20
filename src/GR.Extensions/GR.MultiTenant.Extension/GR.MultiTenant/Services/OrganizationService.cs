@@ -1,6 +1,7 @@
 ﻿using GR.Identity.Data;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Localization;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
@@ -183,12 +185,13 @@ namespace GR.MultiTenant.Services
         /// <summary>
         /// Get all users for organization
         /// </summary>
-        /// <param name="organizationId"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ApplicationUser> GetUsersByOrganizationId(Guid organizationId)
+        public virtual async Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersByOrganizationIdAsync(Guid tenantId)
         {
-            if (organizationId == Guid.Empty) return new List<ApplicationUser>();
-            return _context.Users.Where(x => x.TenantId == organizationId);
+            if (tenantId == Guid.Empty) return new InvalidParametersResultModel<IEnumerable<ApplicationUser>>();
+            var members = await _context.Users.Where(x => x.TenantId == tenantId).ToListAsync();
+            return new SuccessResultModel<IEnumerable<ApplicationUser>>(members);
         }
 
         /// <inheritdoc />
@@ -549,6 +552,42 @@ namespace GR.MultiTenant.Services
         {
             var tenantMachineName = TenantUtils.GetTenantMachineName(tenantName).ToLowerInvariant();
             return await _context.Tenants.AnyAsync(x => x.MachineName.ToLowerInvariant().Equals(tenantMachineName));
+        }
+
+        /// <summary>
+        /// Get members in role
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRoleAsync(Guid? tenantId, string roleName)
+        {
+            if (roleName.IsNullOrEmpty() || tenantId == null) return new InvalidParametersResultModel<IEnumerable<ApplicationUser>>();
+            var membersRequest = await GetUsersByOrganizationIdAsync(tenantId.Value);
+            if (!membersRequest.IsSuccess) return new NotFoundResultModel<IEnumerable<ApplicationUser>>();
+            var members = membersRequest.Result.ToList();
+            var data = new Collection<ApplicationUser>();
+            foreach (var member in members)
+            {
+                var isInRole = await _userManager.UserManager.IsInRoleAsync(member, roleName);
+                if (isInRole) data.Add(member);
+            }
+            return new SuccessResultModel<IEnumerable<ApplicationUser>>(data);
+        }
+
+        /// <summary>
+        /// Get company administrator
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<ApplicationUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId)
+        {
+            if (tenantId == null) return new InvalidParametersResultModel<ApplicationUser>();
+            var companyAdminRequest = await GetUsersInRoleAsync(tenantId, Resources.Roles.COMPANY_ADMINISTRATOR);
+            if (!companyAdminRequest.IsSuccess) return companyAdminRequest.Map<ApplicationUser>(null);
+            var admin = companyAdminRequest.Result.FirstOrDefault();
+            if (admin != null) return new SuccessResultModel<ApplicationUser>(admin);
+            return new NotFoundResultModel<ApplicationUser>();
         }
 
         #region Validation

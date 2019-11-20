@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj" />
   </ItemGroup>
 
@@ -19,5 +20,9 @@
     <Content Update="Views\_ViewStart.cshtml">
       <Pack>false</Pack>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Shared\" />
   </ItemGroup>
 </Project>

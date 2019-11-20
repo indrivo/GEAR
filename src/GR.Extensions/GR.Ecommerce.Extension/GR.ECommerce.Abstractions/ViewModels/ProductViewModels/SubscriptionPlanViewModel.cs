@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
     public sealed class SubscriptionPlanViewModel
     {
+        /// <summary>
+        /// Product id
+        /// </summary>
+        public Guid Id { get; set; }
+
         /// <summary>
         /// Display name
         /// </summary>

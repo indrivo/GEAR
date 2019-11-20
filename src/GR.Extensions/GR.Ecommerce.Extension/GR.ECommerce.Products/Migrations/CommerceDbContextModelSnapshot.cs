@@ -1781,7 +1781,7 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<string>("ModifiedBy");
 
-                    b.Property<double>("Price");
+                    b.Property<decimal>("Price");
 
                     b.Property<Guid>("ProductId");
 
@@ -1982,6 +1982,8 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<string>("Author");
 
+                    b.Property<int>("Availability");
+
                     b.Property<DateTime>("Changed");
 
                     b.Property<DateTime>("Created");
@@ -1989,6 +1991,8 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
 
                     b.Property<Guid>("OrderId");
 
@@ -1998,8 +2002,6 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<Guid>("UserId");
 
-                    b.Property<int>("Valability");
-
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
@@ -2007,6 +2009,42 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Subscription");
+                });
+
+            modelBuilder.Entity("GR.Subscriptions.Abstractions.Models.SubscriptionPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<Guid>("SubscriptionId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<string>("Value")
+                        .IsRequired();
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("SubscriptionPermissions");
                 });
 
             modelBuilder.Entity("GR.Audit.Abstractions.Models.TrackAuditDetails", b =>
@@ -2187,6 +2225,14 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.HasOne("GR.Orders.Abstractions.Models.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GR.Subscriptions.Abstractions.Models.SubscriptionPermission", b =>
+                {
+                    b.HasOne("GR.Subscriptions.Abstractions.Models.Subscription", "Subscription")
+                        .WithMany("SubscriptionPermissions")
+                        .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

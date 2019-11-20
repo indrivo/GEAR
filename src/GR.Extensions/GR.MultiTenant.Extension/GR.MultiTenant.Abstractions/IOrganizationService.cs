@@ -25,9 +25,9 @@ namespace GR.MultiTenant.Abstractions
         /// <summary>
         /// Get users for organization
         /// </summary>
-        /// <param name="organizationId"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
-        IEnumerable<ApplicationUser> GetUsersByOrganizationId(Guid organizationId);
+        Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersByOrganizationIdAsync(Guid tenantId);
 
         /// <summary>
         /// Get users for organization
@@ -165,5 +165,20 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="tenantName"></param>
         /// <returns></returns>
         Task<bool> IsTenantNameUsedAsync(string tenantName);
+
+        /// <summary>
+        /// Get users in role
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRoleAsync(Guid? tenantId, string roleName);
+
+        /// <summary>
+        /// Get company administrator
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        Task<ResultModel<ApplicationUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId);
     }
 }

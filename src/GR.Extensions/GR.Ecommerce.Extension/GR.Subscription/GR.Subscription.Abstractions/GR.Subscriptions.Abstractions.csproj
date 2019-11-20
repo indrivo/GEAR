@@ -5,8 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GR.Files.Abstraction\GR.Files.Abstraction.csproj" />
+    <ProjectReference Include="..\..\..\GR.Identity.Extension\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.ECommerce.Abstractions\GR.ECommerce.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.ECommerce.Orders\GR.Orders.Abstractions\GR.Orders.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Events\EventArgs\" />
   </ItemGroup>
 
 </Project>
