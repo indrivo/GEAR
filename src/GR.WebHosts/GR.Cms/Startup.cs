@@ -113,7 +113,6 @@ using GR.ECommerce.Payments.Abstractions.Extensions;
 using GR.ECommerce.Products.Services;
 using GR.ECommerce.Razor.Extensions;
 using GR.Entities.Extensions;
-using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Localization;
 using GR.Orders;
 using GR.Orders.Abstractions.Models;
@@ -132,6 +131,7 @@ using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Data;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Permissions.Abstractions.Extensions;
+using GR.Subscriptions.BackgroundServices;
 
 #endregion
 
@@ -511,6 +511,7 @@ namespace GR.Cms
 				.RegisterOrderEvents()
 				.RegisterSubscriptionEvents()
 				.RegisterSubscriptionRules()
+				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
 				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
