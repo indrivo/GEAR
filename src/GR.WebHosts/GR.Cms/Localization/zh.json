@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "进展",
   "system_taskmanager_status": "状态",
   "system_taskmanager_actions": "行动",
-  "system_taskmanager_are_you_sure": "你确定要删除的任务",
+  "system_taskmanager_are_you_sure": "你确定吗？",
   "system_taskmanager_yes": "是的",
   "system_taskmanager_no": "没有",
   "system_taskmanager_task_items": "任务项目",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "有没有记录的付款提供者",
   "system_commerce_payment_success": "支付成功的！",
   "system_commerce_email_sent": "电子邮件发送！",
-  "commerce_my_subscriptions": "我订阅"
+  "commerce_my_subscriptions": "我订阅",
+  "system_taskmanager_are_you_sure_text": "你确定要删除的任务 "
 }

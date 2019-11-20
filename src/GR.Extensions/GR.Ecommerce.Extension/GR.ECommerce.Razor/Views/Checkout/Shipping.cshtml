@@ -130,8 +130,8 @@
 					<li class="adress-item">
 						<label for="a_@address.Id" class="w-100 m-0 pt-4 pb-4">
 							<div class="custom-control custom-radio d-flex align-items-center weight-600">
-								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id">
-								<label class="custom-control-label ml-2"><span class="w-130px">@Localizer["system_city"]: </span>@address.ContactName</label>
+								<input type="radio" @(address.IsDefault ? "checked='checked'" : "") id="a_@address.Id" name="customRadio" class="custom-control-input billing-address" value="@address.Id"/>
+								<div class="custom-control-label ml-2"><span class="w-130px">@Localizer["system_city"]: </span>@address.ContactName</div>
 							</div>
 
 							<div class="address-data ml-32px">
@@ -197,7 +197,7 @@
 </div>
 
 <div>
-	<button class="btn btn-primary mt-3" type="submit" form="new-address">
+	<button class="btn btn-primary mt-3 d-flex align-items-center" type="submit" form="new-address">
 		<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
 			<path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
 		</svg>

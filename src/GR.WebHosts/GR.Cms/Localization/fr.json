@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Progrès",
   "system_taskmanager_status": "Statut",
   "system_taskmanager_actions": "Actions",
-  "system_taskmanager_are_you_sure": "Êtes-vous sûr de vouloir supprimer la tâche",
+  "system_taskmanager_are_you_sure": "Êtes-vous sûr?",
   "system_taskmanager_yes": "Oui",
   "system_taskmanager_no": "Pas de",
   "system_taskmanager_task_items": "Les éléments de tâche",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "Il n'y a aucune trace d'un fournisseur de services de paiement",
   "system_commerce_payment_success": "Le paiement de succès!",
   "system_commerce_email_sent": "E-mail envoyé!",
-  "commerce_my_subscriptions": "Mes abonnements"
+  "commerce_my_subscriptions": "Mes abonnements",
+  "system_taskmanager_are_you_sure_text": "Êtes-vous sûr de vouloir supprimer la tâche "
 }

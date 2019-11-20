@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Vooruitgang",
   "system_taskmanager_status": "Status",
   "system_taskmanager_actions": "Acties",
-  "system_taskmanager_are_you_sure": "Weet u zeker dat u wilt verwijderen taak",
+  "system_taskmanager_are_you_sure": "Bent u zeker?",
   "system_taskmanager_yes": "Ja",
   "system_taskmanager_no": "Geen",
   "system_taskmanager_task_items": "Taak-items",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "Er was geen record van een payment provider",
   "system_commerce_payment_success": "Betaling geslaagd!",
   "system_commerce_email_sent": "E-mail verzonden!",
-  "commerce_my_subscriptions": "Mijn abonnementen"
+  "commerce_my_subscriptions": "Mijn abonnementen",
+  "system_taskmanager_are_you_sure_text": "Weet u zeker dat u wilt verwijderen taak "
 }

@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Прогрес",
   "system_taskmanager_status": "Статус",
   "system_taskmanager_actions": "Дії",
-  "system_taskmanager_are_you_sure": "Ви впевнені, що хочете видалити завдання",
+  "system_taskmanager_are_you_sure": "Ви впевнені?",
   "system_taskmanager_yes": "Так",
   "system_taskmanager_no": "Немає",
   "system_taskmanager_task_items": "Елементи завдання ",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "Не було зафіксовано жодного постачальника виплати",
   "system_commerce_payment_success": "Успішної оплати!",
   "system_commerce_email_sent": "Лист відправлено!",
-  "commerce_my_subscriptions": "Мої підписки"
+  "commerce_my_subscriptions": "Мої підписки",
+  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання "
 }

@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Progress",
   "system_taskmanager_status": "Status",
   "system_taskmanager_actions": "Actions",
-  "system_taskmanager_are_you_sure": "Are you sure you want to delete task",
+  "system_taskmanager_are_you_sure": "Are you sure?",
   "system_taskmanager_yes": "Yes",
   "system_taskmanager_no": "No",
   "system_taskmanager_task_items": "Task  items",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "There was no record of a payment provider",
   "system_commerce_payment_success": "Payment successful!",
   "system_commerce_email_sent": "Email sent!",
-  "commerce_my_subscriptions": "My subscriptions"
+  "commerce_my_subscriptions": "My subscriptions",
+  "system_taskmanager_are_you_sure_text": "Are you sure you want to delete task "
 }
