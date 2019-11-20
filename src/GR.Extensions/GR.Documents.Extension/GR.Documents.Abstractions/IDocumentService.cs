@@ -16,6 +16,12 @@ namespace GR.Documents.Abstractions
         Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsAsync();
 
         /// <summary>
+        /// Get documents by list id
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumetId);
+
+        /// <summary>
         /// Get document by id async
         /// </summary>
         /// <param name="documentId"></param>

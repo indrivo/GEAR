@@ -63,6 +63,30 @@ namespace GR.Documents
             return response;
         }
 
+       /// <summary>
+        /// Get  documents by list id
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumetId)
+        {
+            var response = new ResultModel<IEnumerable<Document>>();
+
+            if(listDocumetId is null ||  !listDocumetId.Any()) return new InvalidParametersResultModel<IEnumerable<Document>>();
+
+            var listDocuments = await _context.Documents
+                .Include(i => i.DocumentType)
+                .Include(i => i.DocumentVersions)
+                .Where(x=> listDocumetId.Contains(x.Id))
+                .ToListAsync();
+
+            if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+
+            response.IsSuccess = true;
+            response.Result = listDocuments;
+
+            return response;
+        }
+
         /// <summary>
         /// Get document by id
         /// </summary>
