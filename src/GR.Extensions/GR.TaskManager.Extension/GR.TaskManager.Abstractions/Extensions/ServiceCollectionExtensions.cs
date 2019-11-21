@@ -22,7 +22,7 @@ namespace GR.TaskManager.Abstractions.Extensions
             services.AddTransient<ITaskManager, TTaskService>();
             IoC.RegisterTransientService<ITaskManager, TTaskService>();
             services.AddTransient<ITaskManagerNotificationService, TTaskManagerNotificationService>();
-            services.AddHostedService<TaskManagerBackgroundService>();
+            services.RegisterBackgroundService<TaskManagerBackgroundService>();
             return services;
         }
 

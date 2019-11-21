@@ -9,6 +9,8 @@ using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions;
 using GR.Identity.Abstractions;
+using GR.Notifications.Abstractions;
+using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Subscriptions.Abstractions;
@@ -41,14 +43,20 @@ namespace GR.Subscriptions
         /// </summary>
         private readonly IPaymentService _paymentService;
 
+        /// <summary>
+        /// Inject notifier
+        /// </summary>
+        private readonly INotify<ApplicationRole> _notify;
+
         #endregion
 
-        public SubscriptionService(IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService)
+        public SubscriptionService(IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, INotify<ApplicationRole> notify)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;
             _orderService = orderService;
             _paymentService = paymentService;
+            _notify = notify;
         }
 
         /// <summary>
@@ -180,6 +188,27 @@ namespace GR.Subscriptions
         }
 
         /// <summary>
+        /// Get subscriptions that will expire after some period
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Subscription>>> GetSubscriptionsThatExpireInAsync(TimeSpan timeSpan)
+        {
+            var data = await _subscriptionDbContext.Subscription.Where(x => x.IsValid && TimeSpan.FromDays(x.RemainingDays) < timeSpan).ToListAsync();
+            return new SuccessResultModel<IEnumerable<Subscription>>(data);
+        }
+
+        /// <summary>
+        /// Get expired subscriptions
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Subscription>>> GetExpiredSubscriptionsAsync()
+        {
+            var data = await _subscriptionDbContext.Subscription.Where(x => !x.IsValid).ToListAsync();
+            return new SuccessResultModel<IEnumerable<Subscription>>(data);
+        }
+
+        /// <summary>
         /// Get subscription duration
         /// </summary>
         /// <param name="variation"></param>
@@ -200,6 +229,63 @@ namespace GR.Subscriptions
             }
 
             return days;
+        }
+
+        /// <summary>
+        /// Remove range
+        /// </summary>
+        /// <param name="subscriptions"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> RemoveRangeAsync(IEnumerable<Subscription> subscriptions)
+        {
+            _subscriptionDbContext.Subscription.RemoveRange(subscriptions);
+            return await _subscriptionDbContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Notify expired subscriptions
+        /// </summary>
+        /// <param name="subscriptions"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> NotifyAndRemoveExpiredSubscriptionsAsync([Required]IList<Subscription> subscriptions)
+        {
+            if (subscriptions == null) return new NullReferenceResultModel<object>().ToBase();
+            var removeRequest = await RemoveRangeAsync(subscriptions);
+            if (!removeRequest.IsSuccess) return removeRequest;
+            foreach (var subscription in subscriptions)
+            {
+                await _notify.SendNotificationAsync(new List<Guid> { subscription.UserId }, new Notification
+                {
+                    Subject = $"Subscription {subscription.Name} expired",
+                    SendLocal = true,
+                    SendEmail = true,
+                    Content = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
+                              $"to {subscription.ExpirationDate}, has expired"
+                });
+            }
+
+            return removeRequest;
+        }
+
+        /// <summary>
+        /// Notify subscriptions that will expire
+        /// </summary>
+        /// <param name="subscriptions"></param>
+        /// <returns></returns>
+        public async Task NotifySubscriptionsThatExpireAsync([Required]IList<Subscription> subscriptions)
+        {
+            if (subscriptions == null) throw new NullReferenceException();
+            foreach (var subscription in subscriptions)
+            {
+                await _notify.SendNotificationAsync(new List<Guid> { subscription.UserId }, new Notification
+                {
+                    Subject = "The subscription expires soon",
+                    SendLocal = true,
+                    SendEmail = true,
+                    Content = $"Subscription {subscription.Name}, valid from {subscription.StartDate} " +
+                              $"to {subscription.ExpirationDate}, expires in {subscription.RemainingDays} days"
+                });
+            }
         }
     }
 }

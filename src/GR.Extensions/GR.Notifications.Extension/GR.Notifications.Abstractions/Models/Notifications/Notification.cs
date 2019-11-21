@@ -22,7 +22,7 @@ namespace GR.Notifications.Abstractions.Models.Notifications
         /// <summary>
         /// Notification type
         /// </summary>
-        public Guid NotificationTypeId { get; set; }
+        public Guid NotificationTypeId { get; set; } = NotificationType.Info;
 
         /// <summary>
         /// User

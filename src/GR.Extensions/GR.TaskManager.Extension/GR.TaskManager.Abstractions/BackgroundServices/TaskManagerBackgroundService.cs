@@ -1,76 +1,39 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
+using GR.Core.Services;
 using Microsoft.Extensions.Logging;
 
 namespace GR.TaskManager.Abstractions.BackgroundServices
 {
-    public class TaskManagerBackgroundService : IHostedService, IDisposable
+    public class TaskManagerBackgroundService : BaseBackgroundService<TaskManagerBackgroundService>
     {
-        /// <summary>
-        /// Timer
-        /// </summary>
-        private Timer _timer;
+        #region Injectable
 
         /// <summary>
-        /// Logger
+        /// Inject service
         /// </summary>
-        private readonly ILogger _logger;
-
         private readonly ITaskManagerNotificationService _managerNotificationService;
 
-        public TaskManagerBackgroundService(ILogger<TaskManagerBackgroundService> logger, ITaskManagerNotificationService managerNotificationService)
-        {
-            _logger = logger;
-            _managerNotificationService = managerNotificationService;
-        }
+        #endregion
 
-        /// <inheritdoc />
         /// <summary>
-        /// Start async
+        /// 
         /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public Task StartAsync(CancellationToken cancellationToken)
+        /// <param name="logger"></param>
+        /// <param name="managerNotificationService"></param>
+        public TaskManagerBackgroundService(ILogger<TaskManagerBackgroundService> logger, ITaskManagerNotificationService managerNotificationService)
+            : base("Task manager", logger)
         {
-            _logger.LogInformation("TaskManager Background Service is starting.");
-            _timer = new Timer(Execute, null, TimeSpan.Zero,
-                TimeSpan.FromHours(24));
-            return Task.CompletedTask;
+            _managerNotificationService = managerNotificationService;
+            Interval = TimeSpan.FromHours(24);
         }
 
         /// <summary>
         /// Send logs
         /// </summary>
         /// <param name="state"></param>
-        private async void Execute(object state)
+        public override async void Execute(object state)
         {
             await _managerNotificationService.TaskExpirationNotificationAsync();
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Stop async
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Task Manager Background Service is stopping.");
-
-            _timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Dispose timer
-        /// </summary>
-        public void Dispose()
-        {
-            _timer?.Dispose();
         }
     }
 }

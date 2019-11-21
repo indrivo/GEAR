@@ -39,19 +39,25 @@ namespace GR.Subscriptions.Abstractions.Models
         /// </summary>
         public virtual Order Order { get; set; }
 
-        /// <summary>
-        /// Is valid subscription
-        /// </summary>
-        public virtual bool IsValid => StartDate.AddDays(Availability) > DateTime.Now;
-
-        /// <summary>
-        /// Remaining days subscription
-        /// </summary>
-        public virtual int RemainingDays => IsValid ? (StartDate.AddDays(Availability) - DateTime.Now).Days : 0;
 
         /// <summary>
         /// Services
         /// </summary>
         public virtual IEnumerable<SubscriptionPermission> SubscriptionPermissions { get; set; }
+
+        /// <summary>
+        /// Is valid subscription
+        /// </summary>
+        public virtual bool IsValid => ExpirationDate > DateTime.Now;
+
+        /// <summary>
+        /// Remaining days subscription
+        /// </summary>
+        public virtual int RemainingDays => IsValid ? (ExpirationDate - DateTime.Now).Days : 0;
+
+        /// <summary>
+        /// Expiration Date
+        /// </summary>
+        public virtual DateTime ExpirationDate => StartDate.AddDays(Availability);
     }
 }

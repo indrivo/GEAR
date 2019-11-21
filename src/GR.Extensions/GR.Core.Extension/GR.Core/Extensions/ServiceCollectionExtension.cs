@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using GR.Core.Abstractions;
 using GR.Core.Helpers.Options;
 using GR.Core.Services;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace GR.Core.Extensions
 {
@@ -41,6 +41,19 @@ namespace GR.Core.Extensions
                 var options = provider.GetService<IOptionsMonitor<T>>();
                 return new WritableOptions<T>(environment, options, section.Key);
             });
+        }
+
+        /// <summary>
+        /// Register background service
+        /// </summary>
+        /// <typeparam name="TBackgroundService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterBackgroundService<TBackgroundService>(this IServiceCollection services)
+            where TBackgroundService : BaseBackgroundService<TBackgroundService>
+        {
+            services.AddHostedService<TBackgroundService>();
+            return services;
         }
     }
 }
