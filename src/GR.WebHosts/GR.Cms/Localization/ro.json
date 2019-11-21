@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Progresul",
   "system_taskmanager_status": "Starea",
   "system_taskmanager_actions": "Acțiunile",
-  "system_taskmanager_are_you_sure": "Ești sigur că doriți să ștergeți sarcina",
+  "system_taskmanager_are_you_sure": "Ești sigur?",
   "system_taskmanager_yes": "Da",
   "system_taskmanager_no": "Nu",
   "system_taskmanager_task_items": "Articole de sarcini",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "Nu a fost înregistrat niciun furnizor de plăți",
   "system_commerce_payment_success": "Plată de succes!",
   "system_commerce_email_sent": "E-mail trimis!",
-  "commerce_my_subscriptions": "Abonamentele mele"
+  "commerce_my_subscriptions": "Abonamentele mele",
+  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina "
 }

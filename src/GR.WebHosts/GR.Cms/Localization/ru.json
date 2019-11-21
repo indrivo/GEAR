@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Прогресс",
   "system_taskmanager_status": "Статус",
   "system_taskmanager_actions": "Действия",
-  "system_taskmanager_are_you_sure": "Вы уверены, что хотите удалить задачу",
+  "system_taskmanager_are_you_sure": "Вы уверены?",
   "system_taskmanager_yes": "Да",
   "system_taskmanager_no": "Нет",
   "system_taskmanager_task_items": "Элементы задачи ",
@@ -790,5 +790,6 @@
   "commerce_no_registered_payment_providers": "Не было зафиксировано ни одного поставщика выплаты",
   "system_commerce_payment_success": "Успешной оплаты!",
   "system_commerce_email_sent": "Письмо отправлено!",
-  "commerce_my_subscriptions": "Мои подписки"
+  "commerce_my_subscriptions": "Мои подписки",
+  "system_taskmanager_are_you_sure_text": "Вы уверены, что хотите удалить задачу "
 }
