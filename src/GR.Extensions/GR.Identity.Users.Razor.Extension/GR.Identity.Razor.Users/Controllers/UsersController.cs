@@ -399,8 +399,8 @@ namespace GR.Identity.Razor.Users.Controllers
                 AuthenticationType = applicationUser.AuthenticationType,
                 TenantId = applicationUser.TenantId,
                 Tenants = ApplicationDbContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
-                FirstName = applicationUser.FirstName,
-                LastName = applicationUser.LastName
+                FirstName = applicationUser.UserFirstName,
+                LastName = applicationUser.UserLastName
             };
             return View(model);
         }
@@ -475,8 +475,8 @@ namespace GR.Identity.Razor.Users.Controllers
             user.ModifiedBy = User.Identity.Name;
             user.UserName = model.UserName;
             user.TenantId = model.TenantId;
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
+            user.UserFirstName = model.FirstName;
+            user.UserLastName = model.LastName;
 
             if (model.UserPhotoUpdateFile != null)
             {

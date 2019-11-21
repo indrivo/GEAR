@@ -40,8 +40,8 @@ namespace GR.Core.Razor.TagHelpers
             //output.TagName = "div";
             string docInfo = null;
             var addInfo = new StringBuilder();
-            var template = TemplateManager.GetTagHelperTemplate(Templates.ListTemplate);
-            var addTemplate = TemplateManager.GetTagHelperTemplate(Templates.ListAddSectionTemplate);
+            var template = TemplateManager.GetTemplateBody(Templates.ListTemplate);
+            var addTemplate = TemplateManager.GetTemplateBody(Templates.ListAddSectionTemplate);
             if (addTemplate.IsSuccess)
                 AspFor.HeadButtons.ToList().ForEach(button =>
                 {
@@ -57,7 +57,7 @@ namespace GR.Core.Razor.TagHelpers
 
             if (!string.IsNullOrEmpty(AspFor.Documentation))
             {
-                var docTemplate = TemplateManager.GetTagHelperTemplate(Templates.ListDocumentationTemplate);
+                var docTemplate = TemplateManager.GetTemplateBody(Templates.ListDocumentationTemplate);
                 if (docTemplate.IsSuccess)
                 {
                     docTemplate.Result = docTemplate.Result.Inject(new Dictionary<string, string>
@@ -88,17 +88,17 @@ namespace GR.Core.Razor.TagHelpers
         {
             var container = new StringBuilder();
             var template = TemplateManager
-                .GetTagHelperTemplate(Templates.ListJsScriptTemplate,
+                .GetTemplateBody(Templates.ListJsScriptTemplate,
                     TemplateType.Js);
             if (!template.IsSuccess) return container.ToString();
             var actions = new StringBuilder();
             if (AspFor.HasActions && AspFor.ListActions.Any())
             {
-                var renderColumnTemplate = TemplateManager.GetTagHelperTemplate(Templates.ListRenderColumnJsTemplate, TemplateType.Js);
+                var renderColumnTemplate = TemplateManager.GetTemplateBody(Templates.ListRenderColumnJsTemplate, TemplateType.Js);
                 if (renderColumnTemplate.IsSuccess)
                 {
                     var buttons = new StringBuilder();
-                    var buttonTemplate = TemplateManager.GetTagHelperTemplate(Templates.ATemplate);
+                    var buttonTemplate = TemplateManager.GetTemplateBody(Templates.ATemplate);
                     if (buttonTemplate.IsSuccess)
                     {
                         foreach (var action in AspFor.ListActions)
@@ -143,7 +143,7 @@ namespace GR.Core.Razor.TagHelpers
                     switch (renderItem.BodySystemTemplate)
                     {
                         case RenderCellBodySystemTemplate.Boolean:
-                            var boolTemplate = TemplateManager.GetTagHelperTemplate(Templates.ListBooleanRenderJsTemplate, TemplateType.Js);
+                            var boolTemplate = TemplateManager.GetTemplateBody(Templates.ListBooleanRenderJsTemplate, TemplateType.Js);
                             if (boolTemplate.IsSuccess)
                             {
                                 renderColumns.AppendLine(boolTemplate.Result.Inject(new Dictionary<string, string>
@@ -185,7 +185,7 @@ namespace GR.Core.Razor.TagHelpers
         protected virtual string GetHeadColumns()
         {
             var container = new StringBuilder();
-            var thTemplate = TemplateManager.GetTagHelperTemplate(Templates.ThTemplate);
+            var thTemplate = TemplateManager.GetTemplateBody(Templates.ThTemplate);
             var inlineCss = new StringBuilder();
             var colAttrs = new StringBuilder();
             foreach (var column in AspFor.RenderColumns)
