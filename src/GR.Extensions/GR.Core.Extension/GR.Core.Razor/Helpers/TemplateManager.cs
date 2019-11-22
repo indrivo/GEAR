@@ -13,7 +13,7 @@ namespace GR.Core.Razor.Helpers
         /// <param name="templateName"></param>
         /// <param name="templateType"></param>
         /// <returns></returns>
-        public static ResultModel<string> GetTagHelperTemplate(string templateName, TemplateType templateType = TemplateType.Html)
+        public static ResultModel<string> GetTemplateBody(string templateName, TemplateType templateType = TemplateType.Html)
         {
             var result = new ResultModel<string>();
             if (string.IsNullOrEmpty(templateName)) throw new ArgumentNullException($"{nameof(templateName)} is null");

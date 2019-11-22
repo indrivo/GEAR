@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -18,6 +19,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GR.Core.Helpers;
 using GR.Core.Extensions;
+using GR.Core.Razor.Enums;
+using GR.Core.Razor.Helpers;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
@@ -279,13 +282,21 @@ namespace GR.Identity.Razor.Controllers
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             if (code == null)
             {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Error on generate reset token"));
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Error on generate reset token, try again"));
                 return Json(resultModel);
             }
 
             var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
-            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                $"Please reset your password by clicking here : <a href='{callbackUrl}'>link</a>");
+            var mail = $"Please reset your password by clicking here : <a href='{callbackUrl}'>link</a>";
+            var templateRequest = TemplateManager.GetTemplateBody("forgot-password");
+            if (templateRequest.IsSuccess)
+            {
+                mail = templateRequest.Result?.Inject(new Dictionary<string, string>
+                {
+                    { "Link", callbackUrl }
+                });
+            }
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password", mail);
 
             IdentityEvents.Users.UserForgotPassword(new UserForgotPasswordEventArgs
             {
@@ -687,12 +698,19 @@ namespace GR.Identity.Razor.Controllers
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found");
+                return View(model);
             }
 
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded) return RedirectToAction(nameof(ResetPasswordConfirmation));
+            if (result.Succeeded)
+            {
+                user.LastPasswordChanged = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+
             this.AddIdentityErrors(result);
-            return View();
+            return View(model);
         }
 
         /// <summary>
