@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Core.Razor.Helpers;
+using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Email.Abstractions.Helpers;
 using GR.Identity.Abstractions;

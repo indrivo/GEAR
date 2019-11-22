@@ -16,6 +16,7 @@ using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Responses;
+using GR.Core.Helpers.Templates;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
@@ -247,6 +248,7 @@ namespace GR.MultiTenant.Services
                     .Select(x => x.Name)
                     .ToListAsync();
                 userRoles.Add(GlobalResources.Roles.ANONIMOUS_USER);
+                userRoles.Add(GlobalResources.Roles.USER);
                 var userResult = await _userManager.UserManager.AddToRolesAsync(user, userRoles);
                 if (userResult.Succeeded)
                 {
@@ -271,8 +273,18 @@ namespace GR.MultiTenant.Services
             var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = _urlHelper.Action("ConfirmInvitedUserByEmail", "Company", new { userId = user.Id, confirmToken = code },
                 _httpContextAccessor.HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
-                $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>");
+            var mail = $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>Confirm email</a>";
+            var templateRequest = TemplateManager.GetTemplateBody("invite-new-user");
+            if (templateRequest.IsSuccess)
+            {
+                var tenant = GetTenantById(user.TenantId.GetValueOrDefault());
+                mail = templateRequest.Result.Inject(new Dictionary<string, string>
+                {
+                    { "Link", HtmlEncoder.Default.Encode(callbackUrl) },
+                    { "CompanyName", tenant?.Name }
+                });
+            }
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", mail);
         }
 
         /// <summary>
@@ -365,6 +377,7 @@ namespace GR.MultiTenant.Services
                 EmailConfirmed = false,
                 Created = DateTime.Now,
                 Author = _httpContextAccessor.HttpContext.User.Identity.Name,
+                LastPasswordChanged = DateTime.Now,
                 IsEditable = true
             };
 

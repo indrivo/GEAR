@@ -1,9 +1,8 @@
-﻿using GR.Core.Helpers;
-using System;
+﻿using System;
 using System.IO;
-using GR.Core.Razor.Enums;
+using GR.Core.Helpers.Templates.Enums;
 
-namespace GR.Core.Razor.Helpers
+namespace GR.Core.Helpers.Templates
 {
     public static class TemplateManager
     {
