@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.DynamicEntityStorage.Abstractions;
@@ -125,29 +124,33 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task SendNotificationAsync(IEnumerable<Guid> usersIds, Notification notification)
         {
+            if (notification == null) throw new NullReferenceException();
             try
             {
                 var users = usersIds.ToList();
-                if (notification.SendLocal) _hub.SendNotification(users, NotificationMapper.Map(notification));
+                if (!users.Any()) return;
+                if (!notification.SendLocal && !notification.SendEmail) return;
                 var emails = new HashSet<string>();
                 foreach (var userId in users)
                 {
-                    var user = _userManager.UserManager.Users.FirstOrDefault(x => x.Id.ToGuid() == userId);
+                    var user = await _userManager.UserManager.FindByIdAsync(userId.ToString());
                     if (user == null) continue;
                     //send email only if email was confirmed
-                    if (user.EmailConfirmed) emails.Add(user.Email);
+                    if (notification.SendEmail && user.EmailConfirmed) emails.Add(user.Email);
+
+                    if (!notification.SendLocal) continue;
                     notification.Id = Guid.NewGuid();
                     notification.UserId = userId;
                     var tenant = await _userManager.IdentityContext.Tenants.FirstOrDefaultAsync(x => x.Id.Equals(user.TenantId));
                     var response = await _dataService.Add<SystemNotifications>(_dataService.GetDictionary(notification), tenant.MachineName);
                     if (!response.IsSuccess) _logger.LogError("Fail to add new notification in database");
                 }
-
+                if (notification.SendLocal) _hub.SendNotification(users, NotificationMapper.Map(notification));
                 if (notification.SendEmail) await _emailSender.SendEmailAsync(emails, notification.Subject, notification.Content);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogCritical(e.Message);
             }
         }
 

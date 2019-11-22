@@ -5,7 +5,7 @@ using GR.Core.Razor.Enums;
 
 namespace GR.Core.Razor.Helpers
 {
-    internal static class TemplateManager
+    public static class TemplateManager
     {
         /// <summary>
         /// Get template data

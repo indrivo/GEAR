@@ -5,10 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Templates\enterprise-quotation.html" />
+    <None Remove="Templates\quotation-additional-services.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\enterprise-quotation.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\quotation-additional-services.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj" />
   </ItemGroup>

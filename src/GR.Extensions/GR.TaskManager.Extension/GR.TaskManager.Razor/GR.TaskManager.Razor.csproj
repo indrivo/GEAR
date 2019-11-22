@@ -6,7 +6,8 @@
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Authors>Girbu Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>

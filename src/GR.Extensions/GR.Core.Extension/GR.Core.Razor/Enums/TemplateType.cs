@@ -1,8 +1,11 @@
 ﻿namespace GR.Core.Razor.Enums
 {
-    internal enum TemplateType
+    public enum TemplateType
     {
         Html,
-        Js
+        Js,
+        Jsx,
+        Tsx,
+        Txt
     }
 }

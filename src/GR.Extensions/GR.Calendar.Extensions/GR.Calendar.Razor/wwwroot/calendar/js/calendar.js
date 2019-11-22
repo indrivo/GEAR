@@ -33,8 +33,8 @@
             requestEndDate = requestEndDate.local().add(1, 'h');
         }
 
-        requestStartDate = requestStartDate.format('YYYY-MM-DD[T]HH:mm');
-        requestEndDate = requestEndDate.format('YYYY-MM-DD[T]HH:mm');
+        requestStartDate = requestStartDate.local().format('YYYY-MM-DD[T]HH:mm');
+        requestEndDate = requestEndDate.local().format('YYYY-MM-DD[T]HH:mm');
 
         const eventData = {
             title: eventObj.data('eventObject').title,
@@ -42,8 +42,11 @@
             location: eventObj.data('event-location'),
             startDate: requestStartDate,
             endDate: requestEndDate,
-            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,
-            members: eventObj.data('event-members').split(',')
+            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,            
+        }
+
+        if (eventObj.data('event-members').length != 0) {
+            eventData.members = eventObj.data('event-members').split(',');
         }
 
         calendarEvent.start = displayDate;
@@ -85,7 +88,7 @@
         }
 
     CalendarApp.prototype.eventDrop = function (event, delta, revertFunc) {
-        const isAfter = event.start.isAfter(new Date());
+        const isAfter = event.start.local().isAfter(moment());
         if (!isAfter) {
             toast.notify({ text: window.translate("system_calendar_error_date"), icon: "error" });
             revertFunc();
@@ -336,6 +339,7 @@
          *	selectedValues: <array> //array of selected options(id-s),
          *	disabledValues: <array> //array of disabled options(id-s),
          *	isSelect2: <bool> //if select element is select2
+         *	additionalNone: <bool> //if true will add additional none value element "Add a guest"
          * }
          */
         function fillMembersSelect(selectMembersConfig) {
@@ -361,7 +365,9 @@
                     }
                 }
             });
-            selectMembersConfig.selectTarget.prepend(new Option(window.translate('system_calendar_add_guest'), 'none', true));
+            if (selectMembersConfig.additionalNone) {
+                selectMembersConfig.selectTarget.prepend(new Option(window.translate('system_calendar_add_guest'), 'none', true, true));
+            }
             if (selectMembersConfig.isSelect2) {
                 selectMembersConfig.selectTarget.select2();
             }
@@ -391,7 +397,7 @@
                 const isPopupElement = target.is('.details-popup *');
                 const isPopupAction = target.is('.details-popup .event-edit i') || target.is('.details-popup .event-delete i');
                 const isSelect = target.is('.select2-container *');
-                const isDatepicker = target.is('.datepicker-dropdown *');
+                const isDatepicker = target.is('.datepicker *');
                 const isClockpicker = target.is('.clockpicker-popover *');
                 const popupCase = isPopup || isPopupElement || isSelect || isDatepicker || isClockpicker;
                 if (isEvent) {
@@ -541,7 +547,8 @@
                         selectTarget: $('.details-popup .event-members'),
                         selectedValues: [],
                         disabledValues: [],
-                        isSelect2: true
+                        isSelect2: true,
+                        additionalNone: true
                     }
 
                     $.each($('.details-popup .event-member'), function () {
