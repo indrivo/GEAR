@@ -92,6 +92,17 @@ $(function () {
 				$(`iframe[name='helpcrunch-iframe']`).css("display", "block");
 				if (index == 3) clearInterval(helpCrunchTimer);
 				index++;
+				if ($(window).width() <= 768) {
+					helpCrunchContainer.find('.helpcrunch-widget-type-icon-label').hide();
+				}
+				$(window).resize(function () {
+					if ($(window).width() <= 768) {
+						helpCrunchContainer.find('.helpcrunch-widget-type-icon-label').hide();
+					}
+					else {
+						helpCrunchContainer.find('.helpcrunch-widget-type-icon-label').show();
+					}
+				});
 			}
 		}
 		catch (e) { }
