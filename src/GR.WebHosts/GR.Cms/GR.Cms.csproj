@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.Application.Middleware\GR.Application.Middleware.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.Application\GR.Application.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.Application\GR.WebApplication.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Audit.Extension\GR.Audit.Razor\GR.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Backup.Extension\GR.Backup.Razor\GR.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Cache.Extension\GR.Cache.Razor\GR.Cache.Razor.csproj" />

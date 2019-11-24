@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using GR.Application.InstallerModels;
 using GR.Cache.Abstractions;
-using GR.Cms.ViewModels.InstallerModels;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions;
@@ -26,6 +24,8 @@ using GR.Identity.Permissions.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
+using GR.WebApplication;
+using GR.WebApplication.InstallerModels;
 
 namespace GR.Install.Razor.Controllers
 {
@@ -105,7 +105,7 @@ namespace GR.Install.Razor.Controllers
             _permissionService = permissionService;
             _cacheService = cacheService;
             _notify = notify;
-            _isConfigured = Application.GearApplication.IsConfigured(_hostingEnvironment);
+            _isConfigured = GearWebApplication.IsConfigured(_hostingEnvironment);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace GR.Install.Razor.Controllers
         {
             if (_isConfigured) return RedirectToAction("Index", "Home");
             var model = new SetupModel();
-            var settings = Application.GearApplication.Settings(_hostingEnvironment);
+            var settings = GearWebApplication.Settings(_hostingEnvironment);
             if (settings != null)
             {
                 model.DataBaseType = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
@@ -155,7 +155,7 @@ namespace GR.Install.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> Setup(SetupModel model)
         {
-            var settings = Application.GearApplication.Settings(_hostingEnvironment);
+            var settings = GearWebApplication.Settings(_hostingEnvironment);
 
             if (model.DataBaseType == DbProviderType.MsSqlServer)
             {
@@ -191,7 +191,7 @@ namespace GR.Install.Razor.Controllers
             settings.SystemConfig.MachineIdentifier = $"_{tenantMachineName}_";
             var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
             await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
-            Application.GearApplication.InitMigrations();
+            GearWebApplication.InitMigrations();
 
             await _permissionService.RefreshCache();
 
@@ -253,12 +253,12 @@ namespace GR.Install.Razor.Controllers
             await _entitiesDbContext.SaveChangesAsync();
 
             //Create system tables
-            await Application.GearApplication.SyncDefaultEntityFrameWorkEntities(tenant.Id);
+            await GearWebApplication.SyncDefaultEntityFrameWorkEntities(tenant.Id);
 
             //Create dynamic tables for configured tenant
             await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
 
-            await Application.GearApplication.SeedDynamicDataAsync();
+            await GearWebApplication.SeedDynamicDataAsync();
 
             //Register in memory types
             await _dynamicService.RegisterInMemoryDynamicTypesAsync();

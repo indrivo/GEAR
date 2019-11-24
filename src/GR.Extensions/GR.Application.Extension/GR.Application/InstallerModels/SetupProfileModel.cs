@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace GR.Cms.ViewModels.InstallerModels
+namespace GR.WebApplication.InstallerModels
 {
 	public class SetupProfileModel
 	{

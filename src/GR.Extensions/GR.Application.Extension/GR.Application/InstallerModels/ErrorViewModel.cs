@@ -1,4 +1,4 @@
-namespace GR.Cms.ViewModels.InstallerModels
+namespace GR.WebApplication.InstallerModels
 {
     public class ErrorViewModel
     {

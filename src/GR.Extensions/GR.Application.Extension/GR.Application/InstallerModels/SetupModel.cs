@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using GR.Cms.ViewModels.InstallerModels;
 using GR.Core.Helpers;
 
-namespace GR.Application.InstallerModels
+namespace GR.WebApplication.InstallerModels
 {
 	public class SetupModel
 	{

@@ -132,6 +132,7 @@ using GR.Documents.Data;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Subscriptions.BackgroundServices;
+using GR.WebApplication;
 
 #endregion
 
@@ -176,7 +177,7 @@ namespace GR.Cms
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (GearApplication.IsHostedOnLinux())
+			if (GearWebApplication.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -232,7 +233,7 @@ namespace GR.Cms
 			app.UseStaticFiles();
 
 			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() => { GearApplication.ApplicationStarted(app); });
+			lifetime.ApplicationStarted.Register(() => { GearWebApplication.ApplicationStarted(app); });
 
 			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
 
@@ -476,7 +477,7 @@ namespace GR.Cms
 				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
-			if (GearApplication.IsHostedOnLinux())
+			if (GearWebApplication.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{

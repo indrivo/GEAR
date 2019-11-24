@@ -4,7 +4,7 @@ using NLog;
 using NLog.Web;
 using LogLevel = NLog.LogLevel;
 
-namespace GR.Application.Extensions
+namespace GR.WebApplication.Extensions
 {
     public static class LoggerExtension
     {

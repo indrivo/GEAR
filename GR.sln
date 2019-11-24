@@ -149,7 +149,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Install.Razor", "src\GR.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Application.Extension", "GR.Application.Extension", "{B595C1E9-D7E5-4A9D-8995-55720F89A815}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Application", "src\GR.Extensions\GR.Application.Extension\GR.Application\GR.Application.csproj", "{A2DC4B3F-0020-436A-A24F-E8E7769FAA51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WebApplication", "src\GR.Extensions\GR.Application.Extension\GR.Application\GR.WebApplication.csproj", "{A2DC4B3F-0020-436A-A24F-E8E7769FAA51}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Audit.Razor", "src\GR.Extensions\GR.Audit.Extension\GR.Audit.Razor\GR.Audit.Razor.csproj", "{A3ED949E-AB1C-452B-9932-F5ABAC0C589C}"
 EndProject
@@ -281,11 +281,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Razor", "src\GR
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Documents.Extension", "GR.Documents.Extension", "{145106CB-1B8F-4B17-A761-9B8BCF37AB41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Documents.Abstractions", "src\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj", "{D7EB3209-5E6A-476D-8C92-28597EF05CA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents.Abstractions", "src\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj", "{D7EB3209-5E6A-476D-8C92-28597EF05CA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Documents", "src\GR.Extensions\GR.Documents.Extension\GR.Documents\GR.Documents.csproj", "{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents", "src\GR.Extensions\GR.Documents.Extension\GR.Documents\GR.Documents.csproj", "{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Documents.Razor", "src\GR.Extensions\GR.Documents.Extension\GR.Documents.Razor\GR.Documents.Razor.csproj", "{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents.Razor", "src\GR.Extensions\GR.Documents.Extension\GR.Documents.Razor\GR.Documents.Razor.csproj", "{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

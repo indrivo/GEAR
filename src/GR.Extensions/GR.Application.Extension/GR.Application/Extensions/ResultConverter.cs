@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace GR.Application.Extensions
+namespace GR.WebApplication.Extensions
 {
 	public class ResultConverter : JsonConverter
 	{

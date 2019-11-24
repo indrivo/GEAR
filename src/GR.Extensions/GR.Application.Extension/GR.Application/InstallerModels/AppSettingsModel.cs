@@ -5,7 +5,7 @@ using GR.Core;
 using GR.Email.Abstractions.Models.EmailViewModels;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
-namespace GR.Application.InstallerModels
+namespace GR.WebApplication.InstallerModels
 {
 	public class AppSettingsModel
 	{

@@ -14,18 +14,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Backup.Extension\GR.Backup.Abstractions\GR.Backup.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache\GR.Cache.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities\GR.Entities.csproj" />
-    <ProjectReference Include="..\..\GR.Forms.Razor.Extension\GR.Forms\GR.Forms.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj" />
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Processes.Extension\GR.Processes\GR.Procesess.csproj" />
     <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Abstractions\GR.PageRender.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender.Razor\GR.PageRender.Razor.csproj" />
-    <ProjectReference Include="..\..\GR.Render.Extension\GR.PageRender\GR.PageRender.csproj" />
     <ProjectReference Include="..\..\GR.Report.Extension\GR.Report.Dynamic\GR.Report.Dynamic.csproj" />
   </ItemGroup>
 
