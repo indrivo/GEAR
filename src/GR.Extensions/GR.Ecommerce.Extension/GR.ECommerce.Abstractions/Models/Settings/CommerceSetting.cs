@@ -1,21 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
-using GR.Core.Abstractions;
-using GR.ECommerce.Abstractions.Models.Currencies;
+﻿using GR.ECommerce.Abstractions.Enums;
 
 namespace GR.ECommerce.Abstractions.Models.Settings
 {
-    public class CommerceSetting : IBase<int>
+    public class CommerceSetting
     {
         /// <summary>
-        /// Identifier
+        /// object key
         /// </summary>
-        public virtual int Id { get; set; } = 1;
+        public virtual string Key { get; set; }
 
         /// <summary>
-        /// Global usage of currency
+        /// Serialized value
         /// </summary>
-        public virtual Currency Currency { get; set; }
-        [Required]
-        public virtual string CurrencyId { get; set; }
+        public virtual string Value { get; set; }
+
+        /// <summary>
+        /// Value object type
+        /// </summary>
+        public virtual CommerceSettingType Type { get; set; } = CommerceSettingType.Text;
     }
 }

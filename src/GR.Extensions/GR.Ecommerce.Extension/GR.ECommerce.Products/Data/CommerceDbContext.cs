@@ -83,7 +83,7 @@ namespace GR.ECommerce.BaseImplementations.Data
             builder.Entity<ProductDiscount>().HasKey(x => new { x.DiscountId, x.ProductId });
             builder.Entity<ProductOrder>().HasKey(x => new { x.OrderId, x.ProductId });
             builder.Entity<ProductAttributes>().HasKey(x => new { x.ProductAttributeId, x.ProductId });
-            builder.Entity<CommerceSetting>().HasKey(x => x.Id);
+            builder.Entity<CommerceSetting>().HasKey(x => x.Key);
             builder.Entity<Order>().Property(x => x.CurrencyId).HasDefaultValue(CommerceResources.SystemCurrencies.USD);
 
             builder.Entity<Currency>().HasKey(x => x.Code);

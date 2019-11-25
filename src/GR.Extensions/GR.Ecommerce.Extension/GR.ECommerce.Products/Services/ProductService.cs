@@ -8,6 +8,7 @@ using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.Models.Currencies;
@@ -113,11 +114,15 @@ namespace GR.ECommerce.Products.Services
         public async Task<ResultModel<Currency>> GetGlobalCurrencyAsync()
         {
             var settings = await _commerceContext.CommerceSettings
-                .Include(x => x.Currency)
-                .FirstOrDefaultAsync();
-            if (settings != null) return new SuccessResultModel<Currency>(settings.Currency);
+                .FirstOrDefaultAsync(x => x.Key.Equals(CommerceResources.SettingsParameters.CURRENCY));
 
-            return await SetGlobalCurrencyAsync(CommerceResources.SystemCurrencies.USD);
+            if (settings == null) return await SetGlobalCurrencyAsync(CommerceResources.SystemCurrencies.USD);
+            {
+                var currency =
+                    await _commerceContext.Currencies.FirstOrDefaultAsync(x => x.Code.Equals(settings.Value));
+                return new SuccessResultModel<Currency>(currency);
+            }
+
         }
 
         /// <summary>
@@ -133,35 +138,85 @@ namespace GR.ECommerce.Products.Services
                 x.Code.Equals(code));
 
             if (currency == null) return new NotFoundResultModel<Currency>();
-
-            var settings = await _commerceContext.CommerceSettings
-                .Include(x => x.Currency)
-                .FirstOrDefaultAsync();
-            if (settings != null)
-            {
-                settings.CurrencyId = currency.Code;
-                _commerceContext.CommerceSettings.Update(settings);
-            }
-            else
-            {
-                await _commerceContext.CommerceSettings.AddAsync(new CommerceSetting
-                {
-                    CurrencyId = currency.Code
-                });
-            }
-
-            await _commerceContext.PushAsync();
-            return new SuccessResultModel<Currency>(currency);
+            var dbResponse = await AddOrUpdateSettingAsync(CommerceResources.SettingsParameters.CURRENCY, currency.Code);
+            return dbResponse.Map(currency);
         }
 
         /// <summary>
         /// Get all currencies
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync()
+        public async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync() =>
+            new SuccessResultModel<IEnumerable<Currency>>(await _commerceContext.Currencies.ToListAsync());
+
+        /// <summary>
+        /// Get setting
+        /// </summary>
+        /// <typeparam name="TOutput"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<TOutput>> GetSettingAsync<TOutput>(string key)
+            where TOutput : class
         {
-            var currencies = await _commerceContext.Currencies.ToListAsync();
-            return new SuccessResultModel<IEnumerable<Currency>>(currencies);
+            var setting = await _commerceContext.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
+            if (setting == null) return new InvalidParametersResultModel<TOutput>();
+            return new SuccessResultModel<TOutput>(setting.Value.Deserialize<TOutput>());
         }
+
+        /// <summary>
+        /// Add or update setting
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text)
+        {
+            var setting = await _commerceContext.CommerceSettings.FirstOrDefaultAsync(x => x.Key.Equals(key));
+            if (setting == null)
+            {
+                await _commerceContext.CommerceSettings.AddAsync(new CommerceSetting
+                {
+                    Key = key,
+                    Value = ParseSettingValue(value, type)
+                });
+            }
+            else
+            {
+                setting.Value = ParseSettingValue(value, type);
+                _commerceContext.CommerceSettings.Update(setting);
+            }
+
+            return await _commerceContext.PushAsync();
+        }
+
+        #region Helpers
+
+        /// <summary>
+        /// Parse setting
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static string ParseSettingValue(object value, CommerceSettingType type)
+        {
+            var response = string.Empty;
+
+            switch (type)
+            {
+                case CommerceSettingType.Text:
+                case CommerceSettingType.Number:
+                    response = value.ToString();
+                    break;
+                case CommerceSettingType.Object:
+                case CommerceSettingType.Array:
+                    response = value.SerializeAsJson();
+                    break;
+            }
+
+            return response;
+        }
+
+        #endregion
     }
 }
