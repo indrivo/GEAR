@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using GR.Application;
 using GR.Backup.Abstractions.BackgroundServices;
 using GR.Backup.Abstractions.Extensions;
 using GR.Backup.PostGresSql;
@@ -177,7 +176,7 @@ namespace GR.Cms
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
 			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
 		{
-			if (GearWebApplication.IsHostedOnLinux())
+			if (GearApplication.IsHostedOnLinux())
 			{
 				app.UseForwardedHeaders(new ForwardedHeadersOptions
 				{
@@ -478,7 +477,7 @@ namespace GR.Cms
 				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
-			if (GearWebApplication.IsHostedOnLinux())
+			if (GearApplication.IsHostedOnLinux())
 			{
 				services.Configure<ForwardedHeadersOptions>(options =>
 				{

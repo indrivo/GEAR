@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
 	<TargetFramework>netcoreapp2.2</TargetFramework>
 	<UserSecretsId>aspnet-Identity.API-FE765FD1-1EB9-4D6A-9FA5-E8C49BFECB2F</UserSecretsId>
@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.Application.Middleware\GR.Application.Middleware.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.Application\GR.WebApplication.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Audit.Extension\GR.Audit.Razor\GR.Audit.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Backup.Extension\GR.Backup.Razor\GR.Backup.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Cache.Extension\GR.Cache.Razor\GR.Cache.Razor.csproj" />

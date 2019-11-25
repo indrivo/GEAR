@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using GR.Cache.Abstractions;
 using GR.Core.Events;
@@ -27,6 +26,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core;
 using GR.Core.Events.EventArgs.Database;
+using GR.Core.Extensions;
+using GR.Forms.Data;
+using GR.PageRender.Data;
+using GR.Procesess.Data;
 
 namespace GR.WebApplication
 {
@@ -35,7 +38,7 @@ namespace GR.WebApplication
         /// <summary>
         /// Build web host
         /// </summary>
-        protected static IWebHost WebHost;
+        protected static IWebHost GlobalWebHost;
 
         /// <summary>
         /// Get settings
@@ -60,22 +63,20 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IWebHost Migrate()
         {
-            SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
-            WebHost?.MigrateDbContext<EntitiesDbContext>((context, services) =>
+            GlobalWebHost?.MigrateDbContext<EntitiesDbContext>((context, services) =>
                 {
-                    EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(context, Core.GearSettings.TenantId).Wait();
+                    EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(context, GearSettings.TenantId).Wait();
                 })
                 .MigrateDbContext<FormDbContext>((context, services) =>
                 {
-                    FormDbContextSeeder<FormDbContext>.SeedAsync(context, Core.GearSettings.TenantId).Wait();
+                    FormDbContextSeeder<FormDbContext>.SeedAsync(context, GearSettings.TenantId).Wait();
                 })
                 .MigrateDbContext<ProcessesDbContext>()
                 .MigrateDbContext<DynamicPagesDbContext>((context, services) =>
                 {
-                    DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, Core.GearSettings.TenantId)
+                    DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, GearSettings.TenantId)
                         .Wait();
                 })
-                .MigrateDbContext<DynamicReportDbContext>()
                 .MigrateDbContext<PersistedGrantDbContext>()
                 .MigrateDbContext<ApplicationDbContext>((context, services) =>
                 {
@@ -92,9 +93,9 @@ namespace GR.WebApplication
                     IdentityServerConfigDbSeeder.SeedAsync(configurator, context, applicationDbContext, config, env)
                         .Wait();
                 });
-
+            SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
             SystemEvents.Database.MigrateComplete(new DatabaseMigrateEventArgs());
-            return WebHost;
+            return GlobalWebHost;
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IWebHost BuildWebHost<TStartUp>(string[] args) where TStartUp : class
         {
-            GlobalAppHost = WebHost = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
+            GlobalAppHost = GlobalWebHost = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(args)
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .UseConfiguration(BuildConfiguration())
                 .StartLogging()
@@ -214,7 +215,7 @@ namespace GR.WebApplication
                 .UseSentry()
                 .Build();
 
-            return WebHost;
+            return GlobalWebHost;
         }
     }
 }
