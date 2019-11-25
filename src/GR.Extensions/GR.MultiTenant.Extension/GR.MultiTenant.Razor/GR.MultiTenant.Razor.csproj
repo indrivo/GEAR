@@ -13,12 +13,16 @@
   <ItemGroup>
     <None Remove="libman.json" />
     <None Remove="Static\Embedded Resources\company.png" />
+    <None Remove="Templates\invite-new-user.html" />
     <None Remove="wwwroot\assets\MultiTenantPlugins\company-manage-invite.js" />
     <None Remove="wwwroot\assets\MultiTenantPlugins\company-manage.js" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Static\Embedded Resources\company.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\invite-new-user.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

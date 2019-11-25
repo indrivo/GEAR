@@ -134,11 +134,7 @@ namespace GR.MultiTenant.Razor.Controllers
             var resultModel = new ResultModel();
             if (!ModelState.IsValid)
             {
-                resultModel.Errors.Add(new ErrorModel
-                {
-                    Key = string.Empty,
-                    Message = "Invalid model"
-                });
+                resultModel.AttachModelState(ModelState);
                 return Json(resultModel);
             }
 

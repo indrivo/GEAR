@@ -469,6 +469,7 @@ namespace GR.Cms.Services
 			var data = source.Where(x => x.ParentId == parentId).Select(async x =>
 			{
 				var (_, content) = await GetControlContentAndGoalAsync((Guid)x.Id);
+				var documentCount = await _service.Table("ControlDocuments").Count(new Dictionary<string, object> {{"ControlStructureId", x.Id}});
 				return new ControlThirdLevel
 				{
 					ParentId = parentId,
@@ -477,7 +478,10 @@ namespace GR.Cms.Services
 					Id = x.Id,
 					Content = content,
 					ControlActivities = await GetControlActivitiesAsync(x.Id),
-					ControlDocuments = new ControlDocuments(),
+					ControlDocuments = new ControlDocuments
+					{
+						TotalDocuments = documentCount.Result
+					},
 					ControlRisks = new ControlRisks
 					{
 						TotalRisks = await GetControlRisksCount(x.Id)

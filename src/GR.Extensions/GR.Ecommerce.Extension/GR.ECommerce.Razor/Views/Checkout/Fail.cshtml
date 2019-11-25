@@ -1,7 +1,11 @@
+@using GR.ECommerce.Abstractions
+@using GR.ECommerce.Abstractions.Models
 @model GR.Orders.Abstractions.Models.Order
+@inject IProductService<Product> ProductService
 
 @{
 	ViewData["Title"] = "Payment fail";
+    var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
 }
 
 <div style="height: 100vh">
@@ -18,7 +22,7 @@
 							<b>@Localizer["system_commerce_amount_paid"]:</b>
 						</div>
 						<div class="col-md-6 text-right">
-							$@Model?.Total.ToString("N2")
+							@currency?.Symbol@Model?.Total.ToString("N2")
 						</div>
 					</div>
 				</div>

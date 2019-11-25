@@ -1830,6 +1830,20 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.ToTable("ProductVariationDetails");
                 });
 
+            modelBuilder.Entity("GR.ECommerce.Abstractions.Models.Settings.CommerceSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Type");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("CommerceSettings");
+                });
+
             modelBuilder.Entity("GR.ECommerce.Payments.Abstractions.Models.Payment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1898,6 +1912,10 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<DateTime>("Created");
 
+                    b.Property<string>("CurrencyId")
+                        .IsRequired()
+                        .HasDefaultValue("USD");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
@@ -1916,6 +1934,8 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
 
                     b.ToTable("Orders");
                 });
@@ -2193,6 +2213,14 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.HasOne("GR.ECommerce.Payments.Abstractions.Models.PaymentMethod", "PaymentMethod")
                         .WithMany()
                         .HasForeignKey("PaymentMethodId");
+                });
+
+            modelBuilder.Entity("GR.Orders.Abstractions.Models.Order", b =>
+                {
+                    b.HasOne("GR.ECommerce.Abstractions.Models.Currencies.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GR.Orders.Abstractions.Models.OrderHistory", b =>

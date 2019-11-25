@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
@@ -14,6 +16,8 @@ using GR.Orders.Abstractions;
 
 namespace GR.ECommerce.Products.Services
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
+    [Documentation("Basic implementation of payment service")]
     public class PaymentService : IPaymentService
     {
         #region Injectable

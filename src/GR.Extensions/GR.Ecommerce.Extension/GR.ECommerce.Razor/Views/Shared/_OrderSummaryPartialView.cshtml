@@ -19,7 +19,7 @@
                     <tr class="product-item">
                         <td class=" @(Model.ProductOrders.IsLast(prOrder) ? "pb-4": "")">@prOrder.Product?.Name</td>
                         <td>@prOrder.Amount</td>
-                        <td>$@prOrder.AmountFinalPriceWithOutDiscount.ToString("N2")</td>
+                        <td>@Model.Currency?.Symbol@prOrder.AmountFinalPriceWithOutDiscount.ToString("N2")</td>
                     </tr>
                 }
                 <tr class="border-top-row weight-600 fz-16">
@@ -31,17 +31,17 @@
                 <tr>
                     <td>Subtotal</td>
                     <td></td>
-                    <td>$@Model.SubTotal.ToString("N2")</td>
+                    <td>@Model.Currency?.Symbol@Model.SubTotal.ToString("N2")</td>
                 </tr>
                 <tr>
                     <td class="pb-4">@Localizer["system_commerce_discount"]</td>
                     <td></td>
-                    <td>$@Model.DiscountTotal.ToString("N2")</td>
+                    <td>@Model.Currency?.Symbol@Model.DiscountTotal.ToString("N2")</td>
                 </tr>
                 <tr class="border-top-row weight-600 fz-16">
                     <td class="pt-4">@Localizer["system_commerce_order_total"]</td>
                     <td></td>
-                    <td>$@Model.Total.ToString("N2")</td>
+                    <td>@Model.Currency?.Symbol@Model.Total.ToString("N2")</td>
                 </tr>
             </tbody>
         </table>

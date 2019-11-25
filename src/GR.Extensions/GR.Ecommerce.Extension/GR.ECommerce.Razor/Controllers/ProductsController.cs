@@ -17,6 +17,8 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
 using System.ComponentModel.DataAnnotations;
+using GR.Core;
+using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
@@ -575,5 +577,27 @@ namespace GR.ECommerce.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
         public async Task<JsonResult> GetSubscriptionPlans() =>
             Json(await _productService.GetSubscriptionPlansAsync(), SerializerSettings);
+
+
+        /// <summary>
+        /// Get global currency
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
+        public async Task<JsonResult> GetGlobalCurrency() =>
+            Json(await _productService.GetGlobalCurrencyAsync());
+
+
+        /// <summary>
+        /// Set global currency
+        /// </summary>
+        /// <param name="currencyIdentifier"></param>
+        /// <returns></returns>
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
+        public async Task<JsonResult> SetGlobalCurrency(string currencyIdentifier) =>
+            Json(await _productService.SetGlobalCurrencyAsync(currencyIdentifier));
     }
 }

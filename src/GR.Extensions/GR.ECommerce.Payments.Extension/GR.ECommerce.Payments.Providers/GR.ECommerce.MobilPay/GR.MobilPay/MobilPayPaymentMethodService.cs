@@ -23,11 +23,6 @@ namespace GR.MobilPay
     public class MobilPayPaymentMethodService : IMobilPayPaymentMethod
     {
         /// <summary>
-        /// Currency
-        /// </summary>
-        private readonly string _yourCurrency = "EUR";
-
-        /// <summary>
         /// Configuration
         /// </summary>
         private readonly MobilPayConfiguration _configuration;
@@ -127,7 +122,7 @@ namespace GR.MobilPay
                 card.Url = url;
                 card.TimeStamp = DateTime.Now.ToString("yyyyMMddhhmmss");
                 invoice.Amount = order.Total;
-                invoice.Currency = _yourCurrency;
+                invoice.Currency = order.Currency?.Code;
                 invoice.Details = $"#{orderId}";
 
                 billing.FirstName = user?.UserFirstName;

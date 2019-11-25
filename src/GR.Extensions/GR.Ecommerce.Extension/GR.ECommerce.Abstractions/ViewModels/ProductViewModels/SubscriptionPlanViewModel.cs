@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GR.ECommerce.Abstractions.Models.Currencies;
 
 namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
@@ -18,7 +19,7 @@ namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
         /// <summary>
         /// Currency
         /// </summary>
-        public string Currency { get; set; } = "EUR";
+        public Currency Currency { get; set; }
 
         /// <summary>
         /// Description

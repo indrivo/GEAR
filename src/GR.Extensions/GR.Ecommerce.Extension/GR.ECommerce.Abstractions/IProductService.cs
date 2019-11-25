@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
+using GR.ECommerce.Abstractions.Enums;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 
 namespace GR.ECommerce.Abstractions
@@ -28,5 +30,41 @@ namespace GR.ECommerce.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync();
+
+        /// <summary>
+        /// Get global currency
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<Currency>> GetGlobalCurrencyAsync();
+
+        /// <summary>
+        /// Set global currency for products
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<ResultModel<Currency>> SetGlobalCurrencyAsync(string code);
+
+        /// <summary>
+        /// Get all currencies
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync();
+
+        /// <summary>
+        /// Get setting by key
+        /// </summary>
+        /// <typeparam name="TOutput"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<ResultModel<TOutput>> GetSettingAsync<TOutput>(string key) where TOutput : class;
+
+        /// <summary>
+        /// Add or update setting
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text);
     }
 }

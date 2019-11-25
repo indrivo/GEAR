@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Core.Razor.Helpers;
+using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Email.Abstractions.Helpers;
 using GR.Identity.Abstractions;
@@ -57,7 +57,7 @@ namespace GR.Subscriptions.Razor.Controllers
             var emails = (await _userManager.UserManager.GetUsersInRoleAsync(GlobalResources.Roles.ADMINISTRATOR))
                 .Select(x => x.Email).ToList();
             const string subject = "Quotation request for Enterprise";
-            var templateRequest = TemplateManager.GetTagHelperTemplate("enterprise-quotation");
+            var templateRequest = TemplateManager.GetTemplateBody("enterprise-quotation");
             if (!templateRequest.IsSuccess) return Json(response);
             var template = templateRequest.Result;
             var message = template.Inject(model).Inject(new Dictionary<string, string>
@@ -90,7 +90,7 @@ namespace GR.Subscriptions.Razor.Controllers
             var emails = (await _userManager.UserManager.GetUsersInRoleAsync(GlobalResources.Roles.ADMINISTRATOR))
                 .Select(x => x.Email).ToList();
             const string subject = "Quotation request for additional services";
-            var templateRequest = TemplateManager.GetTagHelperTemplate("quotation-additional-services");
+            var templateRequest = TemplateManager.GetTemplateBody("quotation-additional-services");
             if (!templateRequest.IsSuccess) return Json(response);
             var template = templateRequest.Result;
             var message = template.Inject(model).Inject(new Dictionary<string, string>
