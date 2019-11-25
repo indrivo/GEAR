@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 
 namespace GR.ECommerce.Abstractions
@@ -28,5 +29,24 @@ namespace GR.ECommerce.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<SubscriptionPlanViewModel>>> GetSubscriptionPlansAsync();
+
+        /// <summary>
+        /// Get global currency
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<Currency>> GetGlobalCurrencyAsync();
+
+        /// <summary>
+        /// Set global currency for products
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<ResultModel<Currency>> SetGlobalCurrencyAsync(string code);
+
+        /// <summary>
+        /// Get all currencies
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync();
     }
 }

@@ -1,9 +1,5 @@
 ﻿using GraphiQl;
 using GraphQL;
-using GraphQL.Http;
-using GraphQL.Server;
-using GraphQL.Server.Ui.Playground;
-using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
@@ -11,7 +7,6 @@ using GR.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes;
 using GR.Calendar.NetCore.Api.GraphQL.Queries;
 using GR.Calendar.NetCore.Api.GraphQL.Schemas;
 using GR.Calendar.NetCore.Api.GraphQL.Schemas.Contracts;
-using System;
 
 namespace GR.Calendar.NetCore.Api.GraphQL.Extensions
 {
@@ -22,7 +17,7 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Extensions
         /// </summary>
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
-        public static CalendarServiceCollection AddCalendarGraphQLApi(this CalendarServiceCollection serviceCollection)
+        public static CalendarServiceCollection AddCalendarGraphQlApi(this CalendarServiceCollection serviceCollection)
         {
             serviceCollection.Services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
             serviceCollection.Services.AddSingleton<CalendarQuery>();
@@ -42,7 +37,7 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Extensions
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseCalendarGrapHQL(this IApplicationBuilder app)
+        public static IApplicationBuilder UseCalendarGraphQl(this IApplicationBuilder app)
         {
             app.UseGraphiQl("/api/CalendarGraphQL");
             return app;

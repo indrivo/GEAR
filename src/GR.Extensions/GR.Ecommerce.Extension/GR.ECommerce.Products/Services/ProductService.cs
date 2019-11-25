@@ -2,16 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.ECommerce.Abstractions.Models.Currencies;
+using GR.ECommerce.Abstractions.Models.Settings;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.Products.Services
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
+    [Documentation("Basic Implementation of product service")]
     public class ProductService : IProductService<Product>
     {
         /// <summary>
@@ -89,13 +96,72 @@ namespace GR.ECommerce.Products.Services
                             && x.IsPublished)
                 .ToListAsync();
 
+            var currency = (await GetGlobalCurrencyAsync()).Result;
             var response = new ResultModel<IEnumerable<SubscriptionPlanViewModel>>
             {
                 IsSuccess = true,
-                Result = products.Select(ProductMapper.Map)
+                Result = products.Select(product => ProductMapper.Map(product, currency))
             };
 
             return response;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<Currency>> GetGlobalCurrencyAsync()
+        {
+            var settings = await _commerceContext.CommerceSettings
+                .Include(x => x.Currency)
+                .FirstOrDefaultAsync();
+            if (settings != null) return new SuccessResultModel<Currency>(settings.Currency);
+
+            return await SetGlobalCurrencyAsync(CommerceResources.SystemCurrencies.USD);
+        }
+
+        /// <summary>
+        /// Set global currency for products
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Currency>> SetGlobalCurrencyAsync(string code)
+        {
+            var currency = await _commerceContext.Currencies
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                x.Code.Equals(code));
+
+            if (currency == null) return new NotFoundResultModel<Currency>();
+
+            var settings = await _commerceContext.CommerceSettings
+                .Include(x => x.Currency)
+                .FirstOrDefaultAsync();
+            if (settings != null)
+            {
+                settings.CurrencyId = currency.Code;
+                _commerceContext.CommerceSettings.Update(settings);
+            }
+            else
+            {
+                await _commerceContext.CommerceSettings.AddAsync(new CommerceSetting
+                {
+                    CurrencyId = currency.Code
+                });
+            }
+
+            await _commerceContext.PushAsync();
+            return new SuccessResultModel<Currency>(currency);
+        }
+
+        /// <summary>
+        /// Get all currencies
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Currency>>> GetAllCurrenciesAsync()
+        {
+            var currencies = await _commerceContext.Currencies.ToListAsync();
+            return new SuccessResultModel<IEnumerable<Currency>>(currencies);
         }
     }
 }
