@@ -73,6 +73,7 @@ namespace GR.Documents
         public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByTypeIdAsync(Guid? typeId)
         {
             var result = new ResultModel<IEnumerable<Document>>();
+            var user = await _userManager.GetCurrentUserAsync();
 
             if (typeId is null) return new InvalidParametersResultModel<IEnumerable<Document>>();
 
@@ -83,7 +84,7 @@ namespace GR.Documents
             var documentsBd = await  _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => x.DocumentTypeId == typeId).ToListAsync();
+                .Where(x => x.DocumentTypeId == typeId && x.TenantId == user.Result.TenantId).ToListAsync();
 
             if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
@@ -105,6 +106,7 @@ namespace GR.Documents
         {
 
             var result = new ResultModel<IEnumerable<Document>>();
+            var user = await _userManager.GetCurrentUserAsync();
 
             if (typeId is null) return new InvalidParametersResultModel<IEnumerable<Document>>();
 
@@ -114,7 +116,7 @@ namespace GR.Documents
             var documentsBd = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => x.DocumentTypeId == typeId && !listIgnireDocuments.Contains(x.Id)).ToListAsync();
+                .Where(x => x.DocumentTypeId == typeId && !listIgnireDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId).ToListAsync();
 
             if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
@@ -132,13 +134,14 @@ namespace GR.Documents
         public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumetId)
         {
             var response = new ResultModel<IEnumerable<Document>>();
+            var user = await _userManager.GetCurrentUserAsync();
 
-            if(listDocumetId is null ||  !listDocumetId.Any()) return new InvalidParametersResultModel<IEnumerable<Document>>();
+            if (listDocumetId is null ||  !listDocumetId.Any()) return new InvalidParametersResultModel<IEnumerable<Document>>();
 
             var listDocuments = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x=> listDocumetId.Contains(x.Id))
+                .Where(x=> listDocumetId.Contains(x.Id) && x.TenantId == user.Result.TenantId)
                 .ToListAsync();
 
             if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
@@ -156,6 +159,7 @@ namespace GR.Documents
         /// <returns></returns>
         public async Task<ResultModel<Document>> GetDocumentsByIdAsync(Guid? documentId)
         {
+            var user = await _userManager.GetCurrentUserAsync();
 
             var response = new ResultModel<Document>();
             if (documentId is null)
@@ -164,7 +168,7 @@ namespace GR.Documents
             var document = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .FirstOrDefaultAsync(x => x.Id == documentId);
+                .FirstOrDefaultAsync(x => x.Id == documentId && x.TenantId == user.Result.TenantId);
 
             if (document is null) new NotFoundResultModel<Document>();
 
