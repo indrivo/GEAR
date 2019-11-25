@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using GR.Core;
 using GR.ECommerce.Abstractions.Enums;
+using GR.ECommerce.Abstractions.Models.Currencies;
 
 namespace GR.Orders.Abstractions.Models
 {
@@ -66,5 +67,12 @@ namespace GR.Orders.Abstractions.Models
         /// Shipment address
         /// </summary>
         public virtual Guid? ShipmentAddress { get; set; }
+
+        /// <summary>
+        /// Currency reference
+        /// </summary>
+        public virtual Currency Currency { get; set; }
+        [Required]
+        public virtual string CurrencyId { get; set; }
     }
 }

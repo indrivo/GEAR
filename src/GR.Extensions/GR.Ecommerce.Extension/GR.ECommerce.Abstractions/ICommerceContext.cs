@@ -2,6 +2,7 @@
 using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.Models.Currencies;
+using GR.ECommerce.Abstractions.Models.Settings;
 
 namespace GR.ECommerce.Abstractions
 {
@@ -101,5 +102,10 @@ namespace GR.ECommerce.Abstractions
         /// Currencies
         /// </summary>
         DbSet<Currency> Currencies { get; set; }
+
+        /// <summary>
+        /// Settings
+        /// </summary>
+        DbSet<CommerceSetting> CommerceSettings { get; set; }
     }
 }

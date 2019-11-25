@@ -202,7 +202,8 @@ namespace GR.Cms
 			//----------------------------------Origin Cors Usage-------------------------------------
 			app.UseConfiguredCors(Configuration);
 
-			app.UseCalendarGrapHQL();
+            //----------------------------------Calendar graphQl--------------------------------------
+			app.UseCalendarGraphQl();
 
 			//----------------------------------Use cors-------------------------------------
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
@@ -412,7 +413,7 @@ namespace GR.Cms
 					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
 					options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
 				})
-				.AddCalendarGraphQLApi();
+				.AddCalendarGraphQlApi();
 
 			//------------------------------------File Module-------------------------------------
 			services.AddFileModule<FileManager<FileDbContext>>()

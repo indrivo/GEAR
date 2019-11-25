@@ -46,6 +46,7 @@ namespace GR.Core.Extensions
         public static TOutput Deserialize<TOutput>(this string source, JsonSerializerSettings serializerSettings = null) where TOutput : class
         {
             if (source.IsNullOrEmpty()) return null;
+            if (typeof(TOutput) == typeof(string)) return source as TOutput;
             try
             {
                 return JsonConvert.DeserializeObject<TOutput>(source, serializerSettings ?? SerializeSettings);

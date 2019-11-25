@@ -28,6 +28,23 @@ namespace GR.Documents.Abstractions
         /// <returns></returns>
         Task<ResultModel<Document>> GetDocumentsByIdAsync(Guid? documentId);
 
+        /// <summary>
+        /// Get all document by type
+        /// </summary>
+        /// <param name="typeId"></param>
+        /// <returns></returns>
+
+        Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByTypeIdAsync(Guid? typeId);
+
+        /// <summary>
+        /// get documents by id an eliminate exist documents
+        /// </summary>
+        /// <param name="typeId"></param>
+        /// <param name="listIgnireDocuments"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByTypeIdAndListAsync(Guid? typeId,
+            IEnumerable<Guid> listIgnireDocuments);
+
 
         /// <summary>
         /// Get all document create by current user

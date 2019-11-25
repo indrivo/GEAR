@@ -7,6 +7,7 @@ using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,6 +18,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace GR.Documents.Razor.Controllers
 {
+    [Authorize]
     public class DocumentsController : Controller
     {
 
@@ -67,7 +69,12 @@ namespace GR.Documents.Razor.Controllers
             return Json(result, SerializerSettings);
         }
 
-
+        [HttpPost]
+        public async Task<JsonResult> GetAllDocumentsByTypeIdAndList(List<Guid> listDocumetId, Guid? typeId)
+        {
+            var result = await _documentService.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumetId);
+            return Json(result, SerializerSettings);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -81,7 +88,6 @@ namespace GR.Documents.Razor.Controllers
 
             return View(documentAddModel);
         }
-
 
         [HttpPost]
         public async Task<JsonResult> Create(AddDocumentViewModel model)
@@ -100,7 +106,6 @@ namespace GR.Documents.Razor.Controllers
 
             return Json(result);
         }
-
 
         [HttpGet]
         public async Task<JsonResult> GetAllDocumentVersion(Guid? documentId)
@@ -123,6 +128,12 @@ namespace GR.Documents.Razor.Controllers
 
             result = await _documentService.AddNewDocumentVersionAsync(model);
             return Json(result);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetAllDocumentByTypeAsync(Guid? typeId)
+        {
+            return Json(await _documentService.GetAllDocumentsByTypeIdAsync(typeId), SerializerSettings);
         }
     }
 }

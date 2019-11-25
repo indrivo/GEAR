@@ -52,8 +52,9 @@ namespace GR.Orders.Abstractions
         /// </summary>
         /// <param name="orderId"></param>
         /// <param name="orderState"></param>
+        /// <param name="notes"></param>
         /// <returns></returns>
-        Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState);
+        Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState, string notes = null);
 
         /// <summary>
         /// Cancel order
