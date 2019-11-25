@@ -48,11 +48,13 @@ namespace GR.Documents
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsAsync()
         {
+            var user = await  _userManager.GetCurrentUserAsync();
             var response = new ResultModel<IEnumerable<Document>>();
 
             var listDocuments = await _context.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
+                .Where(x=> x.TenantId == user.Result.TenantId)
                 .ToListAsync();
 
             if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
@@ -63,10 +65,70 @@ namespace GR.Documents
             return response;
         }
 
-       /// <summary>
-        /// Get  documents by list id
+        /// <summary>
+        /// Get all document by type
         /// </summary>
+        /// <param name="typeId"></param>
         /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByTypeIdAsync(Guid? typeId)
+        {
+            var result = new ResultModel<IEnumerable<Document>>();
+
+            if (typeId is null) return new InvalidParametersResultModel<IEnumerable<Document>>();
+
+            var typeBd = await _context.DocumentTypes.FirstOrDefaultAsync(x => x.Id == typeId);
+            if (typeBd is null) return new NotFoundResultModel<IEnumerable<Document>>();
+
+
+            var documentsBd = await  _context.Documents
+                .Include(i => i.DocumentType)
+                .Include(i => i.DocumentVersions)
+                .Where(x => x.DocumentTypeId == typeId).ToListAsync();
+
+            if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+
+            result.IsSuccess = true;
+            result.Result = documentsBd;
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// get documents by id an eliminate exist documents
+        /// </summary>
+        /// <param name="typeId"></param>
+        /// <param name="listIgnireDocuments"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByTypeIdAndListAsync(Guid? typeId,
+            IEnumerable<Guid> listIgnireDocuments)
+        {
+
+            var result = new ResultModel<IEnumerable<Document>>();
+
+            if (typeId is null) return new InvalidParametersResultModel<IEnumerable<Document>>();
+
+            var typeBd = await _context.DocumentTypes.FirstOrDefaultAsync(x => x.Id == typeId);
+            if (typeBd is null) return new NotFoundResultModel<IEnumerable<Document>>();
+
+            var documentsBd = await _context.Documents
+                .Include(i => i.DocumentType)
+                .Include(i => i.DocumentVersions)
+                .Where(x => x.DocumentTypeId == typeId && !listIgnireDocuments.Contains(x.Id)).ToListAsync();
+
+            if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+
+            result.IsSuccess = true;
+            result.Result = documentsBd;
+
+            return result;
+
+        }
+
+       /// <summary>
+       /// Get  documents by list id
+       /// </summary>
+       /// <returns></returns>
         public async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumetId)
         {
             var response = new ResultModel<IEnumerable<Document>>();

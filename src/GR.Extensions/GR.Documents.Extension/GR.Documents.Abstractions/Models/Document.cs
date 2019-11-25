@@ -68,5 +68,10 @@ namespace GR.Documents.Abstractions.Models
         /// File url 
         /// </summary>
         public virtual string LastUrl => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Url;
+
+        /// <summary>
+        /// File version
+        /// </summary>
+        public virtual double LastVersion =>  DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.VersionNumber ?? 1;
     }
 }
