@@ -7,5 +7,7 @@ namespace GR.ECommerce.Razor.ViewModels.SettingsViewModels
     {
         public virtual string CurrencyCode { get; set; }
         public virtual IEnumerable<Currency> Currencies { get; set; }
+
+        public virtual int DaysToNotifyExpiringSubscriptions { get; set; }
     }
 }
