@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Templates;
+using GR.Core.Helpers.Templates.Enums;
 using GR.Core.Razor.Enums;
 using GR.Core.Razor.Helpers;
 using GR.Core.Razor.TagHelpersStructures;
@@ -115,7 +116,7 @@ namespace GR.Core.Razor.TagHelpers
                             if (action.ActionParameters.Any())
                             {
                                 var actionsParams = new StringBuilder();
-                                action.ActionParameters.ToList().ForEach(x => { actionsParams.AppendLine($"{x.ToString()}&"); });
+                                action.ActionParameters.ToList().ForEach(x => { actionsParams.AppendLine($"{x}&"); });
                                 action.Url = $"{action.Url}?{actionsParams}";
                             }
 
@@ -197,7 +198,7 @@ namespace GR.Core.Razor.TagHelpers
 
                 if (column.HtmlAttributes.Any())
                 {
-                    column.HtmlAttributes.ToList().ForEach(x => { colAttrs.AppendLine($"{x.ToString()} "); });
+                    column.HtmlAttributes.ToList().ForEach(x => { colAttrs.AppendLine($"{x} "); });
                 }
                 container.AppendLine(thTemplate.Result.Inject(new Dictionary<string, string> {
                     { "ColumnName", column.ColumnName },

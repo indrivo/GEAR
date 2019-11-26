@@ -1,0 +1,34 @@
+﻿@model GR.ECommerce.Razor.ViewModels.SettingsViewModels.CommerceSettingsViewModel
+
+@{
+    ViewData["Title"] = "Commerce settings";
+}
+
+<div class="card">
+    <div class="card-body">
+        <form asp-controller="CommerceSettings" asp-action="SaveCommerceSettings" method="post">
+            <div class="form-group">
+                <label asp-for="CurrencyCode">Select global currency</label>
+                <select asp-for="CurrencyCode" asp-items="@(new SelectList(Model.Currencies, "Code", "Code"))" class="form-control"></select>
+                <span asp-validation-for="CurrencyCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DaysToNotifyExpiringSubscriptions"> Days To Notify Expiring Subscriptions</label>
+                <input asp-for="DaysToNotifyExpiringSubscriptions" class="form-control" />
+                <span asp-validation-for="CurrencyCode" class="text-danger"></span>
+            </div>
+
+            <div class="row button-group">
+                <div class="col-lg-2 col-md-3">
+                    <button type="submit" class="btn btn-block btn-success"> @Localizer["save"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

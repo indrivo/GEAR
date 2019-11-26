@@ -1,4 +1,4 @@
-﻿namespace GR.Core.Razor.Enums
+﻿namespace GR.Core.Helpers.Templates.Enums
 {
     public enum TemplateType
     {

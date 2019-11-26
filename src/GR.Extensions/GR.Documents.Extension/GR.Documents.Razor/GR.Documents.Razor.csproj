@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Documents\Create.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Documents\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

@@ -6,6 +6,7 @@ using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
+using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Models;
@@ -18,6 +19,7 @@ using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.CurrencyViewModels;
 using GR.ECommerce.Products.Extensions;
 using Mapster;
+using GR.ECommerce.Abstractions.Models.Settings;
 
 namespace GR.ECommerce.BaseImplementations.Data
 {
@@ -65,6 +67,7 @@ namespace GR.ECommerce.BaseImplementations.Data
         public virtual DbSet<Subscription> Subscription { get; set; }
         public virtual DbSet<SubscriptionPermission> SubscriptionPermissions { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
+        public virtual DbSet<CommerceSetting> CommerceSettings { get; set; }
         #endregion
 
         /// <summary>
@@ -80,6 +83,8 @@ namespace GR.ECommerce.BaseImplementations.Data
             builder.Entity<ProductDiscount>().HasKey(x => new { x.DiscountId, x.ProductId });
             builder.Entity<ProductOrder>().HasKey(x => new { x.OrderId, x.ProductId });
             builder.Entity<ProductAttributes>().HasKey(x => new { x.ProductAttributeId, x.ProductId });
+            builder.Entity<CommerceSetting>().HasKey(x => x.Key);
+            builder.Entity<Order>().Property(x => x.CurrencyId).HasDefaultValue(CommerceResources.SystemCurrencies.USD);
 
             builder.Entity<Currency>().HasKey(x => x.Code);
             var currenciesFilePath = Path.Combine(AppContext.BaseDirectory, "Configuration/currencies.json");
@@ -96,9 +101,6 @@ namespace GR.ECommerce.BaseImplementations.Data
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
-        {
-            return Set<TEntity>();
-        }
+        public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel => Set<TEntity>();
     }
 }

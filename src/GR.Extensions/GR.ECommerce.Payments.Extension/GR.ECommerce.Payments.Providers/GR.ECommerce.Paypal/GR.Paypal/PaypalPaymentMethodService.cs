@@ -144,7 +144,7 @@ namespace GR.Paypal
                             Amount = new Amount
                             {
                                 Total = (order.Total + 0.11m).ToString("N2"),
-                                Currency = "EUR",
+                                Currency = order.Currency?.Code,
                                 Details = new Details
                                 {
                                     Subtotal =  order.Total.ToString("N2"),
