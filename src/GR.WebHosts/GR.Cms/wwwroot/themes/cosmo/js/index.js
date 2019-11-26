@@ -110,7 +110,7 @@ $(function () {
 });
 
 $(function () {
-	let btn = $(".scroll-to-top");
+	const btn = $(".scroll-to-top");
 
 	$(window).scroll(function () {
 		if ($(window).scrollTop() > 300) {
@@ -136,6 +136,14 @@ $(function () {
 	$(document).ready(function () {
 		window.forceTranslate().then(() => {
 			replaceIso();
+			let btnWidth = 80;
+			$.each($('.user-nav .btn'), function () {
+				const thisWidth = $(this).width();
+				if (thisWidth > btnWidth) {
+					btnWidth = thisWidth + 24;
+				}
+			});
+			$('.user-nav .btn').css('min-width', btnWidth);
 		});
 		window.forceTranslatePlaceHolders()
 		replaceIso();
@@ -145,7 +153,6 @@ $(function () {
 		var target = this;
 		return target.replace(new RegExp(search, 'g'), replacement);
 	};
-
 
 	function replaceIso() {
 		$.each($('.iso-text'), function () {
