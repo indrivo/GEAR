@@ -76,6 +76,14 @@ namespace GR.Documents.Razor.Controllers
             return Json(result, SerializerSettings);
         }
 
+
+        [HttpPost]
+        public async Task<JsonResult> DeleteDocumnetsByListIdAsync(List<Guid> listDocumetId)
+        {
+            var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumetId);
+            return Json(result, SerializerSettings);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {

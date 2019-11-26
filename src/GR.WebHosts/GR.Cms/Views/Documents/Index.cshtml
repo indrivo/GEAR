@@ -1,55 +1,60 @@
 @model IEnumerable<GR.Documents.Abstractions.ViewModels.DocumentViewModels.DocumentViewModel>
 
+@{
+    ViewData["Title"] = "Documents";
+}
 
 <div class="common-control">
-	<div class="control-area justify-content-end">
-		<div class="dropdown">
-			<button type="button" class="btn btn-link text-black-50" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false" id="visualize">
-				<span class="material-icons mr-1 align-middle">add_circle_outline</span>
-				<span class="align-middle button-label">Adaugă</span>
-				<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
-			</button>
-			<div class="dropdown-menu" aria-labelledby="visualize">
-				@*<a class="dropdown-item" href="#">Document SMSI</a>
-					<a class="dropdown-item" href="#">Document Extern</a>
-					<a class="dropdown-item" href="#">Link</a>*@
-			</div>
-		</div>
+    <div class="control-area justify-content-end">
+        <div class="dropdown">
+            <button type="button" class="btn btn-link text-black-50" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" id="visualize">
+                <span class="material-icons mr-1 align-middle">add_circle_outline</span>
+                <span class="align-middle button-label">Adaugă</span>
+                <span class="material-icons mr-1 align-middle">arrow_drop_down</span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="visualize">
+                @*<a class="dropdown-item" href="#">Document SMSI</a>
+                    <a class="dropdown-item" href="#">Document Extern</a>
+                    <a class="dropdown-item" href="#">Link</a>*@
+            </div>
+        </div>
 
-		<button type="button" class="btn btn-link text-black-50">
-			<span class="material-icons mr-1 align-middle">clear</span>
-			<span class="align-middle button-label">Șterge</span>
-		</button>
-	</div>
+        <button type="button" class="btn btn-link text-black-50" onclick="getAllChechedDeleteDocuments()">
+            <span class="material-icons mr-1 align-middle">clear</span>
+            <span class="align-middle button-label">Șterge</span>
+        </button>
+    </div>
 </div>
 
 <table id="data-table" class="table table-striped mb-4 bg-white table-bordered">
-	<thead>
-		<tr>
-			<th>Title</th>
-			<th>Document/Description</th>
-			<th>File</th>
-			<th>Group</th>
-			<th>Type</th>
-			<th>Version</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody id="tableListDocuments">
-		@*@foreach (var document in Model)
-			{
-				<tr>
-					<td>@document.Title</td>
-					<td>@document.Description</td>
-					<td><a href="@(document.DocumentType.Code == 3 ? document.LastUrl : "#" )" onclick="downloadFile('@document.LastFileId')" target="_blank">@(document.DocumentType.Code == 3 ? document.LastUrl : document.FileName)</a></td>
-					<td>@document.Group</td>
-					<td>@document.DocumentType.Name</td>
-					<td>@document.LastVersion.ToString("N1")</td>
-					<td></td>
-				</tr>
-			}*@
-	</tbody>
+    <thead>
+        <tr>
+            <th></th>
+            <th>Title</th>
+            <th>Document/Description</th>
+            <th>File</th>
+            <th>Group</th>
+            <th>Type</th>
+	        <th>Version</th>
+	        <th>Is delete</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="tableListDocuments">
+        @*@foreach (var document in Model)
+            {
+                <tr>
+                    <td>@document.Title</td>
+                    <td>@document.Description</td>
+                    <td><a href="@(document.DocumentType.Code == 3 ? document.LastUrl : "#" )" onclick="downloadFile('@document.LastFileId')" target="_blank">@(document.DocumentType.Code == 3 ? document.LastUrl : document.FileName)</a></td>
+                    <td>@document.Group</td>
+                    <td>@document.DocumentType.Name</td>
+                    <td>@document.LastVersion.ToString("N1")</td>
+                    <td></td>
+                </tr>
+            }*@
+    </tbody>
 
 </table>
 
@@ -59,188 +64,188 @@
 
 <!-- Modal -->
 <div class="modal fade" id="AddDocumentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form id="formAddDocument" role="form" enctype="multipart/form-data">
-					<input id="DocumentTypeId" name="DocumentTypeId" class="form-control" type="hidden" />
-					<div class="form-body">
-						<div class="row p-t-20">
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Document Code</label>
-									<input name="DocumentCode" class="form-control" value="" />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Tile</label>
-									<input name="Tile" class="form-control" value="" required />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Description</label>
-									<textarea name="Description" class="form-control ckeditor" value=""></textarea>
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddDocument" role="form" enctype="multipart/form-data">
+                    <input id="DocumentTypeId" name="DocumentTypeId" class="form-control" type="hidden" />
+                    <div class="form-body">
+                        <div class="row p-t-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Document Code</label>
+                                    <input name="DocumentCode" class="form-control" value="" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Tile</label>
+                                    <input name="Tile" class="form-control" value="" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea name="Description" class="form-control ckeditor" value=""></textarea>
 
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Group</label>
-									<input name="Group" class="form-control" value="" />
-								</div>
-							</div>
-							<div class="col-md-12" id="UrlDocument">
-								<div class="form-group">
-									<label>Url</label>
-									<input id="UrlDocumentInput" name="Url" class="form-control" value="" />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Comments</label>
-									<textarea name="Comments" class="form-control ckeditor" value=""></textarea>
-								</div>
-							</div>
-							<div class="col-md-12" id="FileInputDocument">
-								<div class="form-group">
-									<label>File</label>
-									<input id="fileinput" name="File" class="dropify" type="file" />
-								</div>
-							</div>
-						</div>
-					</div>
-					<button type="submit" class="btn btn-primary">Save changes</button>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
-		</div>
-	</div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Group</label>
+                                    <input name="Group" class="form-control" value="" />
+                                </div>
+                            </div>
+                            <div class="col-md-12" id="UrlDocument">
+                                <div class="form-group">
+                                    <label>Url</label>
+                                    <input id="UrlDocumentInput" name="Url" class="form-control" value="" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <textarea name="Comments" class="form-control ckeditor" value=""></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12" id="FileInputDocument">
+                                <div class="form-group">
+                                    <label>File</label>
+                                    <input id="fileinput" name="File" class="dropify" type="file" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
 </div>
 
 
 <!-- Modal -->
 <div class="modal fade bd-example-modal-lg" id="ShowDocumentVersions" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<table id="DocumentVersionTabe-table" class="table table-striped mb-4 bg-white table-bordered">
-					<thead>
-						<tr>
-							<th>Title</th>
-							<th>Coments</th>
-							<th>File</th>
-							<th>Version</th>
-						</tr>
-					</thead>
-					<tbody id="DocumntVersionList">
-					</tbody>
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table id="DocumentVersionTabe-table" class="table table-striped mb-4 bg-white table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Coments</th>
+                            <th>File</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody id="DocumntVersionList">
+                    </tbody>
 
-				</table>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
-		</div>
-	</div>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
 </div>
 
 
 <!-- Modal -->
 <div class="modal fade" id="AddNewVersionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-	 aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form id="formAddDocumentVersion" role="form" enctype="multipart/form-data">
-					<input id="DocumentId" name="DocumentId" class="form-control" type="hidden" />
-					<div class="form-body">
-						<div class="row p-t-20">
-							<!-- <div class="col-md-12">
-								<div class="form-group">
-									<label>Document Code</label>
-									<input name="DocumentCode" class="form-control" value=""/>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Tile</label>
-									<input name="Tile" class="form-control" value=""/>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Description</label>
-									<textarea name="Description" class="form-control ckeditor" value=""></textarea>
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddDocumentVersion" role="form" enctype="multipart/form-data">
+                    <input id="DocumentId" name="DocumentId" class="form-control" type="hidden" />
+                    <div class="form-body">
+                        <div class="row p-t-20">
+                            <!-- <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Document Code</label>
+                                    <input name="DocumentCode" class="form-control" value=""/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Tile</label>
+                                    <input name="Tile" class="form-control" value=""/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea name="Description" class="form-control ckeditor" value=""></textarea>
 
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Group</label>
-									<input name="Group" class="form-control" value=""/>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Url</label>
-									<input name="Url" class="form-control" value=""/>
-								</div>
-							</div> -->
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Is Major version</label>
-									<input type="checkbox" name="IsMajorVersion" />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Comments</label>
-									<textarea name="Comments" class="form-control ckeditor" value=""></textarea>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>File</label>
-									<input id="NewVersionFileInput" name="File" class="dropify" type="file" required />
-								</div>
-							</div>
-						</div>
-					</div>
-					<button type="submit" class="btn btn-primary">Save changes</button>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
-		</div>
-	</div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Group</label>
+                                    <input name="Group" class="form-control" value=""/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Url</label>
+                                    <input name="Url" class="form-control" value=""/>
+                                </div>
+                            </div> -->
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Is Major version</label>
+                                    <input type="checkbox" name="IsMajorVersion" />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Comments</label>
+                                    <textarea name="Comments" class="form-control ckeditor" value=""></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>File</label>
+                                    <input id="NewVersionFileInput" name="File" class="dropify" type="file" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -248,243 +253,264 @@
 
 @section Scripts
 {
-	<script type="text/javascript">
+    <script type="text/javascript">
 
         const toast = new ToastNotifier();
 
-		$(document).ready(function () {
-			AddListDocumentType();
-			GetAllDocuments();
-		});
-        
-		function AddListDocumentType() {
+        $(document).ready(function() {
+            AddListDocumentType();
+            GetAllDocuments();
+        });
 
-			$.ajax({
-				url: '/DocumentTypes/GetAllDocumetTypesAsync',
-				method: 'get',
-				contentType: "application/json; charset=utf-8",
-				success: function (data) {
-					if (data.is_success) {
+        function AddListDocumentType() {
 
-						$(".dropdown-menu").empty();
-						$.each(data.result, function (index, value) {
+            $.ajax({
+                url: '/DocumentTypes/GetAllDocumetTypesAsync',
+                method: 'get',
+                contentType: "application/json; charset=utf-8",
+                success: function(data) {
+                    if (data.is_success) {
 
-							var html = `<a class="dropdown-item" href="#" onclick="addNewDocument('${value.id}','${value.code}')" >${value.name}</a>`;
-							$(".dropdown-menu").append(html)
-						});
-					}
-					else {
-						toast.notifyErrorList(data.error_keys);
-					}
-				},
-				error: function (error) {
-					console.log(error);
-				}
-			});
-		}
+                        $(".dropdown-menu").empty();
+                        $.each(data.result,
+                            function(index, value) {
 
-		function addNewDocument(DocumentTypeId, typeCode) {
-			if (typeCode == 3) {
-				$("#UrlDocument").show();
-				$("#UrlDocumentInput").attr('required', 'required');
+                                var html =
+                                    `<a class="dropdown-item" href="#" onclick="addNewDocument('${value.id}','${value
+                                        .code}')" >${value.name}</a>`;
+                                $(".dropdown-menu").append(html)
+                            });
+                    } else {
+                        toast.notifyErrorList(data.error_keys);
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
 
-				$("#FileInputDocument").hide();
-				$("#fileinput").removeAttr("required");
-			}
-			else {
-				$("#FileInputDocument").show();
-				$("#fileinput").attr('required', 'required');
+        function addNewDocument(DocumentTypeId, typeCode) {
+            if (typeCode == 3) {
+                $("#UrlDocument").show();
+                $("#UrlDocumentInput").attr('required', 'required');
 
-				$("#UrlDocument").hide();
-				$("#UrlDocumentInput").removeAttr("required");
-			}
+                $("#FileInputDocument").hide();
+                $("#fileinput").removeAttr("required");
+            } else {
+                $("#FileInputDocument").show();
+                $("#fileinput").attr('required', 'required');
 
-			$('#AddDocumentModal').modal('show');
-			$("#DocumentTypeId").val(DocumentTypeId);
-		}
+                $("#UrlDocument").hide();
+                $("#UrlDocumentInput").removeAttr("required");
+            }
 
-		function AddNewDocumntVersions(documentId) {
-			$('#AddNewVersionModal').modal('show');
-			$("#DocumentId").val(documentId);
-		}
+            $('#AddDocumentModal').modal('show');
+            $("#DocumentTypeId").val(DocumentTypeId);
+        }
 
-		function getDocumntVersions(documentId) {
-			$.ajax({
-				url: '/Documents/GetAllDocumentVersion',
-				method: 'get',
-				contentType: "application/json; charset=utf-8",
-				data: { documentId: documentId },
-				success: function (data) {
-					if (data.is_success) {
+        function AddNewDocumntVersions(documentId) {
+            $('#AddNewVersionModal').modal('show');
+            $("#DocumentId").val(documentId);
+        }
 
-						$("#DocumntVersionList").empty();
-						$('#ShowDocumentVersions').modal('show');
+        function getDocumntVersions(documentId) {
+            $.ajax({
+                url: '/Documents/GetAllDocumentVersion',
+                method: 'get',
+                contentType: "application/json; charset=utf-8",
+                data: { documentId: documentId },
+                success: function(data) {
+                    if (data.is_success) {
 
-						$.each(data.result, function (index, value) {
-							var html =
-								`<tr>
-										<td>${value.document.title}</td>"
-										<td> ${value.comments}</td>
-										<td><a href="#" onclick ="downloadFile('${value.fileStorageId}')">${value.fileName}</a></td>
-										<td>${ value.versionNumber.toFixed(1)}</td>`;
-							$("#DocumntVersionList").append(html);
-						});
-					}
-					else {
-						toast.notifyErrorList(data.error_keys);
-					}
+                        $("#DocumntVersionList").empty();
+                        $('#ShowDocumentVersions').modal('show');
 
-				},
-				error: function (error) {
-					console.log(error);
-				}
-			});
-		}
+                        $.each(data.result,
+                            function(index, value) {
+                                var html =
+                                    `<tr>
+                                                    <td>${value.document.title}</td>"
+                                                    <td> ${value.comments}</td>
+                                                    <td><a href="#" onclick ="downloadFile('${value.fileStorageId
+                                        }')">${
+                                        value.fileName}</a></td>
+                                                    <td>${value.versionNumber.toFixed(1)}</td>`;
+                                $("#DocumntVersionList").append(html);
+                            });
+                    } else {
+                        toast.notifyErrorList(data.error_keys);
+                    }
 
-		function downloadFile(fileId) {
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
 
-			alert(fileId);
-			if (fileId != null && fileId != 'null')
-				window.location.href = '/api/File/' + "GetFile?id=" + fileId;
-		}
+        function downloadFile(fileId) {
 
-		function GetAllDocuments() {
+            alert(fileId);
+            if (fileId != null && fileId != 'null')
+                window.location.href = '/api/File/' + "GetFile?id=" + fileId;
+        }
 
-			//const dbService = new DataInjector();
-			//var listDocumetId = [];
-			//const filters = [{
-			//	parameter: "RequirementId",
-			//	criteria: "equals",
-			//	value: requiredId
-			//}];
+        function GetAllDocuments() {
+
+            $.ajax({
+                type: "Get",
+                url: '/Documents/GetAllDocuments',
+                method: 'get',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.is_success) {
+                        $("#tableListDocuments").empty();
+                        $.each(data.result,
+                            function(index, value) {
+
+                                var html =
+                                    `<tr>
+                                                    <td>
+                                                        <div class="checkbox-container">
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" class="custom-control-input checkedDocumentsToDelete" id="${
+                                        value.id}"/>
+                                                                <label class="custom-control-label" for="${value.id
+                                        }"></label>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td> ${value.title}</td>
+                                                    <td>${value.description}</td>
+                                                    <td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
+                                        }" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
+                                        .documentType.code ==
+                                        3
+                                        ? value.lastUrl
+                                        : value.fileName}</a></td>
+                                                    <td>${value.group}</td>
+                                                    <td>${value.documentType.name}</td>
+                                                    <td> ${value.lastVersion}</td>
+                                                    <td><button type="button" class="btn btn-light" onclick ="getDocumntVersions('${
+                                        value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
+                                        }>All version</button>
+                                                        <button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${
+                                        value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
+                                        }>New version</button></td>
+                                                    </tr>`;
+                                $("#tableListDocuments").append(html);
+                            });
+                    } else {
+                        toast.notifyErrorList(data.error_keys);
+                    }
+
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        $("#formAddDocumentVersion").submit(function(e) {
+            var formData = new FormData();
+            var file = $('#NewVersionFileInput')[0].files[0];
+            formData.append('file', file);
+
+            $.each($(this).serializeArray(),
+                function(i, input) {
+                    formData.append(input.name, input.value);
+                });
+
+            console.log(formData);
+
+            $.ajax({
+                type: "POST",
+                processData: false,
+                contentType: false,
+                url: "/Documents/AddNewDocumentVersion",
+                data: formData,
+                success: function(data) {
+                    if (data.is_success) {
+
+                        GetAllDocuments();
+                        toast.notifySuccess("Save succes");
+                        $('#AddNewVersionModal').modal('hide');
+                        $("#formAddDocumentVersion").trigger('reset');
+                    } else {
+                        toast.notifyErrorList(data.error_keys);
+                    }
+                }
+            });
+
+            return false;
+        });
+
+        $("#formAddDocument").submit(function(e) {
+
+            var formData = new FormData();
+            var file = $('#fileinput')[0].files[0];
+            formData.append('file', file);
+
+            $.each($(this).serializeArray(),
+                function(i, input) {
+                    formData.append(input.name, input.value)
+                });
+
+            $.ajax({
+                type: "POST",
+                processData: false,
+                contentType: false,
+                url: "/Documents/Create",
+                data: formData,
+                success: function(data) {
+                    if (data.is_success) {
+                        GetAllDocuments();
+                        toast.notifySuccess("Save succes");
+                        $('#AddDocumentModal').modal('hide');
+                        $("#formAddDocument").trigger('reset');
+
+                    } else {
+                        toast.notifyErrorList();
+                    }
+                }
+            });
+
+            return false;
+        });
 
 
-			// dbService.getAllWhereWithIncludesAsync("RequirementDocuments", filters).then(response => {
-			//	if (response.is_success) {
-			//		console.log(response);
-			//		if (response.result.length > 0) {
-			//			$.each(response.result, function (i, input) {
-			//				listDocumetId.push(input.documentId);
-			//			});
-			//		}
-			//	} else {
-			//		toast.notifyErrorList(response.error_keys);
-			//	}
-			//}).catch(e => {
-			//	toast.notifyErrorList(e);
-			//});
+        function getAllChechedDeleteDocuments() {
 
+            var listDocumetId = [];
+            $('input:checkbox.checkedDocumentsToDelete').each(function() {
 
-			//console.log(listDocumetId);
-			//const model = {
-			//	listDocumetId: listDocumetId,
-			//};
+                if ($(this).is(':checked'))
+                    listDocumetId.push($(this).attr('id'));
 
-			//if (listDocumetId.length > 0) {
-			$.ajax({
-				type: "Get",
-				url: '/Documents/GetAllDocuments',
-				method: 'get',
-				dataType: 'json',
-				success: function (data) {
-					if (data.is_success) {
-						$("#tableListDocuments").empty();
-						$.each(data.result, function (index, value) {
+            });
 
-							var html =
-								`<tr>
-										<td> ${value.title}</td>
-										<td>${ value.description}</td>
-										<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value.documentType.code == 3 ? value.lastUrl : value.fileName}</a></td>
-										<td>${ value.group}</td>
-										<td>${ value.documentType.name}</td>
-										<td> ${value.lastVersion}</td>
-										<td><button type="button" class="btn btn-light" onclick ="getDocumntVersions('${value.id}')" ${value.documentType.code == 1 ? "" : "disabled"}>All version</button>
-											<button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${value.id}')" ${value.documentType.code == 1 ? "" : "disabled"}>New version</button></td>
-										</tr>`;
-							$("#tableListDocuments").append(html);
-						});
-					}
-					else {
-						toast.notifyErrorList(data.error_keys);
-					}
+            if (listDocumetId.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '/Documents/DeleteDocumnetsByListIdAsync',
+                    method: 'post',
+                    data: { listDocumetId: listDocumetId },
+                    success: function(data) {
+                        if (data.is_success) {
+                            GetAllDocuments();
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
 
-				},
-				error: function (error) {
-					console.log(error);
-				}
-			});
-			//}
-		}
+           
+        }
 
-		$("#formAddDocumentVersion").submit(function (e) {
-			var formData = new FormData();
-			var file = $('#NewVersionFileInput')[0].files[0];
-			formData.append('file', file);
-
-			$.each($(this).serializeArray(), function (i, input) {
-				formData.append(input.name, input.value);
-			});
-
-			console.log(formData);
-
-			$.ajax({
-				type: "POST",
-				processData: false,
-				contentType: false,
-				url: "/Documents/AddNewDocumentVersion",
-				data: formData,
-				success: function (data) {
-					if (data.is_success) {
-
-						GetAllDocuments();
-						toast.notifySuccess("Save succes");
-						$('#AddNewVersionModal').modal('hide');
-						$("#formAddDocumentVersion").trigger('reset');
-					}
-					else {
-						toast.notifyErrorList(data.error_keys);
-					}
-				}
-			});
-
-			return false;
-		});
-
-		$("#formAddDocument").submit(function (e) {
-
-			var formData = new FormData();
-			var file = $('#fileinput')[0].files[0];
-			formData.append('file', file);
-
-			$.each($(this).serializeArray(), function (i, input) {
-				formData.append(input.name, input.value)
-			});
-
-			$.ajax({
-				type: "POST",
-				processData: false,
-				contentType: false,
-				url: "/Documents/Create",
-				data: formData,
-				success: function (data) {
-					if (data.is_success) {
-						GetAllDocuments();
-						toast.notifySuccess("Save succes");
-						$('#AddDocumentModal').modal('hide');
-						$("#formAddDocument").trigger('reset');
-
-					}
-					else {
-						toast.notifyErrorList();
-					}
-				}
-			});
-
-			return false;
-		});
-
-	</script>
+    </script>
 }
 
 

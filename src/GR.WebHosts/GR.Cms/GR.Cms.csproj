@@ -136,6 +136,12 @@
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
+	<Content Update="Views\Documents\Create.cshtml">
+	  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	</Content>
+	<Content Update="Views\Documents\Index.cshtml">
+	  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	</Content>
   </ItemGroup>
   <ItemGroup>
     <None Update="Certificates\samplempass.pfx">
