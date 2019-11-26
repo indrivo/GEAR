@@ -160,11 +160,14 @@ namespace GR.Core.Events
             Application.OnApplicationStarted += EventHandlers.OnApplicationStartedHandler;
             Application.OnApplicationStopped += EventHandlers.OnApplicationStoppedHandler;
             Application.OnEvent += EventHandlers.OnEventHandler;
+            Database.OnMigrateComplete += EventHandlers.OnMigrationCompleteHandler;
 
             //register event group
             Common.RegisterEventGroup(nameof(Application), GetEvents(typeof(Application)));
             Common.RegisterEventGroup(nameof(Database), GetEvents(typeof(Database)));
         }
+
+        #region Helpers
 
         /// <summary>
         /// Invoke events
@@ -220,5 +223,7 @@ namespace GR.Core.Events
 
             return type?.GetProperties().Select(x => x.Name);
         }
+
+        #endregion
     }
 }

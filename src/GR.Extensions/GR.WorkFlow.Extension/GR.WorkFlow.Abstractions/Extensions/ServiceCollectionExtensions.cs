@@ -12,7 +12,5 @@ namespace GR.WorkFlows.Abstractions.Extensions
             IoC.RegisterTransientService<IWorkFlowService, TService>();
             return services;
         }
-
-        
     }
 }

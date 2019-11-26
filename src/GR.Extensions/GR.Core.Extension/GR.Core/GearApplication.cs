@@ -2,8 +2,18 @@
 
 namespace GR.Core
 {
-    public class GearApplication
+    public abstract class GearApplication
     {
+        /// <summary>
+        /// Is configured
+        /// </summary>
+        protected static bool ConfigurationsApplied { get; set; }
+
+        /// <summary>
+        /// Is configured
+        /// </summary>
+        public static bool Configured => ConfigurationsApplied;
+
         /// <summary>
         /// App host
         /// </summary>
@@ -28,6 +38,10 @@ namespace GR.Core
         /// <returns></returns>
         public static TConfiguration GetConfiguration<TConfiguration>() => (TConfiguration)GlobalAppConfiguration;
 
+        /// <summary>
+        /// Check platform host
+        /// </summary>
+        /// <returns></returns>
         public static bool IsHostedOnLinux() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
     }
 }

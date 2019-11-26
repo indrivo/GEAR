@@ -27,19 +27,20 @@ namespace GR.MobilPay.Abstractions.Extensions
                 Description = "mobilPay was developed for companies to facilitate payments between merchants and their customers. I understand that these transactions processed by a third party have their own needs and we have developed the mobilePay platform keeping in mind your needs."
             });
             services.AddTransient<IMobilPayPaymentMethod, TMobilPayProvider>();
-            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
-            {
-                var context = IoC.Resolve<IPaymentContext>();
+            SystemEvents.Database.OnSeed += async (sender, args) =>
+             {
+                 if (!(args.DbContext is IPaymentContext)) return;
+                 var context = IoC.Resolve<IPaymentContext>();
 
-                if (context.PaymentMethods.Any(x => x.Name == "MobilPay")) return;
-                var paymentMethod = new PaymentMethod
-                {
-                    Name = "MobilPay",
-                    IsEnabled = false
-                };
-                await context.PaymentMethods.AddAsync(paymentMethod);
-                await context.PushAsync();
-            };
+                 if (context.PaymentMethods.Any(x => x.Name == "MobilPay")) return;
+                 var paymentMethod = new PaymentMethod
+                 {
+                     Name = "MobilPay",
+                     IsEnabled = false
+                 };
+                 await context.PaymentMethods.AddAsync(paymentMethod);
+                 await context.PushAsync();
+             };
 
             return services;
         }

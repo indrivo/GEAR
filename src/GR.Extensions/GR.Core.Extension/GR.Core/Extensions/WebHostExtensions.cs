@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
+using GR.Core.Events;
+using GR.Core.Events.EventArgs.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,7 +27,7 @@ namespace GR.Core.Extensions
 
         public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost, Action<TContext, IServiceProvider> seeder) where TContext : DbContext
         {
-            var underK8s = webHost.IsInKubernetes();
+            var underK8S = webHost.IsInKubernetes();
 
             using (var scope = webHost.Services.CreateScope())
             {
@@ -39,14 +41,14 @@ namespace GR.Core.Extensions
                 {
                     logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
 
-                    if (underK8s)
+                    if (underK8S)
                     {
                         InvokeSeeder(seeder, context, services);
                     }
                     else
                     {
                         var retry = Policy.Handle<SqlException>()
-                             .WaitAndRetry(new TimeSpan[]
+                             .WaitAndRetry(new[]
                              {
                              TimeSpan.FromSeconds(3),
                              TimeSpan.FromSeconds(5),
@@ -58,6 +60,12 @@ namespace GR.Core.Extensions
                         //apply to transient exceptions
                         // Note that this is NOT applied when running some orchestrators (let the orchestrator to recreate the failing service)
                         retry.Execute(() => InvokeSeeder(seeder, context, services));
+
+                        SystemEvents.Database.MigrateComplete(new DatabaseMigrateEventArgs
+                        {
+                            DbContext = context,
+                            ContextName = context.GetType().Name
+                        });
                     }
 
                     logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(TContext).Name);
@@ -65,7 +73,7 @@ namespace GR.Core.Extensions
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(TContext).Name);
-                    if (underK8s)
+                    if (underK8S)
                     {
                         throw;          // Rethrow under k8s because we rely on k8s to re-run the pod
                     }

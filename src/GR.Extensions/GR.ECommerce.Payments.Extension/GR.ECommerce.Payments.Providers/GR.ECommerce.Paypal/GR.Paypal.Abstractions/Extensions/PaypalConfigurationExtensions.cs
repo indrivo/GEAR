@@ -26,8 +26,9 @@ namespace GR.Paypal.Abstractions.Extensions
                 Description = "Paypal is an American company operating a worldwide online payments"
             });
 
-            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
+            SystemEvents.Database.OnSeed += async (sender, args) =>
             {
+                if (!(args.DbContext is IPaymentContext)) return;
                 var context = IoC.Resolve<IPaymentContext>();
 
                 if (context.PaymentMethods.Any(x => x.Name == "Paypal")) return;

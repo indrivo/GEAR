@@ -108,9 +108,6 @@ namespace GR.Identity.Data
             builder.RegisterIndexes();
         }
 
-        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel
-        {
-            return Set<T>();
-        }
+        public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
     }
 }

@@ -1,17 +1,14 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using GR.Cache.Abstractions;
 using GR.Core.Events;
 using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Seeders;
 using GR.Entities.Abstractions;
 using GR.Entities.Data;
 using GR.Identity.Data;
 using GR.Identity.IdentityServer4;
 using GR.Identity.IdentityServer4.Seeders;
-using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Seeders;
 using GR.Notifications.Abstractions.Seeders;
 using GR.PageRender.Abstractions.Helpers;
@@ -25,11 +22,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core;
-using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Forms.Data;
 using GR.PageRender.Data;
-using GR.Procesess.Data;
 
 namespace GR.WebApplication
 {
@@ -71,7 +66,6 @@ namespace GR.WebApplication
                 {
                     FormDbContextSeeder<FormDbContext>.SeedAsync(context, GearSettings.TenantId).Wait();
                 })
-                .MigrateDbContext<ProcessesDbContext>()
                 .MigrateDbContext<DynamicPagesDbContext>((context, services) =>
                 {
                     DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, GearSettings.TenantId)
@@ -93,8 +87,7 @@ namespace GR.WebApplication
                     IdentityServerConfigDbSeeder.SeedAsync(configurator, context, applicationDbContext, config, env)
                         .Wait();
                 });
-            SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
-            SystemEvents.Database.MigrateComplete(new DatabaseMigrateEventArgs());
+
             return GlobalWebHost;
         }
 
@@ -116,7 +109,8 @@ namespace GR.WebApplication
         public static bool IsConfigured(IHostingEnvironment hostingEnvironment)
         {
             var settings = Settings(hostingEnvironment);
-            return settings != null && settings.IsConfigured;
+            ConfigurationsApplied = settings != null && settings.IsConfigured;
+            return ConfigurationsApplied;
         }
 
         /// <summary>
@@ -163,16 +157,10 @@ namespace GR.WebApplication
                 .CreateScope())
             {
                 var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
-                var service = serviceScope.ServiceProvider.GetService<IDynamicService>();
                 var context = serviceScope.ServiceProvider.GetService<DynamicPagesDbContext>();
-                var cacheService = serviceScope.ServiceProvider.GetService<ICacheService>();
                 if (!IsConfigured(env)) return;
                 await DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(context, GearSettings.TenantId);
                 //Run only if application is configured
-                var permissionService = serviceScope.ServiceProvider.GetService<IPermissionService>();
-                cacheService.FlushAll();
-                await permissionService.RefreshCache();
-                await service.RegisterInMemoryDynamicTypesAsync();
             }
         }
 
