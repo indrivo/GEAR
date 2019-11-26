@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.ECommerce.Payments.Abstractions;
 using GR.MobilPay.Abstractions;
 using GR.MobilPay.Abstractions.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -29,12 +30,18 @@ namespace GR.MobilPay.Razor.Controllers
         /// </summary>
         private readonly IMobilPayPaymentMethod _paymentMethod;
 
+        /// <summary>
+        /// Inject payment service
+        /// </summary>
+        private readonly IPaymentService _paymentService;
+
         #endregion
 
-        public MobilPayController(IOptions<MobilPayConfiguration> options, IMobilPayPaymentMethod paymentMethod)
+        public MobilPayController(IOptions<MobilPayConfiguration> options, IMobilPayPaymentMethod paymentMethod, IPaymentService paymentService)
         {
             _options = options;
             _paymentMethod = paymentMethod;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -63,34 +70,34 @@ namespace GR.MobilPay.Razor.Controllers
         /// Confirm card
         /// </summary>
         /// <returns></returns>
-        [AcceptVerbs("GET", "POST"), AllowAnonymous]
-        public async Task ConfirmCard()
+        [HttpPost, AllowAnonymous]
+        public async Task<IActionResult> ConfirmCard()
         {
-            var errorCode = "0";
-            var errorMessage = "";
-            var errorType = "";
-
+            Response.ContentType = "text/xml";
+            string errorCode;
+            string errorMessage;
+            string errorType;
             if ((HttpContext.Request.Form.ContainsKey("data") == false
-                 || HttpContext.Request.Form["data"] == "")
-                & (HttpContext.Request.Form.ContainsKey("env_key") == false
-                   || HttpContext.Request.Form["env_key"] == ""))
+                    || HttpContext.Request.Form["data"] == "")
+                    & (HttpContext.Request.Form.ContainsKey("env_key") == false
+                    || HttpContext.Request.Form["env_key"] == ""))
             {
 
                 errorType = "0x02";
                 errorCode = "0x300000f5";
                 errorMessage = "mobilpay.ro posted invalid parameters";
             }
+            else
+            {
+                var textXml = HttpContext.Request.Form["data"].ToString();
+                var envKey = HttpContext.Request.Form["env_key"].ToString();
+                var result = await _paymentMethod.ConfirmPaymentAsync(textXml, envKey);
 
-            var textXml = HttpContext.Request.Form["data"].ToString();
-            var envKey = HttpContext.Request.Form["env_key"].ToString();
-            var result = await _paymentMethod.ConfirmPaymentAsync(textXml, envKey);
+                errorType = result.ErrorType;
+                errorCode = result.ErrorCode;
+                errorMessage = result.ErrorMessage;
+            }
 
-            errorType = result.ErrorType;
-            errorCode = result.ErrorCode;
-            errorMessage = result.ErrorMessage;
-
-
-            Response.ContentType = "text/xml";
             var message = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
             if (errorCode == "0")
             {
@@ -102,6 +109,7 @@ namespace GR.MobilPay.Razor.Controllers
             }
 
             await Response.WriteAsync(message);
+            return Ok();
         }
 
         /// <summary>
@@ -109,13 +117,21 @@ namespace GR.MobilPay.Razor.Controllers
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        [HttpGet, AllowAnonymous]
-        public IActionResult ReturnCard(Guid? orderId)
+        [HttpGet]
+        public async Task<IActionResult> ReturnCard(Guid? orderId)
         {
-            return RedirectToAction("Success", "Checkout", new
-            {
-                OrderId = orderId
-            });
+            var isPayedRequest = await _paymentService.IsOrderPayedAsync(orderId);
+
+            if (isPayedRequest.IsSuccess)
+                return RedirectToAction("Success", "Checkout", new
+                {
+                    OrderId = orderId
+                });
+            else
+                return RedirectToAction("Fail", "Checkout", new
+                {
+                    OrderId = orderId
+                });
         }
     }
 }

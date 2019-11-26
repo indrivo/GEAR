@@ -328,14 +328,10 @@ namespace GR.TaskManager.Services
         private async Task<string> GenerateTaskNumberAsync()
         {
             const string number = "00001";
-            var task = await _context.Tasks.LastOrDefaultAsync();
-            if (task != null)
-            {
-                var lastNumber = task.TaskNumber.IsNumeric() ? int.Parse(task.TaskNumber) : 99900;
-                return $"{++lastNumber:00000}";
-            }
-
-            return number;
+            var taskNumber = await _context.Tasks.MaxAsync(x => x.TaskNumber);
+            if (taskNumber.IsNullOrEmpty()) return number;
+            var lastNumber = taskNumber.IsNumeric() ? int.Parse(taskNumber) : int.Parse(number);
+            return $"{++lastNumber:00000}";
         }
 
         #endregion

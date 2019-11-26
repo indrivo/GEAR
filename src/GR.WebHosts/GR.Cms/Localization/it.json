@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Corso",
   "system_taskmanager_status": "Stato",
   "system_taskmanager_actions": "Azioni",
-  "system_taskmanager_are_you_sure": "Sei sicuro di voler eliminare compito",
+  "system_taskmanager_are_you_sure": "Sei sicuro?",
   "system_taskmanager_yes": "Sì",
   "system_taskmanager_no": "No",
   "system_taskmanager_task_items": "Elementi di attività",
@@ -779,5 +779,17 @@
   "system_signature": "Firma",
   "system_public_key": "Chiave pubblica",
   "system_private_key": "Chiave privata",
-  "system_payment_methods": "Metodi di pagamento"
+  "system_payment_methods": "Metodi di pagamento",
+  "user_postal_code": "Codice postale",
+  "system_cancel_order": "Annullare l'ordine",
+  "system_payment": "Pagamento",
+  "system_billing_address": "Indirizzo Di Fatturazione",
+  "system_commerce_retry": "Riprova",
+  "system_commerce_payment_failed": "Pagamento non riuscito!",
+  "system_commerce_amount_paid": "Importo pagato",
+  "commerce_no_registered_payment_providers": "Non vi era alcuna traccia di un provider di pagamento",
+  "system_commerce_payment_success": "Pagamento di successo!",
+  "system_commerce_email_sent": "E-mail inviata!",
+  "commerce_my_subscriptions": "I miei abbonamenti",
+  "system_taskmanager_are_you_sure_text": "Sei sicuro di voler eliminare compito "
 }

@@ -346,7 +346,9 @@ namespace GR.DynamicEntityStorage
             if (!await _entityRoleAccessManager.HaveReadAccessAsync(table.Id)) return new AccessDeniedResult<IEnumerable<Dictionary<string, object>>>();
             result.IsSuccess = true;
             var model = await CreateEntityDefinition<EntityViewModel>(entity, schema);
-            model.Values = GetFilters(filters);
+            var enumeratedFilters = filters?.ToList() ?? new List<Filter>();
+            model.Values = GetFilters(enumeratedFilters);
+            model.Filters = enumeratedFilters.ToList();
             var data = _context.ListEntitiesByParams(model);
             if (expression != null) data.Result.Values = data.Result.Values.Where(expression.Compile()).ToList();
             result.Result = data.Result.Values;

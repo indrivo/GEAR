@@ -9,6 +9,7 @@ using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using GR.Paypal.Abstractions;
@@ -49,15 +50,26 @@ namespace GR.Paypal
         /// </summary>
         private readonly IUserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Inject user address
+        /// </summary>
+        private readonly IUserAddressService _userAddressService;
+
         #endregion
 
-        public PaypalPaymentMethodService(IHttpClientFactory httpClientFactory, IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions, IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<ApplicationUser> userManager)
+        public PaypalPaymentMethodService(IHttpClientFactory httpClientFactory,
+            IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions,
+            IOrderProductService<Order> orderProductService,
+            IPaymentService paymentService,
+            IUserManager<ApplicationUser> userManager,
+            IUserAddressService userAddressService)
         {
             _httpClientFactory = httpClientFactory;
             _payPalOptions = payPalOptions;
             _orderProductService = orderProductService;
             _paymentService = paymentService;
             _userManager = userManager;
+            _userAddressService = userAddressService;
         }
 
         /// <summary>
@@ -71,66 +83,95 @@ namespace GR.Paypal
             var orderRequest = await _orderProductService.GetOrderByIdAsync(orderId);
             if (!orderRequest.IsSuccess)
             {
-                return new ResponsePaypal { Message = "Order not Found", IsSuccess = false };
+                return new ResponsePaypal
+                {
+                    Message = "Order not Found",
+                    IsSuccess = false
+                };
             }
 
             var isPayedRequest = await _paymentService.IsOrderPayedAsync(orderId);
             if (isPayedRequest.IsSuccess)
             {
-                return new ResponsePaypal { Message = "Order was payed before, Check your orders", IsSuccess = false };
+                return new ResponsePaypal
+                {
+                    Message = "Order was payed before, Check your orders",
+                    IsSuccess = false
+                };
             }
 
             var order = orderRequest.Result;
+            var addressRequest = await _userAddressService.GetAddressByIdAsync(order.BillingAddress);
+            var address = addressRequest.IsSuccess ? addressRequest.Result : new Address();
+            var user = await _userManager.UserManager.FindByIdAsync(order.UserId.ToString());
 
-            var accessToken = await GetAccessToken();
+            var accessToken = await GetAccessTokenAsync();
 
             if (string.IsNullOrEmpty(accessToken))
             {
                 return new ResponsePaypal { Message = "No access token", IsSuccess = false };
             }
 
+            var shippingAddress = new ShippingAddress
+            {
+                City = address.StateOrProvince?.Name,
+                CountryCode = address.Country?.Id,
+                Phone = address.Phone,
+                Line1 = address.AddressLine1,
+                Line2 = address.AddressLine2,
+                PostalCode = address.ZipCode,
+                RecipientName = $"{user?.UserFirstName} {user?.UserLastName}"
+            };
+
             using (var httpClient = new HttpClient())
             {
                 var experienceProfileId = await CreateExperienceProfileAsync(accessToken);
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                //TODO: Apply payment fee
+                var unused = CalculatePaymentFee(order.Total);
                 var paymentCreateRequest = new PaymentCreateRequest
                 {
-                    experience_profile_id = experienceProfileId,
-                    intent = "sale",
-                    payer = new Payer
+                    ExperienceProfileId = experienceProfileId,
+                    Intent = "sale",
+                    Payer = new Payer
                     {
-                        payment_method = "paypal"
+                        PaymentMethod = "paypal"
                     },
-                    transactions = new[]
+                    Transactions = new[]
                     {
                         new Transaction
                         {
-                            amount = new Amount
+                            Amount = new Amount
                             {
-                                total = (order.Total + 0.11m).ToString("N2"),
-                                currency = "USD",
-                                details = new Details
+                                Total = (order.Total + 0.11m).ToString("N2"),
+                                Currency = order.Currency?.Code,
+                                Details = new Details
                                 {
-                                    subtotal =  order.Total.ToString("N2"),
-                                    tax = "0.07",
-                                    shipping = "0.03",
-                                    handling_fee = "1.00",
-                                    shipping_discount = "-1.00",
-                                    insurance = "0.01"
+                                    Subtotal =  order.Total.ToString("N2"),
+                                    Tax = "0.07",
+                                    Shipping = "0.03",
+                                    HandlingFee  = "1.00",
+                                    ShippingDiscount = "-1.00",
+                                    Insurance = "0.01"
                                 }
+                            },
+                            Items = new ItemList
+                            {
+                                ShippingAddress = shippingAddress
                             }
                         }
                     },
-                    redirect_urls = new Redirect_Urls
+                    RedirectUrls = new RedirectUrls
                     {
-                        cancel_url = $"{hostingDomain}/Paypal/Cancel",
-                        return_url = $"{hostingDomain}/Paypal/Success"
-                    }
+                        CancelUrl = $"{hostingDomain}/Paypal/Cancel",
+                        ReturnUrl = $"{hostingDomain}/Paypal/Success"
+                    },
+                    Notes = order.Notes
                 };
-
-                var response = await httpClient.PostJsonAsync(
-                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment",
-                    paymentCreateRequest);
+                var serializedData = paymentCreateRequest.SerializeAsJson();
+                var content = new StringContent(serializedData, Encoding.UTF8, "application/json");
+                var response = await httpClient.PostAsync(
+                    $"https://api{_payPalOptions.Value.EnvironmentUrlPart}.paypal.com/v1/payments/payment", content);
 
                 var responseBody = await response.Content.ReadAsStringAsync();
                 dynamic payment = JObject.Parse(responseBody);
@@ -163,7 +204,7 @@ namespace GR.Paypal
                 return new ResponsePaypal { Message = "Order not Found", IsSuccess = false };
             }
             var order = orderRequest.Result;
-            var accessToken = await GetAccessToken();
+            var accessToken = await GetAccessTokenAsync();
 
             using (var httpClient = new HttpClient())
             {
@@ -181,7 +222,8 @@ namespace GR.Paypal
                     GatewayTransactionId = model.PaymentId,
                     PaymentStatus = PaymentStatus.Failed,
                     Total = order.Total,
-                    UserId = userRequest.Result.Id.ToGuid()
+                    UserId = userRequest.Result.Id.ToGuid(),
+                    FailureMessage = responseBody
                 };
 
                 if (response.IsSuccessStatusCode)
@@ -199,7 +241,6 @@ namespace GR.Paypal
 
                 await _orderProductService.ChangeOrderStateAsync(model.OrderId, OrderState.PaymentFailed);
                 payment.PaymentStatus = PaymentStatus.Failed;
-                payment.FailureMessage = responseBody;
                 await _paymentService.AddPaymentAsync(model.OrderId, payment);
 
                 string errorName = responseObject.name;
@@ -212,7 +253,7 @@ namespace GR.Paypal
         /// Get access token
         /// </summary>
         /// <returns></returns>
-        private async Task<string> GetAccessToken()
+        private async Task<string> GetAccessTokenAsync()
         {
             var httpClient = _httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(

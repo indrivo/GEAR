@@ -1,9 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
     public class VariationViewModel
     {
+        /// <summary>
+        /// Variation id
+        /// </summary>
+        public virtual Guid Id { get; set; }
+
         /// <summary>
         /// Options
         /// </summary>

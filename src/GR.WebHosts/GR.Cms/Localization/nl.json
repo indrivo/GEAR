@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Vooruitgang",
   "system_taskmanager_status": "Status",
   "system_taskmanager_actions": "Acties",
-  "system_taskmanager_are_you_sure": "Weet u zeker dat u wilt verwijderen taak",
+  "system_taskmanager_are_you_sure": "Bent u zeker?",
   "system_taskmanager_yes": "Ja",
   "system_taskmanager_no": "Geen",
   "system_taskmanager_task_items": "Taak-items",
@@ -779,5 +779,17 @@
   "system_signature": "Handtekening",
   "system_public_key": "Publieke sleutel",
   "system_private_key": "Eigen sleutel",
-  "system_payment_methods": "Betaalmethoden"
+  "system_payment_methods": "Betaalmethoden",
+  "user_postal_code": "Postcode",
+  "system_cancel_order": "Bestelling annuleren",
+  "system_payment": "Betaling",
+  "system_billing_address": "Facturatie Adres",
+  "system_commerce_retry": "Probeer opnieuw",
+  "system_commerce_payment_failed": "De betaling is mislukt!",
+  "system_commerce_amount_paid": "Bedrag",
+  "commerce_no_registered_payment_providers": "Er was geen record van een payment provider",
+  "system_commerce_payment_success": "Betaling geslaagd!",
+  "system_commerce_email_sent": "E-mail verzonden!",
+  "commerce_my_subscriptions": "Mijn abonnementen",
+  "system_taskmanager_are_you_sure_text": "Weet u zeker dat u wilt verwijderen taak "
 }

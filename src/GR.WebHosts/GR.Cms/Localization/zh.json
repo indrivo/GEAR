@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "进展",
   "system_taskmanager_status": "状态",
   "system_taskmanager_actions": "行动",
-  "system_taskmanager_are_you_sure": "你确定要删除的任务",
+  "system_taskmanager_are_you_sure": "你确定吗？",
   "system_taskmanager_yes": "是的",
   "system_taskmanager_no": "没有",
   "system_taskmanager_task_items": "任务项目",
@@ -779,5 +779,17 @@
   "system_signature": "签名",
   "system_public_key": "公共密钥",
   "system_private_key": "私人钥匙",
-  "system_payment_methods": "支付方式"
+  "system_payment_methods": "支付方式",
+  "user_postal_code": "邮政编码",
+  "system_cancel_order": "取消订单",
+  "system_payment": "付款",
+  "system_billing_address": "帐单的地址",
+  "system_commerce_retry": "试",
+  "system_commerce_payment_failed": "支付失败了！",
+  "system_commerce_amount_paid": "支付的金额",
+  "commerce_no_registered_payment_providers": "有没有记录的付款提供者",
+  "system_commerce_payment_success": "支付成功的！",
+  "system_commerce_email_sent": "电子邮件发送！",
+  "commerce_my_subscriptions": "我订阅",
+  "system_taskmanager_are_you_sure_text": "你确定要删除的任务 "
 }

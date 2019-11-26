@@ -12,6 +12,8 @@ using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GR.ECommerce.Razor.Controllers
 {
@@ -29,6 +31,16 @@ namespace GR.ECommerce.Razor.Controllers
         /// Inject payment service
         /// </summary>
         private readonly IPaymentService _paymentService;
+        #endregion
+
+        #region Helpers
+
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
         #endregion
 
         /// <summary>
@@ -89,12 +101,14 @@ namespace GR.ECommerce.Razor.Controllers
         /// <summary>
         /// Create order
         /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
         /// <returns></returns>
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
-        public async Task<IActionResult> CreateOrderFromPlan([Required]Guid? productId)
+        public async Task<IActionResult> CreateOrderForPlanSubscription([Required]Guid? productId, [Required]Guid? variationId)
         {
-            var createOrderRequest = await _orderProductService.CreateOrderAsync(productId);
+            var createOrderRequest = await _orderProductService.CreateOrderAsync(productId, variationId);
             return Json(createOrderRequest);
         }
 
@@ -119,7 +133,7 @@ namespace GR.ECommerce.Razor.Controllers
         [HttpPost, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(DTResult<Order>))]
         public virtual async Task<JsonResult> GetMyOrdersWithPagination(DTParameters param)
-            => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param));
+            => Json(await _orderProductService.GetMyOrdersWithPaginationWayAsync(param), SerializerSettings);
 
         /// <summary>
         /// Get orders with pagination
@@ -129,7 +143,7 @@ namespace GR.ECommerce.Razor.Controllers
         [HttpPost, Route("api/[controller]/[action]"), Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
         [Produces("application/json", Type = typeof(DTResult<Order>))]
         public virtual JsonResult GetAllOrdersWithPagination(DTParameters param)
-            => Json(_orderProductService.GetAllOrdersWithPaginationWay(param));
+            => Json(_orderProductService.GetAllOrdersWithPaginationWay(param), SerializerSettings);
 
         /// <summary>
         /// Get orders count
@@ -138,19 +152,19 @@ namespace GR.ECommerce.Razor.Controllers
         [HttpGet, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, int>>))]
         public virtual async Task<JsonResult> GetOrdersGraphInfo() =>
-            Json(await _orderProductService.GetOrdersCountForOrderStatesAsync());
+            Json(await _orderProductService.GetOrdersCountForOrderStatesAsync(), SerializerSettings);
 
 
         /// <summary>
         /// Get all orders
         /// </summary>
         /// <returns></returns>
-        [HttpDelete, Route("api/[controller]/[action]")]
+        [HttpGet, Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<Order>>))]
         public async Task<JsonResult> GetAllOrders()
         {
             var ordersRequest = await _orderProductService.GetAllOrdersAsync();
-            return Json(ordersRequest);
+            return Json(ordersRequest, SerializerSettings);
         }
     }
 }

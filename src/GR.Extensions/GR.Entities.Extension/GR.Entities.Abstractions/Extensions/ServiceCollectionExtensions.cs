@@ -85,6 +85,13 @@ namespace GR.Entities.Abstractions.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Add entity module storage
+        /// </summary>
+        /// <typeparam name="TEntityContext"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static IServiceCollection AddEntityModuleStorage<TEntityContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
             where TEntityContext : DbContext, IEntityContext
         {

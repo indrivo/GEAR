@@ -592,7 +592,7 @@
   "system_taskmanager_task_progress": "Прогрес",
   "system_taskmanager_status": "Статус",
   "system_taskmanager_actions": "Дії",
-  "system_taskmanager_are_you_sure": "Ви впевнені, що хочете видалити завдання",
+  "system_taskmanager_are_you_sure": "Ви впевнені?",
   "system_taskmanager_yes": "Так",
   "system_taskmanager_no": "Немає",
   "system_taskmanager_task_items": "Елементи завдання ",
@@ -779,5 +779,17 @@
   "system_signature": "Підпис",
   "system_public_key": "Відкритий ключ",
   "system_private_key": "Закритий ключ",
-  "system_payment_methods": "Способи оплати "
+  "system_payment_methods": "Способи оплати ",
+  "user_postal_code": "Поштовий індекс",
+  "system_cancel_order": "Скасування замовлення",
+  "system_payment": "Оплата",
+  "system_billing_address": "Платіжний Адреса",
+  "system_commerce_retry": "Повторити",
+  "system_commerce_payment_failed": "Платіж не пройшов!",
+  "system_commerce_amount_paid": "Сума, сплачена",
+  "commerce_no_registered_payment_providers": "Не було зафіксовано жодного постачальника виплати",
+  "system_commerce_payment_success": "Успішної оплати!",
+  "system_commerce_email_sent": "Лист відправлено!",
+  "commerce_my_subscriptions": "Мої підписки",
+  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання "
 }

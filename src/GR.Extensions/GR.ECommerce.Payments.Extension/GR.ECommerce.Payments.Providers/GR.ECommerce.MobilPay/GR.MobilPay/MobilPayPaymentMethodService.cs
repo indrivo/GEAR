@@ -9,6 +9,7 @@ using GR.ECommerce.Payments.Abstractions;
 using GR.ECommerce.Payments.Abstractions.Enums;
 using GR.ECommerce.Payments.Abstractions.Models;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Models.AddressModels;
 using GR.MobilPay.Abstractions;
 using GR.MobilPay.Abstractions.Models;
 using GR.MobilPay.Extensions;
@@ -21,14 +22,17 @@ namespace GR.MobilPay
 {
     public class MobilPayPaymentMethodService : IMobilPayPaymentMethod
     {
-        private readonly string _yourCurrency = "USD";
-
         /// <summary>
         /// Configuration
         /// </summary>
         private readonly MobilPayConfiguration _configuration;
 
         #region Injectable
+
+        /// <summary>
+        /// Inject user address service
+        /// </summary>
+        private readonly IUserAddressService _userAddressService;
 
         /// <summary>
         /// Inject order service
@@ -44,14 +48,20 @@ namespace GR.MobilPay
         /// Inject user manager
         /// </summary>
         private readonly IUserManager<ApplicationUser> _userManager;
+
         #endregion
 
 
-        public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService, IPaymentService paymentService, IUserManager<ApplicationUser> userManager, IOptions<MobilPayConfiguration> options)
+        public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService,
+            IPaymentService paymentService,
+            IUserManager<ApplicationUser> userManager,
+            IOptions<MobilPayConfiguration> options,
+            IUserAddressService userAddressService)
         {
             _orderProductService = orderProductService;
             _paymentService = paymentService;
             _userManager = userManager;
+            _userAddressService = userAddressService;
             _configuration = options.Value;
         }
 
@@ -90,6 +100,9 @@ namespace GR.MobilPay
             if (isPayedRequest.IsSuccess) return response;
 
             var order = orderRequest.Result;
+            var addressRequest = await _userAddressService.GetAddressByIdAsync(order.BillingAddress);
+            var address = addressRequest.IsSuccess ? addressRequest.Result : new Address();
+            var user = await _userManager.UserManager.FindByIdAsync(order.UserId.ToString());
 
             try
             {
@@ -109,20 +122,17 @@ namespace GR.MobilPay
                 card.Url = url;
                 card.TimeStamp = DateTime.Now.ToString("yyyyMMddhhmmss");
                 invoice.Amount = order.Total;
-                invoice.Currency = _yourCurrency;
+                invoice.Currency = order.Currency?.Code;
                 invoice.Details = $"#{orderId}";
-                var items = new Mobilpay_Payment_ItemCollection();
-                foreach (var orderItem in order.ProductOrders)
-                {
-                    items.Add(new Mobilpay_Payment_Invoice_Item
-                    {
-                        Name = orderItem.Product.Name,
-                        Price = orderItem.AmountFinalPrice,
-                        Quantity = orderItem.Amount
-                    });
-                }
-                //invoice.Items = items;
 
+                billing.FirstName = user?.UserFirstName;
+                billing.LastName = user?.UserLastName;
+                billing.Email = user?.Email;
+                billing.MobilPhone = address.Phone;
+                billing.Address = address.AddressLine1;
+                billing.ZipCode = address.ZipCode;
+                billing.Country = address.Country?.Name;
+                billing.City = address.StateOrProvince?.Name;
 
                 contactInfo.Billing = billing;
                 shipping.Sameasbilling = "1";
@@ -156,7 +166,10 @@ namespace GR.MobilPay
             var rootPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var filePath = Path.GetFullPath(Path.Combine(rootPath, _configuration.PathToPrivateKey));
 
-            var result = new MobilPayPaymentResponse();
+            var result = new MobilPayPaymentResponse
+            {
+                ErrorCode = "0"
+            };
 
             var encryptDecrypt = new MobilpayEncryptDecrypt.MobilpayEncryptDecrypt();
             var decrypt = new MobilpayDecrypt
@@ -184,22 +197,23 @@ namespace GR.MobilPay
             var payment = new Payment
             {
                 PaymentMethodId = "MobilPay",
-                GatewayTransactionId = "",
+                GatewayTransactionId = orderId.ToString(),
                 PaymentStatus = PaymentStatus.Failed,
                 Total = order.Total,
-                UserId = order.UserId
+                UserId = order.UserId,
+                FailureMessage = card.Card.SerializeAsJson()
             };
-
+            var orderState = order.OrderState;
             switch (card.Confirm.Action)
             {
                 case "confirmed":
                 case "paid":
                     {
-                        var paidAmount = card.Confirm.Original_Amount;
                         result.ErrorMessage = card.Confirm.Crc;
                         if (card.Confirm.Action == "confirmed" && card.Confirm.Error.Code == "0")
                         {
                             payment.PaymentStatus = PaymentStatus.Succeeded;
+                            orderState = OrderState.PaymentReceived;
                         }
                         break;
                     }
@@ -208,11 +222,16 @@ namespace GR.MobilPay
                         result.ErrorType = "0x02";
                         result.ErrorCode = "0x300000f6";
                         result.ErrorMessage = "mobilpay_refference_action paramaters is invalid";
+                        orderState = OrderState.PaymentFailed;
                         break;
                     }
             }
 
-            await _paymentService.AddPaymentAsync(orderId, payment);
+            var addPaymentRequest = await _paymentService.AddPaymentAsync(orderId, payment);
+            if (addPaymentRequest.IsSuccess)
+            {
+                await _orderProductService.ChangeOrderStateAsync(orderId, orderState);
+            }
 
             return result;
         }

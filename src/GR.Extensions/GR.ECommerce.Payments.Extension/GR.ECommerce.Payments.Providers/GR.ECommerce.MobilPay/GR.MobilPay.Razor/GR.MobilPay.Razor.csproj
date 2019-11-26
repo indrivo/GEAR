@@ -33,6 +33,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="libman.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="libman.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
     </Content>

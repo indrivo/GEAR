@@ -28,10 +28,10 @@ using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Abstractions.ViewModels.UserProfileAddress;
 using GR.Identity.LdapAuth.Abstractions;
 using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels;
-using GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileAddress;
 using UserProfileViewModel = GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileViewModel;
 
 namespace GR.Identity.Razor.Users.Controllers
@@ -399,8 +399,8 @@ namespace GR.Identity.Razor.Users.Controllers
                 AuthenticationType = applicationUser.AuthenticationType,
                 TenantId = applicationUser.TenantId,
                 Tenants = ApplicationDbContext.Tenants.AsNoTracking().Where(x => !x.IsDeleted).ToList(),
-                FirstName = applicationUser.FirstName,
-                LastName = applicationUser.LastName
+                FirstName = applicationUser.UserFirstName,
+                LastName = applicationUser.UserLastName
             };
             return View(model);
         }
@@ -475,8 +475,8 @@ namespace GR.Identity.Razor.Users.Controllers
             user.ModifiedBy = User.Identity.Name;
             user.UserName = model.UserName;
             user.TenantId = model.TenantId;
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
+            user.UserFirstName = model.FirstName;
+            user.UserLastName = model.LastName;
 
             if (model.UserPhotoUpdateFile != null)
             {

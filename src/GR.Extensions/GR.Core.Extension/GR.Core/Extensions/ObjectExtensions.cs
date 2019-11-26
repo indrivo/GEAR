@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace GR.Core.Extensions
 {
@@ -11,19 +12,21 @@ namespace GR.Core.Extensions
         /// </summary>
         private static readonly JsonSerializerSettings SerializeSettings = new JsonSerializerSettings
         {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
         /// <summary>
         /// Serialize object
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="serializerSettings"></param>
         /// <returns></returns>
-        public static string Serialize(this object obj)
+        public static string SerializeAsJson(this object obj, JsonSerializerSettings serializerSettings = null)
         {
             try
             {
-                return JsonConvert.SerializeObject(obj, SerializeSettings);
+                return JsonConvert.SerializeObject(obj, serializerSettings ?? SerializeSettings);
             }
             catch (Exception e)
             {
@@ -38,13 +41,15 @@ namespace GR.Core.Extensions
         /// </summary>
         /// <typeparam name="TOutput"></typeparam>
         /// <param name="source"></param>
+        /// <param name="serializerSettings"></param>
         /// <returns></returns>
-        public static TOutput Deserialize<TOutput>(this string source) where TOutput : class
+        public static TOutput Deserialize<TOutput>(this string source, JsonSerializerSettings serializerSettings = null) where TOutput : class
         {
             if (source.IsNullOrEmpty()) return null;
+            if (typeof(TOutput) == typeof(string)) return source as TOutput;
             try
             {
-                return JsonConvert.DeserializeObject<TOutput>(source, SerializeSettings);
+                return JsonConvert.DeserializeObject<TOutput>(source, serializerSettings ?? SerializeSettings);
             }
             catch (Exception e)
             {

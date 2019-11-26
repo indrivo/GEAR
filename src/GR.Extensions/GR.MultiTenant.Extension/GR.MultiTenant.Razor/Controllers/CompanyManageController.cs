@@ -15,24 +15,26 @@ using GR.Core.Abstractions;
 using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 using GR.Entities.Abstractions;
 using GR.Entities.Data;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Helpers;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
+using GR.Identity.Permissions.Abstractions;
 using GR.MultiTenant.Abstractions.Events;
 using GR.MultiTenant.Abstractions.Events.EventArgs;
-using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.MultiTenant.Razor.Helpers;
 using GR.Notifications.Abstractions;
 using IdentityServer4.Extensions;
+using Resources = GR.MultiTenant.Abstractions.Helpers.Resources;
 
 namespace GR.MultiTenant.Razor.Controllers
 {
     [Authorize(Roles = Resources.Roles.COMPANY_ADMINISTRATOR)]
-    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser,
         ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
@@ -63,35 +65,40 @@ namespace GR.MultiTenant.Razor.Controllers
         /// </summary>
         private readonly SignInManager<ApplicationUser> _signInManager;
 
+        /// <summary>
+        /// Inject permission service
+        /// </summary>
+        private readonly IPermissionService _permissionService;
+
         #endregion
 
         public CompanyManageController(UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
-            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<ApplicationUser> userManager1, SignInManager<ApplicationUser> signInManager) :
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<ApplicationUser> userManager1, SignInManager<ApplicationUser> signInManager, IPermissionService permissionService) :
             base(userManager, roleManager, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
             _service = service;
             _userManager = userManager1;
             _signInManager = signInManager;
+            _permissionService = permissionService;
             _listSettings = new MultiTenantListSettings();
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        /// Index view
-        /// </summary>
-        /// <returns></returns>
-        public override IActionResult Index()
+        [HttpGet]
+        public new async Task<IActionResult> Index()
         {
             var user = GetCurrentUser();
             ViewBag.UserRoles = string.Join(", ", UserManager.GetRolesAsync(user).GetAwaiter().GetResult());
             ViewBag.User = user;
-            ViewBag.UsersListSettings = _listSettings.GetCompanyUserListSettings();
+            var hasAccess = await _permissionService.HasPermissionAsync(new List<string> { UserPermissions.UserCreate });
+            var listSettings = _listSettings.GetCompanyUserListSettings();
+            if (!hasAccess) listSettings.HeadButtons = new List<UrlTagHelperViewModel>();
+            ViewBag.UsersListSettings = listSettings;
             ViewBag.Organization = _organizationService.GetUserOrganization(user);
             ViewBag.Countries = _organizationService.GetCountrySelectList().GetAwaiter().GetResult();
-            return base.Index();
+            return View();
         }
 
         /// <inheritdoc />
@@ -127,11 +134,7 @@ namespace GR.MultiTenant.Razor.Controllers
             var resultModel = new ResultModel();
             if (!ModelState.IsValid)
             {
-                resultModel.Errors.Add(new ErrorModel
-                {
-                    Key = string.Empty,
-                    Message = "Invalid model"
-                });
+                resultModel.AttachModelState(ModelState);
                 return Json(resultModel);
             }
 

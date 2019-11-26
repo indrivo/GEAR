@@ -66,7 +66,7 @@ namespace GR.Calendar.Providers.Google
             {
                 UserId = key.ToGuid(),
                 ProviderName = nameof(GoogleCalendarProvider),
-                Value = value.Serialize()
+                Value = value.SerializeAsJson()
             });
         }
     }

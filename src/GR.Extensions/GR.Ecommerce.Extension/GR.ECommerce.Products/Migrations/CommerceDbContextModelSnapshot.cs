@@ -247,6 +247,1212 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("GR.ECommerce.Abstractions.Models.Currencies.Currency", b =>
+                {
+                    b.Property<string>("Code")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("DecimalDigits");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("NativeSymbol")
+                        .IsRequired();
+
+                    b.Property<string>("PluralName");
+
+                    b.Property<decimal>("Rounding");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired();
+
+                    b.HasKey("Code");
+
+                    b.ToTable("Currencies");
+
+                    b.HasData(
+                        new
+                        {
+                            Code = "USD",
+                            DecimalDigits = 0,
+                            Name = "US Dollar",
+                            NativeSymbol = "$",
+                            Rounding = 0m,
+                            Symbol = "$"
+                        },
+                        new
+                        {
+                            Code = "CAD",
+                            DecimalDigits = 0,
+                            Name = "Canadian Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Canadian dollars",
+                            Rounding = 0m,
+                            Symbol = "CA$"
+                        },
+                        new
+                        {
+                            Code = "EUR",
+                            DecimalDigits = 0,
+                            Name = "Euro",
+                            NativeSymbol = "€",
+                            PluralName = "euros",
+                            Rounding = 0m,
+                            Symbol = "€"
+                        },
+                        new
+                        {
+                            Code = "AED",
+                            DecimalDigits = 0,
+                            Name = "United Arab Emirates Dirham",
+                            NativeSymbol = "د.إ.‏",
+                            PluralName = "UAE dirhams",
+                            Rounding = 0m,
+                            Symbol = "AED"
+                        },
+                        new
+                        {
+                            Code = "AFN",
+                            DecimalDigits = 0,
+                            Name = "Afghan Afghani",
+                            NativeSymbol = "؋",
+                            PluralName = "Afghan Afghanis",
+                            Rounding = 0m,
+                            Symbol = "Af"
+                        },
+                        new
+                        {
+                            Code = "ALL",
+                            DecimalDigits = 0,
+                            Name = "Albanian Lek",
+                            NativeSymbol = "Lek",
+                            PluralName = "Albanian lekë",
+                            Rounding = 0m,
+                            Symbol = "ALL"
+                        },
+                        new
+                        {
+                            Code = "AMD",
+                            DecimalDigits = 0,
+                            Name = "Armenian Dram",
+                            NativeSymbol = "դր.",
+                            PluralName = "Armenian drams",
+                            Rounding = 0m,
+                            Symbol = "AMD"
+                        },
+                        new
+                        {
+                            Code = "ARS",
+                            DecimalDigits = 0,
+                            Name = "Argentine Peso",
+                            NativeSymbol = "$",
+                            PluralName = "Argentine pesos",
+                            Rounding = 0m,
+                            Symbol = "AR$"
+                        },
+                        new
+                        {
+                            Code = "AUD",
+                            DecimalDigits = 0,
+                            Name = "Australian Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Australian dollars",
+                            Rounding = 0m,
+                            Symbol = "AU$"
+                        },
+                        new
+                        {
+                            Code = "AZN",
+                            DecimalDigits = 0,
+                            Name = "Azerbaijani Manat",
+                            NativeSymbol = "ман.",
+                            PluralName = "Azerbaijani manats",
+                            Rounding = 0m,
+                            Symbol = "man."
+                        },
+                        new
+                        {
+                            Code = "BAM",
+                            DecimalDigits = 0,
+                            Name = "Bosnia-Herzegovina Convertible Mark",
+                            NativeSymbol = "KM",
+                            PluralName = "Bosnia-Herzegovina convertible marks",
+                            Rounding = 0m,
+                            Symbol = "KM"
+                        },
+                        new
+                        {
+                            Code = "BDT",
+                            DecimalDigits = 0,
+                            Name = "Bangladeshi Taka",
+                            NativeSymbol = "৳",
+                            PluralName = "Bangladeshi takas",
+                            Rounding = 0m,
+                            Symbol = "Tk"
+                        },
+                        new
+                        {
+                            Code = "BGN",
+                            DecimalDigits = 0,
+                            Name = "Bulgarian Lev",
+                            NativeSymbol = "лв.",
+                            PluralName = "Bulgarian leva",
+                            Rounding = 0m,
+                            Symbol = "BGN"
+                        },
+                        new
+                        {
+                            Code = "BHD",
+                            DecimalDigits = 0,
+                            Name = "Bahraini Dinar",
+                            NativeSymbol = "د.ب.‏",
+                            PluralName = "Bahraini dinars",
+                            Rounding = 0m,
+                            Symbol = "BD"
+                        },
+                        new
+                        {
+                            Code = "BIF",
+                            DecimalDigits = 0,
+                            Name = "Burundian Franc",
+                            NativeSymbol = "FBu",
+                            PluralName = "Burundian francs",
+                            Rounding = 0m,
+                            Symbol = "FBu"
+                        },
+                        new
+                        {
+                            Code = "BND",
+                            DecimalDigits = 0,
+                            Name = "Brunei Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Brunei dollars",
+                            Rounding = 0m,
+                            Symbol = "BN$"
+                        },
+                        new
+                        {
+                            Code = "BOB",
+                            DecimalDigits = 0,
+                            Name = "Bolivian Boliviano",
+                            NativeSymbol = "Bs",
+                            PluralName = "Bolivian bolivianos",
+                            Rounding = 0m,
+                            Symbol = "Bs"
+                        },
+                        new
+                        {
+                            Code = "BRL",
+                            DecimalDigits = 0,
+                            Name = "Brazilian Real",
+                            NativeSymbol = "R$",
+                            PluralName = "Brazilian reals",
+                            Rounding = 0m,
+                            Symbol = "R$"
+                        },
+                        new
+                        {
+                            Code = "BWP",
+                            DecimalDigits = 0,
+                            Name = "Botswanan Pula",
+                            NativeSymbol = "P",
+                            PluralName = "Botswanan pulas",
+                            Rounding = 0m,
+                            Symbol = "BWP"
+                        },
+                        new
+                        {
+                            Code = "BYR",
+                            DecimalDigits = 0,
+                            Name = "Belarusian Ruble",
+                            NativeSymbol = "BYR",
+                            PluralName = "Belarusian rubles",
+                            Rounding = 0m,
+                            Symbol = "BYR"
+                        },
+                        new
+                        {
+                            Code = "BZD",
+                            DecimalDigits = 0,
+                            Name = "Belize Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Belize dollars",
+                            Rounding = 0m,
+                            Symbol = "BZ$"
+                        },
+                        new
+                        {
+                            Code = "CDF",
+                            DecimalDigits = 0,
+                            Name = "Congolese Franc",
+                            NativeSymbol = "FrCD",
+                            PluralName = "Congolese francs",
+                            Rounding = 0m,
+                            Symbol = "CDF"
+                        },
+                        new
+                        {
+                            Code = "CHF",
+                            DecimalDigits = 0,
+                            Name = "Swiss Franc",
+                            NativeSymbol = "CHF",
+                            PluralName = "Swiss francs",
+                            Rounding = 0.05m,
+                            Symbol = "CHF"
+                        },
+                        new
+                        {
+                            Code = "CLP",
+                            DecimalDigits = 0,
+                            Name = "Chilean Peso",
+                            NativeSymbol = "$",
+                            PluralName = "Chilean pesos",
+                            Rounding = 0m,
+                            Symbol = "CL$"
+                        },
+                        new
+                        {
+                            Code = "CNY",
+                            DecimalDigits = 0,
+                            Name = "Chinese Yuan",
+                            NativeSymbol = "CN¥",
+                            PluralName = "Chinese yuan",
+                            Rounding = 0m,
+                            Symbol = "CN¥"
+                        },
+                        new
+                        {
+                            Code = "COP",
+                            DecimalDigits = 0,
+                            Name = "Colombian Peso",
+                            NativeSymbol = "$",
+                            PluralName = "Colombian pesos",
+                            Rounding = 0m,
+                            Symbol = "CO$"
+                        },
+                        new
+                        {
+                            Code = "CRC",
+                            DecimalDigits = 0,
+                            Name = "Costa Rican Colón",
+                            NativeSymbol = "₡",
+                            PluralName = "Costa Rican colóns",
+                            Rounding = 0m,
+                            Symbol = "₡"
+                        },
+                        new
+                        {
+                            Code = "CVE",
+                            DecimalDigits = 0,
+                            Name = "Cape Verdean Escudo",
+                            NativeSymbol = "CV$",
+                            PluralName = "Cape Verdean escudos",
+                            Rounding = 0m,
+                            Symbol = "CV$"
+                        },
+                        new
+                        {
+                            Code = "CZK",
+                            DecimalDigits = 0,
+                            Name = "Czech Republic Koruna",
+                            NativeSymbol = "Kč",
+                            PluralName = "Czech Republic korunas",
+                            Rounding = 0m,
+                            Symbol = "Kč"
+                        },
+                        new
+                        {
+                            Code = "DJF",
+                            DecimalDigits = 0,
+                            Name = "Djiboutian Franc",
+                            NativeSymbol = "Fdj",
+                            PluralName = "Djiboutian francs",
+                            Rounding = 0m,
+                            Symbol = "Fdj"
+                        },
+                        new
+                        {
+                            Code = "DKK",
+                            DecimalDigits = 0,
+                            Name = "Danish Krone",
+                            NativeSymbol = "kr",
+                            PluralName = "Danish kroner",
+                            Rounding = 0m,
+                            Symbol = "Dkr"
+                        },
+                        new
+                        {
+                            Code = "DOP",
+                            DecimalDigits = 0,
+                            Name = "Dominican Peso",
+                            NativeSymbol = "RD$",
+                            PluralName = "Dominican pesos",
+                            Rounding = 0m,
+                            Symbol = "RD$"
+                        },
+                        new
+                        {
+                            Code = "DZD",
+                            DecimalDigits = 0,
+                            Name = "Algerian Dinar",
+                            NativeSymbol = "د.ج.‏",
+                            PluralName = "Algerian dinars",
+                            Rounding = 0m,
+                            Symbol = "DA"
+                        },
+                        new
+                        {
+                            Code = "EEK",
+                            DecimalDigits = 0,
+                            Name = "Estonian Kroon",
+                            NativeSymbol = "kr",
+                            PluralName = "Estonian kroons",
+                            Rounding = 0m,
+                            Symbol = "Ekr"
+                        },
+                        new
+                        {
+                            Code = "EGP",
+                            DecimalDigits = 0,
+                            Name = "Egyptian Pound",
+                            NativeSymbol = "ج.م.‏",
+                            PluralName = "Egyptian pounds",
+                            Rounding = 0m,
+                            Symbol = "EGP"
+                        },
+                        new
+                        {
+                            Code = "ERN",
+                            DecimalDigits = 0,
+                            Name = "Eritrean Nakfa",
+                            NativeSymbol = "Nfk",
+                            PluralName = "Eritrean nakfas",
+                            Rounding = 0m,
+                            Symbol = "Nfk"
+                        },
+                        new
+                        {
+                            Code = "ETB",
+                            DecimalDigits = 0,
+                            Name = "Ethiopian Birr",
+                            NativeSymbol = "Br",
+                            PluralName = "Ethiopian birrs",
+                            Rounding = 0m,
+                            Symbol = "Br"
+                        },
+                        new
+                        {
+                            Code = "GBP",
+                            DecimalDigits = 0,
+                            Name = "British Pound Sterling",
+                            NativeSymbol = "£",
+                            PluralName = "British pounds sterling",
+                            Rounding = 0m,
+                            Symbol = "£"
+                        },
+                        new
+                        {
+                            Code = "GEL",
+                            DecimalDigits = 0,
+                            Name = "Georgian Lari",
+                            NativeSymbol = "GEL",
+                            PluralName = "Georgian laris",
+                            Rounding = 0m,
+                            Symbol = "GEL"
+                        },
+                        new
+                        {
+                            Code = "GHS",
+                            DecimalDigits = 0,
+                            Name = "Ghanaian Cedi",
+                            NativeSymbol = "GH₵",
+                            PluralName = "Ghanaian cedis",
+                            Rounding = 0m,
+                            Symbol = "GH₵"
+                        },
+                        new
+                        {
+                            Code = "GNF",
+                            DecimalDigits = 0,
+                            Name = "Guinean Franc",
+                            NativeSymbol = "FG",
+                            PluralName = "Guinean francs",
+                            Rounding = 0m,
+                            Symbol = "FG"
+                        },
+                        new
+                        {
+                            Code = "GTQ",
+                            DecimalDigits = 0,
+                            Name = "Guatemalan Quetzal",
+                            NativeSymbol = "Q",
+                            PluralName = "Guatemalan quetzals",
+                            Rounding = 0m,
+                            Symbol = "GTQ"
+                        },
+                        new
+                        {
+                            Code = "HKD",
+                            DecimalDigits = 0,
+                            Name = "Hong Kong Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Hong Kong dollars",
+                            Rounding = 0m,
+                            Symbol = "HK$"
+                        },
+                        new
+                        {
+                            Code = "HNL",
+                            DecimalDigits = 0,
+                            Name = "Honduran Lempira",
+                            NativeSymbol = "L",
+                            PluralName = "Honduran lempiras",
+                            Rounding = 0m,
+                            Symbol = "HNL"
+                        },
+                        new
+                        {
+                            Code = "HRK",
+                            DecimalDigits = 0,
+                            Name = "Croatian Kuna",
+                            NativeSymbol = "kn",
+                            PluralName = "Croatian kunas",
+                            Rounding = 0m,
+                            Symbol = "kn"
+                        },
+                        new
+                        {
+                            Code = "HUF",
+                            DecimalDigits = 0,
+                            Name = "Hungarian Forint",
+                            NativeSymbol = "Ft",
+                            PluralName = "Hungarian forints",
+                            Rounding = 0m,
+                            Symbol = "Ft"
+                        },
+                        new
+                        {
+                            Code = "IDR",
+                            DecimalDigits = 0,
+                            Name = "Indonesian Rupiah",
+                            NativeSymbol = "Rp",
+                            PluralName = "Indonesian rupiahs",
+                            Rounding = 0m,
+                            Symbol = "Rp"
+                        },
+                        new
+                        {
+                            Code = "ILS",
+                            DecimalDigits = 0,
+                            Name = "Israeli New Sheqel",
+                            NativeSymbol = "₪",
+                            PluralName = "Israeli new sheqels",
+                            Rounding = 0m,
+                            Symbol = "₪"
+                        },
+                        new
+                        {
+                            Code = "INR",
+                            DecimalDigits = 0,
+                            Name = "Indian Rupee",
+                            NativeSymbol = "টকা",
+                            PluralName = "Indian rupees",
+                            Rounding = 0m,
+                            Symbol = "Rs"
+                        },
+                        new
+                        {
+                            Code = "IQD",
+                            DecimalDigits = 0,
+                            Name = "Iraqi Dinar",
+                            NativeSymbol = "د.ع.‏",
+                            PluralName = "Iraqi dinars",
+                            Rounding = 0m,
+                            Symbol = "IQD"
+                        },
+                        new
+                        {
+                            Code = "IRR",
+                            DecimalDigits = 0,
+                            Name = "Iranian Rial",
+                            NativeSymbol = "﷼",
+                            PluralName = "Iranian rials",
+                            Rounding = 0m,
+                            Symbol = "IRR"
+                        },
+                        new
+                        {
+                            Code = "ISK",
+                            DecimalDigits = 0,
+                            Name = "Icelandic Króna",
+                            NativeSymbol = "kr",
+                            PluralName = "Icelandic krónur",
+                            Rounding = 0m,
+                            Symbol = "Ikr"
+                        },
+                        new
+                        {
+                            Code = "JMD",
+                            DecimalDigits = 0,
+                            Name = "Jamaican Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Jamaican dollars",
+                            Rounding = 0m,
+                            Symbol = "J$"
+                        },
+                        new
+                        {
+                            Code = "JOD",
+                            DecimalDigits = 0,
+                            Name = "Jordanian Dinar",
+                            NativeSymbol = "د.أ.‏",
+                            PluralName = "Jordanian dinars",
+                            Rounding = 0m,
+                            Symbol = "JD"
+                        },
+                        new
+                        {
+                            Code = "JPY",
+                            DecimalDigits = 0,
+                            Name = "Japanese Yen",
+                            NativeSymbol = "￥",
+                            PluralName = "Japanese yen",
+                            Rounding = 0m,
+                            Symbol = "¥"
+                        },
+                        new
+                        {
+                            Code = "KES",
+                            DecimalDigits = 0,
+                            Name = "Kenyan Shilling",
+                            NativeSymbol = "Ksh",
+                            PluralName = "Kenyan shillings",
+                            Rounding = 0m,
+                            Symbol = "Ksh"
+                        },
+                        new
+                        {
+                            Code = "KHR",
+                            DecimalDigits = 0,
+                            Name = "Cambodian Riel",
+                            NativeSymbol = "៛",
+                            PluralName = "Cambodian riels",
+                            Rounding = 0m,
+                            Symbol = "KHR"
+                        },
+                        new
+                        {
+                            Code = "KMF",
+                            DecimalDigits = 0,
+                            Name = "Comorian Franc",
+                            NativeSymbol = "FC",
+                            PluralName = "Comorian francs",
+                            Rounding = 0m,
+                            Symbol = "CF"
+                        },
+                        new
+                        {
+                            Code = "KRW",
+                            DecimalDigits = 0,
+                            Name = "South Korean Won",
+                            NativeSymbol = "₩",
+                            PluralName = "South Korean won",
+                            Rounding = 0m,
+                            Symbol = "₩"
+                        },
+                        new
+                        {
+                            Code = "KWD",
+                            DecimalDigits = 0,
+                            Name = "Kuwaiti Dinar",
+                            NativeSymbol = "د.ك.‏",
+                            PluralName = "Kuwaiti dinars",
+                            Rounding = 0m,
+                            Symbol = "KD"
+                        },
+                        new
+                        {
+                            Code = "KZT",
+                            DecimalDigits = 0,
+                            Name = "Kazakhstani Tenge",
+                            NativeSymbol = "тңг.",
+                            PluralName = "Kazakhstani tenges",
+                            Rounding = 0m,
+                            Symbol = "KZT"
+                        },
+                        new
+                        {
+                            Code = "LBP",
+                            DecimalDigits = 0,
+                            Name = "Lebanese Pound",
+                            NativeSymbol = "ل.ل.‏",
+                            PluralName = "Lebanese pounds",
+                            Rounding = 0m,
+                            Symbol = "LB£"
+                        },
+                        new
+                        {
+                            Code = "LKR",
+                            DecimalDigits = 0,
+                            Name = "Sri Lankan Rupee",
+                            NativeSymbol = "SL Re",
+                            PluralName = "Sri Lankan rupees",
+                            Rounding = 0m,
+                            Symbol = "SLRs"
+                        },
+                        new
+                        {
+                            Code = "LTL",
+                            DecimalDigits = 0,
+                            Name = "Lithuanian Litas",
+                            NativeSymbol = "Lt",
+                            PluralName = "Lithuanian litai",
+                            Rounding = 0m,
+                            Symbol = "Lt"
+                        },
+                        new
+                        {
+                            Code = "LVL",
+                            DecimalDigits = 0,
+                            Name = "Latvian Lats",
+                            NativeSymbol = "Ls",
+                            PluralName = "Latvian lati",
+                            Rounding = 0m,
+                            Symbol = "Ls"
+                        },
+                        new
+                        {
+                            Code = "LYD",
+                            DecimalDigits = 0,
+                            Name = "Libyan Dinar",
+                            NativeSymbol = "د.ل.‏",
+                            PluralName = "Libyan dinars",
+                            Rounding = 0m,
+                            Symbol = "LD"
+                        },
+                        new
+                        {
+                            Code = "MAD",
+                            DecimalDigits = 0,
+                            Name = "Moroccan Dirham",
+                            NativeSymbol = "د.م.‏",
+                            PluralName = "Moroccan dirhams",
+                            Rounding = 0m,
+                            Symbol = "MAD"
+                        },
+                        new
+                        {
+                            Code = "MDL",
+                            DecimalDigits = 0,
+                            Name = "Moldovan Leu",
+                            NativeSymbol = "MDL",
+                            PluralName = "Moldovan lei",
+                            Rounding = 0m,
+                            Symbol = "MDL"
+                        },
+                        new
+                        {
+                            Code = "MGA",
+                            DecimalDigits = 0,
+                            Name = "Malagasy Ariary",
+                            NativeSymbol = "MGA",
+                            PluralName = "Malagasy Ariaries",
+                            Rounding = 0m,
+                            Symbol = "MGA"
+                        },
+                        new
+                        {
+                            Code = "MKD",
+                            DecimalDigits = 0,
+                            Name = "Macedonian Denar",
+                            NativeSymbol = "MKD",
+                            PluralName = "Macedonian denari",
+                            Rounding = 0m,
+                            Symbol = "MKD"
+                        },
+                        new
+                        {
+                            Code = "MMK",
+                            DecimalDigits = 0,
+                            Name = "Myanma Kyat",
+                            NativeSymbol = "K",
+                            PluralName = "Myanma kyats",
+                            Rounding = 0m,
+                            Symbol = "MMK"
+                        },
+                        new
+                        {
+                            Code = "MOP",
+                            DecimalDigits = 0,
+                            Name = "Macanese Pataca",
+                            NativeSymbol = "MOP$",
+                            PluralName = "Macanese patacas",
+                            Rounding = 0m,
+                            Symbol = "MOP$"
+                        },
+                        new
+                        {
+                            Code = "MUR",
+                            DecimalDigits = 0,
+                            Name = "Mauritian Rupee",
+                            NativeSymbol = "MURs",
+                            PluralName = "Mauritian rupees",
+                            Rounding = 0m,
+                            Symbol = "MURs"
+                        },
+                        new
+                        {
+                            Code = "MXN",
+                            DecimalDigits = 0,
+                            Name = "Mexican Peso",
+                            NativeSymbol = "$",
+                            PluralName = "Mexican pesos",
+                            Rounding = 0m,
+                            Symbol = "MX$"
+                        },
+                        new
+                        {
+                            Code = "MYR",
+                            DecimalDigits = 0,
+                            Name = "Malaysian Ringgit",
+                            NativeSymbol = "RM",
+                            PluralName = "Malaysian ringgits",
+                            Rounding = 0m,
+                            Symbol = "RM"
+                        },
+                        new
+                        {
+                            Code = "MZN",
+                            DecimalDigits = 0,
+                            Name = "Mozambican Metical",
+                            NativeSymbol = "MTn",
+                            PluralName = "Mozambican meticals",
+                            Rounding = 0m,
+                            Symbol = "MTn"
+                        },
+                        new
+                        {
+                            Code = "NAD",
+                            DecimalDigits = 0,
+                            Name = "Namibian Dollar",
+                            NativeSymbol = "N$",
+                            PluralName = "Namibian dollars",
+                            Rounding = 0m,
+                            Symbol = "N$"
+                        },
+                        new
+                        {
+                            Code = "NGN",
+                            DecimalDigits = 0,
+                            Name = "Nigerian Naira",
+                            NativeSymbol = "₦",
+                            PluralName = "Nigerian nairas",
+                            Rounding = 0m,
+                            Symbol = "₦"
+                        },
+                        new
+                        {
+                            Code = "NIO",
+                            DecimalDigits = 0,
+                            Name = "Nicaraguan Córdoba",
+                            NativeSymbol = "C$",
+                            PluralName = "Nicaraguan córdobas",
+                            Rounding = 0m,
+                            Symbol = "C$"
+                        },
+                        new
+                        {
+                            Code = "NOK",
+                            DecimalDigits = 0,
+                            Name = "Norwegian Krone",
+                            NativeSymbol = "kr",
+                            PluralName = "Norwegian kroner",
+                            Rounding = 0m,
+                            Symbol = "Nkr"
+                        },
+                        new
+                        {
+                            Code = "NPR",
+                            DecimalDigits = 0,
+                            Name = "Nepalese Rupee",
+                            NativeSymbol = "नेरू",
+                            PluralName = "Nepalese rupees",
+                            Rounding = 0m,
+                            Symbol = "NPRs"
+                        },
+                        new
+                        {
+                            Code = "NZD",
+                            DecimalDigits = 0,
+                            Name = "New Zealand Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "New Zealand dollars",
+                            Rounding = 0m,
+                            Symbol = "NZ$"
+                        },
+                        new
+                        {
+                            Code = "OMR",
+                            DecimalDigits = 0,
+                            Name = "Omani Rial",
+                            NativeSymbol = "ر.ع.‏",
+                            PluralName = "Omani rials",
+                            Rounding = 0m,
+                            Symbol = "OMR"
+                        },
+                        new
+                        {
+                            Code = "PAB",
+                            DecimalDigits = 0,
+                            Name = "Panamanian Balboa",
+                            NativeSymbol = "B/.",
+                            PluralName = "Panamanian balboas",
+                            Rounding = 0m,
+                            Symbol = "B/."
+                        },
+                        new
+                        {
+                            Code = "PEN",
+                            DecimalDigits = 0,
+                            Name = "Peruvian Nuevo Sol",
+                            NativeSymbol = "S/.",
+                            PluralName = "Peruvian nuevos soles",
+                            Rounding = 0m,
+                            Symbol = "S/."
+                        },
+                        new
+                        {
+                            Code = "PHP",
+                            DecimalDigits = 0,
+                            Name = "Philippine Peso",
+                            NativeSymbol = "₱",
+                            PluralName = "Philippine pesos",
+                            Rounding = 0m,
+                            Symbol = "₱"
+                        },
+                        new
+                        {
+                            Code = "PKR",
+                            DecimalDigits = 0,
+                            Name = "Pakistani Rupee",
+                            NativeSymbol = "₨",
+                            PluralName = "Pakistani rupees",
+                            Rounding = 0m,
+                            Symbol = "PKRs"
+                        },
+                        new
+                        {
+                            Code = "PLN",
+                            DecimalDigits = 0,
+                            Name = "Polish Zloty",
+                            NativeSymbol = "zł",
+                            PluralName = "Polish zlotys",
+                            Rounding = 0m,
+                            Symbol = "zł"
+                        },
+                        new
+                        {
+                            Code = "PYG",
+                            DecimalDigits = 0,
+                            Name = "Paraguayan Guarani",
+                            NativeSymbol = "₲",
+                            PluralName = "Paraguayan guaranis",
+                            Rounding = 0m,
+                            Symbol = "₲"
+                        },
+                        new
+                        {
+                            Code = "QAR",
+                            DecimalDigits = 0,
+                            Name = "Qatari Rial",
+                            NativeSymbol = "ر.ق.‏",
+                            PluralName = "Qatari rials",
+                            Rounding = 0m,
+                            Symbol = "QR"
+                        },
+                        new
+                        {
+                            Code = "RON",
+                            DecimalDigits = 0,
+                            Name = "Romanian Leu",
+                            NativeSymbol = "RON",
+                            PluralName = "Romanian lei",
+                            Rounding = 0m,
+                            Symbol = "RON"
+                        },
+                        new
+                        {
+                            Code = "RSD",
+                            DecimalDigits = 0,
+                            Name = "Serbian Dinar",
+                            NativeSymbol = "дин.",
+                            PluralName = "Serbian dinars",
+                            Rounding = 0m,
+                            Symbol = "din."
+                        },
+                        new
+                        {
+                            Code = "RUB",
+                            DecimalDigits = 0,
+                            Name = "Russian Ruble",
+                            NativeSymbol = "руб.",
+                            PluralName = "Russian rubles",
+                            Rounding = 0m,
+                            Symbol = "RUB"
+                        },
+                        new
+                        {
+                            Code = "RWF",
+                            DecimalDigits = 0,
+                            Name = "Rwandan Franc",
+                            NativeSymbol = "FR",
+                            PluralName = "Rwandan francs",
+                            Rounding = 0m,
+                            Symbol = "RWF"
+                        },
+                        new
+                        {
+                            Code = "SAR",
+                            DecimalDigits = 0,
+                            Name = "Saudi Riyal",
+                            NativeSymbol = "ر.س.‏",
+                            PluralName = "Saudi riyals",
+                            Rounding = 0m,
+                            Symbol = "SR"
+                        },
+                        new
+                        {
+                            Code = "SDG",
+                            DecimalDigits = 0,
+                            Name = "Sudanese Pound",
+                            NativeSymbol = "SDG",
+                            PluralName = "Sudanese pounds",
+                            Rounding = 0m,
+                            Symbol = "SDG"
+                        },
+                        new
+                        {
+                            Code = "SEK",
+                            DecimalDigits = 0,
+                            Name = "Swedish Krona",
+                            NativeSymbol = "kr",
+                            PluralName = "Swedish kronor",
+                            Rounding = 0m,
+                            Symbol = "Skr"
+                        },
+                        new
+                        {
+                            Code = "SGD",
+                            DecimalDigits = 0,
+                            Name = "Singapore Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Singapore dollars",
+                            Rounding = 0m,
+                            Symbol = "S$"
+                        },
+                        new
+                        {
+                            Code = "SOS",
+                            DecimalDigits = 0,
+                            Name = "Somali Shilling",
+                            NativeSymbol = "Ssh",
+                            PluralName = "Somali shillings",
+                            Rounding = 0m,
+                            Symbol = "Ssh"
+                        },
+                        new
+                        {
+                            Code = "SYP",
+                            DecimalDigits = 0,
+                            Name = "Syrian Pound",
+                            NativeSymbol = "ل.س.‏",
+                            PluralName = "Syrian pounds",
+                            Rounding = 0m,
+                            Symbol = "SY£"
+                        },
+                        new
+                        {
+                            Code = "THB",
+                            DecimalDigits = 0,
+                            Name = "Thai Baht",
+                            NativeSymbol = "฿",
+                            PluralName = "Thai baht",
+                            Rounding = 0m,
+                            Symbol = "฿"
+                        },
+                        new
+                        {
+                            Code = "TND",
+                            DecimalDigits = 0,
+                            Name = "Tunisian Dinar",
+                            NativeSymbol = "د.ت.‏",
+                            PluralName = "Tunisian dinars",
+                            Rounding = 0m,
+                            Symbol = "DT"
+                        },
+                        new
+                        {
+                            Code = "TOP",
+                            DecimalDigits = 0,
+                            Name = "Tongan Paʻanga",
+                            NativeSymbol = "T$",
+                            PluralName = "Tongan paʻanga",
+                            Rounding = 0m,
+                            Symbol = "T$"
+                        },
+                        new
+                        {
+                            Code = "TRY",
+                            DecimalDigits = 0,
+                            Name = "Turkish Lira",
+                            NativeSymbol = "TL",
+                            PluralName = "Turkish Lira",
+                            Rounding = 0m,
+                            Symbol = "TL"
+                        },
+                        new
+                        {
+                            Code = "TTD",
+                            DecimalDigits = 0,
+                            Name = "Trinidad and Tobago Dollar",
+                            NativeSymbol = "$",
+                            PluralName = "Trinidad and Tobago dollars",
+                            Rounding = 0m,
+                            Symbol = "TT$"
+                        },
+                        new
+                        {
+                            Code = "TWD",
+                            DecimalDigits = 0,
+                            Name = "New Taiwan Dollar",
+                            NativeSymbol = "NT$",
+                            PluralName = "New Taiwan dollars",
+                            Rounding = 0m,
+                            Symbol = "NT$"
+                        },
+                        new
+                        {
+                            Code = "TZS",
+                            DecimalDigits = 0,
+                            Name = "Tanzanian Shilling",
+                            NativeSymbol = "TSh",
+                            PluralName = "Tanzanian shillings",
+                            Rounding = 0m,
+                            Symbol = "TSh"
+                        },
+                        new
+                        {
+                            Code = "UAH",
+                            DecimalDigits = 0,
+                            Name = "Ukrainian Hryvnia",
+                            NativeSymbol = "₴",
+                            PluralName = "Ukrainian hryvnias",
+                            Rounding = 0m,
+                            Symbol = "₴"
+                        },
+                        new
+                        {
+                            Code = "UGX",
+                            DecimalDigits = 0,
+                            Name = "Ugandan Shilling",
+                            NativeSymbol = "USh",
+                            PluralName = "Ugandan shillings",
+                            Rounding = 0m,
+                            Symbol = "USh"
+                        },
+                        new
+                        {
+                            Code = "UYU",
+                            DecimalDigits = 0,
+                            Name = "Uruguayan Peso",
+                            NativeSymbol = "$",
+                            PluralName = "Uruguayan pesos",
+                            Rounding = 0m,
+                            Symbol = "$U"
+                        },
+                        new
+                        {
+                            Code = "UZS",
+                            DecimalDigits = 0,
+                            Name = "Uzbekistan Som",
+                            NativeSymbol = "UZS",
+                            PluralName = "Uzbekistan som",
+                            Rounding = 0m,
+                            Symbol = "UZS"
+                        },
+                        new
+                        {
+                            Code = "VEF",
+                            DecimalDigits = 0,
+                            Name = "Venezuelan Bolívar",
+                            NativeSymbol = "Bs.F.",
+                            PluralName = "Venezuelan bolívars",
+                            Rounding = 0m,
+                            Symbol = "Bs.F."
+                        },
+                        new
+                        {
+                            Code = "VND",
+                            DecimalDigits = 0,
+                            Name = "Vietnamese Dong",
+                            NativeSymbol = "₫",
+                            PluralName = "Vietnamese dong",
+                            Rounding = 0m,
+                            Symbol = "₫"
+                        },
+                        new
+                        {
+                            Code = "XAF",
+                            DecimalDigits = 0,
+                            Name = "CFA Franc BEAC",
+                            NativeSymbol = "FCFA",
+                            PluralName = "CFA francs BEAC",
+                            Rounding = 0m,
+                            Symbol = "FCFA"
+                        },
+                        new
+                        {
+                            Code = "XOF",
+                            DecimalDigits = 0,
+                            Name = "CFA Franc BCEAO",
+                            NativeSymbol = "CFA",
+                            PluralName = "CFA francs BCEAO",
+                            Rounding = 0m,
+                            Symbol = "CFA"
+                        },
+                        new
+                        {
+                            Code = "YER",
+                            DecimalDigits = 0,
+                            Name = "Yemeni Rial",
+                            NativeSymbol = "ر.ي.‏",
+                            PluralName = "Yemeni rials",
+                            Rounding = 0m,
+                            Symbol = "YR"
+                        },
+                        new
+                        {
+                            Code = "ZAR",
+                            DecimalDigits = 0,
+                            Name = "South African Rand",
+                            NativeSymbol = "R",
+                            PluralName = "South African rand",
+                            Rounding = 0m,
+                            Symbol = "R"
+                        },
+                        new
+                        {
+                            Code = "ZMK",
+                            DecimalDigits = 0,
+                            Name = "Zambian Kwacha",
+                            NativeSymbol = "ZK",
+                            PluralName = "Zambian kwachas",
+                            Rounding = 0m,
+                            Symbol = "ZK"
+                        });
+                });
+
             modelBuilder.Entity("GR.ECommerce.Abstractions.Models.Discount", b =>
                 {
                     b.Property<Guid>("Id")
@@ -575,7 +1781,7 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<string>("ModifiedBy");
 
-                    b.Property<double>("Price");
+                    b.Property<decimal>("Price");
 
                     b.Property<Guid>("ProductId");
 
@@ -622,6 +1828,20 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.HasIndex("ProductVariationId");
 
                     b.ToTable("ProductVariationDetails");
+                });
+
+            modelBuilder.Entity("GR.ECommerce.Abstractions.Models.Settings.CommerceSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Type");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("CommerceSettings");
                 });
 
             modelBuilder.Entity("GR.ECommerce.Payments.Abstractions.Models.Payment", b =>
@@ -692,6 +1912,10 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<DateTime>("Created");
 
+                    b.Property<string>("CurrencyId")
+                        .IsRequired()
+                        .HasDefaultValue("USD");
+
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
@@ -710,6 +1934,8 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
 
                     b.ToTable("Orders");
                 });
@@ -776,6 +2002,8 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<string>("Author");
 
+                    b.Property<int>("Availability");
+
                     b.Property<DateTime>("Changed");
 
                     b.Property<DateTime>("Created");
@@ -783,6 +2011,8 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name");
 
                     b.Property<Guid>("OrderId");
 
@@ -792,8 +2022,6 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<Guid>("UserId");
 
-                    b.Property<int>("Valability");
-
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
@@ -801,6 +2029,42 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Subscription");
+                });
+
+            modelBuilder.Entity("GR.Subscriptions.Abstractions.Models.SubscriptionPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<Guid>("SubscriptionId");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Type");
+
+                    b.Property<string>("Value")
+                        .IsRequired();
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.ToTable("SubscriptionPermissions");
                 });
 
             modelBuilder.Entity("GR.Audit.Abstractions.Models.TrackAuditDetails", b =>
@@ -951,6 +2215,14 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                         .HasForeignKey("PaymentMethodId");
                 });
 
+            modelBuilder.Entity("GR.Orders.Abstractions.Models.Order", b =>
+                {
+                    b.HasOne("GR.ECommerce.Abstractions.Models.Currencies.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("GR.Orders.Abstractions.Models.OrderHistory", b =>
                 {
                     b.HasOne("GR.Orders.Abstractions.Models.Order", "Order")
@@ -981,6 +2253,14 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                     b.HasOne("GR.Orders.Abstractions.Models.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GR.Subscriptions.Abstractions.Models.SubscriptionPermission", b =>
+                {
+                    b.HasOne("GR.Subscriptions.Abstractions.Models.Subscription", "Subscription")
+                        .WithMany("SubscriptionPermissions")
+                        .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

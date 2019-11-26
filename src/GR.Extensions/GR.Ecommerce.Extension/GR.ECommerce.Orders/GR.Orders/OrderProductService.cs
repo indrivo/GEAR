@@ -4,18 +4,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Abstractions;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Enums;
-using GR.ECommerce.Abstractions.Events;
-using GR.ECommerce.Abstractions.Events.EventArgs.OrderEventArgs;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Helpers.Responses;
 using GR.Orders.Abstractions;
+using GR.Orders.Abstractions.Events;
+using GR.Orders.Abstractions.Events.EventArgs.OrderEventArgs;
 using GR.Orders.Abstractions.Helpers;
 using GR.Orders.Abstractions.Models;
 using GR.Orders.Abstractions.ViewModels.OrderViewModels;
@@ -24,6 +26,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.Orders
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
+    [Documentation("Basic implementation of product ordering service")]
     public class OrderProductService : IOrderProductService<Order>
     {
         #region Injectable
@@ -80,6 +84,7 @@ namespace GR.Orders
             var response = new ResultModel<Order>();
             if (orderId == null) return new InvalidParametersResultModel<Order>();
             var order = await _orderDbContext.Orders
+                .Include(x => x.Currency)
                 .Include(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
                 .ThenInclude(x => x.ProductPrices)
@@ -100,6 +105,7 @@ namespace GR.Orders
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return new UserNotFoundResult<IEnumerable<Order>>();
             var orders = await _orderDbContext.Orders
+                .Include(x => x.Currency)
                 .Include(x => x.ProductOrders)
                 .ThenInclude(x => x.Product)
                 .ThenInclude(x => x.ProductPrices)
@@ -158,11 +164,13 @@ namespace GR.Orders
             if (!cartRequest.IsSuccess) return cartRequest.Map(Guid.Empty);
             var cart = cartRequest.Result;
             var order = OrderMapper.Map(cart, model.Notes);
+            var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
+            order.CurrencyId = currency.Code;
             await _orderDbContext.Orders.AddAsync(order);
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
-                CommerceEvents.Orders.OrderCreated(new AddOrderEventArgs
+                OrderEvents.Orders.OrderCreated(new AddOrderEventArgs
                 {
                     Id = order.Id,
                     OrderStatus = order.OrderState.ToString()
@@ -188,12 +196,49 @@ namespace GR.Orders
             if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
             var product = productRequest.Result;
             var order = OrderMapper.Map(product);
+            var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
+            order.CurrencyId = currency.Code;
             order.UserId = userRequest.Result.Id.ToGuid();
             await _orderDbContext.Orders.AddAsync(order);
             var dbRequest = await _orderDbContext.PushAsync();
             if (dbRequest.IsSuccess)
             {
-                CommerceEvents.Orders.OrderCreated(new AddOrderEventArgs
+                OrderEvents.Orders.OrderCreated(new AddOrderEventArgs
+                {
+                    Id = order.Id,
+                    OrderStatus = order.OrderState.ToString()
+                });
+            }
+
+            await _commerceContext.PushAsync();
+
+            return dbRequest.Map(order.Id);
+        }
+
+        /// <summary>
+        /// Create order
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Guid>> CreateOrderAsync(Guid? productId, Guid? variationId)
+        {
+            if (productId == null || variationId == null) return new InvalidParametersResultModel<Guid>();
+            var userRequest = await _userManager.GetCurrentUserAsync();
+            if (!userRequest.IsSuccess) return userRequest.Map(Guid.Empty);
+            var productRequest = await _productService.GetProductByIdAsync(productId);
+            if (!productRequest.IsSuccess) return productRequest.Map(Guid.Empty);
+            var product = productRequest.Result;
+            var variation = product.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
+            var order = OrderMapper.Map(product, variation);
+            order.UserId = userRequest.Result.Id.ToGuid();
+            var currency = (await _productService.GetGlobalCurrencyAsync()).Result;
+            order.CurrencyId = currency.Code;
+            await _orderDbContext.Orders.AddAsync(order);
+            var dbRequest = await _orderDbContext.PushAsync();
+            if (dbRequest.IsSuccess)
+            {
+                OrderEvents.Orders.OrderCreated(new AddOrderEventArgs
                 {
                     Id = order.Id,
                     OrderStatus = order.OrderState.ToString()
@@ -268,8 +313,9 @@ namespace GR.Orders
         /// </summary>
         /// <param name="orderId"></param>
         /// <param name="orderState"></param>
+        /// <param name="notes"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState)
+        public virtual async Task<ResultModel> ChangeOrderStateAsync(Guid? orderId, OrderState orderState, string notes = null)
         {
             var response = new ResultModel();
             var orderRequest = await GetOrderByIdAsync(orderId);
@@ -284,14 +330,48 @@ namespace GR.Orders
             var oldState = order.OrderState;
             order.OrderState = orderState;
             _orderDbContext.Orders.Update(order);
+
+            //Save history
+            await _orderDbContext.OrderHistories.AddAsync(new OrderHistory
+            {
+                Notes = notes,
+                OrderState = oldState,
+                OrderId = order.Id
+            });
+
             var dbRequest = await _orderDbContext.PushAsync();
-            if (dbRequest.IsSuccess)
-                await _orderDbContext.OrderHistories.AddAsync(new OrderHistory
-                {
-                    Notes = string.Empty,
-                    OrderState = oldState,
-                    OrderId = order.Id
-                });
+            if (!dbRequest.IsSuccess) return dbRequest;
+            switch (order.OrderState)
+            {
+                case OrderState.New:
+                    break;
+                case OrderState.OnHold:
+                    break;
+                case OrderState.PendingPayment:
+                    break;
+                case OrderState.PaymentReceived:
+                    OrderEvents.Orders.PaymentReceived(new PaymentReceivedEventArgs
+                    {
+                        OrderId = order.Id
+                    });
+                    break;
+                case OrderState.PaymentFailed:
+                    break;
+                case OrderState.Invoiced:
+                    break;
+                case OrderState.Shipping:
+                    break;
+                case OrderState.Shipped:
+                    break;
+                case OrderState.Complete:
+                    break;
+                case OrderState.Canceled:
+                    break;
+                case OrderState.Refunded:
+                    break;
+                case OrderState.Closed:
+                    break;
+            }
             return dbRequest;
         }
 
@@ -310,7 +390,25 @@ namespace GR.Orders
             order.BillingAddress = billingAddress;
             order.ShipmentAddress = shipmentAddress;
             _orderDbContext.Orders.Update(order);
-            return await _orderDbContext.PushAsync();
+            var dbResult = await _orderDbContext.PushAsync();
+            if (dbResult.IsSuccess) await ChangeOrderStateAsync(orderId, OrderState.Invoiced);
+            return dbResult;
+        }
+
+        /// <summary>
+        /// Check if the order was in the x state
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="orderState"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<bool>> ItWasInTheStateAsync(Guid? orderId, OrderState orderState)
+        {
+            if (orderId == null) return new InvalidParametersResultModel<bool>();
+            var check = await _orderDbContext.OrderHistories
+                .Include(x => x.Order)
+                .AnyAsync(x => x.OrderId.Equals(orderId)
+                               && (x.OrderState.Equals(orderState) || x.Order.OrderState.Equals(orderState)));
+            return new SuccessResultModel<bool>(check);
         }
 
         /// <summary>
@@ -321,7 +419,7 @@ namespace GR.Orders
         public async Task<ResultModel<IEnumerable<OrderHistory>>> GetOrderHistoryAsync(Guid? orderId)
         {
             var history = await _orderDbContext.OrderHistories.Where(x => x.OrderId.Equals(orderId)).ToListAsync();
-            return new ResultModel<IEnumerable<OrderHistory>> { IsSuccess = true, Result = history };
+            return new SuccessResultModel<IEnumerable<OrderHistory>>(history);
         }
 
         /// <summary>
@@ -339,6 +437,7 @@ namespace GR.Orders
 
             var list = filtered.Select(x =>
             {
+                x.Currency = _commerceContext.Currencies.FirstOrDefault(y => y.Code.Equals(x.CurrencyId));
                 var map = x.Adapt<GetOrdersViewModel>();
                 map.ProductOrders = _orderDbContext.ProductOrders.Where(t => t.OrderId.Equals(map.Id));
                 return map;

@@ -1,33 +1,36 @@
+@using GR.ECommerce.Abstractions
+@using GR.ECommerce.Abstractions.Models
 @model GR.ECommerce.Abstractions.ViewModels.CartViewModels.AddToCartViewModel
-
+@inject IProductService<Product> ProductService
 
 @{
-	ViewData["Title"] = "Cart";
+    ViewData["Title"] = "Cart";
+    var currency = (await ProductService.GetGlobalCurrencyAsync()).Result;
 }
 
 <div class="card">
-	<div class="card-body">
-		<div class="row">
-	
-			<div class="col-8">
-				<partial name="_TableCartItems" model="@Model" />
-				<textarea class="form-control" id="OrderNotes" rows="3" placeholder="Enter order note"></textarea>
-			</div>
-			<div class="col-3 m-2 border border-light">
-				<p>Order summary</p>
-				<hr class="style1">
+    <div class="card-body">
+        <div class="row">
 
-				<div class="col-12 row">
-					<div class="col-6">TotalPrice: </div>
-					<div class="col-6 text-right" id="TotalPrice"> @Model.TotalPrice </div>
-				</div>
+            <div class="col-8">
+                <partial name="_TableCartItems" model="@Model" />
+                <textarea class="form-control" id="OrderNotes" rows="3" placeholder="Enter order note"></textarea>
+            </div>
+            <div class="col-3 m-2 border border-light">
+                <p>Order summary</p>
+                <hr class="style1">
 
-				<hr class="style1">
-				<button @(!Model?.CartItems.Any() ?? false ? "disabled": "") class="btn btn-success" id="checkout">Process to checkout</button>
-			</div>
-	
-		</div>
-	</div>
+                <div class="col-12 row">
+                    <div class="col-6">TotalPrice: </div>
+                    <div class="col-6 text-right" id="TotalPrice"> @Model.TotalPrice @currency?.Symbol</div>
+                </div>
+
+                <hr class="style1">
+                <button @(!Model?.CartItems.Any() ?? false ? "disabled" : "") class="btn btn-success" id="checkout">Process to checkout</button>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 
@@ -102,7 +105,7 @@
 				cartItemId: id
 			},
 			success: function(data) {
-				
+
                 if (data.is_success) {
 
                     $("#TotalPrice").empty();

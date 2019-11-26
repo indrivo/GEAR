@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
+using GR.Orders.Abstractions.Events;
 using GR.Orders.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +33,17 @@ namespace GR.Orders.Abstractions.Extensions
         {
             services.AddTransient<IOrderDbContext, TContext>();
             IoC.RegisterService<IOrderDbContext>(nameof(IOrderDbContext), typeof(TContext));
+            return services;
+        }
+
+        /// <summary>
+        /// Register events
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterOrderEvents(this IServiceCollection services)
+        {
+            OrderEvents.RegisterEvents();
             return services;
         }
     }

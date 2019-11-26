@@ -70,6 +70,17 @@ dotnet pack ./GR.Extensions/GR.Report.Extension/GR.Report.Dynamic/GR.Report.Dyna
 dotnet pack ./GR.Extensions/GR.Report.Extension/GR.Report.Dynamic.Razor/GR.Report.Dynamic.Razor.csproj -o ../../../nupkgs
 
 
+:: Pack mail modules
+dotnet pack ./GR.Extensions/GR.Email.Extension/GR.Email.Abstractions/GR.Email.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Email.Extension/GR.Email/GR.Email.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Email.Extension/GR.Email.Razor/GR.Email.Razor.csproj -o ../../../nupkgs
+
+
+:: Pack multi-tenant modules
+dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Abstractions/GR.MultiTenant.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant/GR.MultiTenant.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Razor/GR.MultiTenant.Razor.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -130,6 +141,16 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Dashboard.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Dynamic*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Report.Razor*
+
+::Push email modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Email.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Email*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Email.Razor*
+
+::Push multi-tenant modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

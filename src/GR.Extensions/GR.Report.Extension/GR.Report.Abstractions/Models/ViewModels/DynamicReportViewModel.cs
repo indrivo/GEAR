@@ -10,7 +10,7 @@ namespace GR.Report.Abstractions.Models.ViewModels
         public string Name { get; set; }
         public DynamicReportFolderViewModel DynamicReportFolder { get; set; }
         public DynamicReportDto ReportDataModel { get; set; }
-        public string ReportData => ReportDataModel == null ? string.Empty : ReportDataModel.Serialize();
+        public string ReportData => ReportDataModel == null ? string.Empty : ReportDataModel.SerializeAsJson();
 
         public virtual string Author { get; set; }
 

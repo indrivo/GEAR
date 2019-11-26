@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Abstractions\GR.ECommerce.Payments.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj" />
   </ItemGroup>
 

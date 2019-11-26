@@ -91,7 +91,7 @@ namespace GR.Identity.Extensions
         {
             var roles = user.Claims.Where(x => x.Type.Equals("role") || x.Type.EndsWith("role")).Select(x => x.Value)
                 .ToList();
-            return await permissionService.HasPermission(roles, new List<string> { permission });
+            return await permissionService.HasPermissionAsync(roles, new List<string> { permission });
         }
 
         /// <summary>
