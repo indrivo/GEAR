@@ -76,15 +76,21 @@
     <div class="modal fade modal-confirm-delete-task" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none;" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header px-4">
-                    <h5 class="modal-title" id="deleteConfirmModalLabel">@Localizer["system_taskmanager_are_you_sure"]<span class="task-name"></span></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="">
+                    <button type="button" class="close p-0" data-dismiss="modal" aria-label="Close">
                         <span class="material-icons">close</span>
                     </button>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">@Localizer["system_taskmanager_no"]</button>
-                    <button id="submit-task-delete" type="button" class="btn btn-danger text-white">@Localizer["system_taskmanager_yes"]</button>
+                <div>
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">@Localizer["system_taskmanager_are_you_sure"]<span class="task-name"></span></h5>
+                </div>
+                <div>
+                    <button id="submit-task-delete" type="button" class="btn btn-primary text-white">
+                        <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
+                            <path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
+                        </svg>
+                        @Localizer["system_taskmanager_yes"]
+                    </button>
                 </div>
             </div>
         </div>

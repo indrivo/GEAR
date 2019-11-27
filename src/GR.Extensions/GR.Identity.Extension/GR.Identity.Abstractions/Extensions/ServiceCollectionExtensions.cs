@@ -100,6 +100,20 @@ namespace GR.Identity.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Register address service
+        /// </summary>
+        /// <typeparam name="TAddressService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
+            where TAddressService : class, IUserAddressService
+        {
+            services.AddTransient<IUserAddressService, TAddressService>();
+            IoC.RegisterTransientService<IUserAddressService, TAddressService>();
+            return services;
+        }
+
+        /// <summary>
         /// Register events
         /// </summary>
         /// <param name="services"></param>

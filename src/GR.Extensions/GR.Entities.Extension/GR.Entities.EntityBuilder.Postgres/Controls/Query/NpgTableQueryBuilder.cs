@@ -92,13 +92,13 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
                     break;
 
                 case "char":
-                    sql.Append(" char");
-                    if (defaultValue != null) sql.AppendFormat(" default '{0}'", defaultValue);
+                    sql.Append(" CHAR");
+                    if (defaultValue != null) sql.AppendFormat(" DEFAULT '{0}'", defaultValue);
                     break;
 
                 default:
-                    sql.AppendFormat(" varchar({0})", "10");
-                    if (defaultValue != null) sql.AppendFormat(" default '{0}'", defaultValue);
+                    sql.AppendFormat(" VARCHAR({0})", "10");
+                    if (defaultValue != null) sql.AppendFormat(" DEFAULT '{0}'", defaultValue);
                     break;
             }
 
@@ -122,14 +122,14 @@ namespace GR.Entities.EntityBuilder.Postgres.Controls.Query
         public override string CheckColumnValues(string tableName, string tableSchema, string columnName)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat(" SELECT * FROM \"{1}\".\"{0}\" WHERE \"{2}\" is not null", tableName, tableSchema, columnName);
+            sql.AppendFormat(" SELECT * FROM \"{1}\".\"{0}\" WHERE \"{2}\" IS NOT NULL", tableName, tableSchema, columnName);
             return sql.ToString();
         }
 
         public override string CheckTableValues(string tableName, string tableSchema)
         {
             var sql = new StringBuilder();
-            sql.AppendFormat(" SELECT TOP 1 * FROM \"{1}\".\"{0}\"", tableName, tableSchema);
+            sql.AppendFormat(" SELECT * FROM \"{1}\".\"{0}\" LIMIT 1", tableName, tableSchema);
             return sql.ToString();
         }
 

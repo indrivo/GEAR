@@ -1,90 +1,110 @@
-﻿namespace GR.Paypal.Abstractions.ViewModels
+﻿using Newtonsoft.Json;
+
+namespace GR.Paypal.Abstractions.ViewModels
 {
     public class PaymentCreateRequest
     {
-        public string intent { get; set; }
+        public virtual string Intent { get; set; }
 
-        public string experience_profile_id { get; set; }
+        [JsonProperty("experience_profile_id")]
+        public virtual string ExperienceProfileId { get; set; }
 
-        public Payer payer { get; set; }
+        public virtual Payer Payer { get; set; }
 
-        public Transaction[] transactions { get; set; }
+        public virtual Transaction[] Transactions { get; set; }
 
-        public string note_to_payer { get; set; }
+        [JsonProperty("note_to_payer")]
+        public virtual string Notes { get; set; }
 
-        public Redirect_Urls redirect_urls { get; set; }
+        [JsonProperty("redirect_urls")]
+        public virtual RedirectUrls RedirectUrls { get; set; }
     }
 
     public class Payer
     {
-        public string payment_method { get; set; }
+        [JsonProperty("payment_method")]
+        public virtual string PaymentMethod { get; set; }
     }
 
-    public class Redirect_Urls
+    public class RedirectUrls
     {
-        public string return_url { get; set; }
-        public string cancel_url { get; set; }
+        [JsonProperty("return_url")]
+        public virtual string ReturnUrl { get; set; }
+
+        [JsonProperty("cancel_url")]
+        public virtual string CancelUrl { get; set; }
     }
 
     public class Transaction
     {
-        public Amount amount { get; set; }
-        public string description { get; set; }
-        public string custom { get; set; }
-        public string invoice_number { get; set; }
-        public Payment_Options payment_options { get; set; }
-        public string soft_descriptor { get; set; }
-        public Item_List item_list { get; set; }
+        public virtual Amount Amount { get; set; }
+        public virtual string Description { get; set; }
+        public virtual string Custom { get; set; }
+        [JsonProperty("invoice_number")]
+        public virtual string InvoiceNumber { get; set; }
+        [JsonProperty("payment_options")]
+        public virtual PaymentOptions PaymentOptions { get; set; }
+        [JsonProperty("soft_descriptor")]
+        public virtual string SoftDescriptor { get; set; }
+        [JsonProperty("item_list")]
+        public virtual ItemList Items { get; set; }
     }
 
     public class Amount
     {
-        public string total { get; set; }
-        public string currency { get; set; }
-        public Details details { get; set; }
+        public virtual string Total { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual Details Details { get; set; }
     }
 
     public class Details
     {
-        public string subtotal { get; set; }
-        public string tax { get; set; }
-        public string shipping { get; set; }
-        public string handling_fee { get; set; }
-        public string shipping_discount { get; set; }
-        public string insurance { get; set; }
+        public virtual string Subtotal { get; set; }
+        public virtual string Tax { get; set; }
+        public virtual string Shipping { get; set; }
+        [JsonProperty("handling_fee")]
+        public virtual string HandlingFee { get; set; }
+        [JsonProperty("shipping_discount")]
+        public virtual string ShippingDiscount { get; set; }
+        public virtual string Insurance { get; set; }
     }
 
-    public class Payment_Options
+    public class PaymentOptions
     {
-        public string allowed_payment_method { get; set; }
+        [JsonProperty("allowed_payment_method")]
+        public virtual string AllowedPaymentMethod { get; set; }
     }
 
-    public class Item_List
+    public class ItemList
     {
-        public Item[] items { get; set; }
-        public Shipping_Address shipping_address { get; set; }
+        public virtual Item[] Items { get; set; }
+        [JsonProperty("shipping_address")]
+        public virtual ShippingAddress ShippingAddress { get; set; }
     }
 
-    public class Shipping_Address
+    public class ShippingAddress
     {
-        public string recipient_name { get; set; }
-        public string line1 { get; set; }
-        public string line2 { get; set; }
-        public string city { get; set; }
-        public string country_code { get; set; }
-        public string postal_code { get; set; }
-        public string phone { get; set; }
-        public string state { get; set; }
+        [JsonProperty("recipient_name")]
+        public virtual string RecipientName { get; set; }
+        public virtual string Line1 { get; set; }
+        public virtual string Line2 { get; set; }
+        public virtual string City { get; set; }
+        [JsonProperty("country_code")]
+        public virtual string CountryCode { get; set; }
+        [JsonProperty("postal_code")]
+        public virtual string PostalCode { get; set; }
+        public virtual string Phone { get; set; }
+        public virtual string State { get; set; }
     }
 
     public class Item
     {
-        public string name { get; set; }
-        public string description { get; set; }
-        public string quantity { get; set; }
-        public string price { get; set; }
-        public string tax { get; set; }
-        public string sku { get; set; }
-        public string currency { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string Description { get; set; }
+        public virtual string Quantity { get; set; }
+        public virtual string Price { get; set; }
+        public virtual string Tax { get; set; }
+        public virtual string Sku { get; set; }
+        public virtual string Currency { get; set; }
     }
 }

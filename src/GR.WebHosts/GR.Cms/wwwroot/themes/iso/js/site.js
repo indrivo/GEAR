@@ -1790,7 +1790,7 @@ $(document).ready(function () {
 		window.forceTranslate();
     });
 
-    $("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
+    //$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
 });
 
 

@@ -31,11 +31,19 @@ namespace GR.Orders.Abstractions.Helpers
                 {
                     ProductVariationId = x.ProductVariationId,
                     Amount = x.Amount,
-                    PriceWithOutDiscount = x.Product?.PriceWithoutDiscount ?? 0,
                     DiscountValue = x.Product?.DiscountPrice ?? 0,
                     OrderId = order.Id,
                     ProductId = x.ProductId
                 };
+                if (x.ProductVariation == null)
+                {
+                    pOrder.PriceWithOutDiscount = x.Product?.PriceWithoutDiscount ?? 0;
+                }
+                else
+                {
+                    pOrder.PriceWithOutDiscount = x.ProductVariation.Price;
+                }
+
                 return pOrder;
             });
 
@@ -61,7 +69,37 @@ namespace GR.Orders.Abstractions.Helpers
                     {
                         ProductId = product.Id,
                         Amount = amount,
-                        PriceWithOutDiscount = product.PriceWithoutDiscount
+                        PriceWithOutDiscount = product.PriceWithoutDiscount,
+                        DiscountValue = product.DiscountPrice,
+                    }
+                }
+            };
+
+            return order;
+        }
+
+        /// <summary>
+        /// Map variation product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="variation"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        public static Order Map(Product product, ProductVariation variation, int amount = 1)
+        {
+            if (product == null) throw new NullReferenceException();
+            var order = new Order
+            {
+                OrderState = OrderState.New,
+                ProductOrders = new List<ProductOrder>
+                {
+                    new ProductOrder
+                    {
+                        ProductId = product.Id,
+                        Amount = amount,
+                        PriceWithOutDiscount = variation == null ? product.PriceWithoutDiscount : variation.Price,
+                        DiscountValue = product.DiscountPrice,
+                        ProductVariationId = variation?.Id
                     }
                 }
             };

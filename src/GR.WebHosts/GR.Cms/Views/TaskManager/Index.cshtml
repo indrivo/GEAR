@@ -1,0 +1,536 @@
+@{
+	ViewData["Title"] = "Task Manager";
+}
+@section Styles {
+	<link rel="stylesheet" href="~/assets/task-manager.css" asp-append-version="true" />
+	<style>
+		.table {
+			font-size: 14px;
+			font-weight: 400;
+		}
+
+			.table thead tr th {
+				padding-left: 2rem;
+				padding-right: 2rem;
+			}
+
+		.progress-cell {
+			min-width: 180px;
+		}
+
+		.progress-block {
+			min-width: calc(100% - 23px);
+		}
+
+		.modal-confirm-delete-task .modal-content {
+			background-color: #fff;
+			padding: 50px 30px;
+		}
+
+		.absolute-close-button {
+			position: absolute;
+			right: 20px;
+			top: 20px;
+		}
+
+		.fw-600 {
+			font-weight: 600;
+		}
+
+		.mb-40px {
+			margin-bottom: 40px;
+		}
+
+		.iso-tabs {
+			border-bottom: 2px solid #2862D6 !important;
+		}
+
+			.iso-tabs li a {
+				background-color: transparent !important;
+				border: 0 !important;
+				color: #818999 !important;
+				font-size: 18px;
+				font-weight: 500;
+			}
+
+				.iso-tabs li a.active {
+					color: #2862D6 !important;
+				}
+	</style>
+}
+@inject IStringLocalizer Localizer
+
+<div class="task-manager">
+	<div class="task-manager-loader justify-content-center align-items-center">
+		<div class="lds-dual-ring"></div>
+	</div>
+
+	<div class="row task-manager-controls">
+		<div class="col-auto ml-auto">
+			<button id="add-new-task" class="task-manager-add-new-task btn btn-outline-primary d-flex align-items-center" data-toggle="modal" data-target="#addTaskModal">
+				<i class="material-icons d-block mr-2">add_circle_outline</i>
+				<span>
+					@Localizer["system_taskmanager_add_task"]
+				</span>
+			</button>
+		</div>
+		<div class="col-auto">
+			<div class="form-group">
+				<select class="form-control task-manager-task-types">
+					<option value="active" selected>@Localizer["system_taskmanager_active"]</option>
+					<option value="assigned">@Localizer["system_taskmanager_assigned"]</option>
+					<option value="deleted">@Localizer["system_taskmanager_deleted"]</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-auto">
+			<div class="form-group d-flex align-items-center ml-4">
+				<label class="m-0 task-manager-items-per-page-label" for="iems-per-page">@Localizer["system_taskmanager_items_per_page"]</label>
+				<select class="task-manager-items-per-page-control form-control w-auto ml-2">
+					<option value="5">5</option>
+					<option value="10" selected>10</option>
+					<option value="20">20</option>
+					<option value="50">50</option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<div class="task-manager-task-list table-responsive">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th class="sortable py-4" data-attribute="TaskNumber">@Localizer["system_taskmanager_task_number"]<span class="sort"></span></th>
+					<th class="sortable" data-attribute="TaskPriority">@Localizer["system_taskmanager_task_priority"]<span class="sort"></span></th>
+					<th>@Localizer["name"]</th>
+					<th>@Localizer["system_taskmanager_task_progress"]</th>
+					<th class="sortable" data-attribute="StartDate" data-sort="ascending">@Localizer["system_taskmanager_start_date"]<span class="sort ascending"></span></th>
+					<th class="sortable" data-attribute="EndDate">@Localizer["system_taskmanager_end_date"]<span class="sort"></span></th>
+					<th class="sortable" data-attribute="Status">@Localizer["system_taskmanager_status"]<span class="sort"></span></th>
+					<th>@Localizer["system_taskmanager_author"]</th>
+					<th>@Localizer["system_taskmanager_assigne"]</th>
+					<th>@Localizer["system_taskmanager_modofiedby"]</th>
+					<th>@Localizer["system_taskmanager_actions"]</th>
+				</tr>
+			</thead>
+			<tbody class="task-manager-task-list-table" id="task-list-table">
+				<tr>
+					<td>
+						<span class="col">@Localizer["system_taskmanager_no_tasks"]</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<nav>
+			<ul id="task-list-pager" class="task-manager-task-list-pager pagination justify-content-center">
+			</ul>
+		</nav>
+	</div>
+
+	<div class="modal fade modal-confirm-delete-task" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div>
+					<button type="button" class="close p-0 absolute-close-button" data-dismiss="modal" aria-label="Close">
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<div class="d-flex justify-content-center confirm-image mb-40px">
+					<svg height="100px" viewBox="-9 0 512 512.00101" width="100px" xmlns="http://www.w3.org/2000/svg"><path d="m444.359375 123.113281-1.621094 22.8125-21.910156 307.898438c-2.027344 28.488281-25.742187 50.570312-54.300781 50.570312h-238.207032c-28.558593 0-52.265624-22.082031-54.292968-50.570312l-23.53125-330.710938zm0 0" fill="#bfdadd" /><path d="m442.738281 145.925781-21.910156 307.898438c-2.027344 28.488281-25.742187 50.570312-54.300781 50.570312h-184.980469c-28.558594 0-52.261719-22.070312-54.289063-50.570312l-20.289062-285.085938c-.875-12.328125 8.886719-22.8125 21.246094-22.8125zm0 0" fill="#e4f5f7" /><path d="m302.074219 47.082031h-109.605469c7.644531-22.941406 29.289062-39.476562 54.796875-39.476562 6.105469 0 11.984375.941406 17.5 2.695312 17.558594 5.578125 31.480469 19.324219 37.308594 36.78125zm0 0" fill="#bfdadd" /><path d="m302.074219 47.082031h-74.628907c5.820313-17.457031 19.75-31.214843 37.320313-36.78125 17.558594 5.578125 31.480469 19.324219 37.308594 36.78125zm0 0" fill="#e4f5f7" /><path d="m486.933594 85.101562c0 6.613282-1.695313 12.828126-4.664063 18.242188-6.449219 11.78125-18.960937 19.769531-33.347656 19.769531h-403.300781c-10.503906 0-20.003906-4.257812-26.886719-11.132812-6.875-6.875-11.132813-16.382813-11.132813-26.878907 0-20.996093 17.023438-38.019531 38.019532-38.019531h403.300781c10.496094 0 20.003906 4.261719 26.878906 11.132813 6.875 6.886718 11.132813 16.394531 11.132813 26.886718zm0 0" fill="#bfdadd" /><path d="m486.933594 85.101562c0 6.613282-1.695313 12.828126-4.664063 18.242188h-349.964843c-10.503907 0-20.003907-4.257812-26.886719-11.132812-6.875-6.882813-11.132813-16.382813-11.132813-26.886719 0-6.613281 1.683594-12.828125 4.652344-18.242188h349.984375c10.496094 0 20.003906 4.261719 26.878906 11.132813 6.875 6.886718 11.132813 16.394531 11.132813 26.886718zm0 0" fill="#e4f5f7" /><g fill="#bfdadd"><path d="m247.425781 454.632812c-13.019531 0-23.570312-10.554687-23.570312-23.570312v-247.878906c0-13.015625 10.550781-23.570313 23.570312-23.570313s23.570313 10.554688 23.570313 23.570313v247.878906c0 13.015625-10.550782 23.570312-23.570313 23.570312zm0 0" /><path d="m352.167969 454.632812c-13.019531 0-23.574219-10.554687-23.574219-23.570312v-247.878906c0-13.015625 10.554688-23.570313 23.574219-23.570313 13.015625 0 23.570312 10.554688 23.570312 23.570313v247.878906c0 13.015625-10.554687 23.570312-23.570312 23.570312zm0 0" /><path d="m142.683594 454.632812c-13.015625 0-23.570313-10.554687-23.570313-23.570312v-247.878906c0-13.015625 10.554688-23.570313 23.570313-23.570313 13.019531 0 23.570312 10.554688 23.570312 23.570313v247.878906c0 13.015625-10.550781 23.570312-23.570312 23.570312zm0 0" /></g><path d="m494.542969 85.097656c0-25.152344-20.46875-45.621094-45.621094-45.621094h-141.621094c-10.253906-23.824218-33.722656-39.476562-60.035156-39.476562s-49.777344 15.652344-60.023437 39.476562h-105.320313c-4.199219 0-7.601563 3.40625-7.601563 7.605469s3.402344 7.605469 7.601563 7.605469h367c16.769531 0 30.410156 13.640625 30.410156 30.410156 0 16.773438-13.640625 30.414063-30.410156 30.414063h-403.300781c-16.769532 0-30.414063-13.640625-30.414063-30.414063 0-16.769531 13.644531-30.410156 30.414063-30.410156h5.882812c4.199219 0 7.605469-3.40625 7.605469-7.605469s-3.40625-7.605469-7.605469-7.605469h-5.882812c-25.15625 0-45.621094 20.46875-45.621094 45.621094 0 24.414063 19.277344 44.40625 43.40625 45.566406l23.035156 323.703126c2.300782 32.320312 29.480469 57.632812 61.878906 57.632812h238.207032c32.398437 0 59.582031-25.3125 61.882812-57.632812l23.035156-323.71875c23.984376-1.316407 43.097657-21.242188 43.097657-45.550782zm-247.277344-69.890625c17.878906 0 34.042969 9.421875 42.976563 24.269531h-85.945313c8.925781-14.847656 25.085937-24.269531 42.96875-24.269531zm165.972656 438.082031c-1.734375 24.394532-22.253906 43.503907-46.710937 43.503907h-238.203125c-24.457031 0-44.976563-19.109375-46.710938-43.503907l-22.953125-322.570312h377.53125zm0 0" /><path d="m247.425781 152.011719c-17.191406 0-31.175781 13.984375-31.175781 31.171875v247.878906c0 17.1875 13.984375 31.175781 31.175781 31.175781 17.191407 0 31.175781-13.988281 31.175781-31.175781v-247.878906c0-17.1875-13.984374-31.171875-31.175781-31.171875zm15.96875 279.050781c0 8.800781-7.164062 15.964844-15.96875 15.964844-8.804687 0-15.96875-7.164063-15.96875-15.964844v-247.878906c0-8.804688 7.164063-15.964844 15.96875-15.964844 8.804688 0 15.96875 7.160156 15.96875 15.964844zm0 0" /><path d="m352.167969 152.011719c-17.191407 0-31.175781 13.984375-31.175781 31.171875v247.878906c0 17.1875 13.984374 31.175781 31.175781 31.175781 17.1875 0 31.171875-13.988281 31.171875-31.175781v-174.628906c0-4.199219-3.402344-7.601563-7.601563-7.601563-4.203125 0-7.605469 3.402344-7.605469 7.601563v174.628906c0 8.804688-7.160156 15.964844-15.964843 15.964844-8.804688 0-15.96875-7.160156-15.96875-15.964844v-247.878906c0-8.804688 7.164062-15.964844 15.96875-15.964844 8.804687 0 15.964843 7.160156 15.964843 15.964844v47.90625c0 4.199218 3.402344 7.601562 7.605469 7.601562 4.199219 0 7.601563-3.402344 7.601563-7.601562v-47.90625c0-17.1875-13.984375-31.171875-31.171875-31.171875zm0 0" /><path d="m142.683594 152.011719c-17.191406 0-31.175782 13.984375-31.175782 31.171875v247.878906c0 17.1875 13.984376 31.175781 31.175782 31.175781s31.175781-13.988281 31.175781-31.175781v-247.878906c0-17.1875-13.984375-31.171875-31.175781-31.171875zm15.96875 279.050781c0 8.800781-7.164063 15.964844-15.96875 15.964844-8.804688 0-15.96875-7.164063-15.96875-15.964844v-247.878906c0-8.804688 7.164062-15.964844 15.96875-15.964844 8.804687 0 15.96875 7.160156 15.96875 15.964844zm0 0" /></svg>
+				</div>
+				<div>
+					<h5 class="h4 fw-600" id="deleteConfirmModalLabel">@Localizer["system_taskmanager_are_you_sure"]</h5>
+					<p class="mt-2">@Localizer["system_taskmanager_are_you_sure_text"] <span class="task-name"></span></p>
+				</div>
+				<div>
+					<button id="submit-task-delete" type="button" class="btn btn-primary d-flex align-items-center ml-auto">
+						<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
+							<path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
+						</svg>
+						@Localizer["system_taskmanager_yes"]
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal-add-task modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModalLabel" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header px-4">
+					<h5 class="modal-title" id="addTaskModalLabel">@Localizer["system_taskmanager_add_task"]</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span class="material-icons ">close</span>
+					</button>
+				</div>
+				<div class="modal-body mx-4 mb-4 p-0">
+					<ul class="nav nav-tabs iso-tabs">
+						<li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#add-task-tab">@Localizer["system_taskmanager_task_details"]</a></li>
+						<li><a class="nav-link" data-toggle="tab" href="#add-task-items-tab">@Localizer["system_taskmanager_task_items"]</a></li>
+					</ul>
+					<div class="tab-content">
+						<div id="add-task-tab" class="tab-pane fade in active show">
+							<form id="add-task">
+								<div class="form-group">
+									<div class="form-group">
+										<label for="add-task-name">@Localizer["name"]</label>
+										<input type="text" class="form-control task-name" id="add-task-name" placeholder="@Localizer["name"]" required>
+									</div>
+									<div class="form-group">
+										<label for="add-task-description">@Localizer["description"]</label>
+										<textarea class="form-control task-description ckeditor" id="add-task-description" type="text" rows="3" required></textarea>
+									</div>
+									<div class="form-group">
+										<label for="add-task-start-date">@Localizer["system_taskmanager_start_date"]</label>
+										<input type="date" id="add-task-start-date" class="form-control task-start-date" required>
+									</div>
+									<div class="form-group">
+										<label for="add-task-end-date">@Localizer["system_taskmanager_end_date"]</label>
+										<input type="date" id="add-task-end-date" class="form-control task-end-date" required>
+									</div>
+									<div class="form-group">
+										<label for="add-task-users">@Localizer["user"]</label>
+										<select id="add-task-users" class="form-control task-users" required>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="add-task-team">@Localizer["system_taskmanager_task_team"]</label>
+										<select id="add-task-team" class="form-control task-team js-example-basic-multiple" name="team[]" multiple>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="add-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
+										<select id="add-task-priority" class="form-control task-priority" required>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="add-task-status">@Localizer["status"]</label>
+										<select id="add-task-status" class="form-control task-status" required>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>@Localizer["system_taskmanager_upload_files"]</label>
+										<div class="add-task-uploaded-files mb-2">
+											<div class="file-list">
+											</div>
+										</div>
+										<div class="custom-file mb-4">
+											<input type="file" class="custom-file-input task-files" id="add-task-files" accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt" multiple>
+											<label class="custom-file-label" for="add-task-files">Choose file</label>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+						<div id="add-task-items-tab" class="tab-pane fade">
+							<div class="task-items-add-task">
+							</div>
+							<form id="add-task-item-add-task">
+								<div class="form-group d-flex">
+									<input type="text" class="form-control" id="new-task-item-name-add-task" placeholder="@Localizer["system_taskmanager_add_task_item"]" required>
+									<button class="btn btn-success py-0 px-2" id="add-new-task-item-add-task" type="submit" form="add-task-item-add-task">
+										<i class="material-icons d-block">add</i>
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="align-self-end pb-4 pr-4">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" class="submit-add-task btn btn-success text-white" form="add-task">@Localizer["system_taskmanager_save_task"]</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-task-details fade" id="detailsTaskModal" tabindex="-1" role="dialog" aria-labelledby="detailsTaskLabel" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header px-4">
+					<h5 class="modal-title" id="detailsTaskLabel">@Localizer["system_taskmanager_task"]<span class="ml-2 task-number">#000000</span></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span class="material-icons ">close</span>
+					</button>
+				</div>
+				<div class="modal-body mx-4 mb-4 p-0">
+					<ul class="nav nav-tabs iso-tabs">
+						<li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#details-tab">@Localizer["system_taskmanager_task_details"]</a></li>
+						<li><a class="nav-link" data-toggle="tab" href="#task-items-tab">@Localizer["system_taskmanager_task_items"]</a></li>
+					</ul>
+					<div class="tab-content">
+						<div id="details-tab" class="tab-pane fade in active show">
+						</div>
+						<div id="task-items-tab" class="tab-pane fade">
+							<div class="task-items">
+
+							</div>
+							<form id="add-task-item">
+								<div class="form-group d-flex">
+									<input type="text" class="form-control" id="new-task-item-name" placeholder="@Localizer["system_taskmanager_add_task_item"]" required>
+									<button class="btn btn-success py-0 px-2" id="add-new-task-item" type="submit" form="add-task-item">
+										<i class="material-icons d-block">add</i>
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal-edit-task modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header px-4">
+					<h5 class="modal-title" id="editTaskModalLabel">@Localizer["system_taskmanager_edit_task"]<span class="task-number"></span></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span class="material-icons ">close</span>
+					</button>
+				</div>
+				<div class="modal-body p-4">
+					<form id="edit-task">
+						<div class="edit-task-form-elements">
+
+						</div>
+						<div class="pull-right">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_taskmanager_close"]</button>
+							<input type="submit" class="btn btn-success text-white" value="@Localizer["system_taskmanager_save_task"]">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts
+{
+	<script id="taskListTemplate" type="text/x-jsrender">
+		<tr class="task priority-{{:~prioritiesList[taskPriority].text}}" data-id="{{:id}}">
+			<td class="task-number">
+				#{{:taskNumber}}
+			</td>
+			<td class="priority" data-priority="{{:taskPriority}}">
+				<span translate="{{:~prioritiesList[taskPriority].translateKey}}">
+					{{:~prioritiesList[taskPriority].text}}
+				</span>
+			</td>
+			<td>
+				<div class="task-label">{{:name}}</div>
+			</td>
+			<td class="progress-cell">
+				<div>
+					<div class="d-inline-block">
+						<p class="task-item-count m-0">
+							<span>{{:taskItemsCount[0]}}/{{:taskItemsCount[1]}}</span>
+						</p>
+					</div>
+					<div class="d-inline-block progress-block pl-2">
+						<div class="progress" style="height: 0.5rem">
+							<div class="progress-bar" role="progressbar" style="width: calc(100% * {{:taskItemsCount[0]}} / {{:taskItemsCount[1]}});" aria-valuenow="{{:taskItemsCount[0]}}" aria-valuemin="0" aria-valuemax="{{:taskItemsCount[1]}}}"></div>
+						</div>
+					</div>
+				</div>
+			</td>
+			<td class="start-date">
+				<span>{{:startDate}}</span>
+			</td>
+			<td class="end-date">
+				<span>{{:startDate}}</span>
+			</td>
+			<td>
+				<div class="status status-{{:~statusesList[status].text}}">
+					<span translate="{{:~statusesList[status].translateKey}}">
+						{{:~statusesList[status].text}}
+					</span>
+				</div>
+			</td>
+			<td class="author">
+				{{:author}}
+			</td>
+			<td class="assigne">
+				{{:~user.text}}
+			</td>
+			<td class="modified-by">
+				{{:modifiedBy}}
+			</td>
+			<td class="task-actions">
+				<div class="dropdown">
+					<button class="btn btn-primary dropdown-toggle d-flex align-items-center" type="button" id="actions-{{:id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="material-icons d-block">settings</i>
+					</button>
+					<div class="dropdown-menu" aria-labelledby="actions-{{:id}}">
+						<a href="" class="dropdown-item view-task d-flex" data-toggle="modal" data-assigned="{{:~assigned}}" data-target="#detailsTaskModal" data-id="{{:id}}">
+							<i class="material-icons d-block mr-2">remove_red_eye</i>
+							<span>@Localizer["system_view_details"]</span>
+						</a>
+						{{if ~deleted}}
+						<a href="" class="dropdown-item restore-task d-flex" data-id="{{:id}}">
+							<i class="material-icons d-block mr-2">restore</i>
+							<span>@Localizer["restore"]</span>
+						</a>
+						{{else !~assigned}}
+						<a href="" class="dropdown-item edit-task d-flex" data-toggle="modal" data-id="{{:id}}" data-task-name="{{:name}}" data-target="#editTaskModal">
+							<i class="material-icons d-block mr-2">edit</i>
+							<span>@Localizer["edit"]</span>
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="" class="dropdown-item delete-task d-flex" data-toggle="modal" data-id="{{:id}}" data-task-name="{{:name}}" data-target="#deleteConfirmModal">
+							<i class="material-icons d-block mr-2">delete_outline</i>
+							<span>@Localizer["delete"]</span>
+						</a>
+						{{/if}}
+					</div>
+				</div>
+			</td>
+		</tr>
+	</script>
+
+	<script id="taskItemsTemplate" type="text/x-jsrender">
+		<div class="task-item" data-id="{{:id}}">
+			{{if ~accessLevel == 'Owner' || ~accessLevel == 'Author'}}
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" class="task-item-status custom-control-input" id="{{:id}}" data-id="{{:id}}" {{if isDone}} checked="{{:isDone}}" {{/if}}>
+				<label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+				<button class="task-item-delete btn btn-outline-danger p-0 pull-right" data-id="{{:id}}">
+					<i class="material-icons d-block">close</i>
+				</button>
+			</div>
+			{{else}}
+			<div>
+				<label>{{:name}}</label>
+			</div>
+			{{/if}}
+			<hr class="my-3">
+		</div>
+	</script>
+
+	<script id="taskItemsAddTaskTemplate" type="text/x-jsrender">
+		<div class="task-item">
+			<div class="task-item-wrapper d-flex align-items-center">
+				<label class="m-0 task-item-name" data-task-name="{{:name}}">{{:name}}</label>
+				<button class="task-item-delete btn btn-outline-danger p-0 ml-auto">
+					<i class="material-icons d-block">close</i>
+				</button>
+			</div>
+			<hr class="my-3">
+		</div>
+	</script>
+
+	<script id="taskEditTemplate" type="text/x-jsrender">
+		<div class="form-group">
+			<label for="edit-task-name">@Localizer["name"]</label>
+			<input type="text" class="form-control task-name" id="edit-task-name" placeholder="@Localizer["name"]" required value="{{:name}}">
+		</div>
+		<div class="form-group">
+			<label for="edit-task-description">@Localizer["description"]</label>
+			<textarea class="form-control task-description ckeditor" id="edit-task-description" type="text" rows="3" required>{{:description}}</textarea>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-start-date">@Localizer["system_taskmanager_start_date"]</label>
+			<input type="date" id="edit-task-start-date" class="form-control task-start-date" required value="{{:~startDateF}}">
+		</div>
+		<div class="form-group">
+			<label for="edit-task-end-date">@Localizer["system_taskmanager_end_date"]</label>
+			<input type="date" id="edit-task-end-date" class="form-control task-end-date" required value="{{:~endDateF}}">
+		</div>
+		<div class="form-group">
+			<label for="edit-task-users">@Localizer["user"]</label>
+			<select id="edit-task-users" class="form-control task-users" required>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-team">@Localizer["system_taskmanager_task_team"]</label>
+			<select id="edit-task-team" class="form-control task-team" multiple>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-priority">@Localizer["system_taskmanager_task_priority"]</label>
+			<select id="edit-task-priority" class="form-control task-priority" required>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-status">@Localizer["system_taskmanager_status"]</label>
+			<select id="add-task-status" class="form-control task-status" required>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="edit-task-status">@Localizer["system_taskmanager_task_files"]</label>
+			<div class="add-task-uploaded-files mb-2">
+				<div class="file-list">
+				</div>
+			</div>
+			<input class="task-files" name="taskEditFiles" type="file" size="1" accept=".xls,.xlsx,.doc,.docx,.pdf,.rtf,.jpg,.jpeg,.bmp,.gif,.png,.ppt,.txt,.odt" />
+		</div>
+	</script>
+
+	<script id="taskDetailsTemplate" type="text/x-jsrender">
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["name"]</label>
+			<span>
+				{{:name}}
+			</span>
+		</div>
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["description"]</label>
+			<span>
+				{{:description}}
+			</span>
+		</div>
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_start_date"]</label>
+			<span>
+				{{:startDate}}
+			</span>
+		</div>
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_end_date"]</label>
+			<span>
+				{{:endDate}}
+			</span>
+		</div>
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["user"]</label>
+			<span>
+				{{:~user.text}}
+			</span>
+		</div>
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_team"]</label>
+			<div class="view-task-team">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_priority"]</label>
+			<span translate="{{:~prioritiesList[taskPriority].translateKey}}">
+				{{:~prioritiesList[taskPriority].text}}
+			</span>
+		</div>
+		{{if accessLevel == 'Owner'}}
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_status"]</label>
+			<select id="edit-assigned-task-status" class="form-control task-status" required>
+			</select>
+		</div>
+		{{else}}
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_status"]</label>
+			<span translate="{{:~statusesList[status].translateKey}}">
+				{{:~statusesList[status].text}}
+			</span>
+		</div>
+		{{/if}}
+		{{if files}}
+		<div class="form-group">
+			<label class="font-weight-bold mr-2">@Localizer["system_taskmanager_task_files"]</label>
+			<div class="view-task-files">
+			</div>
+		</div>
+		{{/if}}
+	</script>
+
+	<script src="~/assets/TaskManagerPlugins/task-manager-plugin.js" asp-append-version="true"></script>
+	<script src="~/assets/TaskManagerPlugins/task-manager.js" asp-append-version="true"></script>
+}

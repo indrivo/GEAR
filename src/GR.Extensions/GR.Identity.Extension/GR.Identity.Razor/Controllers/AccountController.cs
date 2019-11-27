@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Core;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
@@ -17,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GR.Core.Helpers;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
@@ -65,6 +68,8 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly IOptions<MPassOptions> _mpassOptions;
 
+        private readonly RoleManager<ApplicationRole> _roleManager;
+
         /// <summary>
         /// Inject M pass dataService
         /// </summary>
@@ -107,12 +112,13 @@ namespace GR.Identity.Razor.Controllers
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
             IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor,
-            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext)
+            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext, RoleManager<ApplicationRole> roleManager)
         {
             _cache = distributedCache;
             _httpContextAccesor = httpContextAccesor;
             _ldapUserManager = ldapUserManager;
             _applicationDbContext = applicationDbContext;
+            _roleManager = roleManager;
             _manager = manager;
             _mpassOptions = mpassOptions;
             _mpassSigningCredentialStore = mpassSigningCredentialStore;
@@ -275,13 +281,21 @@ namespace GR.Identity.Razor.Controllers
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             if (code == null)
             {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Error on generate reset token"));
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Error on generate reset token, try again"));
                 return Json(resultModel);
             }
 
             var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
-            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                $"Please reset your password by clicking here : <a href='{callbackUrl}'>link</a>");
+            var mail = $"Please reset your password by clicking here : <a href='{callbackUrl}'>link</a>";
+            var templateRequest = TemplateManager.GetTemplateBody("forgot-password");
+            if (templateRequest.IsSuccess)
+            {
+                mail = templateRequest.Result?.Inject(new Dictionary<string, string>
+                {
+                    { "Link", callbackUrl }
+                });
+            }
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password", mail);
 
             IdentityEvents.Users.UserForgotPassword(new UserForgotPasswordEventArgs
             {
@@ -350,8 +364,6 @@ namespace GR.Identity.Razor.Controllers
                 : returnUrl;
 
             if (!ModelState.IsValid) return View(model);
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
             var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Email);
             if (user != null)
@@ -362,7 +374,7 @@ namespace GR.Identity.Razor.Controllers
                     return View(model);
                 }
 
-                if (user.IsPasswordExpired())
+                if (user.IsPasswordExpired() && !await _userManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
                 {
                     ModelState.AddModelError(string.Empty,
                         "Password has been expired, you need to change the password");
@@ -685,12 +697,19 @@ namespace GR.Identity.Razor.Controllers
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found");
+                return View(model);
             }
 
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded) return RedirectToAction(nameof(ResetPasswordConfirmation));
+            if (result.Succeeded)
+            {
+                user.LastPasswordChanged = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+
             this.AddIdentityErrors(result);
-            return View();
+            return View(model);
         }
 
         /// <summary>

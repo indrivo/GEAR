@@ -267,15 +267,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.ECommerce.MobilPay", "GR
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Ecomerce.Subscription", "GR.Ecomerce.Subscription", "{7114D34C-C974-418C-B756-6C95E8567093}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscription.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription.Abstractions\GR.Subscription.Abstractions.csproj", "{939BBAF7-5BFC-47EB-BED4-386221850E49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions.Abstractions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription.Abstractions\GR.Subscriptions.Abstractions.csproj", "{939BBAF7-5BFC-47EB-BED4-386221850E49}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscription", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscription.csproj", "{D8434B44-FA8C-4C8E-93AC-839F78404AA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscriptions.csproj", "{D8434B44-FA8C-4C8E-93AC-839F78404AA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.MobilPay.Abstractions", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj", "{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Subscriptions.Razor", "src\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscriptions.Razor\GR.Subscriptions.Razor.csproj", "{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.MobilPay", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj", "{7F987A82-DE22-47E2-AD70-F95075CC6922}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Abstractions", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj", "{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.MobilPay.Razor", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj", "{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj", "{7F987A82-DE22-47E2-AD70-F95075CC6922}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MobilPay.Razor", "src\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj", "{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Documents.Extension", "GR.Documents.Extension", "{145106CB-1B8F-4B17-A761-9B8BCF37AB41}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents.Abstractions", "src\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj", "{D7EB3209-5E6A-476D-8C92-28597EF05CA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents", "src\GR.Extensions\GR.Documents.Extension\GR.Documents\GR.Documents.csproj", "{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents.Razor", "src\GR.Extensions\GR.Documents.Extension\GR.Documents.Razor\GR.Documents.Razor.csproj", "{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.WorkFlow.Extension", "GR.WorkFlow.Extension", "{A45A887D-97C6-4B42-B1F4-F319CBD39038}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.WorkFlows.Abstractions", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlow.Abstractions\GR.WorkFlows.Abstractions.csproj", "{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.WorkFlows", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows\GR.WorkFlows.csproj", "{6C0A5347-E0CC-481D-982F-B21692FAA877}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -854,6 +870,12 @@ Global
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B}.Stage|Any CPU.Build.0 = Debug|Any CPU
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -872,6 +894,36 @@ Global
 		{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{6C0A5347-E0CC-481D-982F-B21692FAA877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0A5347-E0CC-481D-982F-B21692FAA877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C0A5347-E0CC-481D-982F-B21692FAA877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C0A5347-E0CC-481D-982F-B21692FAA877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C0A5347-E0CC-481D-982F-B21692FAA877}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0A5347-E0CC-481D-982F-B21692FAA877}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1008,9 +1060,17 @@ Global
 		{7114D34C-C974-418C-B756-6C95E8567093} = {4ADAD96E-E01B-47C5-9589-7C6DEF589D66}
 		{939BBAF7-5BFC-47EB-BED4-386221850E49} = {7114D34C-C974-418C-B756-6C95E8567093}
 		{D8434B44-FA8C-4C8E-93AC-839F78404AA3} = {7114D34C-C974-418C-B756-6C95E8567093}
+		{E2AEDBAF-8C44-4929-8303-1E961A6CE56B} = {7114D34C-C974-418C-B756-6C95E8567093}
 		{DA74DBE6-D0C3-49F4-9937-65FE5406CB18} = {43B734C2-ECED-4C2C-97DA-D273A51326D9}
 		{7F987A82-DE22-47E2-AD70-F95075CC6922} = {43B734C2-ECED-4C2C-97DA-D273A51326D9}
 		{3C2D404E-E2BC-4E5F-84A6-648B5D3F8B29} = {43B734C2-ECED-4C2C-97DA-D273A51326D9}
+		{145106CB-1B8F-4B17-A761-9B8BCF37AB41} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
+		{D7EB3209-5E6A-476D-8C92-28597EF05CA3} = {145106CB-1B8F-4B17-A761-9B8BCF37AB41}
+		{9C99CB4F-B40E-41DE-83D5-C3490D0B62CA} = {145106CB-1B8F-4B17-A761-9B8BCF37AB41}
+		{F5C2A1D8-E82D-4CC8-BD43-BFA077C868C6} = {145106CB-1B8F-4B17-A761-9B8BCF37AB41}
+		{A45A887D-97C6-4B42-B1F4-F319CBD39038} = {7AE24405-9DE2-4131-904B-F3ED0F6B104B}
+		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2} = {A45A887D-97C6-4B42-B1F4-F319CBD39038}
+		{6C0A5347-E0CC-481D-982F-B21692FAA877} = {A45A887D-97C6-4B42-B1F4-F319CBD39038}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

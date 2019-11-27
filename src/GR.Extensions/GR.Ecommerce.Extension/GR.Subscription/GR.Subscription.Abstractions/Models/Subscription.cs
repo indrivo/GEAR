@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 using GR.Core;
-using GR.Core.Extensions;
 using GR.Orders.Abstractions.Models;
 
-namespace GR.Subscription.Abstractions.Models
+namespace GR.Subscriptions.Abstractions.Models
 {
-    public class Subscription: BaseModel
+    public class Subscription : BaseModel
     {
+        /// <summary>
+        /// Name
+        /// </summary>
+        public virtual string Name { get; set; }
+
         /// <summary>
         /// Reference to customer
         /// </summary>
@@ -22,19 +25,39 @@ namespace GR.Subscription.Abstractions.Models
         public virtual DateTime StartDate { get; set; }
 
         /// <summary>
-        /// valability day
+        /// Availability days
         /// </summary>
-        public int Valability { get; set; }
+        public virtual int Availability { get; set; }
 
         /// <summary>
         /// Order id
         /// </summary>
-        public Guid OrderId { get; set; }
+        public virtual Guid OrderId { get; set; }
 
         /// <summary>
         /// Order
         /// </summary>
-        public Order Order { get; set; }
+        public virtual Order Order { get; set; }
 
+
+        /// <summary>
+        /// Services
+        /// </summary>
+        public virtual IEnumerable<SubscriptionPermission> SubscriptionPermissions { get; set; }
+
+        /// <summary>
+        /// Is valid subscription
+        /// </summary>
+        public virtual bool IsValid => ExpirationDate > DateTime.Now;
+
+        /// <summary>
+        /// Remaining days subscription
+        /// </summary>
+        public virtual int RemainingDays => IsValid ? (ExpirationDate - DateTime.Now).Days : 0;
+
+        /// <summary>
+        /// Expiration Date
+        /// </summary>
+        public virtual DateTime ExpirationDate => StartDate.AddDays(Availability);
     }
 }

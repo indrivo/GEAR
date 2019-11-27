@@ -49,8 +49,10 @@ $(function () {
     });
 
     $('.task-manager .task-manager-items-per-page-control').on('change', function () {
-        tableProperties.pageSize = $(this).val();
-        loadTaskList(tableProperties);
+        const tablePropertiesLocal = tableProperties;
+        tablePropertiesLocal.pageSize = $(this).val();
+        tablePropertiesLocal.page = 1;
+        loadTaskList(tablePropertiesLocal);
     });
 
     $('.task-manager-add-new-task').on('click', function () {
@@ -122,10 +124,12 @@ $(function () {
             $(this).closest('.task-item').remove();
         });
         $(this).find('#new-task-item-name-add-task').val('');
+        addTaskItemsEvents(null);
     });
 
     $('.task-manager .task-manager-task-types').on('change', function () {
         tableProperties.type = $(this).val();
+        tableProperties.page = 1;
         loadTaskList(tableProperties);
     });
 
@@ -159,8 +163,8 @@ $(function () {
     function addChangeFileInputEvent(type) {
         $('.task-files').off().on('change', function () {
             const scope = this;
-            const wrapper = $(scope).siblings('.add-task-uploaded-files').find('.file-list');
-            const files = getFilesFromInput($(this));
+            const wrapper = $(scope).closest('.form-group').find('.file-list');
+            const files = getFilesFromInput($(scope));
             if (type === 'add') {
                 wrapper.html('');
                 for (let i = 0; i < files.length; i++) {
@@ -357,7 +361,7 @@ $(function () {
             const taskId = $(this).data("id");
             const taskName = $(this).data("task-name");
             e.stopPropagation();
-            $('#deleteConfirmModal .modal-title .task-name').html(taskName);
+            $('#deleteConfirmModal .task-name').html(taskName);
             $('#deleteConfirmModal').modal('show');
 
             $('#deleteConfirmModal #submit-task-delete').off().on('click', function () {
@@ -400,6 +404,12 @@ $(function () {
             const scope = $(this);
             const taskId = scope.data('id');
             const assigned = scope.data('assigned');
+            if ($('.task-manager .task-manager-task-types').val() === 'deleted') {
+                $('.nav-tabs').hide();
+            }
+            else {
+                $('.nav-tabs').show();
+            }
             $('.initial-tab-click').trigger('click');
             viewTask(taskId, assigned).then(() => {
                 if (assigned) {
@@ -549,33 +559,37 @@ $(function () {
     }
 
     function addTaskItemsEvents(taskId) {
-        $('#add-new-task-item').off().on('click', function (e) {
-            e.preventDefault();
-            const name = $(this).siblings('#new-task-item-name').val();
-            $(this).siblings('#new-task-item-name').val('');
-            addTaskItem(taskId, name);
-        });
+        if (taskId !== null) {
+            $('#add-new-task-item').off().on('click', function (e) {
+                e.preventDefault();
+                const name = $(this).siblings('#new-task-item-name').val();
+                $(this).siblings('#new-task-item-name').val('');
+                addTaskItem(taskId, name);
+            });
+            $('.task-item-status').off().on('change', function () {
+                const taskItemId = $(this).data('id');
+                const taskItemName = $(this).siblings('.custom-control-label').text();
+                const taskItemStatus = $(this).is(':checked');
+                updateTaskItem(taskId, taskItemId, taskItemName, taskItemStatus).then(() => { }).catch(() => {
+                });
+            });
+        }
         $('.task-item-delete').off().on('click', function () {
             const scope = $(this);
             let taskItemId = scope.data('id');
-            deleteTaskItem(taskId, taskItemId).then(() => {
-                scope.closest('.task-item').remove();
-            }).catch(e => {
-                console.warn(e, 'delete task item action');
-            });
-        });
-        $('.task-item-status').off().on('change', function () {
-            const taskItemId = $(this).data('id');
-            const taskItemName = $(this).siblings('.custom-control-label').text();
-            const taskItemStatus = $(this).is(':checked');
-            updateTaskItem(taskId, taskItemId, taskItemName, taskItemStatus).then(() => { }).catch(() => {
-            });
+            scope.closest('.task-item').remove();
+            if (taskId !== null) {
+                deleteTaskItem(taskId, taskItemId).then(() => {
+                }).catch(e => {
+                    console.warn(e, 'delete task item action');
+                });
+            }
         });
     }
 
     function addTaskItem(taskId, taskItemName) {
         manager.createTaskItem({ TaskId: taskId, Name: taskItemName, IsDone: false }).then(result => {
-            const htmlOutput = taskItemsTemplate.render({ id: result, name: taskItemName, isDone: false });
+            const htmlOutput = taskItemsTemplate.render({ id: result, name: taskItemName, isDone: false }, { accessLevel: 'Author'});
             $("#task-items-tab .task-items").append(htmlOutput);
             addTaskItemsEvents(taskId);
             refreshTask(taskId).then(() => {
@@ -607,15 +621,9 @@ $(function () {
             targetTask.find('.task-item-count').html(`<span>${result.taskItemsCount[0]}/${result.taskItemsCount[1]}</span>`);
             targetTask.find('.start-date span').html(result.startDate);
             targetTask.find('.end-date span').html(result.endDate);
-            if (result.status === 3) {
-                targetTask.find('.status').html('<i class="material-icons d-block mr-1">done_outline</i>' + statuses[result.status].text);
-            }
-            else {
-                targetTask.find('.status').html(statuses[result.status].text);
-            }
+            targetTask.find('.status').html(statuses[result.status].text);
             targetTask.find('.priority').html(`<span class="priority-${priorities[result.taskPriority].text}">${priorities[result.taskPriority].text}</span>`);
             targetTask.removeClass('priority-High priority-Critical priority-Low priority-Medium').addClass('priority-' + priorities[result.taskPriority].text);
-
         }).catch(e => {
             toast.notifyErrorList(e);
             console.log('here is the problem');
@@ -655,16 +663,27 @@ $(function () {
         if (pageCount > 1) {
             for (let i = 1; i <= pageCount; i++) {
                 if (page === i) {
-                    $('#task-list-pager').append(`<li class="page-item active"><a class="page-link" data-page="` + i + `">` + i + `</a></li>`);
+                    $('#task-list-pager').append(`<li class="page-item active"><a class="page-link" data-page="${i}">${i}</a></li>`);
                 }
                 else {
-                    $('#task-list-pager').append(`<li class="page-item"><a class="page-link" data-page="` + i + `">` + i + `</a></li>`);
+                    $('#task-list-pager').append(`<li class="page-item"><a class="page-link" data-page="${i}">${i}</a></li>`);
                 }
             }
+
+            if (page > 1) {
+                $('#task-list-pager').prepend(`<li class="page-item"><a class="page-link previous-page" data-page="${page - 1}"><i class="material-icons">keyboard_arrow_left</i></a></li>`);
+            }
+            else if (page < pageCount) {
+                $('#task-list-pager').append(`<li class="page-item"><a class="page-link previous-page" data-page="${page + 1}"><i class="material-icons">keyboard_arrow_right</i></a></li>`);
+            }
+            else {
+
+            }
+
             $('#task-list-pager .page-item').off().on('click', function (e) {
                 const linkPage = $(this).children('.page-link').data('page');
                 e.preventDefault();
-                let taskPropertiesLocal = taskPropertiesLocal;
+                let taskPropertiesLocal = tableProperties;
                 taskPropertiesLocal.page = linkPage;
                 loadTaskList(taskPropertiesLocal);
             });

@@ -42,7 +42,7 @@ namespace GR.Report.Abstractions.Models
             {
                 if (value != null)
                 {
-                    ReportData = value.Serialize();
+                    ReportData = value.SerializeAsJson();
                 }
             }
         }

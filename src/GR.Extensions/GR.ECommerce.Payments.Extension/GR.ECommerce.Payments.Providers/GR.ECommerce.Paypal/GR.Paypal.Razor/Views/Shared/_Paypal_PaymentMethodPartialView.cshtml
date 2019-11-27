@@ -1,14 +1,26 @@
-﻿@model Guid
+﻿@using GR.Paypal.Models
+@model Guid
+@inject IOptions<PaypalExpressConfigForm> Options
 
-<label>Paypal Express </label>
-<div id="paypal-button"></div>
+@{
+    var env = Options.Value.IsSandbox ? "sandbox" : "production";
+}
+
+<div id="paypal-button" class="payment-method-button"></div>
 <p style="display: none; color: red" id="paypalPaymentError"></p>
 
 <script src="https://www.paypalobjects.com/api/checkout.js"></script>
 
 <script type="text/javascript">
 	paypal.Button.render({
-			env: 'sandbox',
+        env: '@env',
+        style: {
+           size: 'responsive',
+            shape: 'rect',
+            label: 'paypal',
+            height: 55,
+            color: 'white'
+            },
 			commit: true,
 			payment: function(data, actions) {
 				return paypal.request.post('@Url.Action("CreatePayment", "Paypal", new{ OrderId = Model })')

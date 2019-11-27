@@ -2,8 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
@@ -13,6 +15,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.Products.Services
 {
+    [Author(Authors.DOROSENCO_ION, 1.1)]
+    [Documentation("Basic Implementation of cart service")]
     public class CartService : ICartService
     {
         #region Injectable
@@ -114,8 +118,8 @@ namespace GR.ECommerce.Products.Services
             var cart = await _context.Carts
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.Product)
-                .ThenInclude(i=> i.ProductPrices)
-                .Include(i=> i.CartItems)
+                .ThenInclude(i => i.ProductPrices)
+                .Include(i => i.CartItems)
                 .ThenInclude(i => i.ProductVariation)
                 .FirstOrDefaultAsync(x => x.UserId == user.Result.Result.Id.ToGuid());
 
@@ -128,7 +132,7 @@ namespace GR.ECommerce.Products.Services
             var result = cart.Adapt<AddToCartViewModel>();
 
             result.TotalPrice = GetTotalPrice(result.Id);
-                
+
             response.IsSuccess = true;
             response.Result = result;
             return response;
@@ -152,7 +156,7 @@ namespace GR.ECommerce.Products.Services
 
                 if (cart == null)
                 {
-                    cart = new Cart{ UserId = user.Result.Result.Id.ToGuid() };
+                    cart = new Cart { UserId = user.Result.Result.Id.ToGuid() };
                     await _context.Carts.AddAsync(cart);
                 }
 
@@ -174,10 +178,11 @@ namespace GR.ECommerce.Products.Services
                 {
                     cartItem.Amount += model.Quantity;
                     cartItem.ProductVariationId = model.VariationId;
-                    _context.CartItems.Update(cartItem);}
+                    _context.CartItems.Update(cartItem);
+                }
 
                 var dbResult = await _context.PushAsync();
-                return dbResult.Map((await  GetCartItemByIdAsync(cartItem.Id)).Result);
+                return dbResult.Map((await GetCartItemByIdAsync(cartItem.Id)).Result);
             }
             return resultModel;
         }
@@ -242,10 +247,10 @@ namespace GR.ECommerce.Products.Services
         {
             var cart = _context.Carts
                 .Include(i => i.CartItems)
-                .ThenInclude(i=>i.ProductVariation)
+                .ThenInclude(i => i.ProductVariation)
                 .Include(i => i.CartItems)
                 .ThenInclude(i => i.Product)
-                .ThenInclude(i=> i.ProductPrices)
+                .ThenInclude(i => i.ProductPrices)
                 .FirstOrDefault(x => x.Id == cartId);
 
             decimal totalPrice = 0;
@@ -260,7 +265,7 @@ namespace GR.ECommerce.Products.Services
                     }
                     else
                     {
-                        totalPrice += (decimal)cartItem.ProductVariation?.Price  * cartItem.Amount;
+                        totalPrice += (decimal)cartItem.ProductVariation?.Price * cartItem.Amount;
                     }
                 }
             }

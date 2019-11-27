@@ -103,30 +103,41 @@ TableColumnsVisibility.prototype.toggleRightListSideBar = function (id) {
 				}
 				items += `<li class="list-group-item">${new TableColumnsVisibility().renderCheckBox(data, id, vis)}</li>`;
 			});
-
-		const container =
-			`<div class="row">
-				<div class="col-md-6">
-					<a id="selAllCols" href="javascript:void(0)">${window.translate("select_all")}</a>
-				</div>
-			<div class="col-md-6">
-				<a id="deselAllCols" href="javascript:void(0)">${window.translate("deselect_all")}</a>
-				</div>
-			</div><div class="to-do-widget"><ul class="todo-list list-group m-b-0">${
-			items}</ul</div>`;
+		items = `<li class="list-group-item list-group-item-header">
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" id="selAllCols" class="custom-control-input" checked>
+						<label class="custom-control-label" for="selAllCols">List column</label>
+					</div>
+				</li>` + items;
+		const container = `<div class="to-do-widget"><ul class="todo-list list-group m-b-0">${items}</ul</div>`;
 		$(new TableColumnsVisibility().modalContainer).html(container);
 
-		$("#selAllCols").on("click", function () {
-			new TableColumnsVisibility().dataStateChange(this, true, id);
-			scope.onColumnsVisibilityStateChanged(this);
-		});
+		const checkForUnchecked = () => {
+			$.each($('.vis-check'), function () {
+				const inputToUncheck = $("#selAllCols");
+				if (!$(this).is(':checked')) {
+					inputToUncheck.prop("checked", false);
+					return false;
+				}
+				else {
+					inputToUncheck.prop("checked", true);
+				}
+			});
+		}
 
-		$("#deselAllCols").on("click", function () {
-			new TableColumnsVisibility().dataStateChange(this, false, id);
+		checkForUnchecked();
+
+		$("#selAllCols").on("change", function () {
+			let state = false;
+			if ($(this).is(':checked')) {
+				state = true;
+			}
+			new TableColumnsVisibility().dataStateChange(this, state, id);
 			scope.onColumnsVisibilityStateChanged(this);
 		});
 
 		$(".vis-check").change(function () {
+			checkForUnchecked();
 			new TableColumnsVisibility().dataChanged(this, id);
 			scope.onColumnsVisibilityStateChanged(this);
 		});
@@ -151,8 +162,7 @@ TableColumnsVisibility.prototype.dataStateChange = function(ref, state, id) {
 	const inputs = $($(ref)
 			.parent()
 			.parent()
-			.parent()
-			.children()[1])
+			.parent())
 		.find("input[type=checkbox]");
 
 	for (let input = 0; input < inputs.length; input++) {

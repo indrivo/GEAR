@@ -20,14 +20,14 @@
 	<PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
 	<PackageReference Include="Microsoft.AspNetCore.All" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="2.2.0" />
-	<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" PrivateAssets="All" />
+	<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.4" PrivateAssets="All" />
 	<PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
 	<PackageReference Include="Microsoft.Extensions.HealthChecks.SqlServer" Version="1.0.0" />
 	<PackageReference Include="ST.ServiceDiscovery" Version="1.1.1" />
 	<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="4.0.1" />
 	<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="4.0.1" />
 	<PackageReference Include="System.Drawing.Common" Version="4.6.0" />
-	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.76" />
+	<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
   </ItemGroup>
   <ItemGroup>
 	<DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
@@ -86,9 +86,14 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Calendar.Extensions\GR.Calendar\GR.Calendar.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard.Razor\GR.Dashboard.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Dashboard.Extension\GR.Dashboard\GR.Dashboard.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents.Razor\GR.Documents.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Documents.Extension\GR.Documents\GR.Documents.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Orders\GR.Orders\GR.Orders.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Products\GR.ECommerce.Products.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.ECommerce.Razor\GR.ECommerce.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscriptions.Razor\GR.Subscriptions.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Ecommerce.Extension\GR.Subscription\GR.Subscription\GR.Subscriptions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Abstractions\GR.MobilPay.Abstractions.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay.Razor\GR.MobilPay.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.ECommerce.Payments.Extension\GR.ECommerce.Payments.Providers\GR.ECommerce.MobilPay\GR.MobilPay\GR.MobilPay.csproj" />
@@ -130,6 +135,18 @@
 	</Content>
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+	<Content Update="Views\CompanyManage\Index.cshtml">
+	  <Pack>false</Pack>
+	</Content>
+	<Content Update="Views\Shared\_MobilPay_PaymentMethodPartialView.cshtml">
+	  <Pack>false</Pack>
+	</Content>
+	<Content Update="Views\Shared\_OrderSummaryPartialView.cshtml">
+	  <Pack>false</Pack>
+	</Content>
+	<Content Update="Views\TaskManager\Index.cshtml">
+	  <Pack>false</Pack>
 	</Content>
   </ItemGroup>
   <ItemGroup>

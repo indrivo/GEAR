@@ -13,7 +13,7 @@ namespace GR.Orders.Abstractions.ViewModels.OrderViewModels
         /// <summary>
         /// Text
         /// </summary>
-        public string FormattedTotal => "$" + Total.ToString("N2");
+        public string FormattedTotal => Currency?.Symbol + Total.ToString("N2");
 
         /// <summary>
         /// User

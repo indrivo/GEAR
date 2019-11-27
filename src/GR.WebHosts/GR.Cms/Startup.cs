@@ -41,11 +41,9 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Data;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.LdapAuth;
 using GR.Identity.LdapAuth.Abstractions.Extensions;
 using GR.Identity.Permissions;
-using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Identity.Services;
 using GR.Identity.Versioning;
 using GR.Install.Abstractions.Extensions;
@@ -108,6 +106,7 @@ using GR.TaskManager.Data;
 using GR.TaskManager.Razor.Extensions;
 using GR.TaskManager.Services;
 using GR.Calendar.NetCore.Api.GraphQL.Extensions;
+using GR.Documents;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.ECommerce.BaseImplementations.Data;
 using GR.ECommerce.Payments.Abstractions.Extensions;
@@ -122,8 +121,17 @@ using GR.Paypal;
 using GR.Paypal.Abstractions.Extensions;
 using GR.MobilPay;
 using GR.MobilPay.Abstractions.Extensions;
+using GR.MobilPay.Razor.Extensions;
 using GR.Orders.Abstractions.Extensions;
 using GR.Paypal.Razor.Extensions;
+using GR.Subscriptions.Abstractions.Models;
+using GR.Subscriptions;
+using GR.Subscriptions.Abstractions.Extensions;
+using GR.Documents.Abstractions.Extensions;
+using GR.Documents.Data;
+using GR.Identity.IdentityServer4.Extensions;
+using GR.Identity.Permissions.Abstractions.Extensions;
+using GR.Subscriptions.BackgroundServices;
 
 #endregion
 
@@ -193,7 +201,8 @@ namespace GR.Cms
 			//----------------------------------Origin Cors Usage-------------------------------------
 			app.UseConfiguredCors(Configuration);
 
-			app.UseCalendarGrapHQL();
+            //----------------------------------Calendar graphQl--------------------------------------
+			app.UseCalendarGraphQl();
 
 			//----------------------------------Use cors-------------------------------------
 			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
@@ -271,6 +280,7 @@ namespace GR.Cms
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
+				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
 				.AddMvc()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
@@ -280,7 +290,7 @@ namespace GR.Cms
 				});
 
 			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
-				.AddAuthorizationBasedOnCache<ApplicationDbContext, PermissionService<ApplicationDbContext>>()
+				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
 				.AddHealthChecks(checks =>
@@ -402,7 +412,7 @@ namespace GR.Cms
 					options.ClientSecretId = "./7v5Ns0cT@K?BdD85J/r1MkE1rlPran";
 					options.TenantId = "f24a7cfa-3648-4303-b392-37bb02d09d28";
 				})
-				.AddCalendarGraphQLApi();
+				.AddCalendarGraphQlApi();
 
 			//------------------------------------File Module-------------------------------------
 			services.AddFileModule<FileManager<FileDbContext>>()
@@ -492,11 +502,18 @@ namespace GR.Cms
 				.RegisterMobilPayProvider<MobilPayPaymentMethodService>()
 				.RegisterPaypalRazorProvider(Configuration)
 				.RegisterProductOrderServices<Order, OrderProductService>()
+				.RegisterSubscriptionServices<Subscription, SubscriptionService>()
 				.RegisterPayments<PaymentService>()
 				.RegisterCartService<CartService>()
 				.RegisterOrdersStorage<CommerceDbContext>()
+				.RegisterSubscriptionStorage<CommerceDbContext>()
 				.RegisterPaymentStorage<CommerceDbContext>()
 				.RegisterCommerceEvents()
+				.RegisterOrderEvents()
+				.RegisterSubscriptionEvents()
+				.RegisterSubscriptionRules()
+				.RegisterBackgroundService<SubscriptionValidationBackgroundService>()
+				.RegisterMobilPayRazorProvider(Configuration)
 				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
@@ -510,6 +527,16 @@ namespace GR.Cms
 
 			//------------------------------------------Custom ISO-------------------------------------
 			services.AddTransient<ITreeIsoService, TreeIsoService>();
+
+			//------------------------------------ Documents Module -----------------------------------
+
+			services.RegisterDocumentStorage<DocumentsDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			})
+			.RegisterDocumentTypeServices<DocumentTypeService>()
+			.RegisterDocumentServices<DocumentService>();
 
 			//--------------------------Custom dependency injection-------------------------------------
 			return services.AddWindsorContainers();
