@@ -37,6 +37,9 @@ namespace GR.WebApplication.Extensions
             configAction(configuration);
             configuration.GearServices = services;
 
+            //get and set app configured
+            GearWebApplication.IsConfigured(configuration.HostingEnvironment);
+
             //Use compression
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
 

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using GR.Core;
 
-namespace GR.WorkFlows.Abstractions.Models
+namespace GR.WorkFlows.Abstractions.ViewModels
 {
-    public class State : BaseModel
+    public class AddNewStateViewModel
     {
         /// <summary>
         /// Transition name
@@ -18,24 +17,13 @@ namespace GR.WorkFlows.Abstractions.Models
         public virtual string Description { get; set; }
 
         /// <summary>
-        /// Is start state
-        /// </summary>
-        public virtual bool IsStartState { get; set; }
-
-        /// <summary>
-        /// Is end state
-        /// </summary>
-        public virtual bool IsEndState { get; set; }
-
-        /// <summary>
         /// Reference to workflow
         /// </summary>
-        public virtual WorkFlow WorkFlow { get; set; }
         public virtual Guid WorkFlowId { get; set; }
 
         /// <summary>
-        /// Additional settings
+        /// Settings
         /// </summary>
-        public virtual string AdditionalSettings { get; set; }
+        public virtual object AdditionalSettings { get; set; }
     }
 }

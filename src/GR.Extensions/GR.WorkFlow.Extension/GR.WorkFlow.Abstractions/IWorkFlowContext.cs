@@ -21,5 +21,15 @@ namespace GR.WorkFlows.Abstractions
         /// States
         /// </summary>
         DbSet<State> States { get; set; }
+
+        /// <summary>
+        /// Transition roles
+        /// </summary>
+        DbSet<TransitionRole> TransitionRoles { get; set; }
+
+        /// <summary>
+        /// Actions
+        /// </summary>
+        DbSet<WorkflowAction> WorkflowActions { get; set; }
     }
 }

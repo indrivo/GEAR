@@ -293,6 +293,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WorkFlows", "src\GR.Exte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WebApplication", "src\GR.Extensions\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj", "{A0C4C692-A987-47C7-9437-36457BA49EFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.WorkFlows.Razor", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows.Razor\GR.WorkFlows.Razor.csproj", "{43E024A7-9842-4F33-BE70-600C764F5593}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -924,6 +926,12 @@ Global
 		{A0C4C692-A987-47C7-9437-36457BA49EFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A0C4C692-A987-47C7-9437-36457BA49EFB}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{A0C4C692-A987-47C7-9437-36457BA49EFB}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{43E024A7-9842-4F33-BE70-600C764F5593}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E024A7-9842-4F33-BE70-600C764F5593}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43E024A7-9842-4F33-BE70-600C764F5593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43E024A7-9842-4F33-BE70-600C764F5593}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43E024A7-9842-4F33-BE70-600C764F5593}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E024A7-9842-4F33-BE70-600C764F5593}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1071,6 +1079,7 @@ Global
 		{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2} = {A45A887D-97C6-4B42-B1F4-F319CBD39038}
 		{6C0A5347-E0CC-481D-982F-B21692FAA877} = {A45A887D-97C6-4B42-B1F4-F319CBD39038}
 		{A0C4C692-A987-47C7-9437-36457BA49EFB} = {B595C1E9-D7E5-4A9D-8995-55720F89A815}
+		{43E024A7-9842-4F33-BE70-600C764F5593} = {A45A887D-97C6-4B42-B1F4-F319CBD39038}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}

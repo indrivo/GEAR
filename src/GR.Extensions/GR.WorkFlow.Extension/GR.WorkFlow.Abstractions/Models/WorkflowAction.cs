@@ -2,7 +2,7 @@
 
 namespace GR.WorkFlows.Abstractions.Models
 {
-    public class TransitionAction : BaseModel
+    public class WorkflowAction : BaseModel
     {
         /// <summary>
         /// Action name
