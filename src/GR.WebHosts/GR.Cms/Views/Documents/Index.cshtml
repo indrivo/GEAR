@@ -27,6 +27,8 @@
 	</div>
 </div>
 
+
+
 <table id="data-table" class="table table-striped mb-4 bg-white table-bordered">
 	<thead>
 		<tr>
@@ -42,18 +44,7 @@
 		</tr>
 	</thead>
 	<tbody id="tableListDocuments">
-		@*@foreach (var document in Model)
-			{
-				<tr>
-					<td>@document.Title</td>
-					<td>@document.Description</td>
-					<td><a href="@(document.DocumentType.Code == 3 ? document.LastUrl : "#" )" onclick="downloadFile('@document.LastFileId')" target="_blank">@(document.DocumentType.Code == 3 ? document.LastUrl : document.FileName)</a></td>
-					<td>@document.Group</td>
-					<td>@document.DocumentType.Name</td>
-					<td>@document.LastVersion.ToString("N1")</td>
-					<td></td>
-				</tr>
-			}*@
+		
 	</tbody>
 
 </table>
@@ -186,42 +177,16 @@
 					<input id="DocumentId" name="DocumentId" class="form-control" type="hidden" />
 					<div class="form-body">
 						<div class="row p-t-20">
-							<!-- <div class="col-md-12">
-								<div class="form-group">
-									<label>Document Code</label>
-									<input name="DocumentCode" class="form-control" value=""/>
-								</div>
-							</div>
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Tile</label>
-									<input name="Tile" class="form-control" value=""/>
+									<div class="checkbox-container">
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" name="IsMajorVersion" class="custom-control-input " id="IsMajorVersion"/>
+											<label class="custom-control-label" for="IsMajorVersion">Is Major version </label>
+										</div>
+									</div>
 								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Description</label>
-									<textarea name="Description" class="form-control ckeditor" value=""></textarea>
-
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Group</label>
-									<input name="Group" class="form-control" value=""/>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Url</label>
-									<input name="Url" class="form-control" value=""/>
-								</div>
-							</div> -->
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Is Major version</label>
-									<input type="checkbox" name="IsMajorVersion" />
-								</div>
+								
 							</div>
 							<div class="col-md-12">
 								<div class="form-group">
@@ -352,7 +317,6 @@
 
 		function downloadFile(fileId) {
 
-			alert(fileId);
 			if (fileId != null && fileId != 'null')
 				window.location.href = '/api/File/' + "GetFile?id=" + fileId;
 		}
@@ -382,7 +346,7 @@
 								    </div>
 								</td>
 								<td> ${value.title}</td>
-								<td>${value.description}</td>
+								<td style="white-space: pre-wrap;">${value.description}</td>
 								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
 										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
 										.documentType.code ==
@@ -391,7 +355,7 @@
 										: value.fileName}</a></td>
 								<td>${value.group}</td>
 								<td>${value.documentType.name}</td>
-								<td> ${value.lastVersion}</td>
+								<td> ${value.lastVersion.toFixed(1)}</td>
                                 <td> ${value.isDeleted}</td>
                                 <td>
                                     <button type="button" class="btn btn-light" onclick ="getDocumntVersions('${
@@ -420,9 +384,14 @@
 			var file = $('#NewVersionFileInput')[0].files[0];
 			formData.append('file', file);
 
-			$.each($(this).serializeArray(),
-				function(i, input) {
-					formData.append(input.name, input.value);
+			console.log($(this).serializeArray());
+
+			$.each($(this).serializeArray(), function (i, input) {
+
+				if (input.name === "IsMajorVersion")
+					input.value = true;
+
+				formData.append(input.name, input.value);
 				});
 
 			console.log(formData);
@@ -502,6 +471,9 @@
 					success: function(data) {
 						if (data.is_success) {
 							GetAllDocuments();
+							$(listDocumetId).each(function( index ) {
+								deleteDocuments(index);
+							});
 						}
 					},
 					error: function(error) {
@@ -509,6 +481,37 @@
 					}
 				});
 			}
+		}
+
+		function deleteDocuments(DocumentId) {
+			const dbService = new DataInjector();
+			const filters = [
+				{
+					parameter: "DocumentId",
+					criteria: "equals",
+					value: DocumentId
+				}
+			];
+
+			dbService.deletePermanentWhereAsync("ControlDocuments", filters).then(response => {
+				if (response.is_success) {
+
+				} else {
+					toast.notifyErrorList(response.error_keys);
+				}
+			}).catch(e => {
+				toast.notifyErrorList(e);
+			});
+
+			dbService.deletePermanentWhereAsync("RequirementDocuments", filters).then(response => {
+				if (response.is_success) {
+
+				} else {
+					toast.notifyErrorList(response.error_keys);
+				}
+			}).catch(e => {
+				toast.notifyErrorList(e);
+			});
 		}
 
 	</script>
