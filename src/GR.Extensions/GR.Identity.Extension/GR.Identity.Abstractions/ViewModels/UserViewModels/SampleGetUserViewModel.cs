@@ -1,6 +1,4 @@
-﻿using GR.Identity.Abstractions;
-
-namespace GR.Identity.Models.UserViewModels
+﻿namespace GR.Identity.Abstractions.ViewModels.UserViewModels
 {
     public class SampleGetUserViewModel
     {

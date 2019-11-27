@@ -17,7 +17,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
-    <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Permissions.Abstractions\GR.Identity.Permissions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

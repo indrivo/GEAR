@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Calendar.Abstractions.ExternalProviders\GR.Calendar.Abstractions.ExternalProviders.csproj" />
     <ProjectReference Include="..\GR.Calendar.Abstraction\GR.Calendar.Abstractions.csproj" />
   </ItemGroup>

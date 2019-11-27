@@ -19,7 +19,7 @@ using GR.Calendar.Abstractions.Helpers.Mappers;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Calendar.Razor.ViewModels;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Models.UserViewModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using GR.MultiTenant.Abstractions;
 
 namespace GR.Calendar.Razor.Controllers
