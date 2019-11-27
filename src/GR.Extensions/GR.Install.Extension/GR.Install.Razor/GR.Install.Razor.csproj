@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Application.Extension\GR.WebApplication\GR.WebApplication.csproj" />
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.EntityBuilder.MsSql\GR.Entities.EntityBuilder.MsSql.csproj" />
     <ProjectReference Include="..\..\GR.Entities.Extension\GR.Entities.EntityBuilder.Postgres\GR.Entities.EntityBuilder.Postgres.csproj" />
     <ProjectReference Include="..\GR.Install.Abstractions\GR.Install.Abstractions.csproj" />

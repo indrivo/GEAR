@@ -80,5 +80,14 @@ namespace GR.TaskManager.Data
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
         public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel => Set<TEntity>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public System.Threading.Tasks.Task InvokeSeedAsync()
+        {
+            return System.Threading.Tasks.Task.CompletedTask;
+        }
     }
 }

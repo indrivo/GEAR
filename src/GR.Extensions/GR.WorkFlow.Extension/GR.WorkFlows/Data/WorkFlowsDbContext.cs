@@ -1,4 +1,5 @@
-﻿using GR.Audit.Contexts;
+﻿using System.Threading.Tasks;
+using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.WorkFlows.Abstractions;
 using GR.WorkFlows.Abstractions.Models;
@@ -38,5 +39,14 @@ namespace GR.WorkFlows.Data
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

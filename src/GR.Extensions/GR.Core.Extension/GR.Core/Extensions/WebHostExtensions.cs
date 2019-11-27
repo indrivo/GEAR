@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using GR.Core.Abstractions;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs.Database;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +21,12 @@ namespace GR.Core.Extensions
             return orchestratorType?.ToUpper() == "K8S";
         }
 
+        /// <summary>
+        /// Migrate db context
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="webHost"></param>
+        /// <returns></returns>
         public static IWebHost MigrateDbContext<TContext>(this IWebHost webHost) where TContext : DbContext
         {
             return webHost.MigrateDbContext<TContext>((context, services) => { });
@@ -50,9 +57,9 @@ namespace GR.Core.Extensions
                         var retry = Policy.Handle<SqlException>()
                              .WaitAndRetry(new[]
                              {
-                             TimeSpan.FromSeconds(3),
-                             TimeSpan.FromSeconds(5),
-                             TimeSpan.FromSeconds(8),
+                                TimeSpan.FromSeconds(3),
+                                TimeSpan.FromSeconds(5),
+                                TimeSpan.FromSeconds(8),
                              });
 
                         //if the sql server container is not created on run docker compose this
@@ -83,11 +90,19 @@ namespace GR.Core.Extensions
             return webHost;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="seeder"></param>
+        /// <param name="context"></param>
+        /// <param name="services"></param>
         private static void InvokeSeeder<TContext>(Action<TContext, IServiceProvider> seeder, TContext context, IServiceProvider services)
             where TContext : DbContext
         {
             context.Database.Migrate();
             seeder(context, services);
+            if (context is IDbContext ctx) ctx.InvokeSeedAsync();
         }
     }
 }

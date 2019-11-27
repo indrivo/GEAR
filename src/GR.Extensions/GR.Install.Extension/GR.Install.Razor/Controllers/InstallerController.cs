@@ -252,13 +252,8 @@ namespace GR.Install.Razor.Controllers
 
             await _entitiesDbContext.SaveChangesAsync();
 
-            //Create system tables
-            await GearWebApplication.SyncDefaultEntityFrameWorkEntities(tenant.Id);
-
             //Create dynamic tables for configured tenant
             await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
-
-            await GearWebApplication.SeedDynamicDataAsync();
 
             //Register in memory types
             await _dynamicService.RegisterInMemoryDynamicTypesAsync();

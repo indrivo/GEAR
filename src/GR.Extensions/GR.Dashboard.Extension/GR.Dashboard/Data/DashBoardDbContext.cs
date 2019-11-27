@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
@@ -31,6 +32,23 @@ namespace GR.Dashboard.Data
         {
         }
 
+        #region Entities
+
+        public virtual DbSet<WidgetGroup> WidgetGroups { get; set; }
+        public virtual DbSet<DashBoard> Dashboards { get; set; }
+        public virtual DbSet<Row> Rows { get; set; }
+        public virtual DbSet<CustomWidget> CustomWidgets { get; set; }
+        public virtual DbSet<ChartWidget> ChartWidgets { get; set; }
+        public virtual DbSet<ListWidget> ListWidgets { get; set; }
+        public virtual DbSet<ReportWidget> ReportWidgets { get; set; }
+        public virtual DbSet<TabbedWidget> TabbedWidgets { get; set; }
+        public virtual DbSet<RowChartWidget> RowChartWidgets { get; set; }
+        public virtual DbSet<RowCustomWidget> RowCustomWidgets { get; set; }
+        public virtual DbSet<RowReportWidget> RowReportWidgets { get; set; }
+        public virtual DbSet<RowWidgetAcl> WidgetAcls { get; set; }
+
+        #endregion
+
         /// <inheritdoc />
         /// <summary>
         /// On model creating
@@ -57,17 +75,13 @@ namespace GR.Dashboard.Data
         /// <returns></returns>
         public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
 
-        public virtual DbSet<WidgetGroup> WidgetGroups { get; set; }
-        public virtual DbSet<DashBoard> Dashboards { get; set; }
-        public virtual DbSet<Row> Rows { get; set; }
-        public virtual DbSet<CustomWidget> CustomWidgets { get; set; }
-        public virtual DbSet<ChartWidget> ChartWidgets { get; set; }
-        public virtual DbSet<ListWidget> ListWidgets { get; set; }
-        public virtual DbSet<ReportWidget> ReportWidgets { get; set; }
-        public virtual DbSet<TabbedWidget> TabbedWidgets { get; set; }
-        public virtual DbSet<RowChartWidget> RowChartWidgets { get; set; }
-        public virtual DbSet<RowCustomWidget> RowCustomWidgets { get; set; }
-        public virtual DbSet<RowReportWidget> RowReportWidgets { get; set; }
-        public virtual DbSet<RowWidgetAcl> WidgetAcls { get; set; }
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

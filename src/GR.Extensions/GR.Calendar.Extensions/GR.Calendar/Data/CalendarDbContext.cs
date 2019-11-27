@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Calendar.Abstractions;
 using GR.Calendar.Abstractions.Models;
@@ -84,5 +85,14 @@ namespace GR.Calendar.Data
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

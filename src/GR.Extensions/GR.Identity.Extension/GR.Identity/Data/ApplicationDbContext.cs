@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
@@ -109,5 +110,14 @@ namespace GR.Identity.Data
         }
 
         public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -126,6 +126,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender.Razor\GR.PageRender.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Render.Extension\GR.PageRender\GR.PageRender.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic.Razor\GR.Report.Dynamic.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic\GR.Report.Dynamic.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager\GR.TaskManager.csproj" />
   </ItemGroup>
