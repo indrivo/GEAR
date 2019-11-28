@@ -129,6 +129,7 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic\GR.Report.Dynamic.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager.Razor\GR.TaskManager.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.TaskManager.Extension\GR.TaskManager\GR.TaskManager.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows\GR.WorkFlows.csproj" />
   </ItemGroup>
   <ItemGroup>
 	<Content Update="fileSettings.json">

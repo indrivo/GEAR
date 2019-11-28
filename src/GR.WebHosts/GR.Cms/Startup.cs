@@ -120,6 +120,10 @@ using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
 using GR.Subscriptions.BackgroundServices;
 using GR.WebApplication.Extensions;
+using GR.WorkFlows;
+using GR.WorkFlows.Abstractions.Models;
+using GR.WorkFlows.Abstractions.Extensions;
+using GR.WorkFlows.Data;
 
 #endregion
 
@@ -419,13 +423,22 @@ namespace GR.Cms
 			//------------------------------------------Custom ISO-------------------------------------
 			config.GearServices.AddTransient<ITreeIsoService, TreeIsoService>();
 
+			//-------------------------------------Workflow module-------------------------------------
+			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService>()
+				.AddWorkflowModuleStorage<WorkFlowsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
+
 			//------------------------------------ Documents Module -----------------------------------
 
 			config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			})
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
 			.RegisterDocumentTypeServices<DocumentTypeService>()
 			.RegisterDocumentServices<DocumentService>();
 		});

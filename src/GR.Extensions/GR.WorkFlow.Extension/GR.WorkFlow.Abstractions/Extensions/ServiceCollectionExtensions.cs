@@ -1,5 +1,11 @@
-﻿using GR.Core.Helpers;
+﻿using System;
+using GR.Core;
+using GR.Core.Events;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.WorkFlows.Abstractions.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.WorkFlows.Abstractions.Extensions
@@ -17,7 +23,27 @@ namespace GR.WorkFlows.Abstractions.Extensions
             where TService : class, IWorkFlowCreatorService<TEntity>
             where TEntity : WorkFlow
         {
+            services.AddTransient<IWorkFlowCreatorService<TEntity>, TService>();
             IoC.RegisterTransientService<IWorkFlowCreatorService<TEntity>, TService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Add workflow context
+        /// </summary>
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddWorkflowModuleStorage<TContext>(this IServiceCollection services, Action<DbContextOptionsBuilder> options)
+            where TContext : DbContext, IWorkFlowContext
+        {
+            services.AddScopedContextFactory<IWorkFlowContext, TContext>();
+            services.AddDbContext<TContext>(options, ServiceLifetime.Transient);
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+            };
             return services;
         }
     }

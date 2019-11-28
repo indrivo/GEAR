@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using GR.Core.Abstractions;
+﻿using GR.Core.Abstractions;
 using GR.WorkFlows.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,5 +30,10 @@ namespace GR.WorkFlows.Abstractions
         /// Actions
         /// </summary>
         DbSet<WorkflowAction> WorkflowActions { get; set; }
+
+        /// <summary>
+        /// Mapped actions to transitions
+        /// </summary>
+        DbSet<TransitionAction> TransitionActions { get; set; }
     }
 }

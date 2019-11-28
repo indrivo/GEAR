@@ -73,5 +73,12 @@ namespace GR.Identity.Abstractions
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId);
+
+        /// <summary>
+        /// Filter valid roles
+        /// </summary>
+        /// <param name="rolesIds"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Guid>> FilterValidRolesAsync(IEnumerable<Guid> rolesIds);
     }
 }

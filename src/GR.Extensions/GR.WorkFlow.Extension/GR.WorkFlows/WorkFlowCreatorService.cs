@@ -49,7 +49,8 @@ namespace GR.WorkFlows
                 .AsNoTracking()
                 .Include(x => x.States)
                 .Include(x => x.Transitions)
-                .ThenInclude(x => x.Actions)
+                .ThenInclude(x => x.TransitionActions)
+                .ThenInclude(x => x.Action)
                 .Include(x => x.Transitions)
                 .ThenInclude(x => x.FromState)
                 .Include(x => x.Transitions)
@@ -237,12 +238,11 @@ namespace GR.WorkFlows
         /// <returns></returns>
         public async Task<ResultModel> AddOrUpdateTransitionAllowedRolesAsync(Guid? transitionId, IEnumerable<Guid> roles)
         {
-            var response = new ResultModel();
             var transitionRequest = await GetTransitionByIdAsync(transitionId);
             if (!transitionRequest.IsSuccess) return transitionRequest.ToBase();
             var transition = transitionRequest.Result;
+            var newRoles = await _userManager.FilterValidRolesAsync(roles);
             var oldRoles = transition.TransitionRoles.Select(x => x.RoleId).ToList();
-            var newRoles = roles.ToList();
 
             var (removeItems, addItems) = oldRoles.GetDifferences(newRoles);
 

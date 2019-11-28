@@ -1,4 +1,6 @@
-﻿using GR.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using GR.Core;
 
 namespace GR.WorkFlows.Abstractions.Models
 {
@@ -7,16 +9,19 @@ namespace GR.WorkFlows.Abstractions.Models
         /// <summary>
         /// Action name
         /// </summary>
+        [Required]
         public virtual string Name { get; set; }
 
         /// <summary>
         /// System runtime name
         /// </summary>
+        [Required]
         public virtual string ClassName { get; set; }
 
         /// <summary>
         /// Class name full path
         /// </summary>
+        [Required]
         public virtual string ClassNameWithNameSpace { get; set; }
 
         /// <summary>
@@ -28,5 +33,10 @@ namespace GR.WorkFlows.Abstractions.Models
         /// Check if is system
         /// </summary>
         public virtual bool IsSystem { get; set; }
+
+        /// <summary>
+        /// Mapped to transitions
+        /// </summary>
+        public virtual IEnumerable<TransitionAction> TransitionActions { get; set; }
     }
 }

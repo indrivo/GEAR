@@ -38,7 +38,7 @@ namespace GR.WorkFlows.Abstractions.Models
         /// <summary>
         /// Actions
         /// </summary>
-        public virtual IEnumerable<WorkflowAction> Actions { get; set; }
+        public virtual IEnumerable<TransitionAction> TransitionActions { get; set; }
 
         /// <summary>
         /// Allowed roles to change state 

@@ -205,5 +205,22 @@ namespace GR.Identity.Services
                 Result = addresses
             };
         }
+
+        /// <summary>
+        /// Filter valid roles
+        /// </summary>
+        /// <param name="rolesIds"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<Guid>> FilterValidRolesAsync(IEnumerable<Guid> rolesIds)
+        {
+            var data = new List<Guid>();
+            foreach (var roleId in rolesIds)
+            {
+                var role = await RoleManager.FindByIdAsync(rolesIds.ToString());
+                if (role != null) data.Add(roleId);
+            }
+
+            return data;
+        }
     }
 }
