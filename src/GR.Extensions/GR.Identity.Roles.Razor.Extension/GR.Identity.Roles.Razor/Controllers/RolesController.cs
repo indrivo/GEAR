@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,11 +13,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GR.Core;
 using GR.Core.BaseControllers;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.Entities.Data;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.Models.UserProfiles;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
 using GR.Identity.Permissions.Abstractions;
@@ -29,15 +33,7 @@ namespace GR.Identity.Roles.Razor.Controllers
 {
     public class RolesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
-        #region Inject
-
-        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext) : base(userManager, roleManager, applicationDbContext, context, notify)
-        {
-            _signInManager = signInManager;
-            _logger = logger;
-            _permissionService = permissionService;
-            ConfigurationDbContext = configurationDbContext;
-        }
+        #region Injectable
 
         /// <summary>
         /// Inject configuration db context
@@ -59,7 +55,21 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// </summary>
         private readonly IPermissionService _permissionService;
 
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<ApplicationUser> _userManager;
+
         #endregion
+
+        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, SignInManager<ApplicationUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext, IUserManager<ApplicationUser> userManager1) : base(userManager, roleManager, applicationDbContext, context, notify)
+        {
+            _signInManager = signInManager;
+            _logger = logger;
+            _permissionService = permissionService;
+            ConfigurationDbContext = configurationDbContext;
+            _userManager = userManager1;
+        }
 
 
         /// <summary>
@@ -638,8 +648,17 @@ namespace GR.Identity.Roles.Razor.Controllers
         public async Task<IActionResult> RefreshCachedPermissionsForEachRole()
         {
             await _permissionService.RefreshCache();
-
             return StatusCode(200);
         }
+
+        /// <summary>
+        /// Get users in role for current company
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Route("api/[controller]/[action]")]
+        public async Task<JsonResult> GetUsersInRoleForCurrentCompany([Required] string roleName) => Json(await _userManager.GetUsersInRoleForCurrentCompanyAsync(roleName));
     }
 }

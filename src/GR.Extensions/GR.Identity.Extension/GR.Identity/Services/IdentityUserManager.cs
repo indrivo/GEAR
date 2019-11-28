@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Identity.Services
@@ -221,6 +223,21 @@ namespace GR.Identity.Services
             }
 
             return data;
+        }
+
+        /// <summary>
+        /// Get users in role for current logged user
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<SampleGetUserViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName)
+        {
+            if (roleName.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<SampleGetUserViewModel>>();
+            var currentUserRequest = await GetCurrentUserAsync();
+            if (!currentUserRequest.IsSuccess) return currentUserRequest.Map<IEnumerable<SampleGetUserViewModel>>();
+            var allUsers = await UserManager.GetUsersInRoleAsync(roleName);
+            var filterUsers = allUsers.Where(x => x.TenantId.Equals(currentUserRequest.Result.TenantId)).Select(x => new SampleGetUserViewModel(x)).ToList();
+            return new SuccessResultModel<IEnumerable<SampleGetUserViewModel>>(filterUsers);
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Identity.Abstractions
 {
@@ -80,5 +82,13 @@ namespace GR.Identity.Abstractions
         /// <param name="rolesIds"></param>
         /// <returns></returns>
         Task<IEnumerable<Guid>> FilterValidRolesAsync(IEnumerable<Guid> rolesIds);
+
+        /// <summary>
+        /// Get users in role for current logged user
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+
+        Task<ResultModel<IEnumerable<SampleGetUserViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName);
     }
 }
