@@ -329,6 +329,52 @@ namespace GR.Documents
         }
 
         /// <summary>
+        /// Edit document
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> EditDocumentAsync(AddDocumentViewModel model)
+        {
+            var result = new ResultModel();
+
+            if (model is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "entity is null" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            var user = await _userManager.GetCurrentUserAsync();
+
+            if (user is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "user not fount" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            var document = await _context.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
+
+            if (document is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "document not fount" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            document.DocumentCode = model.DocumentCode;
+            document.Title = model.Tile;
+            document.Description = model.Description;
+            document.Group = model.Group;
+
+             _context.Documents.Update(document);
+            result = await _context.PushAsync();
+            
+            return result;
+        }
+
+
+        /// <summary>
         /// Add new document version
         /// </summary>
         /// <param name="model"></param>
