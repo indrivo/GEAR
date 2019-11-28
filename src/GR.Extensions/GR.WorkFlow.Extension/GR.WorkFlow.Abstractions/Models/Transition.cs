@@ -17,17 +17,32 @@ namespace GR.WorkFlows.Abstractions.Models
         /// From state
         /// </summary>
         public virtual State FromState { get; set; }
+        [Required]
         public virtual Guid FromStateId { get; set; }
 
         /// <summary>
         /// To state
         /// </summary>
         public virtual State ToState { get; set; }
+        [Required]
         public virtual Guid ToStateId { get; set; }
+
+        /// <summary>
+        /// Workflow reference
+        /// </summary>
+        public virtual WorkFlow WorkFlow { get; set; }
+
+        [Required]
+        public virtual Guid WorkflowId { get; set; }
 
         /// <summary>
         /// Actions
         /// </summary>
-        public virtual IEnumerable<TransitionAction> Actions { get; set; }
+        public virtual IEnumerable<TransitionAction> TransitionActions { get; set; }
+
+        /// <summary>
+        /// Allowed roles to change state 
+        /// </summary>
+        public virtual IEnumerable<TransitionRole> TransitionRoles { get; set; }
     }
 }

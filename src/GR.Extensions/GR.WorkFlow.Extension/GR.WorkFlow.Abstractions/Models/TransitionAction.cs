@@ -1,32 +1,21 @@
-﻿using GR.Core;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.WorkFlows.Abstractions.Models
 {
-    public class TransitionAction : BaseModel
+    public class TransitionAction
     {
         /// <summary>
-        /// Action name
+        /// Reference to action
         /// </summary>
-        public virtual string Name { get; set; }
+        public virtual Transition Transition { get; set; }
+        [Required]
+        public virtual Guid TransitionId { get; set; }
 
         /// <summary>
-        /// System runtime name
+        /// Reference to action
         /// </summary>
-        public virtual string ClassName { get; set; }
-
-        /// <summary>
-        /// Class name full path
-        /// </summary>
-        public virtual string ClassNameWithNameSpace { get; set; }
-
-        /// <summary>
-        /// Description
-        /// </summary>
-        public virtual string Description { get; set; }
-
-        /// <summary>
-        /// Check if is system
-        /// </summary>
-        public virtual bool IsSystem { get; set; }
+        public virtual WorkflowAction Action { get; set; }
+        public virtual Guid ActionId { get; set; }
     }
 }

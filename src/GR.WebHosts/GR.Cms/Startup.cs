@@ -3,20 +3,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using GR.Application;
 using GR.Backup.Abstractions.BackgroundServices;
 using GR.Backup.Abstractions.Extensions;
 using GR.Backup.PostGresSql;
 using GR.Cms.Services.Abstractions;
-using GR.Core;
 using GR.Core.Extensions;
-using GR.Core.Razor.Extensions;
 using GR.DynamicEntityStorage.Extensions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Models;
@@ -45,7 +38,6 @@ using GR.Identity.LdapAuth;
 using GR.Identity.LdapAuth.Abstractions.Extensions;
 using GR.Identity.Permissions;
 using GR.Identity.Services;
-using GR.Identity.Versioning;
 using GR.Install.Abstractions.Extensions;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
@@ -54,7 +46,6 @@ using ST.MPass.Gov;
 using GR.Notifications;
 using GR.Notifications.Abstractions.Extensions;
 using GR.Notifications.Data;
-using GR.Notifications.Extensions;
 using GR.Notifications.Razor.Extensions;
 using GR.PageRender.Abstractions.Extensions;
 using GR.PageRender.Data;
@@ -62,20 +53,14 @@ using GR.PageRender.Razor.Extensions;
 using GR.Procesess.Data;
 using GR.Process.Razor.Extensions;
 using GR.Report.Abstractions.Extensions;
-using GR.Report.Dynamic;
-using GR.Report.Dynamic.Data;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using GR.Application.Middleware.Extensions;
-using GR.Application.Middleware.Server;
 using GR.Audit;
 using GR.Audit.Abstractions.Extensions;
-using GR.Cache.Abstractions.Extensions;
-using GR.Cache.Services;
 using GR.Calendar;
 using GR.Calendar.Abstractions.Extensions;
 using GR.Calendar.Abstractions.ExternalProviders;
@@ -131,7 +116,14 @@ using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Data;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Permissions.Abstractions.Extensions;
+using GR.Report.Dynamic;
+using GR.Report.Dynamic.Data;
 using GR.Subscriptions.BackgroundServices;
+using GR.WebApplication.Extensions;
+using GR.WorkFlows;
+using GR.WorkFlows.Abstractions.Models;
+using GR.WorkFlows.Abstractions.Extensions;
+using GR.WorkFlows.Data;
 
 #endregion
 
@@ -170,126 +162,55 @@ namespace GR.Cms
 		/// Configure cms app
 		/// </summary>
 		/// <param name="app"></param>
-		/// <param name="env"></param>
-		/// <param name="languages"></param>
-		/// <param name="lifetime"></param>
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-			IOptionsSnapshot<LocalizationConfig> languages, IApplicationLifetime lifetime)
+		public void Configure(IApplicationBuilder app)
 		{
-			if (GearApplication.IsHostedOnLinux())
-			{
-				app.UseForwardedHeaders(new ForwardedHeadersOptions
+			app.UseGearWebApp(config =>
 				{
-					ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-				});
-			}
-
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseBrowserLink();
-				app.UseDatabaseErrorPage();
-			}
-			else
-			{
-				app.UseExceptionHandler("/Home/Error");
-			}
-
-			//-----------------------Custom url redirection Usage-------------------------------------
-			app.UseUrlRewriteModule();
-
-			//----------------------------------Origin Cors Usage-------------------------------------
-			app.UseConfiguredCors(Configuration);
-
-            //----------------------------------Calendar graphQl--------------------------------------
-			app.UseCalendarGraphQl();
-
-			//----------------------------------Use cors-------------------------------------
-			app.UseAppMvc(Configuration, new Dictionary<string, Action<HttpContext>>
-			{
-				//rewrite root path to redirect on dynamic page, only for commerce landing page
-				{
-					"/", context =>
+					config.HostingEnvironment = HostingEnvironment;
+					config.Configuration = Configuration;
+					config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
 					{
-						var originalPath = context.Request.Path.Value;
-						context.Items["originalPath"] = originalPath;
-						context.Request.Path = "/public";
-					}
-				}
-			});
-
-			//--------------------------------------Swagger Usage-------------------------------------
-			app.UseSwagger()
-				.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "GR.BPMN API v1.0"); });
-
-			//----------------------------------Localization Usage-------------------------------------
-			app.UseLocalizationModule(languages);
-
-			//---------------------------------------SignalR Usage-------------------------------------
-			app.UseSignalRModule();
-
-			//----------------------------------Static files Usage-------------------------------------
-			app.UseDefaultFiles();
-			app.UseStaticFiles();
-
-			//-------------------------Register on app events-------------------------------------
-			lifetime.ApplicationStarted.Register(() => { GearApplication.ApplicationStarted(app); });
-
-			lifetime.RegisterAppEvents(app, nameof(MigrationsAssembly));
-
-			if (env.IsProduction())
-			{
-				//Use compression
-				app.UseResponseCompression();
-			}
+						//rewrite root path to redirect on dynamic page, only for commerce landing page
+						{
+							"/", context =>
+							{
+								var originalPath = context.Request.Path.Value;
+								context.Items["originalPath"] = originalPath;
+								context.Request.Path = "/public";
+							}
+						}
+					};
+				})
+				//----------------------------------Calendar graphQl--------------------------------------
+				.UseCalendarGraphQl();
 		}
 
 		// This method gets called by the runtime. Use this method to add services to the container.
-		public IServiceProvider ConfigureServices(IServiceCollection services)
+		public IServiceProvider ConfigureServices(IServiceCollection services) =>
+			services.RegisterGearWebApp(config =>
 		{
-			if (HostingEnvironment.IsProduction())
-			{
-				//Use compression
-				services.AddResponseCompression();
-			}
-			services.AddHttpClient();
-			//Register system config
-			services.RegisterSystemConfig(Configuration);
+			config.Configuration = Configuration;
+			config.HostingEnvironment = HostingEnvironment;
+			config.GearServices = services;
 
-			services.Configure<SecurityStampValidatorOptions>(options =>
-			{
-				// enables immediate logout, after updating the user's stat.
-				options.ValidationInterval = TimeSpan.Zero;
-			});
-
-			//---------------------------------Custom cache Module-------------------------------------
-			services.AddCacheModule<CacheService, RedisConnection>(HostingEnvironment, Configuration);
-
-			//--------------------------------------Cors origin Module-------------------------------------
-			services.AddOriginCorsModule();
-			services.AddDbContext<ProcessesDbContext>(options =>
+			config.GearServices.AddDbContext<ProcessesDbContext>(options =>
 			{
 				options.GetDefaultOptions(Configuration);
 				options.EnableSensitiveDataLogging();
 			});
 
 			//------------------------------Identity Module-------------------------------------
-			services.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment, MigrationsAssembly, HostingEnvironment)
+			config.GearServices.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment,
+					MigrationsAssembly, HostingEnvironment)
 				.AddIdentityUserManager<IdentityUserManager, ApplicationUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
-				.AddIdentityModuleEvents()
-				.AddMvc()
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-				.AddJsonOptions(x =>
-				{
-					x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
-				});
+				.AddIdentityModuleEvents();
 
-			services.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
+			config.GearServices.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
@@ -303,24 +224,15 @@ namespace GR.Cms
 				});
 
 			//Register MPass
-			services.AddMPassSigningCredentials(new MPassSigningCredentials
+			config.GearServices.AddMPassSigningCredentials(new MPassSigningCredentials
 			{
 				ServiceProviderCertificate =
 					new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
 				IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
 			});
 
-			//---------------------------------Api version Module-------------------------------------
-			services.AddApiVersioning(options =>
-			{
-				options.ReportApiVersions = true;
-				options.AssumeDefaultVersionWhenUnspecified = true;
-				options.DefaultApiVersion = new ApiVersion(1, 0);
-				options.ErrorResponses = new UnsupportedApiVersionErrorResponseProvider();
-			});
-
 			//---------------------------------------Entity Module-------------------------------------
-			services.AddEntityModule<EntitiesDbContext, EntityRepository>()
+			config.GearServices.AddEntityModule<EntitiesDbContext, EntityRepository>()
 				.AddEntityModuleQueryBuilders<NpgTableQueryBuilder, NpgEntityQueryBuilder, NpgTablesService>()
 				.AddEntityModuleStorage<EntitiesDbContext>(options =>
 				{
@@ -332,7 +244,7 @@ namespace GR.Cms
 				.AddEntityRazorUIModule();
 
 			//------------------------------Entity Security Module-------------------------------------
-			services.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
+			config.GearServices.AddEntityRoleAccessModule<EntityRoleAccessManager<EntitySecurityDbContext, ApplicationDbContext>>()
 				.AddEntityModuleSecurityStorage<EntitySecurityDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -341,13 +253,13 @@ namespace GR.Cms
 				.AddEntitySecurityRazorUIModule();
 
 			//----------------------------------------Audit Module-------------------------------------
-			services.AddAuditModule<AuditManager>();
+			config.GearServices.AddAuditModule<AuditManager>();
 
 			//---------------------------Dynamic repository Module-------------------------------------
-			services.AddDynamicDataProviderModule<EntitiesDbContext>();
+			config.GearServices.AddDynamicDataProviderModule<EntitiesDbContext>();
 
 			//------------------------------------Dashboard Module-------------------------------------
-			services.AddDashboardModule<DashboardService, WidgetGroupRepository, WidgetService>()
+			config.GearServices.AddDashboardModule<DashboardService, WidgetGroupRepository, WidgetService>()
 				.AddDashboardModuleStorage<DashBoardDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -362,11 +274,8 @@ namespace GR.Cms
 				})
 				.RegisterProgramAssembly(typeof(Program));
 
-			//--------------------------------------SignalR Module-------------------------------------
-			services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();
-
 			//--------------------------Notification subscriptions-------------------------------------
-			services.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
+			config.GearServices.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
 				{
@@ -376,21 +285,21 @@ namespace GR.Cms
 				.AddNotificationRazorUIModule();
 
 			//---------------------------------Localization Module-------------------------------------
-			services.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(new TranslationModuleOptions
+			config.GearServices.AddLocalizationModule<LocalizationService, YandexTranslationProvider, JsonStringLocalizer>(new TranslationModuleOptions
 			{
 				Configuration = Configuration,
 				LocalizationProvider = LocalizationProvider.Yandex
 			});
 
 			//------------------------------Database backup Module-------------------------------------
-			services.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
+			config.GearServices.RegisterDatabaseBackupRunnerModule<BackupTimeService<PostGreSqlBackupSettings>,
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 			//------------------------------------Processes Module-------------------------------------
-			services.AddProcessesModule();
+			config.GearServices.AddProcessesModule();
 
 			//------------------------------------Calendar Module-------------------------------------
-			services.AddCalendarModule<CalendarManager>()
+			config.GearServices.AddCalendarModule<CalendarManager>()
 				.AddCalendarModuleStorage<CalendarDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -415,14 +324,14 @@ namespace GR.Cms
 				.AddCalendarGraphQlApi();
 
 			//------------------------------------File Module-------------------------------------
-			services.AddFileModule<FileManager<FileDbContext>>()
+			config.GearServices.AddFileModule<FileManager<FileDbContext>>()
 				.AddFileModuleStorage<FileDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			}, Configuration);
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				}, Configuration);
 
-			services
+			config.GearServices
 				.AddFileBoxModule<FileBoxManager<FileBoxDbContext>>()
 				.AddFileBoxModuleStorage<FileBoxDbContext>(options =>
 				{
@@ -430,8 +339,7 @@ namespace GR.Cms
 					options.EnableSensitiveDataLogging();
 				}, Configuration);
 			//------------------------------------Task Module-------------------------------------
-			services
-				.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
+			config.GearServices.AddTaskModule<TaskManager.Services.TaskManager, TaskManagerNotificationService>()
 				.AddTaskModuleStorage<TaskManagerDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -440,7 +348,7 @@ namespace GR.Cms
 				.AddTaskManagerRazorUIModule();
 
 			//-----------------------------------------Form Module-------------------------------------
-			services.AddFormModule<FormDbContext>()
+			config.GearServices.AddFormModule<FormDbContext>()
 				.AddFormModuleStorage<FormDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -449,7 +357,7 @@ namespace GR.Cms
 				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------
-			services.AddPageModule()
+			config.GearServices.AddPageModule()
 				.AddPageModuleStorage<DynamicPagesDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -461,7 +369,7 @@ namespace GR.Cms
 
 
 			//---------------------------------------Report Module-------------------------------------
-			services.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()
+			config.GearServices.AddDynamicReportModule<DynamicReportsService<DynamicReportDbContext>>()
 				.AddDynamicReportModuleStorage<DynamicReportDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
@@ -470,28 +378,20 @@ namespace GR.Cms
 				.AddReportUIModule();
 
 
-			services.AddInstallerModule();
+			config.GearServices.AddInstallerModule();
 
 			//----------------------------------------Email Module-------------------------------------
-			services.AddEmailModule<EmailSender>()
+			config.GearServices.AddEmailModule<EmailSender>()
 				.AddEmailRazorUIModule()
 				.BindEmailSettings(Configuration);
 
-			if (GearApplication.IsHostedOnLinux())
-			{
-				services.Configure<ForwardedHeadersOptions>(options =>
-				{
-					options.KnownProxies.Add(IPAddress.Parse("185.131.222.95"));
-				});
-			}
-
 			//----------------------------------------Ldap Module-------------------------------------
-			services
+			config.GearServices
 				.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(
 					Configuration);
 
 			//-------------------------------------Commerce module-------------------------------------
-			services.RegisterCommerceModule<CommerceDbContext>()
+			config.GearServices.RegisterCommerceModule<CommerceDbContext>()
 				.RegisterCommerceProductRepository<ProductService, Product>()
 				.RegisterCommerceStorage<CommerceDbContext>(options =>
 				{
@@ -517,29 +417,30 @@ namespace GR.Cms
 				.AddCommerceRazorUIModule();
 
 			//---------------------------------Multi Tenant Module-------------------------------------
-			services.AddTenantModule<OrganizationService, Tenant>()
+			config.GearServices.AddTenantModule<OrganizationService, Tenant>()
 				.AddMultiTenantRazorUIModule();
 
-
-			//--------------------------------------Swagger Module-------------------------------------
-			services.AddSwaggerModule(Configuration, HostingEnvironment);
-
-
 			//------------------------------------------Custom ISO-------------------------------------
-			services.AddTransient<ITreeIsoService, TreeIsoService>();
+			config.GearServices.AddTransient<ITreeIsoService, TreeIsoService>();
+
+			//-------------------------------------Workflow module-------------------------------------
+			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService>()
+				.AddWorkflowModuleStorage<WorkFlowsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				});
+
 
 			//------------------------------------ Documents Module -----------------------------------
 
-			services.RegisterDocumentStorage<DocumentsDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			})
+			config.GearServices.RegisterDocumentStorage<DocumentsDbContext>(options =>
+				{
+					options.GetDefaultOptions(Configuration);
+					options.EnableSensitiveDataLogging();
+				})
 			.RegisterDocumentTypeServices<DocumentTypeService>()
 			.RegisterDocumentServices<DocumentService>();
-
-			//--------------------------Custom dependency injection-------------------------------------
-			return services.AddWindsorContainers();
-		}
+		});
 	}
 }

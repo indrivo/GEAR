@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using GR.Calendar.Abstractions.Enums;
 using GR.Core.Abstractions;
 using GR.Identity.Abstractions;
-using GR.Identity.Models.UserViewModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Calendar.Abstractions.Models.ViewModels
 {

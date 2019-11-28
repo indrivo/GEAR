@@ -7,7 +7,7 @@
     <Authors>Girbu Nicolae</Authors>
     <Company>Indrivo</Company>
     <Version>1.0.2</Version>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
   </PropertyGroup>
 
   <ItemGroup>

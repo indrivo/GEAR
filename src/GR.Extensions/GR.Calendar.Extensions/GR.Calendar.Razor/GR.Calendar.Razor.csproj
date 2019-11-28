@@ -7,7 +7,7 @@
     <Company>Indrivo SRL</Company>
     <Description>UI representation of internal calendar</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <PackageReleaseNotes>- Add remind notification before event minutes to remind set
     - Remove organizer parameter from</PackageReleaseNotes>
     <PackageTags>calendar .net core c# ui full calendar</PackageTags>
@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Calendar.Abstractions.ExternalProviders\GR.Calendar.Abstractions.ExternalProviders.csproj" />
     <ProjectReference Include="..\GR.Calendar.Abstraction\GR.Calendar.Abstractions.csproj" />
   </ItemGroup>

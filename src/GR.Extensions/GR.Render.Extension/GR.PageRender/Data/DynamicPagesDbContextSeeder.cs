@@ -17,7 +17,7 @@ namespace GR.PageRender.Data
         /// <summary>
         /// Seed with default data
         /// </summary>
-        public static async Task SeedAsync(TContext context, Guid tenantId)
+        public static async Task SeedAsync(TContext context)
         {
             context.Validate();
             var strategy = context.Database.CreateExecutionStrategy();

@@ -10,8 +10,4 @@
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
-
 </Project>

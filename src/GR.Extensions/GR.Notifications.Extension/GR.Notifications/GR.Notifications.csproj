@@ -9,7 +9,7 @@
     <Company>Indrivo</Company>
     <Version>1.0.1</Version>
     <PackageReleaseNotes>- Send local or email configuration</PackageReleaseNotes>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
   </PropertyGroup>
 
   <ItemGroup>

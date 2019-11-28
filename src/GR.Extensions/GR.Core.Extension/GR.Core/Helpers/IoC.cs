@@ -8,39 +8,11 @@ using GR.Core.Extensions;
 
 namespace GR.Core.Helpers
 {
-    public sealed class IoC
+    public static class IoC
     {
-        private static readonly object LockObj = new object();
-
         private static IWindsorContainer _container;
 
-        private static IoC _instance = new IoC();
-
-        private IoC()
-        {
-
-        }
-
         public static IWindsorContainer Container => _container ?? (_container = new WindsorContainer());
-
-        public static IoC Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (LockObj)
-                    {
-                        if (_instance == null)
-                        {
-                            _instance = new IoC();
-                        }
-                    }
-                }
-
-                return _instance;
-            }
-        }
 
         /// <summary>
         /// Register new service
