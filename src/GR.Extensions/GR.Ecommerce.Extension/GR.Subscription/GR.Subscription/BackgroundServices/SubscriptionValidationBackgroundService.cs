@@ -49,6 +49,8 @@ namespace GR.Subscriptions.BackgroundServices
             var willExpireRequest = await _subscriptionService.GetSubscriptionsThatExpireInAsync(TimeSpan.FromDays(Convert.ToInt32(daysNotifySubscription)));
             if (willExpireRequest.IsSuccess)
                 await _subscriptionService.NotifySubscriptionsThatExpireAsync(willExpireRequest.Result.ToList());
+
+
         }
     }
 }

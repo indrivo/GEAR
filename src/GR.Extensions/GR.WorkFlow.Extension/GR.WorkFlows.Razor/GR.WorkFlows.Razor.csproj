@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.WorkFlow.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>
 </Project>
