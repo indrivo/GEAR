@@ -37,11 +37,14 @@ namespace GR.ECommerce.Razor.Controllers
         public async Task<IActionResult> Index()
         {
             var daysNotifySubscription = (await _productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION)).Result ?? "0";
+            var dayFreeTrailPeriod = (await _productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
+
             var model = new CommerceSettingsViewModel
             {
                 Currencies = (await _productService.GetAllCurrenciesAsync()).Result,
                 CurrencyCode = (await _productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.CURRENCY)).Result,
-                DaysToNotifyExpiringSubscriptions = Convert.ToInt32(daysNotifySubscription)
+                DaysToNotifyExpiringSubscriptions = Convert.ToInt32(daysNotifySubscription),
+                DaysToFreeTailPeriod = Convert.ToInt32(dayFreeTrailPeriod),
             };
 
             return View(model);
@@ -58,6 +61,10 @@ namespace GR.ECommerce.Razor.Controllers
             await _productService.AddOrUpdateSettingAsync(CommerceResources.SettingsParameters.CURRENCY, model.CurrencyCode);
             await _productService.AddOrUpdateSettingAsync(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION,
                 model.DaysToNotifyExpiringSubscriptions, CommerceSettingType.Number);
+
+            await _productService.AddOrUpdateSettingAsync(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS,
+                model.DaysToFreeTailPeriod, CommerceSettingType.Number);
+
             return RedirectToAction(nameof(Index));
         }
     }

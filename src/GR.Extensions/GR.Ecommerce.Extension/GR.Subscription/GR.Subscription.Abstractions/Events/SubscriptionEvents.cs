@@ -35,6 +35,8 @@ namespace GR.Subscriptions.Abstractions.Events
                 var productService = IoC.Resolve<IProductService<Product>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
 
+
+
                 //create free trial subscription
             };
 
