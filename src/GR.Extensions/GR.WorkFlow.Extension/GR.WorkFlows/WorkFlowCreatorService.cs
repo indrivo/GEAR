@@ -63,6 +63,18 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Get workflow by id for display
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<WorkFlowGetViewModel>> GetWorkFlowByIdForDisplayAsync(Guid? workFlowId)
+        {
+            var workFlowRequest = await GetWorkFlowByIdAsync(workFlowId);
+            return !workFlowRequest.IsSuccess ? workFlowRequest.Map<WorkFlowGetViewModel>()
+                : new SuccessResultModel<WorkFlowGetViewModel>(WorkFlowMapper.Map(workFlowRequest.Result));
+        }
+
+        /// <summary>
         /// Add new workflow
         /// </summary>
         /// <param name="model"></param>
@@ -339,13 +351,25 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Get workflow states
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<StateGetViewModel>>> GetWorkFlowStatesAsync([Required] Guid? workFlowId)
+        {
+            var workFlowRequest = await GetWorkFlowByIdAsync(workFlowId);
+            return !workFlowRequest.IsSuccess ? workFlowRequest.Map<IEnumerable<StateGetViewModel>>()
+                : new SuccessResultModel<IEnumerable<StateGetViewModel>>(WorkFlowMapper.Map(workFlowRequest.Result.States));
+        }
+
+        /// <summary>
         /// Get all workflows
         /// </summary>
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<GetWorkFlowViewModel>>> GetAllWorkFlowsAsync()
         {
             var workFlows = await _workFlowContext.WorkFlows.ToListAsync();
-            return new SuccessResultModel<IEnumerable<GetWorkFlowViewModel>>(WorkFlowMapper.MapGet(workFlows));
+            return new SuccessResultModel<IEnumerable<GetWorkFlowViewModel>>(WorkFlowMapper.Map(workFlows));
         }
 
 

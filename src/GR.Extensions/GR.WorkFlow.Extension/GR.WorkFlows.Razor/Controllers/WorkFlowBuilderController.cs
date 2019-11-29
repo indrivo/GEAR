@@ -70,9 +70,9 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<WorkFlow>))]
+        [Produces("application/json", Type = typeof(ResultModel<WorkFlowGetViewModel>))]
         public async Task<JsonResult> GetWorkFlowById([Required] Guid? workflowId)
-            => await JsonAsync(_workFlowCreatorService.GetWorkFlowByIdAsync(workflowId));
+            => await JsonAsync(_workFlowCreatorService.GetWorkFlowByIdForDisplayAsync(workflowId));
 
         /// <summary>
         /// Add new state to workflow
@@ -231,5 +231,16 @@ namespace GR.WorkFlows.Razor.Controllers
         public async Task<JsonResult> UpdateWorkFlowStateAsync([Required] UpdateWorkFlowStateViewModel model)
             => ModelState.IsValid ? await JsonAsync(_workFlowCreatorService.UpdateWorkflowStateAsync(model))
                 : Json(new InvalidParametersResultModel<object>().AttachModelState(ModelState).ToBase());
+
+        /// <summary>
+        /// Get workflow states
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<StateGetViewModel>>))]
+        public async Task<JsonResult> GetWorkFlowStates([Required] Guid? workFlowId)
+            => await JsonAsync(_workFlowCreatorService.GetWorkFlowStatesAsync(workFlowId));
     }
 }

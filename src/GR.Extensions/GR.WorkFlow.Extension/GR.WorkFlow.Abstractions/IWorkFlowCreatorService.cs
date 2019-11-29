@@ -112,5 +112,19 @@ namespace GR.WorkFlows.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> UpdateWorkflowStateAsync([Required] UpdateWorkFlowStateViewModel model);
+
+        /// <summary>
+        /// Get workflow states
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<StateGetViewModel>>> GetWorkFlowStatesAsync([Required] Guid? workFlowId);
+
+        /// <summary>
+        /// Get workflow for display
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        Task<ResultModel<WorkFlowGetViewModel>> GetWorkFlowByIdForDisplayAsync(Guid? workFlowId);
     }
 }

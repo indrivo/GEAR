@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.WorkFlows.Abstractions.Helpers.ActionHandlers;
 using GR.WorkFlows.Abstractions.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,9 @@ namespace GR.WorkFlows.Abstractions.Extensions
         {
             services.AddTransient<IWorkFlowCreatorService<TEntity>, TService>();
             IoC.RegisterTransientService<IWorkFlowCreatorService<TEntity>, TService>();
+
+            services.RegisterWorkflowAction<SendNotificationAction>();
+
             return services;
         }
 
@@ -44,6 +49,31 @@ namespace GR.WorkFlows.Abstractions.Extensions
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
             };
+            return services;
+        }
+
+        /// <summary>
+        /// Register Workflow action
+        /// </summary>
+        /// <typeparam name="TAction"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterWorkflowAction<TAction>(this IServiceCollection services)
+            where TAction : BaseWorkFlowAction
+        {
+            var type = typeof(TAction);
+            var name = type.Name;
+            var fullName = type.FullName;
+            var service = IoC.Resolve<IWorkFlowContext>();
+            if (!service.WorkflowActions.Any(x => x.Name.Equals(name)))
+            {
+                service.WorkflowActions.Add(new WorkflowAction
+                {
+                    Name = name,
+                    ClassName = name,
+                    ClassNameWithNameSpace = fullName,
+                });
+            }
             return services;
         }
     }

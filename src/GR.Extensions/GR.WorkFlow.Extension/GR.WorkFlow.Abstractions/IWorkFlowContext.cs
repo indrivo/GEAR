@@ -35,5 +35,15 @@ namespace GR.WorkFlows.Abstractions
         /// Mapped actions to transitions
         /// </summary>
         DbSet<TransitionAction> TransitionActions { get; set; }
+
+        /// <summary>
+        /// Entity contracts
+        /// </summary>
+        DbSet<WorkFlowEntityContract> Contracts { get; set; }
+
+        /// <summary>
+        /// Entry states
+        /// </summary>
+        DbSet<EntryState> EntryStates { get; set; }
     }
 }

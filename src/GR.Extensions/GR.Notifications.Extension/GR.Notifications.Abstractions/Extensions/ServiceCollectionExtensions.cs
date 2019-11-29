@@ -85,7 +85,7 @@ namespace GR.Notifications.Abstractions.Extensions
                         NotificationTypeId = NotificationType.Info
                     };
 
-                    await notifier.SendNotificationAsync(subscribedRoles.Result, notification);
+                    await notifier.SendNotificationAsync(subscribedRoles.Result, notification, null);
                 }
                 catch (Exception e)
                 {

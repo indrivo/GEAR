@@ -3,15 +3,17 @@ using System;
 using GR.WorkFlows.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GR.WorkFlows.Migrations
 {
     [DbContext(typeof(WorkFlowsDbContext))]
-    partial class WorkFlowsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191129200502_WorkFlowsDbContext_AddWorkflowContractToEntity")]
+    partial class WorkFlowsDbContext_AddWorkflowContractToEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
