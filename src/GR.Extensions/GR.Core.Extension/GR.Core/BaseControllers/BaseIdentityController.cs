@@ -12,7 +12,7 @@ using GR.Core.Extensions;
 namespace GR.Core.BaseControllers
 {
     [Authorize]
-    public abstract class BaseController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : Controller
+    public abstract class BaseIdentityController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : BaseGearController
         where TUser : IdentityUser, IBaseModel
         where TRole : IdentityRole<string>, IBaseModel
         where TTenant : BaseModel
@@ -45,7 +45,7 @@ namespace GR.Core.BaseControllers
         protected readonly RoleManager<TRole> RoleManager;
 
 
-        protected BaseController(UserManager<TUser> userManager, RoleManager<TRole> roleManager,
+        protected BaseIdentityController(UserManager<TUser> userManager, RoleManager<TRole> roleManager,
             TIdentityContext applicationDbContext, TEntityContext context, TNotify notify)
         {
             UserManager = userManager;

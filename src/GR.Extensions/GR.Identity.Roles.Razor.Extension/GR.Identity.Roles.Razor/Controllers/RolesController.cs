@@ -31,7 +31,7 @@ using GR.Notifications.Abstractions.Models.Notifications;
 
 namespace GR.Identity.Roles.Razor.Controllers
 {
-    public class RolesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class RolesController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injectable
 

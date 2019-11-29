@@ -191,7 +191,7 @@ namespace GR.Cms
 		{
 			config.Configuration = Configuration;
 			config.HostingEnvironment = HostingEnvironment;
-			config.GearServices = services;
+			config.CacheConfiguration.UseInMemoryCache = true;
 
 			config.GearServices.AddDbContext<ProcessesDbContext>(options =>
 			{
@@ -205,7 +205,6 @@ namespace GR.Cms
 				.AddIdentityUserManager<IdentityUserManager, ApplicationUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
-				.AddDistributedMemoryCache()
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents();

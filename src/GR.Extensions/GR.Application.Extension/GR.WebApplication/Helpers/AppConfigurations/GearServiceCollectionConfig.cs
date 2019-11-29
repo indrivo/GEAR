@@ -19,7 +19,7 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// </summary>
         public IConfiguration Configuration { get; set; }
 
-        public IServiceCollection GearServices { get; set; } 
+        public IServiceCollection GearServices { get; set; }
 
         /// <summary>
         /// Use Cors default configuration
@@ -61,9 +61,14 @@ namespace GR.WebApplication.Helpers.AppConfigurations
     public sealed class CacheConfiguration
     {
         /// <summary>
-        /// Use default conf
+        /// Use distributed cache
         /// </summary>
-        public bool UseDefaultConfiguration { get; set; } = true;
+        public bool UseDistributedCache { get; set; } = false;
+
+        /// <summary>
+        /// Use in memory cache
+        /// </summary>
+        public bool UseInMemoryCache { get; set; } = true;
     }
 
     public sealed class SignlarConfiguration

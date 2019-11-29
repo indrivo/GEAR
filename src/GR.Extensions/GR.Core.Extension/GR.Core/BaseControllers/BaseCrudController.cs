@@ -8,7 +8,7 @@ using GR.Core.Helpers;
 
 namespace GR.Core.BaseControllers
 {
-    public abstract class BaseCrudController<TOperationContext, TEntity, TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : BaseController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify>
+    public abstract class BaseCrudController<TOperationContext, TEntity, TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify> : BaseIdentityController<TIdentityContext, TEntityContext, TUser, TRole, TTenant, TNotify>
         where TUser : IdentityUser, IBaseModel
         where TRole : IdentityRole<string>, IBaseModel
         where TTenant : BaseModel

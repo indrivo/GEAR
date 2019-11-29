@@ -38,7 +38,7 @@ namespace GR.Forms.Razor.Controllers
     /// <summary>
     /// Forms manipulation
     /// </summary>
-    public class FormController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class FormController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Inject
 

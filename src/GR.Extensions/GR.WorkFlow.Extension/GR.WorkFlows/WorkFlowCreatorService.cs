@@ -77,6 +77,40 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Update workflow
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> UpdateWorkFlowAsync([Required] UpdateWorkflowViewModel model)
+        {
+            if (model == null) return new InvalidParametersResultModel<object>().ToBase();
+            var workFlowRequest = await GetWorkFlowWhitOutIncludesAsync(model.Id);
+            if (!workFlowRequest.IsSuccess) return workFlowRequest.ToBase();
+            var workFlow = workFlowRequest.Result;
+            workFlow.Name = model.Name;
+            workFlow.Description = model.Description;
+            workFlow.Enabled = model.Enabled;
+            _workFlowContext.WorkFlows.Update(workFlow);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Enable or disable workflow
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> EnableOrDisableWorkFlowAsync([Required] Guid? workFlowId, bool state)
+        {
+            var workFlowRequest = await GetWorkFlowWhitOutIncludesAsync(workFlowId);
+            if (!workFlowRequest.IsSuccess) return workFlowRequest.ToBase();
+            var workFlow = workFlowRequest.Result;
+            workFlow.Enabled = state;
+            _workFlowContext.WorkFlows.Update(workFlow);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
         /// Add new state
         /// </summary>
         /// <param name="model"></param>
@@ -103,6 +137,43 @@ namespace GR.WorkFlows
             var dbRequest = await _workFlowContext.PushAsync();
 
             return dbRequest.Map<Guid?>(state.Id);
+        }
+
+        /// <summary>
+        /// Update workflow state
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> UpdateWorkflowStateAsync([Required]UpdateWorkFlowStateViewModel model)
+        {
+            if (model == null) return new InvalidParametersResultModel();
+            var state = await _workFlowContext.States
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(model.StateId));
+            if (state == null) return new NotFoundResultModel();
+            state.AdditionalSettings = model.SerializeAsJson();
+            state.Name = model.Name;
+            state.Description = model.Description;
+            _workFlowContext.States.Update(state);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Update state settings
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> UpdateStateAdditionalSettingsAsync([Required]Guid? stateId, Dictionary<string, string> settings)
+        {
+            if (stateId == null) return new InvalidParametersResultModel();
+            var state = await _workFlowContext.States
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(stateId));
+            if (state == null) return new NotFoundResultModel();
+            state.AdditionalSettings = settings.SerializeAsJson();
+            _workFlowContext.States.Update(state);
+            return await _workFlowContext.PushAsync();
         }
 
 
@@ -267,6 +338,16 @@ namespace GR.WorkFlows
             return await _workFlowContext.PushAsync();
         }
 
+        /// <summary>
+        /// Get all workflows
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<GetWorkFlowViewModel>>> GetAllWorkFlowsAsync()
+        {
+            var workFlows = await _workFlowContext.WorkFlows.ToListAsync();
+            return new SuccessResultModel<IEnumerable<GetWorkFlowViewModel>>(WorkFlowMapper.MapGet(workFlows));
+        }
+
 
         #region Helpers
 
@@ -280,6 +361,20 @@ namespace GR.WorkFlows
         private static bool IsDuplicateTransition(WorkFlow workFlow, Guid? startState, Guid? endState)
             => workFlow?.Transitions?.Any(x => x.FromStateId.Equals(startState) && x.ToStateId.Equals(endState)) ?? false;
 
+        /// <summary>
+        /// Get workflow by id
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        protected virtual async Task<ResultModel<WorkFlow>> GetWorkFlowWhitOutIncludesAsync([Required] Guid? workFlowId)
+        {
+            if (workFlowId == null) return new InvalidParametersResultModel<WorkFlow>();
+            var workFlow = await _workFlowContext.WorkFlows
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(workFlowId));
+            if (workFlow == null) return new NotFoundResultModel<WorkFlow>();
+            return new SuccessResultModel<WorkFlow>(workFlow);
+        }
 
         #endregion
     }

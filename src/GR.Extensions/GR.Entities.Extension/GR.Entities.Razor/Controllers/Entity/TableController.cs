@@ -39,7 +39,7 @@ namespace GR.Entities.Razor.Controllers.Entity
     /// <summary>
     /// Forms manipulation
     /// </summary>
-    public class TableController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class TableController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         /// <summary>
         /// Inject logger

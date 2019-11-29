@@ -18,7 +18,7 @@ using GR.PageRender.Abstractions.Models.Pages;
 
 namespace GR.PageRender.Razor.Controllers
 {
-	public class BlockCategoryController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+	public class BlockCategoryController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         private readonly IDynamicPagesContext _pagesContext;
 

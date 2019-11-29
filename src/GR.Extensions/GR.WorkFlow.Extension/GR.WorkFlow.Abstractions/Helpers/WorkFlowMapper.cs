@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.WorkFlows.Abstractions.Models;
@@ -61,5 +63,19 @@ namespace GR.WorkFlows.Abstractions.Helpers
                 WorkflowId = workFlowId.GetValueOrDefault()
             };
         }
+
+        /// <summary>
+        /// Get list for get response
+        /// </summary>
+        /// <param name="workFlows"></param>
+        /// <returns></returns>
+        public static IEnumerable<GetWorkFlowViewModel> MapGet(IEnumerable<WorkFlow> workFlows)
+            => workFlows.Select(x => new GetWorkFlowViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+                Enabled = x.Enabled
+            }).ToList();
     }
 }

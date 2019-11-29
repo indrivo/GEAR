@@ -76,5 +76,41 @@ namespace GR.WorkFlows.Abstractions
         /// <param name="roles"></param>
         /// <returns></returns>
         Task<ResultModel> AddOrUpdateTransitionAllowedRolesAsync(Guid? transitionId, IEnumerable<Guid> roles);
+
+        /// <summary>
+        /// Get all workflow
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<GetWorkFlowViewModel>>> GetAllWorkFlowsAsync();
+
+        /// <summary>
+        /// Enable or disable workflow
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        Task<ResultModel> EnableOrDisableWorkFlowAsync([Required] Guid? workFlowId, bool state);
+
+        /// <summary>
+        /// Update workflow data
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateWorkFlowAsync([Required] UpdateWorkflowViewModel model);
+
+        /// <summary>
+        /// Update state additional settings
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateStateAdditionalSettingsAsync([Required] Guid? stateId, Dictionary<string, string> settings);
+
+        /// <summary>
+        /// Update workflow state
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateWorkflowStateAsync([Required] UpdateWorkFlowStateViewModel model);
     }
 }
