@@ -4,15 +4,18 @@ namespace GR.Core.Helpers.Responses
 {
     public class InvalidParametersResultModel<T> : ResultModel<T>
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public InvalidParametersResultModel()
+        public override ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>
         {
-            Errors = new List<IErrorModel>
-            {
-                new ErrorModel(string.Empty, "Invalid parameters")
-            };
-        }
+            new ErrorModel(string.Empty, "Invalid parameters")
+        };
+    }
+
+
+    public class InvalidParametersResultModel : ResultModel
+    {
+        public override ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>
+        {
+            new ErrorModel(string.Empty, "Invalid parameters")
+        };
     }
 }

@@ -9,4 +9,12 @@ namespace GR.Core.Helpers.Responses
             new ErrorModel(string.Empty, "Entry not found")
         };
     }
+
+    public class NotFoundResultModel : ResultModel
+    {
+        public override ICollection<IErrorModel> Errors { get; set; } = new List<IErrorModel>
+        {
+            new ErrorModel(string.Empty, "Entry not found")
+        };
+    }
 }

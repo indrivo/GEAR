@@ -10,7 +10,7 @@ using GR.Cache.Abstractions;
 
 namespace GR.Cache.Services
 {
-    public class CacheService : ICacheService
+    public class RedisDistributedCacheService : ICacheService
     {
         /// <summary>
         /// Inject distributed cache
@@ -29,7 +29,7 @@ namespace GR.Cache.Services
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="redisConnection"></param>
-        public CacheService(IDistributedCache cache, IRedisConnection redisConnection)
+        public RedisDistributedCacheService(IDistributedCache cache, IRedisConnection redisConnection)
         {
             _cache = cache;
             _redisConnection = redisConnection;

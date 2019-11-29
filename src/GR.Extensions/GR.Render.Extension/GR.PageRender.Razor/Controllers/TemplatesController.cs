@@ -24,7 +24,7 @@ using GR.PageRender.Abstractions.Models.RenderTemplates;
 namespace GR.PageRender.Razor.Controllers
 {
     [Authorize]
-    public class TemplatesController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class TemplatesController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injectable
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using GR.Application.Middleware.Extensions;
 using GR.Application.Middleware.Server;
+using GR.Cache.Abstractions.Exceptions;
 using GR.Cache.Abstractions.Extensions;
 using GR.Cache.Services;
 using GR.Core;
@@ -33,9 +34,11 @@ namespace GR.WebApplication.Extensions
         /// <returns></returns>
         public static IServiceProvider RegisterGearWebApp(this IServiceCollection services, Action<GearServiceCollectionConfig> configAction)
         {
-            var configuration = new GearServiceCollectionConfig();
+            var configuration = new GearServiceCollectionConfig
+            {
+                GearServices = services
+            };
             configAction(configuration);
-            configuration.GearServices = services;
 
             //get and set app configured
             GearWebApplication.IsConfigured(configuration.HostingEnvironment);
@@ -59,9 +62,18 @@ namespace GR.WebApplication.Extensions
                 services.AddOriginCorsModule();
 
             //---------------------------------Custom cache Module-------------------------------------
-            if (configuration.CacheConfiguration.UseDefaultConfiguration)
+            if (configuration.CacheConfiguration.UseDistributedCache &&
+                configuration.CacheConfiguration.UseInMemoryCache)
+                throw new InvalidCacheConfigurationException("Both types of cached storage cannot be used");
+
+            if (configuration.CacheConfiguration.UseDistributedCache)
             {
-                services.AddCacheModule<CacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+                services.AddDistributedMemoryCache()
+                .AddCacheModule<RedisDistributedCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+            }
+            else if (configuration.CacheConfiguration.UseInMemoryCache)
+            {
+                services.AddCacheModule<InMemoryCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
             }
 
             //Global settings
