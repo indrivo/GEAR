@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using GR.Core;
 using Microsoft.EntityFrameworkCore;
 using GR.Entities.Abstractions;
 using GR.Entities.Abstractions.Models.Tables;
@@ -70,6 +72,15 @@ namespace GR.Entities.Data
             builder.Entity<TableFieldConfigValue>().HasKey(ug => new { ug.TableModelFieldId, ug.TableFieldConfigId });
             builder.Entity<TableModelField>().HasOne(typeof(TableFieldType), "TableFieldType").WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.RegisterIndexes();
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public override async Task InvokeSeedAsync()
+        {
+            await EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(this, GearSettings.TenantId);
         }
     }
 }

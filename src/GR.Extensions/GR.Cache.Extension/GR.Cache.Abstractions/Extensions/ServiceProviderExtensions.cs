@@ -23,6 +23,23 @@ namespace GR.Cache.Abstractions.Extensions
             where TCacheService : class, ICacheService
             where TRedisConnection : class, IRedisConnection
         {
+            services.AddCacheModule<TRedisConnection>(environment, configuration);
+            services.AddSingleton<ICacheService, TCacheService>();
+            IoC.RegisterSingletonService<ICacheService, TCacheService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Add cache module
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="environment"></param>
+        /// <param name="configuration"></param>
+        /// <param name="customSystemIdentifier"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddCacheModule<TRedisConnection>(this IServiceCollection services, IHostingEnvironment environment, IConfiguration configuration, string customSystemIdentifier = null)
+            where TRedisConnection : class, IRedisConnection
+        {
             if (customSystemIdentifier == null)
             {
                 var systemIdentifier = configuration.GetSection(nameof(SystemConfig))
@@ -42,9 +59,7 @@ namespace GR.Cache.Abstractions.Extensions
                 opts.InstanceName = $"{customSystemIdentifier}.{environment.EnvironmentName}@";
             });
 
-            services.AddSingleton<ICacheService, TCacheService>();
             services.AddSingleton<IRedisConnection, TRedisConnection>();
-            IoC.RegisterSingletonService<ICacheService, TCacheService>();
             IoC.RegisterSingletonService<IRedisConnection, TRedisConnection>();
             return services;
         }

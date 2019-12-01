@@ -42,7 +42,7 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
-        /// Distinct by propriety
+        /// Get distinct items by list propriety
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -81,6 +81,40 @@ namespace GR.Core.Extensions
                 return false;
             var last = list.ElementAt(list.Count - 1);
             return item.Equals(last);
+        }
+
+        /// <summary>
+        /// Get differences from 2 list 
+        /// </summary>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static (IList<TItem>, IList<TItem>) GetDifferences<TItem>(this IEnumerable<TItem> source, IEnumerable<TItem> target)
+        {
+            var aData = source?.ToList() ?? new List<TItem>();
+            var bData = target?.ToList() ?? new List<TItem>();
+            var sourceUniqueElements = aData.Except(bData).ToList();
+            var targetUniqueElements = bData.Except(aData).ToList();
+
+            return (sourceUniqueElements, targetUniqueElements);
+        }
+
+        /// <summary>
+        /// Contains any
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool ContainsAny<TSource>(this IEnumerable<TSource> source, IEnumerable<TSource> target)
+        {
+            if (source == null || target == null) return false;
+            var enumeratedSource = source.ToList();
+            var enumeratedTarget = target.ToList();
+            if (!enumeratedSource.Any() || !enumeratedTarget.Any()) return false;
+            var common = enumeratedSource.Intersect(enumeratedTarget);
+            return common.Any();
         }
     }
 }

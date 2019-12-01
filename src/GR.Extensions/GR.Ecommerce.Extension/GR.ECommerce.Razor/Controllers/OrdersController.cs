@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.BaseControllers;
 using GR.Core.Helpers;
 using GR.ECommerce.Abstractions.ViewModels.OrderViewModels;
 using GR.ECommerce.Payments.Abstractions;
@@ -12,13 +13,11 @@ using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace GR.ECommerce.Razor.Controllers
 {
     [Authorize]
-    public class OrdersController : Controller
+    public class OrdersController : BaseGearController
     {
         #region Injectable
 
@@ -31,16 +30,6 @@ namespace GR.ECommerce.Razor.Controllers
         /// Inject payment service
         /// </summary>
         private readonly IPaymentService _paymentService;
-        #endregion
-
-        #region Helpers
-
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
-
         #endregion
 
         /// <summary>
@@ -108,6 +97,8 @@ namespace GR.ECommerce.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<Guid>))]
         public async Task<IActionResult> CreateOrderForPlanSubscription([Required]Guid? productId, [Required]Guid? variationId)
         {
+            //TODO: Muta la subscriptions si anunta-l pe Girbu sa schimbe la el in ui, plus aici verificari la subscriptions
+            //TODO: Sa adaugi mesaje la errors in ResultModel<Guid> de ce nu poate crea o noua subscriere ca sa stie si NIcu ce sa afiseze in pagina
             var createOrderRequest = await _orderProductService.CreateOrderAsync(productId, variationId);
             return Json(createOrderRequest);
         }

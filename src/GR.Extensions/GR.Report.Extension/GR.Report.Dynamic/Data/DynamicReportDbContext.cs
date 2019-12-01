@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Core.Abstractions;
 using GR.Report.Abstractions;
 using GR.Report.Abstractions.Models;
@@ -42,6 +43,15 @@ namespace GR.Report.Dynamic.Data
         public DbSet<T> SetEntity<T>() where T : class, IBaseModel
         {
             return Set<T>();
+        }
+
+        /// <summary>
+        /// Seed data 
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

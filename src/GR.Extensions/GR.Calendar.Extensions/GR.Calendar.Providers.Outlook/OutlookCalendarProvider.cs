@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using IdentityServer4.Extensions;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using GR.Calendar.Abstractions;
@@ -10,6 +9,7 @@ using GR.Calendar.Abstractions.Models.ViewModels;
 using GR.Calendar.Providers.Outlook.Helpers;
 using GR.Calendar.Providers.Outlook.Mappers;
 using GR.Core.Helpers;
+using GR.Core.Extensions;
 
 namespace GR.Calendar.Providers.Outlook
 {
@@ -31,10 +31,6 @@ namespace GR.Calendar.Providers.Outlook
         private bool _isAuthorized;
 
         #region Injectable
-        /// <summary>
-        /// Inject token provider
-        /// </summary>
-        private readonly ICalendarExternalTokenProvider _tokenProvider;
 
         /// <summary>
         /// Inject settings service
@@ -42,9 +38,8 @@ namespace GR.Calendar.Providers.Outlook
         private readonly ICalendarUserSettingsService _settingsService;
         #endregion
 
-        public OutlookCalendarProvider(ICalendarExternalTokenProvider tokenProvider, ICalendarUserSettingsService settingsService)
+        public OutlookCalendarProvider(ICalendarUserSettingsService settingsService)
         {
-            _tokenProvider = tokenProvider;
             _settingsService = settingsService;
             _authSettings = OutlookAuthSettings.GetAuthSettings();
             if (_authSettings == null) throw new Exception("No client settings present");
@@ -194,7 +189,7 @@ namespace GR.Calendar.Providers.Outlook
                 var user = await _graphClient.Me.Request().GetAsync();
                 if (user != null)
                 {
-                    
+
                     response.IsSuccess = true;
                     response.Result = new ExternalCalendarUser
                     {
@@ -230,7 +225,7 @@ namespace GR.Calendar.Providers.Outlook
         /// </summary>
         public void Dispose()
         {
-            
+
         }
     }
 }

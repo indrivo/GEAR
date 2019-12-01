@@ -1,7 +1,10 @@
 ﻿using System;
+using GR.Core;
+using GR.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Report.Abstractions.Extensions
 {
@@ -33,6 +36,10 @@ namespace GR.Report.Abstractions.Extensions
         {
             services.AddDbContext<TReportContext>(options);
             services.AddScopedContextFactory<IReportContext, TReportContext>();
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TReportContext>();
+            };
             return services;
         }
     }

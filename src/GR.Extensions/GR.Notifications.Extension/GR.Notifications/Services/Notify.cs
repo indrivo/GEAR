@@ -71,19 +71,16 @@ namespace GR.Notifications.Services
         /// </summary>
         /// <param name="roles"></param>
         /// <param name="notification"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
-        public virtual async Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification)
+        public virtual async Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification, Guid? tenantId = null)
         {
-            var users = new List<string>();
-            foreach (var role in roles)
-            {
-                var list = _context.UserRoles.Where(x => x.RoleId.Equals(role.Id)).Select(x => x.UserId).Distinct()
-                    .ToList();
-                users.AddRange(list);
-            }
-            var usersUniques = users.Distinct().Select(Guid.Parse).ToList();
+            var usersRequest = await _userManager.GetUsersInRolesAsync((IEnumerable<ApplicationRole>)roles, tenantId);
+            if (!usersRequest.IsSuccess) return;
+            var usersUniques = usersRequest.Result.Select(x => Guid.Parse(x.Id)).ToList();
             await SendNotificationAsync(usersUniques, notification);
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Send notification

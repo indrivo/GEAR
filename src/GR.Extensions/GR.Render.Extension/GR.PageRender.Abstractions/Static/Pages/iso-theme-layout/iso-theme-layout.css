@@ -1,0 +1,142 @@
+html body {
+    background-color: #F4F6F8 !important;
+}
+
+table * .custom-control-label, #hiddenColumnsModal * .custom-control-label {
+    position: static !important;
+}
+
+.header .notification:before {
+    top: 6px;
+    left: 14px;
+}
+
+.logo-holder:hover {
+    cursor: pointer;
+}
+
+.dynamic-select {
+    z-index: 1000;
+}
+
+.dataTables_scrollBody thead th {
+    min-height: 0em !important;
+}
+
+table.dataTable:not(.dynamic-table) tbody td, table:not(.dynamic-table) tbody td {
+    padding: 0.5em !important;
+}
+
+.content-wrapper {
+    height: 100vh;
+}
+
+.dataTables_wrapper {
+    width: 99%;
+}
+
+.dynamic-table thead th:not(.no-sort) {
+    min-width: 8em !important;
+}
+
+.tab-content > .active {
+    padding: 1em;
+}
+
+.lds-dual-ring:after {
+    border: 6px solid #4B89FC !important;
+    border-color: #4B89FC transparent #4B89FC transparent !important;
+}
+
+table.dataTable tbody td {
+    padding: inherit !important;
+}
+
+
+
+table.table-bordered.dataTable tr {
+    height: 4em;
+}
+
+table.table-bordered.dataTable th.no-sort, table.table-bordered.dataTable td.no-sort {
+    max-width: 3em;
+    width: 1em !important;
+}
+
+.dataTables_processing {
+    border: none !important;
+    background: none !important;
+}
+
+.header {
+    z-index: 1000 !important;
+}
+
+/*.dataTables_wrapper .dataTables_scroll{
+	 height: calc(100vh - 280px);
+}
+
+.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody{
+	 height: calc(100vh - 360px);
+} */
+
+
+.dataTables_wrapper .dataTables_scroll, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+    min-height: 30em;
+}
+
+    .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody {
+        position: static !important;
+    }
+
+.table-responsive {
+    overflow-y: inherit !important;
+    overflow-x: auto !important;
+}
+
+.expanded-cell {
+    position: absolute !important;
+}
+
+    .expanded-cell, .expanded-cell .data-cell textarea {
+        z-index: 9999 !important;
+    }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover, .dataTables_wrapper .dataTables_paginate .paginate_button:focus {
+    background: none !important;
+    border-color: white !important;
+}
+
+.row-deleted {
+    background: #ffdbdb !important;
+    text-decoration: line-through;
+    font-style: italic;
+}
+
+.dynamic-table {
+    min-width: 100% !important;
+}
+
+.dataTables_scrollHeadInner {
+    min-width: 100% !important;
+}
+
+table * .form-control:focus {
+    box-shadow: none !important;
+}
+
+#hiddenColumnsModal {
+    z-index: 9999 !important;
+}
+
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+    border-bottom: none !important
+}
+
+.no-sort:after, .no-sort:before {
+    content: "" !important;
+}
+
+.btn-warning {
+    color: white !important;
+}

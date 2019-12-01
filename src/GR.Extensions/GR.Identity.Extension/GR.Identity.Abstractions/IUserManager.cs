@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Models.AddressModels;
+using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Identity.Abstractions
 {
@@ -73,5 +75,35 @@ namespace GR.Identity.Abstractions
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<Address>>> GetUserAddressesAsync(Guid? userId);
+
+        /// <summary>
+        /// Filter valid roles
+        /// </summary>
+        /// <param name="rolesIds"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Guid>> FilterValidRolesAsync(IEnumerable<Guid> rolesIds);
+
+        /// <summary>
+        /// Get users in role for current logged user
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+
+        Task<ResultModel<IEnumerable<SampleGetUserViewModel>>> GetUsersInRoleForCurrentCompanyAsync([Required]string roleName);
+
+        /// <summary>
+        /// Find roles by id
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        Task<IEnumerable<ApplicationRole>> FindRolesByIdAsync(IEnumerable<Guid> ids);
+
+        /// <summary>
+        /// Get users in roles
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRolesAsync(IEnumerable<ApplicationRole> roles, Guid? tenantId = null);
     }
 }

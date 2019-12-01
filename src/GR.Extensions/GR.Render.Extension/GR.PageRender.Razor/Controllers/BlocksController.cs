@@ -23,7 +23,7 @@ using GR.PageRender.Abstractions.Models.Pages;
 namespace GR.PageRender.Razor.Controllers
 {
     [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-    public class BlocksController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class BlocksController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         private readonly IDynamicPagesContext _pagesContext;
 

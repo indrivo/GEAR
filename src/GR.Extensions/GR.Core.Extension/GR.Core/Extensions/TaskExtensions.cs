@@ -15,7 +15,6 @@ namespace GR.Core.Extensions
         /// <summary>
         /// Execute
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="task"></param>
         /// <returns></returns>
         public static void ExecuteAsync(this Task task) => task.GetAwaiter().GetResult();

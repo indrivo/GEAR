@@ -1,4 +1,4 @@
-using GR.Application;
+using GR.WebApplication;
 
 namespace GR.Cms
 {
@@ -8,9 +8,6 @@ namespace GR.Cms
 		/// Main
 		/// </summary>
 		/// <param name="args"></param>
-		public static void Main(string[] args)
-		{
-			GearApplication.Run<Startup>(args);
-		}
+		public static void Main(string[] args) => GearWebApplication.Run<Startup>(args);
 	}
 }

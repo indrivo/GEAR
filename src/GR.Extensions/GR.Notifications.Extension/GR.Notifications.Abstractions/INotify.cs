@@ -14,8 +14,9 @@ namespace GR.Notifications.Abstractions
         /// </summary>
         /// <param name="roles"></param>
         /// <param name="notification"></param>
+        /// <param name="tenantId"></param>
         /// <returns></returns>
-        Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification);
+        Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification, Guid? tenantId);
         /// <summary>
         /// Send notification
         /// </summary>
