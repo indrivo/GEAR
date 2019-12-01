@@ -7,17 +7,22 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using GR.Core;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Microsoft.EntityFrameworkCore;
+using  GR.Core.Extensions;
 
 namespace GR.Identity.Services
 {
+    [Author(Authors.LUPEI_NICOLAE)]
+    [Documentation("Base implementation of gear user manager")]
     public class IdentityUserManager : IUserManager<ApplicationUser>
     {
         /// <inheritdoc />
@@ -238,6 +243,40 @@ namespace GR.Identity.Services
             var allUsers = await UserManager.GetUsersInRoleAsync(roleName);
             var filterUsers = allUsers.Where(x => x.TenantId.Equals(currentUserRequest.Result.TenantId)).Select(x => new SampleGetUserViewModel(x)).ToList();
             return new SuccessResultModel<IEnumerable<SampleGetUserViewModel>>(filterUsers);
+        }
+
+        /// <summary>
+        /// Find roles by id
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<ApplicationRole>> FindRolesByIdAsync(IEnumerable<Guid> ids)
+        {
+            var data = new List<ApplicationRole>();
+            foreach (var id in ids)
+            {
+                var role = await RoleManager.FindByIdAsync(id.ToString());
+                if (role != null) data.Add(role);
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRolesAsync(IEnumerable<ApplicationRole> roles, Guid? tenantId = null)
+        {
+            var data = new List<ApplicationUser>();
+            foreach (var role in roles)
+            {
+                var users = await UserManager.GetUsersInRoleAsync(role.Name);
+                data.AddRange(tenantId == null ? users : users.Where(x => x.TenantId.Equals(tenantId)).ToList());
+            }
+
+            return new SuccessResultModel<IEnumerable<ApplicationUser>>(data.DistinctBy(x => x.Id).ToList());
         }
     }
 }

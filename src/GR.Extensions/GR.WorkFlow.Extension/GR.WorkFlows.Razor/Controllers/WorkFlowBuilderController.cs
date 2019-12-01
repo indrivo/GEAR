@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Attributes.Documentation;
 using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
+using GR.Core.Helpers.ModelBinders;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.WorkFlows.Abstractions;
@@ -19,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GR.WorkFlows.Razor.Controllers
 {
     [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+    [Author(Authors.LUPEI_NICOLAE, 1.1)]
     public class WorkFlowBuilderController : BaseGearController
     {
         #region Injectable
@@ -70,9 +74,9 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<WorkFlow>))]
+        [Produces("application/json", Type = typeof(ResultModel<WorkFlowGetViewModel>))]
         public async Task<JsonResult> GetWorkFlowById([Required] Guid? workflowId)
-            => await JsonAsync(_workFlowCreatorService.GetWorkFlowByIdAsync(workflowId));
+            => await JsonAsync(_workFlowCreatorService.GetWorkFlowByIdForDisplayAsync(workflowId));
 
         /// <summary>
         /// Add new state to workflow
@@ -212,13 +216,16 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <summary>
         /// Update additional settings for workflow state
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="stateId"></param>
+        /// <param name="settings"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> UpdateStateAdditionalSettings([Required]UpdateAdditionalStateSettingsViewModel model)
-            => await JsonAsync(_workFlowCreatorService.UpdateStateAdditionalSettingsAsync(model.StateId, model.Settings));
+        public async Task<JsonResult> UpdateStateAdditionalSettings([Required] Guid? stateId, [ModelBinder(typeof(GearDictionaryBinder<string>))] Dictionary<string, string> settings)
+        {
+            return await JsonAsync(_workFlowCreatorService.UpdateStateAdditionalSettingsAsync(stateId, settings));
+        }
 
         /// <summary>
         /// Update workflow state
@@ -231,5 +238,16 @@ namespace GR.WorkFlows.Razor.Controllers
         public async Task<JsonResult> UpdateWorkFlowStateAsync([Required] UpdateWorkFlowStateViewModel model)
             => ModelState.IsValid ? await JsonAsync(_workFlowCreatorService.UpdateWorkflowStateAsync(model))
                 : Json(new InvalidParametersResultModel<object>().AttachModelState(ModelState).ToBase());
+
+        /// <summary>
+        /// Get workflow states
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<StateGetViewModel>>))]
+        public async Task<JsonResult> GetWorkFlowStates([Required] Guid? workFlowId)
+            => await JsonAsync(_workFlowCreatorService.GetWorkFlowStatesAsync(workFlowId));
     }
 }

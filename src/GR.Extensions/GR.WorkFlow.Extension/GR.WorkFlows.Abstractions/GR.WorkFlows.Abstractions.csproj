@@ -7,12 +7,13 @@
     <Company>Indrivo</Company>
     <Version>1.0.1</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <AssemblyName>GR.WorkFlows.Abstractions</AssemblyName>
+    <RootNamespace>GR.WorkFlows.Abstractions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
-    <ProjectReference Include="..\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

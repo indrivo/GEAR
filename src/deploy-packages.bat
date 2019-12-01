@@ -85,6 +85,12 @@ dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Abstractions
 dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant/GR.MultiTenant.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Razor/GR.MultiTenant.Razor.csproj -o ../../../nupkgs
 
+
+:: Pack state machine modules
+dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Abstractions/GR.WorkFlows.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows/GR.WorkFlows.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Razor/GR.WorkFlows.Razor.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -159,6 +165,11 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Email.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Razor*
+
+::Push state-machine modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

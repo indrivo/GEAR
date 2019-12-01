@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.WorkFlows.Abstractions;
@@ -15,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.WorkFlows
 {
+    [Author(Authors.LUPEI_NICOLAE)]
+    [Documentation("Service for create workflow")]
     public class WorkFlowCreatorService : IWorkFlowCreatorService<WorkFlow>
     {
         #region Injectable
@@ -60,6 +64,18 @@ namespace GR.WorkFlows
                 .FirstOrDefaultAsync(x => x.Id.Equals(workFlowId));
             if (workFlow == null) return new NotFoundResultModel<WorkFlow>();
             return new SuccessResultModel<WorkFlow>(workFlow);
+        }
+
+        /// <summary>
+        /// Get workflow by id for display
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<WorkFlowGetViewModel>> GetWorkFlowByIdForDisplayAsync(Guid? workFlowId)
+        {
+            var workFlowRequest = await GetWorkFlowByIdAsync(workFlowId);
+            return !workFlowRequest.IsSuccess ? workFlowRequest.Map<WorkFlowGetViewModel>()
+                : new SuccessResultModel<WorkFlowGetViewModel>(WorkFlowMapper.Map(workFlowRequest.Result));
         }
 
         /// <summary>
@@ -285,6 +301,25 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Get transition by start and end
+        /// </summary>
+        /// <param name="fromStateId"></param>
+        /// <param name="toStateId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Transition>> GetTransitionAsync([Required] Guid? fromStateId, [Required]Guid? toStateId)
+        {
+            if (fromStateId == null || toStateId == null) return new InvalidParametersResultModel<Transition>();
+            var transition = await _workFlowContext.Transitions
+                .Include(x => x.FromState)
+                .Include(x => x.ToState)
+                .Include(x => x.TransitionRoles)
+                .Include(x => x.WorkFlow)
+                .FirstOrDefaultAsync(x => x.FromStateId.Equals(fromStateId) && x.ToStateId.Equals(toStateId));
+            if (transition == null) return new NotFoundResultModel<Transition>();
+            return new SuccessResultModel<Transition>(transition);
+        }
+
+        /// <summary>
         /// Remove transition by id
         /// </summary>
         /// <param name="transitionId"></param>
@@ -339,13 +374,25 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Get workflow states
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<StateGetViewModel>>> GetWorkFlowStatesAsync([Required] Guid? workFlowId)
+        {
+            var workFlowRequest = await GetWorkFlowByIdAsync(workFlowId);
+            return !workFlowRequest.IsSuccess ? workFlowRequest.Map<IEnumerable<StateGetViewModel>>()
+                : new SuccessResultModel<IEnumerable<StateGetViewModel>>(WorkFlowMapper.Map(workFlowRequest.Result.States));
+        }
+
+        /// <summary>
         /// Get all workflows
         /// </summary>
         /// <returns></returns>
         public async Task<ResultModel<IEnumerable<GetWorkFlowViewModel>>> GetAllWorkFlowsAsync()
         {
             var workFlows = await _workFlowContext.WorkFlows.ToListAsync();
-            return new SuccessResultModel<IEnumerable<GetWorkFlowViewModel>>(WorkFlowMapper.MapGet(workFlows));
+            return new SuccessResultModel<IEnumerable<GetWorkFlowViewModel>>(WorkFlowMapper.Map(workFlows));
         }
 
 

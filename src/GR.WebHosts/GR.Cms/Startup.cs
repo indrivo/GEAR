@@ -113,6 +113,7 @@ using GR.Subscriptions.Abstractions.Models;
 using GR.Subscriptions;
 using GR.Subscriptions.Abstractions.Extensions;
 using GR.Documents.Abstractions.Extensions;
+using GR.Documents.Abstractions.Models;
 using GR.Documents.Data;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Permissions.Abstractions.Extensions;
@@ -423,12 +424,13 @@ namespace GR.Cms
 			config.GearServices.AddTransient<ITreeIsoService, TreeIsoService>();
 
 			//-------------------------------------Workflow module-------------------------------------
-			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService>()
+			config.GearServices.AddWorkFlowModule<WorkFlow, WorkFlowCreatorService, WorkFlowExecutorService>()
 				.AddWorkflowModuleStorage<WorkFlowsDbContext>(options =>
 				{
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
-				});
+				})
+				.RegisterWorkFlowContract(nameof(DocumentVersion), null);
 
 
 			//------------------------------------ Documents Module -----------------------------------

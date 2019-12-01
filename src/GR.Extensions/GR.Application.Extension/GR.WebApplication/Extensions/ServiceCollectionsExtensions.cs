@@ -6,6 +6,7 @@ using GR.Cache.Abstractions.Extensions;
 using GR.Cache.Services;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.Core.Razor.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Data;
@@ -77,7 +78,10 @@ namespace GR.WebApplication.Extensions
             }
 
             //Global settings
-            services.AddMvc()
+            services.AddMvc(options =>
+                {
+                    options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(x =>
                 {

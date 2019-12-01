@@ -27,6 +27,8 @@ namespace GR.WorkFlows.Data
         public virtual DbSet<TransitionRole> TransitionRoles { get; set; }
         public virtual DbSet<WorkflowAction> WorkflowActions { get; set; }
         public virtual DbSet<TransitionAction> TransitionActions { get; set; }
+        public virtual DbSet<WorkFlowEntityContract> Contracts { get; set; }
+        public virtual DbSet<EntryState> EntryStates { get; set; }
 
         #endregion
 
@@ -36,6 +38,8 @@ namespace GR.WorkFlows.Data
             builder.HasDefaultSchema(Schema);
             builder.Entity<TransitionRole>().HasKey(x => new { x.RoleId, x.TransitionId });
             builder.Entity<TransitionAction>().HasKey(x => new { x.TransitionId, x.ActionId });
+            builder.Entity<EntryState>().HasIndex(x => x.EntryId);
+            builder.Entity<WorkFlowEntityContract>().HasIndex(x => x.EntityName);
         }
 
         /// <summary>

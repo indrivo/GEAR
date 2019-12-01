@@ -69,7 +69,7 @@ namespace GR.WorkFlows.Abstractions.Helpers
         /// </summary>
         /// <param name="workFlows"></param>
         /// <returns></returns>
-        public static IEnumerable<GetWorkFlowViewModel> MapGet(IEnumerable<WorkFlow> workFlows)
+        public static IEnumerable<GetWorkFlowViewModel> Map(IEnumerable<WorkFlow> workFlows)
             => workFlows.Select(x => new GetWorkFlowViewModel
             {
                 Id = x.Id,
@@ -77,5 +77,51 @@ namespace GR.WorkFlows.Abstractions.Helpers
                 Description = x.Description,
                 Enabled = x.Enabled
             }).ToList();
+
+        /// <summary>
+        /// Map get
+        /// </summary>
+        /// <param name="states"></param>
+        /// <returns></returns>
+        public static IEnumerable<StateGetViewModel> Map(IEnumerable<State> states)
+             => states?.Select(state => new StateGetViewModel
+             {
+                 Id = state.Id,
+                 Name = state.Name,
+                 Description = state.Description,
+                 AdditionalSettings = state.AdditionalSettings.Deserialize<Dictionary<string, string>>()
+             });
+
+        /// <summary>
+        /// Map transitions
+        /// </summary>
+        /// <param name="transitions"></param>
+        /// <returns></returns>
+        public static IEnumerable<TransitionGetViewModel> Map(IEnumerable<Transition> transitions)
+            => transitions?.Select(transition => new TransitionGetViewModel
+            {
+                Name = transition.Name,
+                WorkFlow = transition.WorkFlow,
+                FromState = transition.FromState,
+                ToState = transition.ToState
+            });
+
+        /// <summary>
+        /// Map get
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static WorkFlowGetViewModel Map(WorkFlow model)
+        {
+            Arg.NotNull(model, nameof(Map));
+            return new WorkFlowGetViewModel
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Enabled = model.Enabled,
+                States = Map(model.States),
+                Transitions = Map(model.Transitions)
+            };
+        }
     }
 }
