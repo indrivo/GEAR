@@ -157,7 +157,7 @@ namespace GR.Documents
        /// Delete documents by list id
        /// </summary>
        /// <returns></returns>
-       public async Task<ResultModel> DeleteDocumentsByListIdAsync(IEnumerable<Guid> listDocumetsId)
+       public virtual async Task<ResultModel> DeleteDocumentsByListIdAsync(IEnumerable<Guid> listDocumetsId)
        {
            var response = new ResultModel();
            var user = await _userManager.GetCurrentUserAsync();
@@ -168,7 +168,7 @@ namespace GR.Documents
                return response;
            }
 
-           var listDocuments = await _context.Documents
+           var listDocuments = await DocumentContext.Documents
                .Include(i => i.DocumentType)
                .Include(i => i.DocumentVersions)
                .Where(x => listDocumetsId.Contains(x.Id) && x.TenantId == user.Result.TenantId)
@@ -184,8 +184,8 @@ namespace GR.Documents
                doc.IsDeleted = true;
 
 
-           _context.Documents.UpdateRange(listDocuments);
-           response =  await _context.PushAsync();
+           DocumentContext.Documents.UpdateRange(listDocuments);
+           response =  await DocumentContext.PushAsync();
 
            return response;
        }
@@ -334,7 +334,7 @@ namespace GR.Documents
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> EditDocumentAsync(AddDocumentViewModel model)
+        public virtual async Task<ResultModel> EditDocumentAsync(AddDocumentViewModel model)
         {
             var result = new ResultModel();
 
@@ -354,7 +354,7 @@ namespace GR.Documents
                 return result;
             }
 
-            var document = await _context.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
+            var document = await DocumentContext.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
 
             if (document is null)
             {
@@ -368,8 +368,8 @@ namespace GR.Documents
             document.Description = model.Description;
             document.Group = model.Group;
 
-             _context.Documents.Update(document);
-            result = await _context.PushAsync();
+            DocumentContext.Documents.Update(document);
+            result = await DocumentContext.PushAsync();
             
             return result;
         }
