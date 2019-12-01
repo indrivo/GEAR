@@ -12,7 +12,7 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// <summary>
         /// Executor
         /// </summary>
-        protected readonly IWorkFlowExecutor Executor;
+        protected readonly IWorkFlowExecutorService Executor;
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         {
             CurrentTransition = currentTransition;
             NextTransitions = nextTransitions;
-            Executor = IoC.Resolve<IWorkFlowExecutor>();
+            Executor = IoC.Resolve<IWorkFlowExecutorService>();
         }
 
         /// <summary>

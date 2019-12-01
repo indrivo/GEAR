@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.WorkFlows.Abstractions;
@@ -15,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.WorkFlows
 {
+    [Author(Authors.LUPEI_NICOLAE)]
+    [Documentation("Service for create workflow")]
     public class WorkFlowCreatorService : IWorkFlowCreatorService<WorkFlow>
     {
         #region Injectable
@@ -292,6 +296,25 @@ namespace GR.WorkFlows
                 .Include(x => x.TransitionRoles)
                 .Include(x => x.WorkFlow)
                 .FirstOrDefaultAsync(x => x.Id.Equals(transitionId));
+            if (transition == null) return new NotFoundResultModel<Transition>();
+            return new SuccessResultModel<Transition>(transition);
+        }
+
+        /// <summary>
+        /// Get transition by start and end
+        /// </summary>
+        /// <param name="fromStateId"></param>
+        /// <param name="toStateId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Transition>> GetTransitionAsync([Required] Guid? fromStateId, [Required]Guid? toStateId)
+        {
+            if (fromStateId == null || toStateId == null) return new InvalidParametersResultModel<Transition>();
+            var transition = await _workFlowContext.Transitions
+                .Include(x => x.FromState)
+                .Include(x => x.ToState)
+                .Include(x => x.TransitionRoles)
+                .Include(x => x.WorkFlow)
+                .FirstOrDefaultAsync(x => x.FromStateId.Equals(fromStateId) && x.ToStateId.Equals(toStateId));
             if (transition == null) return new NotFoundResultModel<Transition>();
             return new SuccessResultModel<Transition>(transition);
         }

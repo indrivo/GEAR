@@ -1,7 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
-    <ProjectReference Include="..\GR.WorkFlow.Abstractions\GR.WorkFlows.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>
 </Project>

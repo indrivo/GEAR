@@ -287,7 +287,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Documents.Razor", "src\G
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.WorkFlow.Extension", "GR.WorkFlow.Extension", "{A45A887D-97C6-4B42-B1F4-F319CBD39038}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WorkFlows.Abstractions", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlow.Abstractions\GR.WorkFlows.Abstractions.csproj", "{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WorkFlows.Abstractions", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj", "{D78B0DD6-CBB2-4589-BC31-CA277A73E0C2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.WorkFlows", "src\GR.Extensions\GR.WorkFlow.Extension\GR.WorkFlows\GR.WorkFlows.csproj", "{6C0A5347-E0CC-481D-982F-B21692FAA877}"
 EndProject

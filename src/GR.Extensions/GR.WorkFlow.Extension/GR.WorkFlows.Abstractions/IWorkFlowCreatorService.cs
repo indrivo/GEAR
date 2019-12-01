@@ -126,5 +126,13 @@ namespace GR.WorkFlows.Abstractions
         /// <param name="workFlowId"></param>
         /// <returns></returns>
         Task<ResultModel<WorkFlowGetViewModel>> GetWorkFlowByIdForDisplayAsync(Guid? workFlowId);
+
+        /// <summary>
+        /// Get transition by from and to
+        /// </summary>
+        /// <param name="fromStateId"></param>
+        /// <param name="toStateId"></param>
+        /// <returns></returns>
+        Task<ResultModel<Transition>> GetTransitionAsync([Required] Guid? fromStateId, [Required] Guid? toStateId);
     }
 }

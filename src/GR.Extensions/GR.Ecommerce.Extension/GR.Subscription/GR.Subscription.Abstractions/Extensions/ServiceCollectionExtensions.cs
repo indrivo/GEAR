@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using GR.Subscriptions.Abstractions.Models;
 using GR.Core.Helpers;
-using GR.ECommerce.Abstractions.Events;
 using GR.Subscriptions.Abstractions.Events;
 using GR.Subscriptions.Abstractions.Helpers;
 using Microsoft.EntityFrameworkCore;

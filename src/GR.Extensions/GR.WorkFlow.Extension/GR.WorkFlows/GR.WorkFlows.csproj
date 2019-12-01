@@ -1,13 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
-    <ProjectReference Include="..\GR.WorkFlow.Abstractions\GR.WorkFlows.Abstractions.csproj" />
+    <ProjectReference Include="..\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
