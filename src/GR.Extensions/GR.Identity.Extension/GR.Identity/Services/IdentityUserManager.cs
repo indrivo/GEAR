@@ -17,7 +17,6 @@ using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using Microsoft.EntityFrameworkCore;
-using  GR.Core.Extensions;
 
 namespace GR.Identity.Services
 {
