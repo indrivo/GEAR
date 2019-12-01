@@ -41,9 +41,9 @@ function LoadReportData(data) {
                 e.preventDefault();
             }
         });
-        if (data.Tables) {
-            $('#tableSelect').val(data.Tables).trigger('change');
-            items = data.Tables;
+        if (data.tables) {
+            $('#tableSelect').val(data.tables).trigger('change');
+            items = data.tables;
             allFields = [];
 
             var tableRequests = [];
@@ -54,7 +54,7 @@ function LoadReportData(data) {
 
             $.when.apply($, tableRequests).done(function () {
 
-                $.each(data.FiltersList, function (i, filter) {
+                $.each(data.filtersList, function (i, filter) {
                     AddFilter();
                     $.each($('#pnlFilters > .row'), function (j, row) {
                         if (i === j) {
@@ -63,15 +63,15 @@ function LoadReportData(data) {
                             var filterOperationSelector = $(row).find(".filterOperationSelector");
                             var filterValueSelector = $(row).find(".filterValueSelector");
                             $.when(updateReportListKeyValue($('#pnlFilters').data('request-url'), null, filterOperationSelector.attr('id'))).done(function () {
-                                filterOperationSelector.val(filter.FilterType).trigger('change');
+                                filterOperationSelector.val(filter.filterType).trigger('change');
                             });
-                            filterFieldSelector.val(filter.FieldName).trigger('change');
-                            filterValueSelector.val(filter.Value);
+                            filterFieldSelector.val(filter.fieldName).trigger('change');
+                            filterValueSelector.val(filter.value);
                         }
                     });
                 });
 
-                $.each(data.FieldsList, function (i, field) {
+                $.each(data.fieldsList, function (i, field) {
                     AddField();
                     $.each($('#pnlFields > .row'), function (j, row) {
                         if (i === j) {
@@ -80,15 +80,15 @@ function LoadReportData(data) {
                             var fieldOperationSelector = $(row).find(".fieldOperationSelector");
                             var filterValueSelector = $(row).find(".filterValueSelector");
                             $.when(updateReportListKeyValue($('#pnlFields').data('request-url'), null, fieldOperationSelector.attr('id'))).done(function () {
-                                fieldOperationSelector.val(field.AggregateType).trigger('change');
+                                fieldOperationSelector.val(field.aggregateType).trigger('change');
                             });
-                            fieldSelector.val(field.FieldName).trigger('change');
-                            filterValueSelector.val(field.FieldAlias);
+                            fieldSelector.val(field.fieldName).trigger('change');
+                            filterValueSelector.val(field.fieldAlias);
                         }
                     });
                 });
 
-                $.each(data.Relations, function (i, relation) {
+                $.each(data.relations, function (i, relation) {
                     AddRelationship();
                     $.each($('#pnlRelationships > .row'), function (j, row) {
                         if (i === j) {
@@ -96,10 +96,10 @@ function LoadReportData(data) {
                             var primaryKeyTableSelect = $(row).find(".primaryKeyTableSelect");
                             var foreignKeyTableSelect = $(row).find(".foreignKeyTableSelect");
                             var foreignKeySelect = $(row).find(".foreignKeySelect");
-                            primaryKeyTableSelect.val(relation.PrimaryKeyTable).trigger('change');
-                            foreignKeyTableSelect.val(relation.ForeignKeyTable).trigger('change');
-                            $.when(updateReportList($('#pnlRelationships').data('request-url'), { tableName: relation.ForeignKeyTable }, foreignKeySelect.attr('id'))).done(function () {
-                                foreignKeySelect.val(relation.ForeignKey).trigger('change');
+                            primaryKeyTableSelect.val(relation.primaryKeyTable).trigger('change');
+                            foreignKeyTableSelect.val(relation.foreignKeyTable).trigger('change');
+                            $.when(updateReportList($('#pnlRelationships').data('request-url'), { tableName: relation.foreignKeyTable }, foreignKeySelect.attr('id'))).done(function () {
+                                foreignKeySelect.val(relation.foreignKey).trigger('change');
                             });
                         }
                     });
@@ -109,8 +109,8 @@ function LoadReportData(data) {
 
 
                 $.when(updateReportListKeyValue($('#chartSelector').data('request-url'), null, "chartSelector")).done(function () {
-                    $.each(data.DynamicReportCharts, function (i, chart) {
-                        chartRequests.push(AddChart(chart.ChartType));
+                    $.each(data.dynamicReportCharts, function (i, chart) {
+                        chartRequests.push(AddChart(chart.chartType));
                     });
 
                     $.when.apply($, chartRequests).done(function () {
@@ -118,12 +118,12 @@ function LoadReportData(data) {
                             var chartIndex = $(row).find("input[name=chartIndex]").val();
                             var chartType = $(row).find("input[name=chartType]").val();
                             var chartTitle = $(row).find(".chartTitle");
-                            chartTitle.val(data.DynamicReportCharts[chartIndex - 1].ChartTitle);
+                            chartTitle.val(data.dynamicReportCharts[chartIndex - 1].chartTitle);
                             var chartFields = $(row).find(".chartFieldSelector");
                             if (chartType === 1) {
                                 var multiselectChartFields = [];
-                                $.map(data.DynamicReportCharts[chartIndex - 1].DynamicReportChartFields, function (val) {
-                                    multiselectChartFields.push(val.FieldName);
+                                $.map(data.dynamicReportCharts[chartIndex - 1].dynamicReportChartFields, function (val) {
+                                    multiselectChartFields.push(val.fieldName);
                                 });
                                 $.each(chartFields, function (j, chartField) {
                                     $(chartField).val(multiselectChartFields).trigger('change');
@@ -131,7 +131,7 @@ function LoadReportData(data) {
                             }
                             else {
                                 $.each(chartFields, function (j, chartField) {
-                                    $(chartField).val(data.DynamicReportCharts[chartIndex - 1].DynamicReportChartFields[j].FieldName).trigger('change');
+                                    $(chartField).val(data.dynamicReportCharts[chartIndex - 1].dynamicReportChartFields[j].fieldName).trigger('change');
                                 });
                             }
                         });

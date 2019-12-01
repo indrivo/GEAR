@@ -62,6 +62,40 @@ namespace GR.Documents.Razor.Controllers
             return Json(result, SerializerSettings);
         }
 
+
+        [HttpGet]
+        public async Task<JsonResult> GetDocumentsByIdAsync(Guid? documentId)
+        {
+            var toReturn = new ResultModel();
+
+            if (documentId is null)
+            {
+                toReturn.IsSuccess = false;
+                toReturn.Errors.Add(new ErrorModel {Message = "document Id not found"});
+                return Json(toReturn, SerializerSettings);
+            }
+
+            var result = await _documentService.GetDocumentsByIdAsync(documentId);
+
+            if(!result.IsSuccess)
+                return Json(result, SerializerSettings);
+
+            var document = new AddDocumentViewModel
+            {
+                DocumentId = result.Result.Id,
+                Description = result.Result.Description,
+                Group =  result.Result.Group,
+                DocumentCode = result.Result.DocumentCode,
+                Tile = result.Result.Title,
+                DocumentTypeId = result.Result.DocumentTypeId,
+            };
+         
+            toReturn.Result = document;
+            toReturn.IsSuccess = true;
+
+            return Json(toReturn, SerializerSettings);
+        }
+
         [HttpPost]
         public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumetId)
         {
@@ -73,6 +107,14 @@ namespace GR.Documents.Razor.Controllers
         public async Task<JsonResult> GetAllDocumentsByTypeIdAndList(List<Guid> listDocumetId, Guid? typeId)
         {
             var result = await _documentService.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumetId);
+            return Json(result, SerializerSettings);
+        }
+
+
+        [HttpPost]
+        public async Task<JsonResult> DeleteDocumnetsByListIdAsync(List<Guid> listDocumetId)
+        {
+            var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumetId);
             return Json(result, SerializerSettings);
         }
 
@@ -103,6 +145,23 @@ namespace GR.Documents.Razor.Controllers
             }
 
             result = await _documentService.AddDocumentAsync(model);
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> Edit(AddDocumentViewModel model)
+        {
+            var result = new ResultModel();
+
+            if (!ModelState.IsValid)
+            {
+                result.IsSuccess = false;
+                result.Result = model;
+                return Json(result);
+            }
+
+            result = await _documentService.EditDocumentAsync(model);
 
             return Json(result);
         }

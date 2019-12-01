@@ -1,7 +1,7 @@
 @model IEnumerable<GR.Documents.Abstractions.ViewModels.DocumentViewModels.DocumentViewModel>
 
 @{
-    ViewData["Title"] = "Documents";
+	ViewData["Title"] = "Documents";
 }
 
 <div class="common-control">
@@ -20,38 +20,31 @@
 			</div>
 		</div>
 
-		<button type="button" class="btn btn-link text-black-50">
+		<button type="button" class="btn btn-link text-black-50" onclick="getAllChechedDeleteDocuments()">
 			<span class="material-icons mr-1 align-middle">clear</span>
 			<span class="align-middle button-label">Șterge</span>
 		</button>
 	</div>
 </div>
 
+
+
 <table id="data-table" class="table table-striped mb-4 bg-white table-bordered">
 	<thead>
 		<tr>
+			<th></th>
 			<th>Title</th>
 			<th>Document/Description</th>
 			<th>File</th>
 			<th>Group</th>
 			<th>Type</th>
 			<th>Version</th>
+			<th>Is delete</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
 	<tbody id="tableListDocuments">
-		@*@foreach (var document in Model)
-			{
-				<tr>
-					<td>@document.Title</td>
-					<td>@document.Description</td>
-					<td><a href="@(document.DocumentType.Code == 3 ? document.LastUrl : "#" )" onclick="downloadFile('@document.LastFileId')" target="_blank">@(document.DocumentType.Code == 3 ? document.LastUrl : document.FileName)</a></td>
-					<td>@document.Group</td>
-					<td>@document.DocumentType.Name</td>
-					<td>@document.LastVersion.ToString("N1")</td>
-					<td></td>
-				</tr>
-			}*@
+		
 	</tbody>
 
 </table>
@@ -184,42 +177,16 @@
 					<input id="DocumentId" name="DocumentId" class="form-control" type="hidden" />
 					<div class="form-body">
 						<div class="row p-t-20">
-							<!-- <div class="col-md-12">
-								<div class="form-group">
-									<label>Document Code</label>
-									<input name="DocumentCode" class="form-control" value=""/>
-								</div>
-							</div>
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Tile</label>
-									<input name="Tile" class="form-control" value=""/>
+									<div class="checkbox-container">
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" name="IsMajorVersion" class="custom-control-input " id="IsMajorVersion"/>
+											<label class="custom-control-label" for="IsMajorVersion">Is Major version </label>
+										</div>
+									</div>
 								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Description</label>
-									<textarea name="Description" class="form-control ckeditor" value=""></textarea>
-
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Group</label>
-									<input name="Group" class="form-control" value=""/>
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Url</label>
-									<input name="Url" class="form-control" value=""/>
-								</div>
-							</div> -->
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Is Major version</label>
-									<input type="checkbox" name="IsMajorVersion" />
-								</div>
+								
 							</div>
 							<div class="col-md-12">
 								<div class="form-group">
@@ -253,34 +220,36 @@
 {
 	<script type="text/javascript">
 
-        const toast = new ToastNotifier();
+		const toast = new ToastNotifier();
 
-		$(document).ready(function () {
+		$(document).ready(function() {
 			AddListDocumentType();
 			GetAllDocuments();
 		});
-        
+
 		function AddListDocumentType() {
 
 			$.ajax({
 				url: '/DocumentTypes/GetAllDocumetTypesAsync',
 				method: 'get',
 				contentType: "application/json; charset=utf-8",
-				success: function (data) {
+				success: function(data) {
 					if (data.is_success) {
 
 						$(".dropdown-menu").empty();
-						$.each(data.result, function (index, value) {
+						$.each(data.result,
+							function(index, value) {
 
-							var html = `<a class="dropdown-item" href="#" onclick="addNewDocument('${value.id}','${value.code}')" >${value.name}</a>`;
-							$(".dropdown-menu").append(html)
-						});
-					}
-					else {
+								var html =
+									`<a class="dropdown-item" href="#" onclick="addNewDocument('${value.id}','${value
+										.code}')" >${value.name}</a>`;
+								$(".dropdown-menu").append(html)
+							});
+					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
 				},
-				error: function (error) {
+				error: function(error) {
 					console.log(error);
 				}
 			});
@@ -293,8 +262,7 @@
 
 				$("#FileInputDocument").hide();
 				$("#fileinput").removeAttr("required");
-			}
-			else {
+			} else {
 				$("#FileInputDocument").show();
 				$("#fileinput").attr('required', 'required');
 
@@ -317,28 +285,31 @@
 				method: 'get',
 				contentType: "application/json; charset=utf-8",
 				data: { documentId: documentId },
-				success: function (data) {
+				success: function(data) {
 					if (data.is_success) {
 
 						$("#DocumntVersionList").empty();
 						$('#ShowDocumentVersions').modal('show');
 
-						$.each(data.result, function (index, value) {
-							var html =
-								`<tr>
-										<td>${value.document.title}</td>"
-										<td> ${value.comments}</td>
-										<td><a href="#" onclick ="downloadFile('${value.fileStorageId}')">${value.fileName}</a></td>
-										<td>${ value.versionNumber.toFixed(1)}</td>`;
-							$("#DocumntVersionList").append(html);
-						});
-					}
-					else {
+						$.each(data.result,
+							function(index, value) {
+								var html =
+									`<tr>
+															<td>${value.document.title}</td>"
+															<td> ${value.comments}</td>
+															<td><a href="#" onclick ="downloadFile('${value
+										.fileStorageId
+										}')">${
+										value.fileName}</a></td>
+															<td>${value.versionNumber.toFixed(1)}</td>`;
+								$("#DocumntVersionList").append(html);
+							});
+					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
 
 				},
-				error: function (error) {
+				error: function(error) {
 					console.log(error);
 				}
 			});
@@ -346,88 +317,82 @@
 
 		function downloadFile(fileId) {
 
-			alert(fileId);
 			if (fileId != null && fileId != 'null')
 				window.location.href = '/api/File/' + "GetFile?id=" + fileId;
 		}
 
 		function GetAllDocuments() {
 
-			//const dbService = new DataInjector();
-			//var listDocumetId = [];
-			//const filters = [{
-			//	parameter: "RequirementId",
-			//	criteria: "equals",
-			//	value: requiredId
-			//}];
-
-
-			// dbService.getAllWhereWithIncludesAsync("RequirementDocuments", filters).then(response => {
-			//	if (response.is_success) {
-			//		console.log(response);
-			//		if (response.result.length > 0) {
-			//			$.each(response.result, function (i, input) {
-			//				listDocumetId.push(input.documentId);
-			//			});
-			//		}
-			//	} else {
-			//		toast.notifyErrorList(response.error_keys);
-			//	}
-			//}).catch(e => {
-			//	toast.notifyErrorList(e);
-			//});
-
-
-			//console.log(listDocumetId);
-			//const model = {
-			//	listDocumetId: listDocumetId,
-			//};
-
-			//if (listDocumetId.length > 0) {
 			$.ajax({
 				type: "Get",
 				url: '/Documents/GetAllDocuments',
 				method: 'get',
 				dataType: 'json',
-				success: function (data) {
+				success: function(data) {
 					if (data.is_success) {
 						$("#tableListDocuments").empty();
-						$.each(data.result, function (index, value) {
+						$.each(data.result,
+							function(index, value) {
 
-							var html =
-								`<tr>
-										<td> ${value.title}</td>
-										<td>${ value.description}</td>
-										<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value.documentType.code == 3 ? value.lastUrl : value.fileName}</a></td>
-										<td>${ value.group}</td>
-										<td>${ value.documentType.name}</td>
-										<td> ${value.lastVersion}</td>
-										<td><button type="button" class="btn btn-light" onclick ="getDocumntVersions('${value.id}')" ${value.documentType.code == 1 ? "" : "disabled"}>All version</button>
-											<button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${value.id}')" ${value.documentType.code == 1 ? "" : "disabled"}>New version</button></td>
-										</tr>`;
-							$("#tableListDocuments").append(html);
-						});
-					}
-					else {
+								var html =
+									`<tr>
+								<td>
+									<div class="checkbox-container">
+										<div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input checkedDocumentsToDelete" id="${
+										value.id}"/>
+                                            <label class="custom-control-label" for="${value.id}"></label>
+									    </div>
+								    </div>
+								</td>
+								<td> ${value.title}</td>
+								<td style="white-space: pre-wrap;">${value.description}</td>
+								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
+										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
+										.documentType.code ==
+										3
+										? value.lastUrl
+										: value.fileName}</a></td>
+								<td>${value.group}</td>
+								<td>${value.documentType.name}</td>
+								<td> ${value.lastVersion.toFixed(1)}</td>
+                                <td> ${value.isDeleted}</td>
+                                <td>
+                                    <button type="button" class="btn btn-light" onclick ="getDocumntVersions('${
+										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
+										}>All version</button>
+                                    <button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${
+										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
+										}>New version</button>
+                                </td>
+							</tr>`;
+								$("#tableListDocuments").append(html);
+							});
+					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
 
 				},
-				error: function (error) {
+				error: function(error) {
 					console.log(error);
 				}
 			});
-			//}
 		}
 
-		$("#formAddDocumentVersion").submit(function (e) {
+		$("#formAddDocumentVersion").submit(function(e) {
 			var formData = new FormData();
 			var file = $('#NewVersionFileInput')[0].files[0];
 			formData.append('file', file);
 
+			console.log($(this).serializeArray());
+
 			$.each($(this).serializeArray(), function (i, input) {
+
+				if (input.name === "IsMajorVersion")
+					input.value = true;
+
 				formData.append(input.name, input.value);
-			});
+				});
 
 			console.log(formData);
 
@@ -437,15 +402,14 @@
 				contentType: false,
 				url: "/Documents/AddNewDocumentVersion",
 				data: formData,
-				success: function (data) {
+				success: function(data) {
 					if (data.is_success) {
 
 						GetAllDocuments();
 						toast.notifySuccess("Save succes");
 						$('#AddNewVersionModal').modal('hide');
 						$("#formAddDocumentVersion").trigger('reset');
-					}
-					else {
+					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
 				}
@@ -454,15 +418,16 @@
 			return false;
 		});
 
-		$("#formAddDocument").submit(function (e) {
+		$("#formAddDocument").submit(function(e) {
 
 			var formData = new FormData();
 			var file = $('#fileinput')[0].files[0];
 			formData.append('file', file);
 
-			$.each($(this).serializeArray(), function (i, input) {
-				formData.append(input.name, input.value)
-			});
+			$.each($(this).serializeArray(),
+				function(i, input) {
+					formData.append(input.name, input.value)
+				});
 
 			$.ajax({
 				type: "POST",
@@ -470,15 +435,14 @@
 				contentType: false,
 				url: "/Documents/Create",
 				data: formData,
-				success: function (data) {
+				success: function(data) {
 					if (data.is_success) {
 						GetAllDocuments();
 						toast.notifySuccess("Save succes");
 						$('#AddDocumentModal').modal('hide');
 						$("#formAddDocument").trigger('reset');
 
-					}
-					else {
+					} else {
 						toast.notifyErrorList();
 					}
 				}
@@ -486,6 +450,69 @@
 
 			return false;
 		});
+
+
+		function getAllChechedDeleteDocuments() {
+
+			var listDocumetId = [];
+			$('input:checkbox.checkedDocumentsToDelete').each(function() {
+
+				if ($(this).is(':checked'))
+					listDocumetId.push($(this).attr('id'));
+
+			});
+
+			if (listDocumetId.length > 0) {
+				$.ajax({
+					type: "POST",
+					url: '/Documents/DeleteDocumnetsByListIdAsync',
+					method: 'post',
+					data: { listDocumetId: listDocumetId },
+					success: function(data) {
+						if (data.is_success) {
+							GetAllDocuments();
+							$(listDocumetId).each(function( index ) {
+								deleteDocuments(index);
+							});
+						}
+					},
+					error: function(error) {
+						console.log(error);
+					}
+				});
+			}
+		}
+
+		function deleteDocuments(DocumentId) {
+			const dbService = new DataInjector();
+			const filters = [
+				{
+					parameter: "DocumentId",
+					criteria: "equals",
+					value: DocumentId
+				}
+			];
+
+			dbService.deletePermanentWhereAsync("ControlDocuments", filters).then(response => {
+				if (response.is_success) {
+
+				} else {
+					toast.notifyErrorList(response.error_keys);
+				}
+			}).catch(e => {
+				toast.notifyErrorList(e);
+			});
+
+			dbService.deletePermanentWhereAsync("RequirementDocuments", filters).then(response => {
+				if (response.is_success) {
+
+				} else {
+					toast.notifyErrorList(response.error_keys);
+				}
+			}).catch(e => {
+				toast.notifyErrorList(e);
+			});
+		}
 
 	</script>
 }

@@ -22,6 +22,14 @@ namespace GR.Documents.Abstractions
         Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumetId);
 
         /// <summary>
+        /// Delete documents by list id
+        /// </summary>
+        /// <param name="listDocumetsId"></param>
+        /// <returns></returns>
+        Task<ResultModel> DeleteDocumentsByListIdAsync(IEnumerable<Guid> listDocumetsId);
+
+
+        /// <summary>
         /// Get document by id async
         /// </summary>
         /// <param name="documentId"></param>
@@ -72,5 +80,13 @@ namespace GR.Documents.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> AddNewDocumentVersionAsync(AddNewVersionDocumentViewModel model);
+
+
+        /// <summary>
+        /// Edit document
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> EditDocumentAsync(AddDocumentViewModel model);
     }
 }

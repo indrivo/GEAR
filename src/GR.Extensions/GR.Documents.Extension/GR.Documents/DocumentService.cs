@@ -85,7 +85,7 @@ namespace GR.Documents
             var documentsBd = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => x.DocumentTypeId == typeId && x.TenantId == user.Result.TenantId).ToListAsync();
+                .Where(x => x.DocumentTypeId == typeId && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
 
             if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
@@ -117,7 +117,7 @@ namespace GR.Documents
             var documentsBd = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => x.DocumentTypeId == typeId && !listIgnireDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId).ToListAsync();
+                .Where(x => x.DocumentTypeId == typeId && !listIgnireDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
 
             if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
@@ -142,7 +142,7 @@ namespace GR.Documents
             var listDocuments = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => listDocumetId.Contains(x.Id) && x.TenantId == user.Result.TenantId)
+                .Where(x=> listDocumetId.Contains(x.Id) && x.TenantId == user.Result.TenantId && !x.IsDeleted)
                 .ToListAsync();
 
             if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
@@ -152,6 +152,43 @@ namespace GR.Documents
 
             return response;
         }
+
+       /// <summary>
+       /// Delete documents by list id
+       /// </summary>
+       /// <returns></returns>
+       public async Task<ResultModel> DeleteDocumentsByListIdAsync(IEnumerable<Guid> listDocumetsId)
+       {
+           var response = new ResultModel();
+           var user = await _userManager.GetCurrentUserAsync();
+
+           if (listDocumetsId is null || !listDocumetsId.Any())
+           {
+               response.Errors.Add(new ErrorModel{Message = "List documents is null"});
+               return response;
+           }
+
+           var listDocuments = await _context.Documents
+               .Include(i => i.DocumentType)
+               .Include(i => i.DocumentVersions)
+               .Where(x => listDocumetsId.Contains(x.Id) && x.TenantId == user.Result.TenantId)
+               .ToListAsync();          
+
+           if (listDocuments is null || !listDocuments.Any())
+           {
+               response.Errors.Add(new ErrorModel { Message = "List documents  null" });
+               return response;
+           }
+
+           foreach (var doc in listDocuments)
+               doc.IsDeleted = true;
+
+
+           _context.Documents.UpdateRange(listDocuments);
+           response =  await _context.PushAsync();
+
+           return response;
+       }
 
         /// <summary>
         /// Get document by id
@@ -196,7 +233,7 @@ namespace GR.Documents
             var listDocuments = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => x.UserId == user.Result.Id.ToGuid()).ToListAsync();
+                .Where(x => x.UserId == user.Result.Id.ToGuid() && !x.IsDeleted).ToListAsync();
 
             if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
@@ -291,6 +328,52 @@ namespace GR.Documents
             result.Result = newDocument.Id;
             return result;
         }
+
+        /// <summary>
+        /// Edit document
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> EditDocumentAsync(AddDocumentViewModel model)
+        {
+            var result = new ResultModel();
+
+            if (model is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "entity is null" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            var user = await _userManager.GetCurrentUserAsync();
+
+            if (user is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "user not fount" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            var document = await _context.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
+
+            if (document is null)
+            {
+                result.Errors.Add(new ErrorModel { Message = "document not fount" });
+                result.IsSuccess = false;
+                return result;
+            }
+
+            document.DocumentCode = model.DocumentCode;
+            document.Title = model.Tile;
+            document.Description = model.Description;
+            document.Group = model.Group;
+
+             _context.Documents.Update(document);
+            result = await _context.PushAsync();
+            
+            return result;
+        }
+
 
         /// <summary>
         /// Add new document version

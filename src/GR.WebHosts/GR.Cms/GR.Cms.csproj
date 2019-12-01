@@ -139,17 +139,11 @@
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
-	<Content Update="Views\CompanyManage\Index.cshtml">
-	  <Pack>false</Pack>
+	<Content Update="Views\Documents\Create.cshtml">
+	  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	</Content>
-	<Content Update="Views\Shared\_MobilPay_PaymentMethodPartialView.cshtml">
-	  <Pack>false</Pack>
-	</Content>
-	<Content Update="Views\Shared\_OrderSummaryPartialView.cshtml">
-	  <Pack>false</Pack>
-	</Content>
-	<Content Update="Views\TaskManager\Index.cshtml">
-	  <Pack>false</Pack>
+	<Content Update="Views\Documents\Index.cshtml">
+	  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 	</Content>
   </ItemGroup>
   <ItemGroup>
