@@ -1,10 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using GR.WorkFlows.Abstractions.Models;
 
 namespace GR.WorkFlows.Abstractions.ViewModels
 {
     public class TransitionGetViewModel
     {
+        /// <summary>
+        /// Id
+        /// </summary>
+        public virtual Guid Id { get; set; }
         /// <summary>
         /// Transition name
         /// </summary>
