@@ -33,9 +33,24 @@ namespace GR.Subscriptions.Abstractions.Events
             TenantEvents.Company.OnCompanyRegistered += async (sender, args) =>
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
+                var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
 
+                var plan = await productService.GetProductByAttributeMinNumberValueAsync("");
 
+                if (plan.IsSuccess)
+                {
+                    var permissions = SubscriptionMapper.Map(plan.Result.ProductAttributes).ToList();
+                    await subscriptionService.CreateUpdateSubscriptionAsync(new SubscriptionViewModel
+                    {
+                        Name = plan.Result.Name,
+                        //OrderId = args.OrderId,
+                        StartDate = DateTime.Now,
+                        Availability = int.Parse(freeTrialPeriodStr),
+                        // UserId = order.UserId,
+                        SubscriptionPermissions = permissions
+                    });
+                }
 
                 //create free trial subscription
             };
@@ -59,7 +74,10 @@ namespace GR.Subscriptions.Abstractions.Events
                 var variationId = order.ProductOrders.FirstOrDefault(x => x.ProductId == checkIfProductIsSubscription)?.ProductVariationId;
                 var variation = plan.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
 
-                await subscriptionService.CreateSubscriptionAsync(new SubscriptionViewModel
+
+                var userSubscription = await subscriptionService.GetLastSubscriptionForUserAsync();
+
+                var newSubscription = new SubscriptionViewModel
                 {
                     Name = plan.Name,
                     OrderId = args.OrderId,
@@ -67,7 +85,15 @@ namespace GR.Subscriptions.Abstractions.Events
                     Availability = subscriptionService.GetSubscriptionDuration(variation),
                     UserId = order.UserId,
                     SubscriptionPermissions = permissions
-                });
+                };
+
+                if (userSubscription.IsSuccess)
+                {
+                    newSubscription.Id = userSubscription.Result.Id;
+                    newSubscription.Availability += userSubscription.Result.Availability;
+                }
+
+                await subscriptionService.CreateUpdateSubscriptionAsync(newSubscription);
             };
         }
     }

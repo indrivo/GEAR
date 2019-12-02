@@ -140,7 +140,7 @@ namespace GR.Subscriptions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<Guid>> CreateSubscriptionAsync(SubscriptionViewModel model)
+        public async Task<ResultModel<Guid>> CreateUpdateSubscriptionAsync(SubscriptionViewModel model)
         {
             if (model == null) throw new NullReferenceException();
             var orderRequest = await _orderService.GetOrderByIdAsync(model.OrderId);
@@ -151,21 +151,41 @@ namespace GR.Subscriptions
             {
                 Errors = new List<IErrorModel> { new ErrorModel(string.Empty, "Order was not paid") }
             };
-            var subscription = new Subscription
-            {
-                Id = model.Id,
-                UserId = order.UserId,
-                StartDate = model.StartDate,
-                Availability = model.Availability,
-                OrderId = model.OrderId,
-                Name = model.Name,
-                SubscriptionPermissions = model.SubscriptionPermissions
-            };
 
-            await _subscriptionDbContext.Subscription.AddAsync(subscription);
+            var existSubsctiption = await GetSubscriptionByIdAsync(model.Id);
+
+            Guid subscriptionId;
+
+            if (existSubsctiption.IsSuccess)
+            {
+                var subscripton = existSubsctiption.Result;
+                subscripton.OrderId = model.OrderId;
+                subscripton.Availability += model.Availability;
+                subscripton.Name = model.Name;
+                subscripton.SubscriptionPermissions = model.SubscriptionPermissions;
+
+                _subscriptionDbContext.Subscription.Update(subscripton);
+                subscriptionId = subscripton.Id;
+            }
+            else
+            {
+                var subscription = new Subscription
+                {
+                    Id = model.Id,
+                    UserId = order.UserId,
+                    StartDate = model.StartDate,
+                    Availability = model.Availability,
+                    OrderId = model.OrderId,
+                    Name = model.Name,
+                    SubscriptionPermissions = model.SubscriptionPermissions
+                };
+                await _subscriptionDbContext.Subscription.AddAsync(subscription);
+                subscriptionId = subscription.Id;
+            }
+
             var dbRequest = await _subscriptionDbContext.PushAsync();
 
-            return dbRequest.Map(subscription.Id);
+            return dbRequest.Map(subscriptionId);
         }
 
         /// <summary>
@@ -286,6 +306,30 @@ namespace GR.Subscriptions
                               $"to {subscription.ExpirationDate}, expires in {subscription.RemainingDays} days"
                 });
             }
+        }
+
+        /// <summary>
+        /// Get las subscription for user
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync()
+        {
+            var userSubscription = await GetSubscriptionsByUserAsync();
+
+            if (!userSubscription.IsSuccess)
+            {
+                return new ResultModel<Subscription>
+                {
+                    Errors = new List<IErrorModel> {new ErrorModel {Message = "subscription not fount"}},
+                    IsSuccess = false
+                };
+            }
+
+            return new ResultModel<Subscription>
+            {
+                IsSuccess = true,
+                Result = userSubscription.Result.OrderByDescending(o => o.Created).FirstOrDefault()
+            };
         }
     }
 }
