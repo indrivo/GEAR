@@ -174,6 +174,8 @@ namespace GR.ECommerce.Products.Services
             int valueInt = 0;
             var listAttribute = _commerceContext.ProductAttributes
                 .Include(i => i.ProductAttribute)
+                .Include(i=> i.Product)
+                .ThenInclude(i=> i.ProductAttributes)
                 .Where(x => x.ProductAttribute.Name == attribute && int.TryParse(x.Value, out valueInt));
 
             if (!listAttribute.Any())

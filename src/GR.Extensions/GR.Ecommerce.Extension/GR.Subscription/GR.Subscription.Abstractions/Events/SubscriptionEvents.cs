@@ -36,7 +36,7 @@ namespace GR.Subscriptions.Abstractions.Events
                 var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
 
-                var plan = await productService.GetProductByAttributeMinNumberValueAsync("");
+                var plan = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
 
                 if (plan.IsSuccess)
                 {
