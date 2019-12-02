@@ -163,6 +163,7 @@ namespace GR.Subscriptions
                 subscripton.Availability += model.Availability;
                 subscripton.Name = model.Name;
                 subscripton.SubscriptionPermissions = model.SubscriptionPermissions;
+                subscripton.IsFree = model.IsFree;
 
                 _subscriptionDbContext.Subscription.Update(subscripton);
                 subscriptionId = subscripton.Id;
@@ -177,6 +178,7 @@ namespace GR.Subscriptions
                     Availability = model.Availability,
                     OrderId = model.OrderId,
                     Name = model.Name,
+                    IsFree = model.IsFree,
                     SubscriptionPermissions = model.SubscriptionPermissions
                 };
                 await _subscriptionDbContext.Subscription.AddAsync(subscription);

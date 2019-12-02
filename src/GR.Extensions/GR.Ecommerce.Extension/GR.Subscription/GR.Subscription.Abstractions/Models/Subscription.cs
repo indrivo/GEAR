@@ -32,12 +32,17 @@ namespace GR.Subscriptions.Abstractions.Models
         /// <summary>
         /// Order id
         /// </summary>
-        public virtual Guid OrderId { get; set; }
+        public virtual Guid? OrderId { get; set; }
 
         /// <summary>
         /// Order
         /// </summary>
         public virtual Order Order { get; set; }
+
+        /// <summary>
+        /// is free
+        /// </summary>
+        public virtual bool IsFree { get; set; }
 
 
         /// <summary>

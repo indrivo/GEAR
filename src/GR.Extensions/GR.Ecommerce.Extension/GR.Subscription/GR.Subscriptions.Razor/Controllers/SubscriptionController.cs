@@ -104,7 +104,7 @@ namespace GR.Subscriptions.Razor.Controllers
 
             if (lastSubscriptionForUser.IsSuccess && product.IsSuccess)
             {
-                if (product.Result.Name != lastSubscriptionForUser.Result?.Name)
+                if (lastSubscriptionForUser.Result != null && product.Result.Name != lastSubscriptionForUser.Result?.Name && !lastSubscriptionForUser.Result.IsFree)
                 {
                     return Json(new ResultModel
                     {

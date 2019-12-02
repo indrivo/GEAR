@@ -6,6 +6,7 @@ using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions.Events;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Events;
@@ -34,7 +35,10 @@ namespace GR.Subscriptions.Abstractions.Events
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
                 var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
+                var userManager = IoC.Resolve<IUserManager<ApplicationUser>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
+                var user = (await userManager.GetCurrentUserAsync()).Result;
+
 
                 var plan = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
 
@@ -44,10 +48,10 @@ namespace GR.Subscriptions.Abstractions.Events
                     await subscriptionService.CreateUpdateSubscriptionAsync(new SubscriptionViewModel
                     {
                         Name = plan.Result.Name,
-                        //OrderId = args.OrderId,
                         StartDate = DateTime.Now,
-                        Availability = int.Parse(freeTrialPeriodStr),
-                        // UserId = order.UserId,
+                        Availability = int.Parse(freeTrialPeriodStr), 
+                       //UserId = user.TenantId,
+                        IsFree = true,
                         SubscriptionPermissions = permissions
                     });
                 }
@@ -84,7 +88,8 @@ namespace GR.Subscriptions.Abstractions.Events
                     StartDate = DateTime.Now,
                     Availability = subscriptionService.GetSubscriptionDuration(variation),
                     UserId = order.UserId,
-                    SubscriptionPermissions = permissions
+                    SubscriptionPermissions = permissions,
+                    IsFree =  false,
                 };
 
                 if (userSubscription.IsSuccess)
