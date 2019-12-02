@@ -1,0 +1,659 @@
+
+@{
+	ViewData["Title"] = "Testplumber";
+}
+
+@section Styles
+{
+	<link rel="stylesheet" type="text/css" href="~/lib/jsPlumb/css/jsplumbtoolkit-defaults.min.css" />
+	<style>
+
+		.w {
+			min-width: 100px;
+			text-align: center;
+			padding: 16px;
+			padding-right: 26px;
+			position: absolute;
+			z-index: 4;
+			border: 1px solid #2e6f9a;
+			box-shadow: 2px 2px 19px #e0e0e0;
+			-o-box-shadow: 2px 2px 19px #e0e0e0;
+			-webkit-box-shadow: 2px 2px 19px #e0e0e0;
+			-moz-box-shadow: 2px 2px 19px #e0e0e0;
+			-moz-border-radius: 8px;
+			border-radius: 8px;
+			font-weight: 500;
+			cursor: move;
+			background-color: white;
+			-webkit-transition: background-color 0.25s ease-in;
+			-moz-transition: background-color 0.25s ease-in;
+			transition: background-color 0.25s ease-in;
+		}
+
+			.w:hover {
+				background-color: #5c96bc;
+				color: white;
+			}
+
+		.aLabel {
+			-webkit-transition: background-color 0.25s ease-in;
+			-moz-transition: background-color 0.25s ease-in;
+			transition: background-color 0.25s ease-in;
+		}
+
+			.aLabel.jtk-hover, .jtk-source-hover, .jtk-target-hover {
+				background-color: #1e8151;
+				color: white;
+			}
+
+		.aLabel {
+			background-color: white;
+			opacity: 0.8;
+			padding: 0.3em;
+			border-radius: 0.5em;
+			border: 1px solid #346789;
+			cursor: pointer;
+		}
+
+		.ep {
+			position: absolute;
+			bottom: 37%;
+			right: 5px;
+			width: 1em;
+			height: 1em;
+			background-color: orange;
+			cursor: pointer;
+			box-shadow: 0 0 2px black;
+			-webkit-transition: -webkit-box-shadow 0.25s ease-in;
+			-moz-transition: -moz-box-shadow 0.25s ease-in;
+			transition: box-shadow 0.25s ease-in;
+		}
+
+			.ep:hover {
+				box-shadow: 0 0 6px black;
+			}
+
+		.jtk-canvas .jtk-endpoint {
+			z-index: 3;
+		}
+
+		.dragHover {
+			border: 2px solid orange;
+		}
+
+		path, .jtk-endpoint {
+			cursor: pointer;
+		}
+
+		.jtk-bootstrap {
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+			.jtk-bootstrap .jtk-page-container {
+				display: flex;
+				width: 100vw;
+				justify-content: center;
+				flex: 1;
+			}
+
+			.jtk-bootstrap .jtk-container {
+				width: 60%;
+				max-width: 800px;
+			}
+
+		.jtk-bootstrap-wide .jtk-container {
+			width: 80%;
+			max-width: 1187px;
+		}
+
+		.jtk-workflow {
+			position: relative;
+			margin-top: 98px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.jtk-demo-inner {
+			display: flex;
+		}
+
+		.jtk-workflow .description {
+			font-size: 13px;
+			margin-top: 25px;
+			padding: 13px;
+			margin-bottom: 22px;
+			background-color: #f4f5ef;
+		}
+
+			.jtk-workflow .description li {
+				list-style-type: disc !important;
+			}
+
+		.jtk-canvas {
+			height: 750px;
+			max-height: 700px;
+			border: 1px solid #CCC;
+			background-color: white;
+			display: flex;
+			flex-grow: 1;
+			position: relative;
+		}
+
+		.canvas-wide {
+			margin-left: 0;
+		}
+
+		.miniview {
+			position: absolute;
+			top: 25px;
+			right: 25px;
+			z-index: 100;
+		}
+
+
+		.jtk-demo-dataset {
+			text-align: left;
+			max-height: 600px;
+			overflow: auto;
+		}
+
+		.demo-title {
+			float: left;
+			font-size: 18px;
+		}
+
+		.controls {
+			top: 25px;
+			color: #FFF;
+			margin-right: 10px;
+			position: absolute;
+			left: 25px;
+			z-index: 1;
+			display: flex;
+		}
+
+			.controls i {
+				background-color: #5184a0;
+				border-radius: 4px;
+				cursor: pointer;
+				margin-right: 4px;
+				padding: 4px;
+			}
+
+		li {
+			list-style-type: none;
+		}
+
+
+		.jtk-surface-pan {
+			display: none;
+		}
+
+		.jtk-connector {
+			z-index: 9;
+		}
+
+			.jtk-connector:hover, .jtk-connector.jtk-hover {
+				z-index: 10;
+			}
+
+		.jtk-endpoint {
+			z-index: 12;
+			opacity: 0.8;
+			cursor: pointer;
+		}
+
+		.jtk-overlay {
+			background-color: white;
+			color: #434343;
+			font-weight: 400;
+			padding: 4px;
+			z-index: 10;
+			cursor: pointer;
+		}
+
+			.jtk-overlay.jtk-hover {
+				color: #434343;
+			}
+
+				.jtk-overlay.jtk-hover .connection-label {
+					color: #434343;
+					border-color: #1e8151;
+				}
+
+		.connection-label {
+			border: 1px solid #5c96bc;
+			border-radius: 8px;
+			padding: 5px 15px;
+		}
+
+		path {
+			cursor: pointer;
+		}
+
+		.selected-mode {
+			color: #E4F013;
+		}
+
+		.connect {
+			width: 10px;
+			height: 10px;
+			background-color: #f76258;
+			position: absolute;
+			bottom: 13px;
+			right: 5px;
+		}
+
+		.jtk-node {
+			background-color: #5184a0;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 12px;
+			position: absolute;
+			z-index: 11;
+			overflow: hidden;
+			min-width: 80px;
+			min-height: 30px;
+			width: auto;
+		}
+
+			.jtk-node .name {
+				color: white;
+				cursor: move;
+				font-size: 13px;
+				line-height: 24px;
+				padding: 6px;
+				text-align: center;
+			}
+
+				.jtk-node .name span {
+					cursor: pointer;
+				}
+	</style>
+}
+@inject IStringLocalizer Localizer
+
+<div id="state-machine" class="state-machine">
+
+</div>
+
+
+<div class="modal edit-connection-modal fade" id="editConnectionModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+
+</div>
+@section Scripts
+{
+	<script src="~/lib/jsPlumb/js/jsplumb.min.js"></script>
+
+	<!--Conncetion modal template-->
+	<script id="coonection-modal" type="text/x-jsrender">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="">
+					<button type="button" class="close p-0" data-dismiss="modal" aria-label="Close">
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<div>
+					<h5 class="modal-title" id="">Connection {{:id}}</h5>
+				</div>
+				<div>
+					<button class="btn btn-primary text-white">
+						OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<!--State box template-->
+	<script id="state-template" type="text/x-jsrender">
+		<div class="w" id="{{:id}}">
+			{{:name}}
+			<div class="ep" action="{{:id}}"></div>
+		</div>
+	</script>
+
+	<!--Workflow template-->
+	<script id="workflow-template" type="text/x-jsrender">
+		<div class="jtk-workflow mb-2">
+			<h3> {{:name}} </h3>
+			<div class="jtk-canvas canvas-wide jtk-surface jtk-surface-nopan" id="{{:id}}">
+
+			</div>
+		</div>
+	</script>
+
+	<!--Custom jsPLumb actions and events-->
+
+	<script>
+		class stateMachine {
+			ajaxRequest(requestUrl, requestType, requestData) {
+				const baseUrl = '/api/WorkFlowBuilder';
+				return new Promise((resolve, reject) => {
+					$.ajax({
+						url: baseUrl + requestUrl,
+						type: requestType,
+						data: requestData,
+						success: (data) => {
+							if (data.is_success) {
+								resolve(data.result);
+							} else if (!data.is_success) {
+								reject(data.error_keys);
+							} else {
+								resolve(data);
+							}
+						},
+						error: (e) => {
+							reject(e);
+						}
+					});
+				});
+			}
+
+			getAllWorkflows() {
+				const requestUrl = '/GetAllWorkflows';
+				return this.ajaxRequest(requestUrl, 'get', null);
+			}
+
+			getRolesAllowedToParticipateInWorkflow() {
+				const requestUrl = '/GetRolesAllowedToParticipateInWorkflow';
+				return this.ajaxRequest(requestUrl, 'get', null);
+			}
+
+			getTransitionById(transitionId) {
+				const requestUrl = '/GetTransitionById';
+				return this.ajaxRequest(requestUrl, 'get', { transitionId });
+			}
+
+			getWorkFlowById(workflowId) {
+				const requestUrl = '/GetWorkFlowById';
+				return this.ajaxRequest(requestUrl, 'get', { workflowId });
+			}
+
+			addNewWorkflow(workflow = {
+				name: '',
+				description: '',
+				enabled: false
+			}) {
+				const requestUrl = '/AddNewWorkflow';
+				return this.ajaxRequest(requestUrl, 'post', workflow);
+			}
+
+			addStateToWorkFlow(state = {
+				name: '',
+				description: '',
+				workFlowId: '',
+				additionalSettings: {}
+			}) {
+				const requestUrl = '/AddStateToWorkFlow';
+				return this.ajaxRequest(requestUrl, 'post', state);
+			}
+
+			setStartStateInWorkflow(state = {
+				workFlowId: '',
+				stateId: ''
+			}) {
+				const requestUrl = '/SetStartStateInWorkflow';
+				return this.ajaxRequest(requestUrl, 'post', state);
+			}
+
+			setEndStateInWorkflow(state = {
+				workFlowId: '',
+				stateId: ''
+			}) {
+				const requestUrl = '/SetEndStateInWorkflow';
+				return this.ajaxRequest(requestUrl, 'post', state);
+			}
+
+			addOrUpdateTransitionAllowedRoles(state = {
+				transitionId: '',
+				roles: ''
+			}) {
+				const requestUrl = '/AddOrUpdateTransitionAllowedRoles';
+				return this.ajaxRequest(requestUrl, 'post', state);
+			}
+
+			enableOrDisableWorkFlow(workflow = {
+				workFlowId: '',
+				state: false
+			}) {
+				const requestUrl = '/EnableOrDisableWorkFlow';
+				return this.ajaxRequest(requestUrl, 'post', workflow);
+			}
+
+			updateWorkFlowAsync(workflow = {
+				id: '',
+				name: '',
+				description: '',
+				enabled: false
+			}) {
+				const requestUrl = '/UpdateWorkFlowAsync';
+				return this.ajaxRequest(requestUrl, 'post', workflow);
+			}
+
+			updateStateAdditionalSettings(state = {
+				stateId: '',
+				settings: ''
+			}) {
+				const requestUrl = '/UpdateStateAdditionalSettings';
+				return this.ajaxRequest(requestUrl, 'post', state);
+			}
+
+			updateWorkFlowStateAsync(workflow = {
+				stateId: '',
+				workFlowId: '',
+				name: '',
+				description: '',
+				additionalSettings: {}
+			}) {
+				const requestUrl = '/UpdateWorkFlowStateAsync';
+				return this.ajaxRequest(requestUrl, 'post', workflow);
+			}
+
+			removeTransitionById(transitionId) {
+				const requestUrl = '/RemoveTransitionById';
+				return this.ajaxRequest(requestUrl, 'delete', { transitionId });
+			}
+		}
+	</script>
+
+	<script>
+		!function ($) {
+			"use strict";
+			const stateMachineManager = new stateMachine();
+			const toast = new ToastNotifier();
+			const connectionModal = $.templates("#coonection-modal");
+			const workflowTemplate = $.templates("#workflow-template");
+			const stateTemplate = $.templates("#state-template");
+
+			const findObjectsByProperties = (array, properties) => {
+				return array.filter(obj => {
+					let response = true;
+					properties.forEach(property => {
+						const propertyFound = obj[property.name] === property.value;
+						response = response && propertyFound;
+					});
+					return response;
+				});
+			}
+
+			const loadWorkflowStates = (id) => {
+				stateMachineManager.getWorkFlowById(id).then(workflow => {
+					const states = workflow.states;
+					$(`#${id}`).html(null);
+					$.each(states, function (index, state) {
+						const htmlOutput = stateTemplate.render(state);
+						$(`#${id}`).append(htmlOutput);
+					});
+					initjsPlumb(workflow.id);
+				});
+			}
+
+			const loadWorkflowTransitions = (id, instance) => {
+				stateMachineManager.getWorkFlowById(id).then(workflow => {
+					const transitions = workflow.transitions;
+					$.each(transitions, function (index, transition) {
+						instance.connect({
+							id: transition.id,
+							source: transition.fromStateId,
+							target: transition.toStateId,
+							type: "basic",
+							parameters: {
+								'transition': transition
+							}
+						});
+					});
+				});
+			}
+
+			stateMachineManager.getAllWorkflows().then(workflows => {
+				$('#state-machine').html(null);
+				$.each(workflows, function (index, workflow) {
+					const htmlOutput = workflowTemplate.render(workflow);
+					$('#state-machine').append(htmlOutput);
+					loadWorkflowStates(workflow.id);
+				});
+			});
+
+
+			const initjsPlumb = (workflowId) => {
+				jsPlumb.ready(function () {
+					// setup some defaults for jsPlumb.
+					var instance = jsPlumb.getInstance({
+						Endpoint: ["Dot", { radius: 2 }],
+						Connector: "StateMachine",
+						HoverPaintStyle: { stroke: "#1e8151", strokeWidth: 2 },
+						ConnectionOverlays: [
+							["Arrow", {
+								location: 1,
+								id: "arrow",
+								length: 14,
+								foldback: 0.8
+							}],
+						],
+						Container: "canvas"
+					});
+
+					instance.registerConnectionType("basic", { anchor: "Continuous", connector: "StateMachine" });
+
+					window.jsp = instance;
+
+					var windows = jsPlumb.getSelector(`#${workflowId} .w`);
+
+					// bind a click listener to each connection; the connection is deleted. you could of course
+					// just do this: instance.bind("click", instance.deleteConnection), but I wanted to make it clear what was
+					// happening.
+					instance.bind("click", function (c) {
+						console.log(c);
+						$('#editConnectionModal').html(null);
+						const htmlOutput = connectionModal.render(c);
+						$('#editConnectionModal').append(htmlOutput).modal('show');
+					});
+
+					instance.bind("beforeDrop", function (conn) {
+						//console.log(conn);
+						const allConnections = instance.getConnections();
+						const sourcePoint = conn.sourceId;
+						const targetPoint = conn.targetId;
+						const matchSource = {
+							name: 'sourceId',
+							value: sourcePoint
+						}
+						const matchTarget = {
+							name: 'targetId',
+							value: targetPoint
+						}
+						const matchedConnections = findObjectsByProperties(allConnections, [matchSource, matchTarget]);
+						let result = true;
+						matchedConnections.forEach(connection => {
+							const conSource = connection.sourceId;
+							const conTarget = connection.targetId;
+							if (sourcePoint === conSource && targetPoint === conTarget) {
+								toast.notify({ text: window.translate("system_state_machine_max_connections"), icon: "error" });
+								result = false;
+							}
+						});
+						return result;
+					});
+
+					instance.bind("connection", function (info) {
+						const transition = info.connection.getParameter('transition');
+						if (transition) {
+							info.connection.setLabel(
+								`<div class="connection-label">${transition.name}</div>`
+							);
+							info.connection.id = transition.id;
+						}
+						else {
+							info.connection.setLabel(
+								`<div class="connection-label">${window.translate('system_state_machine_new_transition')}</div>`
+							);
+							stateMachine.getWorkFlowById()
+						}
+					});
+
+					//
+					// initialise element as connection targets and source.
+					//
+					var initNode = function (el) {
+
+						// initialise draggable elements.
+						instance.draggable(el);
+
+						instance.makeSource(el, {
+							filter: ".ep",
+							anchor: "Continuous",
+							connectorStyle: { stroke: "#5c96bc", strokeWidth: 2, outlineStroke: "transparent", outlineWidth: 4 },
+							connectionType: "basic",
+							extract: {
+								"action": "the-action"
+							},
+						});
+
+						instance.makeTarget(el, {
+							dropOptions: { hoverClass: "dragHover" },
+							anchor: "Continuous",
+							allowLoopback: true
+						});
+
+						// this is not part of the core demo functionality; it is a means for the Toolkit edition's wrapped
+						// version of this demo to find out about new nodes being added.
+						//
+						instance.fire("jsPlumbDemoNodeAdded", el);
+					};
+
+					//var newNode = function (x, y) {
+					//	var d = document.createElement("div");
+					//	var id = jsPlumbUtil.uuid();
+					//	d.className = "w";
+					//	d.id = id;
+					//	d.innerHTML = id.substring(0, 7) + "<div class=\"ep\"></div>";
+					//	x = x < 0 ? 0 : x;
+					//	y = y < 0 ? 0 : y;
+					//	d.style.left = x + "px";
+					//	d.style.top = y + "px";
+					//	instance.getContainer().appendChild(d);
+					//	initNode(d);
+					//	return d;
+					//};
+
+					// suspend drawing and initialise.
+					instance.batch(function () {
+						for (var i = 0; i < windows.length; i++) {
+							initNode(windows[i], true);
+						}
+
+						// and finally, make a few connections
+						loadWorkflowTransitions(workflowId, instance);
+					});
+
+					jsPlumb.fire("jsPlumbDemoLoaded", instance);
+
+				});
+			}
+		}(window.jQuery);
+	</script>
+}

@@ -791,5 +791,8 @@
   "system_commerce_payment_success": "支付成功的！",
   "system_commerce_email_sent": "电子邮件发送！",
   "commerce_my_subscriptions": "我订阅",
-  "system_taskmanager_are_you_sure_text": "你确定要删除的任务 "
+  "system_taskmanager_are_you_sure_text": "你确定要删除的任务 ",
+  "system_state_machine_max_connections": "无法创建一个以上的过渡从来源到这个目标",
+  "system_state_machine_transition": "过渡",
+  "system_state_machine_new_transition": "新的过渡"
 }

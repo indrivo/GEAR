@@ -791,5 +791,8 @@
   "system_commerce_payment_success": "Plată de succes!",
   "system_commerce_email_sent": "E-mail trimis!",
   "commerce_my_subscriptions": "Abonamentele mele",
-  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina "
+  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina ",
+  "system_state_machine_max_connections": "Nu se poate crea mai mult de o tranziție de la aceasta sursa la acest obiectiv",
+  "system_state_machine_transition": "Tranziție",
+  "system_state_machine_new_transition": "Noua tranziție"
 }

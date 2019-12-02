@@ -791,5 +791,8 @@
   "system_commerce_payment_success": "お支払い成功！",
   "system_commerce_email_sent": "メール送!",
   "commerce_my_subscriptions": "私の契約数",
-  "system_taskmanager_are_you_sure_text": "まず削除したいタスク "
+  "system_taskmanager_are_you_sure_text": "まず削除したいタスク ",
+  "system_state_machine_max_connections": "を生成できない以上の一つの遷移からソースをこの目標",
+  "system_state_machine_transition": "遷移",
+  "system_state_machine_new_transition": "新しい転移"
 }

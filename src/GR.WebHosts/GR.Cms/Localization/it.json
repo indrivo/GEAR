@@ -791,5 +791,8 @@
   "system_commerce_payment_success": "Pagamento di successo!",
   "system_commerce_email_sent": "E-mail inviata!",
   "commerce_my_subscriptions": "I miei abbonamenti",
-  "system_taskmanager_are_you_sure_text": "Sei sicuro di voler eliminare compito "
+  "system_taskmanager_are_you_sure_text": "Sei sicuro di voler eliminare compito ",
+  "system_state_machine_max_connections": "Non è possibile creare più di una transizione che da origine a questo target",
+  "system_state_machine_transition": "Transizione",
+  "system_state_machine_new_transition": "Nuova transizione"
 }

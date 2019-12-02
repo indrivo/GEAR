@@ -791,5 +791,8 @@
   "system_commerce_payment_success": "Успішної оплати!",
   "system_commerce_email_sent": "Лист відправлено!",
   "commerce_my_subscriptions": "Мої підписки",
-  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання "
+  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання ",
+  "system_state_machine_max_connections": "Неможливо створити більше одного переходу з цього джерела на цю мету",
+  "system_state_machine_transition": "Перехід",
+  "system_state_machine_new_transition": "Новий перехід"
 }

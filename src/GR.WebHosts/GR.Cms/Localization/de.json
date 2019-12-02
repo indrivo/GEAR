@@ -791,5 +791,8 @@
   "system_commerce_payment_success": "Zahlung erfolgreich!",
   "system_commerce_email_sent": "E-Mail gesendet!",
   "commerce_my_subscriptions": "Meine Abonnements",
-  "system_taskmanager_are_you_sure_text": "Sind Sie sicher, dass Sie löschen möchten Aufgabe "
+  "system_taskmanager_are_you_sure_text": "Sind Sie sicher, dass Sie löschen möchten Aufgabe ",
+  "system_state_machine_max_connections": "Nicht mehr als einen übergang aus dieser Quelle zu diesem Ziel",
+  "system_state_machine_transition": "Übergang",
+  "system_state_machine_new_transition": "Der neue übergang"
 }
