@@ -100,6 +100,7 @@ namespace GR.WorkFlows.Abstractions.Helpers
         public static IEnumerable<TransitionGetViewModel> Map(IEnumerable<Transition> transitions)
             => transitions?.Select(transition => new TransitionGetViewModel
             {
+                Id = transition.Id,
                 Name = transition.Name,
                 WorkFlow = transition.WorkFlow,
                 FromState = transition.FromState,
