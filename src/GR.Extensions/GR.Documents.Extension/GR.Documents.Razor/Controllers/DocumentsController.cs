@@ -34,7 +34,7 @@ namespace GR.Documents.Razor.Controllers
         private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         #endregion

@@ -400,14 +400,14 @@
 								    </div>
 								</td>
 								<td> ${value.title}</td>
-								<td style="white-space: pre-wrap;">${value.description}</td>
+								<td style="white-space: pre-wrap;">${value.description == "null" ? "" : value.description}</td>
 								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
 										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
 										.documentType.code ==
 										3
 										? value.lastUrl
 										: value.fileName}</a></td>
-								<td>${value.group}</td>
+								<td>${value.group == null ? "" : value.group}</td>
 								<td>${value.documentType.name}</td>
 								<td> ${value.lastVersion.toFixed(1)}</td>
                                 <td> ${value.isDeleted}</td>
