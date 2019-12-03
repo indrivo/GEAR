@@ -18,6 +18,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         public static IServiceCollection AddPermissionService<TPermissionService>(this IServiceCollection services) where TPermissionService : class, IPermissionService
         {
             services.AddTransient<IPermissionService, TPermissionService>();
+            IoC.RegisterTransientService<IPermissionService, TPermissionService>();
             SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
             {
                 if (!GearApplication.Configured) return;

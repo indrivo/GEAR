@@ -1,12 +1,15 @@
 ﻿using System.Threading.Tasks;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 using GR.WorkFlows.Abstractions;
 using GR.WorkFlows.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.WorkFlows.Data
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Add entities for WF")]
     public class WorkFlowsDbContext : TrackerDbContext, IWorkFlowContext
     {
         /// <summary>

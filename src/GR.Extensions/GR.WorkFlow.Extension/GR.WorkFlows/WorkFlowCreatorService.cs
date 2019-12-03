@@ -11,13 +11,14 @@ using GR.Core.Helpers.Responses;
 using GR.Identity.Abstractions;
 using GR.WorkFlows.Abstractions;
 using GR.WorkFlows.Abstractions.Helpers;
+using GR.WorkFlows.Abstractions.Helpers.Errors;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.WorkFlows
 {
-    [Author(Authors.LUPEI_NICOLAE)]
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Add base implementation")]
     [Documentation("Service for create workflow")]
     public class WorkFlowCreatorService : IWorkFlowCreatorService<WorkFlow>
     {
@@ -141,7 +142,7 @@ namespace GR.WorkFlows
             var checkDuplicateStateName = workFlow.States.FirstOrDefault(x => x.Name.Equals(model.Name));
             if (checkDuplicateStateName != null)
             {
-                response.Errors.Add(new ErrorModel(string.Empty, "State name is used, choose another state name"));
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x104), WorkFlowErrorCodes.GRWF_0x104));
                 return response;
             }
 
@@ -270,7 +271,13 @@ namespace GR.WorkFlows
 
             if (IsDuplicateTransition(workFlow, model.FromStateId, model.ToStateId))
             {
-                response.Errors.Add(new ErrorModel(string.Empty, "No more than one transition in one direction is allowed"));
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x101), WorkFlowErrorCodes.GRWF_0x101));
+                return response;
+            }
+
+            if (IsConnectionByItSelf(workFlow, model.FromStateId, model.ToStateId))
+            {
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x100), WorkFlowErrorCodes.GRWF_0x100));
                 return response;
             }
 
@@ -294,6 +301,8 @@ namespace GR.WorkFlows
                 .Include(x => x.FromState)
                 .Include(x => x.ToState)
                 .Include(x => x.TransitionRoles)
+                .Include(x => x.TransitionActions)
+                .ThenInclude(x => x.Action)
                 .Include(x => x.WorkFlow)
                 .FirstOrDefaultAsync(x => x.Id.Equals(transitionId));
             if (transition == null) return new NotFoundResultModel<Transition>();
@@ -313,6 +322,8 @@ namespace GR.WorkFlows
                 .Include(x => x.FromState)
                 .Include(x => x.ToState)
                 .Include(x => x.TransitionRoles)
+                .Include(x => x.TransitionActions)
+                .ThenInclude(x => x.Action)
                 .Include(x => x.WorkFlow)
                 .FirstOrDefaultAsync(x => x.FromStateId.Equals(fromStateId) && x.ToStateId.Equals(toStateId));
             if (transition == null) return new NotFoundResultModel<Transition>();
@@ -320,11 +331,70 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Get state by id
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<StateGetViewModel>> GetStateByIdAsync(Guid? stateId)
+        {
+            if (stateId == null) return new InvalidParametersResultModel<StateGetViewModel>();
+            var state = await _workFlowContext.States
+                .Include(x => x.WorkFlow)
+                .FirstOrDefaultAsync(x => x.Id.Equals(stateId));
+            if (state == null) return new NotFoundResultModel<StateGetViewModel>();
+            return new SuccessResultModel<StateGetViewModel>(WorkFlowMapper.Map(state));
+        }
+
+        /// <summary>
+        /// Remove state by id
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RemoveStateAsync(Guid? stateId)
+        {
+            var response = new ResultModel();
+            if (stateId == null) return new InvalidParametersResultModel();
+            var state = await _workFlowContext.States
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(stateId));
+            if (state == null) return new NotFoundResultModel();
+            if (await IsUsedStateAsync(stateId))
+            {
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x102), WorkFlowErrorCodes.GRWF_0x102));
+                return response;
+            }
+
+            _workFlowContext.States.Remove(state);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Remove workflow
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> RemoveWorkFlowAsync([Required]Guid? workFlowId)
+        {
+            var response = new ResultModel();
+            var workflowRequest = await GetWorkFlowByIdAsync(workFlowId);
+            if (!workflowRequest.IsSuccess) return workflowRequest.ToBase();
+            var workFlow = workflowRequest.Result;
+            if (await IsUsedWorkflowAsync(workFlowId))
+            {
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x103), WorkFlowErrorCodes.GRWF_0x103));
+                return response;
+            }
+
+            _workFlowContext.WorkFlows.Remove(workFlow);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
         /// Remove transition by id
         /// </summary>
         /// <param name="transitionId"></param>
         /// <returns></returns>
-        public async Task<ResultModel> RemoveTransitionByIdAsync(Guid? transitionId)
+        public virtual async Task<ResultModel> RemoveTransitionByIdAsync(Guid? transitionId)
         {
             if (transitionId == null) return new InvalidParametersResultModel<object>().ToBase();
             var transition = await _workFlowContext.Transitions
@@ -342,19 +412,19 @@ namespace GR.WorkFlows
         /// <param name="transitionId"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public async Task<ResultModel> AddOrUpdateTransitionAllowedRolesAsync(Guid? transitionId, IEnumerable<Guid> roles)
+        public virtual async Task<ResultModel> AddOrUpdateTransitionAllowedRolesAsync([Required]Guid? transitionId, IEnumerable<Guid> roles)
         {
             var transitionRequest = await GetTransitionByIdAsync(transitionId);
             if (!transitionRequest.IsSuccess) return transitionRequest.ToBase();
             var transition = transitionRequest.Result;
-            var newRoles = await _userManager.FilterValidRolesAsync(roles);
+            var newRoles = (await _userManager.FilterValidRolesAsync(roles)).ToList();
             var oldRoles = transition.TransitionRoles.Select(x => x.RoleId).ToList();
 
             var (removeItems, addItems) = oldRoles.GetDifferences(newRoles);
 
             if (removeItems.Any())
             {
-                var mappedRoles = addItems.Select(x =>
+                var mappedRoles = removeItems.Select(x =>
                     {
                         return transition.TransitionRoles.FirstOrDefault(y => y.RoleId.Equals(x));
                     });
@@ -365,7 +435,7 @@ namespace GR.WorkFlows
             {
                 var mappedRoles = addItems.Select(x => new TransitionRole
                 {
-                    TransitionId = transitionId.GetValueOrDefault(),
+                    TransitionId = transition.Id,
                     RoleId = x
                 });
                 await _workFlowContext.TransitionRoles.AddRangeAsync(mappedRoles);
@@ -374,11 +444,51 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Get actions
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<WorkflowAction>>> GetAllRegisteredActionsAsync()
+            => new SuccessResultModel<IEnumerable<WorkflowAction>>(await _workFlowContext.WorkflowActions.ToListAsync());
+
+        /// <summary>
+        /// Add or update transition actions
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="actionHandlers"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddOrUpdateTransitionActionsAsync([Required]Guid? transitionId, IEnumerable<Guid> actionHandlers)
+        {
+            var transitionRequest = await GetTransitionByIdAsync(transitionId);
+            if (!transitionRequest.IsSuccess) return transitionRequest.ToBase();
+            var transition = transitionRequest.Result;
+            var oldActions = transition.TransitionActions.Select(x => x.ActionId).ToList();
+            var newActions = actionHandlers.ToList();
+            var (toRemove, toAdd) = oldActions.GetDifferences(newActions);
+            if (toRemove.Any())
+            {
+                var mappedActions = transition.TransitionActions.Where(x => toRemove.Contains(x.ActionId)).ToList();
+                _workFlowContext.TransitionActions.RemoveRange(mappedActions);
+            }
+
+            if (toAdd.Any())
+            {
+                var mappedActions = toAdd.Select(x => new TransitionAction
+                {
+                    TransitionId = transition.Id,
+                    ActionId = x
+                });
+                await _workFlowContext.TransitionActions.AddRangeAsync(mappedActions);
+            }
+
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
         /// Get workflow states
         /// </summary>
         /// <param name="workFlowId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<StateGetViewModel>>> GetWorkFlowStatesAsync([Required] Guid? workFlowId)
+        public virtual async Task<ResultModel<IEnumerable<StateGetViewModel>>> GetWorkFlowStatesAsync([Required] Guid? workFlowId)
         {
             var workFlowRequest = await GetWorkFlowByIdAsync(workFlowId);
             return !workFlowRequest.IsSuccess ? workFlowRequest.Map<IEnumerable<StateGetViewModel>>()
@@ -389,9 +499,9 @@ namespace GR.WorkFlows
         /// Get all workflows
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<GetWorkFlowViewModel>>> GetAllWorkFlowsAsync()
+        public virtual async Task<ResultModel<IEnumerable<GetWorkFlowViewModel>>> GetAllWorkFlowsAsync()
         {
-            var workFlows = await _workFlowContext.WorkFlows.ToListAsync();
+            var workFlows = await _workFlowContext.WorkFlows.AsNoTracking().ToListAsync();
             return new SuccessResultModel<IEnumerable<GetWorkFlowViewModel>>(WorkFlowMapper.Map(workFlows));
         }
 
@@ -405,8 +515,18 @@ namespace GR.WorkFlows
         /// <param name="startState"></param>
         /// <param name="endState"></param>
         /// <returns></returns>
-        private static bool IsDuplicateTransition(WorkFlow workFlow, Guid? startState, Guid? endState)
+        protected static bool IsDuplicateTransition(WorkFlow workFlow, Guid? startState, Guid? endState)
             => workFlow?.Transitions?.Any(x => x.FromStateId.Equals(startState) && x.ToStateId.Equals(endState)) ?? false;
+
+        /// <summary>
+        /// Is connection by it self
+        /// </summary>
+        /// <param name="workFlow"></param>
+        /// <param name="startState"></param>
+        /// <param name="endState"></param>
+        /// <returns></returns>
+        protected static bool IsConnectionByItSelf(WorkFlow workFlow, Guid? startState, Guid? endState)
+            => startState == endState;
 
         /// <summary>
         /// Get workflow by id
@@ -422,6 +542,28 @@ namespace GR.WorkFlows
             if (workFlow == null) return new NotFoundResultModel<WorkFlow>();
             return new SuccessResultModel<WorkFlow>(workFlow);
         }
+
+        /// <summary>
+        /// Check if state is used
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        protected virtual async Task<bool> IsUsedStateAsync([Required] Guid? stateId)
+            => await _workFlowContext.EntryStates
+                .AsNoTracking()
+                .Include(x => x.State)
+                .AnyAsync(x => x.StateId.Equals(stateId));
+
+        /// <summary>
+        /// Check if is any registered contract to workflow
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        protected virtual async Task<bool> IsUsedWorkflowAsync([Required] Guid? workFlowId)
+            => await _workFlowContext.Contracts
+                .AsNoTracking()
+                .Include(x => x.WorkFlow)
+                .AnyAsync(x => x.WorkFlowId.Equals(workFlowId));
 
         #endregion
     }
