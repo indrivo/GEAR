@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Betaling geslaagd!",
   "system_commerce_email_sent": "E-mail verzonden!",
   "commerce_my_subscriptions": "Mijn abonnementen",
-  "system_taskmanager_are_you_sure_text": "Weet u zeker dat u wilt verwijderen taak "
+  "system_taskmanager_are_you_sure_text": "Weet u zeker dat u wilt verwijderen taak ",
+  "system_gr_compartment": "Compartiment",
+  "system_gr_audited": "Gecontroleerd",
+  "system_gr_auditor": "Accountant",
+  "system_gr_description": "Beschrijving",
+  "system_gr_recommendation": "Aanbeveling",
+  "system_gr_loading": "Bezig met laden...",
+  "system_gr_year": "Jaar",
+  "system_january": "Januari"
 }

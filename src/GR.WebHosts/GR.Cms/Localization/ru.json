@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Успешной оплаты!",
   "system_commerce_email_sent": "Письмо отправлено!",
   "commerce_my_subscriptions": "Мои подписки",
-  "system_taskmanager_are_you_sure_text": "Вы уверены, что хотите удалить задачу "
+  "system_taskmanager_are_you_sure_text": "Вы уверены, что хотите удалить задачу ",
+  "system_gr_compartment": "Отсек",
+  "system_gr_audited": "Проверенные",
+  "system_gr_auditor": "Аудитор",
+  "system_gr_description": "Описание",
+  "system_gr_recommendation": "Рекомендации",
+  "system_gr_loading": "Загрузка...",
+  "system_gr_year": "Год",
+  "system_january": "Января"
 }

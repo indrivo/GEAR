@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Payment successful!",
   "system_commerce_email_sent": "Email sent!",
   "commerce_my_subscriptions": "My subscriptions",
-  "system_taskmanager_are_you_sure_text": "Are you sure you want to delete task "
+  "system_taskmanager_are_you_sure_text": "Are you sure you want to delete task ",
+  "system_gr_compartment": "Compartment",
+  "system_gr_audited": "Audited",
+  "system_gr_auditor": "Auditor",
+  "system_gr_description": "Description",
+  "system_gr_recommendation": "Recommendation",
+  "system_gr_loading": "Loading...",
+  "system_gr_year": "Year",
+  "system_january": "January"
 }

@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Pago de éxito!",
   "system_commerce_email_sent": "Correo electrónico enviado!",
   "commerce_my_subscriptions": "Mis suscripciones",
-  "system_taskmanager_are_you_sure_text": "Estás seguro de que desea eliminar de la tarea "
+  "system_taskmanager_are_you_sure_text": "Estás seguro de que desea eliminar de la tarea ",
+  "system_gr_compartment": "Compartimiento",
+  "system_gr_audited": "Auditado",
+  "system_gr_auditor": "Auditor",
+  "system_gr_description": "Descripción",
+  "system_gr_recommendation": "Recomendación",
+  "system_gr_loading": "Cargando...",
+  "system_gr_year": "Año",
+  "system_january": "De enero"
 }

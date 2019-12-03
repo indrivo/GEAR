@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Udanej płatności!",
   "system_commerce_email_sent": "List wysłany!",
   "commerce_my_subscriptions": "Moje subskrypcje",
-  "system_taskmanager_are_you_sure_text": "Jesteś pewien, że chcesz usunąć zadanie "
+  "system_taskmanager_are_you_sure_text": "Jesteś pewien, że chcesz usunąć zadanie ",
+  "system_gr_compartment": "Schowek",
+  "system_gr_audited": "Sprawdzone",
+  "system_gr_auditor": "Audytor",
+  "system_gr_description": "Opis",
+  "system_gr_recommendation": "Zalecenia",
+  "system_gr_loading": "Ładowanie...",
+  "system_gr_year": "Rok",
+  "system_january": "Stycznia"
 }

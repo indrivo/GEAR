@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Plată de succes!",
   "system_commerce_email_sent": "E-mail trimis!",
   "commerce_my_subscriptions": "Abonamentele mele",
-  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina "
+  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina ",
+  "system_gr_compartment": "Compartiment",
+  "system_gr_audited": "Auditat",
+  "system_gr_auditor": "Auditor",
+  "system_gr_description": "Descriere",
+  "system_gr_recommendation": "Recomandare",
+  "system_gr_loading": "Loading...",
+  "system_gr_year": "An",
+  "system_january": "Ianuarie"
 }

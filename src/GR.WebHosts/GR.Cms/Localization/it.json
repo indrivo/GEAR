@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Pagamento di successo!",
   "system_commerce_email_sent": "E-mail inviata!",
   "commerce_my_subscriptions": "I miei abbonamenti",
-  "system_taskmanager_are_you_sure_text": "Sei sicuro di voler eliminare compito "
+  "system_taskmanager_are_you_sure_text": "Sei sicuro di voler eliminare compito ",
+  "system_gr_compartment": "Vano",
+  "system_gr_audited": "Sottoposto a revisione",
+  "system_gr_auditor": "Sindaco",
+  "system_gr_description": "Descrizione",
+  "system_gr_recommendation": "Raccomandazione",
+  "system_gr_loading": "Il caricamento...",
+  "system_gr_year": "Anno",
+  "system_january": "Gennaio"
 }

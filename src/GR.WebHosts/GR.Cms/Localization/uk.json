@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "Успішної оплати!",
   "system_commerce_email_sent": "Лист відправлено!",
   "commerce_my_subscriptions": "Мої підписки",
-  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання "
+  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання ",
+  "system_gr_compartment": "Відсік",
+  "system_gr_audited": "Перевірені",
+  "system_gr_auditor": "Аудитор",
+  "system_gr_description": "Опис",
+  "system_gr_recommendation": "Рекомендації",
+  "system_gr_loading": "Завантаження...",
+  "system_gr_year": "Рік",
+  "system_january": "Січня"
 }

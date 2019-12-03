@@ -791,5 +791,13 @@
   "system_commerce_payment_success": "お支払い成功！",
   "system_commerce_email_sent": "メール送!",
   "commerce_my_subscriptions": "私の契約数",
-  "system_taskmanager_are_you_sure_text": "まず削除したいタスク "
+  "system_taskmanager_are_you_sure_text": "まず削除したいタスク ",
+  "system_gr_compartment": "区画",
+  "system_gr_audited": "監査",
+  "system_gr_auditor": "監査役",
+  "system_gr_description": "説明",
+  "system_gr_recommendation": "推薦",
+  "system_gr_loading": "読み込み中...",
+  "system_gr_year": "年",
+  "system_january": "月"
 }
