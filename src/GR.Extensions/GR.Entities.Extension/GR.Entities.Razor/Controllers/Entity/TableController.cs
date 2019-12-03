@@ -39,7 +39,7 @@ namespace GR.Entities.Razor.Controllers.Entity
     /// <summary>
     /// Forms manipulation
     /// </summary>
-    public class TableController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class TableController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         /// <summary>
         /// Inject logger
@@ -288,17 +288,6 @@ namespace GR.Entities.Razor.Controllers.Entity
                 field.Configurations = configurationsRq.Result.ToList();
             }
 
-            if (field.Parameter == FieldType.EntityReference)
-            {
-                var foreignSchema = field.Configurations.FirstOrDefault(x => x.Name == nameof(TableFieldConfigCode.Reference.ForeingSchemaTable));
-                if (foreignSchema != null)
-                {
-                    var index = field.Configurations.IndexOf(foreignSchema);
-                    foreignSchema.Value = "system";
-                    field.Configurations = field.Configurations.Replace(index, foreignSchema).ToList();
-                }
-            }
-
             field = field.CreateSqlField();
             var insertField = _tablesService.AddFieldSql(field, tableName, ConnectionString, true, schema);
             // Save field model in the dataBase
@@ -323,7 +312,9 @@ namespace GR.Entities.Razor.Controllers.Entity
                     if (!referenceTableName.IsNullOrEmpty())
                     {
                         var refTable = await Context.Table.FirstOrDefaultAsync(x =>
-                            x.Name.Equals(referenceTableName) && x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA));
+                            x.Name.Equals(referenceTableName) && x.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
+                            || x.Name.Equals(referenceTableName) && x.IsPartOfDbContext);
+
                         if (refTable.IsPartOfDbContext) isDynamic = false;
                         else if (!refTable.IsCommon) referenceIsCommon = false;
                     }

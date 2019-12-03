@@ -2,9 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core;
+using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.PageRender.Abstractions.Events;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.PageRender.Abstractions.Extensions
 {
@@ -36,6 +39,11 @@ namespace GR.PageRender.Abstractions.Extensions
             services.AddScopedContextFactory<IDynamicPagesContext, TPageContext>();
             services.AddDbContext<TPageContext>(options);
             services.RegisterAuditFor<IDynamicPagesContext>("Page module");
+
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TPageContext>();
+            };
             return services;
         }
     }

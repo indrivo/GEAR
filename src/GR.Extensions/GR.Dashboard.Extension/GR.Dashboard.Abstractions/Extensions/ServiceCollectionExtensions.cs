@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GR.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RazorLight;
@@ -9,6 +10,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Dashboard.Abstractions.Helpers.Compilers;
 using GR.Dashboard.Abstractions.ServiceBuilder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Dashboard.Abstractions.Extensions
 {
@@ -49,6 +51,10 @@ namespace GR.Dashboard.Abstractions.Extensions
             Arg.NotNull(configuration.Services, nameof(AddDashboardModuleStorage));
             configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
             configuration.Services.AddScopedContextFactory<IDashboardDbContext, TDbContext>();
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
+            };
             return configuration;
         }
 

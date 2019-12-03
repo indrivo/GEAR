@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Files.Abstraction;
@@ -6,7 +7,7 @@ using GR.Files.Abstraction.Models;
 
 namespace GR.Files.Data
 {
-    public  class FileDbContext : TrackerDbContext, IFileContext
+    public class FileDbContext : TrackerDbContext, IFileContext
     {
         /// <summary>
         /// Schema
@@ -51,6 +52,15 @@ namespace GR.Files.Data
         public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
             return Set<TEntity>();
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

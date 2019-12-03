@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Audit.Abstractions.Models;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
-using GR.Files.Abstraction.Models;
 using GR.Files.Box.Abstraction;
 using GR.Files.Box.Abstraction.Models;
 
@@ -60,6 +60,15 @@ namespace GR.Files.Box.Data
         public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
             return Set<TEntity>();
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

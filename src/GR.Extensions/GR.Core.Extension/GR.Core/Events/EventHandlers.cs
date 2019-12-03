@@ -1,5 +1,6 @@
 ﻿using System;
 using GR.Core.Events.EventArgs;
+using GR.Core.Events.EventArgs.Database;
 
 namespace GR.Core.Events
 {
@@ -33,6 +34,21 @@ namespace GR.Core.Events
         public static void OnEventHandler(object sender, ApplicationEventEventArgs args)
         {
             //Do something
+        }
+
+        /// <summary>
+        /// On migration complete event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public static void OnMigrationCompleteHandler(object sender, DatabaseMigrateEventArgs args)
+        {
+            //Trigger seed data
+            SystemEvents.Database.Seed(new DatabaseSeedEventArgs
+            {
+                DbContext = args.DbContext,
+                ContextName = args.ContextName
+            });
         }
     }
 }

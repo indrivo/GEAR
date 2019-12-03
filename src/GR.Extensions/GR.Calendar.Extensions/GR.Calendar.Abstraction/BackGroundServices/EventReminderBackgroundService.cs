@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using GR.Calendar.Abstractions.Models;
+using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
@@ -73,6 +74,7 @@ namespace GR.Calendar.Abstractions.BackGroundServices
         /// <param name="state"></param>
         private async void Execute(object state)
         {
+            if (!GearApplication.Configured) return;
             var events = await GetEventsForAllUsersWhatStartInAsync(59);
             if (!events.IsSuccess) return;
             var now = DateTime.Now;

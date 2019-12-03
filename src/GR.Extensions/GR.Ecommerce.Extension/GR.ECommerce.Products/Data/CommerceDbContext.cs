@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
@@ -102,5 +103,14 @@ namespace GR.ECommerce.BaseImplementations.Data
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
         public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel => Set<TEntity>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

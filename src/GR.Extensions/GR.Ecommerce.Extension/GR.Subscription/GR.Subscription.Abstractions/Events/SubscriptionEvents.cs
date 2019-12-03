@@ -6,6 +6,7 @@ using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.MultiTenant.Abstractions.Events;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Events;
 using GR.Orders.Abstractions.Models;
@@ -29,6 +30,14 @@ namespace GR.Subscriptions.Abstractions.Events
         {
             SystemEvents.Common.RegisterEventGroup(nameof(Subscriptions), SystemEvents.GetEvents(typeof(Subscriptions)));
 
+            TenantEvents.Company.OnCompanyRegistered += async (sender, args) =>
+            {
+                var productService = IoC.Resolve<IProductService<Product>>();
+                var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
+
+                //create free trial subscription
+            };
+
             OrderEvents.Orders.OnPaymentReceived += async (sender, args) =>
             {
                 var orderService = IoC.Resolve<IOrderProductService<Order>>();
@@ -45,7 +54,7 @@ namespace GR.Subscriptions.Abstractions.Events
                 if (planRequest.IsSuccess.Negate()) return;
                 var plan = planRequest.Result;
                 var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
-                var variationId = order.ProductOrders.FirstOrDefault(x => x.ProductId == checkIfProductIsSubscription)?.ProductVariationId; 
+                var variationId = order.ProductOrders.FirstOrDefault(x => x.ProductId == checkIfProductIsSubscription)?.ProductVariationId;
                 var variation = plan.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
 
                 await subscriptionService.CreateSubscriptionAsync(new SubscriptionViewModel

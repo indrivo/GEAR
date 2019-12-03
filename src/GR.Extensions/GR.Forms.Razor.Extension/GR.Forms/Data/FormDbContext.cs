@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
+using GR.Core;
 using GR.Core.Abstractions;
 using GR.Forms.Abstractions;
 using GR.Forms.Abstractions.Models.FormModels;
@@ -133,6 +135,15 @@ namespace GR.Forms.Data
         public virtual DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
             return Set<TEntity>();
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public async Task InvokeSeedAsync()
+        {
+            await FormDbContextSeeder<FormDbContext>.SeedAsync(this, GearSettings.TenantId);
         }
     }
 }

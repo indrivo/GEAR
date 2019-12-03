@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using IdentityServer4.Extensions;
 using GR.Calendar.Abstractions.Events;
 using GR.Calendar.Abstractions.ExternalProviders.Exceptions;
 using GR.Calendar.Abstractions.ExternalProviders.Helpers;
 using GR.Calendar.Abstractions.Helpers.Mappers;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
 using GR.Core.Helpers;
+using GR.Core.Extensions;
 
 namespace GR.Calendar.Abstractions.ExternalProviders.Extensions
 {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GR.Core.Events.EventArgs;
+using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 
@@ -114,6 +115,43 @@ namespace GR.Core.Events
             public static void Event(ApplicationEventEventArgs e) => InvokeEvent(null, OnEvent, e, nameof(OnEvent));
         }
 
+        public struct Database
+        {
+            /// <summary>
+            /// On seed event
+            /// </summary>
+            public static event EventHandler<DatabaseSeedEventArgs> OnSeed;
+
+            /// <summary>
+            /// Invoke seed event
+            /// </summary>
+            /// <param name="e"></param>
+            public static void Seed(DatabaseSeedEventArgs e) => InvokeEvent(null, OnSeed, e, nameof(OnSeed));
+
+
+            /// <summary>
+            /// On seed event
+            /// </summary>
+            public static event EventHandler<DatabaseMigrateEventArgs> OnMigrate;
+
+            /// <summary>
+            /// Invoke seed event
+            /// </summary>
+            /// <param name="e"></param>
+            public static void Migrate(DatabaseMigrateEventArgs e) => InvokeEvent(null, OnMigrate, e, nameof(OnMigrate));
+
+            /// <summary>
+            /// On seed event
+            /// </summary>
+            public static event EventHandler<DatabaseMigrateEventArgs> OnMigrateComplete;
+
+            /// <summary>
+            /// Invoke seed event
+            /// </summary>
+            /// <param name="e"></param>
+            public static void MigrateComplete(DatabaseMigrateEventArgs e) => InvokeEvent(null, OnMigrateComplete, e, nameof(OnMigrateComplete));
+        }
+
         /// <summary>
         /// Register app events
         /// </summary>
@@ -122,10 +160,14 @@ namespace GR.Core.Events
             Application.OnApplicationStarted += EventHandlers.OnApplicationStartedHandler;
             Application.OnApplicationStopped += EventHandlers.OnApplicationStoppedHandler;
             Application.OnEvent += EventHandlers.OnEventHandler;
+            Database.OnMigrateComplete += EventHandlers.OnMigrationCompleteHandler;
 
             //register event group
             Common.RegisterEventGroup(nameof(Application), GetEvents(typeof(Application)));
+            Common.RegisterEventGroup(nameof(Database), GetEvents(typeof(Database)));
         }
+
+        #region Helpers
 
         /// <summary>
         /// Invoke events
@@ -181,5 +223,7 @@ namespace GR.Core.Events
 
             return type?.GetProperties().Select(x => x.Name);
         }
+
+        #endregion
     }
 }

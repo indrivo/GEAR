@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Data;
 using GR.Entities.Security.Abstractions.Models;
 using GR.Entities.Security.Data;
 using GR.PageRender.Abstractions;
+using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Abstractions.Models.PagesACL;
 using GR.PageRender.Abstractions.Models.RenderTemplates;
@@ -177,8 +179,20 @@ namespace GR.PageRender.Data
                 builder.Ignore<EntityFieldPermission>();
                 builder.Ignore<EntityPermissionAccess>();
             }
-           
+
             #endregion
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public override async Task InvokeSeedAsync()
+        {
+            await DynamicPagesDbContextSeeder<DynamicPagesDbContext>.SeedAsync(this);
+            await MenuManager.SyncMenuItemsAsync();
+            await PageManager.SyncWebPagesAsync();
+            await TemplateManager.SeedAsync();
         }
     }
 }

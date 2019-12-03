@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -60,7 +59,7 @@ namespace GR.Email
                 {
                     client.Port = settings.Port;
                     client.Host = settings.Host;
-                    client.EnableSsl = true;
+                    client.EnableSsl = settings.EnableSsl;
                     client.Timeout = settings.Timeout;
                     client.DeliveryMethod = SmtpDeliveryMethod.Network;
                     client.UseDefaultCredentials = false;
@@ -88,7 +87,7 @@ namespace GR.Email
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                Console.WriteLine(e);
             }
         }
 

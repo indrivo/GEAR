@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
@@ -27,6 +28,15 @@ namespace GR.Identity.Profile.Data
         public virtual DbSet<T> SetEntity<T>() where T : class, IBaseModel
         {
             return Set<T>();
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
     public class ProfileDbContextContextFactory : IDesignTimeDbContextFactory<ProfileDbContext>

@@ -50,7 +50,7 @@ namespace GR.Core.Helpers
         /// <typeparam name="TModelOutput"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
-        public virtual ResultModel<TModelOutput> Map<TModelOutput>(TModelOutput result) => new ResultModel<TModelOutput>
+        public virtual ResultModel<TModelOutput> Map<TModelOutput>(TModelOutput result = default) => new ResultModel<TModelOutput>
         {
             IsSuccess = IsSuccess,
             Result = result,

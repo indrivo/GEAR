@@ -16,12 +16,13 @@ namespace GR.Notifications.Extensions
         /// Use signalR from GR.Notifications By Indrivo
         /// </summary>
         /// <param name="app"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseSignalRModule(this IApplicationBuilder app)
+        public static IApplicationBuilder UseSignalRModule(this IApplicationBuilder app, string path = "/rtn")
         {
             app.UseSignalR(routes =>
             {
-                routes.MapHub<SignalRNotificationHub>("/rtn",
+                routes.MapHub<SignalRNotificationHub>(path,
                     options =>
                     {
                         options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransports.All;

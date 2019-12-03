@@ -17,6 +17,10 @@ dotnet build ../GR.sln
 dotnet pack ./GR.Extensions/GR.Core.Extension/GR.Core/GR.Core.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Core.Extension/GR.Core.Razor/GR.Core.Razor.csproj -o ../../../nupkgs
 
+::Pack application modules
+dotnet pack ./GR.Extensions/GR.Application.Extension/GR.WebApplication/GR.WebApplication.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Application.Extension/GR.Application.Middleware/GR.Application.Middleware.csproj -o ../../../nupkgs
+
 ::Pack cache modules
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Abstractions/GR.Cache.Abstractions.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache/GR.Cache.csproj -o ../../../nupkgs
@@ -81,6 +85,12 @@ dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Abstractions
 dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant/GR.MultiTenant.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.MultiTenant.Extension/GR.MultiTenant.Razor/GR.MultiTenant.Razor.csproj -o ../../../nupkgs
 
+
+:: Pack state machine modules
+dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Abstractions/GR.WorkFlows.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows/GR.WorkFlows.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Razor/GR.WorkFlows.Razor.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -90,6 +100,10 @@ cd ./nupkgs
 :: Push core modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Core*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Core.Razor*
+
+::Push application modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WebApplication*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Application.Middleware*
 
 :: Push cache modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Abstractions*
@@ -151,6 +165,11 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Email.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Razor*
+
+::Push state-machine modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

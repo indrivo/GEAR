@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Data;
+using GR.Notifications.Abstractions.Seeders;
 using GR.Notifications.Extensions;
 
 namespace GR.Notifications.Data
@@ -58,6 +60,16 @@ namespace GR.Notifications.Data
         public DbSet<T> SetEntity<T>() where T : class, IBaseModel
         {
             return Set<T>();
+        }
+
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public async Task InvokeSeedAsync()
+        {
+            await NotificationManager.SeedNotificationTypesAsync();
         }
     }
 }

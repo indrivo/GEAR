@@ -2,6 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using GR.Core;
+using GR.Core.Events;
+using GR.Core.Extensions;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Documents.Abstractions.Extensions
 {
@@ -24,7 +28,6 @@ namespace GR.Documents.Abstractions.Extensions
         /// <summary>
         /// Register Document  service
         /// </summary>
-        /// <typeparam name="TDocumentTypeService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection RegisterDocumentServices<TDocumentService>(this IServiceCollection services)
@@ -48,6 +51,11 @@ namespace GR.Documents.Abstractions.Extensions
         {
             services.AddDbContext<TDocumentContext>(storageOptions);
             IoC.RegisterTransientService<IDocumentContext, TDocumentContext>();
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TDocumentContext>();
+            };
+
             return services;
         }
     }

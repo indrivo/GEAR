@@ -1,4 +1,5 @@
-﻿using GR.Core.Abstractions;
+﻿using System.Threading.Tasks;
+using GR.Core.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Core.Tests.Helpers
@@ -10,9 +11,15 @@ namespace GR.Core.Tests.Helpers
 
         }
 
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel
+        public DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task InvokeSeedAsync()
         {
-            return Set<T>();
+            return Task.CompletedTask;
         }
     }
 }

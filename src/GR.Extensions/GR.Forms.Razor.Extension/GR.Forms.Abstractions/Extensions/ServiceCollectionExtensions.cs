@@ -2,8 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core;
+using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Forms.Abstractions.Extensions
 {
@@ -34,6 +37,10 @@ namespace GR.Forms.Abstractions.Extensions
             Arg.NotNull(options, nameof(AddFormModuleStorage));
             services.AddDbContext<TFormContext>(options);
             services.RegisterAuditFor<IFormContext>("Form module");
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TFormContext>();
+            };
             return services;
         }
     }

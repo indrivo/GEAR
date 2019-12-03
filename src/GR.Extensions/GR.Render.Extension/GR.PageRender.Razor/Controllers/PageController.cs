@@ -31,7 +31,7 @@ using GR.PageRender.Abstractions.Models.PagesACL;
 
 namespace GR.PageRender.Razor.Controllers
 {
-    public class PageController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class PageController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injectable
         /// <summary>
