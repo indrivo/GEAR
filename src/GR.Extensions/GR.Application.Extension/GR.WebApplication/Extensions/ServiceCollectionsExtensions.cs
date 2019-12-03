@@ -41,9 +41,6 @@ namespace GR.WebApplication.Extensions
             };
             configAction(configuration);
 
-            //get and set app configured
-            GearWebApplication.IsConfigured(configuration.HostingEnvironment);
-
             //Use compression
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
 
@@ -124,6 +121,9 @@ namespace GR.WebApplication.Extensions
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope())
             {
+                var environment = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
+                GearWebApplication.IsConfigured(environment);
+
                 var lifeTimeService = serviceScope.ServiceProvider.GetService<IApplicationLifetime>();
                 lifeTimeService.RegisterAppEvents(app, "GEAR_APP");
 
@@ -165,7 +165,11 @@ namespace GR.WebApplication.Extensions
             if (configuration.SwaggerConfiguration.UseSwaggerUI &&
                 (configuration.SwaggerConfiguration.UseOnlyInDevelopment && configuration.HostingEnvironment.IsDevelopment() || !configuration.SwaggerConfiguration.UseOnlyInDevelopment))
             {
-                app.UseSwagger().UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "GR.BPMN API v1.0"); });
+                app.UseSwagger()
+                    .UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "GEAR API v1.0");
+                });
             }
 
             //----------------------------------Static files Usage-------------------------------------

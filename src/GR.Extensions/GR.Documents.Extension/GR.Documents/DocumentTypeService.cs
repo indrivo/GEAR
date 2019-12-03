@@ -11,10 +11,14 @@ using GR.Core.Abstractions;
 using System.Linq;
 using Mapster;
 using System.Collections.Generic;
+using GR.Core.Attributes.Documentation;
+using GR.Core.Helpers.Global;
 
 namespace GR.Documents
 {
-    public  class DocumentTypeService: IDocumentTypeService
+    [Author(Authors.DOROSENCO_ION, 1.1)]
+    [Author(Authors.LUPEI_NICOLAE, 1.2, "Clean code")]
+    public class DocumentTypeService : IDocumentTypeService
     {
 
         #region Injectable
@@ -22,25 +26,25 @@ namespace GR.Documents
         /// <summary>
         /// Inject db context 
         /// </summary>
-        private IDocumentContext _context;
+        private readonly IDocumentContext _context;
 
-        protected readonly IDataFilter _dataFilter;
+        protected readonly IDataFilter DataFilter;
         #endregion
 
         public DocumentTypeService(IDocumentContext context, IDataFilter dataFilter)
         {
             _context = context;
-            _dataFilter = dataFilter;
+            DataFilter = dataFilter;
         }
 
         /// <summary>
         /// Get all document type
         /// </summary>
         /// <returns></returns>
-        public DTResult<DocumentTypeViewModel> GetAllDocumentType(DTParameters param)
+        public virtual DTResult<DocumentTypeViewModel> GetAllDocumentType(DTParameters param)
         {
 
-            var filtered = _dataFilter.FilterAbstractEntity<DocumentType, IDocumentContext>(_context, param.Search.Value,
+            var filtered = DataFilter.FilterAbstractEntity<DocumentType, IDocumentContext>(_context, param.Search.Value,
                 param.SortOrder, param.Start,
                 param.Length,
                 out var totalCount).Select(x =>
@@ -73,12 +77,12 @@ namespace GR.Documents
         /// Get all document type async
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<DocumentType>>> GetAllDocumentTypeAsync()
+        public virtual async Task<ResultModel<IEnumerable<DocumentType>>> GetAllDocumentTypeAsync()
         {
-            var result = new  ResultModel<IEnumerable<DocumentType>>();
+            var result = new ResultModel<IEnumerable<DocumentType>>();
             var listDocumentTypes = await _context.DocumentTypes.ToListAsync();
 
-            result.IsSuccess = true; 
+            result.IsSuccess = true;
             result.Result = listDocumentTypes;
 
             return result;
@@ -89,7 +93,7 @@ namespace GR.Documents
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<ResultModel<DocumentTypeViewModel>> GetDocumentTypeByIdAsync(Guid? id)
+        public virtual async Task<ResultModel<DocumentTypeViewModel>> GetDocumentTypeByIdAsync(Guid? id)
         {
             var result = new ResultModel<DocumentTypeViewModel>();
 
@@ -119,7 +123,7 @@ namespace GR.Documents
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel> SaveDocumentTypeAsync(DocumentTypeViewModel model)
+        public virtual async Task<ResultModel> SaveDocumentTypeAsync(DocumentTypeViewModel model)
         {
             var code = (await _context.DocumentTypes.LastOrDefaultAsync())?.Code ?? 0;
             code++;
@@ -137,8 +141,8 @@ namespace GR.Documents
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-       public async Task<ResultModel> DeleteDocumentTypeAsync(Guid? id)
-       {
+        public virtual async Task<ResultModel> DeleteDocumentTypeAsync(Guid? id)
+        {
             var result = new ResultModel();
 
 
@@ -159,14 +163,14 @@ namespace GR.Documents
             _context.DocumentTypes.Remove(document.Result.Adapt<DocumentType>());
             result = await _context.PushAsync();
             return result;
-       }
+        }
 
         /// <summary>
         /// Edit document type
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ResultModel<DocumentTypeViewModel>> EditDocumentTypeAsync(DocumentTypeViewModel model)
+        public virtual async Task<ResultModel<DocumentTypeViewModel>> EditDocumentTypeAsync(DocumentTypeViewModel model)
         {
             var result = new ResultModel<DocumentTypeViewModel>();
             var documentTypeRequest = await GetDocumentTypeByIdAsync(model.Id);
@@ -181,7 +185,7 @@ namespace GR.Documents
             documentBd.IsSystem = model.IsSystem;
 
             _context.DocumentTypes.Update(documentBd);
-            var  resultPush =  await _context.PushAsync();
+            var resultPush = await _context.PushAsync();
 
             result.Errors = resultPush.Errors;
             result.IsSuccess = resultPush.IsSuccess;

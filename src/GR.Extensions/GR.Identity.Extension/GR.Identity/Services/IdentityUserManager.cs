@@ -222,7 +222,7 @@ namespace GR.Identity.Services
             var data = new List<Guid>();
             foreach (var roleId in rolesIds)
             {
-                var role = await RoleManager.FindByIdAsync(rolesIds.ToString());
+                var role = await RoleManager.FindByIdAsync(roleId.ToString());
                 if (role != null) data.Add(roleId);
             }
 
