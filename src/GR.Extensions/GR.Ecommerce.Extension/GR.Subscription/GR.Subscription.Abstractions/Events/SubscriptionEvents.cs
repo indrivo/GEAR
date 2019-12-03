@@ -39,18 +39,20 @@ namespace GR.Subscriptions.Abstractions.Events
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
                 var user = (await userManager.GetCurrentUserAsync()).Result;
 
+                
+                var planRequest = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
 
-                var plan = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
-
-                if (plan.IsSuccess)
+                if (planRequest.IsSuccess)
                 {
-                    var permissions = SubscriptionMapper.Map(plan.Result.ProductAttributes).ToList();
+                    var plan = planRequest.Result;
+
+                    var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
                     await subscriptionService.CreateUpdateSubscriptionAsync(new SubscriptionViewModel
                     {
-                        Name = plan.Result.Name,
+                        Name = plan.Name,
                         StartDate = DateTime.Now,
                         Availability = int.Parse(freeTrialPeriodStr), 
-                       //UserId = user.TenantId,
+                        UserId = args.UserId.ToGuid(),
                         IsFree = true,
                         SubscriptionPermissions = permissions
                     });
@@ -89,13 +91,13 @@ namespace GR.Subscriptions.Abstractions.Events
                     Availability = subscriptionService.GetSubscriptionDuration(variation),
                     UserId = order.UserId,
                     SubscriptionPermissions = permissions,
-                    IsFree =  false,
                 };
 
                 if (userSubscription.IsSuccess)
                 {
                     newSubscription.Id = userSubscription.Result.Id;
                     newSubscription.Availability += userSubscription.Result.Availability;
+                    newSubscription.IsFree = false;
                 }
 
                 await subscriptionService.CreateUpdateSubscriptionAsync(newSubscription);

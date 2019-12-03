@@ -10,6 +10,6 @@ namespace GR.ECommerce.Razor.ViewModels.SettingsViewModels
 
         public virtual int DaysToNotifyExpiringSubscriptions { get; set; }
 
-        public virtual int DaysToFreeTailPeriod { get; set; }
+        public virtual int DaysToFreeTrialPeriod { get; set; }
     }
 }
