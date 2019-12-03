@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using GR.Cache.Abstractions;
+using GR.Core.Extensions;
 using GR.Localization.Abstractions.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,16 +12,15 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using GR.Core.Extensions;
 
 namespace GR.Localization
 {
     public class JsonStringLocalizer : IStringLocalizer
-	{
+    {
         #region DependencyInjection Fields
         private readonly IHostingEnvironment _env;
         private readonly IOptionsSnapshot<LocalizationConfig> _locConfig;
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cache;
         #endregion
 
         #region Private Fields
@@ -34,56 +35,56 @@ namespace GR.Localization
         #endregion
 
         #region Constructors
-        public JsonStringLocalizer(IHostingEnvironment env, 
-            IHttpContextAccessor httpAccessor, 
+        public JsonStringLocalizer(IHostingEnvironment env,
+            IHttpContextAccessor httpAccessor,
             IOptionsSnapshot<LocalizationConfig> locConfig,
-            IDistributedCache cache)
-		{
-			_env = env;
+            ICacheService cache)
+        {
+            _env = env;
             _locConfig = locConfig;
             _cache = cache;
-            string sessionKey = _locConfig.Value.SessionStoreKeyName ?? SessionStoreKeyNameDefault;
-            string defaultLanguage = _locConfig.Value.DefaultLanguage ?? DefaultLanguage;
+            var sessionKey = _locConfig.Value.SessionStoreKeyName ?? SessionStoreKeyNameDefault;
+            var defaultLanguage = _locConfig.Value.DefaultLanguage ?? DefaultLanguage;
 
-            string val = httpAccessor.HttpContext.Session.GetString(sessionKey);
+            var val = httpAccessor.HttpContext.Session.GetString(sessionKey);
 
-            if(string.IsNullOrEmpty(val))
+            if (string.IsNullOrEmpty(val))
             {
                 httpAccessor.HttpContext.Session.SetString(sessionKey, defaultLanguage);
             }
-            
+
             _language = httpAccessor.HttpContext.Session.GetString(SessionStoreKeyNameDefault);
             _path = _locConfig.Value.Path ?? PathDefault;
-		}
+        }
         #endregion
-        
+
         #region IStringLocalizer Implementation
         public LocalizedString this[string name]
         {
             get
             {
-                string filePath = GetFilePath();
+                var filePath = GetFilePath();
 
-                bool exists = File.Exists(filePath);
+                var exists = File.Exists(filePath);
                 if (!exists)
                 {
                     return new LocalizedString(name, $"[{name}]", true);
                 }
 
-                string cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{_language}";
-                string locKey = $"{cacheKey}_{name}";
+                var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{_language}";
+                var locKey = $"{cacheKey}_{name}";
 
-                string cacheTranslated = _cache.GetString(locKey);
+                var cacheTranslated = _cache.GetAsync<string>(locKey).ExecuteAsync();
                 if (string.IsNullOrEmpty(cacheTranslated))
                 {
                     Stream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    string value = PullDeserialize<string>(name, fileStream);
+                    var value = PullDeserialize<string>(name, fileStream);
 
-                    string translated = value ?? $"[{name}]";
-                    bool resourceNotFound = value == null;
+                    var translated = value ?? $"[{name}]";
+                    var resourceNotFound = value == null;
                     if (!resourceNotFound)
                     {
-                        _cache.SetString(locKey, translated);
+                        _cache.SetAsync(locKey, translated).ExecuteAsync();
                     }
                     return new LocalizedString(name, translated, resourceNotFound);
                 }
@@ -101,7 +102,7 @@ namespace GR.Localization
         /// <typeparam name="T">Type of the object to deserialize</typeparam>
         /// <param name="propertyName">Name of the property to get from json</param>
         /// <param name="str"><see cref="Stream"/> from where to read the json</param>
-        /// <returns>Deserialized propert from the json</returns>
+        /// <returns>Deserialized property from the json</returns>
         /// <exception cref="System.ArgumentException"></exception>
         /// <exception cref="System.ArgumentNullException"></exception>
         private T PullDeserialize<T>(string propertyName, Stream str)
@@ -113,71 +114,71 @@ namespace GR.Localization
                 throw new System.ArgumentNullException(nameof(str));
 
             using (str)
-            using (StreamReader sReader = new StreamReader(str))
-            using (JsonTextReader reader = new JsonTextReader(sReader))
+            using (var sReader = new StreamReader(str))
+            using (var reader = new JsonTextReader(sReader))
             {
-                while(reader.Read())
+                while (reader.Read())
                 {
-                    if(reader.TokenType == JsonToken.PropertyName
+                    if (reader.TokenType == JsonToken.PropertyName
                         && (string)reader.Value == propertyName)
                     {
                         reader.Read();
-                        JsonSerializer serializer = new JsonSerializer();
+                        var serializer = new JsonSerializer();
                         return serializer.Deserialize<T>(reader);
                     }
                 }
-                return default(T);
+                return default;
             }
         }
 
-		public LocalizedString this[string name, params object[] arguments]
+        public LocalizedString this[string name, params object[] arguments]
         {
             get
             {
-                LocalizedString translated = this[name];
-                string value = string.Format(translated, arguments);
+                var translated = this[name];
+                var value = string.Format(translated, arguments);
                 return new LocalizedString(name, translated.ResourceNotFound
                     ? translated
                     : value, translated.ResourceNotFound);
             }
         }
 
-		public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
-		{
-            string filePath = GetFilePath();
+        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+        {
+            var filePath = GetFilePath();
 
-            bool exists = File.Exists(filePath);
+            var exists = File.Exists(filePath);
             if (!exists)
             {
                 Enumerable.Empty<LocalizedString>();
             }
 
-			using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-			using (StreamReader sReader = new StreamReader(stream))
-			using (JsonTextReader reader = new JsonTextReader(sReader))
-			{
-				reader.SupportMultipleContent = true;
-                JObject obj = JObject.Load(reader);
-                IEnumerable<JProperty> properties = obj.Properties();
-				foreach (JProperty property in properties)
-				{
-                    string value = property.Value?.Value<string>();
-					string name = property.Name;
-					yield return new LocalizedString(name, value ?? $"[{name}]", property.Value == null);
-				}
-			}
-		}
+            using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var sReader = new StreamReader(stream))
+            using (var reader = new JsonTextReader(sReader))
+            {
+                reader.SupportMultipleContent = true;
+                var obj = JObject.Load(reader);
+                var properties = obj.Properties();
+                foreach (var property in properties)
+                {
+                    var value = property.Value?.Value<string>();
+                    var name = property.Name;
+                    yield return new LocalizedString(name, value ?? $"[{name}]", property.Value == null);
+                }
+            }
+        }
 
-		public IStringLocalizer WithCulture(CultureInfo culture)
-		{
+        public IStringLocalizer WithCulture(CultureInfo culture)
+        {
             _language = culture.TwoLetterISOLanguageName;
             return this;
-		}
+        }
         #endregion
 
         private string GetFilePath()
         {
-            string[] paths = new string[]
+            var paths = new string[]
             {
                 _env.ContentRootPath,
                 string.Format("{0}/{1}{2}", _path, _language, ".json")

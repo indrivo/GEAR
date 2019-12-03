@@ -48,12 +48,12 @@ namespace GR.PageRender
         /// <returns></returns>
         protected virtual async Task<IEnumerable<MenuItem>> GetMenuBlockAsync(Guid menuId)
         {
-            var cache = await _cacheService.Get<List<MenuItem>>(MenuHelper.GetCacheKey(menuId.ToString()));
+            var cache = await _cacheService.GetAsync<List<MenuItem>>(MenuHelper.GetCacheKey(menuId.ToString()));
             if (cache != null && cache.Any()) return cache;
             var search = await _service.GetAll<MenuItem, MenuItem>(x => x.MenuId.Equals(menuId));
             if (search.IsSuccess && search.Result.Any())
             {
-                await _cacheService.Set(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
+                await _cacheService.SetAsync(MenuHelper.GetCacheKey(menuId.ToString()), search.Result);
             }
             return search.Result.ToList();
         }

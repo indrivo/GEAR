@@ -47,7 +47,7 @@ namespace GR.Cache.Services
         /// <param name="key"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public virtual async Task<bool> Set<TObject>(string key, TObject obj) where TObject : class
+        public virtual async Task<bool> SetAsync<TObject>(string key, TObject obj) where TObject : class
         {
             try
             {
@@ -68,7 +68,7 @@ namespace GR.Cache.Services
         /// <typeparam name="TObject"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public virtual async Task<TObject> Get<TObject>(string key) where TObject : class
+        public virtual async Task<TObject> GetAsync<TObject>(string key) where TObject : class
         {
             var value = await _cache.GetAsync(key);
             if (value == null || value.Length == 0) return default;

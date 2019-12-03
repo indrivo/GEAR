@@ -30,7 +30,7 @@ namespace GR.Cache.Services
         /// <typeparam name="TObject"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public Task<TObject> Get<TObject>(string key) where TObject : class
+        public Task<TObject> GetAsync<TObject>(string key) where TObject : class
             => Task.Factory.StartNew(() => _inMemoryCacheService.Get<TObject>(key));
 
         public IEnumerable<RedisKey> GetAllByPatternFilter(string pattern)
@@ -64,7 +64,7 @@ namespace GR.Cache.Services
         /// <param name="key"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public Task<bool> Set<TObject>(string key, TObject obj) where TObject : class
+        public Task<bool> SetAsync<TObject>(string key, TObject obj) where TObject : class
             => Task.Factory.StartNew(() =>
             {
                 var ob = _inMemoryCacheService.Set(key, obj);
