@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Είστε σίγουρος ότι θέλετε να διαγράψετε το έργο ",
   "system_state_machine_max_connections": "Δεν είναι δυνατό να δημιουργήσετε περισσότερες από μία μετάβαση από την πηγή στο στόχο αυτό",
   "system_state_machine_transition": "Μετάβαση",
-  "system_state_machine_new_transition": "Νέα μετάβαση"
+  "system_state_machine_new_transition": "Νέα μετάβαση",
+  "system_state_machine_connection_title": "Τίτλος",
+  "system_state_machine_workflows": "Ροές εργασίας",
+  "system_state_machine_are_you_sure_text": "Είστε σίγουρος ότι θέλετε να διαγράψετε",
+  "system_state_machine_add_workflow": "Προσθέστε νέα ροή εργασίας",
+  "system_state_machine_transition_title": "Τίτλος",
+  "system_state_machine_transition_description": "Περιγραφή",
+  "system_state_machine_transition_active": "Ενεργό"
 }

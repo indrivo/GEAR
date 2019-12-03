@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "まず削除したいタスク ",
   "system_state_machine_max_connections": "を生成できない以上の一つの遷移からソースをこの目標",
   "system_state_machine_transition": "遷移",
-  "system_state_machine_new_transition": "新しい転移"
+  "system_state_machine_new_transition": "新しい転移",
+  "system_state_machine_connection_title": "タイトル",
+  "system_state_machine_workflows": "ワークフロー",
+  "system_state_machine_are_you_sure_text": "Are you sure you want to delete",
+  "system_state_machine_add_workflow": "新規追加のワークフロー",
+  "system_state_machine_transition_title": "タイトル",
+  "system_state_machine_transition_description": "説明",
+  "system_state_machine_transition_active": "活動"
 }

@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Вы уверены, что хотите удалить задачу ",
   "system_state_machine_max_connections": "Невозможно создать более одного перехода из этого источника на эту цель",
   "system_state_machine_transition": "Переход",
-  "system_state_machine_new_transition": "Новый переход"
+  "system_state_machine_new_transition": "Новый переход",
+  "system_state_machine_connection_title": "Название",
+  "system_state_machine_workflows": "Рабочие процессы",
+  "system_state_machine_are_you_sure_text": "Вы уверены, что хотите удалить",
+  "system_state_machine_add_workflow": "Добавить новый рабочий процесс",
+  "system_state_machine_transition_title": "Название",
+  "system_state_machine_transition_description": "Описание",
+  "system_state_machine_transition_active": "Активный"
 }

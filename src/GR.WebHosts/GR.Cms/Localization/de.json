@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Sind Sie sicher, dass Sie löschen möchten Aufgabe ",
   "system_state_machine_max_connections": "Nicht mehr als einen übergang aus dieser Quelle zu diesem Ziel",
   "system_state_machine_transition": "Übergang",
-  "system_state_machine_new_transition": "Der neue übergang"
+  "system_state_machine_new_transition": "Der neue übergang",
+  "system_state_machine_connection_title": "Titel",
+  "system_state_machine_workflows": "Workflows",
+  "system_state_machine_are_you_sure_text": "Sind Sie sicher, dass Sie löschen möchten",
+  "system_state_machine_add_workflow": "Hinzufügen neuer workflow",
+  "system_state_machine_transition_title": "Titel",
+  "system_state_machine_transition_description": "Beschreibung",
+  "system_state_machine_transition_active": "Aktiv"
 }

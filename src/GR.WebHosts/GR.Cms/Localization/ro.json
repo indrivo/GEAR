@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina ",
   "system_state_machine_max_connections": "Nu se poate crea mai mult de o tranziție de la aceasta sursa la acest obiectiv",
   "system_state_machine_transition": "Tranziție",
-  "system_state_machine_new_transition": "Noua tranziție"
+  "system_state_machine_new_transition": "Noua tranziție",
+  "system_state_machine_connection_title": "Titlu",
+  "system_state_machine_workflows": "Fluxuri de lucru",
+  "system_state_machine_are_you_sure_text": "Sunteți sigur că doriți să ștergeți",
+  "system_state_machine_add_workflow": "Adăugare flux de lucru nou",
+  "system_state_machine_transition_title": "Titlu",
+  "system_state_machine_transition_description": "Descriere",
+  "system_state_machine_transition_active": "Active"
 }

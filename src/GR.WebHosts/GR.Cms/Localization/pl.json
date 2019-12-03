@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Jesteś pewien, że chcesz usunąć zadanie ",
   "system_state_machine_max_connections": "Nie można utworzyć więcej niż jednego przejścia z tego źródła na ten cel",
   "system_state_machine_transition": "Przejście",
-  "system_state_machine_new_transition": "Nowe przejście"
+  "system_state_machine_new_transition": "Nowe przejście",
+  "system_state_machine_connection_title": "Nazwa",
+  "system_state_machine_workflows": "Procesy robocze",
+  "system_state_machine_are_you_sure_text": "Jesteś pewien, że chcesz usunąć",
+  "system_state_machine_add_workflow": "Dodaj nowy workflow",
+  "system_state_machine_transition_title": "Nazwa",
+  "system_state_machine_transition_description": "Opis",
+  "system_state_machine_transition_active": "Aktywny"
 }

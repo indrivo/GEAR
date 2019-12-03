@@ -7,6 +7,51 @@
 {
 	<link rel="stylesheet" type="text/css" href="~/lib/jsPlumb/css/jsplumbtoolkit-defaults.min.css" />
 	<style>
+		html {
+			overflow-y: hidden;
+		}
+
+		.st-mch-loader {
+			display: none;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			height: 100%;
+			width: 100%;
+			z-index: 99;
+		}
+
+		.state-machine-loader {
+			background-color: white;
+			border: 1px solid rgba(0,0,0,0.125);
+			display: flex;
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			height: 100%;
+			width: 100%;
+		}
+
+		.modal-confirm-delete .modal-content {
+			background-color: #fff;
+			padding: 50px 30px;
+		}
+
+		.weight-500 {
+			font-weight: 500;
+		}
+
+		.fw-600 {
+			font-weight: 600;
+		}
+
+		.mb-40px {
+			margin-bottom: 40px;
+		}
+
+		.bt-1 {
+			border-top: 1px solid #D8DCE0;
+		}
 
 		.w {
 			min-width: 100px;
@@ -110,7 +155,6 @@
 
 		.jtk-workflow {
 			position: relative;
-			margin-top: 98px;
 			display: flex;
 			flex-direction: column;
 		}
@@ -132,8 +176,6 @@
 			}
 
 		.jtk-canvas {
-			height: 750px;
-			max-height: 700px;
 			border: 1px solid #CCC;
 			background-color: white;
 			display: flex;
@@ -209,7 +251,7 @@
 			background-color: white;
 			color: #434343;
 			font-weight: 400;
-			padding: 4px;
+			border-radius: 8px;
 			z-index: 10;
 			cursor: pointer;
 		}
@@ -271,18 +313,121 @@
 				.jtk-node .name span {
 					cursor: pointer;
 				}
+
+		.modal-content {
+			padding: 16px;
+		}
+
+		#workflow-list .workflow .fa-square {
+			font-size: 20px;
+		}
+
+		#workflow-list .workflow .more-icon {
+			width: 10px;
+		}
+
+		.workflow-actions-expandable {
+			width: 0;
+			overflow: hidden;
+			display: inline-flex;
+			transition: 0.5s ease-in-out;
+		}
+
+			.workflow-actions-expandable a {
+				cursor: pointer;
+				transition: 0.2s ease-in-out;
+			}
+
+				.workflow-actions-expandable a:hover {
+					color: #2862D6 !important;
+					transition: 0.2s ease-in-out;
+				}
+
+		.workflow-actions:hover .workflow-actions-expandable {
+			width: 83px;
+			transition: 0.2s ease-in-out;
+		}
+
+		.workflow-actions .workflow-load:hover i {
+			color: #009010;
+		}
+
+		.workflow-actions .workflow-edit:hover i {
+			color: #0088FF;
+		}
+
+		.workflow-actions .workflow-delete:hover i {
+			color: #FF0000;
+		}
 	</style>
 }
 @inject IStringLocalizer Localizer
 
-<div id="state-machine" class="state-machine">
-
+<div class="row pt-5 h-100">
+	<div class="col-md-3">
+		<div class="card h-100">
+			<div class="card-body">
+				<h2>@Localizer["system_state_machine_workflows"]</h2>
+				<div id="workflow-list"></div>
+				<div class="mt-4 pt-4 bt-1">
+					<h3></h3>
+					<form id="add-new-workflow">
+						<div class="form-group">
+							<label for="workflow-title">@Localizer["system_state_machine_transition_title"]</label>
+							<input type="text" id="workflow-title" name="title" class="form-control">
+						</div>
+						<div class="form-group">
+							<label for="workflow-description">@Localizer["system_state_machine_transition_description"]</label>
+							<textarea id="workflow-description" class="form-control"></textarea>
+						</div>
+						<div class="form-group">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="task-item-status custom-control-input" id="workflow-active">
+								<label class="custom-control-label" for="workflow-active">@Localizer["system_state_machine_transition_active"]</label>
+							</div>
+						</div>
+						<button type="submit" class="btn btn-primary w-100">@Localizer["system_state_machine_add_workflow"]</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-9">
+		<div id="state-machine" class="state-machine h-100 w-100 position-relative"></div>
+	</div>
 </div>
 
+<div class="modal edit-connection-modal fade" id="editConnectionModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
 
-<div class="modal edit-connection-modal fade" id="editConnectionModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+<div class="modal edit-workflow-modal fade" id="editWorkflowModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
 
+<div class="modal fade modal-confirm-delete" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div>
+				<button type="button" class="close p-0 absolute-close-button" data-dismiss="modal" aria-label="Close">
+					<span class="material-icons">close</span>
+				</button>
+			</div>
+			<div class="d-flex justify-content-center confirm-image mb-40px">
+				<svg height="100px" viewBox="-9 0 512 512.00101" width="100px" xmlns="http://www.w3.org/2000/svg"><path d="m444.359375 123.113281-1.621094 22.8125-21.910156 307.898438c-2.027344 28.488281-25.742187 50.570312-54.300781 50.570312h-238.207032c-28.558593 0-52.265624-22.082031-54.292968-50.570312l-23.53125-330.710938zm0 0" fill="#bfdadd" /><path d="m442.738281 145.925781-21.910156 307.898438c-2.027344 28.488281-25.742187 50.570312-54.300781 50.570312h-184.980469c-28.558594 0-52.261719-22.070312-54.289063-50.570312l-20.289062-285.085938c-.875-12.328125 8.886719-22.8125 21.246094-22.8125zm0 0" fill="#e4f5f7" /><path d="m302.074219 47.082031h-109.605469c7.644531-22.941406 29.289062-39.476562 54.796875-39.476562 6.105469 0 11.984375.941406 17.5 2.695312 17.558594 5.578125 31.480469 19.324219 37.308594 36.78125zm0 0" fill="#bfdadd" /><path d="m302.074219 47.082031h-74.628907c5.820313-17.457031 19.75-31.214843 37.320313-36.78125 17.558594 5.578125 31.480469 19.324219 37.308594 36.78125zm0 0" fill="#e4f5f7" /><path d="m486.933594 85.101562c0 6.613282-1.695313 12.828126-4.664063 18.242188-6.449219 11.78125-18.960937 19.769531-33.347656 19.769531h-403.300781c-10.503906 0-20.003906-4.257812-26.886719-11.132812-6.875-6.875-11.132813-16.382813-11.132813-26.878907 0-20.996093 17.023438-38.019531 38.019532-38.019531h403.300781c10.496094 0 20.003906 4.261719 26.878906 11.132813 6.875 6.886718 11.132813 16.394531 11.132813 26.886718zm0 0" fill="#bfdadd" /><path d="m486.933594 85.101562c0 6.613282-1.695313 12.828126-4.664063 18.242188h-349.964843c-10.503907 0-20.003907-4.257812-26.886719-11.132812-6.875-6.882813-11.132813-16.382813-11.132813-26.886719 0-6.613281 1.683594-12.828125 4.652344-18.242188h349.984375c10.496094 0 20.003906 4.261719 26.878906 11.132813 6.875 6.886718 11.132813 16.394531 11.132813 26.886718zm0 0" fill="#e4f5f7" /><g fill="#bfdadd"><path d="m247.425781 454.632812c-13.019531 0-23.570312-10.554687-23.570312-23.570312v-247.878906c0-13.015625 10.550781-23.570313 23.570312-23.570313s23.570313 10.554688 23.570313 23.570313v247.878906c0 13.015625-10.550782 23.570312-23.570313 23.570312zm0 0" /><path d="m352.167969 454.632812c-13.019531 0-23.574219-10.554687-23.574219-23.570312v-247.878906c0-13.015625 10.554688-23.570313 23.574219-23.570313 13.015625 0 23.570312 10.554688 23.570312 23.570313v247.878906c0 13.015625-10.554687 23.570312-23.570312 23.570312zm0 0" /><path d="m142.683594 454.632812c-13.015625 0-23.570313-10.554687-23.570313-23.570312v-247.878906c0-13.015625 10.554688-23.570313 23.570313-23.570313 13.019531 0 23.570312 10.554688 23.570312 23.570313v247.878906c0 13.015625-10.550781 23.570312-23.570312 23.570312zm0 0" /></g><path d="m494.542969 85.097656c0-25.152344-20.46875-45.621094-45.621094-45.621094h-141.621094c-10.253906-23.824218-33.722656-39.476562-60.035156-39.476562s-49.777344 15.652344-60.023437 39.476562h-105.320313c-4.199219 0-7.601563 3.40625-7.601563 7.605469s3.402344 7.605469 7.601563 7.605469h367c16.769531 0 30.410156 13.640625 30.410156 30.410156 0 16.773438-13.640625 30.414063-30.410156 30.414063h-403.300781c-16.769532 0-30.414063-13.640625-30.414063-30.414063 0-16.769531 13.644531-30.410156 30.414063-30.410156h5.882812c4.199219 0 7.605469-3.40625 7.605469-7.605469s-3.40625-7.605469-7.605469-7.605469h-5.882812c-25.15625 0-45.621094 20.46875-45.621094 45.621094 0 24.414063 19.277344 44.40625 43.40625 45.566406l23.035156 323.703126c2.300782 32.320312 29.480469 57.632812 61.878906 57.632812h238.207032c32.398437 0 59.582031-25.3125 61.882812-57.632812l23.035156-323.71875c23.984376-1.316407 43.097657-21.242188 43.097657-45.550782zm-247.277344-69.890625c17.878906 0 34.042969 9.421875 42.976563 24.269531h-85.945313c8.925781-14.847656 25.085937-24.269531 42.96875-24.269531zm165.972656 438.082031c-1.734375 24.394532-22.253906 43.503907-46.710937 43.503907h-238.203125c-24.457031 0-44.976563-19.109375-46.710938-43.503907l-22.953125-322.570312h377.53125zm0 0" /><path d="m247.425781 152.011719c-17.191406 0-31.175781 13.984375-31.175781 31.171875v247.878906c0 17.1875 13.984375 31.175781 31.175781 31.175781 17.191407 0 31.175781-13.988281 31.175781-31.175781v-247.878906c0-17.1875-13.984374-31.171875-31.175781-31.171875zm15.96875 279.050781c0 8.800781-7.164062 15.964844-15.96875 15.964844-8.804687 0-15.96875-7.164063-15.96875-15.964844v-247.878906c0-8.804688 7.164063-15.964844 15.96875-15.964844 8.804688 0 15.96875 7.160156 15.96875 15.964844zm0 0" /><path d="m352.167969 152.011719c-17.191407 0-31.175781 13.984375-31.175781 31.171875v247.878906c0 17.1875 13.984374 31.175781 31.175781 31.175781 17.1875 0 31.171875-13.988281 31.171875-31.175781v-174.628906c0-4.199219-3.402344-7.601563-7.601563-7.601563-4.203125 0-7.605469 3.402344-7.605469 7.601563v174.628906c0 8.804688-7.160156 15.964844-15.964843 15.964844-8.804688 0-15.96875-7.160156-15.96875-15.964844v-247.878906c0-8.804688 7.164062-15.964844 15.96875-15.964844 8.804687 0 15.964843 7.160156 15.964843 15.964844v47.90625c0 4.199218 3.402344 7.601562 7.605469 7.601562 4.199219 0 7.601563-3.402344 7.601563-7.601562v-47.90625c0-17.1875-13.984375-31.171875-31.171875-31.171875zm0 0" /><path d="m142.683594 152.011719c-17.191406 0-31.175782 13.984375-31.175782 31.171875v247.878906c0 17.1875 13.984376 31.175781 31.175782 31.175781s31.175781-13.988281 31.175781-31.175781v-247.878906c0-17.1875-13.984375-31.171875-31.175781-31.171875zm15.96875 279.050781c0 8.800781-7.164063 15.964844-15.96875 15.964844-8.804688 0-15.96875-7.164063-15.96875-15.964844v-247.878906c0-8.804688 7.164062-15.964844 15.96875-15.964844 8.804687 0 15.96875 7.160156 15.96875 15.964844zm0 0" /></svg>
+			</div>
+			<div>
+				<h5 class="h4 fw-600" id="deleteConfirmModalLabel">@Localizer["system_taskmanager_are_you_sure"]</h5>
+				<p class="mt-2">@Localizer["system_state_machine_are_you_sure_text"] <span class="workflow-title"></span> ?</p>
+			</div>
+			<div>
+				<button id="submit-delete" type="button" class="btn btn-primary d-flex align-items-center ml-auto">
+					<svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
+						<path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
+					</svg>
+					@Localizer["system_taskmanager_yes"]
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
+
 @section Scripts
 {
 	<script src="~/lib/jsPlumb/js/jsplumb.min.js"></script>
@@ -296,12 +441,24 @@
 						<span class="material-icons">close</span>
 					</button>
 				</div>
+				<form id="add-event">
+					<div class="form-group">
+						<label for="edit-transition-title">@Localizer["system_state_machine_connection_title"]</label>
+						<input type="text" id="edit-transition-title" name="title" class="form-control" value="{{:name}}">
+					</div>
+					<div class="row">
+						<div class="col-6 roles">
+							{{for ~roles tmpl="#checkboxTemplate" /}}
+						</div>
+						<div class="col-6"></div>
+					</div>
+					<button id="edit-transition-submit" type="submit" class="btn btn-outline-primary w-100">
+						@Localizer["save"]
+					</button>
+				</form>
 				<div>
-					<h5 class="modal-title" id="">Connection {{:id}}</h5>
-				</div>
-				<div>
-					<button class="btn btn-primary text-white">
-						OK
+					<button class="connection-delete btn btn-danger text-white" data-conn-id="{{:id}}">
+						Delete connection
 					</button>
 				</div>
 			</div>
@@ -310,17 +467,50 @@
 
 	<!--State box template-->
 	<script id="state-template" type="text/x-jsrender">
-		<div class="w" id="{{:id}}">
+		<div class="w" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
 			{{:name}}
 			<div class="ep" action="{{:id}}"></div>
 		</div>
 	</script>
 
-	<!--Workflow template-->
+	<!--Checkox template-->
+	<script id="checkboxTemplate" type="text/x-jsrender">
+		<div class="custom-control custom-checkbox">
+			<input type="checkbox" class="task-item-status custom-control-input" id="{{:id}}">
+			<label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+		</div>
+	</script>
+
+	<!--Workflow list template-->
 	<script id="workflow-template" type="text/x-jsrender">
-		<div class="jtk-workflow mb-2">
-			<h3> {{:name}} </h3>
-			<div class="jtk-canvas canvas-wide jtk-surface jtk-surface-nopan" id="{{:id}}">
+		<div class="workflow d-flex align-items-center" data-workflow-id="{{:id}}" id="{{:id}}">
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" id="check-{{:id}}" class="custom-control-input" {{if enabled}} checked {{/if}}>
+				<label class="custom-control-label" for="check-{{:id}}">{{:name}}</label>
+			</div>
+			<div class="workflow-actions ml-auto">
+				<span class="workflow-actions-more">
+					<i class="material-icons more-icon">more_vert</i>
+				</span>
+				<span class="workflow-actions-expandable">
+					<a class="workflow-load ml-3">
+						<i class="material-icons">archive</i>
+					</a>
+					<a class="workflow-edit">
+						<i class="material-icons">edit</i>
+					</a>
+					<a class="workflow-delete">
+						<i class="material-icons">delete_outline</i>
+					</a>
+				</span>
+			</div>
+		</div>
+	</script>
+
+	<!--Workflow container template-->
+	<script id="workflow-container-template" type="text/x-jsrender">
+		<div class="jtk-workflow h-100">
+			<div class="jtk-canvas canvas-wide jtk-surface jtk-surface-nopan h-100" id="{{:id}}">
 
 			</div>
 		</div>
@@ -329,7 +519,12 @@
 	<!--Custom jsPLumb actions and events-->
 
 	<script>
+		const toast = new ToastNotifier();
 		class stateMachine {
+			constructor() {
+				this.loadRoles();
+			}
+
 			ajaxRequest(requestUrl, requestType, requestData) {
 				const baseUrl = '/api/WorkFlowBuilder';
 				return new Promise((resolve, reject) => {
@@ -338,12 +533,17 @@
 						type: requestType,
 						data: requestData,
 						success: (data) => {
-							if (data.is_success) {
-								resolve(data.result);
-							} else if (!data.is_success) {
-								reject(data.error_keys);
-							} else {
+							if (Array.isArray(data)) {
 								resolve(data);
+							}
+							else {
+								if (data.is_success) {
+									resolve(data.result);
+								} else if (!data.is_success) {
+									reject(data.error_keys);
+								} else {
+									resolve(data);
+								}
 							}
 						},
 						error: (e) => {
@@ -392,6 +592,16 @@
 				return this.ajaxRequest(requestUrl, 'post', state);
 			}
 
+			createTransition(transition = {
+				workFlowId: '',
+				name: '',
+				fromStateId: '',
+				toStateId: ''
+			}) {
+				const requestUrl = '/CreateTransition';
+				return this.ajaxRequest(requestUrl, 'post', transition);
+			}
+
 			setStartStateInWorkflow(state = {
 				workFlowId: '',
 				stateId: ''
@@ -436,7 +646,7 @@
 
 			updateStateAdditionalSettings(state = {
 				stateId: '',
-				settings: ''
+				settings: {}
 			}) {
 				const requestUrl = '/UpdateStateAdditionalSettings';
 				return this.ajaxRequest(requestUrl, 'post', state);
@@ -455,7 +665,26 @@
 
 			removeTransitionById(transitionId) {
 				const requestUrl = '/RemoveTransitionById';
-				return this.ajaxRequest(requestUrl, 'delete', { transitionId });
+				return this.ajaxRequest(requestUrl, 'delete', { transitionId: transitionId });
+			}
+
+			roles = [];
+
+			loadRoles() {
+				const scope = this;
+				return new Promise((resolve, reject) => {
+					if (scope.roles.length > 0) {
+						resolve(scope.roles);
+					} else {
+						scope.getRolesAllowedToParticipateInWorkflow().then(result => {
+							scope.roles = result;
+							resolve(scope.roles);
+						}).catch(e => {
+							console.warn(e);
+							toast.notifyErrorList(e);
+						});
+					}
+				})
 			}
 		}
 	</script>
@@ -467,6 +696,7 @@
 			const toast = new ToastNotifier();
 			const connectionModal = $.templates("#coonection-modal");
 			const workflowTemplate = $.templates("#workflow-template");
+			const workflowContainerTemplate = $.templates("#workflow-container-template");
 			const stateTemplate = $.templates("#state-template");
 
 			const findObjectsByProperties = (array, properties) => {
@@ -480,16 +710,59 @@
 				});
 			}
 
-			const loadWorkflowStates = (id) => {
-				stateMachineManager.getWorkFlowById(id).then(workflow => {
-					const states = workflow.states;
-					$(`#${id}`).html(null);
-					$.each(states, function (index, state) {
-						const htmlOutput = stateTemplate.render(state);
-						$(`#${id}`).append(htmlOutput);
-					});
-					initjsPlumb(workflow.id);
+			const openConfirmationModal = (entity = {
+				id: null,
+				title: '',
+				type: '',
+			}) => {
+				const submitBtn = $('.modal-confirm-delete #submit-delete');
+				$('.modal-confirm-delete .workflow-title').html(entity.title);
+				submitBtn.data('entity', entity);
+				submitBtn.on('click', function () {
+					switch (entity.type) {
+						case 'workflow': {
+							deleteWorkflow(entity.id);
+						}
+					}
+
+					$('.modal-confirm-delete').modal('hide');
 				});
+
+				$('.modal-confirm-delete').modal('show');
+			}
+
+			const addLoader = elementDOM => {
+				const loadermarkup = `<div class="st-mch-loader">
+																				<div class="state-machine-loader justify-content-center align-items-center">
+																				<div class="lds-dual-ring"></div>
+																					</div>
+																				</div>`;
+				elementDOM.append(loadermarkup);
+				elementDOM.find('.st-mch-loader').fadeIn();
+			}
+
+			const removeLoader = elementDOM => {
+				elementDOM.find('.st-mch-loader').fadeOut();
+				setTimeout(function () { elementDOM.find('.st-mch-loader').remove(); }, 3000);
+			}
+
+			const loadWorkflowStates = (workflow) => {
+				const states = workflow.states;
+				$(`.jtk-canvas#${workflow.id}`).html(null);
+				$.each(states, function (index, state) {
+					const aSets = state.additionalSettings;
+					let statePositions = {
+						x: 0,
+						y: 0
+					};
+					if (aSets && 'x' in aSets && 'y' in aSets) {
+						statePositions.x = aSets.x;
+						statePositions.y = aSets.y;
+					}
+					const htmlOutput = stateTemplate.render(state, statePositions);
+					$(`.jtk-canvas#${workflow.id}`).append(htmlOutput);
+				});
+				initjsPlumb(workflow.id);
 			}
 
 			const loadWorkflowTransitions = (id, instance) => {
@@ -498,26 +771,91 @@
 					$.each(transitions, function (index, transition) {
 						instance.connect({
 							id: transition.id,
-							source: transition.fromStateId,
-							target: transition.toStateId,
+							source: transition.fromState.id,
+							target: transition.toState.id,
 							type: "basic",
 							parameters: {
 								'transition': transition
 							}
 						});
 					});
+					removeLoader($('#state-machine'));
 				});
 			}
 
-			stateMachineManager.getAllWorkflows().then(workflows => {
-				$('#state-machine').html(null);
-				$.each(workflows, function (index, workflow) {
-					const htmlOutput = workflowTemplate.render(workflow);
-					$('#state-machine').append(htmlOutput);
-					loadWorkflowStates(workflow.id);
+			const deleteConnection = id => {
+				stateMachineManager.removeTransitionById(id).then().catch(e => {
+					toast.notifyErrorList(e);
 				});
+			}
+
+			const loadWorkflow = id => {
+				$('#state-machine').html(null);
+				addLoader($('#state-machine'));
+				stateMachineManager.getWorkFlowById(id).then(workflow => {
+					workflow.id = id;
+					const htmlOutput = workflowContainerTemplate.render(workflow);
+					$('#state-machine').append(htmlOutput);
+					loadWorkflowStates(workflow);
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
+			}
+
+			const addNewWorkflow = workflow => {
+				stateMachineManager.addNewWorkflow(workflow).then(workflowId => {
+					workflow.id = workflowId;
+					appendWorkflowToList(workflow);
+				}).catch(e => {
+				toast.notifyErrorList(e);
+			});
+			}
+
+			const attachWorkflowItemActions = id => {
+				const scope = $(`.workflow#${id}`);
+				scope.find('.workflow-load').on('click', function () {
+					loadWorkflow(id);
+				});
+				scope.find('.workflow-delete').on('click', function () {
+					const entity = {
+						id,
+						title: scope.find('.workflow-title').text(),
+						type: 'workflow'
+					}
+					openConfirmationModal(entity);
+				});
+			}
+
+			const deleteWorkflow = id => {
+				$(`.workflow#${id}`).remove();
+				$(`#state-machine .jtk-canvas#${id}`).remove();
+			}
+
+			const appendWorkflowToList = workflow => {
+				const htmlOutput = workflowTemplate.render(workflow);
+				$('#workflow-list').append(htmlOutput);
+				attachWorkflowItemActions(workflow.id);
+			}
+
+			$('#add-new-workflow').submit(function (e) {
+				e.preventDefault();
+				const scope = $(this);
+				const workflow = {
+					name: scope.find('#workflow-title').val(),
+					description: scope.find('#workflow-description').val(),
+					active: scope.find('#workflow-description').val()
+				}
+				addNewWorkflow(workflow);
 			});
 
+			stateMachineManager.getAllWorkflows().then(workflows => {
+				$('#workflow-list').html(null);
+				$.each(workflows, function () {
+					appendWorkflowToList(this);
+				});
+			}).catch(e => {
+				toast.notifyErrorList(e);
+			});
 
 			const initjsPlumb = (workflowId) => {
 				jsPlumb.ready(function () {
@@ -540,21 +878,34 @@
 					instance.registerConnectionType("basic", { anchor: "Continuous", connector: "StateMachine" });
 
 					window.jsp = instance;
-
-					var windows = jsPlumb.getSelector(`#${workflowId} .w`);
+					var windows = jsPlumb.getSelector(`.jtk-canvas#${workflowId} .w`);
 
 					// bind a click listener to each connection; the connection is deleted. you could of course
 					// just do this: instance.bind("click", instance.deleteConnection), but I wanted to make it clear what was
 					// happening.
 					instance.bind("click", function (c) {
-						console.log(c);
-						$('#editConnectionModal').html(null);
-						const htmlOutput = connectionModal.render(c);
-						$('#editConnectionModal').append(htmlOutput).modal('show');
+						stateMachineManager.getTransitionById(c.id).then(transition => {
+							$('#editConnectionModal').html(null);
+							stateMachineManager.loadRoles().then(roles => {
+								const helpers = {
+									roles: roles
+								}
+								const htmlOutput = connectionModal.render(transition, helpers);
+								$('#editConnectionModal').append(htmlOutput).modal('show');
+								$('.connection-delete').click(function () {
+									deleteConnection(c.id);
+									instance.deleteConnection(c);
+									$('#editConnectionModal').append(htmlOutput).modal('hide');
+								});
+							}).catch(e => {
+								toast.notifyErrorList(e);
+							});
+						}).catch(e => {
+							toast.notifyErrorList(e);
+						});
 					});
 
-					instance.bind("beforeDrop", function (conn) {
-						//console.log(conn);
+					instance.bind("beforeDrop", async function (conn) {
 						const allConnections = instance.getConnections();
 						const sourcePoint = conn.sourceId;
 						const targetPoint = conn.targetId;
@@ -566,6 +917,9 @@
 							name: 'targetId',
 							value: targetPoint
 						}
+						if (sourcePoint === conTarget) {
+							return false;
+						}
 						const matchedConnections = findObjectsByProperties(allConnections, [matchSource, matchTarget]);
 						let result = true;
 						matchedConnections.forEach(connection => {
@@ -576,7 +930,32 @@
 								result = false;
 							}
 						});
-						return result;
+
+						let executed = false;
+						if (result) {
+							const transition = {
+								workflowId,
+								name: window.translate('system_state_machine_new_transition'),
+								fromStateId: sourcePoint,
+								toStateId: targetPoint,
+							}
+							stateMachineManager.createTransition(transition).then(transitionId => {
+								conn.id = transitionId;
+								conn.connection.id = transitionId;
+								executed = true;
+							}).catch(e => {
+								toast.notifyErrorList(e);
+							});
+						}
+						else {
+							executed = true;
+							result = false;
+						}
+
+						while (!executed) {
+							return result;
+						}
+
 					});
 
 					instance.bind("connection", function (info) {
@@ -591,7 +970,6 @@
 							info.connection.setLabel(
 								`<div class="connection-label">${window.translate('system_state_machine_new_transition')}</div>`
 							);
-							stateMachine.getWorkFlowById()
 						}
 					});
 
@@ -601,7 +979,21 @@
 					var initNode = function (el) {
 
 						// initialise draggable elements.
-						instance.draggable(el);
+						instance.draggable(el, {
+							stop: function (e) {
+								if (e.pos[0] < 0) {
+									e.pos[0] = 0;
+								}
+								if (e.pos[1] < 0) {
+									e.pos[1] = 0;
+								}
+								const settings = {
+									x: `${e.pos[0]}px`,
+									y: `${e.pos[1]}px`
+								}
+								stateMachineManager.updateStateAdditionalSettings({ stateId: el.id, settings: JSON.stringify(settings) });
+							}
+						});
 
 						instance.makeSource(el, {
 							filter: ".ep",

@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Êtes-vous sûr de vouloir supprimer la tâche ",
   "system_state_machine_max_connections": "Ne peut pas créer plus d'une transition à partir de cette source de cette cible",
   "system_state_machine_transition": "Transition",
-  "system_state_machine_new_transition": "Nouvelle transition"
+  "system_state_machine_new_transition": "Nouvelle transition",
+  "system_state_machine_connection_title": "Titre",
+  "system_state_machine_workflows": "Les flux de travail",
+  "system_state_machine_are_you_sure_text": "Êtes-vous sûr que vous voulez supprimer",
+  "system_state_machine_add_workflow": "Ajouter un nouveau flux de travail",
+  "system_state_machine_transition_title": "Titre",
+  "system_state_machine_transition_description": "Description",
+  "system_state_machine_transition_active": "Active"
 }

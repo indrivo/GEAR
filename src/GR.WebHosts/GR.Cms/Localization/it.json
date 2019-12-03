@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Sei sicuro di voler eliminare compito ",
   "system_state_machine_max_connections": "Non è possibile creare più di una transizione che da origine a questo target",
   "system_state_machine_transition": "Transizione",
-  "system_state_machine_new_transition": "Nuova transizione"
+  "system_state_machine_new_transition": "Nuova transizione",
+  "system_state_machine_connection_title": "Titolo",
+  "system_state_machine_workflows": "I flussi di lavoro",
+  "system_state_machine_are_you_sure_text": "Sei sicuro di voler eliminare",
+  "system_state_machine_add_workflow": "Aggiungi un nuovo flusso di lavoro",
+  "system_state_machine_transition_title": "Titolo",
+  "system_state_machine_transition_description": "Descrizione",
+  "system_state_machine_transition_active": "Attivo"
 }

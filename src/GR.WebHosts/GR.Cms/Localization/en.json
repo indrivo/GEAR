@@ -794,5 +794,12 @@
   "system_taskmanager_are_you_sure_text": "Are you sure you want to delete task ",
   "system_state_machine_max_connections": "Cannot create more than one transition from that source to this target",
   "system_state_machine_transition": "Transition",
-  "system_state_machine_new_transition": "New transition"
+  "system_state_machine_new_transition": "New transition",
+  "system_state_machine_connection_title": "Title",
+  "system_state_machine_workflows": "Workflows",
+  "system_state_machine_are_you_sure_text": "Are you sure you want to delete",
+  "system_state_machine_add_workflow": "Add new workflow",
+  "system_state_machine_transition_title": "Title",
+  "system_state_machine_transition_description": "Description",
+  "system_state_machine_transition_active": "Active"
 }
