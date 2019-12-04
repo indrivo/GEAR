@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Plată de succes!",
   "system_commerce_email_sent": "E-mail trimis!",
   "commerce_my_subscriptions": "Abonamentele mele",
-  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina "
+  "system_taskmanager_are_you_sure_text": "Ești sigur că doriți să ștergeți sarcina ",
+  "system_document_types": "Tipuri de documente",
+  "system_documents": "Documente"
 }

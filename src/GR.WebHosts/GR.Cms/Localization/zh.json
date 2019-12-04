@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "支付成功的！",
   "system_commerce_email_sent": "电子邮件发送！",
   "commerce_my_subscriptions": "我订阅",
-  "system_taskmanager_are_you_sure_text": "你确定要删除的任务 "
+  "system_taskmanager_are_you_sure_text": "你确定要删除的任务 ",
+  "system_document_types": "所有类型的文档",
+  "system_documents": "文件"
 }

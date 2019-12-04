@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Успішної оплати!",
   "system_commerce_email_sent": "Лист відправлено!",
   "commerce_my_subscriptions": "Мої підписки",
-  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання "
+  "system_taskmanager_are_you_sure_text": "Ви впевнені, що хочете видалити завдання ",
+  "system_document_types": "Види документів",
+  "system_documents": "Документи"
 }

@@ -66,7 +66,7 @@ namespace GR.Documents
             if (listDocuments == null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<DocumentViewModel>>();
 
             response.IsSuccess = true;
-            response.Result = listDocuments.Adapt<IEnumerable<DocumentViewModel>>();
+            response.Result = listDocuments.Adapt<List<DocumentViewModel>>();
 
             return response;
         }
@@ -315,25 +315,19 @@ namespace GR.Documents
             await DocumentContext.Documents.AddAsync(newDocument);
 
             Guid? fileId = null;
-
-            if (model.File != null)
-                fileId = FileManager.AddFile(new UploadFileViewModel { File = model.File }, user.Id.ToGuid()).Result;
-
-            var newDocumentVersion = new DocumentVersion
-            {
-                DocumentId = newDocument.Id,
-                FileStorageId = fileId,
-                VersionNumber = 1,
-                IsArhive = false,
-                Comments = model.Comments,
-                OwnerId = user.Id.ToGuid(),
-                IsMajorVersion = true,
-                Url = model.Url,
-                FileName = model.File?.FileName ?? ""
-            };
-
-            await DocumentContext.DocumentVersions.AddAsync(newDocumentVersion);
             result = await DocumentContext.PushAsync();
+
+            if (result.IsSuccess)
+            {
+                result =  await AddNewDocumentVersionAsync(new AddNewVersionDocumentViewModel
+                {
+                    Comments = model.Comments,
+                    DocumentId = newDocument.Id,
+                    File = model.File,
+                    IsMajorVersion = true,
+                });
+            }
+
             result.Result = newDocument.Id;
             return result;
         }

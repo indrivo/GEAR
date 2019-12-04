@@ -70,7 +70,8 @@ namespace GR.WorkFlows
                 await _workFlowContext.EntryStates.AddAsync(new EntryState
                 {
                     EntryId = entryId,
-                    StateId = startState.Id
+                    StateId = startState.Id,
+                    ContractId = contract.Id,
                 });
             }
 

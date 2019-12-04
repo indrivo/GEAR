@@ -440,8 +440,9 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
-			.RegisterDocumentTypeServices<DocumentTypeService>()
-			.RegisterDocumentServices<DocumentService>();
+				.RegisterDocumentTypeServices<DocumentTypeService>()
+				.RegisterDocumentServices<DocumentService>()
+				.RegisterDocumentServicesWithWorkflow<DocumentWithWorkflowService>();
 		});
 	}
 }

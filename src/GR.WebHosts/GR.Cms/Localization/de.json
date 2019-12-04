@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Zahlung erfolgreich!",
   "system_commerce_email_sent": "E-Mail gesendet!",
   "commerce_my_subscriptions": "Meine Abonnements",
-  "system_taskmanager_are_you_sure_text": "Sind Sie sicher, dass Sie löschen möchten Aufgabe "
+  "system_taskmanager_are_you_sure_text": "Sind Sie sicher, dass Sie löschen möchten Aufgabe ",
+  "system_document_types": "Alle Arten von Dokumenten",
+  "system_documents": "Dokumente"
 }

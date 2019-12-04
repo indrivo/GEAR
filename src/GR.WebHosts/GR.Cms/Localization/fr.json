@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Le paiement de succès!",
   "system_commerce_email_sent": "E-mail envoyé!",
   "commerce_my_subscriptions": "Mes abonnements",
-  "system_taskmanager_are_you_sure_text": "Êtes-vous sûr de vouloir supprimer la tâche "
+  "system_taskmanager_are_you_sure_text": "Êtes-vous sûr de vouloir supprimer la tâche ",
+  "system_document_types": "Tous les types de documents",
+  "system_documents": "Documents"
 }

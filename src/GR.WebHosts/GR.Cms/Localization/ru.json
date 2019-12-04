@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Успешной оплаты!",
   "system_commerce_email_sent": "Письмо отправлено!",
   "commerce_my_subscriptions": "Мои подписки",
-  "system_taskmanager_are_you_sure_text": "Вы уверены, что хотите удалить задачу "
+  "system_taskmanager_are_you_sure_text": "Вы уверены, что хотите удалить задачу ",
+  "system_document_types": "Виды документов",
+  "system_documents": "Документы"
 }

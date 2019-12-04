@@ -1,7 +1,7 @@
 
 
 @{
-	ViewData["Title"] = "Documents";
+	ViewData["Title"] = Localizer["system_documents"];
 }
 
 <div class="common-control">
@@ -40,6 +40,7 @@
 			<th>Group</th>
 			<th>Type</th>
 			<th>Version</th>
+			<th>Status</th>
 			<th>Is delete</th>
 			<th>Actions</th>
 		</tr>
@@ -110,7 +111,7 @@
 							<div class="col-md-12" id="FileInputDocument">
 								<div class="form-group">
 									<label>File</label>
-									<input id="fileinput" name="File" class="dropify" type="file" />
+									<input id="fileinput" name="File" class="dropify" type="file" onchange="ValidateSize(this)" />
 								</div>
 							</div>
 						</div>
@@ -198,7 +199,7 @@
 							<div class="col-md-12">
 								<div class="form-group">
 									<label>File</label>
-									<input id="NewVersionFileInput" name="File" class="dropify" type="file" required />
+									<input id="NewVersionFileInput" name="File" class="dropify custom-file-input" type="file" onchange="ValidateSize(this)" required />
 								</div>
 							</div>
 						</div>
@@ -278,7 +279,7 @@
 		const toast = new ToastNotifier();
 
 		$(document).ready(function() {
-			//AddListDocumentType();
+			AddListDocumentType();
 			GetAllDocuments();
 		});
 
@@ -310,7 +311,7 @@
 			});
 		}
 
-		function addNewDocument(DocumentTypeId, typeCode) {
+		function addNewDocument(documentTypeId, typeCode) {
 			if (typeCode == 3) {
 				$("#UrlDocument").show();
 				$("#UrlDocumentInput").attr('required', 'required');
@@ -326,7 +327,7 @@
 			}
 
 			$('#AddDocumentModal').modal('show');
-			$("#DocumentTypeId").val(DocumentTypeId);
+			$("#DocumentTypeId").val(documentTypeId);
 		}
 
 		function AddNewDocumntVersions(documentId) {
@@ -402,7 +403,9 @@
 								</td>
 								<td> ${value.title}</td>
 								<td> ${value.documentCode}</td>
-								<td style="white-space: pre-wrap;">${value.description === null ? "" : value.description}</td>
+								<td style="white-space: pre-wrap;">${value.description === null
+										? ""
+										: value.description}</td>
 								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
 										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
 										.documentType.code ==
@@ -412,15 +415,23 @@
 								<td>${value.group == null ? "" : value.group}</td>
 								<td>${value.documentType.name}</td>
 								<td> ${value.lastVersion.toFixed(1)}</td>
-                                <td> ${value.isDeleted}</td>
+								<td id="${value.lastVersionId}">
+									${htmlStatus(value.lastVersionId, value.currentStateName, value.listNextState)}
+								</td>
+
+                                <td> ${
+										value.isDeleted}</td>
                                 <td>
                                     <button type="button" class="btn btn-light" onclick ="getDocumntVersions('${
-										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
-										}>All version</button>
+										value.id}')" ${
+										value.documentType.code == 1 ? "" : "disabled"
+										}><span class="material-icons material-icons-outlined mr-1 align-middle">remove_red_eye</span>Show version</button>
                                     <button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${
-										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
-										}>New version</button>
-									<button type="button" class="btn btn-light" onclick ="EditDocument('${value.id}')">Edit</button>
+										value.id}')" ${
+										value.documentType.code == 1 ? "" : "disabled"
+										}><span class="material-icons mr-1 align-middle">add_circle_outline</span>Add version</button>
+									<button type="button" class="btn btn-light" onclick ="EditDocument('${
+										value.id}')"><i class="material-icons">edit</i></button>									
                                 </td>
 							</tr>`;
 								$("#tableListDocuments").append(html);
@@ -462,11 +473,10 @@
 				data: formData,
 				success: function(data) {
 					if (data.is_success) {
-
 						GetAllDocuments();
-						toast.notifySuccess("Save succes");
 						$('#AddNewVersionModal').modal('hide');
 						$("#formAddDocumentVersion").trigger('reset');
+						toast.notifySuccess("Save succes");
 					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
@@ -501,7 +511,7 @@
 						$("#formAddDocument").trigger('reset');
 
 					} else {
-						toast.notifyErrorList();
+						toast.notifyErrorList(data.error_keys);
 					}
 				}
 			});
@@ -513,9 +523,10 @@
 
 			var formData = new FormData();
 
-			$.each($(this).serializeArray(),function(i, input) {
-				formData.append(input.name, input.value);
-			});
+			$.each($(this).serializeArray(),
+				function(i, input) {
+					formData.append(input.name, input.value);
+				});
 
 			$.ajax({
 				type: "POST",
@@ -627,6 +638,68 @@
 			});
 		}
 
+		function htmlStatus(id, currentStateName, listNextState) {
+
+			var lisstateHtml = "";
+
+			if (listNextState.length > 0) {
+				$.each(listNextState,
+					function(key, value) {
+						lisstateHtml += `<a class="dropdown-item" href="#" onclick="changeStatus('${id}','${
+							value.workFlowId}','${value.id}')">${value.name}</a>`;
+					});
+
+				var html = `
+				<div class="dropdown">
+					<button type="button" class="btn btn-link text-black-50"  data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false" id="Status_${id}">												
+						<span class="align-middle button-label">${currentStateName}</span>
+						<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
+					</button>
+					<div class="dropdown-menu" aria-labelledby="Status_${id}">
+						${lisstateHtml}
+					</div>
+				</div>`;
+
+				return html;
+			}
+
+			var html = `
+					<button type="button" class="btn btn-link text-black-50" aria-haspopup="true" aria-expanded="false">												
+						<span class="align-middle button-label">${currentStateName}</span>						
+					</button>`;
+
+			return html;
+
+			
+		}
+
+		function changeStatus(entryId, workFlowId, newStateId) {
+			$.ajax({
+				type: "POST",
+				url: "/Documents/ChangeDocumentStatus",
+				data: {EntryId: entryId, WorkFlowId: workFlowId, NewStateId: newStateId},
+				success: function(data) {
+					if (data.is_success) {
+						$("#" + data.result.entryId).empty();
+						$("#" + data.result.entryId).append(htmlStatus(data.result.entryId, data.result.currentStateName, data.result.listNextState));
+
+					} else {
+						toast.notifyErrorList();
+					}
+				}
+			});
+		}
+
+		function ValidateSize(file) {
+			var FileSize = file.files[0].size / 1024 / 1024;
+			if (FileSize > 25) {
+				alert('File size exceeds 25 MB');
+				 $(file).val(''); //for clearing with Jquery
+			} else {
+
+			}
+		}
 	</script>
 }
 

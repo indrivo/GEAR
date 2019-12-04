@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Betaling geslaagd!",
   "system_commerce_email_sent": "E-mail verzonden!",
   "commerce_my_subscriptions": "Mijn abonnementen",
-  "system_taskmanager_are_you_sure_text": "Weet u zeker dat u wilt verwijderen taak "
+  "system_taskmanager_are_you_sure_text": "Weet u zeker dat u wilt verwijderen taak ",
+  "system_document_types": "Alle soorten documenten",
+  "system_documents": "Documenten"
 }

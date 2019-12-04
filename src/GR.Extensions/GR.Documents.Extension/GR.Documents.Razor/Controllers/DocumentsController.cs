@@ -25,7 +25,7 @@ namespace GR.Documents.Razor.Controllers
 
         #region Injectable
 
-        private readonly IDocumentService _documentService;
+        private readonly IDocumentServiceWithWorkflow _documentServiceWithWorkflowice;
         private readonly IDocumentTypeService _documentTypeService;
         private IWorkFlowExecutorService _workFlowExecutorService;
 
@@ -42,9 +42,9 @@ namespace GR.Documents.Razor.Controllers
 
         #endregion
 
-        public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService, IWorkFlowExecutorService workFlowExecutorService)
+        public DocumentsController(IDocumentServiceWithWorkflow documentServiceWithWorkflowice, IDocumentTypeService documentTypeService, IWorkFlowExecutorService workFlowExecutorService)
         {
-            _documentService = documentService;
+            _documentServiceWithWorkflowice = documentServiceWithWorkflowice;
             _documentTypeService = documentTypeService;
             _workFlowExecutorService = workFlowExecutorService;
         }
@@ -62,7 +62,20 @@ namespace GR.Documents.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAllDocuments()
         {
-            var result =   await _documentService.GetAllDocumentsAsync();
+            var result = await _documentServiceWithWorkflowice.GetAllDocumentsAsync();
+
+            var listDocument = result.Result;
+            foreach (var document in listDocument)
+            {
+                var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result.FirstOrDefault()?.Contract?.WorkFlowId;
+                if (workFlow != null)
+                {
+                    document.CurrentStateName = (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(), workFlow)).Result.State.Name;
+                    document.ListNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                }
+
+            }
+
             return Json(result, SerializerSettings);
         }
 
@@ -75,25 +88,25 @@ namespace GR.Documents.Razor.Controllers
             if (documentId is null)
             {
                 toReturn.IsSuccess = false;
-                toReturn.Errors.Add(new ErrorModel {Message = "document Id not found"});
+                toReturn.Errors.Add(new ErrorModel { Message = "document Id not found" });
                 return Json(toReturn, SerializerSettings);
             }
 
-            var result = await _documentService.GetDocumentsByIdAsync(documentId);
+            var result = await _documentServiceWithWorkflowice.GetDocumentsByIdAsync(documentId);
 
-            if(!result.IsSuccess)
+            if (!result.IsSuccess)
                 return Json(result, SerializerSettings);
 
             var document = new AddDocumentViewModel
             {
                 DocumentId = result.Result.Id,
                 Description = result.Result.Description,
-                Group =  result.Result.Group,
+                Group = result.Result.Group,
                 DocumentCode = result.Result.DocumentCode,
                 Tile = result.Result.Title,
                 DocumentTypeId = result.Result.DocumentTypeId,
             };
-         
+
             toReturn.Result = document;
             toReturn.IsSuccess = true;
 
@@ -103,14 +116,14 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumentId)
         {
-            var result = await _documentService.GetAllDocumentsByListId(listDocumentId);
+            var result = await _documentServiceWithWorkflowice.GetAllDocumentsByListId(listDocumentId);
             return Json(result, SerializerSettings);
         }
 
         [HttpPost]
         public async Task<JsonResult> GetAllDocumentsByTypeIdAndList(List<Guid> listDocumetId, Guid? typeId)
         {
-            var result = await _documentService.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumetId);
+            var result = await _documentServiceWithWorkflowice.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumetId);
             return Json(result, SerializerSettings);
         }
 
@@ -118,7 +131,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> DeleteDocumnetsByListIdAsync(List<Guid> listDocumetId)
         {
-            var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumetId);
+            var result = await _documentServiceWithWorkflowice.DeleteDocumentsByListIdAsync(listDocumetId);
             return Json(result, SerializerSettings);
         }
 
@@ -148,7 +161,7 @@ namespace GR.Documents.Razor.Controllers
                 return Json(result);
             }
 
-            result = await _documentService.AddDocumentAsync(model);
+            result = await _documentServiceWithWorkflowice.AddDocumentAsync(model);
 
             return Json(result);
         }
@@ -165,7 +178,7 @@ namespace GR.Documents.Razor.Controllers
                 return Json(result);
             }
 
-            result = await _documentService.EditDocumentAsync(model);
+            result = await _documentServiceWithWorkflowice.EditDocumentAsync(model);
 
             return Json(result);
         }
@@ -173,7 +186,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAllDocumentVersion(Guid? documentId)
         {
-            return Json(await _documentService.GetAllDocumentVersionByIdAsync(documentId), SerializerSettings);
+            return Json(await _documentServiceWithWorkflowice.GetAllDocumentVersionByIdAsync(documentId), SerializerSettings);
         }
 
         [HttpPost]
@@ -189,14 +202,36 @@ namespace GR.Documents.Razor.Controllers
             //    return Json(result);
             //}
 
-            result = await _documentService.AddNewDocumentVersionAsync(model);
+            result = await _documentServiceWithWorkflowice.AddNewDocumentVersionAsync(model);
             return Json(result);
         }
 
         [HttpGet]
         public async Task<JsonResult> GetAllDocumentByTypeAsync(Guid? typeId)
         {
-            return Json(await _documentService.GetAllDocumentsByTypeIdAsync(typeId), SerializerSettings);
+            return Json(await _documentServiceWithWorkflowice.GetAllDocumentsByTypeIdAsync(typeId), SerializerSettings);
+        }
+
+
+        [HttpPost]
+        public async Task<JsonResult> ChangeDocumentStatus(ChangeDocumentStatusViewModel model)
+        {
+            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(model.EntryId, model.WorkFlowId,model.NewStateId);
+
+            if (!result.IsSuccess)
+            {
+                return Json(result);
+            }
+
+            var currentStateName = (await _workFlowExecutorService.GetEntryStateAsync(model.EntryId, model.WorkFlowId)).Result.State.Name;
+            var listNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(model.EntryId, model.WorkFlowId)).Result.ToList();
+
+            var resultModel = new ResultModel();
+
+            resultModel.IsSuccess = currentStateName != null;
+            resultModel.Result = new {model.EntryId, currentStateName, listNextState};
+
+            return Json(resultModel);
         }
     }
 }

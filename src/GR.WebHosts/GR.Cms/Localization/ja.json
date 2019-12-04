@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "お支払い成功！",
   "system_commerce_email_sent": "メール送!",
   "commerce_my_subscriptions": "私の契約数",
-  "system_taskmanager_are_you_sure_text": "まず削除したいタスク "
+  "system_taskmanager_are_you_sure_text": "まず削除したいタスク ",
+  "system_document_types": "すべての種類の書類",
+  "system_documents": "書類"
 }

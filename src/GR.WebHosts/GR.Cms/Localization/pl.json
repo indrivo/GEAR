@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Udanej płatności!",
   "system_commerce_email_sent": "List wysłany!",
   "commerce_my_subscriptions": "Moje subskrypcje",
-  "system_taskmanager_are_you_sure_text": "Jesteś pewien, że chcesz usunąć zadanie "
+  "system_taskmanager_are_you_sure_text": "Jesteś pewien, że chcesz usunąć zadanie ",
+  "system_document_types": "Rodzaje dokumentów",
+  "system_documents": "Dokumenty"
 }

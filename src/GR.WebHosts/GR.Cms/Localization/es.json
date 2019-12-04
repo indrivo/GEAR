@@ -791,5 +791,7 @@
   "system_commerce_payment_success": "Pago de éxito!",
   "system_commerce_email_sent": "Correo electrónico enviado!",
   "commerce_my_subscriptions": "Mis suscripciones",
-  "system_taskmanager_are_you_sure_text": "Estás seguro de que desea eliminar de la tarea "
+  "system_taskmanager_are_you_sure_text": "Estás seguro de que desea eliminar de la tarea ",
+  "system_document_types": "Todos los tipos de documentos",
+  "system_documents": "Documentos"
 }
