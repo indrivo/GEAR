@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GR.WorkFlows.Razor.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.WorkFlows.Razor.Extensions
 {
@@ -11,7 +12,7 @@ namespace GR.WorkFlows.Razor.Extensions
         /// <returns></returns>
         public static IServiceCollection AddWorkflowRazorModule(this IServiceCollection services)
         {
-
+            services.ConfigureOptions(typeof(WorkflowRazorFileConfiguration));
             return services;
         }
     }

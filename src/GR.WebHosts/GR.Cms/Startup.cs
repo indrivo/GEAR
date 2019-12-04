@@ -125,6 +125,7 @@ using GR.WorkFlows;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.Extensions;
 using GR.WorkFlows.Data;
+using GR.WorkFlows.Razor.Extensions;
 
 #endregion
 
@@ -431,6 +432,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.AddWorkflowRazorModule()
 				.RegisterWorkFlowContract(nameof(DocumentVersion), null);
 
 
