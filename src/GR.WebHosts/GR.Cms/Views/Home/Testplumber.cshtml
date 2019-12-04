@@ -53,6 +53,22 @@
 			border-top: 1px solid #D8DCE0;
 		}
 
+		.unavailable {
+			pointer-events: none;
+			opacity: 0.7;
+			cursor: wait;
+		}
+
+			.unavailable .btn {
+				pointer-events: none;
+				cursor: wait;
+			}
+
+		.custom-checkbox label,
+		.custom-checkbox input {
+			cursor: pointer;
+		}
+
 		.w {
 			min-width: 100px;
 			text-align: center;
@@ -73,12 +89,23 @@
 			-webkit-transition: background-color 0.25s ease-in;
 			-moz-transition: background-color 0.25s ease-in;
 			transition: background-color 0.25s ease-in;
+			display: flex;
+			align-items: center;
 		}
 
 			.w:hover {
 				background-color: #5c96bc;
 				color: white;
 			}
+
+			.w .state-edit {
+				cursor: pointer;
+				display: flex;
+			}
+
+				.w .state-edit i {
+					font-size: 15px;
+				}
 
 		.aLabel {
 			-webkit-transition: background-color 0.25s ease-in;
@@ -359,10 +386,41 @@
 		.workflow-actions .workflow-delete:hover i {
 			color: #FF0000;
 		}
+
+		#add-new-state-name {
+			border-bottom-right-radius: 0;
+			border-top-right-radius: 0;
+		}
+
+			#add-new-state-name:focus {
+				border-color: inherit;
+				outline: 0;
+				box-shadow: none;
+			}
+
+		#add-new-state-button {
+			border-bottom-left-radius: 0;
+			border-top-left-radius: 0;
+		}
+
+		.iso-tabs {
+			border-bottom: 2px solid #2862D6 !important;
+		}
+
+			.iso-tabs li a {
+				background-color: transparent !important;
+				border: 0 !important;
+				color: #818999 !important;
+				font-size: 18px;
+				font-weight: 500;
+			}
+
+				.iso-tabs li a.active {
+					color: #2862D6 !important;
+				}
 	</style>
 }
 @inject IStringLocalizer Localizer
-
 <div class="row pt-5 h-100">
 	<div class="col-md-3">
 		<div class="card h-100">
@@ -374,7 +432,7 @@
 					<form id="add-new-workflow">
 						<div class="form-group">
 							<label for="workflow-title">@Localizer["system_state_machine_transition_title"]</label>
-							<input type="text" id="workflow-title" name="title" class="form-control">
+							<input type="text" id="workflow-title" name="title" class="form-control" required>
 						</div>
 						<div class="form-group">
 							<label for="workflow-description">@Localizer["system_state_machine_transition_description"]</label>
@@ -397,9 +455,7 @@
 	</div>
 </div>
 
-<div class="modal edit-connection-modal fade" id="editConnectionModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
-
-<div class="modal edit-workflow-modal fade" id="editWorkflowModal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
+<div class="modal fade" id="state-machine-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
 
 <div class="modal fade modal-confirm-delete" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog" role="document">
@@ -441,33 +497,126 @@
 						<span class="material-icons">close</span>
 					</button>
 				</div>
-				<form id="add-event">
+				<form id="edit-transition">
 					<div class="form-group">
 						<label for="edit-transition-title">@Localizer["system_state_machine_connection_title"]</label>
 						<input type="text" id="edit-transition-title" name="title" class="form-control" value="{{:name}}">
 					</div>
 					<div class="row">
 						<div class="col-6 roles">
+							<span class="h6">@Localizer["system_state_machine_transition_roles"]</span>
 							{{for ~roles tmpl="#checkboxTemplate" /}}
 						</div>
-						<div class="col-6"></div>
+						<div class="col-6 actions">
+							<span class="h6">@Localizer["system_state_machine_transition_actions"]</span>
+							{{for ~actions tmpl="#checkboxTemplate" /}}
+						</div>
 					</div>
-					<button id="edit-transition-submit" type="submit" class="btn btn-outline-primary w-100">
+					<div class="row mt-4">
+						<div class="col-6">
+							<button class="connection-delete btn btn-danger text-white w-100" data-conn-id="{{:id}}">
+								Delete connection
+							</button>
+						</div>
+						<div class="col-6">
+							<button id="edit-transition-submit" type="submit" class="btn btn-outline-primary w-100">
+								@Localizer["save"]
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</script>
+
+	<!--Edit workflow modal template-->
+	<script id="edit-workflow-modal" type="text/x-jsrender">
+		<div class="modal-dialog" role="document" data-workflow-id="{{:~id}}">
+			<div class="modal-content">
+				<div class="">
+					<button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<ul class="nav nav-tabs iso-tabs">
+					<li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#details-tab">@Localizer["system_state_machine_workflow_details"]</a></li>
+					<li><a class="nav-link" data-toggle="tab" href="#workflow-states-tab">@Localizer["system_state_machine_states"]</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="details-tab" class="tab-pane fade in active show">
+						<form id="edit-workflow">
+							<div class="form-group">
+								<label for="edit-workflow-title">@Localizer["system_state_machine_transition_title"]</label>
+								<input type="text" id="edit-workflow-title" name="title" class="form-control" value="{{:name}}" required>
+							</div>
+							<div class="form-group">
+								<label for="edit-workflow-description">@Localizer["system_state_machine_transition_description"]</label>
+								<textarea id="edit-workflow-description" class="form-control">{{:description}}</textarea>
+							</div>
+							<button id="edit-workflow-submit" type="submit" class="mt-4 btn btn-outline-primary w-100">
+								@Localizer["save"]
+							</button>
+						</form>
+					</div>
+					<div id="workflow-states-tab" class="tab-pane fade">
+						<div class="states-list">
+						</div>
+						<form class="mt-4" id="add-state">
+							<div class="form-group d-flex">
+								<input type="text" class="form-control" id="add-new-state-name" required placeholder="@Localizer["system_state_machine_add_new_state"]">
+								<button class="btn btn-success py-0 px-2" id="add-new-state-button" type="submit">
+									<i class="material-icons d-block">add</i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<!--Edit state modal template-->
+	<script id="edit-state-modal" type="text/x-jsrender">
+		<div class="modal-dialog" role="document" data-state-id="{{:id}}">
+			<div class="modal-content">
+				<div class="">
+					<button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<form id="edit-state">
+					<div class="form-group">
+						<label for="edit-workflow-title">@Localizer["system_state_machine_transition_title"]</label>
+						<input type="text" id="edit-workflow-title" name="title" class="form-control" value="{{:name}}" required>
+					</div>
+					<div class="form-group">
+						<label for="edit-workflow-description">@Localizer["system_state_machine_transition_description"]</label>
+						<textarea id="edit-workflow-description" class="form-control">{{:description}}</textarea>
+					</div>
+					<div class="start-end-state">
+						<div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" id="transition_start_state" {{if enabled}} checked {{/if}}>
+							<label class="custom-control-label" for="transition_start_state">@Localizer["system_state_machine_state_start"]</label>
+						</div>
+						<div class="custom-control custom-checkbox">
+							<input type="checkbox" class="custom-control-input" id="transition_end_state" {{if enabled}} checked {{/if}}>
+							<label class="custom-control-label" for="transition_end_state">@Localizer["system_state_machine_state_end"]</label>
+						</div>
+					</div>
+					<button id="edit-state-submit" type="submit" class="mt-4 btn btn-outline-primary w-100">
 						@Localizer["save"]
 					</button>
 				</form>
-				<div>
-					<button class="connection-delete btn btn-danger text-white" data-conn-id="{{:id}}">
-						Delete connection
-					</button>
-				</div>
 			</div>
 		</div>
 	</script>
 
 	<!--State box template-->
 	<script id="state-template" type="text/x-jsrender">
-		<div class="w" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
+		<div class="w" data-state-id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
+			<a class="state-edit mr-2">
+				<i class="material-icons">edit</i>
+			</a>
 			{{:name}}
 			<div class="ep" action="{{:id}}"></div>
 		</div>
@@ -476,8 +625,18 @@
 	<!--Checkox template-->
 	<script id="checkboxTemplate" type="text/x-jsrender">
 		<div class="custom-control custom-checkbox">
-			<input type="checkbox" class="task-item-status custom-control-input" id="{{:id}}">
+			<input type="checkbox" class="task-item-status custom-control-input" id="{{:id}}" {{if enabled}} checked {{/if}}>
 			<label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+		</div>
+	</script>
+
+	<!--State edit workflow template-->
+	<script id="checkboxDeleteTemplate" type="text/x-jsrender">
+		<div class="d-flex mb-2 state-item" data-state-id="{{:id}}">
+			<span>{{:name}}</span>
+			<span class="state-delete btn btn-outline-danger p-0 ml-auto">
+				<i class="material-icons d-block">close</i>
+			</span>
 		</div>
 	</script>
 
@@ -485,7 +644,7 @@
 	<script id="workflow-template" type="text/x-jsrender">
 		<div class="workflow d-flex align-items-center" data-workflow-id="{{:id}}" id="{{:id}}">
 			<div class="custom-control custom-checkbox">
-				<input type="checkbox" id="check-{{:id}}" class="custom-control-input" {{if enabled}} checked {{/if}}>
+				<input type="checkbox" id="check-{{:id}}" class="custom-control-input workflow-list-checkbox" {{if enabled}} checked {{/if}}>
 				<label class="custom-control-label" for="check-{{:id}}">{{:name}}</label>
 			</div>
 			<div class="workflow-actions ml-auto">
@@ -510,7 +669,7 @@
 	<!--Workflow container template-->
 	<script id="workflow-container-template" type="text/x-jsrender">
 		<div class="jtk-workflow h-100">
-			<div class="jtk-canvas canvas-wide jtk-surface jtk-surface-nopan h-100" id="{{:id}}">
+			<div class="jtk-canvas canvas-wide jtk-surface jtk-surface-nopan h-100" data-workflow-id="{{:id}}">
 
 			</div>
 		</div>
@@ -523,6 +682,7 @@
 		class stateMachine {
 			constructor() {
 				this.loadRoles();
+				this.loadActions();
 			}
 
 			ajaxRequest(requestUrl, requestType, requestData) {
@@ -560,6 +720,11 @@
 
 			getRolesAllowedToParticipateInWorkflow() {
 				const requestUrl = '/GetRolesAllowedToParticipateInWorkflow';
+				return this.ajaxRequest(requestUrl, 'get', null);
+			}
+
+			getAllRegisteredActions() {
+				const requestUrl = '/GetAllRegisteredActions';
 				return this.ajaxRequest(requestUrl, 'get', null);
 			}
 
@@ -618,12 +783,20 @@
 				return this.ajaxRequest(requestUrl, 'post', state);
 			}
 
-			addOrUpdateTransitionAllowedRoles(state = {
+			addOrUpdateTransitionActions(transition = {
+				transitionId: '',
+				actionHandlers: ''
+			}) {
+				const requestUrl = '/AddOrUpdateTransitionActions';
+				return this.ajaxRequest(requestUrl, 'post', transition);
+			}
+
+			addOrUpdateTransitionAllowedRoles(transition = {
 				transitionId: '',
 				roles: ''
 			}) {
 				const requestUrl = '/AddOrUpdateTransitionAllowedRoles';
-				return this.ajaxRequest(requestUrl, 'post', state);
+				return this.ajaxRequest(requestUrl, 'post', transition);
 			}
 
 			enableOrDisableWorkFlow(workflow = {
@@ -665,7 +838,17 @@
 
 			removeTransitionById(transitionId) {
 				const requestUrl = '/RemoveTransitionById';
-				return this.ajaxRequest(requestUrl, 'delete', { transitionId: transitionId });
+				return this.ajaxRequest(requestUrl, 'delete', { transitionId });
+			}
+
+			removeState(stateId) {
+				const requestUrl = '/RemoveState';
+				return this.ajaxRequest(requestUrl, 'delete', { stateId });
+			}
+
+			removeWorkflow(workFlowId) {
+				const requestUrl = '/RemoveWorkflow';
+				return this.ajaxRequest(requestUrl, 'delete', { workFlowId });
 			}
 
 			roles = [];
@@ -686,6 +869,25 @@
 					}
 				})
 			}
+
+			actions = [];
+
+			loadActions() {
+				const scope = this;
+				return new Promise((resolve, reject) => {
+					if (scope.actions.length > 0) {
+						resolve(scope.actions);
+					} else {
+						scope.getAllRegisteredActions().then(result => {
+							scope.actions = result;
+							resolve(scope.actions);
+						}).catch(e => {
+							console.warn(e);
+							toast.notifyErrorList(e);
+						});
+					}
+				})
+			}
 		}
 	</script>
 
@@ -695,9 +897,14 @@
 			const stateMachineManager = new stateMachine();
 			const toast = new ToastNotifier();
 			const connectionModal = $.templates("#coonection-modal");
+			const editStateModal = $.templates("#edit-state-modal");
+			const editWorkflowModal = $.templates("#edit-workflow-modal");
 			const workflowTemplate = $.templates("#workflow-template");
 			const workflowContainerTemplate = $.templates("#workflow-container-template");
 			const stateTemplate = $.templates("#state-template");
+			const checkboxDeleteTemplate = $.templates("#checkboxDeleteTemplate");
+			let loadedWorkflow = JSON.parse(localStorage.getItem("workflow"));
+			const modal = $('#state-machine-modal');
 
 			const findObjectsByProperties = (array, properties) => {
 				return array.filter(obj => {
@@ -710,13 +917,30 @@
 				});
 			}
 
+			const setDataLocalStorage = (name, data = {}) => {
+				localStorage.setItem(name, JSON.stringify(data));
+			}
+
+			const loadHelpers = () => {
+				const rolesPromise = stateMachineManager.loadRoles();
+				const actionsPromise = stateMachineManager.loadActions();
+				return Promise.all([rolesPromise, actionsPromise]).then(data => {
+					return {
+						roles: data[0],
+						actions: data[1]
+					}
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
+			}
+
 			const openConfirmationModal = (entity = {
 				id: null,
 				title: '',
 				type: '',
 			}) => {
 				const submitBtn = $('.modal-confirm-delete #submit-delete');
-				$('.modal-confirm-delete .workflow-title').html(entity.title);
+				$('#deleteConfirmModal .workflow-title').html(entity.title);
 				submitBtn.data('entity', entity);
 				submitBtn.on('click', function () {
 					switch (entity.type) {
@@ -725,18 +949,18 @@
 						}
 					}
 
-					$('.modal-confirm-delete').modal('hide');
+					$('#deleteConfirmModal').modal('hide');
 				});
 
-				$('.modal-confirm-delete').modal('show');
+				$('#deleteConfirmModal').modal('show');
 			}
 
 			const addLoader = elementDOM => {
 				const loadermarkup = `<div class="st-mch-loader">
-																				<div class="state-machine-loader justify-content-center align-items-center">
-																				<div class="lds-dual-ring"></div>
-																					</div>
-																				</div>`;
+																																																																												<div class="state-machine-loader justify-content-center align-items-center">
+																																																																												<div class="lds-dual-ring"></div>
+																																																																													</div>
+																																																																												</div>`;
 				elementDOM.append(loadermarkup);
 				elementDOM.find('.st-mch-loader').fadeIn();
 			}
@@ -746,46 +970,167 @@
 				setTimeout(function () { elementDOM.find('.st-mch-loader').remove(); }, 3000);
 			}
 
-			const loadWorkflowStates = (workflow) => {
+			const openStateModal = state => {
+				const htmlOutput = editStateModal.render(state);
+				modal.html(htmlOutput);
+				modal.modal('show');
+			}
+
+			const loadWorkflowStates = workflow => {
 				const states = workflow.states;
 				$(`.jtk-canvas#${workflow.id}`).html(null);
 				$.each(states, function (index, state) {
-					const aSets = state.additionalSettings;
-					let statePositions = {
-						x: 0,
-						y: 0
-					};
-					if (aSets && 'x' in aSets && 'y' in aSets) {
-						statePositions.x = aSets.x;
-						statePositions.y = aSets.y;
-					}
-					const htmlOutput = stateTemplate.render(state, statePositions);
-					$(`.jtk-canvas#${workflow.id}`).append(htmlOutput);
+					appendStateToWorkflow(workflow.id, state);
 				});
 				initjsPlumb(workflow.id);
 			}
 
 			const loadWorkflowTransitions = (id, instance) => {
 				stateMachineManager.getWorkFlowById(id).then(workflow => {
-					const transitions = workflow.transitions;
-					$.each(transitions, function (index, transition) {
-						instance.connect({
-							id: transition.id,
-							source: transition.fromState.id,
-							target: transition.toState.id,
-							type: "basic",
-							parameters: {
-								'transition': transition
-							}
+					if (workflow.transitions) {
+						const transitions = workflow.transitions;
+						$.each(transitions, function (index, transition) {
+							instance.connect({
+								id: transition.id,
+								source: transition.fromState.id,
+								target: transition.toState.id,
+								type: "basic",
+								parameters: {
+									'transition': transition
+								}
+							});
 						});
-					});
-					removeLoader($('#state-machine'));
+						removeLoader($('#state-machine'));
+					}
 				});
+			}
+
+			const getSelectedRolesActionsFromTransition = () => {
+				let roles = [];
+				modal.find('.roles input:checked').each(function () {
+					roles.push($(this).attr('id'));
+				});
+				let actions = [];
+				modal.find('.actions input:checked').each(function () {
+					actions.push($(this).attr('id'));
+				});
+				return {
+					roles,
+					actions
+				}
 			}
 
 			const deleteConnection = id => {
 				stateMachineManager.removeTransitionById(id).then().catch(e => {
 					toast.notifyErrorList(e);
+				});
+			}
+
+			const openEditModal = id => {
+				stateMachineManager.getWorkFlowById(id).then(workflow => {
+					const htmlOutput = editWorkflowModal.render(workflow, { id });
+					modal.html(htmlOutput);
+					$.each(workflow.states, function () {
+						appendStateToWorkflowModal(this);
+					});
+					attachEditModalActions(id);
+					modal.modal('show');
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
+			}
+
+			const attachEditModalActions = id => {
+				$('#add-new-state-button').click(function (e) {
+					e.preventDefault();
+					const state = {
+						name: $('#add-new-state-name').val(),
+						workflowId: id,
+						description: '',
+						additionalSettings: JSON.stringify({
+							x: "0px",
+							y: "0px"
+						})
+					}
+					createState(state).then(() => {
+						$('#add-new-state-name').val(null);
+					});
+				});
+				$('#edit-workflow').submit(function (e) {
+					e.preventDefault();
+					const workflow = {
+						id,
+						name: $('#edit-workflow-title').val(),
+						description: $('#edit-workflow-description').val(),
+						enabled: $('#edit-workflow-active').is(':checked')
+					}
+					let refreshCanvas = false;
+					if (loadedWorkflow.id === id) {
+						refreshCanvas = true;
+					}
+					updateWorkflow(workflow, refreshCanvas).then(() => modal.modal('hide'));
+				});
+			}
+
+			const createState = (state = {
+				name: '',
+				description: '',
+				workflowId: '',
+				additionalSettings: {
+					x: 0,
+					y: 0
+				}
+			}) => {
+				return stateMachineManager.addStateToWorkFlow(state).then(stateId => {
+					state.id = stateId;
+					appendStateToWorkflowModal(state);
+					appendStateToWorkflow(state.workflowId, state);
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
+			}
+
+			const appendStateToWorkflow = (workflowId, state) => {
+				const aSets = state.additionalSettings;
+				let statePositions = {
+					x: "0px",
+					y: "0px"
+				};
+				if (aSets && aSets.x) {
+					statePositions.x = aSets.x;
+				}
+				if (aSets && aSets.y) {
+					statePositions.y = aSets.y;
+				}
+				const htmlOutput = stateTemplate.render(state, statePositions);
+				$(`.jtk-canvas[data-workflow-id="${workflowId}"]`).append(htmlOutput);
+				$(`.w[data-state-id="${state.id}"] .state-edit`).click(() => {
+					openStateModal(state);
+				});
+			}
+
+			const appendStateToWorkflowModal = state => {
+				const htmlOutput = checkboxDeleteTemplate.render(state);
+				modal.find('.states-list').append(htmlOutput);
+				attachStateFromModalActions(state.id);
+			}
+
+			const attachStateFromModalActions = id => {
+				const scope = $(`.state-item[data-state-id="${id}"]`);
+				const workflowId = scope.closest('.modal-dialog').data('workflow-id');
+				scope.find('.state-delete').click(function (e) {
+					e.preventDefault(e);
+					scope.addClass('unavailable');
+					stateMachineManager.removeState(id).then(() => {
+						scope.remove();
+						if (loadedWorkflow == workflowId) {
+							loadWorkflow(workflowId);
+						}
+						toast.notify({ text: window.translate("system_state_machine_deleted_success"), icon: "success" });
+					}).catch(e => {
+						scope.removeClass('unavailable');
+						toast.notifyErrorList(e);
+					});
 				});
 			}
 
@@ -796,7 +1141,14 @@
 					workflow.id = id;
 					const htmlOutput = workflowContainerTemplate.render(workflow);
 					$('#state-machine').append(htmlOutput);
-					loadWorkflowStates(workflow);
+					if (workflow.states.length > 0) {
+						loadWorkflowStates(workflow);
+					}
+					else {
+						removeLoader($('#state-machine'));
+					}
+					setDataLocalStorage('workflow', { id });
+					loadedWorkflow = id;
 				}).catch(e => {
 					toast.notifyErrorList(e);
 				});
@@ -807,16 +1159,27 @@
 					workflow.id = workflowId;
 					appendWorkflowToList(workflow);
 				}).catch(e => {
-				toast.notifyErrorList(e);
-			});
+					toast.notifyErrorList(e);
+				});
+			}
+
+			const updateWorkflow = (workflow, refreshCanvas = false) => {
+				return stateMachineManager.updateWorkFlowAsync(workflow).then(() => {
+					if (refreshCanvas) {
+						loadWorkflow(workflow.id);
+					}
+					$(`#${workflow.id}.workflow .custom-control-label`).text(workflow.name);
+					modal.modal('hide');
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
 			}
 
 			const attachWorkflowItemActions = id => {
-				const scope = $(`.workflow#${id}`);
-				scope.find('.workflow-load').on('click', function () {
-					loadWorkflow(id);
-				});
-				scope.find('.workflow-delete').on('click', function () {
+				const scope = $(`#${id}.workflow`);
+				scope.find('.workflow-load').on('click', () => loadWorkflow(id));
+				scope.find('.workflow-edit').on('click', () => openEditModal(id));
+				scope.find('.workflow-delete').on('click', () => {
 					const entity = {
 						id,
 						title: scope.find('.workflow-title').text(),
@@ -824,11 +1187,30 @@
 					}
 					openConfirmationModal(entity);
 				});
+				scope.find('.workflow-list-checkbox').change(function () {
+					const isChecked = $(this).is(':checked');
+					stateMachineManager.getWorkFlowById(id).then(data => {
+						const workflow = {
+							id,
+							enabled: isChecked,
+							name: data.name,
+							description: data.description
+						}
+						updateWorkflow(workflow, false);
+					}).catch(e => {
+						toast.notifyErrorList(e);
+					});
+				});
 			}
 
 			const deleteWorkflow = id => {
-				$(`.workflow#${id}`).remove();
-				$(`#state-machine .jtk-canvas#${id}`).remove();
+				$(`#${id}.workflow`).remove();
+				stateMachineManager.removeWorkflow(id).then(() => {
+					$(`#state-machine #${id}.jtk-canvas`).remove();
+					toast.notify({ text: window.translate("system_state_machine_deleted_success"), icon: "success" });
+				}).catch(e => {
+					toast.notifyErrorList(e);
+				});
 			}
 
 			const appendWorkflowToList = workflow => {
@@ -843,7 +1225,7 @@
 				const workflow = {
 					name: scope.find('#workflow-title').val(),
 					description: scope.find('#workflow-description').val(),
-					active: scope.find('#workflow-description').val()
+					enabled: scope.find('#workflow-active').is(':checked')
 				}
 				addNewWorkflow(workflow);
 			});
@@ -853,6 +1235,12 @@
 				$.each(workflows, function () {
 					appendWorkflowToList(this);
 				});
+				if (loadedWorkflow) {
+					loadWorkflow(loadedWorkflow.id);
+				}
+				else if (workflows[0]) {
+					loadWorkflow(workflows[0].id);
+				}
 			}).catch(e => {
 				toast.notifyErrorList(e);
 			});
@@ -878,24 +1266,66 @@
 					instance.registerConnectionType("basic", { anchor: "Continuous", connector: "StateMachine" });
 
 					window.jsp = instance;
-					var windows = jsPlumb.getSelector(`.jtk-canvas#${workflowId} .w`);
+					var windows = jsPlumb.getSelector(`.jtk-canvas[data-workflow-id="${workflowId}"] .w`);
 
 					// bind a click listener to each connection; the connection is deleted. you could of course
 					// just do this: instance.bind("click", instance.deleteConnection), but I wanted to make it clear what was
 					// happening.
 					instance.bind("click", function (c) {
 						stateMachineManager.getTransitionById(c.id).then(transition => {
-							$('#editConnectionModal').html(null);
-							stateMachineManager.loadRoles().then(roles => {
-								const helpers = {
-									roles: roles
-								}
+							modal.html(null);
+							loadHelpers().then(helpers => {
+								$.each(helpers.roles, function () {
+									const properties = [
+										{
+											name: 'roleId',
+											value: this.id
+										}
+									];
+									const matchedRole = findObjectsByProperties(transition.transitionRoles, properties)[0];
+
+									if (matchedRole) {
+										this.enabled = true;
+									}
+									else {
+										this.enabled = false;
+									}
+								});
+								$.each(helpers.actions, function (index, value) {
+									const properties = [
+										{
+											name: 'actionId',
+											value: this.id
+										}
+									];
+									const matchedAction = findObjectsByProperties(transition.transitionActions, properties)[0];
+
+									if (matchedAction) {
+										this.enabled = true;
+									}
+									else {
+										this.enabled = false;
+									}
+								});
 								const htmlOutput = connectionModal.render(transition, helpers);
-								$('#editConnectionModal').append(htmlOutput).modal('show');
+								modal.append(htmlOutput).modal('show');
 								$('.connection-delete').click(function () {
 									deleteConnection(c.id);
 									instance.deleteConnection(c);
-									$('#editConnectionModal').append(htmlOutput).modal('hide');
+									modal.append(htmlOutput).modal('hide');
+								});
+								$('#edit-transition').submit(function (e) {
+									e.preventDefault();
+									const selections = getSelectedRolesActionsFromTransition();
+									stateMachineManager.addOrUpdateTransitionAllowedRoles({
+										transitionId: c.id,
+										roles: selections.roles
+									});
+									stateMachineManager.addOrUpdateTransitionActions({
+										transitionId: c.id,
+										actionHandlers: selections.actions
+									});
+									modal.modal(hide);
 								});
 							}).catch(e => {
 								toast.notifyErrorList(e);
@@ -905,34 +1335,22 @@
 						});
 					});
 
-					instance.bind("beforeDrop", async function (conn) {
-						const allConnections = instance.getConnections();
+					instance.bind("beforeDrop", function (conn) {
+						//const allConnections = instance.getConnections();
 						const sourcePoint = conn.sourceId;
 						const targetPoint = conn.targetId;
-						const matchSource = {
-							name: 'sourceId',
-							value: sourcePoint
-						}
-						const matchTarget = {
-							name: 'targetId',
-							value: targetPoint
-						}
-						if (sourcePoint === conTarget) {
+						//const matchSource = {
+						//	name: 'sourceId',
+						//	value: sourcePoint
+						//}
+						//const matchTarget = {
+						//	name: 'targetId',
+						//	value: targetPoint
+						//}
+						if (sourcePoint === targetPoint) {
 							return false;
 						}
-						const matchedConnections = findObjectsByProperties(allConnections, [matchSource, matchTarget]);
-						let result = true;
-						matchedConnections.forEach(connection => {
-							const conSource = connection.sourceId;
-							const conTarget = connection.targetId;
-							if (sourcePoint === conSource && targetPoint === conTarget) {
-								toast.notify({ text: window.translate("system_state_machine_max_connections"), icon: "error" });
-								result = false;
-							}
-						});
-
-						let executed = false;
-						if (result) {
+						else {
 							const transition = {
 								workflowId,
 								name: window.translate('system_state_machine_new_transition'),
@@ -942,20 +1360,25 @@
 							stateMachineManager.createTransition(transition).then(transitionId => {
 								conn.id = transitionId;
 								conn.connection.id = transitionId;
-								executed = true;
+								stateMachineManager.getTransitionById(conn.id).then(transition => {
+									instance.connect({
+										id: conn.id,
+										source: sourcePoint,
+										target: targetPoint,
+										type: "basic",
+										parameters: {
+											'transition': transition
+										}
+									});
+								}).catch(e => {
+									toast.notifyErrorList(e);
+								});
 							}).catch(e => {
 								toast.notifyErrorList(e);
 							});
 						}
-						else {
-							executed = true;
-							result = false;
-						}
 
-						while (!executed) {
-							return result;
-						}
-
+						return false;
 					});
 
 					instance.bind("connection", function (info) {

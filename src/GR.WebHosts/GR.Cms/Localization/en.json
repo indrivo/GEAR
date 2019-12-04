@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Add new workflow",
   "system_state_machine_transition_title": "Title",
   "system_state_machine_transition_description": "Description",
-  "system_state_machine_transition_active": "Active"
+  "system_state_machine_transition_active": "Active",
+  "system_state_machine_deleted_success": "Item successfully deleted",
+  "system_state_machine_states": "States",
+  "system_state_machine_add_new_state": "Add new state",
+  "system_state_machine_workflow_details": "Details",
+  "system_state_machine_transition_roles": "Roles allowed",
+  "system_state_machine_transition_actions": "Actions",
+  "system_state_machine_state_start": "Set state as start state for this workflow",
+  "system_state_machine_state_end": "Set state as start state for this workflow"
 }

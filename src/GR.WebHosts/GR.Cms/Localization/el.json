@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Προσθέστε νέα ροή εργασίας",
   "system_state_machine_transition_title": "Τίτλος",
   "system_state_machine_transition_description": "Περιγραφή",
-  "system_state_machine_transition_active": "Ενεργό"
+  "system_state_machine_transition_active": "Ενεργό",
+  "system_state_machine_deleted_success": "Το στοιχείο διαγραφεί επιτυχώς",
+  "system_state_machine_states": "Μέλη",
+  "system_state_machine_add_new_state": "Για να προσθέσετε ένα νέο",
+  "system_state_machine_workflow_details": "Λεπτομέρειες",
+  "system_state_machine_transition_roles": "Ρόλους επιτρέπεται",
+  "system_state_machine_transition_actions": "Δράσεις",
+  "system_state_machine_state_start": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας",
+  "system_state_machine_state_end": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας"
 }

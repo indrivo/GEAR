@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Dodaj nowy workflow",
   "system_state_machine_transition_title": "Nazwa",
   "system_state_machine_transition_description": "Opis",
-  "system_state_machine_transition_active": "Aktywny"
+  "system_state_machine_transition_active": "Aktywny",
+  "system_state_machine_deleted_success": "Towar pomyślnie usunięty",
+  "system_state_machine_states": "Stanu",
+  "system_state_machine_add_new_state": "Dodać w nowym stanie",
+  "system_state_machine_workflow_details": "Szczegóły",
+  "system_state_machine_transition_roles": "Rolami",
+  "system_state_machine_transition_actions": "Działania",
+  "system_state_machine_state_start": "Ustalono stan jako stan uruchomienia tego procesu",
+  "system_state_machine_state_end": "Ustalono stan jako stan uruchomienia tego procesu"
 }

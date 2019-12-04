@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "新規追加のワークフロー",
   "system_state_machine_transition_title": "タイトル",
   "system_state_machine_transition_description": "説明",
-  "system_state_machine_transition_active": "活動"
+  "system_state_machine_transition_active": "活動",
+  "system_state_machine_deleted_success": "商品の削除に成功し",
+  "system_state_machine_states": "国",
+  "system_state_machine_add_new_state": "新しく追加す",
+  "system_state_machine_workflow_details": "詳細",
+  "system_state_machine_transition_roles": "役割可",
+  "system_state_machine_transition_actions": "行動",
+  "system_state_machine_state_start": "設定状態として開始状態でこのワークフロー",
+  "system_state_machine_state_end": "設定状態として開始状態でこのワークフロー"
 }

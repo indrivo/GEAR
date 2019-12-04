@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Добавить новый рабочий процесс",
   "system_state_machine_transition_title": "Название",
   "system_state_machine_transition_description": "Описание",
-  "system_state_machine_transition_active": "Активный"
+  "system_state_machine_transition_active": "Активный",
+  "system_state_machine_deleted_success": "Товар успешно удален",
+  "system_state_machine_states": "Состояния",
+  "system_state_machine_add_new_state": "Добавить в новом состоянии",
+  "system_state_machine_workflow_details": "Детали",
+  "system_state_machine_transition_roles": "Ролями",
+  "system_state_machine_transition_actions": "Действия",
+  "system_state_machine_state_start": "Установлено состояние как состояние запуска для этого процесса",
+  "system_state_machine_state_end": "Установлено состояние как состояние запуска для этого процесса"
 }

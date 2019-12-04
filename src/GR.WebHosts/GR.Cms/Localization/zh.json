@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "添加新的工作流程",
   "system_state_machine_transition_title": "标题",
   "system_state_machine_transition_description": "描述",
-  "system_state_machine_transition_active": "活性"
+  "system_state_machine_transition_active": "活性",
+  "system_state_machine_deleted_success": "项目成功删除",
+  "system_state_machine_states": "国",
+  "system_state_machine_add_new_state": "添加一个新的",
+  "system_state_machine_workflow_details": "详细信息",
+  "system_state_machine_transition_roles": "角色的允许",
+  "system_state_machine_transition_actions": "行动",
+  "system_state_machine_state_start": "设置状态为启动国家对于这一工作流程",
+  "system_state_machine_state_end": "设置状态为启动国家对于这一工作流程"
 }

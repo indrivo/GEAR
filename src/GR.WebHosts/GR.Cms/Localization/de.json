@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Hinzufügen neuer workflow",
   "system_state_machine_transition_title": "Titel",
   "system_state_machine_transition_description": "Beschreibung",
-  "system_state_machine_transition_active": "Aktiv"
+  "system_state_machine_transition_active": "Aktiv",
+  "system_state_machine_deleted_success": "Der Eintrag wurde erfolgreich gelöscht",
+  "system_state_machine_states": "Staaten",
+  "system_state_machine_add_new_state": "Zum hinzufügen einer neuen",
+  "system_state_machine_workflow_details": "Details",
+  "system_state_machine_transition_roles": "Rollen dürfen",
+  "system_state_machine_transition_actions": "Aktionen",
+  "system_state_machine_state_start": "Set Status als start-Status für diesen workflow",
+  "system_state_machine_state_end": "Set Status als start-Status für diesen workflow"
 }

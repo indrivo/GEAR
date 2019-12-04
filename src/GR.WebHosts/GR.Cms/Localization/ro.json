@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Adăugare flux de lucru nou",
   "system_state_machine_transition_title": "Titlu",
   "system_state_machine_transition_description": "Descriere",
-  "system_state_machine_transition_active": "Active"
+  "system_state_machine_transition_active": "Active",
+  "system_state_machine_deleted_success": "Element șters cu succes",
+  "system_state_machine_states": "Stări",
+  "system_state_machine_add_new_state": "Adăugați o stare nouă",
+  "system_state_machine_workflow_details": "Detalii",
+  "system_state_machine_transition_roles": "Roluri ce au permisiune",
+  "system_state_machine_transition_actions": "Acțiuni",
+  "system_state_machine_state_start": "Setați starea ca stare de început pentru acest flux de lucru",
+  "system_state_machine_state_end": "Setați starea ca stare de sfârșit pentru acest flux de lucru"
 }

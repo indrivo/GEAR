@@ -801,5 +801,13 @@
   "system_state_machine_add_workflow": "Ajouter un nouveau flux de travail",
   "system_state_machine_transition_title": "Titre",
   "system_state_machine_transition_description": "Description",
-  "system_state_machine_transition_active": "Active"
+  "system_state_machine_transition_active": "Active",
+  "system_state_machine_deleted_success": "Élément supprimé avec succès",
+  "system_state_machine_states": "Les états",
+  "system_state_machine_add_new_state": "Pour ajouter un nouveau",
+  "system_state_machine_workflow_details": "Détails",
+  "system_state_machine_transition_roles": "Les rôles autorisés",
+  "system_state_machine_transition_actions": "Actions",
+  "system_state_machine_state_start": "Définir l'état comme état de départ de ce flux de travail",
+  "system_state_machine_state_end": "Définir l'état comme état de départ de ce flux de travail"
 }
