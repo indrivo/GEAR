@@ -27,7 +27,7 @@ namespace GR.Application.Middleware.Server
             var cacheService = httpContext.RequestServices.GetService<ICacheService>();
             try
             {
-                var tenant = cacheService.Get<TenantSettings>($"_tenant_{site}").GetAwaiter().GetResult();
+                var tenant = cacheService.GetAsync<TenantSettings>($"_tenant_{site}").GetAwaiter().GetResult();
                 return tenant != null && tenant.AllowAccess;
             }
             catch (Exception e)

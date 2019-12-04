@@ -215,7 +215,7 @@ namespace GR.Install.Razor.Controllers
             };
 
             //Register new tenant to cache
-            await _cacheService.Set($"_tenant_{tenant.MachineName}", new TenantSettings
+            await _cacheService.SetAsync($"_tenant_{tenant.MachineName}", new TenantSettings
             {
                 AllowAccess = true,
                 TenantId = tenant.Id,
