@@ -209,6 +209,12 @@ namespace GR.WorkFlows
             var newStartState = workFlow.States.FirstOrDefault(x => x.Id.Equals(stateId));
             if (newStartState == null) return new NotFoundResultModel<object>().ToBase();
             if (newStartState.IsStartState) return new SuccessResultModel<object>().ToBase();
+            var response = new ResultModel();
+            if (newStartState.IsEndState)
+            {
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x105), WorkFlowErrorCodes.GRWF_0x105));
+                return response;
+            }
 
             var toUpdate = workFlow.States.Select(x =>
             {
@@ -236,6 +242,12 @@ namespace GR.WorkFlows
             var newEndState = workFlow.States.FirstOrDefault(x => x.Id.Equals(stateId));
             if (newEndState == null) return new NotFoundResultModel<object>().ToBase();
             if (newEndState.IsEndState) return new SuccessResultModel<object>().ToBase();
+            var response = new ResultModel();
+            if (newEndState.IsEndState)
+            {
+                response.Errors.Add(new ErrorModel(nameof(WorkFlowErrorCodes.GRWF_0x106), WorkFlowErrorCodes.GRWF_0x106));
+                return response;
+            }
 
             var toUpdate = workFlow.States.Select(x =>
             {
@@ -449,6 +461,44 @@ namespace GR.WorkFlows
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<WorkflowAction>>> GetAllRegisteredActionsAsync()
             => new SuccessResultModel<IEnumerable<WorkflowAction>>(await _workFlowContext.WorkflowActions.ToListAsync());
+
+        /// <summary>
+        /// Update transition name
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> UpdateTransitionNameAsync(Guid? transitionId, string newName)
+        {
+            if (transitionId == null) return new InvalidParametersResultModel();
+            var transition = await _workFlowContext.Transitions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(transitionId));
+            if (transition == null) return new NotFoundResultModel();
+            transition.Name = newName;
+            _workFlowContext.Transitions.Update(transition);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Update state metadata
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <param name="newName"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> UpdateStateGeneralInfoAsync(Guid? stateId, string newName, string description)
+        {
+            if (stateId == null || newName.IsNullOrEmpty()) return new InvalidParametersResultModel();
+            var state = await _workFlowContext.States
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.Equals(stateId));
+            if (state == null) return new NotFoundResultModel();
+            state.Name = newName;
+            state.Description = description;
+            _workFlowContext.States.Update(state);
+            return await _workFlowContext.PushAsync();
+        }
 
         /// <summary>
         /// Add or update transition actions

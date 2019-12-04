@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GR.Cache.Abstractions;
 using GR.Core;
 using IdentityModel;
 using IdentityServer4;
@@ -14,7 +15,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GR.Core.Helpers;
@@ -44,7 +44,7 @@ namespace GR.Identity.Razor.Controllers
         /// <summary>
         /// Inject distributed cache from redis 
         /// </summary>
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cache;
 
         /// <summary>
         /// Inject email sender
@@ -111,10 +111,10 @@ namespace GR.Identity.Razor.Controllers
             IUserManager<ApplicationUser> manager,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
-            IDistributedCache distributedCache, IHttpContextAccessor httpContextAccesor,
+            ICacheService cacheService, IHttpContextAccessor httpContextAccesor,
             BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext, RoleManager<ApplicationRole> roleManager)
         {
-            _cache = distributedCache;
+            _cache = cacheService;
             _httpContextAccesor = httpContextAccesor;
             _ldapUserManager = ldapUserManager;
             _applicationDbContext = applicationDbContext;
@@ -173,8 +173,8 @@ namespace GR.Identity.Razor.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddDays(20),
                 IsPersistent = true
             };
-            var reqId = await _cache.GetStringAsync(MpassRequestSessionKey);
-            var returnUrl = await _cache.GetStringAsync($"{reqId}_return_url");
+            var reqId = await _cache.GetAsync<string>(MpassRequestSessionKey);
+            var returnUrl = await _cache.GetAsync<string>($"{reqId}_return_url");
 
             if (existingUser == null)
                 return !string.IsNullOrEmpty(returnUrl)
@@ -339,9 +339,9 @@ namespace GR.Identity.Razor.Controllers
                 _mpassSigningCredentialStore.GetMPassCredentials().ServiceProviderCertificate);
             samlRequest = SamlMessage.Encode(samlRequest);
 
-            await _cache.SetStringAsync(MpassRequestSessionKey, requestId);
+            await _cache.SetAsync(MpassRequestSessionKey, requestId);
             if (!string.IsNullOrEmpty(returnUrl))
-                await _cache.SetStringAsync($"{requestId}_return_url", returnUrl);
+                await _cache.SetAsync($"{requestId}_return_url", returnUrl);
 
             ViewData[SamlRequest] = samlRequest;
             ViewData[ReturnUrl] = returnUrl;
@@ -397,7 +397,7 @@ namespace GR.Identity.Razor.Controllers
                         return View(model);
                     }
 
-                    await _cache.SetStringAsync(user.Id,
+                    await _cache.SetAsync(user.Id,
                         Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(model.Password)));
 
                     var hasher = new PasswordHasher<ApplicationUser>();

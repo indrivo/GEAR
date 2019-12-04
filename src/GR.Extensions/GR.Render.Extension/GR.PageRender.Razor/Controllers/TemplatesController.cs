@@ -106,7 +106,7 @@ namespace GR.PageRender.Razor.Controllers
                 model.Author = GetCurrentUser()?.Id;
                 _pagesContext.Templates.Add(model);
                 _pagesContext.SaveChanges();
-                await _cacheService.Set(model.IdentifierName, new TemplateCacheModel
+                await _cacheService.SetAsync(model.IdentifierName, new TemplateCacheModel
                 {
                     Identifier = model.IdentifierName,
                     Value = model.Value
@@ -161,7 +161,7 @@ namespace GR.PageRender.Razor.Controllers
             {
                 _pagesContext.Templates.Update(dataModel);
                 _pagesContext.SaveChanges();
-                await _cacheService.Set(dataModel.IdentifierName, new TemplateCacheModel
+                await _cacheService.SetAsync(dataModel.IdentifierName, new TemplateCacheModel
                 {
                     Identifier = model.IdentifierName,
                     Value = dataModel.Value
@@ -225,7 +225,7 @@ namespace GR.PageRender.Razor.Controllers
                 return Json(result);
             }
 
-            var template = await _cacheService.Get<TemplateCacheModel>(identifier);
+            var template = await _cacheService.GetAsync<TemplateCacheModel>(identifier);
             if (template == null)
             {
                 var templateFromStore = _pagesContext.Templates.FirstOrDefault(x => x.IdentifierName == identifier);
@@ -237,7 +237,7 @@ namespace GR.PageRender.Razor.Controllers
                     };
                     return Json(result);
                 }
-                await _cacheService.Set(templateFromStore.IdentifierName, new TemplateCacheModel
+                await _cacheService.SetAsync(templateFromStore.IdentifierName, new TemplateCacheModel
                 {
                     Identifier = templateFromStore.IdentifierName,
                     Value = templateFromStore.Value

@@ -305,5 +305,31 @@ namespace GR.WorkFlows.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<WorkflowAction>>))]
         public async Task<JsonResult> GetAllRegisteredActions()
             => await JsonAsync(_workFlowCreatorService.GetAllRegisteredActionsAsync());
+
+
+        /// <summary>
+        /// Update transition name
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> UpdateTransitionName(Guid? transitionId, string newName)
+            => await JsonAsync(_workFlowCreatorService.UpdateTransitionNameAsync(transitionId, newName));
+
+        /// <summary>
+        /// Update state general info
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <param name="newName"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> UpdateStateGeneralInfo([Required]Guid? stateId, [Required]string newName, string description)
+            => await JsonAsync(_workFlowCreatorService.UpdateStateGeneralInfoAsync(stateId, newName, description));
     }
 }

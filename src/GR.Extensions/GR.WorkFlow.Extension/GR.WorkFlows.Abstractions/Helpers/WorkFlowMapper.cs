@@ -103,6 +103,8 @@ namespace GR.WorkFlows.Abstractions.Helpers
                 Name = state.Name,
                 WorkFlowId = state.WorkFlowId,
                 Description = state.Description,
+                IsStartState = state.IsStartState,
+                IsEndState = state.IsEndState,
                 AdditionalSettings = state.AdditionalSettings.Deserialize<Dictionary<string, string>>()
             };
         }
