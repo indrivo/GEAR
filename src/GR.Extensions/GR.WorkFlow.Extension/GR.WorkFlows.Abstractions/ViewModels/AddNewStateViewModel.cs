@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GR.Core.Helpers.ModelBinders;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace GR.WorkFlows.Abstractions.ViewModels
 {

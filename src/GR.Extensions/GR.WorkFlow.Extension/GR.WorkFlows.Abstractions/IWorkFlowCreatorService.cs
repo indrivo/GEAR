@@ -169,5 +169,19 @@ namespace GR.WorkFlows.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<WorkflowAction>>> GetAllRegisteredActionsAsync();
+
+        /// <summary>
+        /// Update transition name
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateTransitionNameAsync([Required] Guid? transitionId, string newName);
+
+        /// <summary>
+        /// Update state general info
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel> UpdateStateGeneralInfoAsync([Required]Guid? stateId, string newName, string description);
     }
 }
