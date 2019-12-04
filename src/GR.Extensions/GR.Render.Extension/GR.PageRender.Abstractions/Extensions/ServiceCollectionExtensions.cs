@@ -46,5 +46,19 @@ namespace GR.PageRender.Abstractions.Extensions
             };
             return services;
         }
+
+        /// <summary>
+        /// Register view mode service
+        /// </summary>
+        /// <typeparam name="TViewModelService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterViewModelService<TViewModelService>(this IServiceCollection services)
+            where TViewModelService : class, IViewModelService
+        {
+            services.AddTransient<IViewModelService, TViewModelService>();
+            IoC.RegisterTransientService<IViewModelService, TViewModelService>();
+            return services;
+        }
     }
 }

@@ -365,6 +365,7 @@ namespace GR.Cms
 				})
 				.AddPageRenderUIModule<PageRender.PageRender>()
 				.AddMenuService<MenuService<IDynamicService>>()
+				.RegisterViewModelService<ViewModelService>()
 				.AddPageAclService<PageAclService>();
 
 

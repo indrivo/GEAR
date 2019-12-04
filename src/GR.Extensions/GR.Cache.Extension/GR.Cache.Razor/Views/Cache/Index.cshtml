@@ -40,11 +40,11 @@
                                 foreach (var item in Model)
                                 {
                                     var key = item.ToString().Split('@')?[1];
-                                    var pre = await CacheService.Get
+                                    var pre = await CacheService.GetAsync
                                         <dynamic>
                                         (key);
                                     var value = (pre != null) ? JsonConvert.SerializeObject(pre)
-                                        : JsonConvert.SerializeObject(await CacheService.Get<string>
+                                        : JsonConvert.SerializeObject(await CacheService.GetAsync<string>
                                             (key));
                                     <tr>
                                         <td>@key</td>

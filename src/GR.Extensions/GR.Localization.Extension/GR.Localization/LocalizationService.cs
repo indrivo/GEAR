@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GR.Cache.Abstractions;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Localization.Abstractions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -20,11 +21,11 @@ namespace GR.Localization
         private readonly IOptionsSnapshot<LocalizationConfigModel> _locConfig;
         private readonly IHostingEnvironment _env;
         private readonly IStringLocalizer _localizer;
-        private readonly IDistributedCache _cache;
+        private readonly ICacheService _cache;
         private readonly IExternalTranslationProvider _externalTranslationProvider;
 
         public LocalizationService(IOptionsSnapshot<LocalizationConfigModel> locConfig, IHostingEnvironment env,
-            IStringLocalizer localizer, IDistributedCache cache, IExternalTranslationProvider externalTranslationProvider)
+            IStringLocalizer localizer, ICacheService cache, IExternalTranslationProvider externalTranslationProvider)
         {
             _env = env;
             _locConfig = locConfig;
@@ -209,7 +210,7 @@ namespace GR.Localization
             {
                 var filePath = Path.Combine(_env.ContentRootPath, _locConfig.Value.Path, item.Key + ".json");
                 var cacheKey = $"{_locConfig.Value.SessionStoreKeyName}_{item.Key}_{key}";
-                _cache.SetString(cacheKey, item.Value);
+                _cache.SetAsync(cacheKey, item.Value).ExecuteAsync();
                 if (!File.Exists(filePath))
                 {
                     using (Stream str = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write,

@@ -276,7 +276,7 @@ TableInlineEdit.prototype.addNewItem = function (context) {
             context.off("click");
             this.cancelTableAddMode(context);
         } else {
-            $(context).attr(this.attributeNames.addingInProgressAttr, "false");
+            rowContext.attr(this.attributeNames.addingInProgressAttr, "false");
             this.toast.notify({ heading: req.error_keys[0].message });
             this.toggleVisibilityColumnsButton(context, false);
         }
@@ -358,15 +358,16 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
     const data = $(context).find(".data-new");
     const obj = {};
     for (let i = 0; i < data.length; i++) {
+        const propName = f.attr("data-prop-name");
         const f = $(data[i]);
         switch (f.attr("data-type")) {
             case "nvarchar":
             case "int32":
             case "decimal": {
-                obj[f.attr("data-prop-name")] = f.val();
+                obj[propName] = f.val();
             } break;
             case "bool": {
-                obj[f.attr("data-prop-name")] = f.prop("checked");
+                obj[propName] = f.prop("checked");
             } break;
             case "datetime":
             case "date":
@@ -374,15 +375,15 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
                     const date = f.val();
                     const parsed = moment(date, "DD/MM/YYYY").format("DD.MM.YYYY");
                     if (parsed !== "Invalid date")
-                        obj[f.attr("data-prop-name")] = parsed;
+                        obj[propName] = parsed;
                 } break;
             case "uniqueidentifier":
                 {
                     const value = f.val();
                     if (!value) {
-                        obj[f.attr("data-prop-name")] = "00000000-0000-0000-0000-000000000000";
+                        obj[propName] = "00000000-0000-0000-0000-000000000000";
                     } else {
-                        obj[f.attr("data-prop-name")] = value;
+                        obj[propName] = value;
                     }
                 }
                 break;

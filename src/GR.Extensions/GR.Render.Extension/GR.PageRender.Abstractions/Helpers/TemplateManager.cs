@@ -35,7 +35,7 @@ namespace GR.PageRender.Abstractions.Helpers
                     Value = content
                 };
                 await context.Templates.AddAsync(template);
-                await cache.Set(template.IdentifierName, new TemplateCacheModel
+                await cache.SetAsync(template.IdentifierName, new TemplateCacheModel
                 {
                     Identifier = template.IdentifierName,
                     Value = template.Value
