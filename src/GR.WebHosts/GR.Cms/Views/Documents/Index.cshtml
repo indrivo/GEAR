@@ -1,4 +1,4 @@
-@model IEnumerable<GR.Documents.Abstractions.ViewModels.DocumentViewModels.DocumentViewModel>
+
 
 @{
 	ViewData["Title"] = "Documents";
@@ -7,13 +7,13 @@
 <div class="common-control">
 	<div class="control-area justify-content-end">
 		<div class="dropdown">
-			<button type="button" class="btn btn-link text-black-50" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false" id="visualize">
+			<button type="button" class="btn btn-link text-black-50"  data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false" id="DocumentTypeList">
 				<span class="material-icons mr-1 align-middle">add_circle_outline</span>
 				<span class="align-middle button-label">Adaugă</span>
 				<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
 			</button>
-			<div class="dropdown-menu" aria-labelledby="visualize">
+			<div class="dropdown-menu DocumentTypeList" aria-labelledby="DocumentTypeList">
 				@*<a class="dropdown-item" href="#">Document SMSI</a>
 					<a class="dropdown-item" href="#">Document Extern</a>
 					<a class="dropdown-item" href="#">Link</a>*@
@@ -34,6 +34,7 @@
 		<tr>
 			<th></th>
 			<th>Title</th>
+			<th>Document Code</th>
 			<th>Document/Description</th>
 			<th>File</th>
 			<th>Group</th>
@@ -72,7 +73,7 @@
 							<div class="col-md-12">
 								<div class="form-group">
 									<label>Document Code</label>
-									<input name="DocumentCode" class="form-control" value="" />
+									<input name="DocumentCode" class="form-control" value=""  maxlength="20"/>
 								</div>
 							</div>
 							<div class="col-md-12">
@@ -234,7 +235,7 @@
 							<div class="col-md-12">
 								<div class="form-group">
 									<label>Document Code</label>
-									<input id="DocumentCode" name="DocumentCode" class="form-control" value="" />
+									<input id="DocumentCode" name="DocumentCode" class="form-control" value="" maxlength="20"/>
 								</div>
 							</div>
 							<div class="col-md-12">
@@ -277,7 +278,7 @@
 		const toast = new ToastNotifier();
 
 		$(document).ready(function() {
-			AddListDocumentType();
+			//AddListDocumentType();
 			GetAllDocuments();
 		});
 
@@ -290,14 +291,14 @@
 				success: function(data) {
 					if (data.is_success) {
 
-						$(".dropdown-menu").empty();
+						$(".DocumentTypeList").empty();
 						$.each(data.result,
 							function(index, value) {
 
 								var html =
 									`<a class="dropdown-item" href="#" onclick="addNewDocument('${value.id}','${value
 										.code}')" >${value.name}</a>`;
-								$(".dropdown-menu").append(html)
+								$(".DocumentTypeList").append(html);
 							});
 					} else {
 						toast.notifyErrorList(data.error_keys);
@@ -400,14 +401,15 @@
 								    </div>
 								</td>
 								<td> ${value.title}</td>
-								<td style="white-space: pre-wrap;">${value.description}</td>
+								<td> ${value.documentCode}</td>
+								<td style="white-space: pre-wrap;">${value.description === null ? "" : value.description}</td>
 								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
 										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
 										.documentType.code ==
 										3
 										? value.lastUrl
 										: value.fileName}</a></td>
-								<td>${value.group}</td>
+								<td>${value.group == null ? "" : value.group}</td>
 								<td>${value.documentType.name}</td>
 								<td> ${value.lastVersion.toFixed(1)}</td>
                                 <td> ${value.isDeleted}</td>
@@ -533,7 +535,6 @@
 
 			return false;
 		});
-
 
 		function getAllChechedDeleteDocuments() {
 

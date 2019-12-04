@@ -13,6 +13,7 @@ using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using GR.Files.Abstraction;
 using GR.Files.Abstraction.Models.ViewModels;
 using GR.Identity.Abstractions;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.Documents
@@ -51,10 +52,10 @@ namespace GR.Documents
         /// Get all documents
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsAsync()
+        public virtual async Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsAsync()
         {
             var user = await _userManager.GetCurrentUserAsync();
-            var response = new ResultModel<IEnumerable<Document>>();
+            var response = new ResultModel<IEnumerable<DocumentViewModel>>();
 
             var listDocuments = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
@@ -62,10 +63,10 @@ namespace GR.Documents
                 .Where(x => x.TenantId == user.Result.TenantId)
                 .ToListAsync();
 
-            if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (listDocuments == null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<DocumentViewModel>>();
 
             response.IsSuccess = true;
-            response.Result = listDocuments;
+            response.Result = listDocuments.Adapt<IEnumerable<DocumentViewModel>>();
 
             return response;
         }
@@ -80,10 +81,10 @@ namespace GR.Documents
             var result = new ResultModel<IEnumerable<Document>>();
             var user = await _userManager.GetCurrentUserAsync();
 
-            if (typeId is null) return new InvalidParametersResultModel<IEnumerable<Document>>();
+            if (typeId == null) return new InvalidParametersResultModel<IEnumerable<Document>>();
 
             var typeBd = await DocumentContext.DocumentTypes.FirstOrDefaultAsync(x => x.Id == typeId);
-            if (typeBd is null) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (typeBd == null) return new NotFoundResultModel<IEnumerable<Document>>();
 
 
             var documentsBd = await DocumentContext.Documents
@@ -91,7 +92,7 @@ namespace GR.Documents
                 .Include(i => i.DocumentVersions)
                 .Where(x => x.DocumentTypeId == typeId && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
 
-            if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (documentsBd == null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
             result.IsSuccess = true;
             result.Result = documentsBd;
@@ -104,26 +105,26 @@ namespace GR.Documents
         /// get documents by id an eliminate exist documents
         /// </summary>
         /// <param name="typeId"></param>
-        /// <param name="listIgnireDocuments"></param>
+        /// <param name="listIgnoreDocuments"></param>
         /// <returns></returns>
         public virtual async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByTypeIdAndListAsync(Guid? typeId,
-            IEnumerable<Guid> listIgnireDocuments)
+            IEnumerable<Guid> listIgnoreDocuments)
         {
 
             var result = new ResultModel<IEnumerable<Document>>();
             var user = await _userManager.GetCurrentUserAsync();
 
-            if (typeId is null) return new InvalidParametersResultModel<IEnumerable<Document>>();
+            if (typeId == null) return new InvalidParametersResultModel<IEnumerable<Document>>();
 
             var typeBd = await DocumentContext.DocumentTypes.FirstOrDefaultAsync(x => x.Id == typeId);
-            if (typeBd is null) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (typeBd == null) return new NotFoundResultModel<IEnumerable<Document>>();
 
             var documentsBd = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
-                .Where(x => x.DocumentTypeId == typeId && !listIgnireDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
+                .Where(x => x.DocumentTypeId == typeId && !listIgnoreDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
 
-            if (documentsBd is null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (documentsBd == null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
             result.IsSuccess = true;
             result.Result = documentsBd;
@@ -136,14 +137,14 @@ namespace GR.Documents
         /// Get  documents by list id
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumetId)
+        public virtual async Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsByListId(IEnumerable<Guid> listDocumentId)
         {
             var response = new ResultModel<IEnumerable<Document>>();
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return new ActionBlockedResultModel<IEnumerable<Document>>();
             var user = userRequest.Result;
-            var enumeratedDocs = listDocumetId?.ToList();
-            if (enumeratedDocs is null || !enumeratedDocs.Any()) return new InvalidParametersResultModel<IEnumerable<Document>>();
+            var enumeratedDocs = listDocumentId?.ToList();
+            if (enumeratedDocs == null || !enumeratedDocs.Any()) return new InvalidParametersResultModel<IEnumerable<Document>>();
 
             var listDocuments = await DocumentContext.Documents
                 .Include(i => i.DocumentType)
@@ -151,7 +152,7 @@ namespace GR.Documents
                 .Where(x => enumeratedDocs.Contains(x.Id) && x.TenantId == user.TenantId && !x.IsDeleted)
                 .ToListAsync();
 
-            if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (listDocuments == null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
             response.IsSuccess = true;
             response.Result = listDocuments;
@@ -163,16 +164,16 @@ namespace GR.Documents
         /// Delete documents by list id
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<ResultModel> DeleteDocumentsByListIdAsync(IEnumerable<Guid> listDocumetsId)
+        public virtual async Task<ResultModel> DeleteDocumentsByListIdAsync(IEnumerable<Guid> listDocumentsId)
         {
             var response = new ResultModel();
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return new ActionBlockedResultModel<object>().ToBase();
             var user = userRequest.Result;
-            var enumeratedDocs = listDocumetsId?.ToList();
-            if (enumeratedDocs is null || !enumeratedDocs.Any())
+            var enumeratedDocs = listDocumentsId?.ToList();
+            if (enumeratedDocs == null || !enumeratedDocs.Any())
             {
-                response.Errors.Add(new ErrorModel { Message = "List documents is null" });
+                response.Errors.Add(new ErrorModel { Message = "List documents == null" });
                 return response;
             }
 
@@ -182,7 +183,7 @@ namespace GR.Documents
                 .Where(x => enumeratedDocs.Contains(x.Id) && x.TenantId == user.TenantId)
                 .ToListAsync();
 
-            if (listDocuments is null || !listDocuments.Any())
+            if (listDocuments == null || !listDocuments.Any())
             {
                 response.Errors.Add(new ErrorModel { Message = "List documents  null" });
                 return response;
@@ -210,7 +211,7 @@ namespace GR.Documents
             var user = userRequest.Result;
 
             var response = new ResultModel<Document>();
-            if (documentId is null)
+            if (documentId == null)
                 return new InvalidParametersResultModel<Document>();
 
             var document = await DocumentContext.Documents
@@ -218,7 +219,7 @@ namespace GR.Documents
                 .Include(i => i.DocumentVersions)
                 .FirstOrDefaultAsync(x => x.Id == documentId && x.TenantId == user.TenantId);
 
-            if (document is null) return new NotFoundResultModel<Document>();
+            if (document == null) return new NotFoundResultModel<Document>();
 
             response.IsSuccess = true;
             response.Result = document;
@@ -243,7 +244,7 @@ namespace GR.Documents
                 .Include(i => i.DocumentVersions)
                 .Where(x => x.UserId == user.Id.ToGuid() && !x.IsDeleted).ToListAsync();
 
-            if (listDocuments is null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
+            if (listDocuments == null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<Document>>();
 
             response.IsSuccess = true;
             response.Result = listDocuments;
@@ -261,14 +262,14 @@ namespace GR.Documents
         {
             var result = new ResultModel<IEnumerable<DocumentVersion>>();
 
-            if (documentId is null)
+            if (documentId == null)
                 return new InvalidParametersResultModel<IEnumerable<DocumentVersion>>();
 
             var listDocumentVersion = await DocumentContext.DocumentVersions
                 .Include(i => i.Document)
                 .Where(x => x.DocumentId == documentId).OrderByDescending(o => o.VersionNumber).ToListAsync();
 
-            if (listDocumentVersion is null || !listDocumentVersion.Any()) return new NotFoundResultModel<IEnumerable<DocumentVersion>>();
+            if (listDocumentVersion == null || !listDocumentVersion.Any()) return new NotFoundResultModel<IEnumerable<DocumentVersion>>();
 
             result.IsSuccess = true;
             result.Result = listDocumentVersion;
@@ -285,9 +286,9 @@ namespace GR.Documents
         {
             var result = new ResultModel();
 
-            if (model is null)
+            if (model == null)
             {
-                result.Errors.Add(new ErrorModel { Message = "entity is null" });
+                result.Errors.Add(new ErrorModel { Message = "entity == null" });
                 result.IsSuccess = false;
                 return result;
             }
@@ -346,16 +347,16 @@ namespace GR.Documents
         {
             var result = new ResultModel();
 
-            if (model is null)
+            if (model == null)
             {
-                result.Errors.Add(new ErrorModel { Message = "entity is null" });
+                result.Errors.Add(new ErrorModel { Message = "entity == null" });
                 result.IsSuccess = false;
                 return result;
             }
 
             var document = await DocumentContext.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
 
-            if (document is null)
+            if (document == null)
             {
                 result.Errors.Add(new ErrorModel { Message = "document not fount" });
                 result.IsSuccess = false;
@@ -393,7 +394,7 @@ namespace GR.Documents
 
             var document = await DocumentContext.Documents.FirstOrDefaultAsync(x => x.Id == model.DocumentId);
 
-            if (document is null)
+            if (document == null)
             {
                 result.Errors.Add(new ErrorModel { Message = "document not fount" });
                 result.IsSuccess = false;

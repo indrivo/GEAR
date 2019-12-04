@@ -6,6 +6,7 @@ using GR.Core.Helpers;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
+using GR.WorkFlows.Abstractions;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,8 +25,10 @@ namespace GR.Documents.Razor.Controllers
 
         #region Injectable
 
-        private IDocumentService _documentService;
-        private IDocumentTypeService _documentTypeService;
+        private readonly IDocumentService _documentService;
+        private readonly IDocumentTypeService _documentTypeService;
+        private IWorkFlowExecutorService _workFlowExecutorService;
+
 
         #endregion
 
@@ -39,20 +42,21 @@ namespace GR.Documents.Razor.Controllers
 
         #endregion
 
-        public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService)
+        public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService, IWorkFlowExecutorService workFlowExecutorService)
         {
             _documentService = documentService;
             _documentTypeService = documentTypeService;
+            _workFlowExecutorService = workFlowExecutorService;
         }
 
         // GET: /<controller>/
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
 
-            var listDocuments = await _documentService.GetAllDocumentsAsync();
-            var listResult = listDocuments.Result.Adapt<IEnumerable<DocumentViewModel>>();
+            //var listDocuments = await _documentService.GetAllDocumentsAsync();
+            //var listResult = listDocuments.Result.Adapt<IEnumerable<DocumentViewModel>>();
 
-            return View(listResult);
+            return View();
         }
 
         [HttpGet]
@@ -97,9 +101,9 @@ namespace GR.Documents.Razor.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumetId)
+        public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumentId)
         {
-            var result = await _documentService.GetAllDocumentsByListId(listDocumetId);
+            var result = await _documentService.GetAllDocumentsByListId(listDocumentId);
             return Json(result, SerializerSettings);
         }
 
