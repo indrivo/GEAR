@@ -1,6 +1,6 @@
 
 @{
-	ViewData["Title"] = "Testplumber";
+	ViewData["Title"] = "State machine";
 }
 
 @section Styles
@@ -586,20 +586,20 @@
 				</div>
 				<form id="edit-state">
 					<div class="form-group">
-						<label for="edit-workflow-title">@Localizer["system_state_machine_transition_title"]</label>
-						<input type="text" id="edit-workflow-title" name="title" class="form-control" value="{{:name}}" required>
+						<label for="edit-state-title">@Localizer["system_state_machine_transition_title"]</label>
+						<input type="text" id="edit-state-title" name="title" class="form-control" value="{{:name}}" required>
 					</div>
 					<div class="form-group">
-						<label for="edit-workflow-description">@Localizer["system_state_machine_transition_description"]</label>
-						<textarea id="edit-workflow-description" class="form-control">{{:description}}</textarea>
+						<label for="edit-state-description">@Localizer["system_state_machine_transition_description"]</label>
+						<textarea id="edit-state-description" class="form-control">{{:description}}</textarea>
 					</div>
 					<div class="start-end-state">
-						<div class="custom-control custom-checkbox">
-							<input type="checkbox" class="custom-control-input" id="transition_start_state" {{if enabled}} checked {{/if}}>
+						<div class="custom-control custom-checkbox {{if isEndState}}unavailable{{/if}}">
+							<input type="checkbox" class="custom-control-input" id="transition_start_state" {{if isStartState}} checked {{/if}}>
 							<label class="custom-control-label" for="transition_start_state">@Localizer["system_state_machine_state_start"]</label>
 						</div>
-						<div class="custom-control custom-checkbox">
-							<input type="checkbox" class="custom-control-input" id="transition_end_state" {{if enabled}} checked {{/if}}>
+						<div class="custom-control custom-checkbox {{if isStartState}}unavailable{{/if}}">
+							<input type="checkbox" class="custom-control-input" id="transition_end_state" {{if isEndState}} checked {{/if}}>
 							<label class="custom-control-label" for="transition_end_state">@Localizer["system_state_machine_state_end"]</label>
 						</div>
 					</div>
@@ -613,11 +613,13 @@
 
 	<!--State box template-->
 	<script id="state-template" type="text/x-jsrender">
-		<div class="w" data-state-id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
+		<div class="w" data-state-id="{{:id}}" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
 			<a class="state-edit mr-2">
 				<i class="material-icons">edit</i>
 			</a>
-			{{:name}}
+			<span class="state-name">
+				{{:name}}
+			</span>
 			<div class="ep" action="{{:id}}"></div>
 		</div>
 	</script>
@@ -738,6 +740,11 @@
 				return this.ajaxRequest(requestUrl, 'get', { workflowId });
 			}
 
+			getStateById(stateId) {
+				const requestUrl = '/GetStateById';
+				return this.ajaxRequest(requestUrl, 'get', { stateId });
+			}
+
 			addNewWorkflow(workflow = {
 				name: '',
 				description: '',
@@ -799,6 +806,14 @@
 				return this.ajaxRequest(requestUrl, 'post', transition);
 			}
 
+			updateTransitionName(transition = {
+				transitionId: '',
+				newName: ''
+			}) {
+				const requestUrl = '/UpdateTransitionName';
+				return this.ajaxRequest(requestUrl, 'post', transition);
+			}
+
 			enableOrDisableWorkFlow(workflow = {
 				workFlowId: '',
 				state: false
@@ -822,6 +837,15 @@
 				settings: {}
 			}) {
 				const requestUrl = '/UpdateStateAdditionalSettings';
+				return this.ajaxRequest(requestUrl, 'post', state);
+			}
+
+			updateStateGeneralInfo(state = {
+				stateId: '',
+				newName: '',
+				description: '',
+			}) {
+				const requestUrl = '/UpdateStateGeneralInfo';
 				return this.ajaxRequest(requestUrl, 'post', state);
 			}
 
@@ -903,8 +927,8 @@
 			const workflowContainerTemplate = $.templates("#workflow-container-template");
 			const stateTemplate = $.templates("#state-template");
 			const checkboxDeleteTemplate = $.templates("#checkboxDeleteTemplate");
-			let loadedWorkflow = JSON.parse(localStorage.getItem("workflow"));
 			const modal = $('#state-machine-modal');
+			let loadedWorkflow = JSON.parse(localStorage.getItem("workflow"));
 
 			const findObjectsByProperties = (array, properties) => {
 				return array.filter(obj => {
@@ -957,10 +981,10 @@
 
 			const addLoader = elementDOM => {
 				const loadermarkup = `<div class="st-mch-loader">
-																																																																												<div class="state-machine-loader justify-content-center align-items-center">
-																																																																												<div class="lds-dual-ring"></div>
-																																																																													</div>
-																																																																												</div>`;
+																																																																																					<div class="state-machine-loader justify-content-center align-items-center">
+																																																																																					<div class="lds-dual-ring"></div>
+																																																																																						</div>
+																																																																																					</div>`;
 				elementDOM.append(loadermarkup);
 				elementDOM.find('.st-mch-loader').fadeIn();
 			}
@@ -970,10 +994,87 @@
 				setTimeout(function () { elementDOM.find('.st-mch-loader').remove(); }, 3000);
 			}
 
-			const openStateModal = state => {
-				const htmlOutput = editStateModal.render(state);
-				modal.html(htmlOutput);
-				modal.modal('show');
+			const openStateModal = stateObj => {
+				stateMachineManager.getStateById(stateObj.id).then(state => {
+					const htmlOutput = editStateModal.render(state);
+					modal.html(htmlOutput);
+					attachStateModalActions(state);
+					modal.modal('show');
+				})
+			}
+
+			const attachStateModalActions = (state) => {
+				const form = $('#edit-state');
+				const checkboxes = $('.start-end-state .custom-checkbox');
+				let sendStartEndState = {
+					start: state.isStartState,
+					end: state.isEndState
+				}
+
+				$.each(checkboxes, function (i, checkbox) {
+					$(checkbox).find('.custom-control-input').change(function () {
+						if ($(this).is(':checked')) {
+							$(checkbox).siblings('.custom-checkbox').addClass('unavailable');
+
+							if ($(this).attr('id') === 'transition_start_state') {
+								sendStartEndState.start = true;
+							}
+							else {
+								sendStartEndState.start = false;
+							}
+
+							if ($(this).attr('id') === 'transition_end_state') {
+								sendStartEndState.end = true;
+							}
+							else {
+								sendStartEndState.end = false;
+							}
+						}
+						else {
+							$(checkbox).siblings('.custom-checkbox').removeClass('unavailable');
+						}
+					});
+				});
+
+				form.submit(function (e) {
+					e.preventDefault();
+					const statetoSend = {
+						stateId: state.id,
+						newName: form.find('#edit-state-title').val(),
+						description: form.find('#edit-state-description').val()
+					}
+					refreshWorkflowState(statetoSend);
+
+					stateMachineManager.updateStateGeneralInfo(statetoSend).then(() => {
+						modal.modal('hide');
+					}).catch(e => {
+						toast.notifyErrorList(e);
+					});
+
+					const sendState = {
+						workflowId: state.workFlowId,
+						stateId: state.id
+					}
+
+					if (sendStartEndState.start) {
+						stateMachineManager.setStartStateInWorkflow(sendState).then(() => {
+						}).catch(e => {
+							toast.notifyErrorList(e);
+						});
+					}
+
+					if (sendStartEndState.end) {
+						stateMachineManager.setEndStateInWorkflow(sendState).then(() => {
+						}).catch(e => {
+							toast.notifyErrorList(e);
+						});
+					}
+				});
+
+			}
+
+			const refreshWorkflowState = (state) => {
+				$(`.w[data-state-id="${state.id}"] .state-name`).text(state.newName);
 			}
 
 			const loadWorkflowStates = workflow => {
@@ -1155,7 +1256,7 @@
 			}
 
 			const addNewWorkflow = workflow => {
-				stateMachineManager.addNewWorkflow(workflow).then(workflowId => {
+				return stateMachineManager.addNewWorkflow(workflow).then(workflowId => {
 					workflow.id = workflowId;
 					appendWorkflowToList(workflow);
 				}).catch(e => {
@@ -1227,7 +1328,9 @@
 					description: scope.find('#workflow-description').val(),
 					enabled: scope.find('#workflow-active').is(':checked')
 				}
-				addNewWorkflow(workflow);
+				addNewWorkflow(workflow).then(() => {
+					$('#add-new-workflow')[0].reset();
+				});
 			});
 
 			stateMachineManager.getAllWorkflows().then(workflows => {
@@ -1317,6 +1420,7 @@
 								$('#edit-transition').submit(function (e) {
 									e.preventDefault();
 									const selections = getSelectedRolesActionsFromTransition();
+									const connName = $('#edit-transition-title').val();
 									stateMachineManager.addOrUpdateTransitionAllowedRoles({
 										transitionId: c.id,
 										roles: selections.roles
@@ -1325,7 +1429,14 @@
 										transitionId: c.id,
 										actionHandlers: selections.actions
 									});
-									modal.modal(hide);
+									stateMachineManager.updateTransitionName({
+										transitionId: c.id,
+										newName: connName
+									});
+									c.setLabel(
+										`<div class="connection-label">${connName}</div>`
+									);
+									modal.modal('hide');
 								});
 							}).catch(e => {
 								toast.notifyErrorList(e);
