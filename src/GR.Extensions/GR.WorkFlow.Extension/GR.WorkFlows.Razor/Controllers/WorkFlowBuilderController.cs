@@ -175,7 +175,7 @@ namespace GR.WorkFlows.Razor.Controllers
         public async Task<JsonResult> GetRolesAllowedToParticipateInWorkflow()
         {
             var roles = await _userManager.RoleManager.Roles.ToListAsync();
-            return Json(roles.Select(x => new { x.Id, x.Name }));
+            return Json(new SuccessResultModel<IEnumerable<object>>(roles.Select(x => new { x.Id, x.Name })));
         }
 
         /// <summary>
@@ -249,5 +249,87 @@ namespace GR.WorkFlows.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<StateGetViewModel>>))]
         public async Task<JsonResult> GetWorkFlowStates([Required] Guid? workFlowId)
             => await JsonAsync(_workFlowCreatorService.GetWorkFlowStatesAsync(workFlowId));
+
+        /// <summary>
+        /// Get state by id
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<StateGetViewModel>))]
+        public async Task<JsonResult> GetStateById([Required] Guid? stateId)
+            => await JsonAsync(_workFlowCreatorService.GetStateByIdAsync(stateId));
+
+        /// <summary>
+        /// Remove state 
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveState([Required] Guid? stateId)
+            => await JsonAsync(_workFlowCreatorService.RemoveStateAsync(stateId));
+
+        /// <summary>
+        /// Remove workflow 
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveWorkflow([Required] Guid? workFlowId)
+            => await JsonAsync(_workFlowCreatorService.RemoveWorkFlowAsync(workFlowId));
+
+        /// <summary>
+        /// Add or update transition actions
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="actionHandlers"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> AddOrUpdateTransitionActions([Required] Guid? transitionId,
+            IEnumerable<Guid> actionHandlers)
+            => await JsonAsync(_workFlowCreatorService.AddOrUpdateTransitionActionsAsync(transitionId, actionHandlers));
+
+        /// <summary>
+        /// Get all registered actions
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<WorkflowAction>>))]
+        public async Task<JsonResult> GetAllRegisteredActions()
+            => await JsonAsync(_workFlowCreatorService.GetAllRegisteredActionsAsync());
+
+
+        /// <summary>
+        /// Update transition name
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> UpdateTransitionName(Guid? transitionId, string newName)
+            => await JsonAsync(_workFlowCreatorService.UpdateTransitionNameAsync(transitionId, newName));
+
+        /// <summary>
+        /// Update state general info
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <param name="newName"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> UpdateStateGeneralInfo([Required]Guid? stateId, [Required]string newName, string description)
+            => await JsonAsync(_workFlowCreatorService.UpdateStateGeneralInfoAsync(stateId, newName, description));
     }
 }

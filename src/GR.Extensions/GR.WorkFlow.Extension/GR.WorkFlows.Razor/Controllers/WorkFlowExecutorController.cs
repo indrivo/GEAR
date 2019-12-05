@@ -116,7 +116,7 @@ namespace GR.WorkFlows.Razor.Controllers
         [HttpPost]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> SetStartStateForEntryAsync([Required] string entityName, [Required] string entryId)
+        public async Task<JsonResult> SetStartStateForEntry([Required] string entityName, [Required] string entryId)
             => await JsonAsync(_workFlowExecutorService.SetStartStateForEntryAsync(entityName, entryId));
 
 
@@ -130,7 +130,20 @@ namespace GR.WorkFlows.Razor.Controllers
         [HttpPost]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> ChangeStateForEntryAsync([Required]string entryId, [Required] Guid? workFlowId, [Required] Guid? newStateId)
+        public async Task<JsonResult> ChangeStateForEntry([Required]string entryId, [Required] Guid? workFlowId, [Required] Guid? newStateId)
             => await JsonAsync(_workFlowExecutorService.ChangeStateForEntryAsync(entryId, workFlowId, newStateId));
+
+
+        /// <summary>
+        /// Remove entity contract
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveEntityContractToWorkFlow([Required] string entityName, Guid? workFlowId)
+            => await JsonAsync(_workFlowExecutorService.RemoveEntityContractToWorkFlowAsync(entityName, workFlowId));
     }
 }

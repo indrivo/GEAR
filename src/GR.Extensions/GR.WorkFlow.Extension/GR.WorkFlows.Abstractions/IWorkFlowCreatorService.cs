@@ -134,5 +134,54 @@ namespace GR.WorkFlows.Abstractions
         /// <param name="toStateId"></param>
         /// <returns></returns>
         Task<ResultModel<Transition>> GetTransitionAsync([Required] Guid? fromStateId, [Required] Guid? toStateId);
+
+        /// <summary>
+        /// Get state bu id
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        Task<ResultModel<StateGetViewModel>> GetStateByIdAsync([Required]Guid? stateId);
+
+        /// <summary>
+        /// Remove state
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveStateAsync([Required] Guid? stateId);
+
+        /// <summary>
+        /// Remove workflow by id
+        /// </summary>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveWorkFlowAsync([Required]Guid? workFlowId);
+
+        /// <summary>
+        /// Add or update transition actions
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="actionHandlers"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddOrUpdateTransitionActionsAsync([Required]Guid? transitionId, IEnumerable<Guid> actionHandlers);
+
+        /// <summary>
+        /// Get all registered actions
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<WorkflowAction>>> GetAllRegisteredActionsAsync();
+
+        /// <summary>
+        /// Update transition name
+        /// </summary>
+        /// <param name="transitionId"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        Task<ResultModel> UpdateTransitionNameAsync([Required] Guid? transitionId, string newName);
+
+        /// <summary>
+        /// Update state general info
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel> UpdateStateGeneralInfoAsync([Required]Guid? stateId, string newName, string description);
     }
 }

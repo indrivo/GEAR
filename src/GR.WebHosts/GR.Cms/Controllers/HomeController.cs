@@ -47,7 +47,7 @@ namespace GR.Cms.Controllers
 			ViewBag.TotalSessions = _hub.GetSessionsCount();
 			return View();
 		}
-
+		
 		/// <summary>
 		/// Error page
 		/// </summary>

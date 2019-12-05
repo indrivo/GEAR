@@ -32,8 +32,6 @@ namespace GR.WorkFlows.Abstractions.Extensions
 
             services.AddTransient<IWorkFlowExecutorService, TWorkFlowExecutor>();
             IoC.RegisterTransientService<IWorkFlowExecutorService, TWorkFlowExecutor>();
-
-            if (!GearApplication.Configured) return services;
             services.RegisterWorkflowAction<SendNotificationAction>();
             return services;
         }
@@ -66,9 +64,9 @@ namespace GR.WorkFlows.Abstractions.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterWorkFlowContract(this IServiceCollection services, string entityName, Guid? workflowId)
         {
-            if (!GearApplication.Configured) return services;
             SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
             {
+                if (!GearApplication.Configured) return;
                 var service = IoC.Resolve<IWorkFlowExecutorService>();
                 await service.RegisterEntityContractToWorkFlowAsync(entityName, workflowId);
             };
@@ -84,21 +82,22 @@ namespace GR.WorkFlows.Abstractions.Extensions
         public static IServiceCollection RegisterWorkflowAction<TAction>(this IServiceCollection services)
             where TAction : BaseWorkFlowAction
         {
-            if (!GearApplication.Configured) return services;
-            SystemEvents.Application.OnApplicationStarted += (sender, args) =>
+            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
             {
+                if (!GearApplication.Configured) return;
                 var type = typeof(TAction);
                 var name = type.Name;
                 var fullName = type.FullName;
                 var service = IoC.Resolve<IWorkFlowContext>();
                 if (!service.WorkflowActions.Any(x => x.Name.Equals(name)))
                 {
-                    service.WorkflowActions.Add(new WorkflowAction
+                    await service.WorkflowActions.AddAsync(new WorkflowAction
                     {
                         Name = name,
                         ClassName = name,
                         ClassNameWithNameSpace = fullName,
                     });
+                    await service.PushAsync();
                 }
             };
             return services;

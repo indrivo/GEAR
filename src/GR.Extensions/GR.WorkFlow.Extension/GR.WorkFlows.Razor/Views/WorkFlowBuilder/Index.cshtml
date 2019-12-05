@@ -1,5 +1,270 @@
 ﻿@{
     ViewData["Title"] = "Workflow list";
 }
+@section Styles
+{
+    <link rel="stylesheet" type="text/css" href="~/lib/jsPlumb/css/jsplumbtoolkit-defaults.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/workflow-css/workflow.css" />
+}
 
-<h1>List of Gear workflow</h1>
+@inject IStringLocalizer Localizer
+
+<div class="row pt-5 h-100">
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2>@Localizer["system_state_machine_workflows"]</h2>
+                <div id="workflow-list"></div>
+                <div class="mt-4 pt-4 bt-1">
+                    <h3></h3>
+                    <form id="add-new-workflow">
+                        <div class="form-group">
+                            <label for="workflow-title">@Localizer["system_state_machine_transition_title"]</label>
+                            <input type="text" id="workflow-title" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="workflow-description">@Localizer["system_state_machine_transition_description"]</label>
+                            <textarea id="workflow-description" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="task-item-status custom-control-input" id="workflow-active">
+                                <label class="custom-control-label" for="workflow-active">@Localizer["system_state_machine_transition_active"]</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">@Localizer["system_state_machine_add_workflow"]</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div id="state-machine" class="state-machine h-100 w-100 position-relative"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="state-machine-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
+
+<div class="modal fade modal-confirm-delete" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div>
+                <button type="button" class="close p-0 absolute-close-button" data-dismiss="modal" aria-label="Close">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="d-flex justify-content-center confirm-image mb-40px">
+                <svg height="100px" viewBox="-9 0 512 512.00101" width="100px" xmlns="http://www.w3.org/2000/svg"><path d="m444.359375 123.113281-1.621094 22.8125-21.910156 307.898438c-2.027344 28.488281-25.742187 50.570312-54.300781 50.570312h-238.207032c-28.558593 0-52.265624-22.082031-54.292968-50.570312l-23.53125-330.710938zm0 0" fill="#bfdadd" /><path d="m442.738281 145.925781-21.910156 307.898438c-2.027344 28.488281-25.742187 50.570312-54.300781 50.570312h-184.980469c-28.558594 0-52.261719-22.070312-54.289063-50.570312l-20.289062-285.085938c-.875-12.328125 8.886719-22.8125 21.246094-22.8125zm0 0" fill="#e4f5f7" /><path d="m302.074219 47.082031h-109.605469c7.644531-22.941406 29.289062-39.476562 54.796875-39.476562 6.105469 0 11.984375.941406 17.5 2.695312 17.558594 5.578125 31.480469 19.324219 37.308594 36.78125zm0 0" fill="#bfdadd" /><path d="m302.074219 47.082031h-74.628907c5.820313-17.457031 19.75-31.214843 37.320313-36.78125 17.558594 5.578125 31.480469 19.324219 37.308594 36.78125zm0 0" fill="#e4f5f7" /><path d="m486.933594 85.101562c0 6.613282-1.695313 12.828126-4.664063 18.242188-6.449219 11.78125-18.960937 19.769531-33.347656 19.769531h-403.300781c-10.503906 0-20.003906-4.257812-26.886719-11.132812-6.875-6.875-11.132813-16.382813-11.132813-26.878907 0-20.996093 17.023438-38.019531 38.019532-38.019531h403.300781c10.496094 0 20.003906 4.261719 26.878906 11.132813 6.875 6.886718 11.132813 16.394531 11.132813 26.886718zm0 0" fill="#bfdadd" /><path d="m486.933594 85.101562c0 6.613282-1.695313 12.828126-4.664063 18.242188h-349.964843c-10.503907 0-20.003907-4.257812-26.886719-11.132812-6.875-6.882813-11.132813-16.382813-11.132813-26.886719 0-6.613281 1.683594-12.828125 4.652344-18.242188h349.984375c10.496094 0 20.003906 4.261719 26.878906 11.132813 6.875 6.886718 11.132813 16.394531 11.132813 26.886718zm0 0" fill="#e4f5f7" /><g fill="#bfdadd"><path d="m247.425781 454.632812c-13.019531 0-23.570312-10.554687-23.570312-23.570312v-247.878906c0-13.015625 10.550781-23.570313 23.570312-23.570313s23.570313 10.554688 23.570313 23.570313v247.878906c0 13.015625-10.550782 23.570312-23.570313 23.570312zm0 0" /><path d="m352.167969 454.632812c-13.019531 0-23.574219-10.554687-23.574219-23.570312v-247.878906c0-13.015625 10.554688-23.570313 23.574219-23.570313 13.015625 0 23.570312 10.554688 23.570312 23.570313v247.878906c0 13.015625-10.554687 23.570312-23.570312 23.570312zm0 0" /><path d="m142.683594 454.632812c-13.015625 0-23.570313-10.554687-23.570313-23.570312v-247.878906c0-13.015625 10.554688-23.570313 23.570313-23.570313 13.019531 0 23.570312 10.554688 23.570312 23.570313v247.878906c0 13.015625-10.550781 23.570312-23.570312 23.570312zm0 0" /></g><path d="m494.542969 85.097656c0-25.152344-20.46875-45.621094-45.621094-45.621094h-141.621094c-10.253906-23.824218-33.722656-39.476562-60.035156-39.476562s-49.777344 15.652344-60.023437 39.476562h-105.320313c-4.199219 0-7.601563 3.40625-7.601563 7.605469s3.402344 7.605469 7.601563 7.605469h367c16.769531 0 30.410156 13.640625 30.410156 30.410156 0 16.773438-13.640625 30.414063-30.410156 30.414063h-403.300781c-16.769532 0-30.414063-13.640625-30.414063-30.414063 0-16.769531 13.644531-30.410156 30.414063-30.410156h5.882812c4.199219 0 7.605469-3.40625 7.605469-7.605469s-3.40625-7.605469-7.605469-7.605469h-5.882812c-25.15625 0-45.621094 20.46875-45.621094 45.621094 0 24.414063 19.277344 44.40625 43.40625 45.566406l23.035156 323.703126c2.300782 32.320312 29.480469 57.632812 61.878906 57.632812h238.207032c32.398437 0 59.582031-25.3125 61.882812-57.632812l23.035156-323.71875c23.984376-1.316407 43.097657-21.242188 43.097657-45.550782zm-247.277344-69.890625c17.878906 0 34.042969 9.421875 42.976563 24.269531h-85.945313c8.925781-14.847656 25.085937-24.269531 42.96875-24.269531zm165.972656 438.082031c-1.734375 24.394532-22.253906 43.503907-46.710937 43.503907h-238.203125c-24.457031 0-44.976563-19.109375-46.710938-43.503907l-22.953125-322.570312h377.53125zm0 0" /><path d="m247.425781 152.011719c-17.191406 0-31.175781 13.984375-31.175781 31.171875v247.878906c0 17.1875 13.984375 31.175781 31.175781 31.175781 17.191407 0 31.175781-13.988281 31.175781-31.175781v-247.878906c0-17.1875-13.984374-31.171875-31.175781-31.171875zm15.96875 279.050781c0 8.800781-7.164062 15.964844-15.96875 15.964844-8.804687 0-15.96875-7.164063-15.96875-15.964844v-247.878906c0-8.804688 7.164063-15.964844 15.96875-15.964844 8.804688 0 15.96875 7.160156 15.96875 15.964844zm0 0" /><path d="m352.167969 152.011719c-17.191407 0-31.175781 13.984375-31.175781 31.171875v247.878906c0 17.1875 13.984374 31.175781 31.175781 31.175781 17.1875 0 31.171875-13.988281 31.171875-31.175781v-174.628906c0-4.199219-3.402344-7.601563-7.601563-7.601563-4.203125 0-7.605469 3.402344-7.605469 7.601563v174.628906c0 8.804688-7.160156 15.964844-15.964843 15.964844-8.804688 0-15.96875-7.160156-15.96875-15.964844v-247.878906c0-8.804688 7.164062-15.964844 15.96875-15.964844 8.804687 0 15.964843 7.160156 15.964843 15.964844v47.90625c0 4.199218 3.402344 7.601562 7.605469 7.601562 4.199219 0 7.601563-3.402344 7.601563-7.601562v-47.90625c0-17.1875-13.984375-31.171875-31.171875-31.171875zm0 0" /><path d="m142.683594 152.011719c-17.191406 0-31.175782 13.984375-31.175782 31.171875v247.878906c0 17.1875 13.984376 31.175781 31.175782 31.175781s31.175781-13.988281 31.175781-31.175781v-247.878906c0-17.1875-13.984375-31.171875-31.175781-31.171875zm15.96875 279.050781c0 8.800781-7.164063 15.964844-15.96875 15.964844-8.804688 0-15.96875-7.164063-15.96875-15.964844v-247.878906c0-8.804688 7.164062-15.964844 15.96875-15.964844 8.804687 0 15.96875 7.160156 15.96875 15.964844zm0 0" /></svg>
+            </div>
+            <div>
+                <h5 class="h4 fw-600" id="deleteConfirmModalLabel">@Localizer["system_taskmanager_are_you_sure"]</h5>
+                <p class="mt-2">@Localizer["system_state_machine_are_you_sure_text"] <span class="workflow-title"></span> ?</p>
+            </div>
+            <div>
+                <button id="submit-delete" type="button" class="btn btn-primary d-flex align-items-center ml-auto">
+                    <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="16.001" height="16" viewBox="0 0 16.001 16">
+                        <path id="Icon" d="M8,16a8,8,0,1,1,8-8A8.009,8.009,0,0,1,8,16ZM8,1.6A6.4,6.4,0,1,0,14.4,8,6.407,6.407,0,0,0,8,1.6ZM6.4,12h0L3.2,8.8,4.328,7.672,6.4,9.736l5.272-5.272L12.8,5.6,6.4,12Z" transform="translate(0)" fill="#fff" />
+                    </svg>
+                    @Localizer["system_taskmanager_yes"]
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+
+    <!--Conncetion modal template-->
+    <script id="coonection-modal" type="text/x-jsrender">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="">
+                    <button type="button" class="close p-0" data-dismiss="modal" aria-label="Close">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form id="edit-transition">
+                    <div class="form-group">
+                        <label for="edit-transition-title">@Localizer["system_state_machine_connection_title"]</label>
+                        <input type="text" id="edit-transition-title" name="title" class="form-control" value="{{:name}}">
+                    </div>
+                    <div class="row">
+                        <div class="col-6 roles">
+                            <span class="h6">@Localizer["system_state_machine_transition_roles"]</span>
+                            {{for ~roles tmpl="#checkboxTemplate" /}}
+                        </div>
+                        <div class="col-6 actions">
+                            <span class="h6">@Localizer["system_state_machine_transition_actions"]</span>
+                            {{for ~actions tmpl="#checkboxTemplate" /}}
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-6">
+                            <button class="connection-delete btn btn-danger text-white w-100" data-conn-id="{{:id}}">
+                                Delete connection
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button id="edit-transition-submit" type="submit" class="btn btn-outline-primary w-100">
+                                @Localizer["save"]
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+
+    <!--Edit workflow modal template-->
+    <script id="edit-workflow-modal" type="text/x-jsrender">
+        <div class="modal-dialog" role="document" data-workflow-id="{{:~id}}">
+            <div class="modal-content">
+                <div class="">
+                    <button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <ul class="nav nav-tabs iso-tabs">
+                    <li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#details-tab">@Localizer["system_state_machine_workflow_details"]</a></li>
+                    <li><a class="nav-link" data-toggle="tab" href="#workflow-states-tab">@Localizer["system_state_machine_states"]</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="details-tab" class="tab-pane fade in active show">
+                        <form id="edit-workflow">
+                            <div class="form-group">
+                                <label for="edit-workflow-title">@Localizer["system_state_machine_transition_title"]</label>
+                                <input type="text" id="edit-workflow-title" name="title" class="form-control" value="{{:name}}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-workflow-description">@Localizer["system_state_machine_transition_description"]</label>
+                                <textarea id="edit-workflow-description" class="form-control">{{:description}}</textarea>
+                            </div>
+                            <button id="edit-workflow-submit" type="submit" class="mt-4 btn btn-outline-primary w-100">
+                                @Localizer["save"]
+                            </button>
+                        </form>
+                    </div>
+                    <div id="workflow-states-tab" class="tab-pane fade">
+                        <div class="states-list">
+                        </div>
+                        <form class="mt-4" id="add-state">
+                            <div class="form-group d-flex">
+                                <input type="text" class="form-control" id="add-new-state-name" required placeholder="@Localizer["system_state_machine_add_new_state"]">
+                                <button class="btn btn-success py-0 px-2" id="add-new-state-button" type="submit">
+                                    <i class="material-icons d-block">add</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!--Edit state modal template-->
+    <script id="edit-state-modal" type="text/x-jsrender">
+        <div class="modal-dialog" role="document" data-state-id="{{:id}}">
+            <div class="modal-content">
+                <div class="">
+                    <button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form id="edit-state">
+                    <div class="form-group">
+                        <label for="edit-state-title">@Localizer["system_state_machine_transition_title"]</label>
+                        <input type="text" id="edit-state-title" name="title" class="form-control" value="{{:name}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-state-description">@Localizer["system_state_machine_transition_description"]</label>
+                        <textarea id="edit-state-description" class="form-control">{{:description}}</textarea>
+                    </div>
+                    <div class="start-end-state">
+                        <div class="custom-control custom-checkbox {{if isEndState}}unavailable{{/if}}">
+                            <input type="checkbox" class="custom-control-input" id="transition_start_state" {{if isStartState}} checked {{/if}}>
+                            <label class="custom-control-label" for="transition_start_state">@Localizer["system_state_machine_state_start"]</label>
+                        </div>
+                        <div class="custom-control custom-checkbox {{if isStartState}}unavailable{{/if}}">
+                            <input type="checkbox" class="custom-control-input" id="transition_end_state" {{if isEndState}} checked {{/if}}>
+                            <label class="custom-control-label" for="transition_end_state">@Localizer["system_state_machine_state_end"]</label>
+                        </div>
+                    </div>
+                    <button id="edit-state-submit" type="submit" class="mt-4 btn btn-outline-primary w-100">
+                        @Localizer["save"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </script>
+
+    <!--State box template-->
+    <script id="state-template" type="text/x-jsrender">
+        <div class="w" data-state-id="{{:id}}" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
+            <a class="state-edit mr-2">
+                <i class="material-icons">edit</i>
+            </a>
+            <span class="state-name">
+                {{:name}}
+            </span>
+            <div class="ep" action="{{:id}}"></div>
+        </div>
+    </script>
+
+    <!--Checkox template-->
+    <script id="checkboxTemplate" type="text/x-jsrender">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="task-item-status custom-control-input" id="{{:id}}" {{if enabled}} checked {{/if}}>
+            <label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+        </div>
+    </script>
+
+    <!--State edit workflow template-->
+    <script id="checkboxDeleteTemplate" type="text/x-jsrender">
+        <div class="d-flex mb-2 state-item" data-state-id="{{:id}}">
+            <span>{{:name}}</span>
+            <span class="state-delete btn btn-outline-danger p-0 ml-auto">
+                <i class="material-icons d-block">close</i>
+            </span>
+        </div>
+    </script>
+
+    <!--Workflow list template-->
+    <script id="workflow-template" type="text/x-jsrender">
+        <div class="workflow d-flex align-items-center" data-workflow-id="{{:id}}" id="{{:id}}">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="check-{{:id}}" class="custom-control-input workflow-list-checkbox" {{if enabled}} checked {{/if}}>
+                <label class="custom-control-label" for="check-{{:id}}">{{:name}}</label>
+            </div>
+            <div class="workflow-actions ml-auto">
+                <span class="workflow-actions-more">
+                    <i class="material-icons more-icon">more_vert</i>
+                </span>
+                <span class="workflow-actions-expandable">
+                    <a class="workflow-load ml-3">
+                        <i class="material-icons">archive</i>
+                    </a>
+                    <a class="workflow-edit">
+                        <i class="material-icons">edit</i>
+                    </a>
+                    <a class="workflow-delete">
+                        <i class="material-icons">delete_outline</i>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </script>
+
+    <!--Workflow container template-->
+    <script id="workflow-container-template" type="text/x-jsrender">
+        <div class="jtk-workflow h-100">
+            <div class="jtk-canvas canvas-wide jtk-surface jtk-surface-nopan h-100" data-workflow-id="{{:id}}">
+
+            </div>
+        </div>
+    </script>
+
+    <script src="~/lib/jsPlumb/js/jsplumb.min.js"></script>
+    <script src="~/assets/workflow-plugins/workflow-plugin.js"></script>
+    <script src="~/assets/workflow-plugins/workflow.js"></script>
+}

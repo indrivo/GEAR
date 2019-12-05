@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.ViewModels;
 
 namespace GR.WorkFlows.Abstractions.Helpers
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Add mappers")]
     public static class WorkFlowMapper
     {
         /// <summary>
@@ -84,13 +87,27 @@ namespace GR.WorkFlows.Abstractions.Helpers
         /// <param name="states"></param>
         /// <returns></returns>
         public static IEnumerable<StateGetViewModel> Map(IEnumerable<State> states)
-             => states?.Select(state => new StateGetViewModel
-             {
-                 Id = state.Id,
-                 Name = state.Name,
-                 Description = state.Description,
-                 AdditionalSettings = state.AdditionalSettings.Deserialize<Dictionary<string, string>>()
-             });
+             => states?.Select(Map);
+
+        /// <summary>
+        /// Map state to view model
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static StateGetViewModel Map(State state)
+        {
+            Arg.NotNull(state, nameof(Map));
+            return new StateGetViewModel
+            {
+                Id = state.Id,
+                Name = state.Name,
+                WorkFlowId = state.WorkFlowId,
+                Description = state.Description,
+                IsStartState = state.IsStartState,
+                IsEndState = state.IsEndState,
+                AdditionalSettings = state.AdditionalSettings.Deserialize<Dictionary<string, string>>()
+            };
+        }
 
         /// <summary>
         /// Map transitions

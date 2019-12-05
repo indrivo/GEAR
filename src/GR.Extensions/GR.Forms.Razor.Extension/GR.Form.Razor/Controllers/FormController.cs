@@ -449,7 +449,7 @@ namespace GR.Forms.Razor.Controllers
         /// </summary>
         private Collection<FormValidation> SystemFieldValidations =>
             _cacheService
-                .Get<Collection<FormValidation>>("_fieldValidations").GetAwaiter().GetResult()
+                .GetAsync<Collection<FormValidation>>("_fieldValidations").GetAwaiter().GetResult()
             ?? GetOrUpdateForm().GetAwaiter().GetResult();
 
         /// <summary>
@@ -530,7 +530,7 @@ namespace GR.Forms.Razor.Controllers
             if (systemValidations != null)
             {
                 await _cacheService
-                    .Set("_fieldValidations", systemValidations);
+                    .SetAsync("_fieldValidations", systemValidations);
             }
             return systemValidations;
         }

@@ -458,7 +458,7 @@ namespace GR.PageRender
         public virtual async Task<Page> GetPageAsync(Guid? pageId)
         {
             if (pageId == null) return null;
-            var cachedPage = await _cacheService.Get<Page>($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
+            var cachedPage = await _cacheService.GetAsync<Page>($"{PageRenderConstants.PageCacheIdentifier}{pageId}");
             if (cachedPage != null) return cachedPage;
             var page = await _pagesContext.Pages
                 .Include(x => x.PageScripts)
@@ -468,7 +468,7 @@ namespace GR.PageRender
                 .Include(x => x.Settings)
                 .Include(x => x.RolePagesAcls)
                 .FirstOrDefaultAsync(x => x.Id.Equals(pageId));
-            await _cacheService.Set($"{PageRenderConstants.PageCacheIdentifier}{pageId}", page);
+            await _cacheService.SetAsync($"{PageRenderConstants.PageCacheIdentifier}{pageId}", page);
             return page;
         }
 

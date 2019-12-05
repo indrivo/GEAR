@@ -53,7 +53,7 @@
 
 
 
-<!-- Modal -->
+<!-- Modal add document -->
 <div class="modal fade" id="AddDocumentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
 	 aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
@@ -126,7 +126,7 @@
 </div>
 
 
-<!-- Modal -->
+<!-- Modal show all document versions -->
 <div class="modal fade bd-example-modal-lg" id="ShowDocumentVersions" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
 	 aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
@@ -161,7 +161,7 @@
 </div>
 
 
-<!-- Modal -->
+<!-- Modal add new document version  -->
 <div class="modal fade" id="AddNewVersionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
 	 aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
@@ -214,6 +214,60 @@
 </div>
 
 
+<!-- Modal edit document info -->
+<div class="modal fade" id="EditDocumentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form id="formEditDocument" role="form" enctype="multipart/form-data">
+					<input id="DocumenEdittId" name="DocumentId" class="form-control" type="hidden" />
+					<input id="DocumenTypeId" name="DocumentTypeId" class="form-control" type="hidden" />
+					<div class="form-body">
+						<div class="row p-t-20">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Document Code</label>
+									<input id="DocumentCode" name="DocumentCode" class="form-control" value="" />
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Tile</label>
+									<input id="Tile" name="Tile" class="form-control" value="" required />
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Description</label>
+									<textarea id="Description" name="Description" class="form-control ckeditor" value=""></textarea>
+
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Group</label>
+									<input id="Group" name="Group" class="form-control" value="" />
+								</div>
+							</div>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-primary">Edit</button>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
+	</div>
+</div>
 
 
 @section Scripts
@@ -346,14 +400,14 @@
 								    </div>
 								</td>
 								<td> ${value.title}</td>
-								<td style="white-space: pre-wrap;">${value.description}</td>
+								<td style="white-space: pre-wrap;">${value.description === null ? "" : value.description}</td>
 								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
 										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
 										.documentType.code ==
 										3
 										? value.lastUrl
 										: value.fileName}</a></td>
-								<td>${value.group}</td>
+								<td>${value.group == null ? "" : value.group}</td>
 								<td>${value.documentType.name}</td>
 								<td> ${value.lastVersion.toFixed(1)}</td>
                                 <td> ${value.isDeleted}</td>
@@ -364,6 +418,7 @@
                                     <button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${
 										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
 										}>New version</button>
+									<button type="button" class="btn btn-light" onclick ="EditDocument('${value.id}')">Edit</button>
                                 </td>
 							</tr>`;
 								$("#tableListDocuments").append(html);
@@ -386,12 +441,13 @@
 
 			console.log($(this).serializeArray());
 
-			$.each($(this).serializeArray(), function (i, input) {
+			$.each($(this).serializeArray(),
+				function(i, input) {
 
-				if (input.name === "IsMajorVersion")
-					input.value = true;
+					if (input.name === "IsMajorVersion")
+						input.value = true;
 
-				formData.append(input.name, input.value);
+					formData.append(input.name, input.value);
 				});
 
 			console.log(formData);
@@ -426,7 +482,7 @@
 
 			$.each($(this).serializeArray(),
 				function(i, input) {
-					formData.append(input.name, input.value)
+					formData.append(input.name, input.value);
 				});
 
 			$.ajax({
@@ -442,6 +498,33 @@
 						$('#AddDocumentModal').modal('hide');
 						$("#formAddDocument").trigger('reset');
 
+					} else {
+						toast.notifyErrorList();
+					}
+				}
+			});
+
+			return false;
+		});
+
+		$("#formEditDocument").submit(function(e) {
+
+			var formData = new FormData();
+
+			$.each($(this).serializeArray(),function(i, input) {
+				formData.append(input.name, input.value);
+			});
+
+			$.ajax({
+				type: "POST",
+				processData: false,
+				contentType: false,
+				url: "/Documents/Edit",
+				data: formData,
+				success: function(data) {
+					if (data.is_success) {
+						GetAllDocuments();
+						$('#EditDocumentModal').modal('hide');
 					} else {
 						toast.notifyErrorList();
 					}
@@ -471,7 +554,7 @@
 					success: function(data) {
 						if (data.is_success) {
 							GetAllDocuments();
-							$(listDocumetId).each(function( index ) {
+							$(listDocumetId).each(function(index) {
 								deleteDocuments(index);
 							});
 						}
@@ -511,6 +594,35 @@
 				}
 			}).catch(e => {
 				toast.notifyErrorList(e);
+			});
+		}
+
+		function EditDocument(documentId) {
+			$.ajax({
+				url: '/Documents/GetDocumentsByIdAsync',
+				method: 'get',
+				contentType: "application/json; charset=utf-8",
+				data: { documentId: documentId },
+				success: function(data) {
+					if (data.is_success) {
+						console.log(data);
+
+						$("#DocumenTypeId").val(data.result.documentTypeId);
+						$("#DocumenEdittId").val(data.result.documentId);
+						$("#DocumentCode").val(data.result.documentCode);
+						$("#Tile").val(data.result.tile);
+						$("#Description").val(data.result.description);
+						$("#Group").val(data.result.group);
+
+						$('#EditDocumentModal').modal('show');
+
+					} else {
+						toast.notifyErrorList(data.error_keys);
+					}
+				},
+				error: function(error) {
+					console.log(error);
+				}
 			});
 		}
 
