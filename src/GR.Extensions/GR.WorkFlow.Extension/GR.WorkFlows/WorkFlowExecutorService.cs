@@ -16,6 +16,7 @@ using GR.WorkFlows.Abstractions.Helpers.ActionHandlers;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GR.WorkFlows
 {
@@ -40,13 +41,19 @@ namespace GR.WorkFlows
         /// </summary>
         private readonly IUserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Inject logger
+        /// </summary>
+        private readonly ILogger<WorkFlowExecutorService> _logger;
+
         #endregion
 
-        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager)
+        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager, ILogger<WorkFlowExecutorService> logger)
         {
             _workFlowCreatorService = workFlowCreatorService;
             _workFlowContext = workFlowContext;
             _userManager = userManager;
+            _logger = logger;
         }
 
         /// <summary>
@@ -60,7 +67,7 @@ namespace GR.WorkFlows
             var contractRequest = await GetEntityContractsAsync(entityName);
             if (!contractRequest.IsSuccess) return contractRequest.ToBase();
             var contracts = contractRequest.Result;
-            foreach (var contract in contracts)
+            foreach (var contract in contracts.Where(x => x.WorkFlow.Enabled).ToList())
             {
                 var workflowRequest = await _workFlowCreatorService.GetWorkFlowByIdAsync(contract.WorkFlowId);
                 if (!workflowRequest.IsSuccess) continue;
@@ -200,6 +207,24 @@ namespace GR.WorkFlows
         }
 
         /// <summary>
+        /// Remove entity contract
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> RemoveEntityContractToWorkFlowAsync(string entityName, Guid? workFlowId)
+        {
+            if (entityName.IsNullOrEmpty() || workFlowId == null) return new InvalidParametersResultModel();
+            var contract = await _workFlowContext.Contracts
+                .AsNoTracking()
+                .Include(x => x.WorkFlowId)
+                .FirstOrDefaultAsync(x => x.EntityName.Equals(entityName) && x.WorkFlowId.Equals(workFlowId));
+            if (contract == null) return new NotFoundResultModel();
+            _workFlowContext.Contracts.Remove(contract);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
         /// Check for registered contract to entity
         /// </summary>
         /// <param name="entityName"></param>
@@ -334,12 +359,18 @@ namespace GR.WorkFlows
                 try
                 {
                     var type = assembly.GetType(action.ClassNameWithNameSpace);
+                    if (type == null)
+                    {
+                        _logger.LogError($"Action {action.Name} was not found");
+                        return;
+                    }
                     var activatedObject = (BaseWorkFlowAction)Activator.CreateInstance(type, transition, nextTransitions);
+                    if (activatedObject == null) return;
                     await activatedObject.InvokeExecuteAsync(data);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    _logger.LogCritical(e, e.Message);
                 }
             }
         }
