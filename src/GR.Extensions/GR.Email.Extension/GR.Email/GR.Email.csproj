@@ -7,8 +7,8 @@
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Description>Email sender for gear</Description>
     <PackageTags>gear c# email sender</PackageTags>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.1</Version>
+
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -36,7 +36,7 @@ using UserProfileViewModel = GR.Identity.Razor.Users.ViewModels.UserProfileViewM
 
 namespace GR.Identity.Razor.Users.Controllers
 {
-    public class UsersController : BaseController<ApplicationDbContext, EntitiesDbContext, ApplicationUser,
+    public class UsersController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser,
         ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
         #region Injections

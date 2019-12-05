@@ -6,11 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using GR.Calendar.Abstractions.BackGroundServices;
 using GR.Calendar.Abstractions.Events;
 using GR.Calendar.Abstractions.Helpers.ServiceBuilders;
+using GR.Core;
+using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 
 
@@ -47,6 +50,10 @@ namespace GR.Calendar.Abstractions.Extensions
             Arg.NotNull(configuration.Services, nameof(AddCalendarModuleStorage));
             configuration.Services.AddDbContext<TDbContext>(options, ServiceLifetime.Transient);
             configuration.Services.AddScopedContextFactory<ICalendarDbContext, TDbContext>();
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+                {
+                    GearApplication.GetHost<IWebHost>().MigrateDbContext<TDbContext>();
+                };
             return configuration;
         }
 

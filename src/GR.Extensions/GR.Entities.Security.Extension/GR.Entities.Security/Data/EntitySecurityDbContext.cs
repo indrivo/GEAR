@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
 using GR.Entities.Security.Abstractions;
@@ -63,9 +64,15 @@ namespace GR.Entities.Security.Data
                 .HasIndex(x => x.TableModelFieldId);
         }
 
-        public DbSet<T> SetEntity<T>() where T : class, IBaseModel
+        public DbSet<T> SetEntity<T>() where T : class, IBaseModel => Set<T>();
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task InvokeSeedAsync()
         {
-            return Set<T>();
+            return Task.CompletedTask;
         }
     }
 }

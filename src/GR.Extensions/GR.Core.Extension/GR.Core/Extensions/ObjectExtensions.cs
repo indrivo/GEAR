@@ -47,6 +47,11 @@ namespace GR.Core.Extensions
         {
             if (source.IsNullOrEmpty()) return null;
             if (typeof(TOutput) == typeof(string)) return source as TOutput;
+            if (typeof(TOutput) == typeof(int))
+            {
+                int.TryParse(source, out var numberValue);
+                return numberValue as TOutput;
+            }
             try
             {
                 return JsonConvert.DeserializeObject<TOutput>(source, serializerSettings ?? SerializeSettings);

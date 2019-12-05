@@ -1,5 +1,8 @@
 ﻿using System;
+using GR.Cache.Abstractions;
+using GR.Core;
 using GR.Core.Events;
+using GR.Core.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Identity.Permissions.Abstractions.Configurators;
 
@@ -15,6 +18,17 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
         public static IServiceCollection AddPermissionService<TPermissionService>(this IServiceCollection services) where TPermissionService : class, IPermissionService
         {
             services.AddTransient<IPermissionService, TPermissionService>();
+            IoC.RegisterTransientService<IPermissionService, TPermissionService>();
+            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
+            {
+                if (!GearApplication.Configured) return;
+                var cacheService = IoC.Resolve<ICacheService>();
+                cacheService.FlushAll();
+
+                var permissionService = IoC.Resolve<IPermissionService>();
+                await permissionService.RefreshCache();
+            };
+
             return services;
         }
 
@@ -29,7 +43,7 @@ namespace GR.Identity.Permissions.Abstractions.Extensions
             where TConfiguration : DefaultPermissionsConfigurator<TPermissionsConstants>
             where TPermissionsConstants : class
         {
-            SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
+            SystemEvents.Database.OnSeed += async (sender, args) =>
             {
                 var instance = Activator.CreateInstance<TConfiguration>();
                 await instance.SeedAsync();

@@ -1,8 +1,6 @@
 ﻿using GR.Audit.Contexts;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using GR.Core.Abstractions;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Models;
@@ -58,6 +56,15 @@ namespace GR.Documents.Data
         public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class, IBaseModel
         {
             return Set<TEntity>();
+        }
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        public virtual Task InvokeSeedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

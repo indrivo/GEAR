@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
+    <ProjectReference Include="..\..\GR.WorkFlow.Extension\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Documents.Abstractions\GR.Documents.Abstractions.csproj" />
   </ItemGroup>
 

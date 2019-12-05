@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GR.Core;
 using GR.Core.Services;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
@@ -39,6 +40,7 @@ namespace GR.Subscriptions.BackgroundServices
         /// <param name="state"></param>
         public override async void Execute(object state)
         {
+            if (!GearApplication.Configured) return;
             var daysNotifySubscription = (await _productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION)).Result ?? "0";
             var expiredRequest = await _subscriptionService.GetExpiredSubscriptionsAsync();
             if (expiredRequest.IsSuccess)
@@ -47,6 +49,8 @@ namespace GR.Subscriptions.BackgroundServices
             var willExpireRequest = await _subscriptionService.GetSubscriptionsThatExpireInAsync(TimeSpan.FromDays(Convert.ToInt32(daysNotifySubscription)));
             if (willExpireRequest.IsSuccess)
                 await _subscriptionService.NotifySubscriptionsThatExpireAsync(willExpireRequest.Result.ToList());
+
+
         }
     }
 }

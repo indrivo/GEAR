@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core;
+using GR.Core.Events;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Events;
@@ -81,7 +84,10 @@ namespace GR.Identity.Abstractions.Extensions
             });
 
             services.RegisterAuditFor<IIdentityContext>("Identity module");
-
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TIdentityContext>();
+            };
             return services;
         }
 

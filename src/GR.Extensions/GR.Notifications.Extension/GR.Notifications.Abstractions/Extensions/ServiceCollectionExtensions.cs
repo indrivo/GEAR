@@ -2,13 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
+using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ServiceBuilder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.Notifications.Abstractions.Extensions
 {
@@ -42,6 +45,10 @@ namespace GR.Notifications.Abstractions.Extensions
             services.Services.AddDbContext<TContext>(options);
             services.Services.AddScopedContextFactory<INotificationDbContext, TContext>();
             services.Services.RegisterAuditFor<INotificationDbContext>("Notification module");
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
+            };
             return services;
         }
 
@@ -54,6 +61,7 @@ namespace GR.Notifications.Abstractions.Extensions
         {
             SystemEvents.Application.OnEvent += async delegate (object sender, ApplicationEventEventArgs ev)
             {
+                if (!GearApplication.Configured) return;
                 try
                 {
                     if (string.IsNullOrEmpty(ev.EventName)) return;
@@ -77,7 +85,7 @@ namespace GR.Notifications.Abstractions.Extensions
                         NotificationTypeId = NotificationType.Info
                     };
 
-                    await notifier.SendNotificationAsync(subscribedRoles.Result, notification);
+                    await notifier.SendNotificationAsync(subscribedRoles.Result, notification, null);
                 }
                 catch (Exception e)
                 {
@@ -85,7 +93,7 @@ namespace GR.Notifications.Abstractions.Extensions
                 }
             };
 
-            SystemEvents.Application.OnApplicationStarted += async delegate
+            SystemEvents.Database.OnSeed += async delegate
             {
                 try
                 {

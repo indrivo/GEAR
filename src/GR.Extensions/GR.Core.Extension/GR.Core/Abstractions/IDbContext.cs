@@ -34,5 +34,11 @@ namespace GR.Core.Abstractions
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken());
+
+        /// <summary>
+        /// Seed data
+        /// </summary>
+        /// <returns></returns>
+        Task InvokeSeedAsync();
     }
 }

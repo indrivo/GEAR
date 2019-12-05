@@ -90,12 +90,7 @@ namespace GR.Entities
                 if (foreignSchema == null) return rs;
                 if (foreignTable != null)
                 {
-                    if (foreignTable.IsPartOfDbContext)
-                        foreignSchema.Value = foreignTable.EntityType;
-                    else if (foreignTable.EntityType != GearSettings.DEFAULT_ENTITY_SCHEMA)
-                    {
-                        foreignSchema.Value = GearSettings.DEFAULT_ENTITY_SCHEMA;
-                    }
+                    foreignSchema.Value = foreignTable.IsPartOfDbContext ? foreignTable.EntityType : GearSettings.DEFAULT_ENTITY_SCHEMA;
                 }
                 var exist = data.FirstOrDefault(x =>
                     x.Name == nameof(TableFieldConfigCode.Reference.ForeingSchemaTable));

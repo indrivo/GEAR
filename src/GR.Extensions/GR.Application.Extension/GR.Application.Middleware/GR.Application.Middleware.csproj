@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
+    <Version>1.0.2</Version>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <PackageReleaseNotes>- Add middleware for gear web app</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

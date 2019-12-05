@@ -51,7 +51,6 @@ namespace GR.MobilPay
 
         #endregion
 
-
         public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService,
             IPaymentService paymentService,
             IUserManager<ApplicationUser> userManager,

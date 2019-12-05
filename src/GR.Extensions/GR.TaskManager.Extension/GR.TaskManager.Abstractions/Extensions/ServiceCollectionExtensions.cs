@@ -1,9 +1,12 @@
 ﻿using System;
+using GR.Core;
+using GR.Core.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.TaskManager.Abstractions.BackgroundServices;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GR.TaskManager.Abstractions.Extensions
 {
@@ -38,6 +41,10 @@ namespace GR.TaskManager.Abstractions.Extensions
         {
             services.AddScopedContextFactory<ITaskManagerContext, TTaskManagerContext>();
             services.AddDbContext<TTaskManagerContext>(options, ServiceLifetime.Transient);
+            SystemEvents.Database.OnMigrate += (sender, args) =>
+            {
+                GearApplication.GetHost<IWebHost>().MigrateDbContext<TTaskManagerContext>();
+            };
             return services;
         }
     }

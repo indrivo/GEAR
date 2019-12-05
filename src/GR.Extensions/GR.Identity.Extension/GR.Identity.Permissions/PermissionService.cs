@@ -137,7 +137,7 @@ namespace GR.Identity.Permissions
         {
             var roles = await RolesPermissionsAsync();
             var store = roles.ToDictionary(role => role.Name, role => role.Permissions.Select(x => x.PermissionKey));
-            await _cache.Set(CacheKeyName, store);
+            await _cache.SetAsync(CacheKeyName, store);
             return store;
         }
 
@@ -151,7 +151,7 @@ namespace GR.Identity.Permissions
         /// <returns></returns>
         public async Task RefreshCacheByRole(string roleName, bool delete = false)
         {
-            var storeDictionary = await _cache.Get<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
+            var storeDictionary = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName);
             if (delete)
             {
                 if (storeDictionary.ContainsKey(roleName))
@@ -186,7 +186,7 @@ namespace GR.Identity.Permissions
                 storeDictionary.Add(data.Name, data.Permissions.Select(x => x.PermissionKey));
             }
 
-            await _cache.Set(CacheKeyName, storeDictionary);
+            await _cache.SetAsync(CacheKeyName, storeDictionary);
         }
 
         /// <inheritdoc />
@@ -200,7 +200,7 @@ namespace GR.Identity.Permissions
         {
             var match = new List<string>();
             if (!userPermissions.Any() || !roles.Any()) return false;
-            var data = await _cache.Get<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await RefreshCache();
+            var data = await _cache.GetAsync<Dictionary<string, IEnumerable<string>>>(CacheKeyName) ?? await RefreshCache();
             try
             {
                 foreach (var role in data)

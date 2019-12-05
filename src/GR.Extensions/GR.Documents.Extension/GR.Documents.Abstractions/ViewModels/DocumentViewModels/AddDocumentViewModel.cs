@@ -10,7 +10,7 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
 {
     public class AddDocumentViewModel
     {
-        
+        public Guid  DocumentId { get; set; }
         public string DocumentCode { get; set; }
         [Required]
         public string Tile { get; set; }
