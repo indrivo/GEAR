@@ -29,20 +29,7 @@ namespace GR.Documents
             WorkFlowExecutorService = workFlowExecutorService;
         }
 
-        /// <summary>
-        /// Add document
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        //public override async Task<ResultModel> AddDocumentAsync(AddDocumentViewModel model)
-        //{
-        //    var addNewVersionRequest = await base.AddDocumentAsync(model);
-        //    if (!addNewVersionRequest.IsSuccess) return addNewVersionRequest;
-        //    var entryId = (Guid)addNewVersionRequest.Result;
-        //    //TODO: Discuss with Ion if is the current implementation retrieve document version
-        //    return await WorkFlowExecutorService.SetStartStateForEntryAsync(nameof(DocumentVersion), entryId.ToString());
-        //}
-
+        
         /// <summary>
         /// Add new document version
         /// </summary>
