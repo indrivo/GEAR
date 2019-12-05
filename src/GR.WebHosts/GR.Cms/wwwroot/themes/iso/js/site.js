@@ -1288,6 +1288,7 @@ if (typeof TableInlineEdit !== "undefined") {
                             }
                             break;
                         case "int32":
+                        case "int":
                         case "decimal":
                             {
                                 container = this.getNumberEditCell(data);

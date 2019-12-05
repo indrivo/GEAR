@@ -84,9 +84,8 @@ namespace GR.PageRender.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> TemplateEdit(ViewModelFields model)
         {
-            if (!ModelState.IsValid) return View(model);
             var updateRequest = await _viewModelService.UpdateViewModelFieldTemplateAsync(model);
-            if (updateRequest.IsSuccess) return RedirectToAction("OrderFields", new { updateRequest.Result });
+            if (updateRequest.IsSuccess) return RedirectToAction("OrderFields", new { Id = updateRequest.Result });
             ModelState.AppendResultModelErrors(updateRequest.Errors);
             return View(model);
         }
