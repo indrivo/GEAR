@@ -1,0 +1,411 @@
+﻿html {
+    overflow-y: hidden;
+}
+
+.st-mch-loader {
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 99;
+}
+
+.state-machine-loader {
+    background-color: white;
+    border: 1px solid rgba(0,0,0,0.125);
+    display: flex;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+.modal-confirm-delete .modal-content {
+    background-color: #fff;
+    padding: 50px 30px;
+}
+
+.weight-500 {
+    font-weight: 500;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+.mb-40px {
+    margin-bottom: 40px;
+}
+
+.bt-1 {
+    border-top: 1px solid #D8DCE0;
+}
+
+.unavailable {
+    pointer-events: none;
+    opacity: 0.7;
+    cursor: wait;
+}
+
+    .unavailable .btn {
+        pointer-events: none;
+        cursor: wait;
+    }
+
+.custom-checkbox label,
+.custom-checkbox input {
+    cursor: pointer;
+}
+
+.w {
+    min-width: 100px;
+    text-align: center;
+    padding: 16px;
+    padding-right: 26px;
+    position: absolute;
+    z-index: 4;
+    border: 1px solid #2e6f9a;
+    box-shadow: 2px 2px 19px #e0e0e0;
+    -o-box-shadow: 2px 2px 19px #e0e0e0;
+    -webkit-box-shadow: 2px 2px 19px #e0e0e0;
+    -moz-box-shadow: 2px 2px 19px #e0e0e0;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: move;
+    background-color: white;
+    -webkit-transition: background-color 0.25s ease-in;
+    -moz-transition: background-color 0.25s ease-in;
+    transition: background-color 0.25s ease-in;
+    display: flex;
+    align-items: center;
+}
+
+    .w:hover {
+        background-color: #5c96bc;
+        color: white;
+    }
+
+    .w .state-edit {
+        cursor: pointer;
+        display: flex;
+    }
+
+        .w .state-edit i {
+            font-size: 15px;
+        }
+
+.aLabel {
+    -webkit-transition: background-color 0.25s ease-in;
+    -moz-transition: background-color 0.25s ease-in;
+    transition: background-color 0.25s ease-in;
+}
+
+    .aLabel.jtk-hover, .jtk-source-hover, .jtk-target-hover {
+        background-color: #1e8151;
+        color: white;
+    }
+
+.aLabel {
+    background-color: white;
+    opacity: 0.8;
+    padding: 0.3em;
+    border-radius: 0.5em;
+    border: 1px solid #346789;
+    cursor: pointer;
+}
+
+.ep {
+    position: absolute;
+    bottom: 37%;
+    right: 5px;
+    width: 1em;
+    height: 1em;
+    background-color: orange;
+    cursor: pointer;
+    box-shadow: 0 0 2px black;
+    -webkit-transition: -webkit-box-shadow 0.25s ease-in;
+    -moz-transition: -moz-box-shadow 0.25s ease-in;
+    transition: box-shadow 0.25s ease-in;
+}
+
+    .ep:hover {
+        box-shadow: 0 0 6px black;
+    }
+
+.jtk-canvas .jtk-endpoint {
+    z-index: 3;
+}
+
+.dragHover {
+    border: 2px solid orange;
+}
+
+path, .jtk-endpoint {
+    cursor: pointer;
+}
+
+.jtk-bootstrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+    .jtk-bootstrap .jtk-page-container {
+        display: flex;
+        width: 100vw;
+        justify-content: center;
+        flex: 1;
+    }
+
+    .jtk-bootstrap .jtk-container {
+        width: 60%;
+        max-width: 800px;
+    }
+
+.jtk-bootstrap-wide .jtk-container {
+    width: 80%;
+    max-width: 1187px;
+}
+
+.jtk-workflow {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.jtk-demo-inner {
+    display: flex;
+}
+
+.jtk-workflow .description {
+    font-size: 13px;
+    margin-top: 25px;
+    padding: 13px;
+    margin-bottom: 22px;
+    background-color: #f4f5ef;
+}
+
+    .jtk-workflow .description li {
+        list-style-type: disc !important;
+    }
+
+.jtk-canvas {
+    border: 1px solid #CCC;
+    background-color: white;
+    display: flex;
+    flex-grow: 1;
+    position: relative;
+}
+
+.canvas-wide {
+    margin-left: 0;
+}
+
+.miniview {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    z-index: 100;
+}
+
+
+.jtk-demo-dataset {
+    text-align: left;
+    max-height: 600px;
+    overflow: auto;
+}
+
+.demo-title {
+    float: left;
+    font-size: 18px;
+}
+
+.controls {
+    top: 25px;
+    color: #FFF;
+    margin-right: 10px;
+    position: absolute;
+    left: 25px;
+    z-index: 1;
+    display: flex;
+}
+
+    .controls i {
+        background-color: #5184a0;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 4px;
+        padding: 4px;
+    }
+
+li {
+    list-style-type: none;
+}
+
+
+.jtk-surface-pan {
+    display: none;
+}
+
+.jtk-connector {
+    z-index: 9;
+}
+
+    .jtk-connector:hover, .jtk-connector.jtk-hover {
+        z-index: 10;
+    }
+
+.jtk-endpoint {
+    z-index: 12;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.jtk-overlay {
+    background-color: white;
+    color: #434343;
+    font-weight: 400;
+    border-radius: 8px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+    .jtk-overlay.jtk-hover {
+        color: #434343;
+    }
+
+        .jtk-overlay.jtk-hover .connection-label {
+            color: #434343;
+            border-color: #1e8151;
+        }
+
+.connection-label {
+    border: 1px solid #5c96bc;
+    border-radius: 8px;
+    padding: 5px 15px;
+}
+
+path {
+    cursor: pointer;
+}
+
+.selected-mode {
+    color: #E4F013;
+}
+
+.connect {
+    width: 10px;
+    height: 10px;
+    background-color: #f76258;
+    position: absolute;
+    bottom: 13px;
+    right: 5px;
+}
+
+.jtk-node {
+    background-color: #5184a0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    position: absolute;
+    z-index: 11;
+    overflow: hidden;
+    min-width: 80px;
+    min-height: 30px;
+    width: auto;
+}
+
+    .jtk-node .name {
+        color: white;
+        cursor: move;
+        font-size: 13px;
+        line-height: 24px;
+        padding: 6px;
+        text-align: center;
+    }
+
+        .jtk-node .name span {
+            cursor: pointer;
+        }
+
+.modal-content {
+    padding: 16px;
+}
+
+#workflow-list .workflow .fa-square {
+    font-size: 20px;
+}
+
+#workflow-list .workflow .more-icon {
+    width: 10px;
+}
+
+.workflow-actions-expandable {
+    width: 0;
+    overflow: hidden;
+    display: inline-flex;
+    transition: 0.5s ease-in-out;
+}
+
+    .workflow-actions-expandable a {
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+    }
+
+        .workflow-actions-expandable a:hover {
+            color: #2862D6 !important;
+            transition: 0.2s ease-in-out;
+        }
+
+.workflow-actions:hover .workflow-actions-expandable {
+    width: 83px;
+    transition: 0.2s ease-in-out;
+}
+
+.workflow-actions .workflow-load:hover i {
+    color: #009010;
+}
+
+.workflow-actions .workflow-edit:hover i {
+    color: #0088FF;
+}
+
+.workflow-actions .workflow-delete:hover i {
+    color: #FF0000;
+}
+
+#add-new-state-name {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+    #add-new-state-name:focus {
+        border-color: inherit;
+        outline: 0;
+        box-shadow: none;
+    }
+
+#add-new-state-button {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.iso-tabs {
+    border-bottom: 2px solid #2862D6 !important;
+}
+
+    .iso-tabs li a {
+        background-color: transparent !important;
+        border: 0 !important;
+        color: #818999 !important;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+        .iso-tabs li a.active {
+            color: #2862D6 !important;
+        }

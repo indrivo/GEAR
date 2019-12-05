@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="libman.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="libman.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
