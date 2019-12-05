@@ -163,6 +163,37 @@ namespace GR.ECommerce.Products.Services
             return new SuccessResultModel<TOutput>(setting.Value.Deserialize<TOutput>());
         }
 
+
+        /// <summary>
+        /// get product by min number value by attribute name 
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute)
+        {
+            int valueInt = 0;
+            var listAttribute = _commerceContext.ProductAttributes
+                .Include(i => i.ProductAttribute)
+                .Include(i=> i.Product)
+                .ThenInclude(i=> i.ProductAttributes)
+                .Where(x => x.ProductAttribute.Name == attribute && int.TryParse(x.Value, out valueInt));
+
+            if (!listAttribute.Any())
+            {
+                return new NotFoundResultModel<Product>();
+            }
+
+            var minValue = listAttribute.Min(x => int.Parse(x.Value));
+            var product = (await listAttribute.FirstOrDefaultAsync(x => int.Parse(x.Value) == minValue))?.Product;
+
+            var resultModel = new ResultModel<Product>();
+
+            resultModel.IsSuccess = true;
+            resultModel.Result = product;
+
+            return resultModel;
+        }
+
         /// <summary>
         /// Add or update setting
         /// </summary>

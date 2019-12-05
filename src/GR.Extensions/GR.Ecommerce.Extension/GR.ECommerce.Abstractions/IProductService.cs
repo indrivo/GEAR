@@ -66,5 +66,12 @@ namespace GR.ECommerce.Abstractions
         /// <param name="type"></param>
         /// <returns></returns>
         Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text);
+
+        /// <summary>
+        /// get product by min number value by attribute name 
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute);
     }
 }
