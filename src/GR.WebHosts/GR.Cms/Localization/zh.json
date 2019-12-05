@@ -809,7 +809,7 @@
   "system_state_machine_transition_roles": "角色的允许",
   "system_state_machine_transition_actions": "行动",
   "system_state_machine_state_start": "设置状态为启动国家对于这一工作流程",
-  "system_state_machine_state_end": "设置状态为启动国家对于这一工作流程"
+  "system_state_machine_state_end": "设置状态为启动国家对于这一工作流程",
   "system_document_types": "所有类型的文档",
   "system_documents": "文件"
 }

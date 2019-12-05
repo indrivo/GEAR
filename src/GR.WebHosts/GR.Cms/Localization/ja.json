@@ -809,7 +809,7 @@
   "system_state_machine_transition_roles": "役割可",
   "system_state_machine_transition_actions": "行動",
   "system_state_machine_state_start": "設定状態として開始状態でこのワークフロー",
-  "system_state_machine_state_end": "設定状態として開始状態でこのワークフロー"
+  "system_state_machine_state_end": "設定状態として開始状態でこのワークフロー",
   "system_document_types": "すべての種類の書類",
   "system_documents": "書類"
 }

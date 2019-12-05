@@ -809,7 +809,7 @@
   "system_state_machine_transition_roles": "Rollen dürfen",
   "system_state_machine_transition_actions": "Aktionen",
   "system_state_machine_state_start": "Set Status als start-Status für diesen workflow",
-  "system_state_machine_state_end": "Set Status als start-Status für diesen workflow"
+  "system_state_machine_state_end": "Set Status als start-Status für diesen workflow",
   "system_document_types": "Alle Arten von Dokumenten",
   "system_documents": "Dokumente"
 }

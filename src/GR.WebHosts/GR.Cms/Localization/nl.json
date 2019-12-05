@@ -809,7 +809,7 @@
   "system_state_machine_transition_roles": "Rollen toegestaan",
   "system_state_machine_transition_actions": "Acties",
   "system_state_machine_state_start": "Ingesteld staat als start staat voor deze workflow",
-  "system_state_machine_state_end": "Ingesteld staat als start staat voor deze workflow"
+  "system_state_machine_state_end": "Ingesteld staat als start staat voor deze workflow",
   "system_document_types": "Alle soorten documenten",
   "system_documents": "Documenten"
 }

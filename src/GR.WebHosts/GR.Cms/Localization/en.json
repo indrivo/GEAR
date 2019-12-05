@@ -809,7 +809,7 @@
   "system_state_machine_transition_roles": "Roles allowed",
   "system_state_machine_transition_actions": "Actions",
   "system_state_machine_state_start": "Set state as start state for this workflow",
-  "system_state_machine_state_end": "Set state as end state for this workflow"
+  "system_state_machine_state_end": "Set state as end state for this workflow",
   "system_document_types": "Document types",
   "system_documents": "Documents"
 }
