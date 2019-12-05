@@ -47,11 +47,6 @@ namespace GR.Cms.Controllers
 			ViewBag.TotalSessions = _hub.GetSessionsCount();
 			return View();
 		}
-		public IActionResult Testplumber()
-		{
-			return View();
-		}
-
 		
 		/// <summary>
 		/// Error page
