@@ -416,7 +416,7 @@
 								<td>${value.documentType.name}</td>
 								<td> ${value.lastVersion.toFixed(1)}</td>
 								<td id="${value.lastVersionId}">
-									${htmlStatus(value.lastVersionId, value.currentStateName, value.listNextState)}
+									${value.documentType.code == 1 ? htmlStatus(value.lastVersionId, value.currentStateName, value.listNextState) : ""}
 								</td>
 
                                 <td> ${

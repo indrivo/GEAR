@@ -67,11 +67,19 @@ namespace GR.Documents.Razor.Controllers
             var listDocument = result.Result;
             foreach (var document in listDocument)
             {
-                var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result.FirstOrDefault()?.Contract?.WorkFlowId;
-                if (workFlow != null)
+                if (document.DocumentType.Code == 1)
                 {
-                    document.CurrentStateName = (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(), workFlow)).Result.State.Name;
-                    document.ListNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                    var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
+                        .FirstOrDefault()?.Contract?.WorkFlowId;
+                    if (workFlow != null)
+                    {
+                        document.CurrentStateName =
+                            (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
+                                workFlow)).Result.State.Name;
+                        document.ListNextState =
+                            (await _workFlowExecutorService.GetNextStatesForEntryAsync(
+                                document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                    }
                 }
 
             }
@@ -216,7 +224,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> ChangeDocumentStatus(ChangeDocumentStatusViewModel model)
         {
-            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(model.EntryId, model.WorkFlowId,model.NewStateId);
+            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(model.EntryId, model.WorkFlowId, model.NewStateId);
 
             if (!result.IsSuccess)
             {
@@ -229,7 +237,7 @@ namespace GR.Documents.Razor.Controllers
             var resultModel = new ResultModel();
 
             resultModel.IsSuccess = currentStateName != null;
-            resultModel.Result = new {model.EntryId, currentStateName, listNextState};
+            resultModel.Result = new { model.EntryId, currentStateName, listNextState };
 
             return Json(resultModel);
         }
