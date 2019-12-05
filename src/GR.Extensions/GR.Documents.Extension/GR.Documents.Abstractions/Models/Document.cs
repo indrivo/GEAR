@@ -60,6 +60,11 @@ namespace GR.Documents.Abstractions.Models
         public virtual Guid? LastFileId => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileStorageId;
 
         /// <summary>
+        /// last version Id
+        /// </summary>
+        public virtual Guid? LastVersionId =>DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Id;
+
+        /// <summary>
         /// File name 
         /// </summary>
         public virtual string FileName => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileName;

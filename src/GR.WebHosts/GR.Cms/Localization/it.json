@@ -810,4 +810,6 @@
   "system_state_machine_transition_actions": "Azioni",
   "system_state_machine_state_start": "Impostare lo stato come stato di inizio per il flusso di lavoro",
   "system_state_machine_state_end": "Impostare lo stato come stato di inizio per il flusso di lavoro"
+  "system_document_types": "Tutti i tipi di documenti",
+  "system_documents": "Documenti"
 }

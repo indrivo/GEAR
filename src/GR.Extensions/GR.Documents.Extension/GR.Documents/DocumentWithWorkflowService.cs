@@ -13,7 +13,7 @@ using GR.WorkFlows.Abstractions;
 namespace GR.Documents
 {
     [Author(Authors.LUPEI_NICOLAE, 1.1, "Override methods for init start state of entry")]
-    public class DocumentWithWorkflowService : DocumentService
+    public class DocumentWithWorkflowService : DocumentService, IDocumentServiceWithWorkflow
     {
         #region Injectable
 
@@ -34,14 +34,14 @@ namespace GR.Documents
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public override async Task<ResultModel> AddDocumentAsync(AddDocumentViewModel model)
-        {
-            var addNewVersionRequest = await base.AddDocumentAsync(model);
-            if (!addNewVersionRequest.IsSuccess) return addNewVersionRequest;
-            var entryId = (Guid)addNewVersionRequest.Result;
-            //TODO: Discuss with Ion if is the current implementation retrieve document version
-            return await WorkFlowExecutorService.SetStartStateForEntryAsync(nameof(DocumentVersion), entryId.ToString());
-        }
+        //public override async Task<ResultModel> AddDocumentAsync(AddDocumentViewModel model)
+        //{
+        //    var addNewVersionRequest = await base.AddDocumentAsync(model);
+        //    if (!addNewVersionRequest.IsSuccess) return addNewVersionRequest;
+        //    var entryId = (Guid)addNewVersionRequest.Result;
+        //    //TODO: Discuss with Ion if is the current implementation retrieve document version
+        //    return await WorkFlowExecutorService.SetStartStateForEntryAsync(nameof(DocumentVersion), entryId.ToString());
+        //}
 
         /// <summary>
         /// Add new document version
@@ -53,7 +53,7 @@ namespace GR.Documents
             var addNewVersionRequest = await base.AddNewDocumentVersionAsync(model);
             if (!addNewVersionRequest.IsSuccess) return addNewVersionRequest;
             var entryId = (Guid)addNewVersionRequest.Result;
-            return await WorkFlowExecutorService.SetStartStateForEntryAsync(nameof(DocumentVersion), entryId.ToString());
+            return await WorkFlowExecutorService.SetStartStateForEntryAsync("DocumentVersion", entryId.ToString());
         }
     }
 }

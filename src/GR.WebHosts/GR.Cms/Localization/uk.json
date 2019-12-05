@@ -810,4 +810,6 @@
   "system_state_machine_transition_actions": "Дії",
   "system_state_machine_state_start": "Встановлено стан як стан запуску цього процесу",
   "system_state_machine_state_end": "Встановлено стан як стан запуску цього процесу"
+  "system_document_types": "Види документів",
+  "system_documents": "Документи"
 }

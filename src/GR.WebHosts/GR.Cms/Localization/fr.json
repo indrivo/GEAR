@@ -810,4 +810,6 @@
   "system_state_machine_transition_actions": "Actions",
   "system_state_machine_state_start": "Définir l'état comme état de départ de ce flux de travail",
   "system_state_machine_state_end": "Définir l'état comme état de départ de ce flux de travail"
+  "system_document_types": "Tous les types de documents",
+  "system_documents": "Documents"
 }

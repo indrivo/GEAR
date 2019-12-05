@@ -39,6 +39,20 @@ namespace GR.Documents.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Register Document width Workflow  service
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterDocumentServicesWithWorkflow<TDocumentServiceWithWorkflow>(this IServiceCollection services)
+            where TDocumentServiceWithWorkflow : class, IDocumentServiceWithWorkflow
+        {
+            IoC.RegisterTransientService<IDocumentServiceWithWorkflow, TDocumentServiceWithWorkflow>();
+
+            return services;
+        }
+
+
+        /// <summary>
         /// Register documents context
         /// </summary>
         /// <typeparam name="TDocumentContext"></typeparam>

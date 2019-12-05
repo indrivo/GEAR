@@ -810,4 +810,6 @@
   "system_state_machine_transition_actions": "Acțiuni",
   "system_state_machine_state_start": "Setați starea ca stare de început pentru acest flux de lucru",
   "system_state_machine_state_end": "Setați starea ca stare de sfârșit pentru acest flux de lucru"
+  "system_document_types": "Tipuri de documente",
+  "system_documents": "Documente"
 }
