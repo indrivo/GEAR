@@ -16,6 +16,7 @@
 
 .sidebar ~ .content-area {
 	margin-top: 140px;
+	height: calc(100vh - 140px);
 }
 
 	.sidebar ~ .content-area .sub-nav-container {
@@ -25,7 +26,7 @@
 		width: fill-available;
 		top: 60px;
 		background-color: #f4f6f8;
-		z-index: 8;
+		z-index: 20;
 	}
 
 .list-group-item-header {

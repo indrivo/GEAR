@@ -160,6 +160,15 @@
       "files": [
         "jsviews.min.js"
       ]
+    },
+    {
+      "library": "jsPlumb@2.12.0",
+      "destination": "wwwroot/lib/jsPlumb/",
+      "files": [
+        "js/jsplumb.min.js",
+        "js/jsplumb.js",
+        "css/jsplumbtoolkit-defaults.min.css"
+      ]
     }
   ]
 }

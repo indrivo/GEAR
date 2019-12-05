@@ -13,7 +13,7 @@ namespace GR.Documents.Abstractions
         /// Get all documents
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<Document>>> GetAllDocumentsAsync();
+        Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsAsync();
 
         /// <summary>
         /// Get documents by list id

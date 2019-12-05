@@ -20,6 +20,14 @@ namespace GR.WorkFlows.Abstractions
         Task<ResultModel<Guid>> RegisterEntityContractToWorkFlowAsync([Required] string entityName, Guid? workFlowId);
 
         /// <summary>
+        /// Remove entity contract
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveEntityContractToWorkFlowAsync([Required] string entityName, Guid? workFlowId);
+
+        /// <summary>
         /// Check for registered contract to entity
         /// </summary>
         /// <param name="entityName"></param>
