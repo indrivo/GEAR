@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "设置状态为启动国家对于这一工作流程",
   "system_document_types": "所有类型的文档",
   "system_documents": "文件",
-  "system_workflow_builder": "工作流程生成器"
+  "system_workflow_builder": "工作流程生成器",
+  "system_audit_plan": "审计计划",
+  "system_audit_mission": "特派团的审计 "
 }

@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "Setați starea ca stare de sfârșit pentru acest flux de lucru",
   "system_document_types": "Tipuri de documente",
   "system_documents": "Documente",
-  "system_workflow_builder": "Flux de lucru constructor"
+  "system_workflow_builder": "Flux de lucru constructor",
+  "system_audit_plan": "Planul de audit",
+  "system_audit_mission": "Misiunea de audit "
 }
