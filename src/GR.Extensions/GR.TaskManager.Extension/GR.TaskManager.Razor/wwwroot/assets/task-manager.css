@@ -175,14 +175,66 @@ table th {
     justify-content: center;
 }
 
-.pagination .page-item .page-link i{
-    color: #818999;
-}
+    .pagination .page-item .page-link i {
+        color: #818999;
+    }
 
 .pagination .page-item.active .page-link {
     background-color: #E4E4E4;
 }
 
 .modal-confirm-delete-task {
-    
 }
+
+.table {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+    .table thead tr th {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+.progress-cell {
+    min-width: 180px;
+}
+
+.progress-block {
+    min-width: calc(100% - 23px);
+}
+
+.modal-confirm-delete-task .modal-content {
+    background-color: #fff;
+    padding: 50px 30px;
+}
+
+.absolute-close-button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+.mb-40px {
+    margin-bottom: 40px;
+}
+
+.iso-tabs {
+    border-bottom: 2px solid #2862D6 !important;
+}
+
+    .iso-tabs li a {
+        background-color: transparent !important;
+        border: 0 !important;
+        color: #818999 !important;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+        .iso-tabs li a.active {
+            color: #2862D6 !important;
+        }

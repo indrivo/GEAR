@@ -1,6 +1,6 @@
-﻿const toast = new ToastNotifier();
-class stateMachine {
+﻿class stateMachine {
     constructor() {
+        const toast = new ToastNotifier();
         this.loadRoles();
         this.loadActions();
     }
