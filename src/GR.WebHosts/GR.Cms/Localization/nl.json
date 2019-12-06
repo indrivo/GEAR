@@ -811,5 +811,6 @@
   "system_state_machine_state_start": "Ingesteld staat als start staat voor deze workflow",
   "system_state_machine_state_end": "Ingesteld staat als start staat voor deze workflow",
   "system_document_types": "Alle soorten documenten",
-  "system_documents": "Documenten"
+  "system_documents": "Documenten",
+  "system_workflow_builder": "Workflow builder"
 }
