@@ -42,6 +42,6 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// Execute
         /// </summary>
         /// <returns></returns>
-        public abstract Task InvokeExecuteAsync(Dictionary<string, object> data);
+        public abstract Task InvokeExecuteAsync(Dictionary<string, string> data);
     }
 }

@@ -32,6 +32,7 @@ namespace GR.WorkFlows.Data
         public virtual DbSet<TransitionAction> TransitionActions { get; set; }
         public virtual DbSet<WorkFlowEntityContract> Contracts { get; set; }
         public virtual DbSet<EntryState> EntryStates { get; set; }
+        public virtual DbSet<EntryStateHistory> EntryStateHistories { get; set; }
 
         #endregion
 
@@ -43,6 +44,10 @@ namespace GR.WorkFlows.Data
             builder.Entity<TransitionAction>().HasKey(x => new { x.TransitionId, x.ActionId });
             builder.Entity<EntryState>().HasIndex(x => x.EntryId);
             builder.Entity<WorkFlowEntityContract>().HasIndex(x => x.EntityName);
+            builder.Entity<EntryState>()
+                .HasMany(x => x.EntryStateHistories)
+                .WithOne(x => x.EntryState)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         /// <summary>

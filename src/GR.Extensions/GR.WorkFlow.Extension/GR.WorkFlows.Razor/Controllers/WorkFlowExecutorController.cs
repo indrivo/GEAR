@@ -4,8 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using GR.Core.Attributes.Documentation;
 using GR.Core.BaseControllers;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
+using GR.Core.Helpers.Responses;
 using GR.WorkFlows.Abstractions;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.ViewModels;
@@ -123,15 +125,16 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <summary>
         /// Change state for entry
         /// </summary>
-        /// <param name="entryId"></param>
-        /// <param name="workFlowId"></param>
-        /// <param name="newStateId"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> ChangeStateForEntry([Required]string entryId, [Required] Guid? workFlowId, [Required] Guid? newStateId)
-            => await JsonAsync(_workFlowExecutorService.ChangeStateForEntryAsync(entryId, workFlowId, newStateId));
+        public async Task<JsonResult> ChangeStateForEntry([Required] ObjectChangeStateViewModel model)
+        {
+            if (!ModelState.IsValid) return Json(new InvalidParametersResultModel().AttachModelState(ModelState));
+            return await JsonAsync(_workFlowExecutorService.ChangeStateForEntryAsync(model));
+        }
 
 
         /// <summary>
@@ -145,5 +148,17 @@ namespace GR.WorkFlows.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> RemoveEntityContractToWorkFlow([Required] string entityName, Guid? workFlowId)
             => await JsonAsync(_workFlowExecutorService.RemoveEntityContractToWorkFlowAsync(entityName, workFlowId));
+
+        /// <summary>
+        /// Get entry history
+        /// </summary>
+        /// <param name="workflowId"></param>
+        /// <param name="entryId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<EntryHistoryViewModel>>))]
+        public async Task<JsonResult> GetEntryHistoryByWorkflowId([Required]Guid? workflowId, [Required]string entryId)
+            => await JsonAsync(_workFlowExecutorService.GetEntryHistoryByWorkflowIdAsync(workflowId, entryId));
     }
 }
