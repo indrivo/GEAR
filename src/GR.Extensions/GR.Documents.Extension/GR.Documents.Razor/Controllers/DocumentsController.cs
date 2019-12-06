@@ -4,12 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Helpers;
 using GR.Documents.Abstractions;
-using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using GR.WorkFlows.Abstractions;
-using Mapster;
+using GR.WorkFlows.Abstractions.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -216,21 +214,26 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> ChangeDocumentStatus(ChangeDocumentStatusViewModel model)
         {
-            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(model.EntryId, model.WorkFlowId,model.NewStateId);
-
-            if (!result.IsSuccess)
+            //(model.EntryId, model.WorkFlowId,model.NewStateId
+            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(new ObjectChangeStateViewModel
             {
-                return Json(result);
-            }
+                EntryId = model.EntryId,
+                WorkFlowId = model.WorkFlowId,
+                NewStateId = model.NewStateId
+                //Message = ""
+                //EntryObjectConfiguration = need document
+            });
+
+            if (!result.IsSuccess) return Json(result);
 
             var currentStateName = (await _workFlowExecutorService.GetEntryStateAsync(model.EntryId, model.WorkFlowId)).Result.State.Name;
             var listNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(model.EntryId, model.WorkFlowId)).Result.ToList();
 
-            var resultModel = new ResultModel();
-
-            resultModel.IsSuccess = currentStateName != null;
-            resultModel.Result = new {model.EntryId, currentStateName, listNextState};
-
+            var resultModel = new ResultModel
+            {
+                IsSuccess = currentStateName != null,
+                Result = new { model.EntryId, currentStateName, listNextState }
+            };
             return Json(resultModel);
         }
     }

@@ -811,5 +811,6 @@
   "system_state_machine_state_start": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας",
   "system_state_machine_state_end": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας",
   "system_document_types": "Όλα τα είδη των εγγράφων",
-  "system_documents": "Έγγραφα"
+  "system_documents": "Έγγραφα",
+  "system_workflow_builder": "Workflow builder"
 }

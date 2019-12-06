@@ -811,5 +811,6 @@
   "system_state_machine_state_start": "Impostare lo stato come stato di inizio per il flusso di lavoro",
   "system_state_machine_state_end": "Impostare lo stato come stato di inizio per il flusso di lavoro",
   "system_document_types": "Tutti i tipi di documenti",
-  "system_documents": "Documenti"
+  "system_documents": "Documenti",
+  "system_workflow_builder": "Generatore di flusso di lavoro"
 }
