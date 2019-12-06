@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
@@ -351,14 +350,23 @@ namespace GR.WorkFlows
         /// <returns></returns>
         public virtual async Task ExecuteActionsAsync(Transition transition, Dictionary<string, object> data)
         {
-            var assembly = Assembly.GetExecutingAssembly();
             var actions = transition.TransitionActions.Select(x => x.Action).ToList();
             var nextTransitions = await GetNextTransitionsAsync(transition);
             foreach (var action in actions)
             {
                 try
                 {
-                    var type = assembly.GetType(action.ClassNameWithNameSpace);
+                    Type type = null;
+                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        foreach (var aType in assembly.GetTypes())
+                        {
+                            if (!aType.IsClass || aType.Name != action.ClassName) continue;
+                            type = aType;
+                            break;
+                        }
+                    }
+
                     if (type == null)
                     {
                         _logger.LogError($"Action {action.Name} was not found");
