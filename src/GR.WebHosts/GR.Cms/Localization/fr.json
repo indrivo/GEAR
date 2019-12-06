@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "Définir l'état comme état de départ de ce flux de travail",
   "system_document_types": "Tous les types de documents",
   "system_documents": "Documents",
-  "system_workflow_builder": "Générateur de flux de travaux"
+  "system_workflow_builder": "Générateur de flux de travaux",
+  "system_audit_plan": "Le plan d'audit",
+  "system_audit_mission": "La mission d'audit "
 }

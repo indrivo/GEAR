@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "Ingesteld staat als start staat voor deze workflow",
   "system_document_types": "Alle soorten documenten",
   "system_documents": "Documenten",
-  "system_workflow_builder": "Workflow builder"
+  "system_workflow_builder": "Workflow builder",
+  "system_audit_plan": "De audit plan",
+  "system_audit_mission": "De missie van de audit "
 }

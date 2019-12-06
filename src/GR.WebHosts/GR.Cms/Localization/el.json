@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας",
   "system_document_types": "Όλα τα είδη των εγγράφων",
   "system_documents": "Έγγραφα",
-  "system_workflow_builder": "Workflow builder"
+  "system_workflow_builder": "Workflow builder",
+  "system_audit_plan": "Το σχέδιο ελέγχου",
+  "system_audit_mission": "Αποστολή ελέγχου "
 }

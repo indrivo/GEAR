@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "Set Status als start-Status für diesen workflow",
   "system_document_types": "Alle Arten von Dokumenten",
   "system_documents": "Dokumente",
-  "system_workflow_builder": "Workflow builder"
+  "system_workflow_builder": "Workflow builder",
+  "system_audit_plan": "Audit Plan",
+  "system_audit_mission": "Mission Audit "
 }

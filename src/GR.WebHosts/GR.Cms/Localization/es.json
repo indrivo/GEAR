@@ -812,5 +812,7 @@
   "system_state_machine_state_end": "Conjunto del estado como inicio para este flujo de trabajo",
   "system_document_types": "Todos los tipos de documentos",
   "system_documents": "Documentos",
-  "system_workflow_builder": "Constructor de flujo de trabajo"
+  "system_workflow_builder": "Constructor de flujo de trabajo",
+  "system_audit_plan": "El plan de auditoría",
+  "system_audit_mission": "La misión de la auditoría "
 }
