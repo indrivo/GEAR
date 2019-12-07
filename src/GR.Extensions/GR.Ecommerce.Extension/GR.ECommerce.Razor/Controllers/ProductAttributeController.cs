@@ -10,6 +10,7 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
 using GR.ECommerce.Razor.ViewModels;
 using System.Threading.Tasks;
+using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using GR.ECommerce.Abstractions.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace GR.ECommerce.Razor.ViewModels
+namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
     public class ProductAttributeViewModel : ProductAttribute
     {

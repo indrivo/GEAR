@@ -27,7 +27,6 @@ using GR.MultiTenant.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.Notifications.Abstractions;
-using Resources = GR.MultiTenant.Abstractions.Helpers.Resources;
 
 namespace GR.MultiTenant.Services
 {
@@ -308,9 +307,9 @@ namespace GR.MultiTenant.Services
         /// <returns></returns>
         public virtual byte[] GetDefaultImage()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, Resources.EmbeddedResources.COMPANY_IMAGE);
+            var path = Path.Combine(AppContext.BaseDirectory, MultiTenantResources.EmbeddedResources.COMPANY_IMAGE);
             if (!File.Exists(path))
-                throw new Exception(Resources.Exceptions.E_MULTI_TENANT_COMPANY_IMAGE_NULL);
+                throw new Exception(MultiTenantResources.Exceptions.E_MULTI_TENANT_COMPANY_IMAGE_NULL);
 
             try
             {
@@ -596,7 +595,7 @@ namespace GR.MultiTenant.Services
         public async Task<ResultModel<ApplicationUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId)
         {
             if (tenantId == null) return new InvalidParametersResultModel<ApplicationUser>();
-            var companyAdminRequest = await GetUsersInRoleAsync(tenantId, Resources.Roles.COMPANY_ADMINISTRATOR);
+            var companyAdminRequest = await GetUsersInRoleAsync(tenantId, MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
             if (!companyAdminRequest.IsSuccess) return companyAdminRequest.Map<ApplicationUser>(null);
             var admin = companyAdminRequest.Result.FirstOrDefault();
             if (admin != null) return new SuccessResultModel<ApplicationUser>(admin);

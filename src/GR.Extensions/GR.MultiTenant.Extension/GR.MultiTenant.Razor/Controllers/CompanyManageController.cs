@@ -26,15 +26,15 @@ using GR.Identity.Data;
 using GR.Identity.Permissions.Abstractions;
 using GR.MultiTenant.Abstractions.Events;
 using GR.MultiTenant.Abstractions.Events.EventArgs;
+using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.MultiTenant.Razor.Helpers;
 using GR.Notifications.Abstractions;
 using IdentityServer4.Extensions;
-using Resources = GR.MultiTenant.Abstractions.Helpers.Resources;
 
 namespace GR.MultiTenant.Razor.Controllers
 {
-    [Authorize(Roles = Resources.Roles.COMPANY_ADMINISTRATOR)]
+    [Authorize(Roles = MultiTenantResources.Roles.COMPANY_ADMINISTRATOR)]
     public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser,
         ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
     {
@@ -239,7 +239,7 @@ namespace GR.MultiTenant.Razor.Controllers
                 //send confirm email request
                 await _organizationService.SendConfirmEmailRequest(newCompanyOwner);
 
-                var roleReq = await _userManager.AddToRolesAsync(newCompanyOwner, new List<string> { Resources.Roles.COMPANY_ADMINISTRATOR });
+                var roleReq = await _userManager.AddToRolesAsync(newCompanyOwner, new List<string> { MultiTenantResources.Roles.COMPANY_ADMINISTRATOR });
 
                 if (!roleReq.IsSuccess)
                 {

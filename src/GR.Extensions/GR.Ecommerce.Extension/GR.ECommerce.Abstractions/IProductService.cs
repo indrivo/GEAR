@@ -66,5 +66,34 @@ namespace GR.ECommerce.Abstractions
         /// <param name="type"></param>
         /// <returns></returns>
         Task<ResultModel> AddOrUpdateSettingAsync(string key, object value, CommerceSettingType type = CommerceSettingType.Text);
+
+        /// <summary>
+        /// Get price by variation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<ResultModel> GetPriceByVariationAsync(ProductPriceVariationViewModel model);
+
+        /// <summary>
+        /// Remove attribute
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="attributeId"></param>
+        /// <returns></returns>
+        Task<ResultModel> RemoveAttributeAsync(Guid? productId, Guid? attributeId);
+
+        /// <summary>
+        /// Get commerce general statistic
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        Task<ResultModel<SalesStatisticViewModel>> GetCommerceGeneralStatisticAsync(DateTime? startDate, DateTime? endDate);
+
+        /// <summary>
+        /// Get report for year
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<Dictionary<int, object>>> GetYearReportAsync();
     }
 }

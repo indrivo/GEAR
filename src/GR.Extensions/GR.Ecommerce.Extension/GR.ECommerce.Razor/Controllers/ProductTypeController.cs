@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using GR.Core.Abstractions;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Models;

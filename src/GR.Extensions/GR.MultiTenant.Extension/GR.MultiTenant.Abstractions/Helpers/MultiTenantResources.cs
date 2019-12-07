@@ -1,6 +1,6 @@
 ﻿namespace GR.MultiTenant.Abstractions.Helpers
 {
-    public struct Resources
+    public struct MultiTenantResources
     {
         public struct Translations
         {

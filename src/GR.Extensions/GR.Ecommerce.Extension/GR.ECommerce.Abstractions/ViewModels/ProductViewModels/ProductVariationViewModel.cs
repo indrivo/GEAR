@@ -1,9 +1,9 @@
-﻿using GR.ECommerce.Abstractions.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using GR.ECommerce.Abstractions.Models;
 
-namespace GR.ECommerce.Razor.ViewModels
+namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
     public class ProductVariationViewModel
     {

@@ -1,9 +1,6 @@
 ﻿using GR.ECommerce.Abstractions.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GR.ECommerce.Razor.ViewModels
+namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
     public class ProductOptionViewModel: ProductOption
     {

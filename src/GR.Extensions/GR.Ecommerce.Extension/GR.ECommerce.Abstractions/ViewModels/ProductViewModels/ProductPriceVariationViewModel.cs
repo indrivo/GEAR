@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
-using Remotion.Linq.Parsing.Structure.IntermediateModel;
 
-namespace GR.ECommerce.Razor.ViewModels
+namespace GR.ECommerce.Abstractions.ViewModels.ProductViewModels
 {
     public class ProductPriceVariationViewModel
     {
