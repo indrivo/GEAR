@@ -42,31 +42,10 @@
 	<EmbeddedResource Include="Static\Templates\category.html">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\folders.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\folders_layout.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Static\Templates\notifications.html">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\preview.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\profilefields.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\profilefieldsvalues.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
 	<EmbeddedResource Include="Static\Templates\renderMenu.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\requirements.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\standard.html">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
   </ItemGroup>
