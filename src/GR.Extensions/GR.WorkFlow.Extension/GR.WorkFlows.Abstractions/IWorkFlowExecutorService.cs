@@ -38,10 +38,11 @@ namespace GR.WorkFlows.Abstractions
         /// <summary>
         /// Execute actions
         /// </summary>
+        /// <param name="entry"></param>
         /// <param name="transition"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task ExecuteActionsAsync(Transition transition, Dictionary<string, string> data);
+        Task ExecuteActionsAsync(EntryState entry, Transition transition, Dictionary<string, string> data);
 
         /// <summary>
         /// Force execute transition actions
