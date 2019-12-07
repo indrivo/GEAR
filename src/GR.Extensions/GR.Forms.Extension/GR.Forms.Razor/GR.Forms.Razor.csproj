@@ -7,9 +7,10 @@
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     <Description>Represent UI component for form management</Description>
-    <Copyright>Indrivo</Copyright>
     <Authors>Lupei Nicolae</Authors>
-    <Company>Indrivo  SRL</Company>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Product>UI form management</Product>
   </PropertyGroup>
 

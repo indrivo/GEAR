@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Notifications.Extension"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.MultiTenant.Extension", "GR.MultiTenant.Extension", "{6FE2EAEF-E294-4D4D-BE94-A03D3ABC1653}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Forms.Razor.Extension", "GR.Forms.Razor.Extension", "{6F6983D9-4ABB-4623-88CA-31088CB29A39}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Forms.Extension", "GR.Forms.Extension", "{6F6983D9-4ABB-4623-88CA-31088CB29A39}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Procesess", "src\GR.Extensions\GR.Processes.Extension\GR.Processes\GR.Procesess.csproj", "{14E2739D-1425-4B4C-905B-FDB0D4F13FD3}"
 EndProject
@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Backup.PostgresSql", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Backup.Razor", "src\GR.Extensions\GR.Backup.Extension\GR.Backup.Razor\GR.Backup.Razor.csproj", "{2B532AB2-48B6-4291-9EDB-53939A547CC1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Forms.Razor", "src\GR.Extensions\GR.Forms.Razor.Extension\GR.Form.Razor\GR.Forms.Razor.csproj", "{2433D363-94C9-4205-B7A0-BF6880F33F34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Forms.Razor", "src\GR.Extensions\GR.Forms.Extension\GR.Forms.Razor\GR.Forms.Razor.csproj", "{2433D363-94C9-4205-B7A0-BF6880F33F34}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity", "src\GR.Extensions\GR.Identity.Extension\GR.Identity\GR.Identity.csproj", "{2C1F42A2-564B-48F2-85C9-25B24F02F2DB}"
 EndProject
@@ -93,9 +93,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Report.Abstractions", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Report.Dynamic", "src\GR.Extensions\GR.Report.Extension\GR.Report.Dynamic\GR.Report.Dynamic.csproj", "{852BD136-E1C7-4BC5-AEC7-C694D598D94E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Forms.Abstractions", "src\GR.Extensions\GR.Forms.Razor.Extension\GR.Forms.Abstractions\GR.Forms.Abstractions.csproj", "{09720068-583B-4029-80EA-3F96F63EE8E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Forms.Abstractions", "src\GR.Extensions\GR.Forms.Extension\GR.Forms.Abstractions\GR.Forms.Abstractions.csproj", "{09720068-583B-4029-80EA-3F96F63EE8E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Forms", "src\GR.Extensions\GR.Forms.Razor.Extension\GR.Forms\GR.Forms.csproj", "{342F50CC-EFB4-4731-8402-9A030115AE47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Forms", "src\GR.Extensions\GR.Forms.Extension\GR.Forms\GR.Forms.csproj", "{342F50CC-EFB4-4731-8402-9A030115AE47}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.MultiTenant.Razor", "src\GR.Extensions\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj", "{AC174814-1F8C-4960-9B4A-067EED8B5546}"
 EndProject

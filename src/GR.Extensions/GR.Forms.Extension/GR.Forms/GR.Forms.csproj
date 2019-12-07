@@ -1,9 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
-    <Company>Indrivo SRL</Company>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Description>One implementation of Form abstractions</Description>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>

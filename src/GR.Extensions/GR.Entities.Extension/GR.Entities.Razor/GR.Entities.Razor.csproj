@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
@@ -26,7 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Forms.Razor.Extension\GR.Forms.Abstractions\GR.Forms.Abstractions.csproj" />
+    <ProjectReference Include="..\..\GR.Forms.Extension\GR.Forms.Abstractions\GR.Forms.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity\GR.Identity.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant.Abstractions\GR.MultiTenant.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />

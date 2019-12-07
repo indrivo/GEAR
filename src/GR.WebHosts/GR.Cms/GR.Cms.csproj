@@ -88,8 +88,8 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Files.Box\GR.Files.Box.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Files.Razor\GR.Files.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Files\GR.Files.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Razor.Extension\GR.Form.Razor\GR.Forms.Razor.csproj" />
-	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Razor.Extension\GR.Forms\GR.Forms.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms.Razor\GR.Forms.Razor.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Forms.Extension\GR.Forms\GR.Forms.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.LdapAuth\GR.Identity.LdapAuth.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Identity.Extension\GR.Identity.Permissions\GR.Identity.Permissions.csproj" />
