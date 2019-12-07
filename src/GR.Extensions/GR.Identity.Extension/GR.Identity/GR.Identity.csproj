@@ -3,8 +3,10 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon />
-    <GRartupObject />
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
   </PropertyGroup>

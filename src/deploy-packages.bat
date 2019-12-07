@@ -91,6 +91,22 @@ dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Abstractions/GR.W
 dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows/GR.WorkFlows.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Razor/GR.WorkFlows.Razor.csproj -o ../../../nupkgs
 
+:: Pack identity modules
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Abstractions/GR.Identity.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity/GR.Identity.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Groups.Razor/GR.Identity.Groups.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Razor.Users/GR.Identity.Razor.Users.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Roles.Razor/GR.Identity.Roles.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Razor/GR.Identity.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.IdentityServer4/GR.Identity.IdentityServer4.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.LdapAuth/GR.Identity.LdapAuth.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.LdapAuth.Abstractions/GR.Identity.LdapAuth.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Permissions.Abstractions/GR.Identity.Permissions.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Permissions/GR.Identity.Permissions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Profile.Abstractions/GR.Identity.Profile.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Profile/GR.Identity.Profile.csproj -o ../../../nupkgs
+
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -170,6 +186,21 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Razor*
+
+::Push Identity modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Groups.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Razor.Users*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Roles.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.IdentityServer4*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.LdapAuth*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.LdapAuth.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Permissions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Permissions.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Profile.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Profile*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

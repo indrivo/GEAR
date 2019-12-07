@@ -287,6 +287,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Roles.Razor", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Identity.Razor.Users", "src\GR.Extensions\GR.Identity.Extension\GR.Identity.Razor.Users\GR.Identity.Razor.Users.csproj", "{A19141B5-44D4-4789-9157-C34718521F17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Demo", "src\GR.WebHosts\GR.Demo\GR.Demo.csproj", "{78392945-BAD6-4C11-BCD0-8A142FE65E62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -924,6 +926,12 @@ Global
 		{A19141B5-44D4-4789-9157-C34718521F17}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A19141B5-44D4-4789-9157-C34718521F17}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{A19141B5-44D4-4789-9157-C34718521F17}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1068,6 +1076,7 @@ Global
 		{77056BF2-D0DC-4BEA-BFC6-205728235A47} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 		{4AD4A550-3E6C-4453-A025-D7FEA1E992CE} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
 		{A19141B5-44D4-4789-9157-C34718521F17} = {E75A6593-EA57-45A2-AC38-EBBBD7E7465E}
+		{78392945-BAD6-4C11-BCD0-8A142FE65E62} = {B51682FE-19A0-493E-A853-C2BC6DE0FE68}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6A849486-D7B5-49D1-94F6-9D173ACBA581}
