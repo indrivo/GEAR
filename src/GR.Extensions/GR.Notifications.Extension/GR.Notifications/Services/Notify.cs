@@ -44,7 +44,7 @@ namespace GR.Notifications.Services
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Constructor
@@ -55,7 +55,7 @@ namespace GR.Notifications.Services
         /// <param name="logger"></param>
         /// <param name="emailSender"></param>
         /// <param name="userManager"></param>
-        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<ApplicationUser> userManager)
+        public Notify(IDynamicService dataService, TContext context, INotificationHub hub, ILogger<Notify<TContext, TRole, TUser>> logger, IEmailSender emailSender, IUserManager<GearUser> userManager)
         {
             _dataService = dataService;
             _context = context;
@@ -75,7 +75,7 @@ namespace GR.Notifications.Services
         /// <returns></returns>
         public virtual async Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification, Guid? tenantId = null)
         {
-            var usersRequest = await _userManager.GetUsersInRolesAsync((IEnumerable<ApplicationRole>)roles, tenantId);
+            var usersRequest = await _userManager.GetUsersInRolesAsync((IEnumerable<GearRole>)roles, tenantId);
             if (!usersRequest.IsSuccess) return;
             var usersUniques = usersRequest.Result.Select(x => Guid.Parse(x.Id)).ToList();
             await SendNotificationAsync(usersUniques, notification);

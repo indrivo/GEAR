@@ -116,6 +116,7 @@ using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Data;
 using GR.Identity.IdentityServer4.Extensions;
+using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Permissions.Abstractions.Extensions;
 using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
@@ -204,7 +205,7 @@ namespace GR.Cms
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment,
 					MigrationsAssembly, HostingEnvironment)
-				.AddIdentityUserManager<IdentityUserManager, ApplicationUser>()
+				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddAppProvider<AppProvider>()
@@ -389,7 +390,7 @@ namespace GR.Cms
 
 			//----------------------------------------Ldap Module-------------------------------------
 			config.GearServices
-				.AddIdentityLdapModule<ApplicationUser, LdapService<ApplicationUser>, LdapUserManager<ApplicationUser>>(
+				.AddIdentityLdapModule<LdapUser, LdapService<LdapUser>, LdapUserManager<LdapUser>>(
 					Configuration);
 
 			//-------------------------------------Commerce module-------------------------------------

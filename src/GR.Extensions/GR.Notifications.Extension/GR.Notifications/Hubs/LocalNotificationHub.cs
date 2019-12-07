@@ -12,10 +12,10 @@ namespace GR.Notifications.Hubs
 {
     public class LocalNotificationHub : INotificationHub
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
         private readonly IHubContext<SignalRNotificationHub> _hub;
 
-        public LocalNotificationHub(UserManager<ApplicationUser> userManager, IHubContext<SignalRNotificationHub> hub)
+        public LocalNotificationHub(UserManager<GearUser> userManager, IHubContext<SignalRNotificationHub> hub)
         {
             _userManager = userManager;
             _hub = hub;
@@ -79,7 +79,7 @@ namespace GR.Notifications.Hubs
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public bool IsUserOnline(ApplicationUser user)
+        public bool IsUserOnline(GearUser user)
         {
             return user == null ? default : GetUserOnlineStatus(Guid.Parse(user.Id));
         }

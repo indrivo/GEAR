@@ -84,7 +84,7 @@ namespace GR.TaskManager.Helpers
         private static TaskAccess GetTaskAccessLevel(Task dbTaskResult, Guid? currentUserId)
         {
             if (dbTaskResult == null) return TaskAccess.Undefined;
-            var userManager = IoC.Resolve<IUserManager<ApplicationUser>>();
+            var userManager = IoC.Resolve<IUserManager<GearUser>>();
             if (currentUserId == null) return TaskAccess.Undefined;
             var taskAuthor = userManager.UserManager.Users.FirstOrDefault(x => x.UserName.Equals(dbTaskResult.Author.Trim()));
             if (taskAuthor != null && taskAuthor.Id.ToGuid().Equals(currentUserId.Value)) return TaskAccess.Author;

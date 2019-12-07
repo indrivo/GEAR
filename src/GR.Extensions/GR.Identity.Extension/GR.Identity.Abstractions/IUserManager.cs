@@ -9,7 +9,7 @@ using GR.Identity.Abstractions.ViewModels.UserViewModels;
 
 namespace GR.Identity.Abstractions
 {
-    public interface IUserManager<TUser> where TUser : ApplicationUser
+    public interface IUserManager<TUser> where TUser : GearUser
     {
         /// <summary>
         /// User manager
@@ -18,7 +18,7 @@ namespace GR.Identity.Abstractions
         /// <summary>
         /// Role manager
         /// </summary>
-        RoleManager<ApplicationRole> RoleManager { get; }
+        RoleManager<GearRole> RoleManager { get; }
 
         /// <summary>
         /// Identity context
@@ -33,7 +33,7 @@ namespace GR.Identity.Abstractions
         /// Get the current user
         /// </summary>
         /// <returns></returns>
-        Task<ResultModel<ApplicationUser>> GetCurrentUserAsync();
+        Task<ResultModel<GearUser>> GetCurrentUserAsync();
 
         /// <summary>
         /// Get roles from claims
@@ -53,14 +53,14 @@ namespace GR.Identity.Abstractions
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        Task<ResultModel> AddToRolesAsync(ApplicationUser user, ICollection<string> roles);
+        Task<ResultModel> AddToRolesAsync(GearUser user, ICollection<string> roles);
 
         /// <summary>
         /// Get user roles
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> GetUserRolesAsync(ApplicationUser user);
+        Task<IEnumerable<GearRole>> GetUserRolesAsync(GearUser user);
 
         /// <summary>
         /// Disable user
@@ -96,7 +96,7 @@ namespace GR.Identity.Abstractions
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> FindRolesByIdAsync(IEnumerable<Guid> ids);
+        Task<IEnumerable<GearRole>> FindRolesByIdAsync(IEnumerable<Guid> ids);
 
         /// <summary>
         /// Get users in roles
@@ -104,6 +104,6 @@ namespace GR.Identity.Abstractions
         /// <param name="roles"></param>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRolesAsync(IEnumerable<ApplicationRole> roles, Guid? tenantId = null);
+        Task<ResultModel<IEnumerable<GearUser>>> GetUsersInRolesAsync(IEnumerable<GearRole> roles, Guid? tenantId = null);
     }
 }

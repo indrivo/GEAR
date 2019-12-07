@@ -57,7 +57,7 @@ namespace GR.WorkFlows.Abstractions
         /// </summary>
         /// <param name="transition"></param>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> GetAllowedRolesToTransitionAsync(Transition transition);
+        Task<IEnumerable<GearRole>> GetAllowedRolesToTransitionAsync(Transition transition);
 
         /// <summary>
         /// Get next possible transitions

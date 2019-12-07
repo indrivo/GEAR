@@ -40,7 +40,7 @@ namespace GR.WorkFlows
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject logger
@@ -49,7 +49,7 @@ namespace GR.WorkFlows
 
         #endregion
 
-        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager, ILogger<WorkFlowExecutorService> logger)
+        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<GearUser> userManager, ILogger<WorkFlowExecutorService> logger)
         {
             _workFlowCreatorService = workFlowCreatorService;
             _workFlowContext = workFlowContext;
@@ -182,11 +182,11 @@ namespace GR.WorkFlows
         /// </summary>
         /// <param name="transition"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ApplicationRole>> GetAllowedRolesToTransitionAsync(Transition transition)
+        public virtual async Task<IEnumerable<GearRole>> GetAllowedRolesToTransitionAsync(Transition transition)
         {
             Arg.NotNull(transition, nameof(GetAllowedRolesToTransitionAsync));
             var roleIds = transition?.TransitionRoles?.Select(x => x.RoleId).ToList() ?? new List<Guid>();
-            var roles = await IoC.Resolve<IUserManager<ApplicationUser>>().FindRolesByIdAsync(roleIds);
+            var roles = await IoC.Resolve<IUserManager<GearUser>>().FindRolesByIdAsync(roleIds);
             return roles.ToList();
         }
 

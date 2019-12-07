@@ -38,7 +38,7 @@ namespace GR.Forms.Razor.Controllers
     /// <summary>
     /// Forms manipulation
     /// </summary>
-    public class FormController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class FormController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
         #region Inject
 
@@ -69,7 +69,7 @@ namespace GR.Forms.Razor.Controllers
         #endregion
 
 
-        public FormController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicService service, IFormService formService, IFormContext formContext, IEntityContext entityContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public FormController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicService service, IFormService formService, IFormContext formContext, IEntityContext entityContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _cacheService = cacheService;
             _service = service;
@@ -246,7 +246,7 @@ namespace GR.Forms.Razor.Controllers
                     TypeId = x.TypeId,
                     Type = x.Type,
                     Description = x.Description,
-                    Author = UserManager.Users.FirstOrDefault(y => y.Id.Equals(x.Author))?.Name,
+                    Author = UserManager.Users.FirstOrDefault(y => y.Id.Equals(x.Author))?.UserName,
                     Changed = x.Changed,
                     ModifiedBy = x.ModifiedBy,
                     TableId = x.TableId

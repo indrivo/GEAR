@@ -18,6 +18,6 @@ namespace GR.Orders.Abstractions.ViewModels.OrderViewModels
         /// <summary>
         /// User
         /// </summary>
-        public ApplicationUser User { get; set; }
+        public GearUser User { get; set; }
     }
 }

@@ -70,7 +70,7 @@ namespace GR.PageRender.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
 
         #endregion
 
@@ -87,7 +87,7 @@ namespace GR.PageRender.Razor.Controllers
         public PageRenderController(ApplicationDbContext appContext,
             IDynamicService service,
             IPageRender pageRender,
-            IMenuService menuService, UserManager<ApplicationUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext)
+            IMenuService menuService, UserManager<GearUser> userManager, IFormContext formContext, IDynamicPagesContext pagesContext)
         {
             _appContext = appContext;
             _service = service;

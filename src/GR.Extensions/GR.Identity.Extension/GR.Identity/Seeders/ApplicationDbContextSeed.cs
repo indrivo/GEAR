@@ -28,8 +28,8 @@ namespace GR.Identity.Seeders
         /// <returns></returns>
         public async Task SeedAsync(ApplicationDbContext context, IServiceProvider services)
         {
-            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+            var userManager = services.GetRequiredService<UserManager<GearUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<GearRole>>();
             var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ApplicationDbContextSeed));
             var baseDirectory = AppContext.BaseDirectory;
             var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "IdentityConfiguration.json"));
@@ -48,7 +48,7 @@ namespace GR.Identity.Seeders
                     role.Created = DateTime.Now;
                     role.Changed = DateTime.Now;
                     role.TenantId = GearSettings.TenantId;
-                    await roleManager.CreateAsync(role.Adapt<ApplicationRole>());
+                    await roleManager.CreateAsync(role.Adapt<GearRole>());
                     await context.SaveChangesAsync();
                 }
                 logger.LogInformation("Roles are synchronized with database");
@@ -73,11 +73,11 @@ namespace GR.Identity.Seeders
             if (entity.ApplicationUsers.Any())
             {
                 var group = context.AuthGroups.FirstOrDefault();
-                foreach (var user in entity.ApplicationUsers.Select(x => x.Adapt<ApplicationUser>()).ToList())
+                foreach (var user in entity.ApplicationUsers.Select(x => x.Adapt<GearUser>()).ToList())
                 {
                     var exists = await userManager.FindByNameAsync(user.UserName);
                     if (exists != null) continue;
-                    var hasher = new PasswordHasher<ApplicationUser>();
+                    var hasher = new PasswordHasher<GearUser>();
                     var passwordHash = hasher.HashPassword(user, user.Password);
                     user.PasswordHash = passwordHash;
                     user.Created = DateTime.Now;

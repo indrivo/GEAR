@@ -35,8 +35,8 @@ using IdentityServer4.Extensions;
 namespace GR.MultiTenant.Razor.Controllers
 {
     [Authorize(Roles = MultiTenantResources.Roles.COMPANY_ADMINISTRATOR)]
-    public class CompanyManageController : BaseCrudController<ApplicationDbContext, ApplicationUser,
-        ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class CompanyManageController : BaseCrudController<ApplicationDbContext, GearUser,
+        ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
         #region Injectable
 
@@ -58,12 +58,12 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject sign in manager
         /// </summary>
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<GearUser> _signInManager;
 
         /// <summary>
         /// Inject permission service
@@ -72,10 +72,10 @@ namespace GR.MultiTenant.Razor.Controllers
 
         #endregion
 
-        public CompanyManageController(UserManager<ApplicationUser> userManager,
-            RoleManager<ApplicationRole> roleManager,
-            ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify,
-            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<ApplicationUser> userManager1, SignInManager<ApplicationUser> signInManager, IPermissionService permissionService) :
+        public CompanyManageController(UserManager<GearUser> userManager,
+            RoleManager<GearRole> roleManager,
+            ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify,
+            IDataFilter dataFilter, IOrganizationService<Tenant> organizationService, IStringLocalizer localizer, IEntityRepository service, IUserManager<GearUser> userManager1, SignInManager<GearUser> signInManager, IPermissionService permissionService) :
             base(userManager, roleManager, applicationDbContext, context, notify, dataFilter, localizer)
         {
             _organizationService = organizationService;
@@ -191,7 +191,7 @@ namespace GR.MultiTenant.Razor.Controllers
                 ModelState.AddModelError(string.Empty, "UserName is used!");
                 return View(data);
             }
-            var newCompanyOwner = new ApplicationUser
+            var newCompanyOwner = new GearUser
             {
                 Email = data.Email,
                 UserName = data.UserName,

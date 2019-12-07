@@ -66,7 +66,7 @@ namespace GR.Notifications.Abstractions.Extensions
                 {
                     if (string.IsNullOrEmpty(ev.EventName)) return;
                     var service = IoC.Resolve<INotificationSubscriptionRepository>();
-                    var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                    var notifier = IoC.Resolve<INotify<GearRole>>();
                     var subscribedRoles = await service.GetRolesSubscribedToEventAsync(ev.EventName);
                     if (!subscribedRoles.IsSuccess) return;
                     var template = await service.GetEventTemplateAsync(ev.EventName);

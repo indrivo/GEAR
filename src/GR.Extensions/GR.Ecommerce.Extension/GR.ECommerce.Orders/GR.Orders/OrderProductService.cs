@@ -55,7 +55,7 @@ namespace GR.Orders
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Cart service
@@ -64,7 +64,7 @@ namespace GR.Orders
 
         #endregion
 
-        public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<ApplicationUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
+        public OrderProductService(ICommerceContext commerceContext, IDataFilter dataFilter, IUserManager<GearUser> userManager, ICartService cartService, IOrderDbContext orderDbContext, IProductService<Product> productService)
         {
             _commerceContext = commerceContext;
             _dataFilter = dataFilter;

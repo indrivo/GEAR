@@ -6,7 +6,7 @@
 @{
     ViewData["Title"] = Localizer["system_my_company"];
     ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
-    var user = (ApplicationUser)ViewBag.User;
+    var user = (GearUser)ViewBag.User;
     var roles = (string)ViewBag.UserRoles;
     var organization = (Tenant)ViewBag.Organization;
     ViewData["TenantCallBackUrl"] = "/CompanyManage";
@@ -35,7 +35,7 @@
         <div class="card h-400">
             <div class="card-body">
                 <div class="mx-3 my-2 px-2">
-                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.Name">
+                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.UserName">
                 </div>
                 <div class="text-center">
                     <h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @user.UserName</h5>

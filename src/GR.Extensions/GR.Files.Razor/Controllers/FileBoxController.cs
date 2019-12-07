@@ -25,9 +25,9 @@ namespace GR.Files.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
-        public FileBoxController(IFileBoxManager fileManager, IUserManager<ApplicationUser> userManager)
+        public FileBoxController(IFileBoxManager fileManager, IUserManager<GearUser> userManager)
         {
             _fileManager = fileManager;
             _userManager = userManager;

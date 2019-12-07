@@ -14,7 +14,7 @@ namespace GR.Procesess.Parsers
 {
     public class ProcessParser : IProcessParser
     {
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly RoleManager<GearRole> _roleManager;
         /// <summary>
         /// Xml as string
         /// </summary>
@@ -31,7 +31,7 @@ namespace GR.Procesess.Parsers
         /// Constructor
         /// </summary>
         /// <param name="roleManager"></param>
-        public ProcessParser(RoleManager<ApplicationRole> roleManager)
+        public ProcessParser(RoleManager<GearRole> roleManager)
         {
             _roleManager = roleManager;
         }

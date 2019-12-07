@@ -15,8 +15,8 @@ namespace GR.TaskManager.Services
 {
     public sealed class TaskManagerNotificationService : ITaskManagerNotificationService
     {
-        private readonly INotify<ApplicationRole> _notify;
-        private readonly IUserManager<ApplicationUser> _identity;
+        private readonly INotify<GearRole> _notify;
+        private readonly IUserManager<GearUser> _identity;
         private readonly ITaskManagerContext _context;
 
         private const string TaskCreated = "Task #{0} has been assigned to you.";
@@ -26,9 +26,9 @@ namespace GR.TaskManager.Services
         private const string TaskTitle = "Task Notification";
         private const string TaskExpires = "Task #{0} expires tomorrow.";
 
-        public TaskManagerNotificationService(IUserManager<ApplicationUser> identity)
+        public TaskManagerNotificationService(IUserManager<GearUser> identity)
         {
-            _notify = IoC.Resolve<INotify<ApplicationRole>>();
+            _notify = IoC.Resolve<INotify<GearRole>>();
             _identity = identity;
             _context = IoC.Resolve<ITaskManagerContext>();
         }

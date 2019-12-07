@@ -23,7 +23,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject order service
@@ -32,7 +32,7 @@ namespace GR.ECommerce.Razor.Controllers
 
         #endregion
 
-        public CheckoutController(IUserManager<ApplicationUser> userManager, IOrderProductService<Order> orderProductService)
+        public CheckoutController(IUserManager<GearUser> userManager, IOrderProductService<Order> orderProductService)
         {
             _userManager = userManager;
             _orderProductService = orderProductService;

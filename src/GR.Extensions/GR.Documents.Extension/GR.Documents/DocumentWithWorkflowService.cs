@@ -24,7 +24,7 @@ namespace GR.Documents
 
         #endregion
 
-        public DocumentWithWorkflowService(IDocumentContext documentContext, IUserManager<ApplicationUser> userManager, IFileManager fileManager, IWorkFlowExecutorService workFlowExecutorService) : base(documentContext, userManager, fileManager)
+        public DocumentWithWorkflowService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager, IWorkFlowExecutorService workFlowExecutorService) : base(documentContext, userManager, fileManager)
         {
             WorkFlowExecutorService = workFlowExecutorService;
         }

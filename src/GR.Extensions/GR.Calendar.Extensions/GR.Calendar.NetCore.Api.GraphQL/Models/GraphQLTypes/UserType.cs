@@ -7,7 +7,7 @@ using GR.Identity.Abstractions;
 
 namespace GR.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes
 {
-    public class UserType : ObjectGraphType<ApplicationUser>
+    public class UserType : ObjectGraphType<GearUser>
     {
         public UserType(ICalendarDbContext dbContext)
         {

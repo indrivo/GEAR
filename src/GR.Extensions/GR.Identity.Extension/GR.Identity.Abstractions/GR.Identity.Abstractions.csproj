@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GR.Audit.Extension\GR.Audit\GR.Audit.csproj" />
-    <ProjectReference Include="..\..\GR.Identity.LdapExtension\GR.Identity.LdapAuth.Abstractions\GR.Identity.LdapAuth.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -32,11 +32,11 @@ namespace GR.WorkFlows
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         #endregion
 
-        public WorkFlowCreatorService(IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager)
+        public WorkFlowCreatorService(IWorkFlowContext workFlowContext, IUserManager<GearUser> userManager)
         {
             _workFlowContext = workFlowContext;
             _userManager = userManager;

@@ -31,7 +31,7 @@ namespace GR.Calendar
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject organization service
@@ -45,7 +45,7 @@ namespace GR.Calendar
         #endregion
 
 
-        public CalendarManager(ICalendarDbContext context, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService, IHttpContextAccessor contextAccessor)
+        public CalendarManager(ICalendarDbContext context, IUserManager<GearUser> userManager, IOrganizationService<Tenant> organizationService, IHttpContextAccessor contextAccessor)
         {
             _context = context;
             _userManager = userManager;

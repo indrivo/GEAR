@@ -15,7 +15,7 @@ namespace GR.Calendar.Abstractions.Helpers.Mappers
         /// <summary>
         /// User manager
         /// </summary>
-        private static Lazy<IUserManager<ApplicationUser>> UserManager => new Lazy<IUserManager<ApplicationUser>>(IoC.Resolve<IUserManager<ApplicationUser>>);
+        private static Lazy<IUserManager<GearUser>> UserManager => new Lazy<IUserManager<GearUser>>(IoC.Resolve<IUserManager<GearUser>>);
 
         /// <summary>
         /// Map events
@@ -80,7 +80,7 @@ namespace GR.Calendar.Abstractions.Helpers.Mappers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private static ApplicationUser GetUserById(Guid? id)
+        private static GearUser GetUserById(Guid? id)
         {
             var user = UserManager.Value.UserManager.FindByIdAsync(id.ToString().ToLowerInvariant()).GetAwaiter().GetResult();
             return user;

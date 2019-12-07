@@ -50,7 +50,7 @@ namespace GR.Install.Razor.Controllers
         /// <summary>
         /// Inject SignIn Manager
         /// </summary>
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<GearUser> _signInManager;
 
         /// <summary>
         /// Inject permission dataService
@@ -65,7 +65,7 @@ namespace GR.Install.Razor.Controllers
         /// <summary>
         /// Inject notifier
         /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
+        private readonly INotify<GearRole> _notify;
 
         /// <summary>
         /// Inject dynamic service
@@ -94,7 +94,7 @@ namespace GR.Install.Razor.Controllers
         /// <param name="entitiesDbContext"></param>
         /// <param name="dynamicService"></param>
         /// <param name="entityRepository"></param>
-        public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<ApplicationUser> signInManager, INotify<ApplicationRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IEntityRepository entityRepository)
+        public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<GearUser> signInManager, INotify<GearRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IEntityRepository entityRepository)
         {
             _entitiesDbContext = entitiesDbContext;
             _dynamicService = dynamicService;
@@ -228,7 +228,7 @@ namespace GR.Install.Razor.Controllers
             {
                 superUser.UserName = model.SysAdminProfile.UserName;
                 superUser.Email = model.SysAdminProfile.Email;
-                var hasher = new PasswordHasher<ApplicationUser>();
+                var hasher = new PasswordHasher<GearUser>();
                 var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);
                 superUser.PasswordHash = hashedPassword;
                 await _signInManager.UserManager.UpdateAsync(superUser);

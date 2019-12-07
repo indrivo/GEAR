@@ -40,14 +40,14 @@ namespace GR.ECommerce.Products.Services
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject order db context
         /// </summary>
         private readonly IOrderDbContext _orderDbContext;
 
-        public ProductService(ICommerceContext commerceContext, IUserManager<ApplicationUser> userManager, IPaymentContext paymentContext, IOrderDbContext orderDbContext)
+        public ProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, IPaymentContext paymentContext, IOrderDbContext orderDbContext)
         {
             _commerceContext = commerceContext;
             _userManager = userManager;
@@ -320,7 +320,7 @@ namespace GR.ECommerce.Products.Services
             if (startDate == null || endDate == null) return new InvalidParametersResultModel<NewCustomersStatisticViewModel>();
             var companyRole = await _userManager.RoleManager.FindByNameAsync(MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
             if (companyRole == null) return new NotFoundResultModel<NewCustomersStatisticViewModel>();
-            var newCustomersRequest = await _userManager.GetUsersInRolesAsync(new List<ApplicationRole> { companyRole });
+            var newCustomersRequest = await _userManager.GetUsersInRolesAsync(new List<GearRole> { companyRole });
             if (!newCustomersRequest.IsSuccess) return newCustomersRequest.Map<NewCustomersStatisticViewModel>();
             var newCustomers = newCustomersRequest.Result.ToList();
             var inPeriod = newCustomers.Where(x => x.Created >= startDate && x.Created <= endDate).ToList();

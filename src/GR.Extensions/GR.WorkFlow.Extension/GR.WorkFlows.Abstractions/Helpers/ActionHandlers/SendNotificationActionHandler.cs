@@ -15,13 +15,13 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// <summary>
         /// Inject notifier
         /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
+        private readonly INotify<GearRole> _notify;
 
         #endregion
 
         public SendNotificationAction(Transition transition, IEnumerable<Transition> nextTransitions) : base(transition, nextTransitions)
         {
-            _notify = IoC.Resolve<INotify<ApplicationRole>>();
+            _notify = IoC.Resolve<INotify<GearRole>>();
         }
 
         /// <summary>
