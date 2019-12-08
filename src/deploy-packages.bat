@@ -140,7 +140,7 @@ dotnet pack ./GR.Extensions/GR.Install.Extension/GR.Install.Razor/GR.Install.Raz
 
 :: Pack proces modules
 dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Processes.Abstractions/GR.Processes.Abstractions.csproj -o ../../../nupkgs
-dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Processes/GR.Processes.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Processes/GR.Procesess.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Process.Razor/GR.Process.Razor.csproj -o ../../../nupkgs
 
 :: Pack page render modules
@@ -276,7 +276,7 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Install.Razor*
 
 ::Push process modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Processes.Abstractions*
-dotnet nuget push -k %pushKey% -s %pushHost% GR.Processes*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Procesess*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Process.Razor*
 
 

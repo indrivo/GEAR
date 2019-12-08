@@ -196,12 +196,6 @@ namespace GR.Cms
 			config.HostingEnvironment = HostingEnvironment;
 			config.CacheConfiguration.UseInMemoryCache = true;
 
-			config.GearServices.AddDbContext<ProcessesDbContext>(options =>
-			{
-				options.GetDefaultOptions(Configuration);
-				options.EnableSensitiveDataLogging();
-			});
-
 			//------------------------------Identity Module-------------------------------------
 			config.GearServices.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment,
 					MigrationsAssembly, HostingEnvironment)
@@ -298,7 +292,12 @@ namespace GR.Cms
 					PostGreSqlBackupSettings, PostGreBackupService>(Configuration);
 
 			//------------------------------------Processes Module-------------------------------------
-			config.GearServices.AddProcessesModule();
+			config.GearServices.AddProcessesModule()
+			.AddDbContext<ProcessesDbContext>(options =>
+			{
+				options.GetDefaultOptions(Configuration);
+				options.EnableSensitiveDataLogging();
+			});
 
 			//------------------------------------Calendar Module-------------------------------------
 			config.GearServices.AddCalendarModule<CalendarManager>()
