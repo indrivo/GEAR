@@ -7,7 +7,7 @@
     <div class="card-body">
         <h4 class="card-title">Applications</h4>
         <h6 class="card-subtitle">List of applications</h6>
-        <div class="table-responsive">
+        <div class="table-dataTable">
             <div class="mt-2">
                 <div class="d-flex">
                     <div class="mr-auto">
@@ -56,7 +56,7 @@
 				"language": {
 					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
 				},
-				dom: '<"CustomizeColumns">lBfrtip',
+				dom: '<"CustomizeColumns">lBfr<"table-responsive"t>ip',
 				"processing": true, // for show progress bar
 				"serverSide": true, // for process server side
 				"filter": true, // this is for disable filter (search box)
@@ -95,7 +95,14 @@
 									<button type="button" class='btn btn-danger btn-sm' onclick="CreateAlert('${row.id}');">Delete</button></div>`;
 						}
 					}
-				]
+				],
+                "fnDrawCallback":function(){
+                    if ($('.dataTables_paginate .pagination li').length > 3) {
+                        $('.dataTables_paginate').show();
+                    } else {
+                        $('.dataTables_paginate').hide();
+                    }
+                }
 			});
 		});
 

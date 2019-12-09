@@ -83,7 +83,14 @@
 									</div>`;
 						}
 					}
-				]
+				],
+                "fnDrawCallback":function(){
+                    if ($('.dataTables_paginate .pagination li').length > 3) {
+                        $('.dataTables_paginate').show();
+                    } else {
+                        $('.dataTables_paginate').hide();
+                    }
+                }
 			});
 		});
 		function CreateAlert(rowId) {

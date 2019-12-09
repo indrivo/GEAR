@@ -200,14 +200,14 @@
 
     <!--State box template-->
     <script id="state-template" type="text/x-jsrender">
-        <div class="w" data-state-id="{{:id}}" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
+        <div class="w" data-state-id="{{:id}}" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}" data-isstart="{{:isStartState}}" data-isend="{{:isEndState}}">
             <a class="state-edit mr-2">
                 <i class="material-icons">edit</i>
             </a>
             <span class="state-name">
                 {{:name}}
             </span>
-            <div class="ep" action="{{:id}}"></div>
+            <div class="ep" action="{{:id}}" style="background-color:{{:~bgColor}}"></div>
         </div>
     </script>
 

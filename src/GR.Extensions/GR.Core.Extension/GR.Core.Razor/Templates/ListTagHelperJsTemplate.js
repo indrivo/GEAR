@@ -8,7 +8,7 @@
         "language": {
             "url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
         },
-        dom: '{Dom}',
+        dom: '<"CustomizeColumns">lBfr<"table-responsive"t>ip',
         "processing": true,
         "serverSide": true,
         "filter": true,
@@ -21,6 +21,13 @@
         "columns": [
             {RenderColumnsContainer}
             {ListActionsContainer}
-        ]
+        ],
+        "fnDrawCallback": function () {
+            if ($('.dataTables_paginate .pagination li').length > 3) {
+                $('.dataTables_paginate').show();
+            } else {
+                $('.dataTables_paginate').hide();
+            }
+        }
     });
 });
