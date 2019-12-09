@@ -1,15 +1,15 @@
 ﻿@using GR.Core.Razor.Enums
 @{
-    ViewData["Title"] = Localizer["system_document_types"];
-    var conf = new ListTagHelperModel
-    {
-        Title = Localizer["system_document_types"],
-        ListIdentifier = "document_type",
-        Api = new ListApiConfigurationViewModel
+        ViewData["Title"] = Localizer["system_document_types"];
+        var conf = new ListTagHelperModel
         {
-            Url = Url.Action("ListDocumentTypes", "DocumentTypes")
-        },
-        RenderColumns = new List<ListRenderColumn>
+            Title = Localizer["system_document_types"],
+            ListIdentifier = "document_type",
+            Api = new ListApiConfigurationViewModel
+            {
+                Url = Url.Action("ListDocumentTypes", "DocumentTypes")
+            },
+            RenderColumns = new List<ListRenderColumn>
         {
             new ListRenderColumn(Localizer["name"], "name"),
             new ListRenderColumn("Is system", "isSystem")
@@ -22,8 +22,8 @@
             new ListRenderColumn(Localizer["author"], "author"),
 
         },
-        HeadButtons = new List<UrlTagHelperViewModel>
-        {
+            HeadButtons = new List<UrlTagHelperViewModel>
+            {
             new UrlTagHelperViewModel
             {
                 AspAction = "Create",
@@ -31,10 +31,10 @@
                 ButtonName = "Add new document type",
                 Description = "New document type will be added"
             }
-        },
-        HasActions = true,
-        ListActions = new List<ListActionViewModel>
-        {
+            },
+            HasActions = true,
+            ListActions = new List<ListActionViewModel>
+            {
             new ListActionViewModel
             {
                 HasIcon = false,
@@ -63,8 +63,8 @@
                     new ActionParameter("id", "id")
                 }
             },
-        },
-        Documentation = "This tab allow to manage your document type"
+            },
+            Documentation = "This tab allow to manage your document type"
     };
 
 }
