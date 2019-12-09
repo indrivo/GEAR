@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
@@ -15,11 +14,14 @@ using GR.WorkFlows.Abstractions.Helpers;
 using GR.WorkFlows.Abstractions.Helpers.ActionHandlers;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.ViewModels;
+using GR.WorkFlows.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace GR.WorkFlows
 {
-    [Author(Authors.LUPEI_NICOLAE)]
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Implementation")]
+    [Author(Authors.LUPEI_NICOLAE, 1.2, "Add history and message state")]
     [Documentation("Workflow executor flow")]
     public class WorkFlowExecutorService : IWorkFlowExecutorService
     {
@@ -40,14 +42,22 @@ namespace GR.WorkFlows
         /// </summary>
         private readonly IUserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Inject logger
+        /// </summary>
+        private readonly ILogger<WorkFlowExecutorService> _logger;
+
         #endregion
 
-        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager)
+        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager, ILogger<WorkFlowExecutorService> logger)
         {
             _workFlowCreatorService = workFlowCreatorService;
             _workFlowContext = workFlowContext;
             _userManager = userManager;
+            _logger = logger;
         }
+
+        #region  Entry states
 
         /// <summary>
         /// Set start state for entry on all registered workflows
@@ -60,7 +70,7 @@ namespace GR.WorkFlows
             var contractRequest = await GetEntityContractsAsync(entityName);
             if (!contractRequest.IsSuccess) return contractRequest.ToBase();
             var contracts = contractRequest.Result;
-            foreach (var contract in contracts)
+            foreach (var contract in contracts.Where(x => x.WorkFlow.Enabled).ToList())
             {
                 var workflowRequest = await _workFlowCreatorService.GetWorkFlowByIdAsync(contract.WorkFlowId);
                 if (!workflowRequest.IsSuccess) continue;
@@ -81,31 +91,35 @@ namespace GR.WorkFlows
         /// <summary>
         /// Change state for entry 
         /// </summary>
-        /// <param name="entryId"></param>
-        /// <param name="workFlowId"></param>
-        /// <param name="newStateId"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> ChangeStateForEntryAsync([Required]string entryId, [Required] Guid? workFlowId, [Required] Guid? newStateId)
+        public virtual async Task<ResultModel> ChangeStateForEntryAsync([Required]ObjectChangeStateViewModel model)
         {
-            if (workFlowId == null || newStateId == null || entryId.IsNullOrEmpty()) return new InvalidParametersResultModel();
-            var entryStateRequest = await GetEntryStateAsync(entryId, workFlowId);
+            if (model?.WorkFlowId == null || model.NewStateId == null || model.EntryId.IsNullOrEmpty())
+                return new InvalidParametersResultModel();
+            var entryStateRequest = await GetEntryStateAsync(model.EntryId, model.WorkFlowId);
             if (!entryStateRequest.IsSuccess) return entryStateRequest.ToBase();
             var entryState = entryStateRequest.Result;
-            var transactionRequest = await _workFlowCreatorService.GetTransitionAsync(entryState.StateId, newStateId);
+            var transactionRequest = await _workFlowCreatorService.GetTransitionAsync(entryState.StateId, model.WorkFlowId);
             if (!transactionRequest.IsSuccess) return transactionRequest.ToBase();
             var transaction = transactionRequest.Result;
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return new NotAuthorizedResultModel().ToBase();
             var roles = await _userManager.GetUserRolesAsync(userRequest.Result);
-            var allowPerformAction = roles.Select(x => x.Id.ToGuid()).ContainsAny(transaction.TransitionRoles.Select(x => x.RoleId));
+            var allowPerformAction = roles.Select(x => x.Id.ToGuid())
+                .ContainsAny(transaction.TransitionRoles
+                    .Select(x => x.RoleId));
             if (!allowPerformAction) return new ActionBlockedResultModel<object>().ToBase();
-
-            entryState.StateId = newStateId.GetValueOrDefault();
+            var newState = model.NewStateId.GetValueOrDefault();
+            await AddEntryChangesToHistoryAsync(entryState, newState);
+            entryState.StateId = newState;
+            entryState.Message = model.Message;
             _workFlowContext.EntryStates.Update(entryState);
             var dbRequest = await _workFlowContext.PushAsync();
-            if (dbRequest.IsSuccess) await ExecuteActionsAsync(transaction, new Dictionary<string, object>());
+            if (dbRequest.IsSuccess) await ExecuteActionsAsync(transaction, model.EntryObjectConfiguration);
             return dbRequest;
         }
+
 
         /// <summary>
         /// Get next states for entry 
@@ -125,20 +139,6 @@ namespace GR.WorkFlows
             return new SuccessResultModel<IEnumerable<StateGetViewModel>>(mappedCollection);
         }
 
-        /// <summary>
-        /// Get entity contracts
-        /// </summary>
-        /// <param name="entityName"></param>
-        /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<WorkFlowEntityContract>>> GetEntityContractsAsync([Required]string entityName)
-        {
-            if (entityName.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<WorkFlowEntityContract>>();
-            var contracts = await _workFlowContext.Contracts
-                .Include(x => x.WorkFlow)
-                .Where(x => x.EntityName.Equals(entityName))
-                .ToListAsync();
-            return new SuccessResultModel<IEnumerable<WorkFlowEntityContract>>(contracts);
-        }
 
         /// <summary>
         /// Get entry state
@@ -176,59 +176,6 @@ namespace GR.WorkFlows
             return new SuccessResultModel<EntryState>(entry);
         }
 
-        /// <summary>
-        /// Register entity contract
-        /// </summary>
-        /// <param name="entityName"></param>
-        /// <param name="workFlowId"></param>
-        /// <returns></returns>
-        public virtual async Task<ResultModel<Guid>> RegisterEntityContractToWorkFlowAsync([Required]string entityName, Guid? workFlowId)
-        {
-            if (entityName.IsNullOrEmpty() || workFlowId == null) return new InvalidParametersResultModel<Guid>();
-            var workFlowRequest = await _workFlowCreatorService.GetWorkFlowByIdAsync(workFlowId);
-            if (!workFlowRequest.IsSuccess) return workFlowRequest.Map<Guid>();
-            if (await IsAnyRegisteredContractToEntityAsync(entityName, workFlowId))
-                return new InvalidParametersResultModel<Guid>("This workflow for the entity has already been recorded");
-            var contract = new WorkFlowEntityContract
-            {
-                WorkFlowId = workFlowId.GetValueOrDefault(),
-                EntityName = entityName
-            };
-            await _workFlowContext.Contracts.AddAsync(contract);
-            var dbRequest = await _workFlowContext.PushAsync();
-            return dbRequest.Map(contract.Id);
-        }
-
-        /// <summary>
-        /// Check for registered contract to entity
-        /// </summary>
-        /// <param name="entityName"></param>
-        /// <param name="workFlowId"></param>
-        /// <returns></returns>
-        public virtual async Task<bool> IsAnyRegisteredContractToEntityAsync([Required]string entityName, Guid? workFlowId)
-            => await _workFlowContext.Contracts.AnyAsync(x => x.WorkFlowId.Equals(workFlowId) && x.EntityName.Equals(entityName));
-
-        /// <summary>
-        /// Force execute transition actions
-        /// </summary>
-        /// <param name="entryId"></param>
-        /// <param name="transitionId"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public virtual async Task<ResultModel> ForceExecuteTransitionActionsAsync(Guid? entryId, Guid? transitionId, Dictionary<string, object> data)
-        {
-            var entryState = await _workFlowContext.EntryStates
-                .Include(x => x.Contract)
-                .ThenInclude(x => x.WorkFlow)
-                .FirstOrDefaultAsync(x => x.Id.Equals(entryId));
-            if (entryState == null) return new InvalidParametersResultModel();
-            var workFlowRequest = await _workFlowCreatorService.GetWorkFlowByIdAsync(entryState.Contract.WorkFlowId);
-            if (!workFlowRequest.IsSuccess) return workFlowRequest.ToBase();
-            var workFlow = workFlowRequest.Result;
-            var transition = workFlow.Transitions.FirstOrDefault(x => x.Id.Equals(transitionId));
-            await ExecuteActionsAsync(transition, data);
-            return new SuccessResultModel<object>().ToBase();
-        }
 
         /// <summary>
         /// Get roles for transition
@@ -318,30 +265,192 @@ namespace GR.WorkFlows
             return new SuccessResultModel<IEnumerable<State>>(nextStates);
         }
 
+        #endregion
+
+        #region Entry state history 
+
+        /// <summary>
+        /// Add entry changes to history
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="newState"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> AddEntryChangesToHistoryAsync(EntryState state, Guid? newState)
+        {
+            if (state == null || newState == null) return new InvalidParametersResultModel();
+            var model = new EntryStateHistory
+            {
+                EntryStateId = state.StateId,
+                FromStateId = state.StateId,
+                ToStateId = newState.GetValueOrDefault(),
+                Message = state.Message
+            };
+            await _workFlowContext.EntryStateHistories.AddAsync(model);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Get entry history
+        /// </summary>
+        /// <param name="workflowId"></param>
+        /// <param name="entryId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<EntryHistoryViewModel>>> GetEntryHistoryByWorkflowIdAsync(Guid? workflowId, string entryId)
+        {
+            if (workflowId == null || entryId.IsNullOrEmpty())
+                return new InvalidParametersResultModel<IEnumerable<EntryHistoryViewModel>>();
+            var history = await _workFlowContext.EntryStateHistories
+                .AsNoTracking()
+                .Include(x => x.EntryState)
+                .ThenInclude(x => x.Contract)
+                .ThenInclude(x => x.WorkFlow)
+                .Include(x => x.FromState)
+                .Include(x => x.ToState)
+                .Where(x => x.EntryState.Contract.WorkFlowId.Equals(workflowId)
+                            && x.EntryState.EntryId.Equals(entryId))
+                .ToListAsync();
+
+            return new SuccessResultModel<IEnumerable<EntryHistoryViewModel>>(WorkFlowMapper.Map(history));
+        }
+
+        #endregion
+
+        #region Entity contracts
+
+        /// <summary>
+        /// Get entity contracts
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<WorkFlowEntityContract>>> GetEntityContractsAsync([Required]string entityName)
+        {
+            if (entityName.IsNullOrEmpty()) return new InvalidParametersResultModel<IEnumerable<WorkFlowEntityContract>>();
+            var contracts = await _workFlowContext.Contracts
+                .Include(x => x.WorkFlow)
+                .Where(x => x.EntityName.Equals(entityName))
+                .ToListAsync();
+            return new SuccessResultModel<IEnumerable<WorkFlowEntityContract>>(contracts);
+        }
+
+        /// <summary>
+        /// Register entity contract
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<Guid>> RegisterEntityContractToWorkFlowAsync([Required]string entityName, Guid? workFlowId)
+        {
+            if (entityName.IsNullOrEmpty() || workFlowId == null) return new InvalidParametersResultModel<Guid>();
+            var workFlowRequest = await _workFlowCreatorService.GetWorkFlowByIdAsync(workFlowId);
+            if (!workFlowRequest.IsSuccess) return workFlowRequest.Map<Guid>();
+            if (await IsAnyRegisteredContractToEntityAsync(entityName, workFlowId))
+                return new InvalidParametersResultModel<Guid>("This workflow for the entity has already been recorded");
+            var contract = new WorkFlowEntityContract
+            {
+                WorkFlowId = workFlowId.GetValueOrDefault(),
+                EntityName = entityName
+            };
+            await _workFlowContext.Contracts.AddAsync(contract);
+            var dbRequest = await _workFlowContext.PushAsync();
+            return dbRequest.Map(contract.Id);
+        }
+
+        /// <summary>
+        /// Remove entity contract
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> RemoveEntityContractToWorkFlowAsync(string entityName, Guid? workFlowId)
+        {
+            if (entityName.IsNullOrEmpty() || workFlowId == null) return new InvalidParametersResultModel();
+            var contract = await _workFlowContext.Contracts
+                .AsNoTracking()
+                .Include(x => x.WorkFlowId)
+                .FirstOrDefaultAsync(x => x.EntityName.Equals(entityName) && x.WorkFlowId.Equals(workFlowId));
+            if (contract == null) return new NotFoundResultModel();
+            _workFlowContext.Contracts.Remove(contract);
+            return await _workFlowContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Check for registered contract to entity
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <param name="workFlowId"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> IsAnyRegisteredContractToEntityAsync([Required]string entityName, Guid? workFlowId)
+            => await _workFlowContext.Contracts.AnyAsync(x => x.WorkFlowId.Equals(workFlowId) && x.EntityName.Equals(entityName));
+
+        #endregion
+
+        #region Actions
+
+        /// <summary>
+        /// Force execute transition actions
+        /// </summary>
+        /// <param name="entryId"></param>
+        /// <param name="transitionId"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel> ForceExecuteTransitionActionsAsync(Guid? entryId, Guid? transitionId, Dictionary<string, string> data)
+        {
+            var entryState = await _workFlowContext.EntryStates
+                .Include(x => x.Contract)
+                .ThenInclude(x => x.WorkFlow)
+                .FirstOrDefaultAsync(x => x.Id.Equals(entryId));
+            if (entryState == null) return new InvalidParametersResultModel();
+            var workFlowRequest = await _workFlowCreatorService.GetWorkFlowByIdAsync(entryState.Contract.WorkFlowId);
+            if (!workFlowRequest.IsSuccess) return workFlowRequest.ToBase();
+            var workFlow = workFlowRequest.Result;
+            var transition = workFlow.Transitions.FirstOrDefault(x => x.Id.Equals(transitionId));
+            await ExecuteActionsAsync(transition, data);
+            return new SuccessResultModel<object>().ToBase();
+        }
+
         /// <summary>
         /// Execute actions
         /// </summary>
         /// <param name="transition"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public virtual async Task ExecuteActionsAsync(Transition transition, Dictionary<string, object> data)
+        public virtual async Task ExecuteActionsAsync(Transition transition, Dictionary<string, string> data)
         {
-            var assembly = Assembly.GetExecutingAssembly();
             var actions = transition.TransitionActions.Select(x => x.Action).ToList();
             var nextTransitions = await GetNextTransitionsAsync(transition);
             foreach (var action in actions)
             {
                 try
                 {
-                    var type = assembly.GetType(action.ClassNameWithNameSpace);
+                    Type type = null;
+                    var memoryType = WorkFlowActionsStorage.GetActionType(action.ClassName);
+                    if (memoryType == null)
+                    {
+                        var findType = this.GetTypeFromAssembliesByClassName(action.ClassName);
+                        if (findType != null)
+                        {
+                            type = findType;
+                            WorkFlowActionsStorage.AppendActionType(action.ClassName, findType);
+                        }
+                    }
+                    else type = memoryType;
+
+                    if (type == null)
+                    {
+                        _logger.LogError($"Action {action.Name} was not found");
+                        return;
+                    }
                     var activatedObject = (BaseWorkFlowAction)Activator.CreateInstance(type, transition, nextTransitions);
+                    if (activatedObject == null) return;
                     await activatedObject.InvokeExecuteAsync(data);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    _logger.LogCritical(e, e.Message);
                 }
             }
         }
+
+        #endregion
     }
 }

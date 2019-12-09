@@ -358,11 +358,12 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
     const data = $(context).find(".data-new");
     const obj = {};
     for (let i = 0; i < data.length; i++) {
-        const propName = f.attr("data-prop-name");
         const f = $(data[i]);
+        const propName = f.attr("data-prop-name");
         switch (f.attr("data-type")) {
             case "nvarchar":
             case "int32":
+            case "int":
             case "decimal": {
                 obj[propName] = f.val();
             } break;
@@ -448,6 +449,7 @@ TableInlineEdit.prototype.getAddRowCell = function (column, cell) {
             }
             break;
         case "int32":
+        case "int":
         case "decimal":
             {
                 const el = this.getNumberEditCell(data);
@@ -951,6 +953,7 @@ TableInlineEdit.prototype.initInlineEditForRow = function (target) {
                         }
                         break;
                     case "int32":
+                    case "int":
                     case "decimal":
                         {
                             container = this.getNumberEditCell(data);
