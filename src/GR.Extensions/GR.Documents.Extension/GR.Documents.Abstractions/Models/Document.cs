@@ -62,7 +62,7 @@ namespace GR.Documents.Abstractions.Models
         /// Document Category Id
         /// </summary>
         [Required]
-        public virtual Guid? DocumentCategoryId { get; set; }
+        public virtual Guid DocumentCategoryId { get; set; }
 
 
         /// <summary>
