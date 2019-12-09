@@ -814,5 +814,7 @@
   "system_documents": "Documentos",
   "system_workflow_builder": "Constructor de flujo de trabajo",
   "system_audit_plan": "El plan de auditoría",
-  "system_audit_mission": "La misión de la auditoría "
+  "system_audit_mission": "La misión de la auditoría ",
+  "system_document_categories": "Categorías de documentos",
+  "system_is_system": "Es el sistema de"
 }

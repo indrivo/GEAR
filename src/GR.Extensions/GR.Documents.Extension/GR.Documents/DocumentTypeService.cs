@@ -61,15 +61,6 @@ namespace GR.Documents
                 RecordsTotal = filtered.Count
             };
 
-            //var result = new ResultModel<IEnumerable<DocumentType>>();
-            //var listDocumentTypes = await _context.DocumentTypes.ToListAsync();
-
-            //if(listDocumentTypes is null || !listDocumentTypes.Any())
-            //    new NotFoundResultModel<IEnumerable<DocumentType>>();
-
-            //result.IsSuccess = true;
-            //result.Result = listDocumentTypes;
-
             return result;
         }
 

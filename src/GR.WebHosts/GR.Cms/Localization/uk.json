@@ -814,5 +814,7 @@
   "system_documents": "Документи",
   "system_workflow_builder": "Робочий процес будівельник",
   "system_audit_plan": "План аудиту",
-  "system_audit_mission": "Місія аудиту "
+  "system_audit_mission": "Місія аудиту ",
+  "system_document_categories": "Категорії документів ",
+  "system_is_system": "Система"
 }

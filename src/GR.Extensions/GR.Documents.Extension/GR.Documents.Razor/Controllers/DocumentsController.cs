@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Core.Helpers;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
@@ -23,9 +24,10 @@ namespace GR.Documents.Razor.Controllers
 
         #region Injectable
 
-        private readonly IDocumentServiceWithWorkflow _documentServiceWithWorkflowice;
+        private readonly IDocumentService _documentService;
         private readonly IDocumentTypeService _documentTypeService;
-        private IWorkFlowExecutorService _workFlowExecutorService;
+        private readonly IWorkFlowExecutorService _workFlowExecutorService;
+        private IDocumentCategoryService _documentCategoryService;
 
 
         #endregion
@@ -40,45 +42,94 @@ namespace GR.Documents.Razor.Controllers
 
         #endregion
 
-        public DocumentsController(IDocumentServiceWithWorkflow documentServiceWithWorkflowice, IDocumentTypeService documentTypeService, IWorkFlowExecutorService workFlowExecutorService)
+        public DocumentsController(IDocumentService documentService, IDocumentTypeService documentTypeService, IWorkFlowExecutorService workFlowExecutorService, IDocumentCategoryService documentCategoryService)
         {
-            _documentServiceWithWorkflowice = documentServiceWithWorkflowice;
+            _documentService = documentService;
             _documentTypeService = documentTypeService;
             _workFlowExecutorService = workFlowExecutorService;
+            _documentCategoryService = documentCategoryService;
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-
-            //var listDocuments = await _documentService.GetAllDocumentsAsync();
-            //var listResult = listDocuments.Result.Adapt<IEnumerable<DocumentViewModel>>();
+            ViewBag.ListDocumentType = (await _documentTypeService.GetAllDocumentTypeAsync()).Result.Select(s => new SelectListItem
+            {
+                Text = s.Name,
+                Value = s.Id.ToString(),
+            }).ToList();
+            ViewBag.ListDocumentCategory = (await _documentCategoryService.GetAllDocumentCategoryAsync()).Result.Select(s => new SelectListItem
+            {
+                Text = s.Name,
+                Value = s.Id.ToString() + "_" + s.Code,
+                
+            }).ToList();
 
             return View();
         }
 
+
+        /// <summary>
+        /// Get all Document  from table model
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> ListDocuments(DTParameters param)
+        {
+            var list = _documentService.GetAllDocument(param);
+
+            var listDocument = list.Data;
+            if (listDocument != null && listDocument.Any())
+            {
+                foreach (var document in listDocument)
+                {
+                    if (document.DocumentCategory.Code == 1)
+                    {
+                        var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString()))
+                            .Result.FirstOrDefault()?.Contract?.WorkFlowId;
+                        if (workFlow != null)
+                        {
+                            document.CurrentStateName =(await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
+                                    workFlow)).Result.State.Name;
+                            document.ListNextState =(await _workFlowExecutorService.GetNextStatesForEntryAsync(
+                                    document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                        }
+                    }
+                }
+            }
+
+            return Json(list, SerializerSettings);
+        }
+
+        /// <summary>
+        /// get all documents
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<DocumentViewModel>>))]
         public async Task<JsonResult> GetAllDocuments()
         {
-            var result = await _documentServiceWithWorkflowice.GetAllDocumentsAsync();
+            var result = await _documentService.GetAllDocumentsAsync();
 
             var listDocument = result.Result;
             foreach (var document in listDocument)
             {
-                //if (document.DocumentType.Code == 1)
-                //{
-                //    var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
-                //        .FirstOrDefault()?.Contract?.WorkFlowId;
-                //    if (workFlow != null)
-                //    {
-                //        document.CurrentStateName =
-                //            (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
-                //                workFlow)).Result.State.Name;
-                //        document.ListNextState =
-                //            (await _workFlowExecutorService.GetNextStatesForEntryAsync(
-                //                document.LastVersionId.ToString(), workFlow)).Result.ToList();
-                //    }
-                //}
+                if (document.DocumentCategory.Code == 1)
+                {
+                    var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
+                        .FirstOrDefault()?.Contract?.WorkFlowId;
+                    if (workFlow != null)
+                    {
+                        document.CurrentStateName =
+                            (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
+                                workFlow)).Result.State.Name;
+                        document.ListNextState =
+                            (await _workFlowExecutorService.GetNextStatesForEntryAsync(
+                                document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                    }
+                }
 
             }
 
@@ -86,50 +137,38 @@ namespace GR.Documents.Razor.Controllers
         }
 
 
+        /// <summary>
+        /// Register entity contract
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<DocumentViewModel>))]
         public async Task<JsonResult> GetDocumentsByIdAsync(Guid? documentId)
         {
-            var toReturn = new ResultModel();
-
             if (documentId is null)
             {
-                toReturn.IsSuccess = false;
-                toReturn.Errors.Add(new ErrorModel { Message = "document Id not found" });
-                return Json(toReturn, SerializerSettings);
+                return Json(new ResultModel { 
+                    IsSuccess = false,
+                    Errors = new List<IErrorModel>{ new ErrorModel { Message = "document Id not found" }}
+                });
             }
 
-            var result = await _documentServiceWithWorkflowice.GetDocumentsByIdAsync(documentId);
-
-            if (!result.IsSuccess)
-                return Json(result, SerializerSettings);
-
-            var document = new AddDocumentViewModel
-            {
-                DocumentId = result.Result.Id,
-                Description = result.Result.Description,
-                Group = result.Result.Group,
-                DocumentCode = result.Result.DocumentCode,
-                Tile = result.Result.Title,
-                DocumentTypeId = result.Result.DocumentTypeId,
-            };
-
-            toReturn.Result = document;
-            toReturn.IsSuccess = true;
-
-            return Json(toReturn, SerializerSettings);
+            var result = await _documentService.GetDocumentsByIdAsync(documentId);
+            return Json(result, SerializerSettings);
         }
 
         [HttpPost]
         public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumentId)
         {
-            var result = await _documentServiceWithWorkflowice.GetAllDocumentsByListId(listDocumentId);
+            var result = await _documentService.GetAllDocumentsByListId(listDocumentId);
             return Json(result, SerializerSettings);
         }
 
         [HttpPost]
         public async Task<JsonResult> GetAllDocumentsByTypeIdAndList(List<Guid> listDocumetId, Guid? typeId)
         {
-            var result = await _documentServiceWithWorkflowice.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumetId);
+            var result = await _documentService.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumetId);
             return Json(result, SerializerSettings);
         }
 
@@ -137,7 +176,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> DeleteDocumnetsByListIdAsync(List<Guid> listDocumetId)
         {
-            var result = await _documentServiceWithWorkflowice.DeleteDocumentsByListIdAsync(listDocumetId);
+            var result = await _documentService.DeleteDocumentsByListIdAsync(listDocumetId);
             return Json(result, SerializerSettings);
         }
 
@@ -158,16 +197,7 @@ namespace GR.Documents.Razor.Controllers
         public async Task<JsonResult> Create(AddDocumentViewModel model)
         {
             var result = new ResultModel();
-
-            if (!ModelState.IsValid)
-            {
-                result.IsSuccess = false;
-                result.Result = model;
-
-                return Json(result);
-            }
-
-            result = await _documentServiceWithWorkflowice.AddDocumentAsync(model);
+            result = await _documentService.AddDocumentAsync(model);
 
             return Json(result);
         }
@@ -184,7 +214,7 @@ namespace GR.Documents.Razor.Controllers
                 return Json(result);
             }
 
-            result = await _documentServiceWithWorkflowice.EditDocumentAsync(model);
+            result = await _documentService.EditDocumentAsync(model);
 
             return Json(result);
         }
@@ -192,7 +222,7 @@ namespace GR.Documents.Razor.Controllers
         [HttpGet]
         public async Task<JsonResult> GetAllDocumentVersion(Guid? documentId)
         {
-            return Json(await _documentServiceWithWorkflowice.GetAllDocumentVersionByIdAsync(documentId), SerializerSettings);
+            return Json(await _documentService.GetAllDocumentVersionByIdAsync(documentId), SerializerSettings);
         }
 
         [HttpPost]
@@ -208,14 +238,14 @@ namespace GR.Documents.Razor.Controllers
             //    return Json(result);
             //}
 
-            result = await _documentServiceWithWorkflowice.AddNewDocumentVersionAsync(model);
+            result = await _documentService.AddNewDocumentVersionAsync(model);
             return Json(result);
         }
 
         [HttpGet]
         public async Task<JsonResult> GetAllDocumentByTypeAsync(Guid? typeId)
         {
-            return Json(await _documentServiceWithWorkflowice.GetAllDocumentsByTypeIdAsync(typeId), SerializerSettings);
+            return Json(await _documentService.GetAllDocumentsByTypeIdAsync(typeId), SerializerSettings);
         }
 
 
@@ -228,17 +258,17 @@ namespace GR.Documents.Razor.Controllers
             //if (!result.IsSuccess)
 
             ////(model.EntryId, model.WorkFlowId,model.NewStateId
-            ////var result = await _workFlowExecutorService.ChangeStateForEntryAsync(new ObjectChangeStateViewModel
+            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(new ObjectChangeStateViewModel
 
-            ////{
-            ////    EntryId = model.EntryId,
-            ////    WorkFlowId = model.WorkFlowId,
-            ////    NewStateId = model.NewStateId
-            ////    //Message = ""
-            ////    //EntryObjectConfiguration = need document
-            ////});
+            {
+                EntryId = model.EntryId,
+                WorkFlowId = model.WorkFlowId,
+                NewStateId = model.NewStateId
+                //Message = ""
+                //EntryObjectConfiguration = need document
+            });
 
-            //if (!result.IsSuccess) return Json(result);
+            if (!result.IsSuccess) return Json(result);
 
             //var currentStateName = (await _workFlowExecutorService.GetEntryStateAsync(model.EntryId, model.WorkFlowId)).Result.State.Name;
             //var listNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(model.EntryId, model.WorkFlowId)).Result.ToList();

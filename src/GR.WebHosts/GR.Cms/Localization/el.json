@@ -814,5 +814,7 @@
   "system_documents": "Έγγραφα",
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "Το σχέδιο ελέγχου",
-  "system_audit_mission": "Αποστολή ελέγχου "
+  "system_audit_mission": "Αποστολή ελέγχου ",
+  "system_document_categories": "Έγγραφο κατηγορίες",
+  "system_is_system": "Είναι το σύστημα"
 }

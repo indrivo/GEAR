@@ -40,7 +40,7 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
        
         public virtual DocumentType DocumentType { get; set; }
        
-       // public virtual List<DocumentVersion> DocumentVersions { get; set; }
+        public virtual List<DocumentVersion> ListDocumentVersions { get; set; }
        
         public virtual Guid UserId { get; set; }
         
@@ -57,6 +57,10 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
         public string CurrentStateName { get; set; }
 
         public List<StateGetViewModel> ListNextState { get; set; }
+       
+        public virtual DocumentCategory DocumentCategory { get; set; }
+        
+        public virtual Guid? DocumentCategoryId { get; set; }
 
     }
 }

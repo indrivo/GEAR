@@ -814,5 +814,7 @@
   "system_documents": "Documente",
   "system_workflow_builder": "Flux de lucru constructor",
   "system_audit_plan": "Planul de audit",
-  "system_audit_mission": "Misiunea de audit "
+  "system_audit_mission": "Misiunea de audit ",
+  "system_document_categories": "Categorii de documente",
+  "system_is_system": "Este sistemul"
 }

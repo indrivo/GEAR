@@ -814,5 +814,7 @@
   "system_documents": "Documenti",
   "system_workflow_builder": "Generatore di flusso di lavoro",
   "system_audit_plan": "Piano di controllo",
-  "system_audit_mission": "La missione di controllo "
+  "system_audit_mission": "La missione di controllo ",
+  "system_document_categories": "Documento categorie",
+  "system_is_system": "È il sistema di"
 }

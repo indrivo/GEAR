@@ -814,5 +814,7 @@
   "system_documents": "Documenten",
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "De audit plan",
-  "system_audit_mission": "De missie van de audit "
+  "system_audit_mission": "De missie van de audit ",
+  "system_document_categories": "Document categorieën",
+  "system_is_system": "Systeem"
 }

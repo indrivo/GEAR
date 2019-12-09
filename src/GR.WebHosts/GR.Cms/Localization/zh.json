@@ -814,5 +814,7 @@
   "system_documents": "文件",
   "system_workflow_builder": "工作流程生成器",
   "system_audit_plan": "审计计划",
-  "system_audit_mission": "特派团的审计 "
+  "system_audit_mission": "特派团的审计 ",
+  "system_document_categories": "文件的类别",
+  "system_is_system": "是系统"
 }

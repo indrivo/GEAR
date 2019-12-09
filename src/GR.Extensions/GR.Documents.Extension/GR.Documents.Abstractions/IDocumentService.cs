@@ -1,4 +1,5 @@
-﻿using GR.Core.Helpers;
+﻿using GR.Core;
+using GR.Core.Helpers;
 using GR.Documents.Abstractions.Models;
 using GR.Documents.Abstractions.ViewModels.DocumentViewModels;
 using System;
@@ -9,6 +10,13 @@ namespace GR.Documents.Abstractions
 {
     public interface IDocumentService
     {
+        /// <summary>
+        /// Get all documents  from table model
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DTResult<DocumentViewModel> GetAllDocument(DTParameters param);
+
         /// <summary>
         /// Get all documents
         /// </summary>
@@ -34,7 +42,7 @@ namespace GR.Documents.Abstractions
         /// </summary>
         /// <param name="documentId"></param>
         /// <returns></returns>
-        Task<ResultModel<Document>> GetDocumentsByIdAsync(Guid? documentId);
+        Task<ResultModel<DocumentViewModel>> GetDocumentsByIdAsync(Guid? documentId);
 
         /// <summary>
         /// Get all document by type

@@ -814,5 +814,7 @@
   "system_documents": "Dokumente",
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "Audit Plan",
-  "system_audit_mission": "Mission Audit "
+  "system_audit_mission": "Mission Audit ",
+  "system_document_categories": "Dokument-Kategorien",
+  "system_is_system": "Ist system"
 }
