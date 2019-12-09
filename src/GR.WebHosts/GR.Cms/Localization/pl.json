@@ -811,5 +811,8 @@
   "system_state_machine_state_start": "Ustalono stan jako stan uruchomienia tego procesu",
   "system_state_machine_state_end": "Ustalono stan jako stan uruchomienia tego procesu",
   "system_document_types": "Rodzaje dokumentów",
-  "system_documents": "Dokumenty"
+  "system_documents": "Dokumenty",
+  "system_workflow_builder": "Proces roboczy budowniczy",
+  "system_audit_plan": "Plan audytu",
+  "system_audit_mission": "Zadaniem audytu "
 }

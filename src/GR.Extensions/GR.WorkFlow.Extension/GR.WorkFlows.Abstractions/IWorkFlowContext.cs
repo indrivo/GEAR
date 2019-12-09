@@ -45,5 +45,10 @@ namespace GR.WorkFlows.Abstractions
         /// Entry states
         /// </summary>
         DbSet<EntryState> EntryStates { get; set; }
+
+        /// <summary>
+        /// Entity state histories
+        /// </summary>
+        DbSet<EntryStateHistory> EntryStateHistories { get; set; }
     }
 }

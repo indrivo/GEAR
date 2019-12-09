@@ -811,5 +811,8 @@
   "system_state_machine_state_start": "設定状態として開始状態でこのワークフロー",
   "system_state_machine_state_end": "設定状態として開始状態でこのワークフロー",
   "system_document_types": "すべての種類の書類",
-  "system_documents": "書類"
+  "system_documents": "書類",
+  "system_workflow_builder": "ワークフローをビルダー",
+  "system_audit_plan": "の監査計画",
+  "system_audit_mission": "当監査 "
 }

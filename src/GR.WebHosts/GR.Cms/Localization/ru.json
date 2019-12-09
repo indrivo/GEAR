@@ -811,5 +811,8 @@
   "system_state_machine_state_start": "Установлено состояние как состояние запуска для этого процесса",
   "system_state_machine_state_end": "Установлено состояние как состояние запуска для этого процесса",
   "system_document_types": "Виды документов",
-  "system_documents": "Документы"
+  "system_documents": "Документы",
+  "system_workflow_builder": "Рабочий процесс строитель",
+  "system_audit_plan": "План аудита",
+  "system_audit_mission": "Миссия аудита "
 }

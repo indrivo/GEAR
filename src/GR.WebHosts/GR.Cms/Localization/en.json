@@ -811,5 +811,8 @@
   "system_state_machine_state_start": "Set state as start state for this workflow",
   "system_state_machine_state_end": "Set state as end state for this workflow",
   "system_document_types": "Document types",
-  "system_documents": "Documents"
+  "system_documents": "Documents",
+  "system_workflow_builder": "Workflow builder",
+  "system_audit_plan": "The audit plan",
+  "system_audit_mission": "Mission of the audit "
 }

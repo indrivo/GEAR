@@ -358,8 +358,8 @@ TableInlineEdit.prototype.getRowDataOnAddMode = (context) => {
     const data = $(context).find(".data-new");
     const obj = {};
     for (let i = 0; i < data.length; i++) {
-        const propName = f.attr("data-prop-name");
         const f = $(data[i]);
+        const propName = f.attr("data-prop-name");
         switch (f.attr("data-type")) {
             case "nvarchar":
             case "int32":

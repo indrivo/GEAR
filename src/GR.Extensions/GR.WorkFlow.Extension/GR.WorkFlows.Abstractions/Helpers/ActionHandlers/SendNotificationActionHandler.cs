@@ -29,7 +29,7 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public override async Task InvokeExecuteAsync(Dictionary<string, object> data)
+        public override async Task InvokeExecuteAsync(Dictionary<string, string> data)
         {
             var rolesForPrevTransition = await Executor.GetAllowedRolesToTransitionAsync(CurrentTransition);
             await _notify.SendNotificationAsync(rolesForPrevTransition, new Notification
