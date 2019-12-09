@@ -1,28 +1,27 @@
 ﻿@using GR.Core.Razor.Enums
 @{
-        ViewData["Title"] = Localizer["system_document_types"];
-        var conf = new ListTagHelperModel
+    ViewData["Title"] = Localizer["system_document_types"];
+    var conf = new ListTagHelperModel
+    {
+        Title = Localizer["system_document_types"],
+        ListIdentifier = "document_type",
+        Api = new ListApiConfigurationViewModel
         {
-            Title = Localizer["system_document_types"],
-            ListIdentifier = "document_type",
-            Api = new ListApiConfigurationViewModel
-            {
-                Url = Url.Action("ListDocumentTypes", "DocumentTypes")
-            },
-            RenderColumns = new List<ListRenderColumn>
+            Url = Url.Action("ListDocumentTypes", "DocumentTypes")
+        },
+        RenderColumns = new List<ListRenderColumn>
         {
             new ListRenderColumn(Localizer["name"], "name"),
-            new ListRenderColumn("Is system", "isSystem")
-            {
-                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
-            },
-            new ListRenderColumn("Code", "code"),
+            //new ListRenderColumn("Is system", "isSystem")
+            //{
+            //    BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            //},
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
 
         },
-            HeadButtons = new List<UrlTagHelperViewModel>
+        HeadButtons = new List<UrlTagHelperViewModel>
             {
             new UrlTagHelperViewModel
             {
@@ -32,8 +31,8 @@
                 Description = "New document type will be added"
             }
             },
-            HasActions = true,
-            ListActions = new List<ListActionViewModel>
+        HasActions = true,
+        ListActions = new List<ListActionViewModel>
             {
             new ListActionViewModel
             {
@@ -64,7 +63,7 @@
                 }
             },
             },
-            Documentation = "This tab allow to manage your document type"
+        Documentation = "This tab allow to manage your document type"
     };
 
 }

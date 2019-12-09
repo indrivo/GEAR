@@ -65,20 +65,20 @@ namespace GR.Documents.Razor.Controllers
             var listDocument = result.Result;
             foreach (var document in listDocument)
             {
-                if (document.DocumentType.Code == 1)
-                {
-                    var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
-                        .FirstOrDefault()?.Contract?.WorkFlowId;
-                    if (workFlow != null)
-                    {
-                        document.CurrentStateName =
-                            (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
-                                workFlow)).Result.State.Name;
-                        document.ListNextState =
-                            (await _workFlowExecutorService.GetNextStatesForEntryAsync(
-                                document.LastVersionId.ToString(), workFlow)).Result.ToList();
-                    }
-                }
+                //if (document.DocumentType.Code == 1)
+                //{
+                //    var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
+                //        .FirstOrDefault()?.Contract?.WorkFlowId;
+                //    if (workFlow != null)
+                //    {
+                //        document.CurrentStateName =
+                //            (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
+                //                workFlow)).Result.State.Name;
+                //        document.ListNextState =
+                //            (await _workFlowExecutorService.GetNextStatesForEntryAsync(
+                //                document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                //    }
+                //}
 
             }
 
@@ -222,41 +222,41 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         public async Task<JsonResult> ChangeDocumentStatus(ChangeDocumentStatusViewModel model)
         {
-<<<<<<< HEAD
-            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(model.EntryId, model.WorkFlowId, model.NewStateId);
 
-            if (!result.IsSuccess)
-=======
-            //(model.EntryId, model.WorkFlowId,model.NewStateId
-            var result = await _workFlowExecutorService.ChangeStateForEntryAsync(new ObjectChangeStateViewModel
->>>>>>> d4e2dd5858b20170588d18308ae5c815f42c6dea
-            {
-                EntryId = model.EntryId,
-                WorkFlowId = model.WorkFlowId,
-                NewStateId = model.NewStateId
-                //Message = ""
-                //EntryObjectConfiguration = need document
-            });
+            //var result = await _workFlowExecutorService.ChangeStateForEntryAsync(model.EntryId, model.WorkFlowId, model.NewStateId);
 
-            if (!result.IsSuccess) return Json(result);
+            //if (!result.IsSuccess)
 
-            var currentStateName = (await _workFlowExecutorService.GetEntryStateAsync(model.EntryId, model.WorkFlowId)).Result.State.Name;
-            var listNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(model.EntryId, model.WorkFlowId)).Result.ToList();
+            ////(model.EntryId, model.WorkFlowId,model.NewStateId
+            ////var result = await _workFlowExecutorService.ChangeStateForEntryAsync(new ObjectChangeStateViewModel
 
-<<<<<<< HEAD
-            var resultModel = new ResultModel();
+            ////{
+            ////    EntryId = model.EntryId,
+            ////    WorkFlowId = model.WorkFlowId,
+            ////    NewStateId = model.NewStateId
+            ////    //Message = ""
+            ////    //EntryObjectConfiguration = need document
+            ////});
 
-            resultModel.IsSuccess = currentStateName != null;
-            resultModel.Result = new { model.EntryId, currentStateName, listNextState };
+            //if (!result.IsSuccess) return Json(result);
 
-=======
-            var resultModel = new ResultModel
-            {
-                IsSuccess = currentStateName != null,
-                Result = new { model.EntryId, currentStateName, listNextState }
-            };
->>>>>>> d4e2dd5858b20170588d18308ae5c815f42c6dea
-            return Json(resultModel);
+            //var currentStateName = (await _workFlowExecutorService.GetEntryStateAsync(model.EntryId, model.WorkFlowId)).Result.State.Name;
+            //var listNextState = (await _workFlowExecutorService.GetNextStatesForEntryAsync(model.EntryId, model.WorkFlowId)).Result.ToList();
+
+
+            //var resultModel = new ResultModel();
+
+            //resultModel.IsSuccess = currentStateName != null;
+            //resultModel.Result = new { model.EntryId, currentStateName, listNextState };
+
+
+            //var resultModel = new ResultModel
+            //{
+            //    IsSuccess = currentStateName != null,
+            //    Result = new { model.EntryId, currentStateName, listNextState }
+            //};
+
+            return Json("");
         }
     }
 }

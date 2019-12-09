@@ -17,13 +17,13 @@ namespace GR.Documents.Abstractions.Models
         /// <summary>
         /// Document code 
         /// </summary>
-        public virtual int Code { get; set; }
+       // public virtual int Code { get; set; }
 
         /// <summary>
         /// Is system
         /// </summary>
-        [Required]
-        public virtual bool IsSystem { get; set; }
+       //[Required]
+       // public virtual bool IsSystem { get; set; }
 
     }
 }
