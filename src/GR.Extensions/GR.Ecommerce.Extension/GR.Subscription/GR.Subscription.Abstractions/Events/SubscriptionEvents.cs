@@ -35,7 +35,7 @@ namespace GR.Subscriptions.Abstractions.Events
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
                 var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
-                var userManager = IoC.Resolve<IUserManager<ApplicationUser>>();
+                var userManager = IoC.Resolve<IUserManager<GearUser>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
                 var user = (await userManager.GetCurrentUserAsync()).Result;
 
