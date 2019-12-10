@@ -35,4 +35,9 @@
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.WorkFlows.Abstractions\GR.WorkFlows.Abstractions.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\jsPlumb\css\" />
+    <Folder Include="wwwroot\lib\jsPlumb\js\" />
+  </ItemGroup>
 </Project>

@@ -95,5 +95,12 @@ namespace GR.ECommerce.Abstractions
         /// </summary>
         /// <returns></returns>
         Task<ResultModel<Dictionary<int, object>>> GetYearReportAsync();
+
+        /// <summary>
+        /// get product by min number value by attribute name 
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute);
     }
 }
