@@ -816,5 +816,20 @@
   "system_audit_plan": "План аудита",
   "system_audit_mission": "Миссия аудита ",
   "system_document_categories": "Категории документов ",
-  "system_is_system": "Система"
+  "system_is_system": "Система",
+  "system_title": "Название",
+  "system_document_code": "Код документа ",
+  "file": "Файл",
+  "group": "Группа",
+  "type": "Тип",
+  "system_status": "Статус",
+  "add_document": "Добавить документ",
+  "all_versions": "Все варианты",
+  "add_version": "Добавить версия",
+  "document_category": "Категория документ ",
+  "system_document_type": "Тип документа ",
+  "url": "URL-адрес",
+  "coments": "Комментарии",
+  "add_document_version": "Добавить версия документа ",
+  "is_major_version": "Это основная версия"
 }

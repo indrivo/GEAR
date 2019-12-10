@@ -816,5 +816,20 @@
   "system_audit_plan": "Το σχέδιο ελέγχου",
   "system_audit_mission": "Αποστολή ελέγχου ",
   "system_document_categories": "Έγγραφο κατηγορίες",
-  "system_is_system": "Είναι το σύστημα"
+  "system_is_system": "Είναι το σύστημα",
+  "system_title": "Τίτλος",
+  "system_document_code": "Έγγραφο κώδικα",
+  "file": "Αρχείο",
+  "group": "Ομάδα",
+  "type": "Τύπος",
+  "system_status": "Κατάσταση",
+  "add_document": "Προσθέστε το έγγραφο",
+  "all_versions": "Όλες οι εκδόσεις",
+  "add_version": "Προσθέστε έκδοση",
+  "document_category": "Κατηγορία εγγράφου",
+  "system_document_type": "Τύπος εγγράφου",
+  "url": "Url",
+  "coments": "Σχόλια",
+  "add_document_version": "Προσθήκη εγγράφου έκδοση",
+  "is_major_version": "Είναι σημαντική έκδοση"
 }

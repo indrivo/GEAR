@@ -816,5 +816,20 @@
   "system_audit_plan": "Piano di controllo",
   "system_audit_mission": "La missione di controllo ",
   "system_document_categories": "Documento categorie",
-  "system_is_system": "È il sistema di"
+  "system_is_system": "È il sistema di",
+  "system_title": "Titolo",
+  "system_document_code": "Codice documento",
+  "file": "File",
+  "group": "Gruppo",
+  "type": "Tipo",
+  "system_status": "Stato",
+  "add_document": "Aggiungi documento",
+  "all_versions": "Tutte le versioni",
+  "add_version": "Aggiungere versione",
+  "document_category": "Categoria del documento",
+  "system_document_type": "Tipo di documento",
+  "url": "Url",
+  "coments": "Commenti",
+  "add_document_version": "Aggiungere versione documento",
+  "is_major_version": "È la versione principale"
 }

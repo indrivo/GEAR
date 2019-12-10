@@ -11,11 +11,12 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
 {
     public class DocumentViewModel
     {
-        public Guid Id { get; set; }
+        
+        public virtual Guid Id { get; set; }
         
         public virtual string Author { get; set; }
         
-        public DateTime Created { get; set; }
+        public virtual DateTime Created { get; set; }
         
         public virtual string ModifiedBy { get; set; }
 
@@ -29,7 +30,6 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
         
         public virtual string DocumentCode { get; set; }
        
-       
         public virtual string Title { get; set; }
         
         public virtual string Description { get; set; }
@@ -40,7 +40,7 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
        
         public virtual DocumentType DocumentType { get; set; }
        
-        public virtual List<DocumentVersion> ListDocumentVersions { get; set; }
+        //public virtual List<DocumentVersion> ListDocumentVersions { get; set; }
        
         public virtual Guid UserId { get; set; }
         
@@ -54,13 +54,13 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
 
         public virtual Guid? LastVersionId { get; set; }
 
-        public string CurrentStateName { get; set; }
+        public virtual string CurrentStateName { get; set; }
 
-        public List<StateGetViewModel> ListNextState { get; set; }
+        public virtual List<StateGetViewModel> ListNextState { get; set; }
        
         public virtual DocumentCategory DocumentCategory { get; set; }
         
-        public virtual Guid? DocumentCategoryId { get; set; }
+        public virtual Guid DocumentCategoryId { get; set; }
 
     }
 }

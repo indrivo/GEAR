@@ -12,7 +12,8 @@ namespace GR.Core.BaseControllers
         protected readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            DateFormatString = GearSettings.Date.DateFormat
         };
 
         #endregion

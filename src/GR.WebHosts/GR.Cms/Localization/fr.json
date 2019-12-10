@@ -816,5 +816,20 @@
   "system_audit_plan": "Le plan d'audit",
   "system_audit_mission": "La mission d'audit ",
   "system_document_categories": "Catégories de documents",
-  "system_is_system": "Le système de"
+  "system_is_system": "Le système de",
+  "system_title": "Titre",
+  "system_document_code": "Code du Document",
+  "file": "Fichier",
+  "group": "Groupe",
+  "type": "Type",
+  "system_status": "Statut",
+  "add_document": "Ajouter un document",
+  "all_versions": "Toutes les versions",
+  "add_version": "Ajouter une version",
+  "document_category": "Catégorie de Document",
+  "system_document_type": "Type de Document",
+  "url": "Url",
+  "coments": "Commentaires",
+  "add_document_version": "Ajouter un document version",
+  "is_major_version": "Est version majeure"
 }

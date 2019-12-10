@@ -25,10 +25,5 @@ namespace GR.Documents.Abstractions.Models
         /// </summary>
         [Required]
         public virtual bool IsSystem { get; set; }
-
-        /// <summary>
-        /// List documents
-        /// </summary>
-        public virtual IEnumerable<Document> Documents { get; set;}
     }
 }
