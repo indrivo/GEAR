@@ -58,7 +58,7 @@ namespace GR.Cms.TagHelpers
 		/// <summary>
 		/// Inject User Manager
 		/// </summary>
-		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly UserManager<GearUser> _userManager;
 
 		/// <summary>
 		/// Inject http context
@@ -71,7 +71,7 @@ namespace GR.Cms.TagHelpers
 		/// <param name="dbContext"></param>
 		/// <param name="httpContextAccessor"></param>
 		/// <param name="userManager"></param>
-		public ListTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IDynamicPagesContext pagesContext)
+		public ListTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<GearUser> userManager, IDynamicPagesContext pagesContext)
 		{
 			_dbContext = dbContext;
 			_userManager = userManager;

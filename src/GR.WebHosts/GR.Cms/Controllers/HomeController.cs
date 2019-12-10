@@ -15,10 +15,10 @@ namespace GR.Cms.Controllers
 	{
 		#region Inject
 
-		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly UserManager<GearUser> _userManager;
 		private readonly INotificationHub _hub;
 		private readonly ApplicationDbContext _context;
-		private readonly SignInManager<ApplicationUser> _signInManager;
+		private readonly SignInManager<GearUser> _signInManager;
 
 		#endregion
 
@@ -29,7 +29,7 @@ namespace GR.Cms.Controllers
 		/// <param name="hub"></param>
 		/// <param name="context"></param>
 		/// <param name="signInManager"></param>
-		public HomeController(UserManager<ApplicationUser> userManager, INotificationHub hub, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
+		public HomeController(UserManager<GearUser> userManager, INotificationHub hub, ApplicationDbContext context, SignInManager<GearUser> signInManager)
 		{
 			_userManager = userManager;
 			_hub = hub;

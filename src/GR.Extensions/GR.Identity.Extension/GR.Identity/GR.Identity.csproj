@@ -3,10 +3,18 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <ApplicationIcon />
-    <GRartupObject />
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.2</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <NuspecProperties>
+      <files>
+        <file src="bin\Debug\countries.json" target="lib" />
+      </files>
+    </NuspecProperties>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,16 +35,23 @@
     <Compile Remove="Migrations\20190904223609_test.cs" />
     <Compile Remove="Migrations\20190904223609_test.Designer.cs" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Remove="countries.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="countries.json">
+    <EmbeddedResource Include="countries.json" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <!--<PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);Assets</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="Assets">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="countries.json">
+        <PackagePath>netstandard2.0</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>-->
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />

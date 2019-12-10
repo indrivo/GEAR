@@ -63,7 +63,7 @@ namespace GR.Identity.Abstractions.Models.AddressModels
         /// <summary>
         /// Reference to Users
         /// </summary>
-        public ApplicationUser ApplicationUser { get; set; }
+        public GearUser ApplicationUser { get; set; }
         public string ApplicationUserId { get; set; }
 
         /// <summary>

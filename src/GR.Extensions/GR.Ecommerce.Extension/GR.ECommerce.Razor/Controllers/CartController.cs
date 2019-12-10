@@ -1,25 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using GR.Core.Abstractions;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.ViewModels.CartViewModels;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
-using GR.ECommerce.Razor.ViewModels;
-using GR.Identity.Abstractions;
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace GR.ECommerce.Razor.Controllers
 {
@@ -31,15 +20,6 @@ namespace GR.ECommerce.Razor.Controllers
         /// inserc cart service
         /// </summary>
         private readonly ICartService _cartService;
-
-        #endregion
-
-        #region Helpers
-
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
 
         #endregion
 

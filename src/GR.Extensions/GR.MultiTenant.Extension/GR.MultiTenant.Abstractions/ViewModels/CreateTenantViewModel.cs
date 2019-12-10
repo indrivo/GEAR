@@ -85,7 +85,7 @@ namespace GR.MultiTenant.Abstractions.ViewModels
         /// Organization logo
         /// </summary>
         [Display(Name = "Organization Logo")]
-        [DisplayTranslate(Key = Resources.Translations.TENANT_LOGO)]
+        [DisplayTranslate(Key = MultiTenantResources.Translations.TENANT_LOGO)]
         public virtual IFormFile OrganizationLogoFormFile { get; set; }
 
         /// <summary>

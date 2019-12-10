@@ -12,7 +12,7 @@ namespace GR.Notifications.Abstractions
         /// <summary>
         /// Provide system roles
         /// </summary>
-        IEnumerable<ApplicationRole> Roles { get; }
+        IEnumerable<GearRole> Roles { get; }
 
         /// <summary>
         /// Provide application events
@@ -36,7 +36,7 @@ namespace GR.Notifications.Abstractions
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<ApplicationRole>>> GetRolesSubscribedToEventAsync(string eventName);
+        Task<ResultModel<IEnumerable<GearRole>>> GetRolesSubscribedToEventAsync(string eventName);
 
         /// <summary>
         /// Get template for event

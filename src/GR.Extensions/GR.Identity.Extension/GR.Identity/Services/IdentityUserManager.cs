@@ -22,19 +22,19 @@ namespace GR.Identity.Services
 {
     [Author(Authors.LUPEI_NICOLAE)]
     [Documentation("Base implementation of gear user manager")]
-    public class IdentityUserManager : IUserManager<ApplicationUser>
+    public class IdentityUserManager : IUserManager<GearUser>
     {
         /// <inheritdoc />
         /// <summary>
         /// Inject user manager
         /// </summary>
-        public UserManager<ApplicationUser> UserManager { get; }
+        public UserManager<GearUser> UserManager { get; }
 
         /// <inheritdoc />
         /// <summary>
         /// Inject role manager
         /// </summary>
-        public RoleManager<ApplicationRole> RoleManager { get; }
+        public RoleManager<GearRole> RoleManager { get; }
 
         /// <inheritdoc />
         /// <summary>
@@ -47,7 +47,7 @@ namespace GR.Identity.Services
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IdentityUserManager(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<ApplicationRole> roleManager, IIdentityContext identityContext)
+        public IdentityUserManager(UserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, RoleManager<GearRole> roleManager, IIdentityContext identityContext)
         {
             UserManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -60,9 +60,9 @@ namespace GR.Identity.Services
         /// Get current user
         /// </summary>
         /// <returns></returns>
-        public async Task<ResultModel<ApplicationUser>> GetCurrentUserAsync()
+        public async Task<ResultModel<GearUser>> GetCurrentUserAsync()
         {
-            var result = new ResultModel<ApplicationUser>();
+            var result = new ResultModel<GearUser>();
             if (_httpContextAccessor.HttpContext == null) return result;
             var user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             result.IsSuccess = user != null;
@@ -103,7 +103,7 @@ namespace GR.Identity.Services
             {
                 Guid? val = _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == "tenant")?.Value
                                 ?.ToGuid() ?? GearSettings.TenantId;
-                var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
+                var userManager = IoC.Resolve<UserManager<GearUser>>();
                 if (val != Guid.Empty) return val;
                 var user = userManager.GetUserAsync(_httpContextAccessor?.HttpContext?.User).GetAwaiter()
                     .GetResult();
@@ -123,7 +123,7 @@ namespace GR.Identity.Services
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> AddToRolesAsync(ApplicationUser user, ICollection<string> roles)
+        public virtual async Task<ResultModel> AddToRolesAsync(GearUser user, ICollection<string> roles)
         {
             var result = new ResultModel();
             var defaultRoles = new Collection<string> { GlobalResources.Roles.USER, GlobalResources.Roles.ANONIMOUS_USER };
@@ -168,7 +168,7 @@ namespace GR.Identity.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ApplicationRole>> GetUserRolesAsync(ApplicationUser user)
+        public virtual async Task<IEnumerable<GearRole>> GetUserRolesAsync(GearUser user)
         {
             if (user == null) throw new NullReferenceException();
             var roles = await UserManager.GetRolesAsync(user);
@@ -249,9 +249,9 @@ namespace GR.Identity.Services
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<ApplicationRole>> FindRolesByIdAsync(IEnumerable<Guid> ids)
+        public async Task<IEnumerable<GearRole>> FindRolesByIdAsync(IEnumerable<Guid> ids)
         {
-            var data = new List<ApplicationRole>();
+            var data = new List<GearRole>();
             foreach (var id in ids)
             {
                 var role = await RoleManager.FindByIdAsync(id.ToString());
@@ -262,20 +262,67 @@ namespace GR.Identity.Services
         }
 
         /// <summary>
+        /// Find roles by names
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<GearRole>>> FindRolesByNamesAsync(IEnumerable<string> roles)
+        {
+            var data = new List<GearRole>();
+            foreach (var role in roles)
+            {
+                var gRole = await RoleManager.FindByNameAsync(role);
+                if (gRole == null) continue;
+                data.Add(gRole);
+            }
+            return new SuccessResultModel<IEnumerable<GearRole>>(data);
+        }
+
+        /// <summary>
         /// </summary>
         /// <param name="roles"></param>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRolesAsync(IEnumerable<ApplicationRole> roles, Guid? tenantId = null)
+        public async Task<ResultModel<IEnumerable<GearUser>>> GetUsersInRolesAsync(IEnumerable<GearRole> roles, Guid? tenantId = null)
         {
-            var data = new List<ApplicationUser>();
+            var data = new List<GearUser>();
             foreach (var role in roles)
             {
                 var users = await UserManager.GetUsersInRoleAsync(role.Name);
                 data.AddRange(tenantId == null ? users : users.Where(x => x.TenantId.Equals(tenantId)).ToList());
             }
 
-            return new SuccessResultModel<IEnumerable<ApplicationUser>>(data.DistinctBy(x => x.Id).ToList());
+            return new SuccessResultModel<IEnumerable<GearUser>>(data.DistinctBy(x => x.Id).ToList());
+        }
+
+        /// <summary>
+        /// Change user roles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> ChangeUserRolesAsync(Guid? userId, IEnumerable<Guid> roles)
+        {
+            var user = await UserManager.FindByIdAsync(userId.ToString());
+            if (user == null) return new NotFoundResultModel();
+            var currentRolesRequest = await FindRolesByNamesAsync(await UserManager.GetRolesAsync(user));
+            if (!currentRolesRequest.IsSuccess) return currentRolesRequest.ToBase();
+            var currentRoles = currentRolesRequest.Result.ToList();
+            var rolesIds = currentRoles.Select(x => x.Id.ToGuid()).ToList();
+            var (newRoles, excludeRoles) = rolesIds.GetDifferences(roles);
+            if (newRoles.Any())
+            {
+                var roleNames = (await FindRolesByIdAsync(newRoles)).Select(x => x.Name).ToList();
+                await UserManager.AddToRolesAsync(user, roleNames);
+            }
+
+            if (excludeRoles.Any())
+            {
+                var roleNames = (await FindRolesByIdAsync(excludeRoles)).Select(x => x.Name).ToList();
+                await UserManager.RemoveFromRolesAsync(user, roleNames);
+            }
+
+            return new SuccessResultModel<object>().ToBase();
         }
     }
 }

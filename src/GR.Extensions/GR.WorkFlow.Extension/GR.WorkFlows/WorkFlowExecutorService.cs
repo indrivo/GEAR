@@ -40,7 +40,7 @@ namespace GR.WorkFlows
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject logger
@@ -49,7 +49,7 @@ namespace GR.WorkFlows
 
         #endregion
 
-        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<ApplicationUser> userManager, ILogger<WorkFlowExecutorService> logger)
+        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<GearUser> userManager, ILogger<WorkFlowExecutorService> logger)
         {
             _workFlowCreatorService = workFlowCreatorService;
             _workFlowContext = workFlowContext;
@@ -116,7 +116,7 @@ namespace GR.WorkFlows
             entryState.Message = model.Message;
             _workFlowContext.EntryStates.Update(entryState);
             var dbRequest = await _workFlowContext.PushAsync();
-            if (dbRequest.IsSuccess) await ExecuteActionsAsync(transaction, model.EntryObjectConfiguration);
+            if (dbRequest.IsSuccess) await ExecuteActionsAsync(entryState, transaction, model.EntryObjectConfiguration);
             return dbRequest;
         }
 
@@ -182,11 +182,11 @@ namespace GR.WorkFlows
         /// </summary>
         /// <param name="transition"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ApplicationRole>> GetAllowedRolesToTransitionAsync(Transition transition)
+        public virtual async Task<IEnumerable<GearRole>> GetAllowedRolesToTransitionAsync(Transition transition)
         {
             Arg.NotNull(transition, nameof(GetAllowedRolesToTransitionAsync));
             var roleIds = transition?.TransitionRoles?.Select(x => x.RoleId).ToList() ?? new List<Guid>();
-            var roles = await IoC.Resolve<IUserManager<ApplicationUser>>().FindRolesByIdAsync(roleIds);
+            var roles = await IoC.Resolve<IUserManager<GearUser>>().FindRolesByIdAsync(roleIds);
             return roles.ToList();
         }
 
@@ -404,17 +404,18 @@ namespace GR.WorkFlows
             if (!workFlowRequest.IsSuccess) return workFlowRequest.ToBase();
             var workFlow = workFlowRequest.Result;
             var transition = workFlow.Transitions.FirstOrDefault(x => x.Id.Equals(transitionId));
-            await ExecuteActionsAsync(transition, data);
+            await ExecuteActionsAsync(entryState, transition, data);
             return new SuccessResultModel<object>().ToBase();
         }
 
         /// <summary>
         /// Execute actions
         /// </summary>
+        /// <param name="entry"></param>
         /// <param name="transition"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public virtual async Task ExecuteActionsAsync(Transition transition, Dictionary<string, string> data)
+        public virtual async Task ExecuteActionsAsync(EntryState entry, Transition transition, Dictionary<string, string> data)
         {
             var actions = transition.TransitionActions.Select(x => x.Action).ToList();
             var nextTransitions = await GetNextTransitionsAsync(transition);
@@ -440,7 +441,8 @@ namespace GR.WorkFlows
                         _logger.LogError($"Action {action.Name} was not found");
                         return;
                     }
-                    var activatedObject = (BaseWorkFlowAction)Activator.CreateInstance(type, transition, nextTransitions);
+
+                    var activatedObject = (BaseWorkFlowAction)Activator.CreateInstance(type, entry, transition, nextTransitions);
                     if (activatedObject == null) return;
                     await activatedObject.InvokeExecuteAsync(data);
                 }

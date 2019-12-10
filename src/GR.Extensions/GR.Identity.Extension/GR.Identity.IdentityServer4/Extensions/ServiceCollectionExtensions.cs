@@ -25,7 +25,7 @@ namespace GR.Identity.IdentityServer4.Extensions
         {
             services.AddIdentityServer(x => x.IssuerUri = "null")
                 .AddDeveloperSigningCredential()
-                .AddAspNetIdentity<ApplicationUser>()
+                .AddAspNetIdentity<GearUser>()
                 .AddConfigurationStore(options =>
                 {
                     options.DefaultSchema = IdentityConfig.DEFAULT_SCHEMA;

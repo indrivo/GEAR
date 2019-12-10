@@ -7,8 +7,7 @@
     <Company>Indrivo</Company>
     <Description>Ui for localization  module</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

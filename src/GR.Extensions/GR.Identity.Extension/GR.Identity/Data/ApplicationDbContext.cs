@@ -14,7 +14,7 @@ using GR.Identity.Extensions;
 
 namespace GR.Identity.Data
 {
-    public class ApplicationDbContext : TrackerIdentityDbContext<ApplicationUser, ApplicationRole, string>, IIdentityContext
+    public class ApplicationDbContext : TrackerIdentityDbContext<GearUser, GearRole, string>, IIdentityContext
     {
         /// <summary>
         /// Schema
@@ -61,8 +61,8 @@ namespace GR.Identity.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(Schema);
-            builder.Entity<ApplicationRole>().ToTable("Roles");
-            builder.Entity<ApplicationUser>().ToTable("Users");
+            builder.Entity<GearRole>().ToTable("Roles");
+            builder.Entity<GearUser>().ToTable("Users");
             builder.Entity<Permission>().ToTable("Permissions");
             builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
             builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
@@ -86,12 +86,12 @@ namespace GR.Identity.Data
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
 
-            builder.Entity<ApplicationUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
-            builder.Entity<ApplicationRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
+            builder.Entity<GearUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
+            builder.Entity<GearRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);
-            builder.Entity<ApplicationUser>()
+            builder.Entity<GearUser>()
                 .HasMany(x => x.Addresses)
                 .WithOne(x => x.ApplicationUser)
                 .OnDelete(DeleteBehavior.Cascade);

@@ -29,7 +29,7 @@ namespace GR.Identity.Abstractions.Extensions
             IHostingEnvironment environment)
             where TContext : DbContext, IIdentityContext
         {
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+            services.AddIdentity<GearUser, GearRole>()
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
             return services;
@@ -43,7 +43,7 @@ namespace GR.Identity.Abstractions.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection AddIdentityUserManager<TUserManager, TUser>(this IServiceCollection services)
-            where TUser : ApplicationUser
+            where TUser : GearUser
             where TUserManager : class, IUserManager<TUser>
         {
             services.AddTransient<IUserManager<TUser>, TUserManager>();

@@ -26,7 +26,7 @@ namespace GR.Subscriptions
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject subscription db context
@@ -46,11 +46,11 @@ namespace GR.Subscriptions
         /// <summary>
         /// Inject notifier
         /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
+        private readonly INotify<GearRole> _notify;
 
         #endregion
 
-        public SubscriptionService(IUserManager<ApplicationUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, INotify<ApplicationRole> notify)
+        public SubscriptionService(IUserManager<GearUser> userManager, ISubscriptionDbContext subscriptionDbContext, IOrderProductService<Order> orderService, IPaymentService paymentService, INotify<GearRole> notify)
         {
             _userManager = userManager;
             _subscriptionDbContext = subscriptionDbContext;

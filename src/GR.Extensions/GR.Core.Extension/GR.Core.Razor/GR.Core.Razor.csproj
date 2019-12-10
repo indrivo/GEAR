@@ -6,7 +6,7 @@
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</RepositoryUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</PackageProjectUrl>
   </PropertyGroup>
 

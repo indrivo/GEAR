@@ -814,5 +814,6 @@
   "system_documents": "Документы",
   "system_workflow_builder": "Рабочий процесс строитель",
   "system_audit_plan": "План аудита",
-  "system_audit_mission": "Миссия аудита "
+  "system_audit_mission": "Миссия аудита ",
+  "system_change_roles": "Роли меняются "
 }

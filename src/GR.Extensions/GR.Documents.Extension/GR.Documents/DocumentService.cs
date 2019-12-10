@@ -31,7 +31,7 @@ namespace GR.Documents
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject file manager
@@ -40,7 +40,7 @@ namespace GR.Documents
 
         #endregion
 
-        public DocumentService(IDocumentContext documentContext, IUserManager<ApplicationUser> userManager, IFileManager fileManager)
+        public DocumentService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager)
         {
             DocumentContext = documentContext;
             _userManager = userManager;
@@ -314,7 +314,6 @@ namespace GR.Documents
 
             await DocumentContext.Documents.AddAsync(newDocument);
 
-            Guid? fileId = null;
             result = await DocumentContext.PushAsync();
 
             if (result.IsSuccess)

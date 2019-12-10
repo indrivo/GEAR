@@ -31,7 +31,7 @@ namespace GR.Notifications.Abstractions
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        bool IsUserOnline(ApplicationUser user);
+        bool IsUserOnline(GearUser user);
         /// <summary>
         /// Get sessions count
         /// </summary>

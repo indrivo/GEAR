@@ -32,9 +32,9 @@ namespace GR.PageRender.Razor.Attributes
 
             private readonly IPageAclService _pageAclService;
 
-            private readonly RoleManager<ApplicationRole> _roleManager;
+            private readonly RoleManager<GearRole> _roleManager;
 
-            public AuthorizePageAttributeExecutor(IPageRender pageRender, IPageAclService pageAclService, RoleManager<ApplicationRole> roleManager)
+            public AuthorizePageAttributeExecutor(IPageRender pageRender, IPageAclService pageAclService, RoleManager<GearRole> roleManager)
             {
                 _pageRender = pageRender;
                 _pageAclService = pageAclService;

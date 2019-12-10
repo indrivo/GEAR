@@ -814,5 +814,6 @@
   "system_documents": "書類",
   "system_workflow_builder": "ワークフローをビルダー",
   "system_audit_plan": "の監査計画",
-  "system_audit_mission": "当監査 "
+  "system_audit_mission": "当監査 ",
+  "system_change_roles": "の役割を変更"
 }

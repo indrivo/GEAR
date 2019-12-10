@@ -10,9 +10,9 @@ namespace GR.Notifications.Hubs
 {
     public class SignalRNotificationHub : Hub
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
 
-        public SignalRNotificationHub(UserManager<ApplicationUser> userManager)
+        public SignalRNotificationHub(UserManager<GearUser> userManager)
         {
             _userManager = userManager;
         }

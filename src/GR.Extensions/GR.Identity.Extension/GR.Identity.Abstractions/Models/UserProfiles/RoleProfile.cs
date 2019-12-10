@@ -8,7 +8,7 @@ namespace GR.Identity.Abstractions.Models.UserProfiles
 	public class RoleProfile 
 	{
 
-		public ApplicationRole ApplicationRole { get; set; } 
+		public GearRole GearRole { get; set; } 
 		public Profile Profile { get; set; }
 
 		[Key]

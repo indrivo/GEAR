@@ -15,43 +15,46 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// <summary>
         /// Inject notifier
         /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
+        private readonly INotify<GearRole> _notify;
 
         #endregion
 
-        public SendNotificationAction(Transition transition, IEnumerable<Transition> nextTransitions) : base(transition, nextTransitions)
+        public SendNotificationAction(EntryState entry, Transition transition, IEnumerable<Transition> nextTransitions) : base(entry, transition, nextTransitions)
         {
-            _notify = IoC.Resolve<INotify<ApplicationRole>>();
+            _notify = IoC.Resolve<INotify<GearRole>>();
         }
 
         /// <summary>
         /// Execute data
-        /// </summary>
+        /// </summary> 
         /// <param name="data"></param>
         /// <returns></returns>
         public override async Task InvokeExecuteAsync(Dictionary<string, string> data)
         {
             var rolesForPrevTransition = await Executor.GetAllowedRolesToTransitionAsync(CurrentTransition);
+            var subject = "Entry x";
+            if (data.ContainsKey("Name")) subject = data["Name"];
             await _notify.SendNotificationAsync(rolesForPrevTransition, new Notification
             {
-                Subject = "Workflow state changed",
-                Content = $"Entry x has changed its status to {CurrentTransition?.FromState.Name}",
+                Subject = $"{subject} state changed",
+                Content = $"{subject} has changed its status from {CurrentTransition?.FromState?.Name} to {CurrentTransition?.ToState?.Name}",
                 SendLocal = true,
                 SendEmail = true,
                 NotificationTypeId = NotificationType.Info
-            }, null);
+            }, EntryState.TenantId);
 
             foreach (var nextTransition in NextTransitions)
             {
                 var rolesForNextTransition = await Executor.GetAllowedRolesToTransitionAsync(nextTransition);
+
                 await _notify.SendNotificationAsync(rolesForNextTransition, new Notification
                 {
-                    Subject = "Workflow state changed",
-                    Content = "Entry x was ",
+                    Subject = "You have new actions",
+                    Content = $"{subject} can be switched to {nextTransition?.ToState.Name} state",
                     SendLocal = true,
                     SendEmail = true,
                     NotificationTypeId = NotificationType.Info
-                }, null);
+                }, EntryState.TenantId);
             }
         }
     }

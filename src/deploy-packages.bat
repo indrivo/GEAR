@@ -91,6 +91,63 @@ dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Abstractions/GR.W
 dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows/GR.WorkFlows.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.WorkFlow.Extension/GR.WorkFlows.Razor/GR.WorkFlows.Razor.csproj -o ../../../nupkgs
 
+:: Pack identity modules
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Abstractions/GR.Identity.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity/GR.Identity.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Groups.Razor/GR.Identity.Groups.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Razor.Users/GR.Identity.Razor.Users.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Roles.Razor/GR.Identity.Roles.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Razor/GR.Identity.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.IdentityServer4/GR.Identity.IdentityServer4.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.LdapAuth/GR.Identity.LdapAuth.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.LdapAuth.Abstractions/GR.Identity.LdapAuth.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Permissions.Abstractions/GR.Identity.Permissions.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Permissions/GR.Identity.Permissions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Profile.Abstractions/GR.Identity.Profile.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Identity.Extension/GR.Identity.Profile/GR.Identity.Profile.csproj -o ../../../nupkgs
+
+:: Pack backup modules
+dotnet pack ./GR.Extensions/GR.Backup.Extension/GR.Backup.Abstractions/GR.Backup.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Backup.Extension/GR.Backup.PostgresSql/GR.Backup.PostgresSql.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Backup.Extension/GR.Backup.Razor/GR.Backup.Razor.csproj -o ../../../nupkgs
+
+:: Pack dynamic entities repos modules
+dotnet pack ./GR.Extensions/GR.DynamicEntityStorage.Extension/GR.DynamicEntityStorage.Abstractions/GR.DynamicEntityStorage.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.DynamicEntityStorage.Extension/GR.DynamicEntityStorage/GR.DynamicEntityStorage.csproj -o ../../../nupkgs
+
+:: Pack entities modules
+dotnet pack ./GR.Extensions/GR.Entities.Extension/GR.Entities/GR.Entities.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Entities.Extension/GR.Entities.Abstractions/GR.Entities.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Entities.Extension/GR.Entities.Razor/GR.Entities.Razor.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Entities.Extension/GR.Entities.EntityBuilder.MsSql/GR.Entities.EntityBuilder.MsSql.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Entities.Extension/GR.Entities.EntityBuilder.Postgres/GR.Entities.EntityBuilder.Postgres.csproj -o ../../../nupkgs
+
+:: Pack entities security modules
+dotnet pack ./GR.Extensions/GR.Entities.Security.Extension/GR.Entities.Security/GR.Entities.Security.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Entities.Security.Extension/GR.Entities.Security.Abstractions/GR.Entities.Security.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Entities.Security.Extension/GR.Entities.Security.Razor/GR.Entities.Security.Razor.csproj -o ../../../nupkgs
+
+
+:: Pack mail modules
+dotnet pack ./GR.Extensions/GR.Forms.Extension/GR.Forms.Abstractions/GR.Forms.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Forms.Extension/GR.Forms/GR.Forms.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Forms.Extension/GR.Forms.Razor/GR.Forms.Razor.csproj -o ../../../nupkgs
+
+:: Pack install modules
+dotnet pack ./GR.Extensions/GR.Install.Extension/GR.Install.Abstractions/GR.Install.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Install.Extension/GR.Install/GR.Install.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Install.Extension/GR.Install.Razor/GR.Install.Razor.csproj -o ../../../nupkgs
+
+:: Pack proces modules
+dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Processes.Abstractions/GR.Processes.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Processes/GR.Procesess.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Processes.Extension/GR.Process.Razor/GR.Process.Razor.csproj -o ../../../nupkgs
+
+:: Pack page render modules
+dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender.Abstractions/GR.PageRender.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender/GR.PageRender.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Render.Extension/GR.PageRender.Razor/GR.PageRender.Razor.csproj -o ../../../nupkgs
+
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Push projects-------------------------------------------------
 ::-----------------------------------------------------------------------------------------------------------
@@ -170,6 +227,63 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.MultiTenant.Razor*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WorkFlows.Razor*
+
+::Push Identity modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Groups.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Razor.Users*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Roles.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.IdentityServer4*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.LdapAuth*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.LdapAuth.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Permissions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Permissions.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Profile.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Identity.Profile*
+
+::Push backup modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Backup.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Backup.PostgresSql*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Backup.Razor*
+
+::Push dynamic entities repos modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.DynamicEntityStorage.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.DynamicEntityStorage*
+
+::Push entities modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.Razor*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.EntityBuilder.MsSql*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.EntityBuilder.Postgres*
+
+::Push entity security modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.Security.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.Security*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Entities.Security.Razor*
+
+::Push forms modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Forms.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Forms*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Forms.Razor*
+
+::Push installer modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Install.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Install*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Install.Razor*
+
+::Push process modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Processes.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Procesess*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Process.Razor*
+
+
+::Push page render modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.PageRender.Razor*
 
 ::-----------------------------------------------------------------------------------------------------------
 ::---------------------------------------------Clean directories---------------------------------------------

@@ -29,11 +29,11 @@ namespace GR.ECommerce.Products.Services
         /// <summary>
         /// Inject user
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         #endregion
 
-        public CartService(ICommerceContext context, IUserManager<ApplicationUser> userManager)
+        public CartService(ICommerceContext context, IUserManager<GearUser> userManager)
         {
             _context = context;
             _userManager = userManager;
