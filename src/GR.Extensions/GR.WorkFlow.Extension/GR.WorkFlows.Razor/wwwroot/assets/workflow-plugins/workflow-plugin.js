@@ -209,7 +209,7 @@
                     toast.notifyErrorList(e);
                 });
             }
-        })
+        });
     }
 
     actions = [];
@@ -228,6 +228,6 @@
                     toast.notifyErrorList(e);
                 });
             }
-        })
+        });
     }
 }
