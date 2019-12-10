@@ -31,7 +31,7 @@ namespace GR.Subscriptions.Abstractions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<Guid>> CreateSubscriptionAsync(SubscriptionViewModel model);
+        Task<ResultModel<Guid>> CreateUpdateSubscriptionAsync(SubscriptionViewModel model);
 
         /// <summary>
         /// Has valid subscription
@@ -86,5 +86,11 @@ namespace GR.Subscriptions.Abstractions
         /// <param name="subscriptions"></param>
         /// <returns></returns>
         Task NotifySubscriptionsThatExpireAsync([Required] IList<Subscription> subscriptions);
+
+        /// <summary>
+        /// Get last subscription for user
+        /// </summary>
+        /// <returns></returns>
+        Task<ResultModel<Subscription>> GetLastSubscriptionForUserAsync();
     }
 }
