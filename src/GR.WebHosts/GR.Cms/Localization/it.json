@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Impostare lo stato come stato di inizio per il flusso di lavoro",
   "system_state_machine_state_end": "Impostare lo stato come stato di inizio per il flusso di lavoro",
   "system_document_types": "Tutti i tipi di documenti",
-  "system_documents": "Documenti"
+  "system_documents": "Documenti",
+  "system_february": "Febbraio",
+  "system_march": "Marzo",
+  "system_april": "Aprile",
+  "system_may": "Può",
+  "system_june": "Giugno",
+  "system_july": "Luglio",
+  "system_august": "Agosto",
+  "system_september": "Settembre",
+  "system_october": "Ottobre",
+  "system_november": "Novembre",
+  "system_december": "Dicembre",
+  "system_loading": "Il caricamento..."
 }

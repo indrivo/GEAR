@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Установлено состояние как состояние запуска для этого процесса",
   "system_state_machine_state_end": "Установлено состояние как состояние запуска для этого процесса",
   "system_document_types": "Виды документов",
-  "system_documents": "Документы"
+  "system_documents": "Документы",
+  "system_february": "Февраль",
+  "system_march": "Марта",
+  "system_april": "Апреля",
+  "system_may": "Может",
+  "system_june": "Июня",
+  "system_july": "Июля",
+  "system_august": "Августа",
+  "system_september": "Сентября",
+  "system_october": "Октября",
+  "system_november": "Ноября",
+  "system_december": "Декабря",
+  "system_loading": "Загрузка..."
 }

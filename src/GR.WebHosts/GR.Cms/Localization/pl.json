@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Ustalono stan jako stan uruchomienia tego procesu",
   "system_state_machine_state_end": "Ustalono stan jako stan uruchomienia tego procesu",
   "system_document_types": "Rodzaje dokumentów",
-  "system_documents": "Dokumenty"
+  "system_documents": "Dokumenty",
+  "system_february": "Stycznia",
+  "system_march": "Marca",
+  "system_april": "Kwietnia",
+  "system_may": "Może",
+  "system_june": "Czerwca",
+  "system_july": "Lipca",
+  "system_august": "Sierpnia",
+  "system_september": "Września",
+  "system_october": "Października",
+  "system_november": "Listopada",
+  "system_december": "Grudnia",
+  "system_loading": "Pobieranie..."
 }

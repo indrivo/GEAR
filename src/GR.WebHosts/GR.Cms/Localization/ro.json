@@ -797,7 +797,7 @@
   "system_gr_auditor": "Auditor",
   "system_gr_description": "Descriere",
   "system_gr_recommendation": "Recomandare",
-  "system_gr_loading": "Loading...",
+  "system_gr_loading": "Se încarcă...",
   "system_gr_year": "An",
   "system_january": "Ianuarie",
   "system_state_machine_max_connections": "Nu se poate crea mai mult de o tranziție de la aceasta sursa la acest obiectiv",
@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Setați starea ca stare de început pentru acest flux de lucru",
   "system_state_machine_state_end": "Setați starea ca stare de sfârșit pentru acest flux de lucru",
   "system_document_types": "Tipuri de documente",
-  "system_documents": "Documente"
+  "system_documents": "Documente",
+  "system_february": "Februarie",
+  "system_march": "Martie",
+  "system_april": "Aprilie",
+  "system_may": "Poate",
+  "system_june": "Iunie",
+  "system_july": "Iulie",
+  "system_august": "August",
+  "system_september": "Septembrie",
+  "system_october": "Octombrie",
+  "system_november": "Noiembrie",
+  "system_december": "Decembrie",
+  "system_loading": "Încărcare..."
 }

@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Встановлено стан як стан запуску цього процесу",
   "system_state_machine_state_end": "Встановлено стан як стан запуску цього процесу",
   "system_document_types": "Види документів",
-  "system_documents": "Документи"
+  "system_documents": "Документи",
+  "system_february": "Лютий",
+  "system_march": "Березня",
+  "system_april": "Квітня",
+  "system_may": "Може",
+  "system_june": "Червня",
+  "system_july": "Липня",
+  "system_august": "Серпня",
+  "system_september": "Вересня",
+  "system_october": "Жовтня",
+  "system_november": "Листопада",
+  "system_december": "Грудня",
+  "system_loading": "Завантаження..."
 }

@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Conjunto del estado como inicio para este flujo de trabajo",
   "system_state_machine_state_end": "Conjunto del estado como inicio para este flujo de trabajo",
   "system_document_types": "Todos los tipos de documentos",
-  "system_documents": "Documentos"
+  "system_documents": "Documentos",
+  "system_february": "Febrero",
+  "system_march": "De marzo de",
+  "system_april": "De abril de",
+  "system_may": "Puede",
+  "system_june": "De junio de",
+  "system_july": "Julio",
+  "system_august": "De agosto de",
+  "system_september": "Septiembre",
+  "system_october": "Octubre",
+  "system_november": "Noviembre",
+  "system_december": "De diciembre de",
+  "system_loading": "La carga de..."
 }

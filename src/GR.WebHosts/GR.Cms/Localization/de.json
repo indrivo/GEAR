@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Set Status als start-Status für diesen workflow",
   "system_state_machine_state_end": "Set Status als start-Status für diesen workflow",
   "system_document_types": "Alle Arten von Dokumenten",
-  "system_documents": "Dokumente"
+  "system_documents": "Dokumente",
+  "system_february": "Februar",
+  "system_march": "März",
+  "system_april": "April",
+  "system_may": "Kann",
+  "system_june": "Juni",
+  "system_july": "Juli",
+  "system_august": "August",
+  "system_september": "September",
+  "system_october": "Oktober",
+  "system_november": "November",
+  "system_december": "Dezember",
+  "system_loading": "Laden..."
 }

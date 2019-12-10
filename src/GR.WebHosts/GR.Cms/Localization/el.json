@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας",
   "system_state_machine_state_end": "Σύνολο κράτους ως έναρξη κράτος για αυτήν τη ροή εργασίας",
   "system_document_types": "Όλα τα είδη των εγγράφων",
-  "system_documents": "Έγγραφα"
+  "system_documents": "Έγγραφα",
+  "system_february": "Φεβρουαρίου",
+  "system_march": "Μαρτίου",
+  "system_april": "Απριλίου",
+  "system_may": "Μπορεί να",
+  "system_june": "Ιουνίου",
+  "system_july": "Ιουλίου",
+  "system_august": "Τον αύγουστο",
+  "system_september": "Σεπτεμβρίου",
+  "system_october": "Οκτωβρίου",
+  "system_november": "Νοεμβρίου",
+  "system_december": "Δεκεμβρίου",
+  "system_loading": "Φόρτωση..."
 }

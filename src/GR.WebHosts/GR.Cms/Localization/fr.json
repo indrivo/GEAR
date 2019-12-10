@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Définir l'état comme état de départ de ce flux de travail",
   "system_state_machine_state_end": "Définir l'état comme état de départ de ce flux de travail",
   "system_document_types": "Tous les types de documents",
-  "system_documents": "Documents"
+  "system_documents": "Documents",
+  "system_february": "Février",
+  "system_march": "Mars",
+  "system_april": "Avril",
+  "system_may": "Peut",
+  "system_june": "Juin",
+  "system_july": "Juillet",
+  "system_august": "Août",
+  "system_september": "Septembre",
+  "system_october": "Octobre",
+  "system_november": "Novembre",
+  "system_december": "Décembre",
+  "system_loading": "Chargement..."
 }

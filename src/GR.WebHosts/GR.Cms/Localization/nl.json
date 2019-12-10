@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Ingesteld staat als start staat voor deze workflow",
   "system_state_machine_state_end": "Ingesteld staat als start staat voor deze workflow",
   "system_document_types": "Alle soorten documenten",
-  "system_documents": "Documenten"
+  "system_documents": "Documenten",
+  "system_february": "Februari",
+  "system_march": "Maart",
+  "system_april": "April",
+  "system_may": "Mei",
+  "system_june": "Juni",
+  "system_july": "Juli",
+  "system_august": "Augustus",
+  "system_september": "September",
+  "system_october": "Oktober",
+  "system_november": "November",
+  "system_december": "December",
+  "system_loading": "Laden..."
 }

@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "Set state as start state for this workflow",
   "system_state_machine_state_end": "Set state as end state for this workflow",
   "system_document_types": "Document types",
-  "system_documents": "Documents"
+  "system_documents": "Documents",
+  "system_february": "February",
+  "system_march": "March",
+  "system_april": "April",
+  "system_may": "May",
+  "system_june": "June",
+  "system_july": "July",
+  "system_august": "August",
+  "system_september": "September",
+  "system_october": "October",
+  "system_november": "November",
+  "system_december": "December",
+  "system_loading": "Loading..."
 }

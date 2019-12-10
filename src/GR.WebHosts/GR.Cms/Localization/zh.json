@@ -819,5 +819,17 @@
   "system_state_machine_state_start": "设置状态为启动国家对于这一工作流程",
   "system_state_machine_state_end": "设置状态为启动国家对于这一工作流程",
   "system_document_types": "所有类型的文档",
-  "system_documents": "文件"
+  "system_documents": "文件",
+  "system_february": "二月",
+  "system_march": "三月",
+  "system_april": "四月",
+  "system_may": "可",
+  "system_june": "六月",
+  "system_july": "七月",
+  "system_august": "八月",
+  "system_september": "九月",
+  "system_october": "十月",
+  "system_november": "十一月",
+  "system_december": "十二月",
+  "system_loading": "加载"
 }
