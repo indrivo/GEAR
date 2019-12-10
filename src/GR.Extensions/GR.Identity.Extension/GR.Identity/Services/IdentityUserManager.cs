@@ -262,6 +262,23 @@ namespace GR.Identity.Services
         }
 
         /// <summary>
+        /// Find roles by names
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<IEnumerable<GearRole>>> FindRolesByNamesAsync(IEnumerable<string> roles)
+        {
+            var data = new List<GearRole>();
+            foreach (var role in roles)
+            {
+                var gRole = await RoleManager.FindByNameAsync(role);
+                if (gRole == null) continue;
+                data.Add(gRole);
+            }
+            return new SuccessResultModel<IEnumerable<GearRole>>(data);
+        }
+
+        /// <summary>
         /// </summary>
         /// <param name="roles"></param>
         /// <param name="tenantId"></param>
@@ -276,6 +293,36 @@ namespace GR.Identity.Services
             }
 
             return new SuccessResultModel<IEnumerable<GearUser>>(data.DistinctBy(x => x.Id).ToList());
+        }
+
+        /// <summary>
+        /// Change user roles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> ChangeUserRolesAsync(Guid? userId, IEnumerable<Guid> roles)
+        {
+            var user = await UserManager.FindByIdAsync(userId.ToString());
+            if (user == null) return new NotFoundResultModel();
+            var currentRolesRequest = await FindRolesByNamesAsync(await UserManager.GetRolesAsync(user));
+            if (!currentRolesRequest.IsSuccess) return currentRolesRequest.ToBase();
+            var currentRoles = currentRolesRequest.Result.ToList();
+            var rolesIds = currentRoles.Select(x => x.Id.ToGuid()).ToList();
+            var (newRoles, excludeRoles) = rolesIds.GetDifferences(roles);
+            if (newRoles.Any())
+            {
+                var roleNames = (await FindRolesByIdAsync(newRoles)).Select(x => x.Name).ToList();
+                await UserManager.AddToRolesAsync(user, roleNames);
+            }
+
+            if (excludeRoles.Any())
+            {
+                var roleNames = (await FindRolesByIdAsync(excludeRoles)).Select(x => x.Name).ToList();
+                await UserManager.RemoveFromRolesAsync(user, roleNames);
+            }
+
+            return new SuccessResultModel<object>().ToBase();
         }
     }
 }

@@ -13,13 +13,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GR.Core;
 using GR.Core.BaseControllers;
-using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Responses;
 using GR.Entities.Data;
 using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Helpers.Attributes;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.Models.UserProfiles;
+using GR.Identity.Abstractions.ViewModels.RoleViewModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
 using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
@@ -660,5 +662,82 @@ namespace GR.Identity.Roles.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
         [Route("api/[controller]/[action]")]
         public async Task<JsonResult> GetUsersInRoleForCurrentCompany([Required] string roleName) => Json(await _userManager.GetUsersInRoleForCurrentCompanyAsync(roleName));
+
+        /// <summary>
+        /// Change user roles
+        /// </summary>
+        /// <returns></returns>
+        [Roles(GlobalResources.Roles.ADMINISTRATOR, "Company Administrator")]
+        [HttpPost]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        [Route("api/[controller]/[action]")]
+        public async Task<JsonResult> ChangeUserRoles(Guid? userId, IEnumerable<Guid> roles)
+            => await JsonAsync(_userManager.ChangeUserRolesAsync(userId, roles));
+
+        /// <summary>
+        /// Get current user roles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Route("api/[controller]/[action]")]
+        public async Task<JsonResult> GetUserRoles([Required]string userId)
+        {
+            var user = await UserManager.FindByIdAsync(userId);
+            if (user == null) return Json(new NotFoundResultModel());
+            var roles = (await _userManager.GetUserRolesAsync(user)).Select(x => new BaseRoleViewModel
+            {
+                Id = x.Id,
+                Name = x.Name
+            });
+
+            return Json(new SuccessResultModel<IEnumerable<BaseRoleViewModel>>(roles));
+        }
+
+        /// <summary>
+        /// Get  user roles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<Dictionary<string, object>>))]
+        [Route("api/[controller]/[action]")]
+        public async Task<JsonResult> GetUserRolesWithAllRoles([Required]string userId)
+        {
+            var user = await UserManager.FindByIdAsync(userId);
+            if (user == null) return Json(new NotFoundResultModel());
+            var roles = (await _userManager.GetUserRolesAsync(user)).Select(x => new BaseRoleViewModel
+            {
+                Id = x.Id,
+                Name = x.Name
+            });
+
+            var dict = new Dictionary<string, object>
+            {
+                { "UserRoles", roles },
+                { "AllRoles",  RoleManager.Roles.Select(x => new BaseRoleViewModel
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                })}
+            };
+
+            return Json(new SuccessResultModel<Dictionary<string, object>>(dict));
+        }
+
+        /// <summary>
+        /// Get all roles
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SampleGetUserViewModel>>))]
+        [Route("api/[controller]/[action]")]
+        public JsonResult GetAllRolesAsync()
+            => Json(new SuccessResultModel<IEnumerable<BaseRoleViewModel>>(RoleManager.Roles.Select(x => new BaseRoleViewModel
+            {
+                Id = x.Id,
+                Name = x.Name
+            })));
     }
 }

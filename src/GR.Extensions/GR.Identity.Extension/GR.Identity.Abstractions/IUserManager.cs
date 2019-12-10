@@ -105,5 +105,20 @@ namespace GR.Identity.Abstractions
         /// <param name="tenantId"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<GearUser>>> GetUsersInRolesAsync(IEnumerable<GearRole> roles, Guid? tenantId = null);
+
+        /// <summary>
+        /// Find roles by names
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<GearRole>>> FindRolesByNamesAsync(IEnumerable<string> roles);
+
+        /// <summary>
+        /// Change user roles
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="roles"></param>
+        /// <returns></returns>
+        Task<ResultModel> ChangeUserRolesAsync(Guid? userId, IEnumerable<Guid> roles);
     }
 }

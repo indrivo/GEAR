@@ -180,5 +180,7 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="tenantId"></param>
         /// <returns></returns>
         Task<ResultModel<GearUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId);
+
+
     }
 }
