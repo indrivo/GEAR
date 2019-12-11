@@ -3,15 +3,17 @@ using System;
 using GR.Documents.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GR.Documents.Migrations
 {
     [DbContext(typeof(DocumentsDbContext))]
-    partial class DocumentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191209093347_DocumentsDbContext_addDocumentCategoryList")]
+    partial class DocumentsDbContext_addDocumentCategoryList
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,12 +101,11 @@ namespace GR.Documents.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<Guid?>("DocumentCategoryId")
-                        .IsRequired();
+                    b.Property<Guid?>("DocumentCategoryId");
 
                     b.Property<string>("DocumentCode");
 
-                    b.Property<Guid?>("DocumentTypeId");
+                    b.Property<Guid>("DocumentTypeId");
 
                     b.Property<string>("Group");
 
@@ -248,12 +249,12 @@ namespace GR.Documents.Migrations
                 {
                     b.HasOne("GR.Documents.Abstractions.Models.DocumentCategory", "DocumentCategory")
                         .WithMany("Documents")
-                        .HasForeignKey("DocumentCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DocumentCategoryId");
 
                     b.HasOne("GR.Documents.Abstractions.Models.DocumentType", "DocumentType")
                         .WithMany()
-                        .HasForeignKey("DocumentTypeId");
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GR.Documents.Abstractions.Models.DocumentVersion", b =>

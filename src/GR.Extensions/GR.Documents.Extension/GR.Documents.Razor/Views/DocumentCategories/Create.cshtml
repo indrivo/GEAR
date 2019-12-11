@@ -1,4 +1,4 @@
-﻿@model GR.Documents.Abstractions.ViewModels.DocumentTypeViewModels.DocumentTypeViewModel;
+﻿@model GR.Documents.Abstractions.ViewModels.DocumentCategoryViewModels.DocumentCategoryViewModel;
 
 <div class="row">
     <div class="col-lg-12">
@@ -7,8 +7,7 @@
                 <h4 class="m-b-0 text-white">Add document type</h4>
             </div>
             <div class="card-body">
-                <form asp-action="Edit" role="form">
-                    @Html.HiddenFor(x => x.Id)
+                <form asp-action="Create" role="form">
                     <div class="form-body">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="row p-t-20">
@@ -20,15 +19,15 @@
                                 </div>
                             </div>
                         </div>
-                        @*<div class="row p-t-20">
+                        <div class="row p-t-20">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label asp-for="IsSystem"></label>
-                                    <input asp-for="IsSystem" class="checkbox" />
+                                    <input asp-for="IsSystem" class="checkbox"/>
                                     <span asp-validation-for="IsSystem"></span>
                                 </div>
                             </div>
-                        </div>*@
+                        </div>
                     </div>
                     <div class="row button-group">
                         <div class="col-lg-2 col-md-3">

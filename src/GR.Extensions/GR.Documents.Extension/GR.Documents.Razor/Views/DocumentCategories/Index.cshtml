@@ -1,43 +1,47 @@
 ﻿@using GR.Core.Razor.Enums
 @{
-    ViewData["Title"] = Localizer["system_document_types"];
+    ViewData["Title"] = Localizer["system_document_categories"];
     var conf = new ListTagHelperModel
     {
-        Title = Localizer["system_document_types"],
-        ListIdentifier = "document_type",
+        Title = Localizer["system_document_categories"],
+        ListIdentifier = "document_Categories",
         Api = new ListApiConfigurationViewModel
         {
-            Url = Url.Action("ListDocumentTypes", "DocumentTypes")
+            Url = Url.Action("ListDocumentCategories", "DocumentCategories")
         },
         RenderColumns = new List<ListRenderColumn>
-        {
+{
             new ListRenderColumn(Localizer["name"], "name"),
+            new ListRenderColumn(Localizer["system_is_system"], "isSystem")
+            {
+                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+            },
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
 
         },
         HeadButtons = new List<UrlTagHelperViewModel>
-            {
+    {
             new UrlTagHelperViewModel
             {
                 AspAction = "Create",
-                AspController = "DocumentTypes",
-                ButtonName = "Add new document type",
-                Description = "New document type will be added"
+                AspController = "DocumentCategories",
+                ButtonName = "Add new document category",
+                Description = "New document category will be added"
             }
             },
         HasActions = true,
         ListActions = new List<ListActionViewModel>
-            {
+    {
             new ListActionViewModel
             {
                 HasIcon = false,
                 Name = Localizer["edit"],
-                Url = Url.Action("Edit", "DocumentTypes"),
+                Url = Url.Action("Edit", "DocumentCategories"),
                 ButtonType = BootstrapButton.Info,
                 ActionParameters = new List<ActionParameter>
-                {
+        {
                     new ActionParameter("id", "id")
                 }
             },
@@ -45,7 +49,7 @@
             {
                 HasIcon = false,
                 Name = Localizer["delete"],
-                Url = Url.Action("Delete", "DocumentTypes"),
+                Url = Url.Action("Delete", "DocumentCategories"),
                 IsJsEvent = true,
                 ButtonEvent = new JsActionButtonEvent
                 {
@@ -54,12 +58,12 @@
                 },
                 ButtonType = BootstrapButton.Danger,
                 ActionParameters = new List<ActionParameter>
-                {
+        {
                     new ActionParameter("id", "id")
                 }
             },
             },
-        Documentation = "This tab allow to manage your document type"
+        Documentation = "This tab allow to manage your document category"
     };
 
 }

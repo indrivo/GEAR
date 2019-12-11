@@ -31,6 +31,11 @@ namespace GR.Documents.Data
         public DbSet<DocumentType> DocumentTypes { get; set; }
 
         /// <summary>
+        /// Document types
+        /// </summary>
+        public DbSet<DocumentCategory> DocumentCategories { get; set; }
+
+        /// <summary>
         /// Document versions
         /// </summary>
         public DbSet<DocumentVersion> DocumentVersions { get; set; }

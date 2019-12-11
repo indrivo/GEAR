@@ -3,15 +3,17 @@ using System;
 using GR.Documents.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GR.Documents.Migrations
 {
     [DbContext(typeof(DocumentsDbContext))]
-    partial class DocumentsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191209083046_DocumentsDbContext_addDocumentCategory")]
+    partial class DocumentsDbContext_addDocumentCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,12 +101,9 @@ namespace GR.Documents.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<Guid?>("DocumentCategoryId")
-                        .IsRequired();
-
                     b.Property<string>("DocumentCode");
 
-                    b.Property<Guid?>("DocumentTypeId");
+                    b.Property<Guid>("DocumentTypeId");
 
                     b.Property<string>("Group");
 
@@ -122,8 +121,6 @@ namespace GR.Documents.Migrations
                     b.Property<int>("Version");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DocumentCategoryId");
 
                     b.HasIndex("DocumentTypeId");
 
@@ -246,14 +243,10 @@ namespace GR.Documents.Migrations
 
             modelBuilder.Entity("GR.Documents.Abstractions.Models.Document", b =>
                 {
-                    b.HasOne("GR.Documents.Abstractions.Models.DocumentCategory", "DocumentCategory")
-                        .WithMany("Documents")
-                        .HasForeignKey("DocumentCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("GR.Documents.Abstractions.Models.DocumentType", "DocumentType")
                         .WithMany()
-                        .HasForeignKey("DocumentTypeId");
+                        .HasForeignKey("DocumentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GR.Documents.Abstractions.Models.DocumentVersion", b =>
