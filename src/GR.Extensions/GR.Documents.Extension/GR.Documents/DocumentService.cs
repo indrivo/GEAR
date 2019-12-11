@@ -151,23 +151,23 @@ namespace GR.Documents
         /// <param name="typeId"></param>
         /// <param name="listIgnoreDocuments"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsByTypeIdAndListAsync(Guid? typeId,
+        public virtual async Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsByCategoryIdAndListAsync(Guid? cetgoryId,
             IEnumerable<Guid> listIgnoreDocuments)
         {
 
             var result = new ResultModel<IEnumerable<DocumentViewModel>>();
             var user = await _userManager.GetCurrentUserAsync();
 
-            if (typeId == null) return new InvalidParametersResultModel<IEnumerable<DocumentViewModel>>();
+            if (cetgoryId == null) return new InvalidParametersResultModel<IEnumerable<DocumentViewModel>>();
 
-            var typeBd = await _documentContext.DocumentTypes.FirstOrDefaultAsync(x => x.Id == typeId);
+            var typeBd = await _documentContext.DocumentCategories.FirstOrDefaultAsync(x => x.Id == cetgoryId);
             if (typeBd == null) return new NotFoundResultModel<IEnumerable<DocumentViewModel>>();
 
             var documentsBd = await _documentContext.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
                 .Include(i => i.DocumentCategory)
-                .Where(x => x.DocumentTypeId == typeId && !listIgnoreDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
+                .Where(x => x.DocumentCategoryId == cetgoryId && !listIgnoreDocuments.Contains(x.Id) && x.TenantId == user.Result.TenantId && !x.IsDeleted).ToListAsync();
 
             if (documentsBd == null || !documentsBd.Any()) return new NotFoundResultModel<IEnumerable<DocumentViewModel>>();
 

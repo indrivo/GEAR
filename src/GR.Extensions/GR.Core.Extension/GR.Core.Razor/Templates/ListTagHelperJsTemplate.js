@@ -8,7 +8,7 @@
         "language": {
             "url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
         },
-        dom: '<"table_render_{Identifier}" <"CustomizeColumns">lBfr<"table-responsive"t>ip >',
+        dom: '{Dom}',
         "processing": true,
         "serverSide": true,
         "filter": true,
