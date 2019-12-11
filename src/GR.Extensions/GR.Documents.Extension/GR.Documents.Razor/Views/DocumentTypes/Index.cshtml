@@ -12,18 +12,13 @@
         RenderColumns = new List<ListRenderColumn>
         {
             new ListRenderColumn(Localizer["name"], "name"),
-            new ListRenderColumn("Is system", "isSystem")
-            {
-                BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
-            },
-            new ListRenderColumn("Code", "code"),
             new ListRenderColumn(Localizer["created"], "created"),
             new ListRenderColumn(Localizer["changed"], "changed"),
             new ListRenderColumn(Localizer["author"], "author"),
 
         },
         HeadButtons = new List<UrlTagHelperViewModel>
-        {
+            {
             new UrlTagHelperViewModel
             {
                 AspAction = "Create",
@@ -31,10 +26,10 @@
                 ButtonName = "Add new document type",
                 Description = "New document type will be added"
             }
-        },
+            },
         HasActions = true,
         ListActions = new List<ListActionViewModel>
-        {
+            {
             new ListActionViewModel
             {
                 HasIcon = false,
@@ -63,7 +58,7 @@
                     new ActionParameter("id", "id")
                 }
             },
-        },
+            },
         Documentation = "This tab allow to manage your document type"
     };
 

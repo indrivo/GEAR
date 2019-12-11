@@ -21,6 +21,12 @@ namespace GR.Documents.Abstractions
 
 
         /// <summary>
+        /// Document types
+        /// </summary>
+        DbSet<DocumentCategory> DocumentCategories { get; set; }
+
+
+        /// <summary>
         /// Document versions
         /// </summary>
         DbSet<DocumentVersion> DocumentVersions { get; set; }

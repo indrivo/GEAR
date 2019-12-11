@@ -100,7 +100,7 @@ namespace GR.WorkFlows
             var entryStateRequest = await GetEntryStateAsync(model.EntryId, model.WorkFlowId);
             if (!entryStateRequest.IsSuccess) return entryStateRequest.ToBase();
             var entryState = entryStateRequest.Result;
-            var transactionRequest = await _workFlowCreatorService.GetTransitionAsync(entryState.StateId, model.WorkFlowId);
+            var transactionRequest = await _workFlowCreatorService.GetTransitionAsync(entryState.StateId, model.NewStateId);
             if (!transactionRequest.IsSuccess) return transactionRequest.ToBase();
             var transaction = transactionRequest.Result;
             var userRequest = await _userManager.GetCurrentUserAsync();
@@ -111,9 +111,9 @@ namespace GR.WorkFlows
                     .Select(x => x.RoleId));
             if (!allowPerformAction) return new ActionBlockedResultModel<object>().ToBase();
             var newState = model.NewStateId.GetValueOrDefault();
+            entryState.Message = model.Message;
             await AddEntryChangesToHistoryAsync(entryState, newState);
             entryState.StateId = newState;
-            entryState.Message = model.Message;
             _workFlowContext.EntryStates.Update(entryState);
             var dbRequest = await _workFlowContext.PushAsync();
             if (dbRequest.IsSuccess) await ExecuteActionsAsync(entryState, transaction, model.EntryObjectConfiguration);
@@ -280,7 +280,7 @@ namespace GR.WorkFlows
             if (state == null || newState == null) return new InvalidParametersResultModel();
             var model = new EntryStateHistory
             {
-                EntryStateId = state.StateId,
+                EntryStateId = state.Id,
                 FromStateId = state.StateId,
                 ToStateId = newState.GetValueOrDefault(),
                 Message = state.Message

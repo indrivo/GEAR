@@ -26,6 +26,20 @@ namespace GR.Documents.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Register Document category service
+        /// </summary>
+        /// <typeparam name="TDocumentTypeService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterDocumentCategoryServices<TDocumentCategoryService>(this IServiceCollection services)
+            where TDocumentCategoryService : class, IDocumentCategoryService
+        {
+            IoC.RegisterTransientService<IDocumentCategoryService, TDocumentCategoryService>();
+
+            return services;
+        }
+
+        /// <summary>
         /// Register Document  service
         /// </summary>
         /// <param name="services"></param>
@@ -38,20 +52,7 @@ namespace GR.Documents.Abstractions.Extensions
             return services;
         }
 
-        /// <summary>
-        /// Register Document width Workflow  service
-        /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        public static IServiceCollection RegisterDocumentServicesWithWorkflow<TDocumentServiceWithWorkflow>(this IServiceCollection services)
-            where TDocumentServiceWithWorkflow : class, IDocumentServiceWithWorkflow
-        {
-            IoC.RegisterTransientService<IDocumentServiceWithWorkflow, TDocumentServiceWithWorkflow>();
-
-            return services;
-        }
-
-
+       
         /// <summary>
         /// Register documents context
         /// </summary>
