@@ -815,7 +815,6 @@
   "system_workflow_builder": "Generatore di flusso di lavoro",
   "system_audit_plan": "Piano di controllo",
   "system_audit_mission": "La missione di controllo ",
-<<<<<<< HEAD
   "system_document_categories": "Documento categorie",
   "system_is_system": "È il sistema di",
   "system_title": "Titolo",
@@ -832,8 +831,6 @@
   "url": "Url",
   "coments": "Commenti",
   "add_document_version": "Aggiungere versione documento",
-  "is_major_version": "È la versione principale"
-=======
+  "is_major_version": "È la versione principale",
   "system_change_roles": "Il cambio di ruoli"
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

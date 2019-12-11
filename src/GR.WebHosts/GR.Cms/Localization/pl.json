@@ -815,7 +815,6 @@
   "system_workflow_builder": "Proces roboczy budowniczy",
   "system_audit_plan": "Plan audytu",
   "system_audit_mission": "Zadaniem audytu ",
-<<<<<<< HEAD
   "system_document_categories": "Kategorie dokumentów ",
   "system_is_system": "System",
   "system_title": "Nazwa",
@@ -832,8 +831,6 @@
   "url": "Adres URL",
   "coments": "Komentarze",
   "add_document_version": "Dodaj wersja dokumentu ",
-  "is_major_version": "Jest to podstawowa wersja"
-=======
+  "is_major_version": "Jest to podstawowa wersja",
   "system_change_roles": "Role się zmieniają "
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

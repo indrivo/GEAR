@@ -815,7 +815,6 @@
   "system_workflow_builder": "Рабочий процесс строитель",
   "system_audit_plan": "План аудита",
   "system_audit_mission": "Миссия аудита ",
-<<<<<<< HEAD
   "system_document_categories": "Категории документов ",
   "system_is_system": "Система",
   "system_title": "Название",
@@ -832,8 +831,6 @@
   "url": "URL-адрес",
   "coments": "Комментарии",
   "add_document_version": "Добавить версия документа ",
-  "is_major_version": "Это основная версия"
-=======
+  "is_major_version": "Это основная версия",
   "system_change_roles": "Роли меняются "
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

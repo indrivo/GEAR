@@ -815,7 +815,6 @@
   "system_workflow_builder": "Constructor de flujo de trabajo",
   "system_audit_plan": "El plan de auditoría",
   "system_audit_mission": "La misión de la auditoría ",
-<<<<<<< HEAD
   "system_document_categories": "Categorías de documentos",
   "system_is_system": "Es el sistema de",
   "system_title": "Título",
@@ -832,8 +831,6 @@
   "url": "Url",
   "coments": "Comentarios",
   "add_document_version": "Agregar versión de documento",
-  "is_major_version": "Es la versión principal"
-=======
+  "is_major_version": "Es la versión principal",
   "system_change_roles": "Cambio de roles"
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

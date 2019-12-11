@@ -815,7 +815,6 @@
   "system_workflow_builder": "Générateur de flux de travaux",
   "system_audit_plan": "Le plan d'audit",
   "system_audit_mission": "La mission d'audit ",
-<<<<<<< HEAD
   "system_document_categories": "Catégories de documents",
   "system_is_system": "Le système de",
   "system_title": "Titre",
@@ -832,8 +831,6 @@
   "url": "Url",
   "coments": "Commentaires",
   "add_document_version": "Ajouter un document version",
-  "is_major_version": "Est version majeure"
-=======
+  "is_major_version": "Est version majeure",
   "system_change_roles": "Changer les rôles"
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }
