@@ -33,7 +33,7 @@ namespace GR.TaskManager.Services
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
         #endregion
 
 
@@ -43,7 +43,7 @@ namespace GR.TaskManager.Services
         /// <param name="context"></param>
         /// <param name="identity"></param>
         /// <param name="userManager"></param>
-        public TaskManager(ITaskManagerContext context, IUserManager<ApplicationUser> identity, IUserManager<ApplicationUser> userManager)
+        public TaskManager(ITaskManagerContext context, IUserManager<GearUser> identity, IUserManager<GearUser> userManager)
         {
             _context = context;
             _userManager = userManager;

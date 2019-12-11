@@ -1,0 +1,226 @@
+@model IEnumerable<GR.Identity.Razor.Users.ViewModels.UserViewModels.UserListItemViewModel>
+
+@inject IStringLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["user_list"];
+}
+
+@section Styles
+    {
+    <style>
+        .table th, .table td {
+            white-space: initial !important;
+        }
+    </style>
+}
+
+<input type="hidden" id="hiddenID" />
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Localizer["user_list"]</h4>
+        <h6 class="card-subtitle"></h6>
+        <div class="mt-4">
+            <div class="d-flex">
+                <div class="mr-auto">
+                    <div class="form-group">
+                        <a asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
+                            @Localizer["add_user"]
+                        </a>
+                        <small>@Localizer["users_add_info"]</small>
+                        @*<a id="adTrigger" alt="default" data-toggle="modal" data-target="#myModal" style="margin-left: 3em;" href="javascript:void(0)" class="btn btn-primary btn-sm">
+                                <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>
+                                Import Ad User
+                            </a>
+                            <small>New ad user will be added.</small>*@
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <table class="table table-striped table-bordered" style="width: 100%" id="usersTable">
+            <thead>
+                <tr>
+                    <th>@Localizer["name"]</th>
+                    <th>@Localizer["organization"]</th>
+                    <th>@Localizer["roles"]</th>
+                    <th>@Localizer["created"]</th>
+                    <th>@Localizer["author"]</th>
+                    <th>@Localizer["modified_by"]</th>
+                    <th>@Localizer["changed"]</th>
+                    <th>@Localizer["sessions"]</th>
+                    <th>@Localizer["authentification_type"]</th>
+                    <th>Last login</th>
+                    <th>@Localizer["list_actions"]</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+        </table>
+    </div>
+</div>
+
+
+<!-- sample modal content -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">@Localizer["import_ad_user"]</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Select Ad User</label>
+                            <select id="adUsers" class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="postAdUser" class="btn btn-success waves-effect">Add</button>
+                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+@section Scripts{
+    <script type="text/javascript" language="javascript">
+		function getTokenAntiForgery() {
+			const token = '@Html.AntiForgeryToken()';
+			return $(token).val();
+		}
+    </script>
+    <script language="javascript" type="text/javascript">
+		$(document).ready(function($) {
+			const tableId = '#usersTable';
+			if ($.fn.DataTable.isDataTable(tableId)) {
+				$(tableId).dataTable().fnDestroy();
+				$(tableId).dataTable().empty();
+			}
+
+			$(tableId).DataTable({
+				"language": {
+					"url": `http://cdn.datatables.net/plug-ins/1.10.19/i18n/${window.getCookie("language")}.json`
+				},
+				dom: '<"table_render_{Identifier}" <"CustomizeColumns">lBfr<"table-responsive"t>ip >',
+				"processing": true, // for show progress bar
+				"serverSide": true, // for process server side
+				"filter": true, // this is for disable filter (search box)
+				"orderMulti": false, // for disable multiple column at once
+				"destroy": true,
+				"ajax": {
+					"url": '@Url.Action("LoadUsers")',
+					"type": "POST"
+				},
+				"columns": [
+					{ "data": "userName" },
+					{ "data": "organization" },
+					{ "data": "roles" },
+					{ "data": "createdDate" },
+					{ "data": "createdBy" },
+					{ "data": "modifiedBy" },
+					{ "data": "changed" },
+					{ "data": "sessions" },
+					{ "data": "authenticationType" },
+					{ "data": "lastLogin" },
+					{
+						data: null,
+						"render": function(data, type, row, meta) {
+							return `<div class="btn-group" role="group" aria-label="Action buttons">
+									    <a class="btn btn-info btn-sm" href="@Url.Action("Edit")?id=${row.id}">${window.translate("edit")}</a>
+									    <a class="btn btn-warning btn-sm" href="@Url.Action("ChangeUserPassword")?userId=${row.id}&callBackUrl=/Users">${window.translate("system_user_change_password")}</a>
+									    <a href="javascript:void(0)" class='btn btn-danger btn-sm' onclick=CreateAlert('${row.id}'); >${window.translate("delete")}</a>
+									</div>`;
+						}
+					}
+                ],
+                drawCallback: function () {
+                    if ($('.table_render_{Identifier} .dataTables_paginate .pagination li').length > 3) {
+                        $('.table_render_{Identifier} .dataTables_paginate').show();
+                    } else {
+                        $('.table_render_{Identifier} .dataTables_paginate').hide();
+                    }
+                },
+                "language": {
+                    "paginate": {
+                        "previous": '<i class="material-icons">keyboard_arrow_left</i>',
+                        "next": '<i class="material-icons">keyboard_arrow_right</i>'
+                    }
+                }
+			});
+		});
+
+		function CreateAlert(rowId) {
+			const object = {
+				alertTitle: "Delete this user?",
+				alertText: "Are you sure that you want to leave this user?",
+				confirmButtonText: "Yes, delete it!",
+				rowId: rowId,
+				tableId: "#usersTable",
+				urlForDelete: '@Url.Action("Delete")',
+				type: "warning",
+				onDeleteSuccess: "User has been deleted.",
+				onDeleteFail: "Something wrong",
+				onServerNoResponse: "Api not respond or not have permissions."
+			};
+			DeleteData(object);
+		}
+
+		$("#adTrigger").on("click",
+			function() {
+				$.ajax({
+					url: "@Url.Action("GetAdUsers")",
+					method: "get",
+					success: function(data) {
+						if (data != null) {
+							$("#adUsers").html(null);
+							$.each(data,
+								function() {
+									$("#adUsers").append(new Option(this.name, this.samAccountName));
+								});
+						}
+					},
+					fail: function(data) {
+
+					}
+				});
+			});
+
+		$("#postAdUser").on("click",
+			function() {
+				const user = $("#adUsers").find(":selected").val();
+				if (user != null) {
+					$.ajax({
+						url: "@Url.Action("AddAdUser")",
+						method: "post",
+						data: {
+							userName: user
+						},
+						success: function(data) {
+							if (data != null) {
+								if (!data.is_success) {
+									swal("Error", data.error_keys[0].message, "error");
+								} else {
+									location.href = `/Users/Edit?id=${data.result}`;
+								}
+							} else {
+								swal("Error", "Server error", "error");
+							}
+						},
+						fail: function(error) {
+							swal("Error", "Server error", "error");
+						}
+					});
+				}
+			});
+    </script>
+}

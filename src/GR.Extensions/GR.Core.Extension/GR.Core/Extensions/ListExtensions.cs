@@ -94,10 +94,9 @@ namespace GR.Core.Extensions
         {
             var aData = source?.ToList() ?? new List<TItem>();
             var bData = target?.ToList() ?? new List<TItem>();
-            var sourceUniqueElements = aData.Except(bData).ToList();
-            var targetUniqueElements = bData.Except(aData).ToList();
-
-            return (sourceUniqueElements, targetUniqueElements);
+            var toExclude = aData.Where(left => !bData.Contains(left)).ToList();
+            var toAdd = bData.Where(right => !aData.Contains(right)).ToList();
+            return (toAdd, toExclude);
         }
 
         /// <summary>

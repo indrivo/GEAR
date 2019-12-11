@@ -71,7 +71,7 @@ namespace GR.Calendar.Abstractions.Extensions
             {
                 var subject = "Changes in the event " + args.Title;
                 var message = $"An event is created for which you are invited, more details {calendarLink}";
-                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                var notifier = IoC.Resolve<INotify<GearRole>>();
                 if (notifier == null) return;
                 var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();
                 if (users.Any())
@@ -84,7 +84,7 @@ namespace GR.Calendar.Abstractions.Extensions
             {
                 var subject = "Changes in the event " + args.Title;
                 var message = $"Event {args.Title} has been modified, more details {calendarLink}";
-                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                var notifier = IoC.Resolve<INotify<GearRole>>();
                 var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();
                 if (users.Any())
                 {
@@ -96,7 +96,7 @@ namespace GR.Calendar.Abstractions.Extensions
             {
                 var subject = "Changes in the event " + args.Title;
                 var message = $"Event {args.Title} was canceled";
-                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                var notifier = IoC.Resolve<INotify<GearRole>>();
                 var users = args.Invited?.Select(x => x.ToGuid()).ToList() ?? new List<Guid>();
                 if (users.Any())
                 {
@@ -106,12 +106,12 @@ namespace GR.Calendar.Abstractions.Extensions
 
             CalendarEvents.SystemCalendarEvents.OnUserChangeAcceptance += async (sender, args) =>
             {
-                var userManager = IoC.Resolve<UserManager<ApplicationUser>>();
+                var userManager = IoC.Resolve<UserManager<GearUser>>();
                 if (userManager == null) return;
                 var subject = "Changes in the event " + args.Title;
                 var user = await userManager.FindByIdAsync(args.Member.UserId.ToString());
                 var message = $"User {user.Email} responded with {args.AcceptanceState} to event {args.Title}";
-                var notifier = IoC.Resolve<INotify<ApplicationRole>>();
+                var notifier = IoC.Resolve<INotify<GearRole>>();
                 await notifier.SendNotificationAsync(new List<Guid> { args.Organizer }, NotificationType.Info, subject, message);
             };
 

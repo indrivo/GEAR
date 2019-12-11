@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Notification subscriptions";
     var groups = ((IEnumerable<IGrouping<string, NotificationSubscribeGetViewModel>>)ViewBag.Events).ToList();
-    var roles = ((IEnumerable<ApplicationRole>)ViewBag.Roles).ToList();
+    var roles = ((IEnumerable<GearRole>)ViewBag.Roles).ToList();
 }
 
 @section Styles

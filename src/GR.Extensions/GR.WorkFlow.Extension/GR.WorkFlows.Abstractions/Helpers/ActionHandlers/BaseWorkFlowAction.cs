@@ -17,6 +17,11 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         #endregion
 
         /// <summary>
+        /// Entry state
+        /// </summary>
+        protected EntryState EntryState { get; set; }
+
+        /// <summary>
         /// Current transition
         /// </summary>
         protected Transition CurrentTransition { get; set; }
@@ -29,10 +34,12 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="entry"></param>
         /// <param name="currentTransition"></param>
         /// <param name="nextTransitions"></param>
-        protected BaseWorkFlowAction(Transition currentTransition, IEnumerable<Transition> nextTransitions)
+        protected BaseWorkFlowAction(EntryState entry, Transition currentTransition, IEnumerable<Transition> nextTransitions)
         {
+            EntryState = entry;
             CurrentTransition = currentTransition;
             NextTransitions = nextTransitions;
             Executor = IoC.Resolve<IWorkFlowExecutorService>();
@@ -42,6 +49,6 @@ namespace GR.WorkFlows.Abstractions.Helpers.ActionHandlers
         /// Execute
         /// </summary>
         /// <returns></returns>
-        public abstract Task InvokeExecuteAsync(Dictionary<string, object> data);
+        public abstract Task InvokeExecuteAsync(Dictionary<string, string> data);
     }
 }

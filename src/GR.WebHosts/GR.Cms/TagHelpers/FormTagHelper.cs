@@ -27,7 +27,7 @@ namespace GR.Cms.TagHelpers
 		/// <summary>
 		/// Inject User Manager
 		/// </summary>
-		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly UserManager<GearUser> _userManager;
 
 		/// <summary>
 		/// Inject http context
@@ -84,7 +84,7 @@ namespace GR.Cms.TagHelpers
 		/// <param name="httpContextAccessor"></param>
 		/// <param name="userManager"></param>
 		/// <param name="localizer"></param>
-		public FormTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IStringLocalizer localizer)
+		public FormTagHelper(EntitiesDbContext dbContext, IHttpContextAccessor httpContextAccessor, UserManager<GearUser> userManager, IStringLocalizer localizer)
 		{
 			_dbContext = dbContext;
 			_userManager = userManager;

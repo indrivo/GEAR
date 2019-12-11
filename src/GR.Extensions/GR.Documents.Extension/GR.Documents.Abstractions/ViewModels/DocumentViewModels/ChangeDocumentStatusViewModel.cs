@@ -9,5 +9,7 @@ namespace GR.Documents.Abstractions.ViewModels.DocumentViewModels
         public string EntryId { get; set; }
         public Guid? WorkFlowId { get; set; }
         public Guid? NewStateId { get; set; }
+        public string Comments { get; set; }
+
     }
 }

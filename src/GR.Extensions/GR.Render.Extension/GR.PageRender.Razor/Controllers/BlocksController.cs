@@ -23,11 +23,11 @@ using GR.PageRender.Abstractions.Models.Pages;
 namespace GR.PageRender.Razor.Controllers
 {
     [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-    public class BlocksController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class BlocksController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
         private readonly IDynamicPagesContext _pagesContext;
 
-        public BlocksController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public BlocksController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _pagesContext = pagesContext;
         }

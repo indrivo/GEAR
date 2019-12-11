@@ -10,7 +10,7 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Queries
 {
     public class CalendarQuery : ObjectGraphType
     {
-        public CalendarQuery(ICalendarDbContext dbContext, IUserManager<ApplicationUser> userManager)
+        public CalendarQuery(ICalendarDbContext dbContext, IUserManager<GearUser> userManager)
         {
             Field<ListGraphType<EventType>>(
                 "events",

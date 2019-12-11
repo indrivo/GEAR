@@ -22,7 +22,7 @@ namespace GR.Identity.Abstractions.Models
         /// The role object that will be populated if using
         /// the Include method
         /// </summary>
-        public ApplicationRole Role { get; set; }
+        public GearRole Role { get; set; }
 
         public Permission Permission { get; set; }
 

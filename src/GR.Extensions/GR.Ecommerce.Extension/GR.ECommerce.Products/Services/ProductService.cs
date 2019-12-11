@@ -14,6 +14,11 @@ using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.Models.Settings;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
+using GR.ECommerce.Payments.Abstractions;
+using GR.ECommerce.Payments.Abstractions.Enums;
+using GR.Identity.Abstractions;
+using GR.MultiTenant.Abstractions.Helpers;
+using GR.Orders.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GR.ECommerce.Products.Services
@@ -27,9 +32,27 @@ namespace GR.ECommerce.Products.Services
         /// </summary>
         private readonly ICommerceContext _commerceContext;
 
-        public ProductService(ICommerceContext commerceContext)
+        /// <summary>
+        /// Inject payment context
+        /// </summary>
+        private readonly IPaymentContext _paymentContext;
+
+        /// <summary>
+        /// Inject user manager
+        /// </summary>
+        private readonly IUserManager<GearUser> _userManager;
+
+        /// <summary>
+        /// Inject order db context
+        /// </summary>
+        private readonly IOrderDbContext _orderDbContext;
+
+        public ProductService(ICommerceContext commerceContext, IUserManager<GearUser> userManager, IPaymentContext paymentContext, IOrderDbContext orderDbContext)
         {
             _commerceContext = commerceContext;
+            _userManager = userManager;
+            _paymentContext = paymentContext;
+            _orderDbContext = orderDbContext;
         }
 
         /// <summary>
@@ -163,6 +186,37 @@ namespace GR.ECommerce.Products.Services
             return new SuccessResultModel<TOutput>(setting.Value.Deserialize<TOutput>());
         }
 
+
+        /// <summary>
+        /// get product by min number value by attribute name 
+        /// </summary>
+        /// <param name="attribute"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<Product>> GetProductByAttributeMinNumberValueAsync(string attribute)
+        {
+            int valueInt = 0;
+            var listAttribute = _commerceContext.ProductAttributes
+                .Include(i => i.ProductAttribute)
+                .Include(i=> i.Product)
+                .ThenInclude(i=> i.ProductAttributes)
+                .Where(x => x.ProductAttribute.Name == attribute && int.TryParse(x.Value, out valueInt));
+
+            if (!listAttribute.Any())
+            {
+                return new NotFoundResultModel<Product>();
+            }
+
+            var minValue = listAttribute.Min(x => int.Parse(x.Value));
+            var product = (await listAttribute.FirstOrDefaultAsync(x => int.Parse(x.Value) == minValue))?.Product;
+
+            var resultModel = new ResultModel<Product>();
+
+            resultModel.IsSuccess = true;
+            resultModel.Result = product;
+
+            return resultModel;
+        }
+
         /// <summary>
         /// Add or update setting
         /// </summary>
@@ -188,6 +242,171 @@ namespace GR.ECommerce.Products.Services
             }
 
             return await _commerceContext.PushAsync();
+        }
+
+        /// <summary>
+        /// Get price by variation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> GetPriceByVariationAsync(ProductPriceVariationViewModel model)
+        {
+            var resultModel = new ResultModel();
+
+            var prod = await _commerceContext.Products.Include(i => i.ProductPrices).FirstOrDefaultAsync(x => x.Id == model.ProductId);
+
+            if (prod != null)
+            {
+                if (model.VariationId is null)
+                {
+                    resultModel.IsSuccess = true;
+                    resultModel.Result = new { Price = prod.PriceWithDiscount * model.Quantity };
+                    return resultModel;
+                }
+
+                var productVariation = _commerceContext.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
+
+                if (productVariation is null)
+                {
+                    resultModel.IsSuccess = false;
+                    resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                    return resultModel;
+                }
+
+                resultModel.IsSuccess = true;
+                resultModel.Result = new { Price = productVariation.Price * model.Quantity };
+                return resultModel;
+            }
+
+            resultModel.IsSuccess = false;
+            resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+
+
+            return resultModel;
+        }
+
+        /// <summary>
+        /// Remove product attribute
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="attributeId"></param>
+        /// <returns></returns>
+        public async Task<ResultModel> RemoveAttributeAsync(Guid? productId, Guid? attributeId)
+        {
+            if (productId == null || attributeId == null) return new InvalidParametersResultModel();
+            var result = await _commerceContext.ProductAttributes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.ProductAttributeId == attributeId && x.ProductId == productId);
+
+            if (result == null) return new NotFoundResultModel();
+            _commerceContext.ProductAttributes.Remove(result);
+            var dbResult = await _commerceContext.PushAsync();
+            return dbResult;
+        }
+
+        /// <summary>
+        /// Get commerce general statistic
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        public async Task<ResultModel<SalesStatisticViewModel>> GetCommerceGeneralStatisticAsync(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null || endDate == null) return new InvalidParametersResultModel<SalesStatisticViewModel>();
+            var model = new SalesStatisticViewModel
+            {
+                NewCustomers = (await GetNewCustomersGeneralInfoAsync(startDate, endDate)).Result,
+                TotalEarnings = (await GetTotalEarningsAsync(startDate, endDate)).Result,
+                OrderReceived = (await GetOrderReceivedStatisticAsync(startDate, endDate)).Result
+            };
+            return new SuccessResultModel<SalesStatisticViewModel>(model);
+        }
+
+        public async Task<ResultModel<Dictionary<int, object>>> GetYearReportAsync()
+        {
+            var year = DateTime.Today.Year;
+            var data = new Dictionary<int, object>();
+            for (var i = 1; i <= 12; i++)
+            {
+                var users = await _userManager.UserManager.Users.CountAsync(x => x.Created.Year.Equals(year) && x.Created.Month.Equals(i));
+                var orders = await _orderDbContext.Orders.Where(x => x.OrderState == OrderState.PaymentReceived)
+                    .CountAsync(x => x.Created.Year.Equals(year) && x.Created.Month.Equals(i));
+                data.Add(i, new
+                {
+                    Users = users,
+                    Sales = orders
+                });
+            }
+            return new SuccessResultModel<Dictionary<int, object>>(data);
+        }
+
+        /// <summary>
+        /// Get customers info
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        private async Task<ResultModel<NewCustomersStatisticViewModel>> GetNewCustomersGeneralInfoAsync(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null || endDate == null) return new InvalidParametersResultModel<NewCustomersStatisticViewModel>();
+            var companyRole = await _userManager.RoleManager.FindByNameAsync(MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
+            if (companyRole == null) return new NotFoundResultModel<NewCustomersStatisticViewModel>();
+            var newCustomersRequest = await _userManager.GetUsersInRolesAsync(new List<GearRole> { companyRole });
+            if (!newCustomersRequest.IsSuccess) return newCustomersRequest.Map<NewCustomersStatisticViewModel>();
+            var newCustomers = newCustomersRequest.Result.ToList();
+            var inPeriod = newCustomers.Where(x => x.Created >= startDate && x.Created <= endDate).ToList();
+            var model = new NewCustomersStatisticViewModel
+            {
+                NewCustomers = inPeriod.Count,
+                Percentage = inPeriod.Count.PercentOf(newCustomers.Count)
+            };
+            return new SuccessResultModel<NewCustomersStatisticViewModel>(model);
+        }
+
+        /// <summary>
+        /// Get total earnings info
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        private async Task<ResultModel<TotalEarningsStatisticViewModel>> GetTotalEarningsAsync(
+            DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null || endDate == null) return new InvalidParametersResultModel<TotalEarningsStatisticViewModel>();
+            var total = await _paymentContext.Payments
+                .Where(x => x.PaymentStatus.Equals(PaymentStatus.Succeeded))
+                .ToListAsync();
+            var inPeriod = await _paymentContext.Payments
+                .Where(x => x.PaymentStatus.Equals(PaymentStatus.Succeeded) && x.Created >= startDate &&
+                            x.Created <= endDate)
+                .ToListAsync();
+            var model = new TotalEarningsStatisticViewModel
+            {
+                TotalEarnings = inPeriod?.Sum(x => x.Total) ?? 0,
+                Percentage = inPeriod?.Count.PercentOf(total.Count) ?? 0
+            };
+            return new SuccessResultModel<TotalEarningsStatisticViewModel>(model);
+        }
+
+        /// <summary>
+        /// Get order statistic
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        private async Task<ResultModel<OrderReceivedStatisticViewModel>> GetOrderReceivedStatisticAsync(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null || endDate == null) return new InvalidParametersResultModel<OrderReceivedStatisticViewModel>();
+            var total = await _orderDbContext.Orders.CountAsync();
+            var inPeriod = await _orderDbContext.Orders
+                .AsNoTracking()
+                .CountAsync(x => x.Created >= startDate && x.Created <= endDate);
+            var model = new OrderReceivedStatisticViewModel
+            {
+                TotalOrderReceived = inPeriod,
+                Percentage = inPeriod.PercentOf(total)
+            };
+            return new SuccessResultModel<OrderReceivedStatisticViewModel>(model);
         }
 
         #region Helpers

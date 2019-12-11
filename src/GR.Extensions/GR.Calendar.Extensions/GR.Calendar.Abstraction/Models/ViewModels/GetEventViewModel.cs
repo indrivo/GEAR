@@ -53,7 +53,7 @@ namespace GR.Calendar.Abstractions.Models.ViewModels
 
     public sealed class CalendarUserViewModel : SampleGetUserViewModel
     {
-        public CalendarUserViewModel(ApplicationUser user) : base(user) { }
+        public CalendarUserViewModel(GearUser user) : base(user) { }
         public EventAcceptance Acceptance { get; set; } = EventAcceptance.Tentative;
     }
 }

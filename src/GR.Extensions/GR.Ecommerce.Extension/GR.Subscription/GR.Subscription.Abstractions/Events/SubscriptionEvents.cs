@@ -6,6 +6,7 @@ using GR.Core.Helpers;
 using GR.ECommerce.Abstractions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
+using GR.Identity.Abstractions;
 using GR.MultiTenant.Abstractions.Events;
 using GR.Orders.Abstractions;
 using GR.Orders.Abstractions.Events;
@@ -33,7 +34,29 @@ namespace GR.Subscriptions.Abstractions.Events
             TenantEvents.Company.OnCompanyRegistered += async (sender, args) =>
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
+                var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
+                var userManager = IoC.Resolve<IUserManager<GearUser>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
+                var user = (await userManager.GetCurrentUserAsync()).Result;
+
+                
+                var planRequest = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
+
+                if (planRequest.IsSuccess)
+                {
+                    var plan = planRequest.Result;
+
+                    var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
+                    await subscriptionService.CreateUpdateSubscriptionAsync(new SubscriptionViewModel
+                    {
+                        Name = plan.Name,
+                        StartDate = DateTime.Now,
+                        Availability = int.Parse(freeTrialPeriodStr), 
+                        UserId = args.UserId.ToGuid(),
+                        IsFree = true,
+                        SubscriptionPermissions = permissions
+                    });
+                }
 
                 //create free trial subscription
             };
@@ -57,15 +80,27 @@ namespace GR.Subscriptions.Abstractions.Events
                 var variationId = order.ProductOrders.FirstOrDefault(x => x.ProductId == checkIfProductIsSubscription)?.ProductVariationId;
                 var variation = plan.ProductVariations.FirstOrDefault(x => x.Id.Equals(variationId));
 
-                await subscriptionService.CreateSubscriptionAsync(new SubscriptionViewModel
+
+                var userSubscription = await subscriptionService.GetLastSubscriptionForUserAsync();
+
+                var newSubscription = new SubscriptionViewModel
                 {
                     Name = plan.Name,
                     OrderId = args.OrderId,
                     StartDate = DateTime.Now,
                     Availability = subscriptionService.GetSubscriptionDuration(variation),
                     UserId = order.UserId,
-                    SubscriptionPermissions = permissions
-                });
+                    SubscriptionPermissions = permissions,
+                };
+
+                if (userSubscription.IsSuccess)
+                {
+                    newSubscription.Id = userSubscription.Result.Id;
+                    newSubscription.Availability += userSubscription.Result.Availability;
+                    newSubscription.IsFree = false;
+                }
+
+                await subscriptionService.CreateUpdateSubscriptionAsync(newSubscription);
             };
         }
     }

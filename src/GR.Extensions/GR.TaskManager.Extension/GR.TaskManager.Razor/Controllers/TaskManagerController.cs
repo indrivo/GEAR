@@ -29,9 +29,9 @@ namespace GR.TaskManager.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
-        public TaskManagerController(ITaskManager taskManager, IUserManager<ApplicationUser> userManager)
+        public TaskManagerController(ITaskManager taskManager, IUserManager<GearUser> userManager)
         {
             _taskManager = taskManager;
             _userManager = userManager;
@@ -71,7 +71,7 @@ namespace GR.TaskManager.Razor.Controllers
         {
             var users = _userManager.UserManager.Users.Where(x => x.TenantId == _userManager.CurrentUserTenantId).ToList();
 
-            var directions = from ApplicationUser d in users select new {ID = d.Id, Name = d.UserName};
+            var directions = from GearUser d in users select new {ID = d.Id, Name = d.UserName};
             return Json(new SelectList(directions, "ID", "Name", 0));
         }
 

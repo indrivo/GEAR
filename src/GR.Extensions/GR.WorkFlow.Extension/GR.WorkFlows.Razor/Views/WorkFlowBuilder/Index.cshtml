@@ -1,13 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "Workflow list";
+    ViewData["Title"] = Localizer["system_workflow_builder"];
 }
 @section Styles
 {
     <link rel="stylesheet" type="text/css" href="~/lib/jsPlumb/css/jsplumbtoolkit-defaults.min.css" />
     <link rel="stylesheet" type="text/css" href="~/assets/workflow-css/workflow.css" />
 }
-
-@inject IStringLocalizer Localizer
 
 <div class="row pt-5 h-100">
     <div class="col-md-3">
@@ -200,14 +198,14 @@
 
     <!--State box template-->
     <script id="state-template" type="text/x-jsrender">
-        <div class="w" data-state-id="{{:id}}" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}">
+        <div class="w" data-state-id="{{:id}}" id="{{:id}}" style="top: {{:~y}}; left:{{:~x}}" data-isstart="{{:isStartState}}" data-isend="{{:isEndState}}">
             <a class="state-edit mr-2">
                 <i class="material-icons">edit</i>
             </a>
             <span class="state-name">
                 {{:name}}
             </span>
-            <div class="ep" action="{{:id}}"></div>
+            <div class="ep" action="{{:id}}" style="background-color:{{:~bgColor}}"></div>
         </div>
     </script>
 

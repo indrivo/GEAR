@@ -22,7 +22,7 @@ namespace GR.Identity.Permissions.Abstractions
         /// <param name="user"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        Task<bool> HasClaim(ApplicationUser user, string permission);
+        Task<bool> HasClaim(GearUser user, string permission);
         /// <summary>
         /// Has permission
         /// </summary>

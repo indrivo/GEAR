@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Commerce Dashboard";
 }
 
 @section Styles
@@ -7,22 +7,12 @@
     <link rel="stylesheet" href="~/lib/bootstrap-daterangepicker/daterangepicker.min.css" />
     <link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
 }
-<div class="row">
+<div class="row mb-3">
     <div class="col-md-9"></div>
     <div class="col controls-wrapper mt-3 mt-md-0 d-none d-md-block ">
         <div class="controls d-flex justify-content-center justify-content-md-end">
             <input type="text" class="form-control date-rage width-260">
-            <button type="button" class="btn btn-danger">Apply Range</button>
-            <div class="dropdown">
-                <button type="button" id="downloadGrid" data-toggle="dropdown" class="btn btn-secondary py-1 px-2"><span class="material-icons align-text-bottom">save_alt</span></button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="downloadGrid">
-                    <a class="dropdown-item" href="#">Save as PDF</a>
-                    <a class="dropdown-item" href="#">Save as Image</a>
-                    <a class="dropdown-item" href="#">Save as Word</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">Export Excel</a>
-                </div>
-            </div>
+            <button id="reloadBtn" type="button" class="btn btn-danger">Apply Range</button>
         </div>
     </div>
 </div>
@@ -32,7 +22,7 @@
     <div class="card-body  p-lg-4">
         <div class="row">
 
-            <div class="col-md-6 col-lg-3  mb-4 mb-lg-0">
+            <div id="ordersReceived" class="col-md-6 col-lg-3  mb-4 mb-lg-0">
                 <div class="media align-items-center">
                     <span class="material-icons text-info mr-4 circle p-3 border border-info bg-info-light25">shopping_cart</span>
                     <div class="media-body">
@@ -41,11 +31,11 @@
                     </div>
                 </div>
                 <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3  mb-4 mb-lg-0">
+            <div id="earnings" class="col-md-6 col-lg-3  mb-4 mb-lg-0">
                 <div class="media align-items-center">
                     <span class="material-icons text-danger mr-3 circle p-3 border border-danger bg-danger-light25">monetization_on</span>
                     <div class="media-body">
@@ -54,11 +44,11 @@
                     </div>
                 </div>
                 <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-3  mb-4 mb-md-0 ">
+            <div id="newCustomers" class="col-md-6 col-lg-3  mb-4 mb-md-0 ">
                 <div class="media align-items-center">
                     <span class="material-icons text-success mr-3 circle p-3 border border-success bg-success-light25">person_add</span>
                     <div class="media-body">
@@ -67,20 +57,7 @@
                     </div>
                 </div>
                 <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3 mb-4 mb-md-0">
-                <div class="media align-items-center">
-                    <span class="material-icons text-warning mr-3 circle p-3 border border-warning bg-warning-light25">group</span>
-                    <div class="media-body">
-                        <h4 class="weight-400 m-0">0</h4>
-                        <small class="text-muted">Churned Users</small>
-                    </div>
-                </div>
-                <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
 
@@ -91,7 +68,7 @@
 
 
 <div class="row">
-    <div class="col-lg-8 mb-4">
+    <div class="col-lg-12 mb-4">
         <div class="card  h-100">
             <div class="card-header py-3">Sales &amp; Users Report</div>
             <div class="card-body ">
@@ -101,112 +78,17 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-4 mb-4">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="weight-400 mb-3 border-left border-warning pl-2 border-width-medium">USA <span class="text-muted">Sales Report</span></h6>
-                <div class="row">
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                </div>
-                <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div>
-        <div class="card mb-4">
-            <div class="card-body">
-                <h6 class="weight-400 mb-3 border-left border-primary pl-2 border-width-medium">USA <span class="text-muted">Sales Report</span></h6>
-                <div class="row">
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                </div>
-                <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 35%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-danger" role="progressbar" style="width: 15%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-info" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-body">
-                <h6 class="weight-400 mb-3 border-left border-danger pl-2 border-width-medium">USA <span class="text-muted">Sales Report</span></h6>
-                <div class="row">
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                    <div class="col">
-                        <small class="text-muted weight-300">This Week</small>
-                        <div class="weight-400">$28,343</div>
-                    </div>
-                </div>
-                <div class="progress mt-3" style="height: 6px;">
-                    <div class="progress-bar bg-secondary" role="progressbar" style="width: 35%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar " role="progressbar" style="width: 10%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div class="progress-bar bg-warning" role="progressbar" style="width: 40%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 
 <div class="row">
-    <div class="col-lg-4 mb-4 mb-lg-0 ">
+    <div class="col-lg-6 mb-4 mb-lg-0 ">
         <div class="card h-100 ">
             <div class="card-header">Order Statuses</div>
             <div class="card-body">
                 <h3 class="weight-400 text-center mb-0"><span class="material-icons mr-2 text-success">arrow_upward</span><span class="total-orders"></span></h3>
                 <p class="text-muted text-center">Orders</p>
                 <canvas id="chart-area" height="220"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body table-responsive p-0">
-
-                <table class="table  m-0">
-                    <thead>
-                        <tr>
-                            <th scope="col" width="1" class="border-top-0">#</th>
-                            <th scope="col" class="border-top-0">Full Name</th>
-                            <th scope="col" class="border-top-0">Address</th>
-                            <th scope="col" class="border-top-0">Avg. Session</th>
-                            <th scope="col" class="border-top-0 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-
             </div>
         </div>
     </div>

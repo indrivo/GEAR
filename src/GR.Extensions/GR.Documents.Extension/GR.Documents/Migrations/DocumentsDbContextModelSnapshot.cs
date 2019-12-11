@@ -99,9 +99,12 @@ namespace GR.Documents.Migrations
 
                     b.Property<string>("Description");
 
+                    b.Property<Guid?>("DocumentCategoryId")
+                        .IsRequired();
+
                     b.Property<string>("DocumentCode");
 
-                    b.Property<Guid>("DocumentTypeId");
+                    b.Property<Guid?>("DocumentTypeId");
 
                     b.Property<string>("Group");
 
@@ -120,12 +123,14 @@ namespace GR.Documents.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DocumentCategoryId");
+
                     b.HasIndex("DocumentTypeId");
 
                     b.ToTable("Documents");
                 });
 
-            modelBuilder.Entity("GR.Documents.Abstractions.Models.DocumentType", b =>
+            modelBuilder.Entity("GR.Documents.Abstractions.Models.DocumentCategory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -141,6 +146,33 @@ namespace GR.Documents.Migrations
                     b.Property<bool>("IsDeleted");
 
                     b.Property<bool>("IsSystem");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DocumentCategories");
+                });
+
+            modelBuilder.Entity("GR.Documents.Abstractions.Models.DocumentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("ModifiedBy");
 
@@ -214,10 +246,14 @@ namespace GR.Documents.Migrations
 
             modelBuilder.Entity("GR.Documents.Abstractions.Models.Document", b =>
                 {
+                    b.HasOne("GR.Documents.Abstractions.Models.DocumentCategory", "DocumentCategory")
+                        .WithMany("Documents")
+                        .HasForeignKey("DocumentCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("GR.Documents.Abstractions.Models.DocumentType", "DocumentType")
                         .WithMany()
-                        .HasForeignKey("DocumentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DocumentTypeId");
                 });
 
             modelBuilder.Entity("GR.Documents.Abstractions.Models.DocumentVersion", b =>
