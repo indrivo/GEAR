@@ -95,8 +95,47 @@
 	</div>
 </div>
 
+<div class="modal fade company-manage-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+
+</div>
+
 @section Scripts
 {
+	<script id="checkboxTemplate" type="text/x-jsrender">
+		<div class="custom-control custom-checkbox mt-2">
+			<input type="checkbox" class="custom-control-input" id="{{:id}}" {{if checked}} checked {{/if}}>
+			<label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+		</div>
+	</script>
+
+	<script id="edit-user-roles-modal" type="text/x-jsrender">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content p-4">
+				<div class="">
+					<button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+						<span class="material-icons">close</span>
+					</button>
+				</div>
+				<div class="pb-2 h5">
+					{{:~userName}}
+				</div>
+				<form id="edit-user-roles">
+					<div class="roles-list">
+						{{for roles tmpl="#checkboxTemplate" /}}
+					</div>
+					<div class="mt-4 d-flex">
+						<button type="button" class="btn btn-danger ml-auto mr-3" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+							@Localizer["cancel"]
+						</button>
+						<button id="edit-user-roles-submit" class="btn btn-outline-primary" type="submit">
+							@Localizer["save"]
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
 	<script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
 	<script src="~/assets/MultiTenantPlugins/company-manage-invite.js"></script>
