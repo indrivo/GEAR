@@ -49,11 +49,8 @@ namespace GR.Documents
 
         #endregion
 
-<<<<<<< HEAD
-        public DocumentService(IDocumentContext documentContext, IUserManager<ApplicationUser> userManager, IFileManager fileManager, IDataFilter dataFilter)
-=======
-        public DocumentService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager)
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
+
+        public DocumentService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager, IDataFilter dataFilter)
         {
             _documentContext = documentContext;
             _userManager = userManager;
@@ -366,13 +363,8 @@ namespace GR.Documents
             };
 
             await _documentContext.Documents.AddAsync(newDocument);
-
-<<<<<<< HEAD
-            Guid? fileId = null;
             result = await _documentContext.PushAsync();
-=======
-            result = await DocumentContext.PushAsync();
->>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
+
 
             if (result.IsSuccess)
             {
