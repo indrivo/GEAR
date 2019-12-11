@@ -832,5 +832,8 @@
   "coments": "Comentarios",
   "add_document_version": "Agregar versión de documento",
   "is_major_version": "Es la versión principal",
-  "system_change_roles": "Cambio de roles"
+  "system_change_roles": "Cambio de roles",
+  "start_state": "Inicio",
+  "next_state": "Siguiente estado",
+  "change_state": "Cambio de estado"
 }

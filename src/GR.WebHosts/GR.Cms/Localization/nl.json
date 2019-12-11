@@ -832,5 +832,8 @@
   "coments": "Opmerkingen",
   "add_document_version": "Voeg versie van het document",
   "is_major_version": "Is de grote versie",
-  "system_change_roles": "Wijzigen van rollen"
+  "system_change_roles": "Wijzigen van rollen",
+  "start_state": "Start staat",
+  "next_state": "Volgende staat",
+  "change_state": "Status wijzigen"
 }

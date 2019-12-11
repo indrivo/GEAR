@@ -832,5 +832,8 @@
   "coments": "Comentarii",
   "add_document_version": "Adăugați versiune document",
   "is_major_version": "Este versiune majoră",
-  "system_change_roles": "Schimba rolurile"
+  "system_change_roles": "Schimba rolurile",
+  "start_state": "Statutul inițial",
+  "next_state": "Următorul statut",
+  "change_state": "Schimba stat"
 }

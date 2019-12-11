@@ -832,5 +832,8 @@
   "coments": "Σχόλια",
   "add_document_version": "Προσθήκη εγγράφου έκδοση",
   "is_major_version": "Είναι σημαντική έκδοση",
-  "system_change_roles": "Αλλάζουν ρόλους"
+  "system_change_roles": "Αλλάζουν ρόλους",
+  "start_state": "Έναρξη μέλος",
+  "next_state": "Επόμενη κατάσταση",
+  "change_state": "Αλλαγή μέλους"
 }

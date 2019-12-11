@@ -832,5 +832,8 @@
   "coments": "Kommentare",
   "add_document_version": "Add Dokument-version",
   "is_major_version": "Ist der major-version",
-  "system_change_roles": "Rollen ändern"
+  "system_change_roles": "Rollen ändern",
+  "start_state": "Starten Sie Zustand",
+  "next_state": "Nächsten Zustand",
+  "change_state": "Status ändern"
 }

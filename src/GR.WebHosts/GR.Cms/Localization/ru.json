@@ -832,5 +832,8 @@
   "coments": "Комментарии",
   "add_document_version": "Добавить версия документа ",
   "is_major_version": "Это основная версия",
-  "system_change_roles": "Роли меняются "
+  "system_change_roles": "Роли меняются ",
+  "start_state": "Начальное состояние",
+  "next_state": "Следующее состояние",
+  "change_state": "Изменение состояния "
 }
