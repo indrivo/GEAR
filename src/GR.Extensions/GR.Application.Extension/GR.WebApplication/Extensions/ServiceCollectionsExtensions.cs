@@ -96,7 +96,7 @@ namespace GR.WebApplication.Extensions
 
             //--------------------------------------SignalR Module-------------------------------------
             if (configuration.SignlarConfiguration.UseDefaultConfiguration)
-                services.AddSignalRModule<ApplicationDbContext, ApplicationUser, ApplicationRole>();
+                services.AddSignalRModule<ApplicationDbContext, GearUser, GearRole>();
 
 
             //--------------------------------------Swagger Module-------------------------------------

@@ -27,7 +27,6 @@ using GR.MultiTenant.Abstractions;
 using GR.MultiTenant.Abstractions.Helpers;
 using GR.MultiTenant.Abstractions.ViewModels;
 using GR.Notifications.Abstractions;
-using Resources = GR.MultiTenant.Abstractions.Helpers.Resources;
 
 namespace GR.MultiTenant.Services
 {
@@ -43,7 +42,7 @@ namespace GR.MultiTenant.Services
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject context accessor
@@ -82,7 +81,7 @@ namespace GR.MultiTenant.Services
         /// <param name="urlHelper"></param>
         /// <param name="localizer"></param>
         /// <param name="hub"></param>
-        public OrganizationService(ApplicationDbContext context, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor,
+        public OrganizationService(ApplicationDbContext context, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor,
             IEmailSender emailSender, IUrlHelper urlHelper, IStringLocalizer localizer, INotificationHub hub)
         {
             _context = context;
@@ -100,9 +99,9 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ApplicationUser> GetAllowedUsersByOrganizationId(Guid organizationId)
+        public virtual IEnumerable<GearUser> GetAllowedUsersByOrganizationId(Guid organizationId)
         {
-            if (organizationId == Guid.Empty) return new List<ApplicationUser>();
+            if (organizationId == Guid.Empty) return new List<GearUser>();
             return _context.Users.Where(x => x.TenantId == organizationId && !x.IsDeleted);
         }
 
@@ -133,9 +132,9 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ApplicationUser> GetDisabledUsersByOrganizationId(Guid organizationId)
+        public virtual IEnumerable<GearUser> GetDisabledUsersByOrganizationId(Guid organizationId)
         {
-            if (organizationId == Guid.Empty) return new List<ApplicationUser>();
+            if (organizationId == Guid.Empty) return new List<GearUser>();
             return _context.Users.Where(x => x.TenantId == organizationId && x.IsDeleted);
         }
 
@@ -158,8 +157,8 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="organization"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ApplicationUser> GetUsersByOrganization(Tenant organization) => organization == null
-            ? new List<ApplicationUser>()
+        public virtual IEnumerable<GearUser> GetUsersByOrganization(Tenant organization) => organization == null
+            ? new List<GearUser>()
             : _context.Users.Where(x => x.TenantId.Equals(organization.Id)).ToList();
 
         /// <inheritdoc />
@@ -169,9 +168,9 @@ namespace GR.MultiTenant.Services
         /// <param name="organizationId"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public virtual IEnumerable<ApplicationUser> GetUsersByOrganization(Guid organizationId, Guid roleId)
+        public virtual IEnumerable<GearUser> GetUsersByOrganization(Guid organizationId, Guid roleId)
         {
-            if (organizationId == Guid.Empty || roleId == Guid.Empty) return new List<ApplicationUser>();
+            if (organizationId == Guid.Empty || roleId == Guid.Empty) return new List<GearUser>();
             var role = _context.Roles.FirstOrDefault(x =>
                 string.Equals(x.Id, roleId.ToString(), StringComparison.CurrentCultureIgnoreCase));
             if (role == null) return default;
@@ -188,11 +187,11 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersByOrganizationIdAsync(Guid tenantId)
+        public virtual async Task<ResultModel<IEnumerable<GearUser>>> GetUsersByOrganizationIdAsync(Guid tenantId)
         {
-            if (tenantId == Guid.Empty) return new InvalidParametersResultModel<IEnumerable<ApplicationUser>>();
+            if (tenantId == Guid.Empty) return new InvalidParametersResultModel<IEnumerable<GearUser>>();
             var members = await _context.Users.Where(x => x.TenantId == tenantId).ToListAsync();
-            return new SuccessResultModel<IEnumerable<ApplicationUser>>(members);
+            return new SuccessResultModel<IEnumerable<GearUser>>(members);
         }
 
         /// <inheritdoc />
@@ -201,7 +200,7 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public virtual Tenant GetUserOrganization(ApplicationUser user)
+        public virtual Tenant GetUserOrganization(GearUser user)
         {
             Arg.NotNull(user, nameof(GetUserOrganization));
             return _context.Tenants
@@ -236,7 +235,7 @@ namespace GR.MultiTenant.Services
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel> CreateNewOrganizationUserAsync(ApplicationUser user, IEnumerable<string> roles)
+        public virtual async Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<string> roles)
         {
             Arg.NotNull(user, nameof(CreateNewOrganizationUserAsync));
             var mResult = new ResultModel();
@@ -267,7 +266,7 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public virtual async Task SendInviteToEmailAsync(ApplicationUser user)
+        public virtual async Task SendInviteToEmailAsync(GearUser user)
         {
             Arg.NotNull(user, nameof(SendInviteToEmailAsync));
             var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
@@ -291,7 +290,7 @@ namespace GR.MultiTenant.Services
         /// Send confirm email
         /// </summary>
         /// <returns></returns>
-        public virtual async Task SendConfirmEmailRequest(ApplicationUser user)
+        public virtual async Task SendConfirmEmailRequest(GearUser user)
         {
             Arg.NotNull(user, nameof(SendConfirmEmailRequest));
             var code = await _userManager.UserManager.GenerateEmailConfirmationTokenAsync(user);
@@ -308,9 +307,9 @@ namespace GR.MultiTenant.Services
         /// <returns></returns>
         public virtual byte[] GetDefaultImage()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, Resources.EmbeddedResources.COMPANY_IMAGE);
+            var path = Path.Combine(AppContext.BaseDirectory, MultiTenantResources.EmbeddedResources.COMPANY_IMAGE);
             if (!File.Exists(path))
-                throw new Exception(Resources.Exceptions.E_MULTI_TENANT_COMPANY_IMAGE_NULL);
+                throw new Exception(MultiTenantResources.Exceptions.E_MULTI_TENANT_COMPANY_IMAGE_NULL);
 
             try
             {
@@ -333,7 +332,7 @@ namespace GR.MultiTenant.Services
         /// Return list of available roles
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<ApplicationRole>> GetRoles()
+        public virtual async Task<IEnumerable<GearRole>> GetRoles()
         {
             var rolesToExclude = new HashSet<string>
             {
@@ -368,7 +367,7 @@ namespace GR.MultiTenant.Services
                 return resultModel;
             }
 
-            var newUser = new ApplicationUser
+            var newUser = new GearUser
             {
                 Email = model.Email,
                 NormalizedEmail = model.Email.ToUpper(),
@@ -531,7 +530,7 @@ namespace GR.MultiTenant.Services
                 if (tenant == null) return def;
             }
 
-            var filtered = _context.Filter<ApplicationUser>(param.Search.Value, param.SortOrder,
+            var filtered = _context.Filter<GearUser>(param.Search.Value, param.SortOrder,
                 param.Start,
                 param.Length,
                 out var totalCount,
@@ -573,19 +572,19 @@ namespace GR.MultiTenant.Services
         /// <param name="tenantId"></param>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRoleAsync(Guid? tenantId, string roleName)
+        public async Task<ResultModel<IEnumerable<GearUser>>> GetUsersInRoleAsync(Guid? tenantId, string roleName)
         {
-            if (roleName.IsNullOrEmpty() || tenantId == null) return new InvalidParametersResultModel<IEnumerable<ApplicationUser>>();
+            if (roleName.IsNullOrEmpty() || tenantId == null) return new InvalidParametersResultModel<IEnumerable<GearUser>>();
             var membersRequest = await GetUsersByOrganizationIdAsync(tenantId.Value);
-            if (!membersRequest.IsSuccess) return new NotFoundResultModel<IEnumerable<ApplicationUser>>();
+            if (!membersRequest.IsSuccess) return new NotFoundResultModel<IEnumerable<GearUser>>();
             var members = membersRequest.Result.ToList();
-            var data = new Collection<ApplicationUser>();
+            var data = new Collection<GearUser>();
             foreach (var member in members)
             {
                 var isInRole = await _userManager.UserManager.IsInRoleAsync(member, roleName);
                 if (isInRole) data.Add(member);
             }
-            return new SuccessResultModel<IEnumerable<ApplicationUser>>(data);
+            return new SuccessResultModel<IEnumerable<GearUser>>(data);
         }
 
         /// <summary>
@@ -593,14 +592,14 @@ namespace GR.MultiTenant.Services
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public async Task<ResultModel<ApplicationUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId)
+        public async Task<ResultModel<GearUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId)
         {
-            if (tenantId == null) return new InvalidParametersResultModel<ApplicationUser>();
-            var companyAdminRequest = await GetUsersInRoleAsync(tenantId, Resources.Roles.COMPANY_ADMINISTRATOR);
-            if (!companyAdminRequest.IsSuccess) return companyAdminRequest.Map<ApplicationUser>(null);
+            if (tenantId == null) return new InvalidParametersResultModel<GearUser>();
+            var companyAdminRequest = await GetUsersInRoleAsync(tenantId, MultiTenantResources.Roles.COMPANY_ADMINISTRATOR);
+            if (!companyAdminRequest.IsSuccess) return companyAdminRequest.Map<GearUser>(null);
             var admin = companyAdminRequest.Result.FirstOrDefault();
-            if (admin != null) return new SuccessResultModel<ApplicationUser>(admin);
-            return new NotFoundResultModel<ApplicationUser>();
+            if (admin != null) return new SuccessResultModel<GearUser>(admin);
+            return new NotFoundResultModel<GearUser>();
         }
 
         #region Validation

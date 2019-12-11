@@ -815,6 +815,7 @@
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "Το σχέδιο ελέγχου",
   "system_audit_mission": "Αποστολή ελέγχου ",
+<<<<<<< HEAD
   "system_document_categories": "Έγγραφο κατηγορίες",
   "system_is_system": "Είναι το σύστημα",
   "system_title": "Τίτλος",
@@ -832,4 +833,7 @@
   "coments": "Σχόλια",
   "add_document_version": "Προσθήκη εγγράφου έκδοση",
   "is_major_version": "Είναι σημαντική έκδοση"
+=======
+  "system_change_roles": "Αλλάζουν ρόλους"
+>>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

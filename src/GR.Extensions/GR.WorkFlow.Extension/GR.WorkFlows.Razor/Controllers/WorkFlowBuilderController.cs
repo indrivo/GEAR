@@ -34,10 +34,10 @@ namespace GR.WorkFlows.Razor.Controllers
         /// <summary>
         /// Inject users manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
         #endregion
 
-        public WorkFlowBuilderController(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IUserManager<ApplicationUser> userManager)
+        public WorkFlowBuilderController(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IUserManager<GearUser> userManager)
         {
             _workFlowCreatorService = workFlowCreatorService;
             _userManager = userManager;

@@ -19,7 +19,7 @@ namespace GR.Identity.Extensions
         /// <param name="user"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<IList<Claim>> GetClaimsFromPermissions<TContext>(this ApplicationUser user,
+        public static async Task<IList<Claim>> GetClaimsFromPermissions<TContext>(this GearUser user,
             TContext context) where TContext : ApplicationDbContext
         {
             var userPermission = new HashSet<string>();
@@ -46,8 +46,8 @@ namespace GR.Identity.Extensions
         /// <param name="context"></param>
         /// <param name="signInManager"></param>
         /// <returns></returns>
-        public static async Task RefreshClaims<TContext>(this ApplicationUser user, TContext context,
-            SignInManager<ApplicationUser> signInManager) where TContext : ApplicationDbContext
+        public static async Task RefreshClaims<TContext>(this GearUser user, TContext context,
+            SignInManager<GearUser> signInManager) where TContext : ApplicationDbContext
         {
             var oldClaims = await signInManager.UserManager.GetClaimsAsync(user);
             var claims = await user.GetClaimsFromPermissions(context);
@@ -69,7 +69,7 @@ namespace GR.Identity.Extensions
         /// <param name="onlineUsers"></param>
         /// <returns></returns>
         public static async Task RefreshOnlineUsersClaims<TContext>(this ClaimsPrincipal user, TContext context,
-            SignInManager<ApplicationUser> signInManager, IEnumerable<Guid> onlineUsers) where TContext : ApplicationDbContext
+            SignInManager<GearUser> signInManager, IEnumerable<Guid> onlineUsers) where TContext : ApplicationDbContext
         {
             foreach (var onlineUser in onlineUsers)
             {

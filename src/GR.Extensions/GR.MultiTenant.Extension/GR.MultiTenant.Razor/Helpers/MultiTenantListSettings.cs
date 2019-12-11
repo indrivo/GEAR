@@ -105,6 +105,18 @@ namespace GR.MultiTenant.Razor.Helpers
                     new ListActionViewModel
                     {
                         HasIcon = false,
+                        Name = _localizer["system_change_roles"],
+                        IsJsEvent = true,
+                        ButtonEvent = new JsActionButtonEvent
+                        {
+                            JsEvent = JsEvent.OnClick,
+                            JsEventHandler = "changeRoles('${row.id}')"
+                        },
+                        ButtonType = BootstrapButton.Info
+                    },
+                    new ListActionViewModel
+                    {
+                        HasIcon = false,
                         Name = _localizer["delete"],
                         Url = "/CompanyManage/DeleteUser",
                         ActionParameters = new List<ActionParameter>

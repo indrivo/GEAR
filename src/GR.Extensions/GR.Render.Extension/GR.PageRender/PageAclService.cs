@@ -15,7 +15,7 @@ namespace GR.PageRender
         /// <param name="page"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        public bool HasAccess(Page page, IEnumerable<ApplicationRole> roles)
+        public bool HasAccess(Page page, IEnumerable<GearRole> roles)
         {
             if (!page.IsEnabledAcl) return true;
             var acl = page.RolePagesAcls.ToList();

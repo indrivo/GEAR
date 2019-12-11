@@ -63,10 +63,10 @@
 
     const addLoader = elementDOM => {
         const loadermarkup = `<div class="st-mch-loader">
-																																																																																					<div class="state-machine-loader justify-content-center align-items-center">
-																																																																																					<div class="lds-dual-ring"></div>
-																																																																																						</div>
-																																																																																					</div>`;
+            <div class="state-machine-loader justify-content-center align-items-center">
+            <div class="lds-dual-ring"></div>
+                </div>
+            </div>`;
         elementDOM.append(loadermarkup);
         elementDOM.find('.st-mch-loader').fadeIn();
     }
@@ -88,7 +88,7 @@
     const attachStateModalActions = (state) => {
         const form = $('#edit-state');
         const checkboxes = $('.start-end-state .custom-checkbox');
-        let sendStartEndState = {
+        const sendStartEndState = {
             start: state.isStartState,
             end: state.isEndState
         }
@@ -96,7 +96,7 @@
         $.each(checkboxes, function (i, checkbox) {
             $(checkbox).find('.custom-control-input').change(function () {
                 if ($(this).is(':checked')) {
-                    $(checkbox).siblings('.custom-checkbox').addClass('unavailable');
+                    $(checkbox).siblings('.custom-checkbox').addClass('unavailable').prop("checked", false);
 
                     if ($(this).attr('id') === 'transition_start_state') {
                         sendStartEndState.start = true;
@@ -125,38 +125,67 @@
                 newName: form.find('#edit-state-title').val(),
                 description: form.find('#edit-state-description').val()
             }
-            refreshWorkflowState(statetoSend);
-
-            stateMachineManager.updateStateGeneralInfo(statetoSend).then(() => {
-                modal.modal('hide');
-            }).catch(e => {
-                toast.notifyErrorList(e);
-            });
-
-            const sendState = {
+            const requestState = {
                 workflowId: state.workFlowId,
                 stateId: state.id
             }
 
-            if (sendStartEndState.start) {
-                stateMachineManager.setStartStateInWorkflow(sendState).then(() => {
+            const updateState = () => {
+                stateMachineManager.updateStateGeneralInfo(statetoSend).then(() => {
+                    modal.modal('hide');
+                    refreshWorkflowState(state.id);
                 }).catch(e => {
                     toast.notifyErrorList(e);
                 });
             }
 
-            if (sendStartEndState.end) {
-                stateMachineManager.setEndStateInWorkflow(sendState).then(() => {
+            if (sendStartEndState.start) {
+                stateMachineManager.setStartStateInWorkflow(requestState).then(() => {
+                    updateState();
                 }).catch(e => {
                     toast.notifyErrorList(e);
                 });
+            } else if (sendStartEndState.end) {
+                stateMachineManager.setEndStateInWorkflow(requestState).then(() => {
+                    updateState();
+                }).catch(e => {
+                    toast.notifyErrorList(e);
+                });
+            }
+            else {
+                updateState();
             }
         });
 
     }
 
-    const refreshWorkflowState = (state) => {
-        $(`.w[data-state-id="${state.id}"] .state-name`).text(state.newName);
+    const refreshWorkflowState = (id) => {
+        stateMachineManager.getStateById(id).then(state => {
+            const stateElement = $(`.w[data-state-id="${id}"]`);
+            stateElement.find('.state-name').text(state.name);
+            if (state.isStartState) {
+                $('.w').data('isstart', 'false');
+                stateElement.data('isstart', 'true');
+            } else if (state.isEndState) {
+                $('.w').data('isend', 'false');
+                stateElement.data('isend', 'true');
+            }
+            updateStateBoxColors();
+        }).catch(e => {
+            toast.notifyErrorList(e);
+        });
+    }
+
+    const updateStateBoxColors = () => {
+        $('.w .ep').css('background-color', '#ffa500');
+        $.each($('.w'), function () {
+            if ($(this).data('isstart') == 'true' || $(this).data('isstart') == true) {
+                $(this).find('.ep').css('background-color', '#009010');
+            }
+            else if ($(this).data('isend') == 'true' || $(this).data('isend') == true) {
+                $(this).find('.ep').css('background-color', '#FF0000');
+            }
+        });
     }
 
     const loadWorkflowStates = workflow => {
@@ -275,17 +304,24 @@
 
     const appendStateToWorkflow = (workflowId, state) => {
         const aSets = state.additionalSettings;
-        let statePositions = {
+        let helpers = {
             x: "0px",
-            y: "0px"
+            y: "0px",
+            bgColor: '#ffa500'
         };
         if (aSets && aSets.x) {
-            statePositions.x = aSets.x;
+            helpers.x = aSets.x;
         }
         if (aSets && aSets.y) {
-            statePositions.y = aSets.y;
+            helpers.y = aSets.y;
         }
-        const htmlOutput = stateTemplate.render(state, statePositions);
+        if (state.isStartState) {
+            helpers.bgColor = '#009010';
+        }
+        if (state.isEndState) {
+            helpers.bgColor = '#FF0000';
+        }
+        const htmlOutput = stateTemplate.render(state, helpers);
         $(`.jtk-canvas[data-workflow-id="${workflowId}"]`).append(htmlOutput);
         $(`.w[data-state-id="${state.id}"] .state-edit`).click(() => {
             openStateModal(state);
@@ -320,6 +356,9 @@
     const loadWorkflow = id => {
         $('#state-machine').html(null);
         addLoader($('#state-machine'));
+        const workflowlistItem = $(`.workflow[data-workflow-id="${id}"]`);
+        workflowlistItem.addClass('active-workflow');
+        workflowlistItem.siblings('.workflow').removeClass('active-workflow');
         stateMachineManager.getWorkFlowById(id).then(workflow => {
             workflow.id = id;
             const htmlOutput = workflowContainerTemplate.render(workflow);
@@ -529,17 +568,8 @@
             });
 
             instance.bind("beforeDrop", function (conn) {
-                //const allConnections = instance.getConnections();
                 const sourcePoint = conn.sourceId;
                 const targetPoint = conn.targetId;
-                //const matchSource = {
-                //	name: 'sourceId',
-                //	value: sourcePoint
-                //}
-                //const matchTarget = {
-                //	name: 'targetId',
-                //	value: targetPoint
-                //}
                 if (sourcePoint === targetPoint) {
                     return false;
                 }
@@ -632,21 +662,6 @@
                 //
                 instance.fire("jsPlumbDemoNodeAdded", el);
             };
-
-            //var newNode = function (x, y) {
-            //	var d = document.createElement("div");
-            //	var id = jsPlumbUtil.uuid();
-            //	d.className = "w";
-            //	d.id = id;
-            //	d.innerHTML = id.substring(0, 7) + "<div class=\"ep\"></div>";
-            //	x = x < 0 ? 0 : x;
-            //	y = y < 0 ? 0 : y;
-            //	d.style.left = x + "px";
-            //	d.style.top = y + "px";
-            //	instance.getContainer().appendChild(d);
-            //	initNode(d);
-            //	return d;
-            //};
 
             // suspend drawing and initialise.
             instance.batch(function () {

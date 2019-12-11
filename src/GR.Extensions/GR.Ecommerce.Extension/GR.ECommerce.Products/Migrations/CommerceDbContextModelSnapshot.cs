@@ -2010,11 +2010,13 @@ namespace GR.ECommerce.BaseImplementations.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<bool>("IsFree");
+
                     b.Property<string>("ModifiedBy");
 
                     b.Property<string>("Name");
 
-                    b.Property<Guid>("OrderId");
+                    b.Property<Guid?>("OrderId");
 
                     b.Property<DateTime>("StartDate");
 
@@ -2252,8 +2254,7 @@ namespace GR.ECommerce.BaseImplementations.Migrations
                 {
                     b.HasOne("GR.Orders.Abstractions.Models.Order", "Order")
                         .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("OrderId");
                 });
 
             modelBuilder.Entity("GR.Subscriptions.Abstractions.Models.SubscriptionPermission", b =>

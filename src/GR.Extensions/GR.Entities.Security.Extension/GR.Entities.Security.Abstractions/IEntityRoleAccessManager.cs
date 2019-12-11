@@ -14,7 +14,7 @@ namespace GR.Entities.Security.Abstractions
         /// <summary>
         /// Get all active roles
         /// </summary>
-        IQueryable<ApplicationRole> Roles { get; }
+        IQueryable<GearRole> Roles { get; }
 
         /// <summary>
         /// Get all tables
@@ -26,7 +26,7 @@ namespace GR.Entities.Security.Abstractions
         /// <param name="user"></param>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        Task<ICollection<EntityAccessType>> GetPermissionsAsync(ApplicationUser user, Guid entityId);
+        Task<ICollection<EntityAccessType>> GetPermissionsAsync(GearUser user, Guid entityId);
         /// <summary>
         /// Get permissions for specific roles
         /// </summary>

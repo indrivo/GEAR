@@ -815,6 +815,7 @@
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "Audit Plan",
   "system_audit_mission": "Mission Audit ",
+<<<<<<< HEAD
   "system_document_categories": "Dokument-Kategorien",
   "system_is_system": "Ist system",
   "system_title": "Titel",
@@ -832,4 +833,7 @@
   "coments": "Kommentare",
   "add_document_version": "Add Dokument-version",
   "is_major_version": "Ist der major-version"
+=======
+  "system_change_roles": "Rollen ändern"
+>>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

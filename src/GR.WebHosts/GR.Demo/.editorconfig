@@ -1,0 +1,9 @@
+[*]
+indent_style = tab
+charset = utf-8
+trim_trailing_whitespace = true
+tab_width = 4
+
+[*.json]
+indent_style = space 
+indent_size = 2

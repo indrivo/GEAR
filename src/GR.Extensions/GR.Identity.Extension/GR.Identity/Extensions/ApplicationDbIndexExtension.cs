@@ -15,10 +15,10 @@ namespace GR.Identity.Extensions
         /// <returns></returns>
         public static ModelBuilder RegisterIndexes(this ModelBuilder builder)
         {
-            builder.Entity<ApplicationUser>()
+            builder.Entity<GearUser>()
                 .HasIndex(x => x.TenantId);
 
-            builder.Entity<ApplicationRole>()
+            builder.Entity<GearRole>()
                 .HasIndex(x => x.TenantId);
 
             builder.Entity<AuthGroup>()

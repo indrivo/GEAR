@@ -10,17 +10,17 @@ using GR.Identity.Abstractions;
 namespace GR.Identity.Data.Permissions
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class IdentityParser : IIdentityParser<ApplicationUser>
+    public class IdentityParser : IIdentityParser<GearUser>
     {
-        private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<GearRole> _roleManager;
+        private readonly UserManager<GearUser> _userManager;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="roleManager"></param>
         /// <param name="userManager"></param>
-        public IdentityParser(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+        public IdentityParser(RoleManager<GearRole> roleManager, UserManager<GearUser> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -45,12 +45,12 @@ namespace GR.Identity.Data.Permissions
         /// </summary>
         /// <param name="principal"></param>
         /// <returns></returns>
-        public async Task<ApplicationUser> Parse(IPrincipal principal)
+        public async Task<GearUser> Parse(IPrincipal principal)
         {
             if (!(principal is ClaimsPrincipal claimsPrincipal))
                 throw new ArgumentException("The principal must be a ClaimsPrincipal", nameof(principal));
             var claims = claimsPrincipal.Claims.ToList();
-            var userFromClaims = new ApplicationUser
+            var userFromClaims = new GearUser
             {
                 Id = claims.FirstOrDefault(claim => IsClaimOfType(claim, JwtClaimTypes.Subject))?.Value ?? string.Empty,
                 UserName = claims.FirstOrDefault(claim => IsClaimOfType(claim, JwtClaimTypes.Name))?.Value ?? string.Empty,

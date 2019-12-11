@@ -1,15 +1,15 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using GR.Identity.Abstractions;
 using Microsoft.AspNetCore.Identity;
-using ApplicationUser = GR.Identity.Abstractions.ApplicationUser;
 using UserGroup = GR.Identity.Abstractions.UserGroup;
 
 namespace GR.Identity.Data.Groups
 {
-    public class GroupRepository<TContext> : IGroupRepository<TContext, ApplicationUser> where TContext : ApplicationDbContext
+    public class GroupRepository<TContext> : IGroupRepository<TContext, GearUser> where TContext : ApplicationDbContext
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
         private readonly TContext _context;
 
         #region Predefined GroupResults and Errros
@@ -30,7 +30,7 @@ namespace GR.Identity.Data.Groups
         private readonly GroupResult _emptyUserResult;
         #endregion Predefined GroupResults and Errros
 
-        public GroupRepository(UserManager<ApplicationUser> userManager, TContext context)
+        public GroupRepository(UserManager<GearUser> userManager, TContext context)
         {
             _emptyGroupNameResult = GroupResult.Failed(_emptyGroupError);
             _emptyUserResult = GroupResult.Failed(_emptyUserError);
@@ -38,7 +38,7 @@ namespace GR.Identity.Data.Groups
             _context = context;
         }
 
-        public GroupResult AddUserToGroup(ApplicationUser user, string groupName)
+        public GroupResult AddUserToGroup(GearUser user, string groupName)
         {
             var validationResult = ValidateUserAndGroupInput(user, groupName);
             if (!validationResult.Succeeded)
@@ -109,12 +109,12 @@ namespace GR.Identity.Data.Groups
             throw new NotImplementedException();
         }
 
-        public GroupResult RemoveUserFromGroup(ApplicationUser user, string groupName)
+        public GroupResult RemoveUserFromGroup(GearUser user, string groupName)
         {
             throw new NotImplementedException();
         }
 
-        public bool UserIsInGroup(ApplicationUser user, string groupName)
+        public bool UserIsInGroup(GearUser user, string groupName)
         {
             var group = _context.AuthGroups.FirstOrDefault(x => x.Name == groupName);
             return _context.UserGroups.Any(ug => ug.UserId == user.Id && ug.AuthGroupId == group.Id);
@@ -126,7 +126,7 @@ namespace GR.Identity.Data.Groups
             return UserIsInGroup(appUser, groupName);
         }
 
-        private GroupResult ValidateUserAndGroupInput(ApplicationUser user, string groupName, bool isValidatedAlready = false)
+        private GroupResult ValidateUserAndGroupInput(GearUser user, string groupName, bool isValidatedAlready = false)
         {
             if (isValidatedAlready) return GroupResult.Success;
             var userProvided = user != null || !string.IsNullOrEmpty(user.Id);

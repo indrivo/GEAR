@@ -24,11 +24,11 @@ namespace GR.Identity.Services
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         #endregion
 
-        public UserAddressService(IIdentityContext context, IUserManager<ApplicationUser> userManager)
+        public UserAddressService(IIdentityContext context, IUserManager<GearUser> userManager)
         {
             _context = context;
             _userManager = userManager;

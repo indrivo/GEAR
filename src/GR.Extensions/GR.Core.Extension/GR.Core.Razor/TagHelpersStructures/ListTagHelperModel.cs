@@ -35,7 +35,7 @@ namespace GR.Core.Razor.TagHelpersStructures
         /// <summary>
         /// Provide the sub title of page
         /// </summary>
-        public string SubTitle { get; set; }
+        public string SubTitle { get; set; } = string.Empty;
         /// <summary>
         /// Documentation
         /// </summary>

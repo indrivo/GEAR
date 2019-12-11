@@ -815,6 +815,7 @@
   "system_workflow_builder": "Flux de lucru constructor",
   "system_audit_plan": "Planul de audit",
   "system_audit_mission": "Misiunea de audit ",
+<<<<<<< HEAD
   "system_document_categories": "Categorii de documente",
   "system_is_system": "Este sistemul",
   "system_title": "Titlu",
@@ -832,4 +833,7 @@
   "coments": "Comentarii",
   "add_document_version": "Adăugați versiune document",
   "is_major_version": "Este versiune majoră"
+=======
+  "system_change_roles": "Schimba rolurile"
+>>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

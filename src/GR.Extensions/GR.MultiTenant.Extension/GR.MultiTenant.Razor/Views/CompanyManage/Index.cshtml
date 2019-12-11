@@ -6,7 +6,7 @@
 @{
     ViewData["Title"] = Localizer["system_my_company"];
     ViewData["layoutId"] = Guid.Parse("587592ed-cd11-432e-b689-a5fce2a9859c");
-    var user = (ApplicationUser)ViewBag.User;
+    var user = (GearUser)ViewBag.User;
     var roles = (string)ViewBag.UserRoles;
     var organization = (Tenant)ViewBag.Organization;
     ViewData["TenantCallBackUrl"] = "/CompanyManage";
@@ -35,7 +35,7 @@
         <div class="card h-400">
             <div class="card-body">
                 <div class="mx-3 my-2 px-2">
-                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.Name">
+                    <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.UserName">
                 </div>
                 <div class="text-center">
                     <h5 class="weight-400">@Localizer["iso_hello"].Value.FirstCharToUpper(), @user.UserName</h5>
@@ -83,8 +83,44 @@
     </div>
 </div>
 
+<div class="modal fade company-manage-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true">
+
+</div>
+
 @section Scripts
 {
+    <script id="checkboxTemplate" type="text/x-jsrender">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="{{:id}}" {{if checked}} checked {{/if}}>
+            <label class="custom-control-label" for="{{:id}}">{{:name}}</label>
+        </div>
+    </script>
+
+    <script id="edit-user-roles-modal" type="text/x-jsrender">
+        <div class="modal-dialog" role="document" data-user-id="{{:id}}">
+            <div class="modal-content">
+                <div class="">
+                    <button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form id="edit-user-roles">
+                    <div class="roles-list">
+                        {{for roles tmpl="#checkboxTemplate" /}}
+                    </div>
+                    <div class="mt-4 d-flex">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" aria-hidden="true" aria-label="Close">
+                            @Localizer["cancel"]
+                        </button>
+                        <button id="edit-user-roles-submit" class="btn btn-outline-primary" type="submit">
+                            @Localizer["save"]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Dropify/0.2.2/js/dropify.min.js"></script>
     <script src="~/assets/MultiTenantPlugins/company-manage.js"></script>
     <script src="~/assets/MultiTenantPlugins/company-manage-invite.js"></script>
@@ -95,4 +131,145 @@
         </script>
     }
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        !function ($) {
+            class userRolesEdit {
+                constructor() {
+                    const toast = new ToastNotifier();
+                    this.getRoles();
+                }
+                ajaxRequest(requestUrl, requestType, requestData) {
+                    const baseUrl = '/api/WorkFlowBuilder';
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: baseUrl + requestUrl,
+                            type: requestType,
+                            data: requestData,
+                            success: (data) => {
+                                if (Array.isArray(data)) {
+                                    resolve(data);
+                                }
+                                else {
+                                    if (data.is_success) {
+                                        resolve(data.result);
+                                    } else if (!data.is_success) {
+                                        reject(data.error_keys);
+                                    } else {
+                                        resolve(data);
+                                    }
+                                }
+                            },
+                            error: (e) => {
+                                reject(e);
+                            }
+                        });
+                    });
+                }
+                getRoles() {
+                    const requestUrl = '/getRoles';
+                    return this.ajaxRequest(requestUrl, 'get', null);
+                }
+
+                roles = [];
+                loadRoles() {
+                    const scope = this;
+                    return new Promise((resolve, reject) => {
+                        if (scope.roles.length > 0) {
+                            resolve(scope.roles);
+                        } else {
+                            scope.getRoles().then(result => {
+                                scope.roles = result;
+                                resolve(scope.roles);
+                            }).catch(e => {
+                                console.warn(e);
+                                toast.notifyErrorList(e);
+                            });
+                        }
+                    });
+                }
+            }
+        }(window.jQuery);
+    </script>
+    <script>
+        !function ($) {
+            const userRolesManager = new userRolesEdit();
+            const toast = new ToastNotifier();
+            const editUserRolesModal = $.templates("#edit-user-roles-modal");
+            const modal = $('.company-manage-modal');
+
+            const findObjectsByProperties = (array, properties) => {
+                return array.filter(obj => {
+                    let response = true;
+                    properties.forEach(property => {
+                        const propertyFound = obj[property.name] === property.value;
+                        response = response && propertyFound;
+                    });
+                    return response;
+                });
+            }
+
+            const addCheckedPropToRoles = userRoles => {
+                return userRolesManager.loadRoles(roles => {
+                    $.each(userRoles, function () {
+                        const properties = [
+                            {
+                                name: 'id',
+                                value: this.id
+                            }
+                        ];
+                        const matchedRole = findObjectsByProperties(roles, properties)[0];
+
+                        if (matchedRole) {
+                            this.checked = true;
+                        }
+                        else {
+                            this.checked = false;
+                        }
+                    });
+                    return userRoles;
+                }).catch(e => {
+                    toast.notifyErrorList(e);
+                });
+            }
+
+            const updateUserRoles = (config) => {
+                userRolesManager.updateUserRoles(config).then().catch(e => {
+                    toast.notifyErrorList(e);
+                });
+            }
+
+            const getRolesFromCheckboxes = () => {
+                let roles = [];
+                $.each(modal.find('.roles-list .custom-checkbox'), function () {
+                    const checkbox = $(this).find('input[type="checkbox"]');
+                    if (checkbox.is(':checked')) {
+                        roles.push(checkbox.attr('id'));
+                    } 
+                });
+                return roles;
+            }
+
+            const addModalEvents = () => {
+                modal.find('.edit-user-roles').submit(function (e) {
+                    e.preventDefault();
+                    const config = {
+                        id: modal.find('.modal-dialog').data('user-id'),
+                        roles: getRolesFromCheckboxes(),
+                    }
+                    updateUserRoles(config);
+                    modal.modal('hide');
+                });
+            }
+
+            const changeRoles = async id => {
+                const user = await userRolesManager.getUser(id);
+                user.roles = await addCheckedPropToRoles(user.roles);
+                const htmlOutput = editUserRolesModal.render(user);
+                modal.html(htmlOutput);
+                addModalEvents();
+                modal.modal('show');
+            }
+        }(window.jQuery);
+    </script>
 }

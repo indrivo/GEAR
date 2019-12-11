@@ -21,11 +21,11 @@ namespace GR.Identity.Services
 		#region DependencyInjection Private Fields
 
 		private readonly ApplicationDbContext _context;
-		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly UserManager<GearUser> _userManager;
 
 		#endregion DependencyInjection Private Fields
 
-		public ProfileService(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+		public ProfileService(UserManager<GearUser> userManager, ApplicationDbContext context)
 		{
 			_userManager = userManager;
 			_context = context;
@@ -76,7 +76,7 @@ namespace GR.Identity.Services
 			}
 		}
 
-		private static IEnumerable<Claim> GetUserClaims(ApplicationUser user, UserManager<ApplicationUser> userManager)
+		private static IEnumerable<Claim> GetUserClaims(GearUser user, UserManager<GearUser> userManager)
 		{
 			var claims = new List<Claim>
 			{

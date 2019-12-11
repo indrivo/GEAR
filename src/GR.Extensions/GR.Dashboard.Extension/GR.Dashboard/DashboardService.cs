@@ -35,15 +35,15 @@ namespace GR.Dashboard
         /// <summary>
         /// Inject role manager
         /// </summary>
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly RoleManager<GearRole> _roleManager;
 
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
         #endregion
 
-        public DashboardService(IDashboardDbContext context, RoleManager<ApplicationRole> roleManager, IUserManager<ApplicationUser> userManager)
+        public DashboardService(IDashboardDbContext context, RoleManager<GearRole> roleManager, IUserManager<GearUser> userManager)
         {
             _context = context;
             _roleManager = roleManager;

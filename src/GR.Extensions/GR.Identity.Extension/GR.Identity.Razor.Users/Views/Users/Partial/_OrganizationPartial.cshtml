@@ -1,0 +1,26 @@
+@using GR.Identity.Abstractions
+@model GR.Identity.Razor.Users.ViewModels.UserProfileViewModels.UserProfileTenantViewModel
+@inject IUserManager<GearUser> UserManager
+@{
+    var user = (await UserManager.GetCurrentUserAsync()).Result;
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="mx-3 my-2 px-2">
+            <img src="/Tenant/GetImage?id=@user.TenantId" class="img-thumbnail img-fluid rounded-circle" alt="@user.UserName">
+        </div>
+    </div>
+    <div class="col-md-9">
+        <p class="mb-4">@Model.Description</p>
+        <p>
+            <span class="weight-400">@Localizer["iso_company_name"] : </span><span class="text-muted">@Model.Name</span>
+        </p>
+        <p>
+            <span class="weight-400">@Localizer["system_adress"] : </span><span class="text-muted">@Model.Address</span>
+        </p>
+        <p>
+            <span class="weight-400">@Localizer["iso_company_website"] : </span> <a href="@Model.SiteWeb" class="text-muted">@Model.SiteWeb</a>
+        </p>
+    </div>
+</div>

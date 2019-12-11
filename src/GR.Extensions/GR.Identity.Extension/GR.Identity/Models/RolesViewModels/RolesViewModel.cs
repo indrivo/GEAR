@@ -4,7 +4,7 @@ using GR.Identity.Data.Permissions;
 
 namespace GR.Identity.Models.RolesViewModels
 {
-    public class RolesViewModel : ApplicationRole
+    public class RolesViewModel : GearRole
     {
         public IEnumerable<string> Permissions { get; set; }
     }

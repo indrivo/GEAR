@@ -9,6 +9,7 @@
     <PackageTags>calendar api gear graphQL</PackageTags>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageReleaseNotes>- register api , add some get methods whitout filters</PackageReleaseNotes>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

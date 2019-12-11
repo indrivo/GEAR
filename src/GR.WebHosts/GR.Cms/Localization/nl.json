@@ -815,6 +815,7 @@
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "De audit plan",
   "system_audit_mission": "De missie van de audit ",
+<<<<<<< HEAD
   "system_document_categories": "Document categorieën",
   "system_is_system": "Systeem",
   "system_title": "Titel",
@@ -832,4 +833,7 @@
   "coments": "Opmerkingen",
   "add_document_version": "Voeg versie van het document",
   "is_major_version": "Is de grote versie"
+=======
+  "system_change_roles": "Wijzigen van rollen"
+>>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

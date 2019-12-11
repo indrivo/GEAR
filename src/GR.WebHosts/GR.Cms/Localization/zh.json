@@ -815,6 +815,7 @@
   "system_workflow_builder": "工作流程生成器",
   "system_audit_plan": "审计计划",
   "system_audit_mission": "特派团的审计 ",
+<<<<<<< HEAD
   "system_document_categories": "文件的类别",
   "system_is_system": "是系统",
   "system_title": "标题",
@@ -832,4 +833,7 @@
   "coments": "评论意见",
   "add_document_version": "添加文件的版本",
   "is_major_version": "是主要的版本"
+=======
+  "system_change_roles": "改变角色"
+>>>>>>> e92e70b343caf0f80e19ec0339fd9e58571d0d2c
 }

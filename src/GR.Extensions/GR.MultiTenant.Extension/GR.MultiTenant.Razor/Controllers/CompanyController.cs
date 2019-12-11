@@ -32,17 +32,17 @@ namespace GR.MultiTenant.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject sign in manager
         /// </summary>
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<GearUser> _signInManager;
 
         #endregion
 
 
-        public CompanyController(IStringLocalizer localizer, IHttpContextAccessor httpContextAccessor, IUserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public CompanyController(IStringLocalizer localizer, IHttpContextAccessor httpContextAccessor, IUserManager<GearUser> userManager, SignInManager<GearUser> signInManager)
         {
             _localizer = localizer;
             _httpContextAccessor = httpContextAccessor;

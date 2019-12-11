@@ -28,7 +28,7 @@ namespace GR.Subscriptions.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject env service
@@ -36,7 +36,7 @@ namespace GR.Subscriptions.Razor.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         #endregion
 
-        public SubscriptionHelperController(IEmailSender emailSender, IUserManager<ApplicationUser> userManager, IHostingEnvironment hostingEnvironment)
+        public SubscriptionHelperController(IEmailSender emailSender, IUserManager<GearUser> userManager, IHostingEnvironment hostingEnvironment)
         {
             _emailSender = emailSender;
             _userManager = userManager;

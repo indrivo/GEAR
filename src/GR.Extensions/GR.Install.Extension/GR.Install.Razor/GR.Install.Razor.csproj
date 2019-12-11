@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Authors>Lupei Nicolae</Authors>
+    <Company>Indrivo</Company>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
