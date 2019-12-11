@@ -164,6 +164,27 @@ namespace GR.Documents.Razor.Controllers
         public async Task<JsonResult> GetAllDocumentsByListId(List<Guid> listDocumentId)
         {
             var result = await _documentService.GetAllDocumentsByListId(listDocumentId);
+
+            if (!result.IsSuccess) return Json(result);
+
+            var listDocument = result.Result.ToList();
+            foreach (var document in listDocument.Where(document => document.DocumentCategory.Code == 1))
+            {
+                var workFlow = (await _workFlowExecutorService.GetEntryStatesAsync(document.LastVersionId.ToString())).Result
+                    .FirstOrDefault()?.Contract?.WorkFlowId;
+                if (workFlow != null)
+                {
+                    document.CurrentStateName =
+                        (await _workFlowExecutorService.GetEntryStateAsync(document.LastVersionId.ToString(),
+                            workFlow)).Result.State.Name;
+                    document.ListNextState =
+                        (await _workFlowExecutorService.GetNextStatesForEntryAsync(
+                            document.LastVersionId.ToString(), workFlow)).Result.ToList();
+                }
+            }
+
+            result.Result = listDocument;
+
             return Json(result, SerializerSettings);
         }
 
@@ -177,9 +198,9 @@ namespace GR.Documents.Razor.Controllers
         [HttpPost]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<DocumentViewModel>))]
-        public async Task<JsonResult> GetAllDocumentsByTypeIdAndList(List<Guid> listDocumentId, Guid? typeId)
+        public async Task<JsonResult> GetAllDocumentsByCategoryIdAndList(List<Guid> listDocumentId, Guid? categoryId)
         {
-            var result = await _documentService.GetAllDocumentsByTypeIdAndListAsync(typeId, listDocumentId);
+            var result = await _documentService.GetAllDocumentsByCategoryIdAndListAsync(categoryId, listDocumentId);
             return Json(result, SerializerSettings);
         }
 

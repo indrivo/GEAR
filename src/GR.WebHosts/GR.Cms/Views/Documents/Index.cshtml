@@ -148,8 +148,8 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
-				<form id="formAddDocument" role="form" enctype="multipart/form-data">
+			<form id="formAddDocument" role="form" enctype="multipart/form-data">
+				<div class="modal-body">
 					<input id="DocumentCategoryId" name="DocumentCategoryId" class="form-control" type="hidden" />
 					<div class="form-body">
 						<div class="row p-t-20">
@@ -220,13 +220,14 @@
 							</div>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary">Save changes</button>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
+					
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_close"]</button>
+					<button type="submit" class="btn btn-primary">@Localizer["save"]s</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -326,7 +327,7 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Add document</h5>
+				<h5 class="modal-title">@Localizer["edit"]</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -340,7 +341,7 @@
 
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Document type</label>
+									<label>@Localizer["type"]</label>
 									<select name="DocumentTypeId" asp-items="ViewBag.ListDocumentType" class="form-control" id="DocumentTypeId">
 										<option value=""></option>
 									</select>
@@ -356,21 +357,21 @@
 
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Title</label>
+									<label>@Localizer["system_title"]</label>
 									<input id="Title" name="Title" class="form-control" value="" required />
 								</div>
 							</div>
 
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Group</label>
+									<label>@Localizer["group"]</label>
 									<input id="Group" name="Group" class="form-control" value="" />
 								</div>
 							</div>
 
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Description</label>
+									<label>@Localizer["description"]</label>
 									<textarea id="Description" name="Description" class="form-control ckeditor" value=""></textarea>
 								</div>
 							</div>
@@ -380,8 +381,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary">Edit</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_close"]</button>
+					<button type="submit" class="btn btn-primary">@Localizer["edit"]</button>
 				</div>
 			</form>
 		</div>
@@ -395,7 +396,7 @@
 		<div class="modal-content">
 
 			<div class="modal-header">
-				<h5 class="modal-title">Change state</h5>
+				<h5 class="modal-title">@Localizer["change_state"]</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -408,11 +409,11 @@
 					</div>
 					<div class="col-md-12">
 						<div class="form-group">
-							<label>Comments</label>
+							<label>@Localizer["iso_active_comments"]</label>
 							<textarea id="CommentsChangeState" name="Comments" class="form-control ckeditor" value=""></textarea>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary">Change state</button>
+					<button type="submit" class="btn btn-primary">@Localizer["change_state"]</button>
 				</form>
 
 
@@ -420,9 +421,9 @@
 					<thead>
 					<tr>
 						<th>Created by</th>
-						<th>Comments</th>
-						<th>Start status</th>
-						<th>Next status</th>
+						<th>@Localizer["iso_active_comments"]</th>
+						<th>@Localizer["start_state"]</th>
+						<th>@Localizer["next_state"]</th>
 					</tr>
 					</thead>
 					<tbody id="DocumentChangeStatusHistory">
@@ -776,8 +777,6 @@
 
 		}
 
-		
-
 		$("#ChangeDocumentStatus").submit(function(e) {
 
 			newState.Comments = $("#CommentsChangeState").val();
@@ -818,7 +817,6 @@
 
 			return html;
         }
-
 
 		function ValidateSize(file) {
 			var fileSize = file.files[0].size / 1024 / 1024;

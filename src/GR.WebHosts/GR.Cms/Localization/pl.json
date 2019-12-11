@@ -832,5 +832,8 @@
   "coments": "Komentarze",
   "add_document_version": "Dodaj wersja dokumentu ",
   "is_major_version": "Jest to podstawowa wersja",
-  "system_change_roles": "Role się zmieniają "
+  "system_change_roles": "Role się zmieniają ",
+  "start_state": "Stan początkowy",
+  "next_state": "Następujący stan",
+  "change_state": "Zmiana stanu "
 }

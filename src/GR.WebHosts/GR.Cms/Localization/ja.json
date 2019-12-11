@@ -832,5 +832,8 @@
   "coments": "コメント",
   "add_document_version": "追加文書版",
   "is_major_version": "がメジャーバージョン",
-  "system_change_roles": "の役割を変更"
+  "system_change_roles": "の役割を変更",
+  "start_state": "開始状態",
+  "next_state": "次の状態",
+  "change_state": "状態を変化さ"
 }

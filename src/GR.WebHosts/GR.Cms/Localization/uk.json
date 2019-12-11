@@ -832,5 +832,8 @@
   "coments": "Коментарі",
   "add_document_version": "Додати версія документа ",
   "is_major_version": "Це основна версія",
-  "system_change_roles": "Ролі змінюються "
+  "system_change_roles": "Ролі змінюються ",
+  "start_state": "Початковий стан",
+  "next_state": "Наступне стан",
+  "change_state": "Зміна стану "
 }
