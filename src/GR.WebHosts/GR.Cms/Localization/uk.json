@@ -832,5 +832,12 @@
   "coments": "Коментарі",
   "add_document_version": "Додати версія документа ",
   "is_major_version": "Це основна версія",
-  "system_change_roles": "Ролі змінюються "
+  "system_change_roles": "Ролі змінюються ",
+  "system_gr_compartment": "Відсік",
+  "system_gr_audited": "Перевірені",
+  "system_gr_documents": "Документи",
+  "system_gr_auditor": "Аудитор",
+  "system_gr_description": "Опис",
+  "system_gr_recommendation": "Рекомендації",
+  "audit_mission_details": "Місії аудиту "
 }

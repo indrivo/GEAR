@@ -832,5 +832,12 @@
   "coments": "Комментарии",
   "add_document_version": "Добавить версия документа ",
   "is_major_version": "Это основная версия",
-  "system_change_roles": "Роли меняются "
+  "system_change_roles": "Роли меняются ",
+  "system_gr_compartment": "Отсек",
+  "system_gr_audited": "Проверенные",
+  "system_gr_documents": "Документы",
+  "system_gr_auditor": "Аудитор",
+  "system_gr_description": "Описание",
+  "system_gr_recommendation": "Рекомендации",
+  "audit_mission_details": "Миссии аудита "
 }

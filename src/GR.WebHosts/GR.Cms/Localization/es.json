@@ -832,5 +832,12 @@
   "coments": "Comentarios",
   "add_document_version": "Agregar versión de documento",
   "is_major_version": "Es la versión principal",
-  "system_change_roles": "Cambio de roles"
+  "system_change_roles": "Cambio de roles",
+  "system_gr_compartment": "Compartimiento",
+  "system_gr_audited": "Auditado",
+  "system_gr_documents": "Documentos",
+  "system_gr_auditor": "Auditor",
+  "system_gr_description": "Descripción",
+  "system_gr_recommendation": "Recomendación",
+  "audit_mission_details": "Misiones de auditoría"
 }

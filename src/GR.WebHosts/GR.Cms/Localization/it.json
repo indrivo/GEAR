@@ -832,5 +832,12 @@
   "coments": "Commenti",
   "add_document_version": "Aggiungere versione documento",
   "is_major_version": "È la versione principale",
-  "system_change_roles": "Il cambio di ruoli"
+  "system_change_roles": "Il cambio di ruoli",
+  "system_gr_compartment": "Vano",
+  "system_gr_audited": "Sottoposto a revisione",
+  "system_gr_documents": "Documenti",
+  "system_gr_auditor": "Sindaco",
+  "system_gr_description": "Descrizione",
+  "system_gr_recommendation": "Raccomandazione",
+  "audit_mission_details": "Missioni di verifica"
 }

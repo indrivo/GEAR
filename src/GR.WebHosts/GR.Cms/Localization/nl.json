@@ -832,5 +832,12 @@
   "coments": "Opmerkingen",
   "add_document_version": "Voeg versie van het document",
   "is_major_version": "Is de grote versie",
-  "system_change_roles": "Wijzigen van rollen"
+  "system_change_roles": "Wijzigen van rollen",
+  "system_gr_compartment": "Compartiment",
+  "system_gr_audited": "Gecontroleerd",
+  "system_gr_documents": "Documenten",
+  "system_gr_auditor": "Accountant",
+  "system_gr_description": "Beschrijving",
+  "system_gr_recommendation": "Aanbeveling",
+  "audit_mission_details": "Audit-missies"
 }

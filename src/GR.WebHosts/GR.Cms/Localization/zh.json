@@ -832,5 +832,12 @@
   "coments": "评论意见",
   "add_document_version": "添加文件的版本",
   "is_major_version": "是主要的版本",
-  "system_change_roles": "改变角色"
+  "system_change_roles": "改变角色",
+  "system_gr_compartment": "舱",
+  "system_gr_audited": "经审计的",
+  "system_gr_documents": "文件",
+  "system_gr_auditor": "审计员",
+  "system_gr_description": "描述",
+  "system_gr_recommendation": "建议",
+  "audit_mission_details": "审计的特派团"
 }

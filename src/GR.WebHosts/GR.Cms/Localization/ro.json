@@ -832,5 +832,12 @@
   "coments": "Comentarii",
   "add_document_version": "Adăugați versiune document",
   "is_major_version": "Este versiune majoră",
-  "system_change_roles": "Schimba rolurile"
+  "system_change_roles": "Schimba rolurile",
+  "system_gr_compartment": "Compartiment",
+  "system_gr_audited": "Auditat",
+  "system_gr_documents": "Documente",
+  "system_gr_auditor": "Auditor",
+  "system_gr_description": "Descriere",
+  "system_gr_recommendation": "Recomandare",
+  "audit_mission_details": "Misiuni de Audit"
 }

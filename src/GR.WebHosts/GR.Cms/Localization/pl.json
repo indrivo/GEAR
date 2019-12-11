@@ -832,5 +832,12 @@
   "coments": "Komentarze",
   "add_document_version": "Dodaj wersja dokumentu ",
   "is_major_version": "Jest to podstawowa wersja",
-  "system_change_roles": "Role się zmieniają "
+  "system_change_roles": "Role się zmieniają ",
+  "system_gr_compartment": "Schowek",
+  "system_gr_audited": "Sprawdzone",
+  "system_gr_documents": "Dokumenty",
+  "system_gr_auditor": "Audytor",
+  "system_gr_description": "Opis",
+  "system_gr_recommendation": "Zalecenia",
+  "audit_mission_details": "Misji audytu "
 }

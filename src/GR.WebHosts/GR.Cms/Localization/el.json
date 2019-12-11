@@ -832,5 +832,12 @@
   "coments": "Σχόλια",
   "add_document_version": "Προσθήκη εγγράφου έκδοση",
   "is_major_version": "Είναι σημαντική έκδοση",
-  "system_change_roles": "Αλλάζουν ρόλους"
+  "system_change_roles": "Αλλάζουν ρόλους",
+  "system_gr_compartment": "Διαμέρισμα",
+  "system_gr_audited": "Ελέγχθηκαν",
+  "system_gr_documents": "Έγγραφα",
+  "system_gr_auditor": "Ελεγκτής",
+  "system_gr_description": "Περιγραφή",
+  "system_gr_recommendation": "Σύσταση",
+  "audit_mission_details": "Αποστολές ελέγχου"
 }
