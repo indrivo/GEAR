@@ -377,7 +377,7 @@ namespace GR.DynamicEntityStorage
             var fieldReferences = table.TableFields
                 .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return listWithoutInclude;
-            foreach (var item in listWithoutInclude.Result)
+            foreach (var item in listWithoutInclude.Result.ToList())
             {
                 var includes = await IncludeSingleForDictionaryObjectAsync(item, fieldReferences);
                 if (includes.Any())
