@@ -20,6 +20,7 @@ using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Filters.Enums;
+using GR.Core.Helpers.Responses;
 using GR.Entities.Abstractions.Constants;
 using GR.Entities.Abstractions.Enums;
 using GR.Forms.Abstractions;
@@ -741,6 +742,51 @@ namespace GR.PageRender.Razor.Controllers
             }
 
             return Json(new { message = "Items was deleted!", success = true });
+        }
+
+        /// <summary>
+        /// Delete page by id
+        /// </summary>
+        /// <param name="viewModelId"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [AjaxOnly, HttpPost, Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> DeletePermanentItemsFromDynamicEntity(Guid viewModelId, IEnumerable<string> ids)
+        {
+            var response = new ResultModel();
+            if (ids == null)
+            {
+                response.Errors.Add(new ErrorModel("", "Fail to delete!"));
+                return Json(response);
+            }
+            var viewModel = _pagesContext.ViewModels.Include(x => x.TableModel)
+                .FirstOrDefault(x => x.Id.Equals(viewModelId));
+
+            if (viewModel == null)
+            {
+                response.Errors.Add(new ErrorModel("", "Fail to delete!"));
+                return Json(response);
+            }
+
+            var fails = 0;
+            try
+            {
+                foreach (var id in ids)
+                {
+                    if (string.IsNullOrEmpty(id)) throw new Exception("Selected row not found!");
+                    var deleteRequest = await _service.Table(viewModel.TableModel.Name).DeletePermanent<object>(Guid.Parse(id));
+                    if (!deleteRequest.IsSuccess) fails++;
+                }
+            }
+            catch (Exception e)
+            {
+                response.Errors.Add(new ErrorModel("", e.Message));
+                return Json(response);
+            }
+
+            if (fails == 0) return Json(new SuccessResultModel<object>());
+            response.Errors.Add(new ErrorModel("FAIL_DELETE_ALL_ROWS", "Some recordings could not be deleted because they are used!"));
+            return Json(response);
         }
 
         /// <summary>

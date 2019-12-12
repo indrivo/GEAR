@@ -378,6 +378,7 @@ function IsoTableHeadActions() {
         enabledOptions: {
             add: true,
             deleteRestore: true,
+            deletePermanent: true,
             hiddenColumns: true,
             rows: true
         },
@@ -424,19 +425,16 @@ function changeTextCellPosition() {
     const navBarWidth = $(".navigation").width();
     pos.left -= navBarWidth;
     const wPercent = pos.left * 100 / docWidth;
-    //const diffW = docWidth - pos.left;
 
     if (hPercent > 72 && hPercent < 75) {
         expandCell.css("top", `${pos.top - diffH}px`);
     } else if (hPercent > 80) {
         expandCell.css("top", `${pos.top - diffH
-            // - 240
             }px`);
     }
 
     if (wPercent > 70) {
         expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
-            // * 2
             }px`);
     }
 }
@@ -445,16 +443,40 @@ function changeTextCellPosition() {
 $(".table")
     .on("preInit.dt",
         function () {
+            if (!$(this).hasClass("dynamic-table")) return;
             const conf = new IsoTableHeadActions().getConfiguration();
-            //Risk company matrix
-            if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
-                conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
-            }
-            const content = tManager.render("template_headListActions", conf);
-            const selector = $("div.CustomTableHeadBar");
-            selector.html(content);
-            selector.find(".add-matrix").on("click", riskMatrixCreate);
-            window.forceTranslate("div.CustomTableHeadBar");
+            const domTableId = $(this).attr("id");
+            const tableBuilderInstance = window.TableBuilderInstances.instances.find(x => x.configurations.listId == domTableId);
+            const entityId = tableBuilderInstance.configurations.viewmodelData.tableModelId;
+            $.ajax({
+                url: "/api/EntitySecurity/GetEntityPermissionsForCurrentUser",
+                data: { entityId },
+                async: false,
+                success: function (response) {
+                    if (!response.is_success) {
+                        tableBuilderInstance.toast.notifyErrorList(response.error_keys);
+                        return;
+                    }
+                    const permissions = response.result;
+                    const fullControl = permissions.includes("FullControl");
+                    if (!fullControl) {
+                        conf.settings.enabledOptions.add = permissions.includes("Write");
+                        conf.settings.enabledOptions.deletePermanent = permi0ssions.includes("DeletePermanent");
+                        conf.settings.enabledOptions.deleteRestore = permissions.includes("Delete") | permissions.includes("Restore");
+                    }
+
+                    //Risk company matrix
+                    if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
+                        conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
+                    }
+                    const content = tManager.render("template_headListActions", conf);
+                    const selector = $("div.CustomTableHeadBar");
+                    selector.html(content);
+                    selector.find(".add-matrix").on("click", riskMatrixCreate);
+                    window.forceTranslate("div.CustomTableHeadBar");
+                },
+                error: function () { }
+            });
         });
 
 
@@ -652,6 +674,16 @@ if (typeof TableColumnsVisibility !== "undefined") {
                 if (cTable) {
                     if (typeof TableBuilder !== "undefined") {
                         new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+                    }
+                }
+            });
+
+        $(".delete-multiple-rows-permanent").on("click",
+            function () {
+                const cTable = $(this).closest(".card").find(".dynamic-table");
+                if (cTable) {
+                    if (typeof TableBuilder !== "undefined") {
+                        new TableBuilder().deleteSelectedRowsPermanentHandler(cTable.DataTable());
                     }
                 }
             });

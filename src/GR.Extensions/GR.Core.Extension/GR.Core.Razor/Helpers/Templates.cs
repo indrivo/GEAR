@@ -8,7 +8,8 @@
         public const string ListJsScriptTemplate = "ListTagHelperJsTemplate";
         public const string ThTemplate = "ThSectionHtmlTemplate";
         public const string ATemplate = "ActionTagTemplate";
-        public const string ListRenderColumnJsTemplate = "ListRenderJsTemplate";
+        public const string ListButtonGroupRenderJsTemplate = "ListButtonGroupRenderJsTemplate";
+        public const string ListButtonDropdownRenderJsTemplate = "ListButtonDropdownRenderJsTemplate";
         public const string ListBooleanRenderJsTemplate = "ListBooleanRenderJsTemplate";
     }
 }

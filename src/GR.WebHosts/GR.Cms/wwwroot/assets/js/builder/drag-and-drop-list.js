@@ -7,14 +7,14 @@ function handleDragStart(e) {
 	e.dataTransfer.effectAllowed = 'move';
 	e.dataTransfer.setData('text/html', this.outerHTML);
 
-	this.classlist.add('dragElem');
+    $(this).addClass("dragElem");
 	$(this).addClass("active");
 }
 function handleDragOver(e) {
 	if (e.preventDefault) {
 		e.preventDefault(); // Necessary. Allows us to drop.
-	}
-	this.classlist.add('over');
+    }
+    $(this).addClass("over");
 
 	e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
 	$(this).addClass("active");
@@ -26,7 +26,7 @@ function handleDragEnter(e) {
 }
 
 function handleDragLeave(e) {
-	this.classlist.remove('over');  // this / e.target is previous target element.
+    $(this).removeClass("over");  // this / e.target is previous target element.
 	$(this).removeClass("active");
 }
 
@@ -49,14 +49,14 @@ function handleDrop(e) {
 		var dropElem = this.previousSibling;
 		addDnDHandlers(dropElem);
 	}
-	this.classlist.remove('over');
+    $(this).removeClass("over");
 	$(this).removeClass("active");
 	return false;
 }
 
 function handleDragEnd(e) {
-	// this/e.target is the source node.
-	this.classlist.remove('over');
+    // this/e.target is the source node.
+    $(this).removeClass("over");
 	refreshOrderItems("#columns");
 }
 

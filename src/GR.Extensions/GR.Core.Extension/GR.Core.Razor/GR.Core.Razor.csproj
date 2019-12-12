@@ -6,7 +6,7 @@
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</RepositoryUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</PackageProjectUrl>
   </PropertyGroup>
 
@@ -21,8 +21,9 @@
     <None Remove="Templates\ActionTagTemplate.html" />
     <None Remove="Templates\AddSectionHtmlTemplate.html" />
     <None Remove="Templates\ListBooleanRenderJsTemplate.js" />
+    <None Remove="Templates\ListButtonDropdownRenderJsTemplate.js" />
+    <None Remove="Templates\ListButtonGroupRenderJsTemplate.js" />
     <None Remove="Templates\ListDocumentationHtmlTemplate.html" />
-    <None Remove="Templates\ListRenderJsTemplate.js" />
     <None Remove="Templates\ListTagHelperHtmlTemplate.html" />
     <None Remove="Templates\ListTagHelperJsTemplate.js" />
     <None Remove="Templates\ThSectionHtmlTemplate.html" />
@@ -32,13 +33,16 @@
     <EmbeddedResource Include="Templates\ActionTagTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\ListButtonDropdownRenderJsTemplate.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListDocumentationHtmlTemplate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListBooleanRenderJsTemplate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\ListRenderJsTemplate.js">
+    <EmbeddedResource Include="Templates\ListButtonGroupRenderJsTemplate.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Templates\ListTagHelperJsTemplate.js">
