@@ -835,5 +835,9 @@
   "system_change_roles": "Changer les rôles",
   "delete_permanent": "Supprimer permanent",
   "system_delete_permanent_multiple_entries": "Vous êtes sûr que vous voulez supprimer définitivement les enregistrements sélectionnés?",
-  "system_delete_multiple_confirm": "Supprimer définitivement"
+  "system_delete_multiple_confirm": "Supprimer définitivement",
+  "start_state": "État de départ",
+  "next_state": "Suivant l'état",
+  "change_state": "Changer d'état",
+  "system_notifications_clear_all": "Effacer tous les"
 }

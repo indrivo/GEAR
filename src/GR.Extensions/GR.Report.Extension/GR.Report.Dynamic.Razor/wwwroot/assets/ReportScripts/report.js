@@ -223,9 +223,9 @@ function AddRelationship() {
 					<select class="form-control foreignKeySelect" id="foreignKeySelect`+ relationId + `"><option></option></select>
 				</div>
 			</div>
-			<div class="col-1">
-				<label>&nbsp;</label>
-				<button class="btn btn-danger removeRelationship">`+ localizer.translate('remove_relationship') + `</button>
+			<div class="col-2">
+                <label>&nbsp;</label>
+				<button class="btn btn-danger removeRelationship w-100">`+ localizer.translate('remove_relationship') + `</button>
 			</div>
 		</div>`;
     $("#pnlRelationships").append(currentHtml);
@@ -257,21 +257,21 @@ function AddField() {
     var currentHtml = `
 				<div class="row">
 			<div class="col-12 row m-t-20">
-				<div class="col-md-4">
+				<div class="col-3">
 					<div class="form-group">
 						<label>` + localizer.translate('field') + `:</label>
 						<select class="form-control fieldSelector" id="fieldSelector`+ fieldId + `">
 						</select>
 					</div>
 				</div>
-				<div class="col-4">
+				<div class="col-3">
 					<div class="form-group">
 						<label>` + localizer.translate('aggregates') + `:</label>
 						<select class="form-control fieldOperationSelector" id="fieldOperationSelector`+ fieldId + `">
 						</select>
 					</div>
 				</div>
-				<div class="col-md-3">
+				<div class="col-3">
 					<div class="form-group">
 						<label>` + localizer.translate('caption') + `:</label>
 						<input class="form-control filterValueSelector" type="text" id="fieldCaptionSelector`+ fieldId + `">
@@ -279,7 +279,7 @@ function AddField() {
 					</div>
 					<div class="col-1">
 						<label>&nbsp;</label>
-						<button class="btn btn-danger removeField">` + localizer.translate('remove_field') + `</button>
+						<button class="btn btn-danger removeField w-100">` + localizer.translate('remove_field') + `</button>
 					</div>
 				</div>
 			</div>`;
@@ -318,21 +318,21 @@ function AddFilter() {
     var currentHtml = `
 				<div class="row">
 				<div class="col-12 row m-t-20 changedRow">
-					<div class="col-md-4">
+					<div class="col-3">
 						<div class="form-group">
 							<label>` + localizer.translate('field') + `:</label>
 							<select class="form-control filterFieldSelector" id="filterFieldSelector`+ filterId + `">
 							</select>
 						</div>
 					</div>
-					<div class="col-4">
+					<div class="col-3">
 						<div class="form-group">
 							<label>` + localizer.translate('operation') + `:</label>
 							<select class="form-control filterOperationSelector" id="filterOperationSelector`+ filterId + `">
 							</select>
 						</div>
 					</div>
-					<div class="col-md-3">
+					<div class="col-3">
 						<div class="form-group">
 							<label>` + localizer.translate('iso_active_value') + `:</label>
 							<input class="form-control filterValueSelector" type="text" id="filterValueSelector`+ filterId + `">
@@ -340,7 +340,7 @@ function AddFilter() {
 						</div>
 						<div class="col-1">
 							<label>&nbsp;</label>
-							<button class="btn btn-danger removeFilter">` + localizer.translate('remove_filter') + `</button>
+							<button class="btn btn-danger removeFilter w-100">` + localizer.translate('remove_filter') + `</button>
 						</div>
 					</div>
 				</div>`;
@@ -368,7 +368,8 @@ function AddChart(chartType) {
         var chartTypeData = $('#chartSelector').find("option[value='" + chartType + "']")[0];
         var currentHtml = `
 						<div class="row">
-					<div class="col-12 row m-t-20 changedRow">
+                    <div class="col-12">
+					<div class="row m-t-20 changedRow">
 						<input name="chartType" type="hidden" value="` + chartType + `" />
                         <input name="chartIndex" type="hidden" value="` + index + `" />
 						<div class="col-md-1">
@@ -398,12 +399,13 @@ function AddChart(chartType) {
 							</div>
 						</div>`;
         });
-        currentHtml += `<div class="col-1">
+        currentHtml += `<div class="col-2 ml-auto">
 								<label>&nbsp;</label>
-								<button class="btn btn-danger removeChart">` + localizer.translate('remove_chart') + `</button>
+								<button class="btn btn-danger removeChart w-100">` + localizer.translate('remove_chart') + `</button>
 							</div>
 						</div>
-					</div>`;
+					</div>
+                    </div>`;
         //$("#pnlCharts").append(chartType);
         $("#pnlCharts").append(currentHtml);
 
@@ -628,14 +630,15 @@ function SetChartValues(data) {
 //});
 
 function LoadNew() {
-    LoadFinished = true;
     var callback = function (data) {
         tables = $.merge([], data);
         $('#tableSelect').select2({
             placeholder: " - " + localizer.translate('select_tables') + " - ",
             multiple: true,
             data: data
-        }).change(function () {
+        });
+        LoadFinished = true;
+        $('#tableSelect').change(function () {
             if (LoadFinished) {
                 items = $(this).val();
                 SetRelValues();
@@ -744,6 +747,7 @@ $(document).ready(function () {
 
     $("#AddRelationship").click(function () {
         AddRelationship();
+        $('#report_relationships').collapse('show');
     });
 
     //#region Fields
@@ -787,6 +791,7 @@ $(document).ready(function () {
 
     $("#AddField").click(function () {
         AddField();
+        $('#display_options').collapse('show');
     });
 
     //#endregion Fields
@@ -821,6 +826,7 @@ $(document).ready(function () {
 
     $("#AddFilter").click(function () {
         AddFilter();
+        $('#filters_group_options').collapse('show');
     });
 
     //#endregion Filters

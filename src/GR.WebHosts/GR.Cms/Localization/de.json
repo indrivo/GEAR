@@ -835,5 +835,9 @@
   "system_change_roles": "Rollen ändern",
   "delete_permanent": "Löschen dauerhaft",
   "system_delete_permanent_multiple_entries": "Sind Sie sicher, dass Sie die ausgewählten Datensätze dauerhaft löschen?",
-  "system_delete_multiple_confirm": "Für immer löschen"
+  "system_delete_multiple_confirm": "Für immer löschen",
+  "start_state": "Starten Sie Zustand",
+  "next_state": "Nächsten Zustand",
+  "change_state": "Status ändern",
+  "system_notifications_clear_all": "Deaktivieren Sie alle",
 }

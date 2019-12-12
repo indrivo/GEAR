@@ -835,5 +835,9 @@
   "system_change_roles": "の役割を変更",
   "delete_permanent": "永久削除",
   "system_delete_permanent_multiple_entries": "Are you sure you wantを完全に削除するには、選択した名前を挙げた報告書を発表した。",
-  "system_delete_multiple_confirm": "恒久的に削除"
+  "system_delete_multiple_confirm": "恒久的に削除",
+  "start_state": "開始状態",
+  "next_state": "次の状態",
+  "change_state": "状態を変化さ",
+  "system_notifications_clear_all": "すべてクリア"
 }

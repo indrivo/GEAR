@@ -835,5 +835,9 @@
   "system_change_roles": "Il cambio di ruoli",
   "delete_permanent": "Elimina permanente",
   "system_delete_permanent_multiple_entries": "Sei sicuro di voler eliminare definitivamente le voci selezionate?",
-  "system_delete_multiple_confirm": "Eliminare definitivamente"
+  "system_delete_multiple_confirm": "Eliminare definitivamente",
+  "start_state": "Stato di inizio",
+  "next_state": "Stato successivo",
+  "change_state": "Il cambiamento di stato",
+  "system_notifications_clear_all": "Cancella tutto"
 }

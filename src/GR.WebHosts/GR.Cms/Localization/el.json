@@ -835,5 +835,9 @@
   "system_change_roles": "Αλλάζουν ρόλους",
   "delete_permanent": "Μόνιμη διαγραφή",
   "system_delete_permanent_multiple_entries": "Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τα επιλεγμένα αρχεία;",
-  "system_delete_multiple_confirm": "Για να καταργήσετε μόνιμα"
+  "system_delete_multiple_confirm": "Για να καταργήσετε μόνιμα",
+  "start_state": "Έναρξη μέλος",
+  "next_state": "Επόμενη κατάσταση",
+  "change_state": "Αλλαγή μέλους",
+  "system_notifications_clear_all": "Σαφή όλα"
 }

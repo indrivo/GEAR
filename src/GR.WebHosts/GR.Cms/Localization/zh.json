@@ -835,5 +835,9 @@
   "system_change_roles": "改变角色",
   "delete_permanent": "删除永久性的",
   "system_delete_permanent_multiple_entries": "你确定你想要永久删除选择的记录？",
-  "system_delete_multiple_confirm": "删除永久地"
+  "system_delete_multiple_confirm": "删除永久地",
+  "start_state": "开始状态",
+  "next_state": "下一个状态",
+  "change_state": "改变态",
+  "system_notifications_clear_all": "全部清除"
 }

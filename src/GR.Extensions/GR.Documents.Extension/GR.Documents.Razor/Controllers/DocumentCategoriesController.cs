@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Helpers;
 using GR.Documents.Abstractions;
 using GR.Documents.Abstractions.Extensions;
 using GR.Documents.Abstractions.Helpers;
@@ -52,6 +53,21 @@ namespace GR.Documents.Razor.Controllers
             return View();
         }
 
+
+        /// <summary>
+        /// Get all Document categories from table model
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<DocumentCategoryViewModel>))]
+        public async Task<JsonResult> ListDocumentCategoriesAsync()
+        {
+            var list = await _documentCategoryService.GetAllDocumentCategoryAsync();
+
+            return Json(list);
+        }
 
         /// <summary>
         /// Create document type 

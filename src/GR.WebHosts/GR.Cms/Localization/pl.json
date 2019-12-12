@@ -835,5 +835,9 @@
   "system_change_roles": "Role się zmieniają ",
   "delete_permanent": "Usuwanie stałego",
   "system_delete_permanent_multiple_entries": "Czy na pewno chcesz trwale usunąć wybrane wpisy?",
-  "system_delete_multiple_confirm": "Trwale usunąć"
+  "system_delete_multiple_confirm": "Trwale usunąć",
+  "start_state": "Stan początkowy",
+  "next_state": "Następujący stan",
+  "change_state": "Zmiana stanu ",
+  "system_notifications_clear_all": "Jasne wszystko"
 }

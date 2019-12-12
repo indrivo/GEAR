@@ -835,5 +835,9 @@
   "system_change_roles": "Cambio de roles",
   "delete_permanent": "Eliminar permanente",
   "system_delete_permanent_multiple_entries": "Está seguro de que desea eliminar de forma permanente los registros seleccionados?",
-  "system_delete_multiple_confirm": "Eliminar para siempre"
+  "system_delete_multiple_confirm": "Eliminar para siempre",
+  "start_state": "Inicio",
+  "next_state": "Siguiente estado",
+  "change_state": "Cambio de estado",
+  "system_notifications_clear_all": "Borrar todos los"
 }

@@ -835,5 +835,9 @@
   "system_change_roles": "Роли меняются ",
   "delete_permanent": "Удаление постоянного",
   "system_delete_permanent_multiple_entries": "Вы уверены, что хотите навсегда удалить выбранные записи?",
-  "system_delete_multiple_confirm": "Навсегда удалить"
+  "system_delete_multiple_confirm": "Навсегда удалить",
+  "start_state": "Начальное состояние",
+  "next_state": "Следующее состояние",
+  "change_state": "Изменение состояния ",
+  "system_notifications_clear_all": "Ясно все"
 }

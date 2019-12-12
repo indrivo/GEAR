@@ -835,5 +835,9 @@
   "system_change_roles": "Wijzigen van rollen",
   "delete_permanent": "Permanent verwijderen",
   "system_delete_permanent_multiple_entries": "Weet u zeker dat u permanent wilt verwijderen van de geselecteerde record?",
-  "system_delete_multiple_confirm": "Permanent verwijderen"
+  "system_delete_multiple_confirm": "Permanent verwijderen",
+  "start_state": "Start staat",
+  "next_state": "Volgende staat",
+  "change_state": "Status wijzigen",
+  "system_notifications_clear_all": "Alles wissen"
 }

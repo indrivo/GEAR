@@ -835,5 +835,9 @@
   "system_change_roles": "Schimba rolurile",
   "delete_permanent": "Șterge permanent",
   "system_delete_permanent_multiple_entries": "Sunteți sigur că doriți să eliminați definitiv înregistrările selectate?",
-  "system_delete_multiple_confirm": "Elimina definitiv"
+  "system_delete_multiple_confirm": "Elimina definitiv",
+  "start_state": "Statutul inițial",
+  "next_state": "Următorul statut",
+  "change_state": "Schimba stat",
+  "system_notifications_clear_all": "Ștergele pe toate"
 }

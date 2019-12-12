@@ -835,5 +835,9 @@
   "system_change_roles": "Change roles",
   "delete_permanent": "Delete permanent",
   "system_delete_permanent_multiple_entries": "Are you sure you want to permanently delete the selected record?",
-  "system_delete_multiple_confirm": "Permanently delete"
+  "system_delete_multiple_confirm": "Permanently delete",
+  "start_state": "Start state",
+  "next_state": "Next state",
+  "change_state": "Change statutul",
+  "system_notifications_clear_all": "Clear all"
 }
