@@ -299,7 +299,7 @@
   "iso_objective_requirement": "Die Voraussetzung für die PI ",
   "iso_objective_is_fullfilment": "Gemacht?",
   "iso_objective_interessted_part": "Die Interessierte Partei",
-  "iso_standard_27001_menu": "Standard ISO 27001",
+  "iso_standard_27001_menu": "27001",
   "iso_menu_controls": "Die Steuerelemente",
   "iso_menu_asset_category": "Vermögenswerte",
   "iso_menu_function": "Funktion",
@@ -501,7 +501,7 @@
   "iso_trends_in_main_indicators_of_information_security": "Die trends in den wichtigsten Indikatoren für die Sicherheit der Informationen, die",
   "iso_trends": "Trends",
   "iso_changes_in_internal_and_external_aspects": "Die änderungen zu den Aspekten des internen und externen",
-  "iso_meetings": "Treffen",
+  "iso_meetings": "Management-Bewertung",
   "iso_meeting_date": "Der Zeitpunkt des Shootings",
   "iso_meeting_participants": "Teilnehmer",
   "iso_meeting_generate_report": "Erzeugt einen Bericht über die Analyse des Managements von",
@@ -839,5 +839,5 @@
   "start_state": "Starten Sie Zustand",
   "next_state": "Nächsten Zustand",
   "change_state": "Status ändern",
-  "system_notifications_clear_all": "Deaktivieren Sie alle",
+  "system_notifications_clear_all": "Deaktivieren Sie alle"
 }

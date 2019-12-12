@@ -243,7 +243,11 @@ class TableBuilder {
                         colName = window.translate(column.translate);
                     }
                     const htmlCol = document.createElement("th");
-                    htmlCol.innerHTML = colName;
+                    let isRequired = false;
+                    if (column.tableModelFields) {
+                        isRequired = !column.tableModelFields.allowNull;
+                    }
+                    htmlCol.innerHTML = `${colName}${isRequired ? " <span style='color:red'>*</span>" : ""}`;
                     tr.appendChild(htmlCol);
                     renderColumns.push({
                         config: {
