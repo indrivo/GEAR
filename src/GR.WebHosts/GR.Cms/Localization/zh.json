@@ -835,5 +835,7 @@
   "system_change_roles": "改变角色",
   "start_state": "开始状态",
   "next_state": "下一个状态",
-  "change_state": "改变态"
+  "change_state": "改变态",
+  "system_change_roles": "改变角色",
+  "system_notifications_clear_all": "全部清除"
 }

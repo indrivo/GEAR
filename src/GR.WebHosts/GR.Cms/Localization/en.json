@@ -835,5 +835,7 @@
   "system_change_roles": "Change roles",
   "start_state": "Start state",
   "next_state": "Next state",
-  "change_state": "Change statutul"
+  "change_state": "Change statutul",
+  "system_change_roles": "Change roles",
+  "system_notifications_clear_all": "Clear all"
 }

@@ -835,5 +835,7 @@
   "system_change_roles": "Wijzigen van rollen",
   "start_state": "Start staat",
   "next_state": "Volgende staat",
-  "change_state": "Status wijzigen"
+  "change_state": "Status wijzigen",
+  "system_change_roles": "Wijzigen van rollen",
+  "system_notifications_clear_all": "Alles wissen"
 }

@@ -835,5 +835,7 @@
   "system_change_roles": "Schimba rolurile",
   "start_state": "Statutul inițial",
   "next_state": "Următorul statut",
-  "change_state": "Schimba stat"
+  "change_state": "Schimba stat",
+  "system_change_roles": "Schimba rolurile",
+  "system_notifications_clear_all": "Ștergele pe toate"
 }

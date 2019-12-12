@@ -836,4 +836,6 @@
   "start_state": "Starten Sie Zustand",
   "next_state": "Nächsten Zustand",
   "change_state": "Status ändern"
+  "system_change_roles": "Rollen ändern",
+  "system_notifications_clear_all": "Deaktivieren Sie alle",
 }

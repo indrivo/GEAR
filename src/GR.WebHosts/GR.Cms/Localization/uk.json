@@ -835,5 +835,7 @@
   "system_change_roles": "Ролі змінюються ",
   "start_state": "Початковий стан",
   "next_state": "Наступне стан",
-  "change_state": "Зміна стану "
+  "change_state": "Зміна стану ",
+  "system_change_roles": "Ролі змінюються ",
+  "system_notifications_clear_all": "Все Ясно"
 }

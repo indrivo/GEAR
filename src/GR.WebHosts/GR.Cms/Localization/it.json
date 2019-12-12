@@ -835,5 +835,7 @@
   "system_change_roles": "Il cambio di ruoli",
   "start_state": "Stato di inizio",
   "next_state": "Stato successivo",
-  "change_state": "Il cambiamento di stato"
+  "change_state": "Il cambiamento di stato",
+  "system_change_roles": "Il cambio di ruoli",
+  "system_notifications_clear_all": "Cancella tutto"
 }

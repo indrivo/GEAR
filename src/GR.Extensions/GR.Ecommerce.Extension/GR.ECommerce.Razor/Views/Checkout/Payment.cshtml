@@ -45,13 +45,23 @@
             padding-bottom: 1em !important;
         }
 
-        .payment-actions {
-            bottom: 0;
-            left: 0px;
-            width: 100vw;
-            padding-left: 60px;
-            background-color: white;
-        }
+        .sidebar + .content-area .payment-actions {
+			width: calc(100vw - 300px);
+			margin-left: 300px;
+			bottom: 0;
+			left: 0;
+			background-color: white;
+			transition: all 0.4s;
+		}
+
+		.sidebar.collapsed + .content-area .payment-actions {
+			width: calc(100vw - 60px);
+			margin-left: 60px;
+			bottom: 0;
+			left: 0;
+			background-color: white;
+			transition: all 0.4s;
+		}
 
         .button-border {
             border: 1px solid #D3D4D7;

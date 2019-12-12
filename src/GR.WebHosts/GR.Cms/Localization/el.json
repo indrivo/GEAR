@@ -835,5 +835,7 @@
   "system_change_roles": "Αλλάζουν ρόλους",
   "start_state": "Έναρξη μέλος",
   "next_state": "Επόμενη κατάσταση",
-  "change_state": "Αλλαγή μέλους"
+  "change_state": "Αλλαγή μέλους",
+  "system_change_roles": "Αλλάζουν ρόλους",
+  "system_notifications_clear_all": "Σαφή όλα"
 }

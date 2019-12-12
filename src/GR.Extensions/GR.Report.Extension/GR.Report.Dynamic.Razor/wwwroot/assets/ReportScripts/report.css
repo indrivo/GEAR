@@ -135,3 +135,66 @@ table.pivot .inf::after {
 .card-header {
 	border-bottom: 0;
 }
+
+#select2-tableSelect-results ul.select2-results__options--nested {
+    columns: 4;
+}
+
+.multilevel-collapse .select2 {
+    width: 100% !important;
+}
+
+.multilevel-collapse .card .collapse {
+    padding-right: 20px;
+}
+
+    .multilevel-collapse .card .collapse .card-header {
+        padding-right: 0px !important;
+    }
+
+#report_tables .select2 {
+    width: calc(100% - 20px) !important;
+}
+
+    #report_tables .select2 .select2-selection {
+        padding-right: 50px;
+    }
+
+.mw-180 {
+    min-width: 180px;
+    justify-content: center;
+}
+
+.fw-500 {
+    font-weight: 500 !important;
+}
+
+.sidebar + .content-area .report-actions {
+    width: calc(100vw - 300px);
+    margin-left: 300px;
+    bottom: 0;
+    left: 0;
+    background-color: white;
+    transition: all 0.4s;
+}
+
+.sidebar.collapsed + .content-area .report-actions {
+    width: calc(100vw - 60px);
+    margin-left: 60px;
+    bottom: 0;
+    left: 0;
+    background-color: white;
+    transition: all 0.4s;
+}
+
+.button-border {
+    border: 1px solid #D3D4D7;
+    border-radius: 4px;
+    color: #707070;
+    background-color: transparent;
+}
+
+    .button-border:hover {
+        border: 1px solid #707070;
+        color: #404040;
+    }

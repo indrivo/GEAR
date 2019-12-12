@@ -835,5 +835,7 @@
   "system_change_roles": "Role się zmieniają ",
   "start_state": "Stan początkowy",
   "next_state": "Następujący stan",
-  "change_state": "Zmiana stanu "
+  "change_state": "Zmiana stanu ",
+  "system_change_roles": "Role się zmieniają ",
+  "system_notifications_clear_all": "Jasne wszystko"
 }
