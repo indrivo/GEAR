@@ -832,5 +832,8 @@
   "coments": "Kommentare",
   "add_document_version": "Add Dokument-version",
   "is_major_version": "Ist der major-version",
-  "system_change_roles": "Rollen ändern"
+  "system_change_roles": "Rollen ändern",
+  "delete_permanent": "Löschen dauerhaft",
+  "system_delete_permanent_multiple_entries": "Sind Sie sicher, dass Sie die ausgewählten Datensätze dauerhaft löschen?",
+  "system_delete_multiple_confirm": "Für immer löschen"
 }

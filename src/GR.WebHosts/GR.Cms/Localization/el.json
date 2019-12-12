@@ -832,5 +832,8 @@
   "coments": "Σχόλια",
   "add_document_version": "Προσθήκη εγγράφου έκδοση",
   "is_major_version": "Είναι σημαντική έκδοση",
-  "system_change_roles": "Αλλάζουν ρόλους"
+  "system_change_roles": "Αλλάζουν ρόλους",
+  "delete_permanent": "Μόνιμη διαγραφή",
+  "system_delete_permanent_multiple_entries": "Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά τα επιλεγμένα αρχεία;",
+  "system_delete_multiple_confirm": "Για να καταργήσετε μόνιμα"
 }

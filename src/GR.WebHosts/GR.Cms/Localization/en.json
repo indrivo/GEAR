@@ -832,5 +832,8 @@
   "coments": "Comments",
   "add_document_version": "Add document version",
   "is_major_version": "Is major version",
-  "system_change_roles": "Change roles"
+  "system_change_roles": "Change roles",
+  "delete_permanent": "Delete permanent",
+  "system_delete_permanent_multiple_entries": "Are you sure you want to permanently delete the selected record?",
+  "system_delete_multiple_confirm": "Permanently delete"
 }

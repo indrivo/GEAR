@@ -832,5 +832,8 @@
   "coments": "评论意见",
   "add_document_version": "添加文件的版本",
   "is_major_version": "是主要的版本",
-  "system_change_roles": "改变角色"
+  "system_change_roles": "改变角色",
+  "delete_permanent": "删除永久性的",
+  "system_delete_permanent_multiple_entries": "你确定你想要永久删除选择的记录？",
+  "system_delete_multiple_confirm": "删除永久地"
 }

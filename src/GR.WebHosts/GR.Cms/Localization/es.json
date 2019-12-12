@@ -832,5 +832,8 @@
   "coments": "Comentarios",
   "add_document_version": "Agregar versión de documento",
   "is_major_version": "Es la versión principal",
-  "system_change_roles": "Cambio de roles"
+  "system_change_roles": "Cambio de roles",
+  "delete_permanent": "Eliminar permanente",
+  "system_delete_permanent_multiple_entries": "Está seguro de que desea eliminar de forma permanente los registros seleccionados?",
+  "system_delete_multiple_confirm": "Eliminar para siempre"
 }

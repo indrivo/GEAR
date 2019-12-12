@@ -832,5 +832,8 @@
   "coments": "Komentarze",
   "add_document_version": "Dodaj wersja dokumentu ",
   "is_major_version": "Jest to podstawowa wersja",
-  "system_change_roles": "Role się zmieniają "
+  "system_change_roles": "Role się zmieniają ",
+  "delete_permanent": "Usuwanie stałego",
+  "system_delete_permanent_multiple_entries": "Czy na pewno chcesz trwale usunąć wybrane wpisy?",
+  "system_delete_multiple_confirm": "Trwale usunąć"
 }

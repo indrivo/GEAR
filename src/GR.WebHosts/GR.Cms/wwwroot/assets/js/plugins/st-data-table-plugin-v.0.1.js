@@ -753,6 +753,54 @@ TableBuilder.prototype.deleteSelectedRowsHandler = function (ctx) {
 };
 
 /**
+ * Delete items forever
+ * @param {any} ctx
+ */
+TableBuilder.prototype.deleteSelectedRowsPermanentHandler = function (ctx) {
+    const scope = this;
+    const tableId = ctx.table().node().id;
+    if (!tableId) {
+        return scope.toast.notify({ heading: "Something did not work" });
+    }
+    const selected = ctx.rows({ selected: true }).data();
+
+    if (selected.length === 0)
+        return this.toast.notify({ heading: window.translate("delete_no_selected_items"), icon: "warning" });
+
+    swal({
+        title: window.translate("system_delete_permanent_multiple_entries"),
+        text: "",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: window.translate("system_delete_multiple_confirm"),
+        cancelButtonText: window.translate("cancel")
+    }).then((result) => {
+        if (result.value) {
+
+            const viewModelId = $(`#${tableId}`).attr("db-viewmodel");
+            if (selected.length > 0) {
+                const toDeleteItems = Array.from(selected.map(x => {
+                    return x.id;
+                }));
+
+                this.deletePermanentApiAsync(ctx, toDeleteItems, viewModelId)
+                    .then(() => {
+                        ctx.ajax.reload();
+                        scope.toast.notify({ heading: window.translate("items_deleted"), icon: "success" });
+                    }).catch(e => {
+                        ctx.ajax.reload();
+                        scope.toast.notifyErrorList(e);
+                    });
+            } else {
+                scope.toast.notify({ heading: window.translate("delete_no_selected_items"), icon: "warning" });
+            }
+        }
+    });
+};
+
+/**
  * Delete items from api
  * @param {any} ctx
  * @param {any} data
@@ -776,6 +824,33 @@ TableBuilder.prototype.deleteRestoreApiAsync = function (ctx, data, viewModelId,
             }).catch(err => {
                 reject();
                 console.warn(err);
+            });
+    });
+};
+
+
+/**
+ * Delete items from api
+ * @param {any} ctx
+ * @param {any} data
+ * @param {any} viewModelId
+ * @param {any} mode
+ */
+TableBuilder.prototype.deletePermanentApiAsync = function (ctx, data, viewModelId) {
+    return new Promise((resolve, reject) => {
+        window.loadAsync("/PageRender/DeletePermanentItemsFromDynamicEntity",
+            {
+                ids: data,
+                viewModelId: viewModelId
+            },
+            "post").then(req => {
+                if (req.is_success) {
+                    resolve();
+                } else {
+                    reject(req.error_keys);
+                }
+            }).catch(err => {
+                reject(err);
             });
     });
 };
@@ -871,7 +946,6 @@ TableBuilder.prototype.dom = '<"CustomizeColumns">lBfrtip';
  */
 TableBuilder.prototype.replaceTableSystemTranslations = function () {
     const customReplace = new Array();
-    //customReplace.push({ Key: "propName", Value: "value" });
     const searialData = JSON.stringify(customReplace);
     return searialData;
 };

@@ -38,7 +38,6 @@ namespace GR.Core.Razor.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagMode = TagMode.StartTagAndEndTag;
-            //output.TagName = "div";
             string docInfo = null;
             var addInfo = new StringBuilder();
             var template = TemplateManager.GetTemplateBody(Templates.ListTemplate);
@@ -92,50 +91,7 @@ namespace GR.Core.Razor.TagHelpers
                 .GetTemplateBody(Templates.ListJsScriptTemplate,
                     TemplateType.Js);
             if (!template.IsSuccess) return container.ToString();
-            var actions = new StringBuilder();
-            if (AspFor.HasActions && AspFor.ListActions.Any())
-            {
-                var renderColumnTemplate = TemplateManager.GetTemplateBody(Templates.ListRenderColumnJsTemplate, TemplateType.Js);
-                if (renderColumnTemplate.IsSuccess)
-                {
-                    var buttons = new StringBuilder();
-                    var buttonTemplate = TemplateManager.GetTemplateBody(Templates.ATemplate);
-                    if (buttonTemplate.IsSuccess)
-                    {
-                        foreach (var action in AspFor.ListActions)
-                        {
-                            var attrs = new StringBuilder();
-                            if (action.IsJsEvent)
-                            {
-                                if (action.ButtonEvent != null)
-                                {
-                                    attrs.Append(new HtmlAttribute(action.ButtonEvent.GetEvent, action.ButtonEvent.JsEventHandler));
-                                }
-                            }
-
-                            if (action.ActionParameters.Any())
-                            {
-                                var actionsParams = new StringBuilder();
-                                action.ActionParameters.ToList().ForEach(x => { actionsParams.AppendLine($"{x}&"); });
-                                action.Url = $"{action.Url}?{actionsParams}";
-                            }
-
-                            var actionContent = buttonTemplate.Result
-                                .Inject(new Dictionary<string, string>
-                                {
-                                    { "ButtonBootstrapStyle", action.ButtonType.ToString().ToLower() },
-                                    { "Attributes", attrs.ToString() }
-                                })
-                                .Inject(action);
-                            buttons.AppendLine(actionContent);
-                        }
-                    }
-
-                    actions.AppendLine(renderColumnTemplate
-                        .Result
-                        .Inject(new Dictionary<string, string> { { "Buttons", buttons.ToString() } }));
-                }
-            }
+            var actions = AspFor.ListActionDrawer.Render(AspFor);
             var renderColumns = new StringBuilder();
             foreach (var renderItem in AspFor.RenderColumns)
             {
@@ -172,7 +128,7 @@ namespace GR.Core.Razor.TagHelpers
             {
                 { "DataApi", AspFor.Api.Url },
                 { "Method", AspFor.Api.ApiType.ToString().ToLower() },
-                { "ListActionsContainer", actions.ToString() },
+                { "ListActionsContainer", actions },
                 { "RenderColumnsContainer", renderColumns.ToString() }
             });
             container.Append(content);

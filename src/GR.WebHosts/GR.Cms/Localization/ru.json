@@ -832,5 +832,8 @@
   "coments": "Комментарии",
   "add_document_version": "Добавить версия документа ",
   "is_major_version": "Это основная версия",
-  "system_change_roles": "Роли меняются "
+  "system_change_roles": "Роли меняются ",
+  "delete_permanent": "Удаление постоянного",
+  "system_delete_permanent_multiple_entries": "Вы уверены, что хотите навсегда удалить выбранные записи?",
+  "system_delete_multiple_confirm": "Навсегда удалить"
 }

@@ -832,5 +832,8 @@
   "coments": "Коментарі",
   "add_document_version": "Додати версія документа ",
   "is_major_version": "Це основна версія",
-  "system_change_roles": "Ролі змінюються "
+  "system_change_roles": "Ролі змінюються ",
+  "delete_permanent": "Видалення постійного",
+  "system_delete_permanent_multiple_entries": "Ви впевнені, що хочете назавжди видалити вибрані записи?",
+  "system_delete_multiple_confirm": "Назавжди видалити"
 }

@@ -832,5 +832,8 @@
   "coments": "Commenti",
   "add_document_version": "Aggiungere versione documento",
   "is_major_version": "È la versione principale",
-  "system_change_roles": "Il cambio di ruoli"
+  "system_change_roles": "Il cambio di ruoli",
+  "delete_permanent": "Elimina permanente",
+  "system_delete_permanent_multiple_entries": "Sei sicuro di voler eliminare definitivamente le voci selezionate?",
+  "system_delete_multiple_confirm": "Eliminare definitivamente"
 }

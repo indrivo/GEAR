@@ -832,5 +832,8 @@
   "coments": "Commentaires",
   "add_document_version": "Ajouter un document version",
   "is_major_version": "Est version majeure",
-  "system_change_roles": "Changer les rôles"
+  "system_change_roles": "Changer les rôles",
+  "delete_permanent": "Supprimer permanent",
+  "system_delete_permanent_multiple_entries": "Vous êtes sûr que vous voulez supprimer définitivement les enregistrements sélectionnés?",
+  "system_delete_multiple_confirm": "Supprimer définitivement"
 }

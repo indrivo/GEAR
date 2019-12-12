@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using GR.Core.Helpers;
 using GR.Core.Razor.Enums;
+using GR.Core.Razor.TagHelpers.Drawers;
 using GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels;
 using GR.Core.Razor.TagHelpersStructures;
 
@@ -34,6 +35,7 @@ namespace GR.MultiTenant.Razor.Helpers
                 {
                     new InlineStyleAttribute("width", "100%")
                 },
+                ListActionDrawer = new DropDownListActionDrawer(),
                 RenderColumns = new List<ListRenderColumn>
                 {
                     new ListRenderColumn(_localizer["name"], "userName"),

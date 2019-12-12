@@ -832,5 +832,8 @@
   "coments": "Opmerkingen",
   "add_document_version": "Voeg versie van het document",
   "is_major_version": "Is de grote versie",
-  "system_change_roles": "Wijzigen van rollen"
+  "system_change_roles": "Wijzigen van rollen",
+  "delete_permanent": "Permanent verwijderen",
+  "system_delete_permanent_multiple_entries": "Weet u zeker dat u permanent wilt verwijderen van de geselecteerde record?",
+  "system_delete_multiple_confirm": "Permanent verwijderen"
 }

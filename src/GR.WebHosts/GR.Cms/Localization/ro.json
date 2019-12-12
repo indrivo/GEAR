@@ -832,5 +832,8 @@
   "coments": "Comentarii",
   "add_document_version": "Adăugați versiune document",
   "is_major_version": "Este versiune majoră",
-  "system_change_roles": "Schimba rolurile"
+  "system_change_roles": "Schimba rolurile",
+  "delete_permanent": "Șterge permanent",
+  "system_delete_permanent_multiple_entries": "Sunteți sigur că doriți să eliminați definitiv înregistrările selectate?",
+  "system_delete_multiple_confirm": "Elimina definitiv"
 }
