@@ -815,5 +815,6 @@
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "Audit Plan",
   "system_audit_mission": "Mission Audit ",
-  "system_change_roles": "Rollen ändern"
+  "system_change_roles": "Rollen ändern",
+  "system_notifications_clear_all": "Deaktivieren Sie alle"
 }

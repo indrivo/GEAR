@@ -815,5 +815,6 @@
   "system_workflow_builder": "Flux de lucru constructor",
   "system_audit_plan": "Planul de audit",
   "system_audit_mission": "Misiunea de audit ",
-  "system_change_roles": "Schimba rolurile"
+  "system_change_roles": "Schimba rolurile",
+  "system_notifications_clear_all": "Ștergele pe toate"
 }

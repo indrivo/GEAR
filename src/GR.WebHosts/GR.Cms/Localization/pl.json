@@ -815,5 +815,6 @@
   "system_workflow_builder": "Proces roboczy budowniczy",
   "system_audit_plan": "Plan audytu",
   "system_audit_mission": "Zadaniem audytu ",
-  "system_change_roles": "Role się zmieniają "
+  "system_change_roles": "Role się zmieniają ",
+  "system_notifications_clear_all": "Jasne wszystko"
 }

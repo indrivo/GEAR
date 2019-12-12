@@ -815,5 +815,6 @@
   "system_workflow_builder": "Générateur de flux de travaux",
   "system_audit_plan": "Le plan d'audit",
   "system_audit_mission": "La mission d'audit ",
-  "system_change_roles": "Changer les rôles"
+  "system_change_roles": "Changer les rôles",
+  "system_notifications_clear_all": "Effacer tous les"
 }

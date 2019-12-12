@@ -815,5 +815,6 @@
   "system_workflow_builder": "Workflow builder",
   "system_audit_plan": "Το σχέδιο ελέγχου",
   "system_audit_mission": "Αποστολή ελέγχου ",
-  "system_change_roles": "Αλλάζουν ρόλους"
+  "system_change_roles": "Αλλάζουν ρόλους",
+  "system_notifications_clear_all": "Σαφή όλα"
 }

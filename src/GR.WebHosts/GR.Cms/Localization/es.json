@@ -815,5 +815,6 @@
   "system_workflow_builder": "Constructor de flujo de trabajo",
   "system_audit_plan": "El plan de auditoría",
   "system_audit_mission": "La misión de la auditoría ",
-  "system_change_roles": "Cambio de roles"
+  "system_change_roles": "Cambio de roles",
+  "system_notifications_clear_all": "Borrar todos los"
 }
