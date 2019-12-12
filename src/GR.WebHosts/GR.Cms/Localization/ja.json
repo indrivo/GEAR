@@ -839,5 +839,9 @@
   "system_gr_auditor": "監査役",
   "system_gr_description": "説明",
   "system_gr_recommendation": "推薦",
-  "audit_mission_details": "監査ミッション"
+  "audit_mission_details": "監査ミッション",
+  "system_gr_beginning": "始",
+  "system_gr_end": "終了",
+  "system_gr_measure_unit": "計測ユニット",
+  "system_gr_period": "期間"
 }

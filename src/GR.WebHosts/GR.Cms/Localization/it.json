@@ -839,5 +839,9 @@
   "system_gr_auditor": "Sindaco",
   "system_gr_description": "Descrizione",
   "system_gr_recommendation": "Raccomandazione",
-  "audit_mission_details": "Missioni di verifica"
+  "audit_mission_details": "Missioni di verifica",
+  "system_gr_beginning": "Inizio",
+  "system_gr_end": "Fine",
+  "system_gr_measure_unit": "Unità di misura",
+  "system_gr_period": "Periodo"
 }

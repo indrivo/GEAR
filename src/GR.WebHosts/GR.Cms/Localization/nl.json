@@ -839,5 +839,9 @@
   "system_gr_auditor": "Accountant",
   "system_gr_description": "Beschrijving",
   "system_gr_recommendation": "Aanbeveling",
-  "audit_mission_details": "Audit-missies"
+  "audit_mission_details": "Audit-missies",
+  "system_gr_beginning": "Begin",
+  "system_gr_end": "Einde",
+  "system_gr_measure_unit": "Eenheid",
+  "system_gr_period": "Periode"
 }

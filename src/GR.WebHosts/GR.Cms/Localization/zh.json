@@ -839,5 +839,9 @@
   "system_gr_auditor": "审计员",
   "system_gr_description": "描述",
   "system_gr_recommendation": "建议",
-  "audit_mission_details": "审计的特派团"
+  "audit_mission_details": "审计的特派团",
+  "system_gr_beginning": "开始",
+  "system_gr_end": "结束",
+  "system_gr_measure_unit": "测量单位",
+  "system_gr_period": "周期"
 }

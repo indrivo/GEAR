@@ -839,5 +839,9 @@
   "system_gr_auditor": "Audytor",
   "system_gr_description": "Opis",
   "system_gr_recommendation": "Zalecenia",
-  "audit_mission_details": "Misji audytu "
+  "audit_mission_details": "Misji audytu ",
+  "system_gr_beginning": "Początek",
+  "system_gr_end": "Koniec",
+  "system_gr_measure_unit": "Jednostka miary ",
+  "system_gr_period": "Okres"
 }

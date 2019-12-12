@@ -839,5 +839,9 @@
   "system_gr_auditor": "Аудитор",
   "system_gr_description": "Опис",
   "system_gr_recommendation": "Рекомендації",
-  "audit_mission_details": "Місії аудиту "
+  "audit_mission_details": "Місії аудиту ",
+  "system_gr_beginning": "Початок",
+  "system_gr_end": "Кінець",
+  "system_gr_measure_unit": "Одиниця виміру ",
+  "system_gr_period": "Період"
 }
