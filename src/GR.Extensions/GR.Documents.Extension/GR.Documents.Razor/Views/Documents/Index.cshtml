@@ -1,55 +1,139 @@
-@model IEnumerable<GR.Documents.Abstractions.ViewModels.DocumentViewModels.DocumentViewModel>
-
+@using GR.Core.Razor.Enums
 @{
-	ViewData["Title"] = "Documents";
+	ViewData["Title"] = Localizer["system_documents"];
 }
 
-<div class="common-control">
-	<div class="control-area justify-content-end">
-		<div class="dropdown">
-			<button type="button" class="btn btn-link text-black-50" data-toggle="dropdown"
-					aria-haspopup="true" aria-expanded="false" id="visualize">
-				<span class="material-icons mr-1 align-middle">add_circle_outline</span>
-				<span class="align-middle button-label">Adaugă</span>
-				<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
-			</button>
-			<div class="dropdown-menu" aria-labelledby="visualize">
-				@*<a class="dropdown-item" href="#">Document SMSI</a>
-					<a class="dropdown-item" href="#">Document Extern</a>
-					<a class="dropdown-item" href="#">Link</a>*@
-			</div>
-		</div>
+@{
+	ViewData["Title"] = Localizer["system_documents"];
+	var conf = new ListTagHelperModel
+	{
+		Title = Localizer["system_documents"],
+		ListIdentifier = "document_Categories",
+		Api = new ListApiConfigurationViewModel
+		{
+			Url = Url.Action("ListDocuments", "Documents")
+		},
+		StyleAttributes = new List<InlineStyleAttribute>
+		{
+			new InlineStyleAttribute("white-space", "pre-wrap")
 
-		<button type="button" class="btn btn-link text-black-50" onclick="getAllChechedDeleteDocuments()">
-			<span class="material-icons mr-1 align-middle">clear</span>
-			<span class="align-middle button-label">Șterge</span>
-		</button>
-	</div>
-</div>
+		},
+		RenderColumns = new List<ListRenderColumn>
+		{
 
+			new ListRenderColumn(Localizer["created"], "created"),
+			new ListRenderColumn(Localizer["changed"], "changed"),
+			new ListRenderColumn(Localizer["author"], "author"),
 
+			new ListRenderColumn(Localizer["system_title"], "title"),
+			new ListRenderColumn(Localizer["system_document_code"], "documentCode"),
+			new ListRenderColumn(Localizer["description"], "description")
+			{
 
-<table id="data-table" class="table table-striped mb-4 bg-white table-bordered">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Title</th>
-			<th>Document/Description</th>
-			<th>File</th>
-			<th>Group</th>
-			<th>Type</th>
-			<th>Version</th>
-			<th>Is delete</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody id="tableListDocuments">
-		
-	</tbody>
+				HasTemplate = true,
+				Template = @"{data: null,
+							render: function(data, type, row, meta){
 
-</table>
+								return `<div style=""white-space: pre-wrap;"">${row.description}</div>`;
+							}
+						},"
+			},
+			new ListRenderColumn(Localizer["file"], "fileName"),
+			new ListRenderColumn(Localizer["group"], "group"),
+			new ListRenderColumn(Localizer["type"], "documentType.name"),
+			new ListRenderColumn(Localizer["iso_category"], "documentCategory.name"),
+			new ListRenderColumn(Localizer["version"], "lastVersion"),
+			new ListRenderColumn(Localizer["system_status"], "currentStateName")
+			{
+				HasTemplate = true,
+				Template = @"{data: null,
+							render: function(data, type, row, meta){
 
+							   if(row.currentStateName != null && row.currentStateName != 'null')
+									return `<div id='DocumentState_${row.lastVersionId}' onclick='ChangeState(""${row.lastVersionId}"")'>${row.currentStateName}</div>`;
 
+								return '';
+							}
+						},"
+			},
+			new ListRenderColumn(Localizer["id_deleted"], "isDeleted")
+			{
+				BodySystemTemplate = RenderCellBodySystemTemplate.Boolean
+			},
+
+		},
+		HeadButtons = new List<UrlTagHelperViewModel>
+		{
+			new UrlTagHelperViewModel
+			{
+				AspAction = "",
+				AspController = "",
+				ButtonName = Localizer["add_document"],
+				HtmlAttributes = new List<HtmlAttribute>
+				{
+					new HtmlAttribute("Id", "addDocument"),
+					new HtmlAttribute("onclick", "AddNewDocument()")
+				}
+			}
+		},
+		HasActions = true,
+		ListActions = new List<ListActionViewModel>
+		{
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["edit"],
+				ButtonType = BootstrapButton.Info,
+				IsJsEvent = true,
+				ButtonEvent = new JsActionButtonEvent
+				{
+					JsEvent = JsEvent.OnClick,
+					JsEventHandler = "EditDocument('${row.id}');"
+				},
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["delete"],
+				IsJsEvent = true,
+				ButtonEvent = new JsActionButtonEvent
+				{
+					JsEvent = JsEvent.OnClick,
+					JsEventHandler = "deleteDocuments('${row.id}');"
+				},
+				ButtonType = BootstrapButton.Danger,
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name = Localizer["all_versions"],
+				IsJsEvent = true,
+				ButtonEvent = new JsActionButtonEvent
+				{
+					JsEvent = JsEvent.OnClick,
+					JsEventHandler = "getDocumentVersions('${row.id}');"
+				},
+				ButtonType = BootstrapButton.Info,
+			},
+			new ListActionViewModel
+			{
+				HasIcon = false,
+				Name =  Localizer["add_version"],
+				IsJsEvent = true,
+				ButtonEvent = new JsActionButtonEvent
+				{
+					JsEvent = JsEvent.OnClick,
+					JsEventHandler = "AddNewDocumentVersions('${row.id}');"
+				},
+				ButtonType = BootstrapButton.Info,
+			},
+		},
+		Documentation = "This tab allow to manage your document category"
+	};
+
+}
+
+<JList asp-for="@conf"></JList>
 
 
 
@@ -59,68 +143,91 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">@Localizer["add_document"]</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
-				<form id="formAddDocument" role="form" enctype="multipart/form-data">
-					<input id="DocumentTypeId" name="DocumentTypeId" class="form-control" type="hidden" />
+			<form id="formAddDocument" role="form" enctype="multipart/form-data">
+				<div class="modal-body">
+					<input id="DocumentCategoryId" name="DocumentCategoryId" class="form-control" type="hidden" />
 					<div class="form-body">
 						<div class="row p-t-20">
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Document Code</label>
-									<input name="DocumentCode" class="form-control" value="" />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Tile</label>
-									<input name="Tile" class="form-control" value="" required />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Description</label>
-									<textarea name="Description" class="form-control ckeditor" value=""></textarea>
 
-								</div>
-							</div>
 							<div class="col-md-12">
-								<div class="form-group">
-									<label>Group</label>
-									<input name="Group" class="form-control" value="" />
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>@Localizer["document_category"]</label>
+										<select asp-items="ViewBag.ListDocumentCategory" class="form-control" id="AddDocumentSelectCategoryId" required>
+											<option value="">@Localizer["no_value_selected"]</option>
+										</select>
+									</div>
 								</div>
 							</div>
-							<div class="col-md-12" id="UrlDocument">
-								<div class="form-group">
-									<label>Url</label>
-									<input id="UrlDocumentInput" name="Url" class="form-control" value="" />
+
+							<div id="blockAddDocuments" class="col-md-12" style="display: none">
+								<div class="col-md-12" id="DocumentTypeBlock">
+									<div class="form-group">
+										<label>@Localizer["system_document_type"]</label>
+										<select name="DocumentTypeId" asp-items="ViewBag.ListDocumentType" class="form-control">
+											<option value=""></option>
+										</select>
+									</div>
 								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Comments</label>
-									<textarea name="Comments" class="form-control ckeditor" value=""></textarea>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>@Localizer["system_document_code"]</label>
+										<input id="DocumentCode" name="DocumentCode" class="form-control" value="" maxlength="20" />
+									</div>
 								</div>
-							</div>
-							<div class="col-md-12" id="FileInputDocument">
-								<div class="form-group">
-									<label>File</label>
-									<input id="fileinput" name="File" class="dropify" type="file" />
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>@Localizer["system_title"]</label>
+										<input name="Title" class="form-control" value="" required />
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>@Localizer["description"]</label>
+										<textarea name="Description" class="form-control ckeditor" value=""></textarea>
+
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>@Localizer["group"]</label>
+										<input name="Group" class="form-control" value="" />
+									</div>
+								</div>
+								<div class="col-md-12" id="UrlDocument">
+									<div class="form-group">
+										<label>@Localizer["url"]</label>
+										<input id="UrlDocumentInput" name="Url" class="form-control" value="" />
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>@Localizer["iso_active_comments"]</label>
+										<textarea name="Comments" class="form-control ckeditor" value=""></textarea>
+									</div>
+								</div>
+								<div class="col-md-12" id="FileInputDocument">
+									<div class="form-group">
+										<label>@Localizer["file"]</label>
+										<input id="fileinput" name="File" class="dropify" type="file" onchange="ValidateSize(this)" />
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary">Save changes</button>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
+					
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_close"]</button>
+					<button type="submit" class="btn btn-primary">@Localizer["save"]s</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -132,7 +239,7 @@
 	<div class="modal-dialog modal-dialog-centered  modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">@Localizer["all_versions"]</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -141,13 +248,13 @@
 				<table id="DocumentVersionTabe-table" class="table table-striped mb-4 bg-white table-bordered">
 					<thead>
 						<tr>
-							<th>Title</th>
-							<th>Coments</th>
-							<th>File</th>
-							<th>Version</th>
+							<th>@Localizer["iso_active_comments"]</th>
+							<th>@Localizer["file"]</th>
+							<th>@Localizer["version"]</th>
+							<th>@Localizer["system_status"]</th>
 						</tr>
 					</thead>
-					<tbody id="DocumntVersionList">
+					<tbody id="DocumentVersionList">
 					</tbody>
 
 				</table>
@@ -167,13 +274,14 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+				<h5 class="modal-title" id="exampleModalLongTitle">@Localizer["add_document_version"]</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
-				<form id="formAddDocumentVersion" role="form" enctype="multipart/form-data">
+			<form id="formAddDocumentVersion" role="form" enctype="multipart/form-data">
+				<div class="modal-body">
+
 					<input id="DocumentId" name="DocumentId" class="form-control" type="hidden" />
 					<div class="form-body">
 						<div class="row p-t-20">
@@ -181,34 +289,33 @@
 								<div class="form-group">
 									<div class="checkbox-container">
 										<div class="custom-control custom-checkbox">
-											<input type="checkbox" name="IsMajorVersion" class="custom-control-input " id="IsMajorVersion"/>
-											<label class="custom-control-label" for="IsMajorVersion">Is Major version </label>
+											<input type="checkbox" name="IsMajorVersion" class="custom-control-input " id="IsMajorVersion" />
+											<label class="custom-control-label" for="IsMajorVersion">@Localizer["is_major_version"] </label>
 										</div>
 									</div>
 								</div>
-								
+
 							</div>
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Comments</label>
+									<label>@Localizer["coments"]</label>
 									<textarea name="Comments" class="form-control ckeditor" value=""></textarea>
 								</div>
 							</div>
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>File</label>
-									<input id="NewVersionFileInput" name="File" class="dropify" type="file" required />
+									<label>@Localizer["file"]</label>
+									<input id="NewVersionFileInput" name="File" type="file" onchange="ValidateSize(this)" required />
 								</div>
 							</div>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary">Save changes</button>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_close"]</button>
+					<button type="submit" class="btn btn-primary">@Localizer["save"]</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -220,51 +327,111 @@
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="exampleModalLongTitle">Add document</h5>
+				<h5 class="modal-title">@Localizer["edit"]</h5>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
-				<form id="formEditDocument" role="form" enctype="multipart/form-data">
-					<input id="DocumenEdittId" name="DocumentId" class="form-control" type="hidden" />
-					<input id="DocumenTypeId" name="DocumentTypeId" class="form-control" type="hidden" />
+			<form id="formEditDocument" role="form" enctype="multipart/form-data">
+				<div class="modal-body">
+
+					<input id="DocumentEditId" name="DocumentId" class="form-control" type="hidden" />
 					<div class="form-body">
 						<div class="row p-t-20">
+
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>@Localizer["type"]</label>
+									<select name="DocumentTypeId" asp-items="ViewBag.ListDocumentType" class="form-control" id="DocumentTypeId">
+										<option value=""></option>
+									</select>
+								</div>
+							</div>
+
 							<div class="col-md-12">
 								<div class="form-group">
 									<label>Document Code</label>
-									<input id="DocumentCode" name="DocumentCode" class="form-control" value="" />
+									<input id="DocumentCodeEdit" name="DocumentCode" class="form-control" value="" maxlength="20" />
 								</div>
 							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Tile</label>
-									<input id="Tile" name="Tile" class="form-control" value="" required />
-								</div>
-							</div>
-							<div class="col-md-12">
-								<div class="form-group">
-									<label>Description</label>
-									<textarea id="Description" name="Description" class="form-control ckeditor" value=""></textarea>
 
-								</div>
-							</div>
 							<div class="col-md-12">
 								<div class="form-group">
-									<label>Group</label>
+									<label>@Localizer["system_title"]</label>
+									<input id="Title" name="Title" class="form-control" value="" required />
+								</div>
+							</div>
+
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>@Localizer["group"]</label>
 									<input id="Group" name="Group" class="form-control" value="" />
 								</div>
 							</div>
+
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>@Localizer["description"]</label>
+									<textarea id="Description" name="Description" class="form-control ckeditor" value=""></textarea>
+								</div>
+							</div>
+
+
 						</div>
 					</div>
-					<button type="submit" class="btn btn-primary">Edit</button>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["system_close"]</button>
+					<button type="submit" class="btn btn-primary">@Localizer["edit"]</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<!-- Modal change document SMSI status -->
+<div id="ChangeDocumentStatus" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header">
+				<h5 class="modal-title">@Localizer["change_state"]</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+
+			<div class="modal-body">
+				<form id="formChangeDocumentState" role="form" enctype="multipart/form-data">
+					<div id="CurentStatus">
+
+					</div>
+					<div class="col-md-12">
+						<div class="form-group">
+							<label>@Localizer["iso_active_comments"]</label>
+							<textarea id="CommentsChangeState" name="Comments" class="form-control ckeditor" value=""></textarea>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-primary">@Localizer["change_state"]</button>
 				</form>
+
+
+				<table class="table table-striped mb-4 mt-4 bg-white table-bordered">
+					<thead>
+					<tr>
+						<th>Created by</th>
+						<th>@Localizer["iso_active_comments"]</th>
+						<th>@Localizer["start_state"]</th>
+						<th>@Localizer["next_state"]</th>
+					</tr>
+					</thead>
+					<tbody id="DocumentChangeStatusHistory">
+					</tbody>
+
+				</table>
 			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
-			</div>
+
 		</div>
 	</div>
 </div>
@@ -275,89 +442,89 @@
 	<script type="text/javascript">
 
 		const toast = new ToastNotifier();
+		var newState = new FormData();
 
 		$(document).ready(function() {
-			AddListDocumentType();
-			GetAllDocuments();
 		});
 
-		function AddListDocumentType() {
-
-			$.ajax({
-				url: '/DocumentTypes/GetAllDocumetTypesAsync',
-				method: 'get',
-				contentType: "application/json; charset=utf-8",
-				success: function(data) {
-					if (data.is_success) {
-
-						$(".dropdown-menu").empty();
-						$.each(data.result,
-							function(index, value) {
-
-								var html =
-									`<a class="dropdown-item" href="#" onclick="addNewDocument('${value.id}','${value
-										.code}')" >${value.name}</a>`;
-								$(".dropdown-menu").append(html)
-							});
-					} else {
-						toast.notifyErrorList(data.error_keys);
-					}
-				},
-				error: function(error) {
-					console.log(error);
-				}
-			});
-		}
-
-		function addNewDocument(DocumentTypeId, typeCode) {
-			if (typeCode == 3) {
-				$("#UrlDocument").show();
-				$("#UrlDocumentInput").attr('required', 'required');
-
-				$("#FileInputDocument").hide();
-				$("#fileinput").removeAttr("required");
-			} else {
-				$("#FileInputDocument").show();
-				$("#fileinput").attr('required', 'required');
-
-				$("#UrlDocument").hide();
-				$("#UrlDocumentInput").removeAttr("required");
-			}
+		function AddNewDocument() {
 
 			$('#AddDocumentModal').modal('show');
-			$("#DocumentTypeId").val(DocumentTypeId);
+
 		}
 
-		function AddNewDocumntVersions(documentId) {
+		$('#AddDocumentSelectCategoryId').change(function() {
+
+			const categoryId = $(this).val().split('_')[0];
+			const categoryCode = $(this).val().split("_").pop();
+			$("#DocumentCategoryId").val(categoryId);
+
+
+			switch (categoryCode) {
+			case '1':
+				$("#UrlDocument").hide();
+				$("#DocumentTypeBlock").show();
+				$("#FileInputDocument").show();
+				$("#blockAddDocuments").show();
+
+				$('#UrlDocumentInput').removeAttr('required');
+				$('#fileinput').attr('required', 'required');
+				break;
+			case '2':
+				$("#UrlDocument").hide();
+				$("#DocumentTypeBlock").hide();
+				$("#FileInputDocument").show();
+				$("#blockAddDocuments").show();
+
+				$('#UrlDocumentInput').removeAttr('required');
+				$('#fileinput').attr('required', 'required');
+				break;
+			case '3':
+				$("#UrlDocument").show();
+				$("#DocumentTypeBlock").hide();
+				$("#FileInputDocument").hide();
+				$("#blockAddDocuments").show();
+
+				$('#fileinput').removeAttr('required');
+				$('#UrlDocumentInput').attr('required', 'required');
+				break;
+			default:
+				$("#blockAddDocuments").hide();
+			}
+
+
+		});
+
+		function AddNewDocumentVersions(documentId) {
 			$('#AddNewVersionModal').modal('show');
 			$("#DocumentId").val(documentId);
 		}
 
-		function getDocumntVersions(documentId) {
+		function getDocumentVersions(documentId) {
 			$.ajax({
-				url: '/Documents/GetAllDocumentVersion',
+				url: '/api/Documents/GetAllDocumentVersion',
 				method: 'get',
 				contentType: "application/json; charset=utf-8",
 				data: { documentId: documentId },
 				success: function(data) {
 					if (data.is_success) {
 
-						$("#DocumntVersionList").empty();
-						$('#ShowDocumentVersions').modal('show');
-
+						$("#DocumentVersionList").empty();
 						$.each(data.result,
 							function(index, value) {
+								console.log(value);
 								var html =
 									`<tr>
-															<td>${value.document.title}</td>"
-															<td> ${value.comments}</td>
-															<td><a href="#" onclick ="downloadFile('${value
-										.fileStorageId
-										}')">${
-										value.fileName}</a></td>
-															<td>${value.versionNumber.toFixed(1)}</td>`;
-								$("#DocumntVersionList").append(html);
+
+													<td> ${value.comments}</td>
+													<td><a href="#" onclick ="downloadFile('${value.fileStorageId
+										}')">${value
+										.fileName}</a></td>
+													<td>${value.versionNumber.toFixed(1)}</td>
+													<td>${value.currentStateName}</td>`;
+								$("#DocumentVersionList").append(html);
 							});
+						$('#ShowDocumentVersions').modal('show');
 					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
@@ -375,71 +542,11 @@
 				window.location.href = '/api/File/' + "GetFile?id=" + fileId;
 		}
 
-		function GetAllDocuments() {
-
-			$.ajax({
-				type: "Get",
-				url: '/Documents/GetAllDocuments',
-				method: 'get',
-				dataType: 'json',
-				success: function(data) {
-					if (data.is_success) {
-						$("#tableListDocuments").empty();
-						$.each(data.result,
-							function(index, value) {
-
-								var html =
-									`<tr>
-								<td>
-									<div class="checkbox-container">
-										<div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input checkedDocumentsToDelete" id="${
-										value.id}"/>
-                                            <label class="custom-control-label" for="${value.id}"></label>
-									    </div>
-								    </div>
-								</td>
-								<td> ${value.title}</td>
-								<td style="white-space: pre-wrap;">${value.description === null ? "" : value.description}</td>
-								<td><a href="${value.documentType.code == 3 ? value.lastUrl : "#"
-										}" onclick ="downloadFile('${value.lastFileId}')" target="_blank">${value
-										.documentType.code ==
-										3
-										? value.lastUrl
-										: value.fileName}</a></td>
-								<td>${value.group == null ? "" : value.group}</td>
-								<td>${value.documentType.name}</td>
-								<td> ${value.lastVersion.toFixed(1)}</td>
-                                <td> ${value.isDeleted}</td>
-                                <td>
-                                    <button type="button" class="btn btn-light" onclick ="getDocumntVersions('${
-										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
-										}>All version</button>
-                                    <button type="button" class="btn btn-light" onclick ="AddNewDocumntVersions('${
-										value.id}')" ${value.documentType.code == 1 ? "" : "disabled"
-										}>New version</button>
-									<button type="button" class="btn btn-light" onclick ="EditDocument('${value.id}')">Edit</button>
-                                </td>
-							</tr>`;
-								$("#tableListDocuments").append(html);
-							});
-					} else {
-						toast.notifyErrorList(data.error_keys);
-					}
-
-				},
-				error: function(error) {
-					console.log(error);
-				}
-			});
-		}
-
 		$("#formAddDocumentVersion").submit(function(e) {
 			var formData = new FormData();
 			var file = $('#NewVersionFileInput')[0].files[0];
 			formData.append('file', file);
 
-			console.log($(this).serializeArray());
 
 			$.each($(this).serializeArray(),
 				function(i, input) {
@@ -456,15 +563,14 @@
 				type: "POST",
 				processData: false,
 				contentType: false,
-				url: "/Documents/AddNewDocumentVersion",
+				url: "/api/Documents/AddNewDocumentVersion",
 				data: formData,
 				success: function(data) {
 					if (data.is_success) {
-
-						GetAllDocuments();
-						toast.notifySuccess("Save succes");
+						$("#render_document_Categories").DataTable().draw();
 						$('#AddNewVersionModal').modal('hide');
 						$("#formAddDocumentVersion").trigger('reset');
+						toast.notifySuccess("Save success");
 					} else {
 						toast.notifyErrorList(data.error_keys);
 					}
@@ -493,13 +599,13 @@
 				data: formData,
 				success: function(data) {
 					if (data.is_success) {
-						GetAllDocuments();
 						toast.notifySuccess("Save succes");
 						$('#AddDocumentModal').modal('hide');
 						$("#formAddDocument").trigger('reset');
+						$("#render_document_Categories").DataTable().draw();
 
 					} else {
-						toast.notifyErrorList();
+						toast.notifyErrorList(data.error_keys);
 					}
 				}
 			});
@@ -511,19 +617,19 @@
 
 			var formData = new FormData();
 
-			$.each($(this).serializeArray(),function(i, input) {
-				formData.append(input.name, input.value);
-			});
+			$.each($(this).serializeArray(),
+				function(i, input) {
+					formData.append(input.name, input.value);
+				});
 
 			$.ajax({
 				type: "POST",
 				processData: false,
 				contentType: false,
-				url: "/Documents/Edit",
+				url: "/api/Documents/Edit",
 				data: formData,
 				success: function(data) {
 					if (data.is_success) {
-						GetAllDocuments();
 						$('#EditDocumentModal').modal('hide');
 					} else {
 						toast.notifyErrorList();
@@ -534,45 +640,13 @@
 			return false;
 		});
 
-
-		function getAllChechedDeleteDocuments() {
-
-			var listDocumetId = [];
-			$('input:checkbox.checkedDocumentsToDelete').each(function() {
-
-				if ($(this).is(':checked'))
-					listDocumetId.push($(this).attr('id'));
-
-			});
-
-			if (listDocumetId.length > 0) {
-				$.ajax({
-					type: "POST",
-					url: '/Documents/DeleteDocumnetsByListIdAsync',
-					method: 'post',
-					data: { listDocumetId: listDocumetId },
-					success: function(data) {
-						if (data.is_success) {
-							GetAllDocuments();
-							$(listDocumetId).each(function(index) {
-								deleteDocuments(index);
-							});
-						}
-					},
-					error: function(error) {
-						console.log(error);
-					}
-				});
-			}
-		}
-
-		function deleteDocuments(DocumentId) {
+		function deleteDocuments(documentId) {
 			const dbService = new DataInjector();
 			const filters = [
 				{
 					parameter: "DocumentId",
 					criteria: "equals",
-					value: DocumentId
+					value: documentId
 				}
 			];
 
@@ -599,22 +673,23 @@
 
 		function EditDocument(documentId) {
 			$.ajax({
-				url: '/Documents/GetDocumentsByIdAsync',
+				url: '/api/Documents/GetDocumentsByIdAsync',
 				method: 'get',
 				contentType: "application/json; charset=utf-8",
 				data: { documentId: documentId },
 				success: function(data) {
 					if (data.is_success) {
-						console.log(data);
 
-						$("#DocumenTypeId").val(data.result.documentTypeId);
-						$("#DocumenEdittId").val(data.result.documentId);
-						$("#DocumentCode").val(data.result.documentCode);
-						$("#Tile").val(data.result.tile);
+						$(`#DocumentTypeId option[value=${data.result.documentTypeId}]`)
+							.attr('selected', 'selected');
+						$("#DocumentEditId").val(data.result.documentId);
+						$("#DocumentCodeEdit").val(data.result.documentCode);
+						$("#Title").val(data.result.title);
 						$("#Description").val(data.result.description);
 						$("#Group").val(data.result.group);
-
 						$('#EditDocumentModal').modal('show');
+
+						$("#render_document_Categories").DataTable().draw();
 
 					} else {
 						toast.notifyErrorList(data.error_keys);
@@ -626,6 +701,132 @@
 			});
 		}
 
+		function htmlStatus(id, currentStateName, listNextState) {
+
+			var listNextStateHtml = "";
+
+			if (listNextState.length > 0) {
+				$.each(listNextState,
+					function(key, value) {
+						listNextStateHtml += `<a class="dropdown-item" href="#" onclick="SetNewState('${id}','${
+							value.workFlowId}','${value.id}', '${value.name}')">${value.name}</a>`;
+					});
+
+				var html = `
+											<div class="dropdown">
+												<button type="button" class="btn btn-link text-black-50"  data-toggle="dropdown"
+													aria-haspopup="true" aria-expanded="false" id="Status_${id}">
+													<span class="align-middle button-label" id="StateName_${id}">${
+					currentStateName}</span>
+													<span class="material-icons mr-1 align-middle">arrow_drop_down</span>
+												</button>
+												<div class="dropdown-menu" aria-labelledby="Status_${id}">
+													${listNextStateHtml}
+												</div>
+											</div>`;
+
+				return html;
+			}
+
+			var html = `
+												<button type="button" class="btn btn-link text-black-50" aria-haspopup="true" aria-expanded="false">
+													<span class="align-middle button-label">${currentStateName}</span>
+												</button>`;
+
+			return html;
+		}
+
+		function ChangeState(versionId) {
+
+			$.ajax({
+				url: '/api/Documents/GetDocumentStateAsync',
+				method: 'get',
+				contentType: "application/json; charset=utf-8",
+				data: { versionId: versionId },
+				success: function(data) {
+					if (data.is_success) {
+
+						$("#CurentStatus").empty();
+						var html = htmlStatus(data.result.id, data.result.currentStateName, data.result.listNextState);
+                        $("#CurentStatus").append(html);
+
+                        $("#DocumentChangeStatusHistory").empty();
+						$("#DocumentChangeStatusHistory").append(AddStateHistory(data.result.history));
+
+                        $("#ChangeDocumentStatus").modal('show');
+
+
+					} else {
+						toast.notifyErrorList(data.error_keys);
+					}
+
+				},
+				error: function(error) {
+					console.log(error);
+				}
+			});
+
+
+		}
+
+		function SetNewState(entryId, workFlowId, newStateId, selectStateName) {
+
+			newState = { EntryId: entryId, WorkFlowId: workFlowId, NewStateId: newStateId, Comments: "" };
+			$(`#StateName_${entryId}`).empty();
+			$(`#StateName_${entryId}`).append(selectStateName);
+
+		}
+
+		$("#ChangeDocumentStatus").submit(function(e) {
+
+			newState.Comments = $("#CommentsChangeState").val();
+
+			$.ajax({
+				type: "POST",
+				url: "/api/Documents/ChangeDocumentStatus",
+				data: newState,
+				success: function(data) {
+					if (data.is_success) {
+
+						$(`#DocumentState_${data.result.entryId}`).empty();
+						$(`#DocumentState_${data.result.entryId}`).append(data.result.currentStateName);
+						$("#CommentsChangeState").val('');
+						ChangeState(data.result.entryId);
+					} else {
+						toast.notifyErrorList(data.error_keys);
+					}
+				}
+			});
+
+			return false;
+		});
+
+		function AddStateHistory(listHistory) {
+
+			var html = "";
+
+			$.each(listHistory, function(key, value) {
+					html += `
+						<tr>
+							<td>${value.author}</td>
+							<td style="white-space: pre-wrap;">${value.message}</td>
+							<td>${value.fromState.name}</td>
+							<td>${value.toState.name}</td>
+						</tr>`;
+				});
+
+			return html;
+        }
+
+		function ValidateSize(file) {
+			var fileSize = file.files[0].size / 1024 / 1024;
+			if (fileSize > 25) {
+				alert('File size exceeds 25 MB');
+				$(file).val(''); //for clearing with Jquery
+			} else {
+
+			}
+		}
 	</script>
 }
 

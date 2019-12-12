@@ -61,15 +61,6 @@ namespace GR.Documents
                 RecordsTotal = filtered.Count
             };
 
-            //var result = new ResultModel<IEnumerable<DocumentType>>();
-            //var listDocumentTypes = await _context.DocumentTypes.ToListAsync();
-
-            //if(listDocumentTypes is null || !listDocumentTypes.Any())
-            //    new NotFoundResultModel<IEnumerable<DocumentType>>();
-
-            //result.IsSuccess = true;
-            //result.Result = listDocumentTypes;
-
             return result;
         }
 
@@ -125,10 +116,7 @@ namespace GR.Documents
         /// <returns></returns>
         public virtual async Task<ResultModel> SaveDocumentTypeAsync(DocumentTypeViewModel model)
         {
-            var code = (await _context.DocumentTypes.LastOrDefaultAsync())?.Code ?? 0;
-            code++;
-
-            model.Code = code;
+            //model.Code = code;
             await _context.DocumentTypes.AddAsync(model);
             var dbResult = await _context.PushAsync();
             dbResult.Result = model;
@@ -154,12 +142,6 @@ namespace GR.Documents
                 return result;
             }
 
-            if (document.Result.IsSystem)
-            {
-                result.IsSuccess = false;
-                return result;
-            }
-
             _context.DocumentTypes.Remove(document.Result.Adapt<DocumentType>());
             result = await _context.PushAsync();
             return result;
@@ -182,7 +164,6 @@ namespace GR.Documents
 
             var documentBd = documentTypeRequest.Result.Adapt<DocumentType>();
             documentBd.Name = model.Name;
-            documentBd.IsSystem = model.IsSystem;
 
             _context.DocumentTypes.Update(documentBd);
             var resultPush = await _context.PushAsync();

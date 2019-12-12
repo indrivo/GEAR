@@ -14,16 +14,5 @@ namespace GR.Documents.Abstractions.Models
         [Required]
         public virtual string Name { get; set; }
 
-        /// <summary>
-        /// Document code 
-        /// </summary>
-        public virtual int Code { get; set; }
-
-        /// <summary>
-        /// Is system
-        /// </summary>
-        [Required]
-        public virtual bool IsSystem { get; set; }
-
     }
 }
