@@ -843,5 +843,8 @@
   "system_gr_beginning": "Beginning",
   "system_gr_end": "End",
   "system_gr_measure_unit": "Measurement unit",
-  "system_gr_period": "Period"
+  "system_gr_period": "Period",
+  "start_state": "Start state",
+  "next_state": "Next state",
+  "change_state": "Change statutul"
 }

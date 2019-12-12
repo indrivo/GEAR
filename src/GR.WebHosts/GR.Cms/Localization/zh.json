@@ -843,5 +843,8 @@
   "system_gr_beginning": "开始",
   "system_gr_end": "结束",
   "system_gr_measure_unit": "测量单位",
-  "system_gr_period": "周期"
+  "system_gr_period": "周期",
+  "start_state": "开始状态",
+  "next_state": "下一个状态",
+  "change_state": "改变态"
 }

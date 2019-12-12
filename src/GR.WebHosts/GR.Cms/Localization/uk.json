@@ -843,5 +843,8 @@
   "system_gr_beginning": "Початок",
   "system_gr_end": "Кінець",
   "system_gr_measure_unit": "Одиниця виміру ",
-  "system_gr_period": "Період"
+  "system_gr_period": "Період",
+  "start_state": "Початковий стан",
+  "next_state": "Наступне стан",
+  "change_state": "Зміна стану "
 }

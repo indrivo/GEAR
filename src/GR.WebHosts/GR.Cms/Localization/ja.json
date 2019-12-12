@@ -843,5 +843,8 @@
   "system_gr_beginning": "始",
   "system_gr_end": "終了",
   "system_gr_measure_unit": "計測ユニット",
-  "system_gr_period": "期間"
+  "system_gr_period": "期間",
+  "start_state": "開始状態",
+  "next_state": "次の状態",
+  "change_state": "状態を変化さ"
 }

@@ -58,7 +58,7 @@ namespace GR.Documents.Abstractions
         /// <param name="typeId"></param>
         /// <param name="listIgnireDocuments"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsByTypeIdAndListAsync(Guid? typeId,
+        Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsByCategoryIdAndListAsync(Guid? typeId,
             IEnumerable<Guid> listIgnireDocuments);
 
 

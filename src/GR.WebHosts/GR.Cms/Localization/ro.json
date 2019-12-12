@@ -843,5 +843,8 @@
   "system_gr_beginning": "Început",
   "system_gr_end": "Sfârșit",
   "system_gr_measure_unit": "Unitate de măsură",
-  "system_gr_period": "Perioada"
+  "system_gr_period": "Perioada",
+  "start_state": "Statutul inițial",
+  "next_state": "Următorul statut",
+  "change_state": "Schimba stat"
 }
