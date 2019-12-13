@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace GR.Notifications.Razor.Controllers.Notifications
+namespace GR.Notifications.Razor.Controllers
 {
     [Authorize]
     public class NotificationTypeController : Controller
