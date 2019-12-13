@@ -373,29 +373,12 @@ const settings = JSON.parse(localStorage.getItem("settings"));
 const tManager = new TemplateManager();
 
 function IsoTableHeadActions() {
-    this.settings = {
-        show: true,
-        enabledOptions: {
-            add: true,
-            deleteRestore: true,
-            deletePermanent: true,
-            hiddenColumns: true,
-            rows: true
-        },
-        actions: {
-            add: {
-                class: "add_new_inline btn btn-outline-primary mr-2",
-                translate: "add"
-            }
-        },
-        customPreActions: [],
-        customPostActions: []
-    };
 	this.settings = {
 		show: true,
 		enabledOptions: {
 			add: true,
 			deleteRestore: true,
+			deletePermanent: true,
 			hiddenColumns: true,
 			rows: true
 		},
@@ -426,34 +409,6 @@ IsoTableHeadActions.prototype.getConfiguration = function () {
  * text cell position
  */
 function changeTextCellPosition() {
-    $(this).parent().focusout(function () {
-        $(this).css("left", "");
-        $(this).css("top", "");
-    });
-
-    const expandCell = $(this).parent();
-    const pos = new TableInlineEdit().elementOffset($(this).parent().get(0));
-    const docHeight = $(document).height();
-    const docWidth = $(document).width();
-    const hPercent = pos.top * 100 / docHeight;
-    const diffH = docHeight - pos.top;
-    const textareaWidth = $(expandCell).innerWidth();
-
-    const navBarWidth = $(".navigation").width();
-    pos.left -= navBarWidth;
-    const wPercent = pos.left * 100 / docWidth;
-
-    if (hPercent > 72 && hPercent < 75) {
-        expandCell.css("top", `${pos.top - diffH}px`);
-    } else if (hPercent > 80) {
-        expandCell.css("top", `${pos.top - diffH
-            }px`);
-    }
-
-    if (wPercent > 70) {
-        expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
-            }px`);
-    }
 	$(this).parent().focusout(function () {
 		$(this).css("left", "");
 		$(this).css("top", "");
@@ -470,74 +425,58 @@ function changeTextCellPosition() {
 	const navBarWidth = $(".navigation").width();
 	pos.left -= navBarWidth;
 	const wPercent = pos.left * 100 / docWidth;
-	//const diffW = docWidth - pos.left;
 
 	if (hPercent > 72 && hPercent < 75) {
 		expandCell.css("top", `${pos.top - diffH}px`);
 	} else if (hPercent > 80) {
 		expandCell.css("top", `${pos.top - diffH
-			// - 240
 			}px`);
 	}
 
 	if (wPercent > 70) {
 		expandCell.css("left", `${docWidth - navBarWidth - textareaWidth
-			// * 2
 			}px`);
 	}
 }
 
 
 $(".table")
-    .on("preInit.dt",
-        function () {
-            if (!$(this).hasClass("dynamic-table")) return;
-            const conf = new IsoTableHeadActions().getConfiguration();
-            const domTableId = $(this).attr("id");
-            const tableBuilderInstance = window.TableBuilderInstances.instances.find(x => x.configurations.listId == domTableId);
-            const entityId = tableBuilderInstance.configurations.viewmodelData.tableModelId;
-            $.ajax({
-                url: "/api/EntitySecurity/GetEntityPermissionsForCurrentUser",
-                data: { entityId },
-                async: false,
-                success: function (response) {
-                    if (!response.is_success) {
-                        tableBuilderInstance.toast.notifyErrorList(response.error_keys);
-                        return;
-                    }
-                    const permissions = response.result;
-                    const fullControl = permissions.includes("FullControl");
-                    if (!fullControl) {
-                        conf.settings.enabledOptions.add = permissions.includes("Write");
-                        conf.settings.enabledOptions.deletePermanent = permi0ssions.includes("DeletePermanent");
-                        conf.settings.enabledOptions.deleteRestore = permissions.includes("Delete") | permissions.includes("Restore");
-                    }
-
-                    //Risk company matrix
-                    if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
-                        conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
-                    }
-                    const content = tManager.render("template_headListActions", conf);
-                    const selector = $("div.CustomTableHeadBar");
-                    selector.html(content);
-                    selector.find(".add-matrix").on("click", riskMatrixCreate);
-                    window.forceTranslate("div.CustomTableHeadBar");
-                },
-                error: function () { }
-            });
-        });
 	.on("preInit.dt",
 		function () {
+			if (!$(this).hasClass("dynamic-table")) return;
 			const conf = new IsoTableHeadActions().getConfiguration();
-			//Risk company matrix
-			if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
-				conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
-			}
-			const content = tManager.render("template_headListActions", conf);
-			const selector = $("div.CustomTableHeadBar");
-			selector.html(content);
-			selector.find(".add-matrix").on("click", riskMatrixCreate);
-			window.forceTranslate("div.CustomTableHeadBar");
+			const domTableId = $(this).attr("id");
+			const tableBuilderInstance = window.TableBuilderInstances.instances.find(x => x.configurations.listId == domTableId);
+			const entityId = tableBuilderInstance.configurations.viewmodelData.tableModelId;
+			$.ajax({
+				url: "/api/EntitySecurity/GetEntityPermissionsForCurrentUser",
+				data: { entityId },
+				async: false,
+				success: function (response) {
+					if (!response.is_success) {
+						tableBuilderInstance.toast.notifyErrorList(response.error_keys);
+						return;
+					}
+					const permissions = response.result;
+					const fullControl = permissions.includes("FullControl");
+					if (!fullControl) {
+						conf.settings.enabledOptions.add = permissions.includes("Write");
+						conf.settings.enabledOptions.deletePermanent = permi0ssions.includes("DeletePermanent");
+						conf.settings.enabledOptions.deleteRestore = permissions.includes("Delete") | permissions.includes("Restore");
+					}
+
+					//Risk company matrix
+					if ($(this).attr("db-viewmodel") === "8d42136d-eed5-4cdf-ae6c-424e2986ebf5") {
+						conf.settings.actions.add.class = "add-matrix btn btn-outline-primary mr-2";
+					}
+					const content = tManager.render("template_headListActions", conf);
+					const selector = $("div.CustomTableHeadBar");
+					selector.html(content);
+					selector.find(".add-matrix").on("click", riskMatrixCreate);
+					window.forceTranslate("div.CustomTableHeadBar");
+				},
+				error: function () { }
+			});
 		});
 
 
@@ -722,55 +661,6 @@ if (typeof TableColumnsVisibility !== "undefined") {
 	/*
 	 * Register events for control initialization
 	*/
-    TableColumnsVisibility.prototype.registerInitEvents = function () {
-        $(".table-search").keyup(function () {
-            const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
-            oTable.search($(this).val()).draw();
-        });
-
-        //Delete multiple rows
-        $(".deleteMultipleRows").on("click",
-            function () {
-                const cTable = $(this).closest(".card").find(".dynamic-table");
-                if (cTable) {
-                    if (typeof TableBuilder !== "undefined") {
-                        new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
-                    }
-                }
-            });
-
-        $(".delete-multiple-rows-permanent").on("click",
-            function () {
-                const cTable = $(this).closest(".card").find(".dynamic-table");
-                if (cTable) {
-                    if (typeof TableBuilder !== "undefined") {
-                        new TableBuilder().deleteSelectedRowsPermanentHandler(cTable.DataTable());
-                    }
-                }
-            });
-
-        $(".add_new_inline").on("click",
-            function () {
-                new TableInlineEdit().addNewHandler(this);
-            });
-
-        //Items on page
-        $(".tablePaginationView a").on("click",
-            function () {
-                const ctx = $(this);
-                const onPageValue = ctx.data("page");
-                const onPageText = ctx.text();
-                ctx.closest(".dropdown").find(".page-size").html(`(${onPageText})`);
-                const table = ctx.closest(".card").find(".dynamic-table").DataTable();
-                table.page.len(onPageValue).draw();
-            });
-
-        //hide columns
-        $(".hidden-columns-event").click(function () {
-            new TableColumnsVisibility().toggleRightListSideBar($(this).attr("data-id"));
-            $("#hiddenColumnsModal").modal();
-        });
-    };
 	TableColumnsVisibility.prototype.registerInitEvents = function () {
 		$(".table-search").keyup(function () {
 			const oTable = $(this).closest(".card").find(".dynamic-table").DataTable();
@@ -784,6 +674,16 @@ if (typeof TableColumnsVisibility !== "undefined") {
 				if (cTable) {
 					if (typeof TableBuilder !== "undefined") {
 						new TableBuilder().deleteSelectedRowsHandler(cTable.DataTable());
+					}
+				}
+			});
+
+		$(".delete-multiple-rows-permanent").on("click",
+			function () {
+				const cTable = $(this).closest(".card").find(".dynamic-table");
+				if (cTable) {
+					if (typeof TableBuilder !== "undefined") {
+						new TableBuilder().deleteSelectedRowsPermanentHandler(cTable.DataTable());
 					}
 				}
 			});
@@ -1875,7 +1775,6 @@ function makeMenuActive(target) {
 }
 
 $(document).ready(function () {
-	moment.locale(settings.localization.current.identifier);
 	window.forceTranslate();
 	//Log Out
 	new ST().registerLocalLogout(".sa-logout");
