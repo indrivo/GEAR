@@ -53,11 +53,12 @@
 }
 <div class="notifications-page">
 	<div class="notifications-actions">
-		<a href="">@Localizer["system_notifications_delete_all"]</a>
+		<button id="delete-all-notifications" type="button" class="btn btn-outline-primary mb-3 d-flex align-items-center" data-toggle="modal" data-target="#confirmModal">
+			<i class="material-icons mr-2">delete</i>
+			@Localizer["system_notifications_delete_all"]
+		</button>
 	</div>
-	<div id="notificationsList" class="minh-100 w-100 position-relative bg-white px-3 py-2">
-
-	</div>
+	<div id="notificationsList" class="minh-100 w-100 position-relative bg-white px-3 py-2"></div>
 </div>
 
 @section Scripts
@@ -145,10 +146,10 @@
 
 			const addLoader = elementDOM => {
 				const loadermarkup = `<div class="${loaderClassString}">
-														<div class="${loaderClassString}-body justify-content-center align-items-center">
-														<div class="lds-dual-ring"></div>
-															</div>
-														</div>`;
+																			<div class="${loaderClassString}-body justify-content-center align-items-center">
+																			<div class="lds-dual-ring"></div>
+																				</div>
+																			</div>`;
 				elementDOM.append(loadermarkup);
 				elementDOM.find(loaderClass).fadeIn();
 			}
@@ -210,6 +211,29 @@
 			}
 
 			waitForSettings();
+
+			$('#delete-all-notifications').click(() => {
+				Swal.fire({
+					icon: 'warning',
+					title: window.translate('system_notifications_you_sure_delete_all'),
+					text: window.translate('system_notifications_will_delete_all'),
+					showCancelButton: true,
+					confirmButtonText: window.translate('system_notifications_confirm_delete'),
+					cancelButtonText: window.translate('cancel'),
+				}).then((result) => {
+					if (result.value) {
+						notificationContainer.slideUp(500);
+						setTimeout(function () {
+							markAsRead(notification.id).then(() => {
+								notificationContainer.html(window.translate('system_notificator_no_notifications'));
+								notificationContainer.slideDown();
+							}).catch(e => {
+								toast.notifyErrorList(e);
+							});
+						}, 500);
+					}
+				});
+			});
 
 		}(window.jQuery);
 	</script>
