@@ -22,6 +22,11 @@ namespace GR.Notifications.Razor.Controllers.Notifications
 		{
 			_notify = notify;
 		}
+
+        public IActionResult Index()
+        {
+            return View();
+        }
 		/// <summary>
 		/// Get notifications by user id
 		/// </summary>

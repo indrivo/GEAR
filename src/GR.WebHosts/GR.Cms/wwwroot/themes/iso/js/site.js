@@ -1651,22 +1651,60 @@ if (typeof Notificator !== "undefined") {
 			$('#notificationList .notifications').html(noNotifications).slideDown(100);
 		}, 500);
 	});
+
+	const markAsRead = notificationId => {
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				url: `/api/Notifications/MarkAsRead`,
+				method: "post",
+				data: {
+					notificationId
+				},
+				success: function (data) {
+				console.log('here');
+					if (Array.isArray(data)) {
+						resolve(data);
+					}
+					else {
+						if (data.is_success) {
+							resolve(data.result);
+						} else if (!data.is_success) {
+							reject(data.error_keys);
+						} else {
+							resolve(data);
+						}
+					}
+				},
+				error: function (e) {
+					reject(e);
+				}
+			});
+		});
+	}
+
 	//override notification populate container
 	Notificator.prototype.addNewNotificationToContainer = function (notification) {
-		const _ = $("#notificationAlarm");
-		if (!_.hasClass("notification"))
-			_.addClass("notification");
-		const template = this.createNotificationBodyContainer(notification);
-		const target = $("#notificationList .notifications");
-		$("#noNotifications").hide();
-		target.prepend(template);
-		this.registerOpenNotificationEvent();
-		$(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
-			$(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
-			setTimeout(function () {
-				$(`.notification-item[data-notification-id="${notification.id}"]`).remove();
-			}, 500);
-		});
+		if (!notification.isDeleted) {
+			const _ = $("#notificationAlarm");
+			if (!_.hasClass("notification"))
+				_.addClass("notification");
+			const template = this.createNotificationBodyContainer(notification);
+			const target = $("#notificationList .notifications");
+			$("#noNotifications").hide();
+			target.prepend(template);
+			this.registerOpenNotificationEvent();
+			$(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
+				$(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
+				setTimeout(function () {
+					markAsRead(notification.id).then(() => {
+						$(`.notification-item[data-notification-id="${notification.id}"]`).remove();
+					}).catch(e => {
+						new ToastNotifier().notifyErrorList(e);
+						$(`.notification-item[data-notification-id="${notification.id}"]`).show();
+					});
+				}, 500);
+			});
+		}
 	}
 
 	Notificator.prototype.createNotificationBodyContainer = function (n) {
