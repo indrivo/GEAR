@@ -10,6 +10,13 @@ test_projects:
   stage: test
   script:
     - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
+    - echo "Code quality tests started"
+    - dotnet sonarscanner begin /k:"ISO"
+    - dotnet build /nodereuse:false
+    - dotnet sonarscanner end 
+    - dotnet build-server shutdown
+    - echo "Code quality end succesfull"
+
 
 deploy_to_server_job:
   stage: deploy_to_server
