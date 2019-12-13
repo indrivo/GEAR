@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GR.Application.Middleware.Extensions;
 using GR.Application.Middleware.Server;
 using GR.Cache.Abstractions.Exceptions;
@@ -7,7 +9,6 @@ using GR.Cache.Services;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
-using GR.Core.Razor.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Data;
 using GR.Localization.Abstractions.Extensions;
@@ -17,9 +18,11 @@ using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -190,6 +193,54 @@ namespace GR.WebApplication.Extensions
             }
 
             return new GearAppBuilder(app.ApplicationServices);
+        }
+
+        /// <summary>
+        /// Use app as mvc
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="configuration"></param>
+        /// <param name="routeMapping"></param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseAppMvc(this IApplicationBuilder app, IConfiguration configuration, Dictionary<string, Action<HttpContext>> routeMapping = null)
+        {
+            var isConfigured = configuration.GetValue<bool>("IsConfigured");
+
+            var singleTenantTemplate = isConfigured
+                ? "{controller=Home}/{action=Index}"
+                : "{controller=Installer}/{action=Index}";
+
+            app.UseMvc(routes =>
+            {
+                routes.ApplicationBuilder.Use(async (context, next) =>
+                {
+                    if (routeMapping == null || !isConfigured)
+                    {
+                        await next();
+                    }
+                    else
+                    {
+                        var match = routeMapping.FirstOrDefault(o => o.Key.Equals(context.Request.Path));
+                        if (!match.IsNull())
+                        {
+                            match.Value.Invoke(context);
+                            await next();
+                        }
+                        else
+                        {
+                            await next();
+                        }
+                    }
+                });
+
+                routes.MapRoute(
+                    name: "default",
+                    template: singleTenantTemplate,
+                    defaults: singleTenantTemplate
+                    //constraints: new { tenant = new TenantRouteConstraint() }
+                );
+            });
+            return app;
         }
     }
 }

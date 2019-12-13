@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using GR.Core.Helpers;
 using GR.Notifications.Abstractions.Models.Notifications;
+using GR.Notifications.Abstractions.ViewModels;
 
 namespace GR.Notifications.Abstractions
 {
@@ -17,6 +18,7 @@ namespace GR.Notifications.Abstractions
         /// <param name="tenantId"></param>
         /// <returns></returns>
         Task SendNotificationAsync(IEnumerable<TRole> roles, Notification notification, Guid? tenantId);
+
         /// <summary>
         /// Send notification
         /// </summary>
@@ -24,6 +26,7 @@ namespace GR.Notifications.Abstractions
         /// <param name="notification"></param>
         /// <returns></returns>
         Task SendNotificationAsync(IEnumerable<Guid> users, Notification notification);
+
         /// <summary>
         /// Send notification
         /// </summary>
@@ -40,24 +43,29 @@ namespace GR.Notifications.Abstractions
         /// <param name="notification"></param>
         /// <returns></returns>
         Task SendNotificationAsync(Notification notification);
+
         /// <summary>
         /// Send notifications to user admins
         /// </summary>
         /// <param name="notification"></param>
         /// <returns></returns>
         Task SendNotificationToSystemAdminsAsync(Notification notification);
+
         /// <summary>
         /// Get notifications by id
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="onlyUnread"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId);
+        Task<ResultModel<IEnumerable<SystemNotifications>>> GetNotificationsByUserIdAsync(Guid userId, bool onlyUnread = true);
+
         /// <summary>
         /// Mark notification as read
         /// </summary>
         /// <param name="notificationId"></param>
         /// <returns></returns>
         Task<ResultModel<Guid>> MarkAsReadAsync(Guid notificationId);
+
         /// <summary>
         /// Check if user is online
         /// </summary>
@@ -70,6 +78,28 @@ namespace GR.Notifications.Abstractions
         /// </summary>
         /// <param name="notificationId"></param>
         /// <returns></returns>
-        Task<ResultModel<Dictionary<string, object>>> GetNotificationById(Guid notificationId);
+        Task<ResultModel<Dictionary<string, object>>> GetNotificationByIdAsync(Guid? notificationId);
+
+        /// <summary>
+        /// Clear all notifications
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<ResultModel> ClearAllUserNotificationsAsync(Guid userId);
+
+        /// <summary>
+        /// Get notifications with pagination
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="perPage"></param>
+        /// <returns></returns>
+        Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10);
+
+        /// <summary>
+        /// Delete notification
+        /// </summary>
+        /// <param name="notificationId"></param>
+        /// <returns></returns>
+        Task<ResultModel> PermanentlyDeleteNotificationAsync(Guid? notificationId);
     }
 }

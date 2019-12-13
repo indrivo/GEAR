@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -47,14 +48,20 @@ namespace GR.WorkFlows
         /// </summary>
         private readonly ILogger<WorkFlowExecutorService> _logger;
 
+        /// <summary>
+        /// Inject background task runner
+        /// </summary>
+        private readonly IBackgroundTaskQueue _backgroundTaskQueue;
+
         #endregion
 
-        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<GearUser> userManager, ILogger<WorkFlowExecutorService> logger)
+        public WorkFlowExecutorService(IWorkFlowCreatorService<WorkFlow> workFlowCreatorService, IWorkFlowContext workFlowContext, IUserManager<GearUser> userManager, ILogger<WorkFlowExecutorService> logger, IBackgroundTaskQueue backgroundTaskQueue)
         {
             _workFlowCreatorService = workFlowCreatorService;
             _workFlowContext = workFlowContext;
             _userManager = userManager;
             _logger = logger;
+            _backgroundTaskQueue = backgroundTaskQueue;
         }
 
         #region  Entry states
@@ -419,38 +426,42 @@ namespace GR.WorkFlows
         {
             var actions = transition.TransitionActions.Select(x => x.Action).ToList();
             var nextTransitions = await GetNextTransitionsAsync(transition);
-            foreach (var action in actions)
+
+            _backgroundTaskQueue.PushBackgroundWorkItemInQueue(async token =>
             {
-                try
+                foreach (var action in actions)
                 {
-                    Type type = null;
-                    var memoryType = WorkFlowActionsStorage.GetActionType(action.ClassName);
-                    if (memoryType == null)
+                    try
                     {
-                        var findType = this.GetTypeFromAssembliesByClassName(action.ClassName);
-                        if (findType != null)
+                        Type type = null;
+                        var memoryType = WorkFlowActionsStorage.GetActionType(action.ClassName);
+                        if (memoryType == null)
                         {
-                            type = findType;
-                            WorkFlowActionsStorage.AppendActionType(action.ClassName, findType);
+                            var findType = this.GetTypeFromAssembliesByClassName(action.ClassName);
+                            if (findType != null)
+                            {
+                                type = findType;
+                                WorkFlowActionsStorage.AppendActionType(action.ClassName, findType);
+                            }
                         }
-                    }
-                    else type = memoryType;
+                        else type = memoryType;
 
-                    if (type == null)
+                        if (type == null)
+                        {
+                            _logger.LogError($"Action {action.Name} was not found");
+                            return;
+                        }
+
+                        var activatedObject = (BaseWorkFlowAction)Activator.CreateInstance(type, entry, transition, nextTransitions);
+                        if (activatedObject == null) return;
+                        await activatedObject.InvokeExecuteAsync(data);
+                    }
+                    catch (Exception e)
                     {
-                        _logger.LogError($"Action {action.Name} was not found");
-                        return;
+                        _logger.LogCritical(e, e.Message);
                     }
-
-                    var activatedObject = (BaseWorkFlowAction)Activator.CreateInstance(type, entry, transition, nextTransitions);
-                    if (activatedObject == null) return;
-                    await activatedObject.InvokeExecuteAsync(data);
                 }
-                catch (Exception e)
-                {
-                    _logger.LogCritical(e, e.Message);
-                }
-            }
+            });
         }
 
         #endregion

@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Razor.ViewModels.Subscriptions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace GR.Notifications.Razor.Controllers.Notifications
+namespace GR.Notifications.Razor.Controllers
 {
     [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
     public class NotificationSubscriptionsController : Controller
