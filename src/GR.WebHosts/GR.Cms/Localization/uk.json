@@ -842,5 +842,8 @@
   "system_notificator_no_notifications": "У вас немає повідомлень",
   "system_notifications_show_all": "Показати всі",
   "system_notifications_clear_all": "Все Ясно",
-  "system_notifications_delete_all": "Видалити всі"
+  "system_notifications_delete_all": "Видалити всі",
+  "system_notifications_you_sure_delete_all": "Ви впевнені?",
+  "system_notifications_will_delete_all": "Всі повідомлення будуть видалені",
+  "system_notifications_confirm_delete": "Так, видалити"
 }

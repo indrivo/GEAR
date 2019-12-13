@@ -842,5 +842,8 @@
   "system_notificator_no_notifications": "Δεν έχετε ειδοποιήσεις",
   "system_notifications_show_all": "Εμφάνιση όλων",
   "system_notifications_clear_all": "Σαφή όλα",
-  "system_notifications_delete_all": "Διαγραφή όλων"
+  "system_notifications_delete_all": "Διαγραφή όλων",
+  "system_notifications_you_sure_delete_all": "Είσαι σίγουρος;",
+  "system_notifications_will_delete_all": "Όλες οι κοινοποιήσεις θα πρέπει να διαγραφεί",
+  "system_notifications_confirm_delete": "Ναι, διαγραφή"
 }

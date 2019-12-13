@@ -842,5 +842,8 @@
   "system_notifications_clear_all": "Borrar todos los",
   "system_notificator_no_notifications": "Usted no tiene notificaciones",
   "system_notifications_show_all": "Mostrar todos los",
-  "system_notifications_delete_all": "Eliminar todos los"
+  "system_notifications_delete_all": "Eliminar todos los",
+  "system_notifications_you_sure_delete_all": "Estás seguro?",
+  "system_notifications_will_delete_all": "Todas las notificaciones serán eliminados",
+  "system_notifications_confirm_delete": "Sí, eliminar"
 }
