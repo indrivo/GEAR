@@ -169,6 +169,15 @@
         "js/jsplumb.js",
         "css/jsplumbtoolkit-defaults.min.css"
       ]
+    },
+    {
+      "library": "moment.js@2.24.0",
+      "destination": "wwwroot/lib/moment.js/",
+      "files": [
+        "moment.min.js",
+        "locale/ro.js",
+        "locale/en-gb.js"
+      ]
     }
   ]
 }

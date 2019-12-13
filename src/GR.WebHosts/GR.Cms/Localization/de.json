@@ -838,4 +838,7 @@
   "change_state": "Status ändern"
   "system_change_roles": "Rollen ändern",
   "system_notifications_clear_all": "Deaktivieren Sie alle",
+  "system_notifications_clear_all": "Deaktivieren Sie alle",
+  "system_notificator_no_notifications": "Sie haben keine Benachrichtigungen",
+  "system_notifications_show_all": "Alle anzeigen"
 }

@@ -837,5 +837,8 @@
   "next_state": "Stato successivo",
   "change_state": "Il cambiamento di stato",
   "system_change_roles": "Il cambio di ruoli",
-  "system_notifications_clear_all": "Cancella tutto"
+  "system_notifications_clear_all": "Cancella tutto",
+  "system_notifications_clear_all": "Cancella tutto",
+  "system_notificator_no_notifications": "Non hai notifiche",
+  "system_notifications_show_all": "Mostra tutti"
 }

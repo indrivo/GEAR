@@ -65,10 +65,56 @@
 	justify-content: center;
 }
 
-.pagination .page-item .page-link i {
-	color: #818999;
-}
+	.pagination .page-item .page-link i {
+		color: #818999;
+	}
 
 .pagination .page-item.active .page-link {
 	background-color: #E4E4E4;
+}
+
+
+#notificationList .notification-item .delete-notification {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	height: 15px;
+	width: 15px;
+	cursor: pointer;
+}
+
+	#notificationList .notification-item .delete-notification i {
+		font-size: 15px;
+	}
+
+#notificationList .notifications {
+	padding-right: 2px;
+}
+
+#notificationList:hover .notifications {
+	padding-right: 0;
+}
+
+#notificationList .notifications::-webkit-scrollbar {
+	width: 0px;
+}
+
+#notificationList:hover .notifications::-webkit-scrollbar {
+	width: 2px;
+}
+
+#notificationList .notifications::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+#notificationList:hover .notifications::-webkit-scrollbar-track {
+	background-color: #f4f6f8;
+}
+
+#notificationList .notifications::-webkit-scrollbar-thumb {
+	cursor: pointer;
+}
+
+.show-all-wrapper {
+	border-top: 1px solid #dbdbdb;
 }

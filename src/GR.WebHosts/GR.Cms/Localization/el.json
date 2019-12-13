@@ -837,5 +837,8 @@
   "next_state": "Επόμενη κατάσταση",
   "change_state": "Αλλαγή μέλους",
   "system_change_roles": "Αλλάζουν ρόλους",
-  "system_notifications_clear_all": "Σαφή όλα"
+  "system_notifications_clear_all": "Σαφή όλα",
+  "system_notifications_clear_all": "Σαφή όλα",
+  "system_notificator_no_notifications": "Δεν έχετε ειδοποιήσεις",
+  "system_notifications_show_all": "Εμφάνιση όλων"
 }
