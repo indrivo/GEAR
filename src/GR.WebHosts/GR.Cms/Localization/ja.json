@@ -299,7 +299,7 @@
   "iso_objective_requirement": "これによって、PI ",
   "iso_objective_is_fullfilment": "になってきている。",
   "iso_objective_interessted_part": "の関係者",
-  "iso_standard_27001_menu": "標準ISO27001",
+  "iso_standard_27001_menu": "27001",
   "iso_menu_controls": "の制御",
   "iso_menu_asset_category": "資産",
   "iso_menu_function": "機能",
@@ -501,7 +501,7 @@
   "iso_trends_in_main_indicators_of_information_security": "の動向の指標のセキュリティ情報",
   "iso_trends": "動向",
   "iso_changes_in_internal_and_external_aspects": "の変化の面内外の",
-  "iso_meetings": "会議",
+  "iso_meetings": "経営評価",
   "iso_meeting_date": "日の撮影",
   "iso_meeting_participants": "参加者",
   "iso_meeting_generate_report": "コンパイル時レポートを作成し、解析の管理",
@@ -833,6 +833,9 @@
   "add_document_version": "追加文書版",
   "is_major_version": "がメジャーバージョン",
   "system_change_roles": "の役割を変更",
+  "delete_permanent": "永久削除",
+  "system_delete_permanent_multiple_entries": "Are you sure you wantを完全に削除するには、選択した名前を挙げた報告書を発表した。",
+  "system_delete_multiple_confirm": "恒久的に削除",
   "start_state": "開始状態",
   "next_state": "次の状態",
   "change_state": "状態を変化さ",
@@ -840,5 +843,6 @@
   "system_notifications_clear_all": "すべてクリア",
   "system_notifications_clear_all": "すべてクリア",
   "system_notificator_no_notifications": "思い通知",
-  "system_notifications_show_all": "全て表示"
+  "system_notifications_show_all": "全て表示",
+  "system_notifications_clear_all": "すべてクリア"
 }

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using GR.Core.Razor.TagHelpersStructures;
 
 namespace GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 {
-    public sealed class ListActionViewModel : TagHelperBaseModel
+    public class ListActionViewModel : TagHelperBaseModel
     {
         public bool HasIcon { get; set; }
         public string Icon { get; set; }
@@ -12,6 +13,11 @@ namespace GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
         public ICollection<ActionParameter> ActionParameters = new List<ActionParameter>();
         public bool IsJsEvent { get; set; }
         public JsActionButtonEvent ButtonEvent { get; set; }
+
+        /// <summary>
+        /// Action attributes
+        /// </summary>
+        public virtual ICollection<HtmlAttribute> Attributes { get; set; } = new List<HtmlAttribute>();
     }
 
     public sealed class ActionParameter
@@ -20,8 +26,8 @@ namespace GR.Core.Razor.TagHelpers.TagHelperViewModels.ListTagHelperViewModels
 
         public ActionParameter(string name, string value)
         {
-            this.ParameterName = name;
-            this.ObjectValue = value;
+            ParameterName = name;
+            ObjectValue = value;
         }
 
         public string ParameterName { get; set; }

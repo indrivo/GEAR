@@ -299,7 +299,7 @@
   "iso_objective_requirement": "Потреба в ІС ",
   "iso_objective_is_fullfilment": "Операція пройшла?",
   "iso_objective_interessted_part": "Зацікавлена сторона",
-  "iso_standard_27001_menu": "Стандарт ISO 27001",
+  "iso_standard_27001_menu": "27001",
   "iso_menu_controls": "Контроль",
   "iso_menu_asset_category": "Категорії активів",
   "iso_menu_function": "Функція",
@@ -501,7 +501,7 @@
   "iso_trends_in_main_indicators_of_information_security": "Тенденції в основних показниках в області безпеки інформаційних технологій",
   "iso_trends": "Тенденції",
   "iso_changes_in_internal_and_external_aspects": "Зміни аспектах-внутрішніх і зовнішніх",
-  "iso_meetings": "Зустрічі",
+  "iso_meetings": "Оцінка управління ",
   "iso_meeting_date": "Дата засідання",
   "iso_meeting_participants": "Учасники",
   "iso_meeting_generate_report": "Створення звітів, аналіз, управління",
@@ -833,6 +833,9 @@
   "add_document_version": "Додати версія документа ",
   "is_major_version": "Це основна версія",
   "system_change_roles": "Ролі змінюються ",
+  "delete_permanent": "Видалення постійного",
+  "system_delete_permanent_multiple_entries": "Ви впевнені, що хочете назавжди видалити вибрані записи?",
+  "system_delete_multiple_confirm": "Назавжди видалити",
   "start_state": "Початковий стан",
   "next_state": "Наступне стан",
   "change_state": "Зміна стану ",
@@ -840,5 +843,6 @@
   "system_notifications_clear_all": "Все Ясно",
   "system_notifications_clear_all": "Все Ясно",
   "system_notificator_no_notifications": "У вас немає повідомлень",
-  "system_notifications_show_all": "Показати всі"
+  "system_notifications_show_all": "Показати всі",
+  "system_notifications_clear_all": "Все Ясно"
 }
