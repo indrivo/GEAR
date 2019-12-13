@@ -839,10 +839,8 @@
   "start_state": "Start staat",
   "next_state": "Volgende staat",
   "change_state": "Status wijzigen",
-  "system_change_roles": "Wijzigen van rollen",
-  "system_notifications_clear_all": "Alles wissen",
-  "system_notifications_clear_all": "Alles wissen",
   "system_notificator_no_notifications": "U hoeft geen meldingen",
   "system_notifications_show_all": "Toon alle",
-  "system_notifications_clear_all": "Alles wissen"
+  "system_notifications_clear_all": "Alles wissen",
+  "system_notifications_delete_all": "Het verwijderen van alle"
 }

@@ -839,10 +839,8 @@
   "start_state": "Statutul inițial",
   "next_state": "Următorul statut",
   "change_state": "Schimba stat",
-  "system_change_roles": "Schimba rolurile",
-  "system_notifications_clear_all": "Ștergele pe toate",
   "system_notifications_clear_all": "Ștergele pe toate",
   "system_notificator_no_notifications": "Nu aveți notificări",
   "system_notifications_show_all": "Afișează-le pe toate",
-  "system_notifications_clear_all": "Ștergele pe toate"
+  "system_notifications_delete_all": "Șterge-le pe toate"
 }

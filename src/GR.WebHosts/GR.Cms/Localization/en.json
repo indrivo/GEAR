@@ -839,9 +839,8 @@
   "start_state": "Start state",
   "next_state": "Next state",
   "change_state": "Change statutul",
-  "system_change_roles": "Change roles",
   "system_notifications_clear_all": "Clear all",
   "system_notificator_no_notifications": "You don't have notifications",
   "system_notifications_show_all": "Show all",
-  "system_notifications_clear_all": "Clear all"
+  "system_notifications_delete_all": "Delete all"
 }

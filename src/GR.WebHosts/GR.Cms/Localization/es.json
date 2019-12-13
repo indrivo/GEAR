@@ -839,10 +839,8 @@
   "start_state": "Inicio",
   "next_state": "Siguiente estado",
   "change_state": "Cambio de estado",
-  "system_change_roles": "Cambio de roles",
-  "system_notifications_clear_all": "Borrar todos los",
   "system_notifications_clear_all": "Borrar todos los",
   "system_notificator_no_notifications": "Usted no tiene notificaciones",
   "system_notifications_show_all": "Mostrar todos los",
-  "system_notifications_clear_all": "Borrar todos los"
+  "system_notifications_delete_all": "Eliminar todos los"
 }

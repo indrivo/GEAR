@@ -839,10 +839,8 @@
   "start_state": "Stan początkowy",
   "next_state": "Następujący stan",
   "change_state": "Zmiana stanu ",
-  "system_change_roles": "Role się zmieniają ",
-  "system_notifications_clear_all": "Jasne wszystko",
-  "system_notifications_clear_all": "Jasne wszystko",
   "system_notificator_no_notifications": "Nie ma powiadomień",
   "system_notifications_show_all": "Pokaż wszystkie",
-  "system_notifications_clear_all": "Jasne wszystko"
+  "system_notifications_clear_all": "Jasne wszystko",
+  "system_notifications_delete_all": "Usuń wszystkie"
 }

@@ -839,10 +839,8 @@
   "start_state": "開始状態",
   "next_state": "次の状態",
   "change_state": "状態を変化さ",
-  "system_change_roles": "の役割を変更",
-  "system_notifications_clear_all": "すべてクリア",
-  "system_notifications_clear_all": "すべてクリア",
   "system_notificator_no_notifications": "思い通知",
   "system_notifications_show_all": "全て表示",
-  "system_notifications_clear_all": "すべてクリア"
+  "system_notifications_clear_all": "すべてクリア",
+  "system_notifications_delete_all": "べて削除する"
 }

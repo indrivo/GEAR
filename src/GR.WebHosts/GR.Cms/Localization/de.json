@@ -838,12 +838,9 @@
   "system_delete_multiple_confirm": "Für immer löschen",
   "start_state": "Starten Sie Zustand",
   "next_state": "Nächsten Zustand",
-  "change_state": "Status ändern"
-  "system_change_roles": "Rollen ändern",
-  "system_notifications_clear_all": "Deaktivieren Sie alle",
+  "change_state": "Status ändern",
   "system_notifications_clear_all": "Deaktivieren Sie alle",
   "system_notificator_no_notifications": "Sie haben keine Benachrichtigungen",
   "system_notifications_show_all": "Alle anzeigen",
-  "change_state": "Status ändern",
-  "system_notifications_clear_all": "Deaktivieren Sie alle"
+  "system_notifications_delete_all": "Löschen Sie alle"
 }

@@ -839,10 +839,8 @@
   "start_state": "Начальное состояние",
   "next_state": "Следующее состояние",
   "change_state": "Изменение состояния ",
-  "system_change_roles": "Роли меняются ",
-  "system_notifications_clear_all": "Ясно все",
   "system_notifications_clear_all": "Ясно все",
   "system_notificator_no_notifications": "У вас нет уведомлений",
   "system_notifications_show_all": "Показать все",
-  "system_notifications_clear_all": "Ясно все"
+  "system_notifications_delete_all": "Удалить все"
 }
