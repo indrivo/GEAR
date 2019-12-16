@@ -77,6 +77,7 @@ namespace GR.Subscriptions
                 .Include(i => i.Order)
                 .ThenInclude(i => i.ProductOrders)
                 .Include(x => x.SubscriptionPermissions)
+                .Where(x=> x.TenantId == user.TenantId)
                 .ToListAsync();
 
             response.IsSuccess = true;
@@ -143,37 +144,49 @@ namespace GR.Subscriptions
         public async Task<ResultModel<Guid>> CreateUpdateSubscriptionAsync(SubscriptionViewModel model)
         {
             if (model == null) throw new NullReferenceException();
-            var orderRequest = await _orderService.GetOrderByIdAsync(model.OrderId);
-            if (!orderRequest.IsSuccess) return new InvalidParametersResultModel<Guid>();
-            var order = orderRequest.Result;
-            var isPayedRequest = await _paymentService.IsOrderPayedAsync(order.Id);
-            if (!isPayedRequest.IsSuccess) return new ResultModel<Guid>
-            {
-                Errors = new List<IErrorModel> { new ErrorModel(string.Empty, "Order was not paid") }
-            };
 
-            var existSubsctiption = await GetSubscriptionByIdAsync(model.Id);
+            if (!model.IsFree)
+            {
+                var orderRequest = await _orderService.GetOrderByIdAsync(model.OrderId);
+                if (!orderRequest.IsSuccess) return new InvalidParametersResultModel<Guid>();
+                var order = orderRequest.Result;
+                var isPayedRequest = await _paymentService.IsOrderPayedAsync(order.Id);
+                if (!isPayedRequest.IsSuccess)
+                    return new ResultModel<Guid>
+                    {
+                        Errors = new List<IErrorModel> {new ErrorModel(string.Empty, "Order was not paid")}
+                    };
+            }
+
+            var existSubscription = await GetSubscriptionByIdAsync(model.Id);
 
             Guid subscriptionId;
 
-            if (existSubsctiption.IsSuccess)
+            if (existSubscription.IsSuccess)
             {
-                var subscripton = existSubsctiption.Result;
-                subscripton.OrderId = model.OrderId;
-                subscripton.Availability += model.Availability;
-                subscripton.Name = model.Name;
-                subscripton.SubscriptionPermissions = model.SubscriptionPermissions;
-                subscripton.IsFree = model.IsFree;
+                var subscription = existSubscription.Result;
+                subscription.OrderId = model.OrderId;
+                subscription.Availability += model.Availability;
+                subscription.Name = model.Name;
+                subscription.SubscriptionPermissions = model.SubscriptionPermissions;
+                subscription.IsFree = model.IsFree;
 
-                _subscriptionDbContext.Subscription.Update(subscripton);
-                subscriptionId = subscripton.Id;
+                _subscriptionDbContext.Subscription.Update(subscription);
+                subscriptionId = subscription.Id;
             }
             else
             {
+                var user = await _userManager.UserManager.FindByIdAsync(model.UserId.ToString());
+
+                if (user == null)
+                    return new ResultModel<Guid>{
+                        Errors = new List<IErrorModel> { new ErrorModel(string.Empty, "OUser not exist") }};
+
                 var subscription = new Subscription
                 {
                     Id = model.Id,
-                    UserId = order.UserId,
+                    UserId = user.Id.ToGuid(),
+                    TenantId =  user.TenantId,
                     StartDate = model.StartDate,
                     Availability = model.Availability,
                     OrderId = model.OrderId,
