@@ -8,8 +8,6 @@ cache:
     - src/GR.WebHosts/GR.Cms/wwwroot/lib/
 test_projects:
   stage: test
-  only:
-    - develop
   script:
     - echo "Code quality tests started"
     - dotnet sonarscanner begin /k:"ISODMS"
