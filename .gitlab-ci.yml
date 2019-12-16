@@ -1,5 +1,3 @@
-image: microsoft/dotnet:latest
-
 stages:
   - test
   - deploy_to_server
