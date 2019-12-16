@@ -11,7 +11,7 @@ test_projects:
   script:
     - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
     - echo "Code quality tests started"
-    - dotnet sonarscanner begin /k:"ISODMS"
+    - dotnet sonarscanner begin /k:"ISODMS" /d:sonar.login="773da174d5234a7b1ece8bece84e1c489142e82d"
     - dotnet build /nodereuse:false
     - dotnet sonarscanner end 
     - dotnet build-server shutdown
