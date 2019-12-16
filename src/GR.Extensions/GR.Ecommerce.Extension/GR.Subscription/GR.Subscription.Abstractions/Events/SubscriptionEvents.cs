@@ -35,11 +35,8 @@ namespace GR.Subscriptions.Abstractions.Events
             {
                 var productService = IoC.Resolve<IProductService<Product>>();
                 var subscriptionService = IoC.Resolve<ISubscriptionService<Subscription>>();
-                var userManager = IoC.Resolve<IUserManager<GearUser>>();
                 var freeTrialPeriodStr = (await productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.FREE_TRIAL_PERIOD_DAYS)).Result ?? "15";
-                var user = (await userManager.GetCurrentUserAsync()).Result;
 
-                
                 var planRequest = await productService.GetProductByAttributeMinNumberValueAsync("Number of users");
 
                 if (planRequest.IsSuccess)
@@ -47,9 +44,9 @@ namespace GR.Subscriptions.Abstractions.Events
                     var plan = planRequest.Result;
 
                     var permissions = SubscriptionMapper.Map(plan.ProductAttributes).ToList();
-                    await subscriptionService.CreateUpdateSubscriptionAsync(new SubscriptionViewModel
+                    var result =  await subscriptionService.CreateUpdateSubscriptionAsync(new SubscriptionViewModel
                     {
-                        Name = plan.Name,
+                        Name = "Free trial",
                         StartDate = DateTime.Now,
                         Availability = int.Parse(freeTrialPeriodStr), 
                         UserId = args.UserId.ToGuid(),
@@ -57,8 +54,6 @@ namespace GR.Subscriptions.Abstractions.Events
                         SubscriptionPermissions = permissions
                     });
                 }
-
-                //create free trial subscription
             };
 
             OrderEvents.Orders.OnPaymentReceived += async (sender, args) =>
