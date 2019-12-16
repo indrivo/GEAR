@@ -160,10 +160,6 @@
       "files": [
         "jsviews.min.js"
       ]
-    },
-    {
-      "library": "jquery-endless-scroll@1.8.0",
-      "destination": "wwwroot/lib/jquery-endless-scroll/"
     }
   ]
 }

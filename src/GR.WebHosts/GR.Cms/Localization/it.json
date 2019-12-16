@@ -845,5 +845,6 @@
   "system_notifications_delete_all": "Eliminare tutti",
   "system_notifications_you_sure_delete_all": "Sei sicuro?",
   "system_notifications_will_delete_all": "Tutte le notifiche saranno cancellati",
-  "system_notifications_confirm_delete": "Sì, eliminare"
+  "system_notifications_confirm_delete": "Sì, eliminare",
+  "system_notifications_show_more": "Vedi di più"
 }

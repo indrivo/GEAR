@@ -51,7 +51,7 @@
 			}
 	</style>
 }
-<div class="notifications-page">
+<div class="notifications-page h-100">
 	<div class="notifications-actions">
 		<button id="delete-all-notifications" type="button" class="btn btn-outline-primary mb-3 d-flex align-items-center" data-toggle="modal" data-target="#confirmModal">
 			<i class="material-icons mr-2">delete</i>
@@ -111,9 +111,9 @@
 				});
 			}
 
-			getNotificationsByUserId(userId) {
+			getNotificationsByUserId(userId, onlyUnread) {
 				const requestUrl = '/GetNotificationsByUserId';
-				return this.ajaxRequest(requestUrl, 'get', { userId });
+				return this.ajaxRequest(requestUrl, 'get', { userId, onlyUnread });
 			}
 
 			getNotificationById(notificationId) {
@@ -131,6 +131,10 @@
 				return this.ajaxRequest(requestUrl, 'post', { userId });
 			}
 
+			permanentlyDeleteNotification(notificationId) {
+				const requestUrl = '/PermanentlyDeleteNotification';
+				return this.ajaxRequest(requestUrl, 'delete', { notificationId });
+			}
 		}
 	</script>
 
@@ -146,10 +150,10 @@
 
 			const addLoader = elementDOM => {
 				const loadermarkup = `<div class="${loaderClassString}">
-																			<div class="${loaderClassString}-body justify-content-center align-items-center">
-																			<div class="lds-dual-ring"></div>
-																				</div>
-																			</div>`;
+																				<div class="${loaderClassString}-body justify-content-center align-items-center">
+																				<div class="lds-dual-ring"></div>
+																					</div>
+																				</div>`;
 				elementDOM.append(loadermarkup);
 				elementDOM.find(loaderClass).fadeIn();
 			}
@@ -161,14 +165,14 @@
 
 			const deleteNotification = id => {
 				$(`.notification-list-item#${id}`).slideUp(500);
-				//setTimeout(function () {
-				//	notificationsManager.deleteNotificationbyId(id).then(() => {
-				//		$(`.notification-list-item#${id}`).remove();
-				//	}).catch(e => {
-				//		$(`.notification-list-item#${id}`).slideDown();
-				//		toast.notifyErrorList(e);
-				//	});
-				//}, 500);
+				setTimeout(function () {
+					notificationsManager.permanentlyDeleteNotification(id).then(() => {
+						$(`.notification-list-item#${id}`).remove();
+					}).catch(e => {
+						$(`.notification-list-item#${id}`).slideDown();
+						toast.notifyErrorList(e);
+					});
+				}, 500);
 			}
 
 			const attachNotificationActions = id => {
@@ -179,7 +183,7 @@
 			}
 
 			const loadUserNotifications = userId => {
-				return notificationsManager.getNotificationsByUserId(userId).then(notifications => {
+				return notificationsManager.getNotificationsByUserId(userId, true).then(notifications => {
 					if (notifications.length < 1) {
 						notificationContainer.html(window.translate('system_notificator_no_notifications'));
 					} else {

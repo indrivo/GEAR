@@ -506,10 +506,10 @@ function initExternalConnections(user) {
  * Show notifications on page load
  */
 function loadNotifications() {
-	notificator.getAllNotifications().then(notificationList => {
-		if (!notificationList) return;
-		if (notificationList.is_success) {
-			$.each(notificationList.result, (i, notification) => {
+	notificator.getAllNotifications(1, 10).then(data => {
+		if (!data) return;
+		if (data.is_success) {
+			$.each(data.result.notifications, (i, notification) => {
 				notificator.addNewNotificationToContainer(notification);
 			});
 		}
@@ -543,6 +543,11 @@ Notificator.prototype.addNewNotificationToContainer = function (notification) {
 	const template = this.createNotificationBodyContainer(notification);
 	$("#notificationList .notifications").prepend(template);
 	this.registerOpenNotificationEvent();
+};
+
+Notificator.prototype.appendNotificationToContainer = function (notification) {
+	const template = this.createNotificationBodyContainer(notification);
+	$("#notificationList .notifications").append(template);
 };
 
 /**

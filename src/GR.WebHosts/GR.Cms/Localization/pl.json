@@ -845,5 +845,6 @@
   "system_notifications_delete_all": "Usuń wszystkie",
   "system_notifications_you_sure_delete_all": "Jesteś pewien?",
   "system_notifications_will_delete_all": "Wszystkie zgłoszenia zostaną usunięte",
-  "system_notifications_confirm_delete": "Tak, usuń"
+  "system_notifications_confirm_delete": "Tak, usuń",
+  "system_notifications_show_more": "Pokaż więcej"
 }

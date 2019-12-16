@@ -118,3 +118,24 @@
 .show-all-wrapper {
 	border-top: 1px solid #dbdbdb;
 }
+
+.notification-loader {
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+	z-index: 99;
+}
+
+.notification-loader-body {
+	background-color: white;
+	border: 1px solid rgba(0,0,0,0.125);
+	display: flex;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 100%;
+	width: 100%;
+}

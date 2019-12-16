@@ -1636,32 +1636,15 @@ if (typeof TableInlineEdit !== "undefined") {
 ************************************************/
 if (typeof Notificator !== "undefined") {
 	const noNotifications = `<p id="noNotifications" class="text-muted p-3 m-0">${window.translate('system_notificator_no_notifications')}</p>`;
-	$(document).click(() => {
-		$("#notificationList").collapse('hide');
-	});
-	$('#notificationDropdown').click(() => {
-		$("#notificationList").collapse('toggle');
-	});
-	$('#notificationList').click(e => {
-		e.stopPropagation();
-	});
-	$('#notificationList .clear-all').click(() => {
-		$('#notificationList .notifications').hide(500);
-		setTimeout(function () {
-			$('#notificationList .notifications').html(noNotifications).slideDown(100);
-		}, 500);
-	});
 
-	const markAsRead = notificationId => {
+	const ajaxRequest = (requestUrl, requestType, requestData) => {
+		const baseUrl = '/api/Notifications';
 		return new Promise((resolve, reject) => {
 			$.ajax({
-				url: `/api/Notifications/MarkAsRead`,
-				method: "post",
-				data: {
-					notificationId
-				},
-				success: function (data) {
-				console.log('here');
+				url: baseUrl + requestUrl,
+				type: requestType,
+				data: requestData,
+				success: (data) => {
 					if (Array.isArray(data)) {
 						resolve(data);
 					}
@@ -1675,36 +1658,104 @@ if (typeof Notificator !== "undefined") {
 						}
 					}
 				},
-				error: function (e) {
+				error: (e) => {
 					reject(e);
 				}
 			});
 		});
 	}
 
+	const markAsRead = notificationId => {
+		const requestUrl = '/MarkAsRead';
+		return ajaxRequest(requestUrl, 'post', { notificationId });
+	}
+
+	const loaderClassString = 'notification-loader';
+	const loaderClass = `.${loaderClassString}`;
+
+	const addLoader = elementDOM => {
+		const loadermarkup = `<div class="${loaderClassString}">
+			<div class="${loaderClassString}-body justify-content-center align-items-center">
+			<div class="lds-dual-ring"></div>
+				</div>
+			</div>`;
+		elementDOM.append(loadermarkup);
+		elementDOM.find(loaderClass).fadeIn();
+	}
+
+	const removeLoader = elementDOM => {
+		elementDOM.find(loaderClass).fadeOut();
+		setTimeout(function () { elementDOM.find(loaderClass).remove(); }, 400);
+	}
+
+	const getNotificationsFromDropdown = () => {
+		let notifications = [];
+		$.each($('#notificationList .notifications .notification-item'), function (i, value) {
+			notifications.push(value.data('notification-id'));
+		});
+		return notifications;
+	}
+
+	let notificationsPage = 1;
+
+	$(document).click(() => {
+		$("#notificationList").collapse('hide');
+	});
+	$('#notificationDropdown').click(() => {
+		$("#notificationList").collapse('toggle');
+	});
+	$('#notificationList').click(e => {
+		e.stopPropagation();
+	});
+	$('#notificationList .clear-all').click(() => {
+		$('#notificationList .notifications').hide(500);
+		setTimeout(function () {
+			$('#notificationList .notifications').html(noNotifications).slideDown(100);
+			const markNotifications = getNotificationsFromDropdown();
+			$.each(markNotifications, function () {
+				markAsRead(this.id);
+			});
+		}, 500);
+	});
+
+	$('#notificationList .show-more').click(() => {
+		addLoader($('#notificationList'));
+		notificationsPage++;
+		Notificator.prototype.getAllNotifications(notificationsPage, 10).then(data => {
+			if (!data) return;
+			if (data.is_success) {
+				$.each(data.result.notifications, (i, notification) => {
+					notificator.appendNotificationToContainer(notification);
+				});
+			}
+			removeLoader($('#notificationList'));
+		}).catch(e => {
+			new ToastNotifier().notifyErrorList(e);
+		});
+	});
+
+
 	//override notification populate container
 	Notificator.prototype.addNewNotificationToContainer = function (notification) {
-		if (!notification.isDeleted) {
-			const _ = $("#notificationAlarm");
-			if (!_.hasClass("notification"))
-				_.addClass("notification");
-			const template = this.createNotificationBodyContainer(notification);
-			const target = $("#notificationList .notifications");
-			$("#noNotifications").hide();
-			target.prepend(template);
-			this.registerOpenNotificationEvent();
-			$(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
-				$(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
-				setTimeout(function () {
-					markAsRead(notification.id).then(() => {
-						$(`.notification-item[data-notification-id="${notification.id}"]`).remove();
-					}).catch(e => {
-						new ToastNotifier().notifyErrorList(e);
-						$(`.notification-item[data-notification-id="${notification.id}"]`).show();
-					});
-				}, 500);
-			});
-		}
+		const _ = $("#notificationAlarm");
+		if (!_.hasClass("notification"))
+			_.addClass("notification");
+		const template = this.createNotificationBodyContainer(notification);
+		const target = $("#notificationList .notifications");
+		$("#noNotifications").hide();
+		target.prepend(template);
+		this.registerOpenNotificationEvent();
+		$(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
+			$(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
+			setTimeout(function () {
+				markAsRead(notification.id).then(() => {
+					$(`.notification-item[data-notification-id="${notification.id}"]`).remove();
+				}).catch(e => {
+					new ToastNotifier().notifyErrorList(e);
+					$(`.notification-item[data-notification-id="${notification.id}"]`).show();
+				});
+			}, 500);
+		});
 	}
 
 	Notificator.prototype.createNotificationBodyContainer = function (n) {
@@ -1722,6 +1773,25 @@ if (typeof Notificator !== "undefined") {
 			</div>`;
 		return block;
 	}
+
+	Notificator.prototype.getAllNotifications = function (page, perPage) {
+		return new Promise((resolve, reject) => {
+			$.ajax({
+				url: `${this.origin()}/api/Notifications/GetUserNotificationsWithPagination`,
+				method: "get",
+				data: {
+					page,
+					perPage
+				},
+				success: function (data) {
+					resolve(data);
+				},
+				error: function (error) {
+					reject(error);
+				}
+			});
+		});
+	};
 }
 
 /***********************************************
