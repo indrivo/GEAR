@@ -9,11 +9,7 @@ cache:
 test_projects:
   stage: test
   script:
-    - echo "Scanning started"
-    - dotnet sonarscanner begin /k:"ISODMS"
-    - dotnet build /nodereuse:false
-    - dotnet sonarscanner end 
-    - dotnet build-server shutdown
+    - dotnet test ./src/GR.Tests/GR.Core.Tests/GR.Core.Tests.csproj
 
 deploy_to_server_job:
   stage: deploy_to_server
