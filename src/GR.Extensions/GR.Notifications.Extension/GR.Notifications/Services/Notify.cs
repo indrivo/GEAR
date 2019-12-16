@@ -194,9 +194,10 @@ namespace GR.Notifications.Services
         {
             var filters = new List<Filter>
             {
-                new Filter(nameof(SystemNotifications.UserId), userId),
-                new Filter(nameof(BaseModel.IsDeleted), !onlyUnread)
+                new Filter(nameof(SystemNotifications.UserId), userId)
             };
+
+            if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
 
             var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, filters);
             if (notifications.IsSuccess)
@@ -212,18 +213,19 @@ namespace GR.Notifications.Services
         /// </summary>
         /// <param name="page"></param>
         /// <param name="perPage"></param>
-        /// <param name="isDeleted"></param>
+        /// <param name="onlyUnread"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10, bool isDeleted = false)
+        public virtual async Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10, bool onlyUnread = true)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return userRequest.Map<PaginatedNotificationsViewModel>();
             var user = userRequest.Result;
             var filters = new List<Filter>
             {
-                new Filter(nameof(SystemNotifications.UserId),user.Id.ToGuid()),
-                new Filter(nameof(BaseModel.IsDeleted), isDeleted)
+                new Filter(nameof(SystemNotifications.UserId),user.Id.ToGuid())
             };
+
+            if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
 
             var sortableDirection = new Dictionary<string, EntityOrderDirection>
             {
@@ -274,7 +276,6 @@ namespace GR.Notifications.Services
             var response = await _dataService.Delete<SystemNotifications>(notificationId);
             return response;
         }
-
 
         /// <inheritdoc />
         /// <summary>
