@@ -92,8 +92,9 @@ namespace GR.Notifications.Abstractions
         /// </summary>
         /// <param name="page"></param>
         /// <param name="perPage"></param>
+        /// <param name="isDeleted"></param>
         /// <returns></returns>
-        Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10);
+        Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10, bool isDeleted = false);
 
         /// <summary>
         /// Delete notification

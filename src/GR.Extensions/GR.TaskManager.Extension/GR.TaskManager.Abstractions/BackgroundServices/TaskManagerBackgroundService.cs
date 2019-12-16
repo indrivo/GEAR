@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Services;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ namespace GR.TaskManager.Abstractions.BackgroundServices
         /// Send logs
         /// </summary>
         /// <param name="state"></param>
-        public override async void Execute(object state)
+        public override async Task Execute(object state)
         {
             if (!GearApplication.Configured) return;
             await _managerNotificationService.TaskExpirationNotificationAsync();

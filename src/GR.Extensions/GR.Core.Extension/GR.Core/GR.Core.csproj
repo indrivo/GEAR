@@ -5,13 +5,13 @@
     <LangVersion>7.3</LangVersion>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Description>This package is a core to the Gear Cms</Description>
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core</RepositoryUrl>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core</PackageProjectUrl>
-    <PackageReleaseNotes>- Add new extensions for IEnumerables</PackageReleaseNotes>
+    <PackageReleaseNotes>- Fix sonar warnings for async void </PackageReleaseNotes>
 
   </PropertyGroup>
 

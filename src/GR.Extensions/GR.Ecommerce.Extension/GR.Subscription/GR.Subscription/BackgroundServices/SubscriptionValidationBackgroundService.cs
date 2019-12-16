@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GR.Core;
 using GR.Core.Services;
 using GR.ECommerce.Abstractions;
@@ -38,7 +39,7 @@ namespace GR.Subscriptions.BackgroundServices
         /// Execute
         /// </summary>
         /// <param name="state"></param>
-        public override async void Execute(object state)
+        public override async Task Execute(object state)
         {
             if (!GearApplication.Configured) return;
             var daysNotifySubscription = (await _productService.GetSettingAsync<string>(CommerceResources.SettingsParameters.DAYS_NOTIFY_SUBSCRIPTION_EXPIRATION)).Result ?? "0";

@@ -51,12 +51,13 @@ namespace GR.Notifications.Razor.Controllers
         /// </summary>
         /// <param name="page"></param>
         /// <param name="perPage"></param>
+        /// <param name="isDeleted"></param>
         /// <returns></returns>
         [HttpGet]
         [Produces("application/json", Type = typeof(ResultModel<PaginatedNotificationsViewModel>))]
         [Route("api/[controller]/[action]")]
-        public async Task<JsonResult> GetUserNotificationsWithPagination([Required] uint page = 1, uint perPage = 10)
-            => await JsonAsync(_notify.GetUserNotificationsWithPaginationAsync(page, perPage));
+        public async Task<JsonResult> GetUserNotificationsWithPagination([Required] uint page = 1, uint perPage = 10, bool isDeleted = false)
+            => await JsonAsync(_notify.GetUserNotificationsWithPaginationAsync(page, perPage, isDeleted));
 
         /// <summary>
         /// Get notification by id
