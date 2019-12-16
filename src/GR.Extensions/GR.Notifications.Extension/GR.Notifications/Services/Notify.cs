@@ -193,15 +193,9 @@ namespace GR.Notifications.Services
         {
             var filters = new List<Filter>
             {
-                new Filter(nameof(SystemNotifications.UserId), userId)
+                new Filter(nameof(SystemNotifications.UserId), userId),
+                new Filter(nameof(BaseModel.IsDeleted), !onlyUnread)
             };
-
-            if (onlyUnread) filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
-            else
-            {
-                filters.Add(new Filter(nameof(BaseModel.IsDeleted), false));
-                filters.Add(new Filter(nameof(BaseModel.IsDeleted), true));
-            }
 
             var notifications = await _dataService.GetAllWithInclude<SystemNotifications, SystemNotifications>(null, filters);
             if (notifications.IsSuccess)
@@ -230,7 +224,7 @@ namespace GR.Notifications.Services
             };
 
             var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters);
-            if (!paginatedResult.IsSuccess) return paginatedResult.Map<PaginatedNotificationsViewModel>(new PaginatedNotificationsViewModel
+            if (!paginatedResult.IsSuccess) return paginatedResult.Map(new PaginatedNotificationsViewModel
             {
                 Page = page,
                 PerPage = perPage,

@@ -217,5 +217,3 @@ We store history of object states in `EntryStateHistory`, this entity has the fo
 ## License
 
 MIT
-
-
