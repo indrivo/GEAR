@@ -13,6 +13,7 @@ using GR.Core.Helpers.Filters;
 using GR.Core.Helpers.Responses;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.Email.Abstractions;
+using GR.Entities.Abstractions.Enums;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Mappers;
@@ -211,8 +212,9 @@ namespace GR.Notifications.Services
         /// </summary>
         /// <param name="page"></param>
         /// <param name="perPage"></param>
+        /// <param name="isDeleted"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10)
+        public virtual async Task<ResultModel<PaginatedNotificationsViewModel>> GetUserNotificationsWithPaginationAsync(uint page = 1, uint perPage = 10, bool isDeleted = false)
         {
             var userRequest = await _userManager.GetCurrentUserAsync();
             if (!userRequest.IsSuccess) return userRequest.Map<PaginatedNotificationsViewModel>();
@@ -220,10 +222,15 @@ namespace GR.Notifications.Services
             var filters = new List<Filter>
             {
                 new Filter(nameof(SystemNotifications.UserId),user.Id.ToGuid()),
-                new Filter(nameof(BaseModel.IsDeleted), false)
+                new Filter(nameof(BaseModel.IsDeleted), isDeleted)
             };
 
-            var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters);
+            var sortableDirection = new Dictionary<string, EntityOrderDirection>
+            {
+                { nameof(SystemNotifications.Created), EntityOrderDirection.Desc }
+            };
+
+            var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters, sortableDirection);
             if (!paginatedResult.IsSuccess) return paginatedResult.Map(new PaginatedNotificationsViewModel
             {
                 Page = page,
