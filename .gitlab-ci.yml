@@ -11,6 +11,7 @@ test_projects:
   only:
     - develop
   script:
+    - dotnet clean
     - echo "Code quality tests started"
     - dotnet sonarscanner begin /k:"ISODMS"
     - dotnet build /nodereuse:false
