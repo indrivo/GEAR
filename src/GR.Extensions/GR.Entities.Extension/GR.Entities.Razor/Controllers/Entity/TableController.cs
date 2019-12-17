@@ -121,7 +121,7 @@ namespace GR.Entities.Razor.Controllers.Entity
             var newTable = new CreateTableViewModel
             {
                 Name = model.Name,
-                EntityType = entityType.Name,
+                EntityType = GearSettings.DEFAULT_ENTITY_SCHEMA,  //entityType.Name,
                 Description = model.Description,
                 TenantId = CurrentUserTenantId,
                 IsCommon = model.IsCommon
