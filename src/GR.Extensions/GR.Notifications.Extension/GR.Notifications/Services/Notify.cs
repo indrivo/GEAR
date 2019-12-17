@@ -232,7 +232,7 @@ namespace GR.Notifications.Services
                 { nameof(SystemNotifications.Created), EntityOrderDirection.Desc }
             };
 
-            var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters, sortableDirection);
+            var paginatedResult = await _dataService.GetPaginatedResultAsync<SystemNotifications>(page, perPage, null, filters, sortableDirection, false);
             if (!paginatedResult.IsSuccess) return paginatedResult.Map(new PaginatedNotificationsViewModel
             {
                 Page = page,

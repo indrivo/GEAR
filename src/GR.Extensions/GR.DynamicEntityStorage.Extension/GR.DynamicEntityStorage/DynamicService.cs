@@ -644,12 +644,11 @@ namespace GR.DynamicEntityStorage
         /// <param name="queryString"></param>
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
+        /// <param name="loadIncludes"></param>
         /// <returns></returns>
         public virtual async Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync<TEntity>(uint page = 1, uint perPage = 10, string queryString = null,
-            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null) where TEntity : BaseModel
-        {
-            return await GetPaginatedResultAsync(typeof(TEntity).Name, page, perPage, queryString, filters, orderDirection);
-        }
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null, bool loadIncludes = true) where TEntity : BaseModel
+        => await GetPaginatedResultAsync(typeof(TEntity).Name, page, perPage, queryString, filters, orderDirection, loadIncludes);
 
         /// <summary>
         /// Get paginated result
@@ -660,9 +659,10 @@ namespace GR.DynamicEntityStorage
         /// <param name="queryString"></param>
         /// <param name="filters"></param>
         /// <param name="orderDirection"></param>
+        /// <param name="loadIncludes"></param>
         /// <returns></returns>
         public virtual async Task<ResultModel<PaginationResponseViewModel>> GetPaginatedResultAsync(string entity, uint page = 1, uint perPage = 10, string queryString = null,
-            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null)
+            IEnumerable<Filter> filters = null, Dictionary<string, EntityOrderDirection> orderDirection = null, bool loadIncludes = true)
         {
             var response = new ResultModel<PaginationResponseViewModel>();
             if (entity.IsNullOrEmpty()) return response;
@@ -680,6 +680,7 @@ namespace GR.DynamicEntityStorage
             if (filters != null) model.Filters = filters.ToList();
             if (orderDirection != null) model.OrderByColumns = orderDirection;
             var dbRequest = _context.GetPaginationResult(model, page, perPage, queryString);
+            if (!loadIncludes) return dbRequest;
             var referenceFields = table.TableFields?.Where(x => x.DataType.Equals(TableFieldDataType.Guid)).ToList();
             var responseData = dbRequest.Result.ViewModel.Values;
             if (referenceFields != null)
@@ -697,8 +698,8 @@ namespace GR.DynamicEntityStorage
                     }
                 }
             }
-
             dbRequest.Result.ViewModel.Values = responseData;
+
             return dbRequest;
         }
 
