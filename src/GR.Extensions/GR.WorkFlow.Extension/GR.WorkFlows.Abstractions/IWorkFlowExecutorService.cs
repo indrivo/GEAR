@@ -149,5 +149,12 @@ namespace GR.WorkFlows.Abstractions
         /// <param name="entryId"></param>
         /// <returns></returns>
         Task<ResultModel<IEnumerable<EntryHistoryViewModel>>> GetEntryHistoryByWorkflowIdAsync(Guid? workflowId, string entryId);
+
+        /// <summary>
+        /// Get workflow contracts
+        /// </summary>
+        /// <param name="workFLowId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<WorkFlowEntityContract>>> GetWorkflowContractsAsync(Guid? workFLowId);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 using GR.Core.Attributes.Documentation;
 using GR.Core.BaseControllers;
@@ -160,5 +161,16 @@ namespace GR.WorkFlows.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel<IEnumerable<EntryHistoryViewModel>>))]
         public async Task<JsonResult> GetEntryHistoryByWorkflowId([Required]Guid? workflowId, [Required]string entryId)
             => await JsonAsync(_workFlowExecutorService.GetEntryHistoryByWorkflowIdAsync(workflowId, entryId));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="workFLowId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<WorkFlowEntityContract>>))]
+        public async Task<JsonResult> GetWorkflowContracts(Guid? workFLowId)
+            => await JsonAsync(_workFlowExecutorService.GetWorkflowContractsAsync(workFLowId));
     }
 }
