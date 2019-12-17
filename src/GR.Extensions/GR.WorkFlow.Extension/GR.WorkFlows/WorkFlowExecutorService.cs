@@ -389,6 +389,20 @@ namespace GR.WorkFlows
         public virtual async Task<bool> IsAnyRegisteredContractToEntityAsync([Required]string entityName, Guid? workFlowId)
             => await _workFlowContext.Contracts.AnyAsync(x => x.WorkFlowId.Equals(workFlowId) && x.EntityName.Equals(entityName));
 
+
+        /// <summary>
+        /// Get workflow contracts
+        /// </summary>
+        /// <param name="workFLowId"></param>
+        /// <returns></returns>
+        public virtual async Task<ResultModel<IEnumerable<WorkFlowEntityContract>>> GetWorkflowContractsAsync(Guid? workFLowId)
+        {
+            if (workFLowId == null) return new NotFoundResultModel<IEnumerable<WorkFlowEntityContract>>();
+            var contracts = await _workFlowContext.Contracts
+                .Where(x => x.WorkFlowId.Equals(workFLowId))
+                .ToListAsync();
+            return new SuccessResultModel<IEnumerable<WorkFlowEntityContract>>(contracts);
+        }
         #endregion
 
         #region Actions
