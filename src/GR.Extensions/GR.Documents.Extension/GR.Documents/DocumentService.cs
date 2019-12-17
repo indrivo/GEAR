@@ -77,7 +77,7 @@ namespace GR.Documents
                     x.DocumentCategory = _documentContext.DocumentCategories.FirstOrDefault(i => i.Id == x.DocumentCategoryId);
                     var listModel = x.Adapt<DocumentViewModel>();
                     return listModel;
-                }).ToList();
+                }).Where(x=> !x.IsDeleted).ToList();
 
             var result = new DTResult<DocumentViewModel>
             {
@@ -103,7 +103,7 @@ namespace GR.Documents
                 .Include(i => i.DocumentType)
                 .Include(i => i.DocumentVersions)
                 .Include(i=> i.DocumentCategory)
-                .Where(x => x.TenantId == user.Result.TenantId)
+                .Where(x => x.TenantId == user.Result.TenantId && !x.IsDeleted)
                 .ToListAsync();
 
             if (listDocuments == null || !listDocuments.Any()) return new NotFoundResultModel<IEnumerable<DocumentViewModel>>();
