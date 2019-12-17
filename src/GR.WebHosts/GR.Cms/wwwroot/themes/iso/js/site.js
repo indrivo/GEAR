@@ -1690,13 +1690,16 @@ if (typeof Notificator !== "undefined") {
 
 	const getNotificationsFromDropdown = () => {
 		let notifications = [];
-		$.each($('#notificationList .notifications .notification-item'), function (i, value) {
-			notifications.push(value.data('notification-id'));
+		$('#notificationList .notification-item').each(function () {
+			notifications.push($(this).data('notification-id'));
 		});
 		return notifications;
 	}
 
 	let notificationsPage = 1;
+	let stopGetNotifications = false;
+
+	addLoader($('#notificationList'));
 
 	$(document).click(() => {
 		$("#notificationList").collapse('hide');
@@ -1710,28 +1713,37 @@ if (typeof Notificator !== "undefined") {
 	$('#notificationList .clear-all').click(() => {
 		$('#notificationList .notifications').hide(500);
 		setTimeout(function () {
-			$('#notificationList .notifications').html(noNotifications).slideDown(100);
 			const markNotifications = getNotificationsFromDropdown();
+			$('#notificationList .notifications').html(noNotifications).slideDown(100);
 			$.each(markNotifications, function () {
-				markAsRead(this.id);
+				markAsRead(this);
 			});
 		}, 500);
 	});
 
 	$('#notificationList .show-more').click(() => {
-		addLoader($('#notificationList'));
-		notificationsPage++;
-		Notificator.prototype.getAllNotifications(notificationsPage, 10).then(data => {
-			if (!data) return;
-			if (data.is_success) {
-				$.each(data.result.notifications, (i, notification) => {
-					notificator.appendNotificationToContainer(notification);
-				});
-			}
-			removeLoader($('#notificationList'));
-		}).catch(e => {
-			new ToastNotifier().notifyErrorList(e);
-		});
+		if (!stopGetNotifications) {
+			addLoader($('#notificationList'));
+			Notificator.prototype.getAllNotifications(notificationsPage, 5, true).then(data => {
+				if (!data) return;
+				if (data.is_success) {
+					if (data.result.notifications.length > 0) {
+						notificationsPage++;
+					}
+					else {
+						$('#notificationList .show-more').hide();
+						stopGetNotifications = true;
+					}
+					$.each(data.result.notifications, (i, notification) => {
+						notificator.appendNotificationToContainer(notification);
+					});
+				}
+				$('#noNotifications').remove();
+				removeLoader($('#notificationList'));
+			}).catch(e => {
+				new ToastNotifier().notifyErrorList(e);
+			});
+		}
 	});
 
 
@@ -1774,14 +1786,15 @@ if (typeof Notificator !== "undefined") {
 		return block;
 	}
 
-	Notificator.prototype.getAllNotifications = function (page, perPage) {
+	Notificator.prototype.getAllNotifications = function (page, perPage, onlyUnread) {
 		return new Promise((resolve, reject) => {
 			$.ajax({
 				url: `${this.origin()}/api/Notifications/GetUserNotificationsWithPagination`,
 				method: "get",
 				data: {
 					page,
-					perPage
+					perPage,
+					onlyUnread
 				},
 				success: function (data) {
 					resolve(data);

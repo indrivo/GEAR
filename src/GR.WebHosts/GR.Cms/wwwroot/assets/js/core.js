@@ -506,12 +506,16 @@ function initExternalConnections(user) {
  * Show notifications on page load
  */
 function loadNotifications() {
-	notificator.getAllNotifications(1, 10).then(data => {
+	notificator.getAllNotifications(1, 10, true).then(data => {
 		if (!data) return;
 		if (data.is_success) {
 			$.each(data.result.notifications, (i, notification) => {
 				notificator.addNewNotificationToContainer(notification);
 			});
+			const loaderClassString = 'notification-loader';
+			const loaderClass = `.${loaderClassString}`;
+			$('#notificationList').find(loaderClass).fadeOut();
+			setTimeout(function () { $('#notificationList').find(loaderClass).remove(); }, 400);
 		}
 	});
 }
