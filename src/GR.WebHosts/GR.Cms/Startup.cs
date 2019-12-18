@@ -204,7 +204,8 @@ namespace GR.Cms
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
-				.AddIdentityModuleEvents();
+				.AddIdentityModuleEvents()
+				.RegisterLocationService<LocationService>();
 
 			config.GearServices.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
