@@ -170,3 +170,7 @@
 	.dataTables_paginate .pagination .paginate_button.next:before {
 		transform: rotate(180deg);
 	}
+
+table.dataTable {
+	width: 100% !important;
+}
