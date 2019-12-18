@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "Estás seguro?",
   "system_notifications_will_delete_all": "Todas las notificaciones serán eliminados",
   "system_notifications_confirm_delete": "Sí, eliminar",
-  "system_notifications_show_more": "Mostrar más"
+  "system_notifications_show_more": "Mostrar más",
+  "system_state_machine_contracts": "Los contratos de",
+  "system_state_machine_add_new_contract": "Añadir un nuevo contrato"
 }

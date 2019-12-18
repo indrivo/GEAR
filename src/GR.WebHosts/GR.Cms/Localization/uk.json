@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "Ви впевнені?",
   "system_notifications_will_delete_all": "Всі повідомлення будуть видалені",
   "system_notifications_confirm_delete": "Так, видалити",
-  "system_notifications_show_more": "Показати більше"
+  "system_notifications_show_more": "Показати більше",
+  "system_state_machine_contracts": "Контракти",
+  "system_state_machine_add_new_contract": "Додати новий контракт"
 }

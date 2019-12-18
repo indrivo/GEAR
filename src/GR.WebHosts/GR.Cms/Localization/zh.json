@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "你确定吗？",
   "system_notifications_will_delete_all": "所有通知将被删除",
   "system_notifications_confirm_delete": "是的，删除",
-  "system_notifications_show_more": "显示出更多的"
+  "system_notifications_show_more": "显示出更多的",
+  "system_state_machine_contracts": "合同",
+  "system_state_machine_add_new_contract": "添加新的合同"
 }

@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "Bent u zeker?",
   "system_notifications_will_delete_all": "Alle meldingen zullen worden verwijderd",
   "system_notifications_confirm_delete": "Ja, verwijderen",
-  "system_notifications_show_more": "Toon meer"
+  "system_notifications_show_more": "Toon meer",
+  "system_state_machine_contracts": "Contracten",
+  "system_state_machine_add_new_contract": "Toevoegen nieuw contract"
 }

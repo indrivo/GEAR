@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "Ești sigur?",
   "system_notifications_will_delete_all": "Toate notificările vor fi șterse",
   "system_notifications_confirm_delete": "Da, șterge-le",
-  "system_notifications_show_more": "Arată mai mult"
+  "system_notifications_show_more": "Arată mai mult",
+  "system_state_machine_contracts": "Contracte",
+  "system_state_machine_add_new_contract": "Adaugă nou contract"
 }

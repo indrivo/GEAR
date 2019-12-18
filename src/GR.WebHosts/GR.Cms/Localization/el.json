@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "Είσαι σίγουρος;",
   "system_notifications_will_delete_all": "Όλες οι κοινοποιήσεις θα πρέπει να διαγραφεί",
   "system_notifications_confirm_delete": "Ναι, διαγραφή",
-  "system_notifications_show_more": "Εμφάνιση περισσότερων"
+  "system_notifications_show_more": "Εμφάνιση περισσότερων",
+  "system_state_machine_contracts": "Συμβάσεις",
+  "system_state_machine_add_new_contract": "Προσθέστε νέο συμβόλαιο"
 }

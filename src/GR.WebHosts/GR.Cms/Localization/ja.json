@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "ご確認ください。",
   "system_notifications_will_delete_all": "すべての通知を削除する",
   "system_notifications_confirm_delete": "Yes削除",
-  "system_notifications_show_more": "続きを見る"
+  "system_notifications_show_more": "続きを見る",
+  "system_state_machine_contracts": "契約",
+  "system_state_machine_add_new_contract": "新規契約"
 }

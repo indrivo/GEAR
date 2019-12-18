@@ -846,5 +846,7 @@
   "system_notifications_you_sure_delete_all": "Вы уверены?",
   "system_notifications_will_delete_all": "Все уведомления будут удалены",
   "system_notifications_confirm_delete": "Да, удалить",
-  "system_notifications_show_more": "Показать больше"
+  "system_notifications_show_more": "Показать больше",
+  "system_state_machine_contracts": "Контракты",
+  "system_state_machine_add_new_contract": "Добавить новый контракт"
 }

@@ -43,7 +43,7 @@
 
 <div class="modal fade" id="state-machine-modal" tabindex="-1" role="dialog" style="display: none;" aria-hidden="true"></div>
 
-<div class="modal fade modal-confirm-delete" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none;" aria-hidden="true">
+<div class="modal fade modal-confirm-delete" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" style="display: none; transform: translate(0, 60px);" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div>
@@ -75,7 +75,7 @@
 
     <!--Conncetion modal template-->
     <script id="coonection-modal" type="text/x-jsrender">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document" style="transform: translate(0, 60px);">
             <div class="modal-content">
                 <div class="">
                     <button type="button" class="close p-0" data-dismiss="modal" aria-label="Close">
@@ -116,7 +116,7 @@
 
     <!--Edit workflow modal template-->
     <script id="edit-workflow-modal" type="text/x-jsrender">
-        <div class="modal-dialog" role="document" data-workflow-id="{{:~id}}">
+        <div class="modal-dialog" role="document" data-workflow-id="{{:~id}}" style="transform: translate(0, 60px);">
             <div class="modal-content">
                 <div class="">
                     <button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
@@ -126,6 +126,7 @@
                 <ul class="nav nav-tabs iso-tabs">
                     <li><a class="nav-link initial-tab-click active" data-toggle="tab" href="#details-tab">@Localizer["system_state_machine_workflow_details"]</a></li>
                     <li><a class="nav-link" data-toggle="tab" href="#workflow-states-tab">@Localizer["system_state_machine_states"]</a></li>
+                    <li><a class="nav-link" data-toggle="tab" href="#workflow-contracts-tab">@Localizer["system_state_machine_contracts"]</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="details-tab" class="tab-pane fade in active show">
@@ -155,6 +156,18 @@
                             </div>
                         </form>
                     </div>
+                    <div id="workflow-contracts-tab" class="tab-pane fade">
+                        <div class="contracts-list">
+                        </div>
+                        <form class="mt-4" id="add-contract">
+                            <div class="form-group d-flex">
+                                <input type="text" class="form-control" id="add-new-contract-name" required placeholder="@Localizer["system_state_machine_add_new_contract"]">
+                                <button class="btn btn-success py-0 px-2" id="add-new-contract-button" type="submit">
+                                    <i class="material-icons d-block">add</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -162,7 +175,7 @@
 
     <!--Edit state modal template-->
     <script id="edit-state-modal" type="text/x-jsrender">
-        <div class="modal-dialog" role="document" data-state-id="{{:id}}">
+        <div class="modal-dialog" role="document" data-state-id="{{:id}}" style="transform: translate(0, 60px);">
             <div class="modal-content">
                 <div class="">
                     <button type="button" class="close p-0" data-dismiss="modal" aria-hidden="true" aria-label="Close">
@@ -222,6 +235,16 @@
         <div class="d-flex mb-2 state-item" data-state-id="{{:id}}">
             <span>{{:name}}</span>
             <span class="state-delete btn btn-outline-danger p-0 ml-auto">
+                <i class="material-icons d-block">close</i>
+            </span>
+        </div>
+    </script>
+
+    <!--State edit workflow template-->
+    <script id="checkboxDeleteTemplateContract" type="text/x-jsrender">
+        <div class="d-flex mb-2 contract-item" data-contract-id="{{:id}}" data-entity-name="{{:entityName}}">
+            <span>{{:entityName}}</span>
+            <span class="contract-delete btn btn-outline-danger p-0 ml-auto">
                 <i class="material-icons d-block">close</i>
             </span>
         </div>
