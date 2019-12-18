@@ -1030,9 +1030,20 @@ class Validator {
 	 * Validate email
 	 * @param {any} email
 	 */
-	isValidEmail(email) {
-		return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email);
-	}
+    isValidEmail(email) {
+        return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(email);
+    }
+
+	/**
+	 * Bind valdations to form
+	 * @param {any} formSelector
+	 */
+    reAttachValidationsRulesToForm(formSelector) {
+        var $form = $(formSelector);
+        $form.unbind();
+        $form.data("validator", null);
+        $.validator.unobtrusive.parse(document);
+    }
 }
 
 //Jquery Extensions
@@ -1051,3 +1062,6 @@ Array.prototype.update = function (predicate, item) {
 		this[index] = item;
 	} catch (e) { console.warn(e); }
 };
+
+
+
