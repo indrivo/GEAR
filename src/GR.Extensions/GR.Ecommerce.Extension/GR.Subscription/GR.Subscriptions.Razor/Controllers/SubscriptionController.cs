@@ -99,17 +99,36 @@ namespace GR.Subscriptions.Razor.Controllers
             //TODO: Muta la subscriptions si anunta-l pe Girbu sa schimbe la el in ui, plus aici verificari la subscriptions
             //TODO: Sa adaugi mesaje la errors in ResultModel<Guid> de ce nu poate crea o noua subscriere ca sa stie si NIcu ce sa afiseze in pagina
 
-            var product = await _productService.GetProductByIdAsync(productId);
+            var productRequest = await _productService.GetProductByIdAsync(productId);
             var lastSubscriptionForUser = await _subscriptionService.GetLastSubscriptionForUserAsync();
 
-            if (lastSubscriptionForUser.IsSuccess && product.IsSuccess)
+            if (lastSubscriptionForUser.IsSuccess && productRequest.IsSuccess)
             {
-                if (lastSubscriptionForUser.Result != null && product.Result.Name != lastSubscriptionForUser.Result?.Name && !lastSubscriptionForUser.Result.IsFree)
+                if (lastSubscriptionForUser.Result != null && productRequest.Result.Name != lastSubscriptionForUser.Result?.Name && !lastSubscriptionForUser.Result.IsFree)
                 {
                     return Json(new ResultModel
                     {
                         IsSuccess = false, 
                         Errors = new List<IErrorModel> { new ErrorModel() {Message = "Select plan not correspond exist plan" } }
+                    });
+                }
+            }
+
+            if (lastSubscriptionForUser.Result != null)
+            {
+                var product = productRequest.Result;
+                var subscription = lastSubscriptionForUser.Result;
+
+                var productAttribute = product.ProductAttributes.FirstOrDefault(x => x.ProductAttribute.Name == "Number of users")?.Value;
+                var subscriptionValue = subscription.SubscriptionPermissions.FirstOrDefault()?.Value;
+
+                if (int.TryParse(productAttribute, out var valueAttribute) && int.TryParse(subscriptionValue, out var valueSubscription)
+                     && valueAttribute < valueSubscription)
+                {
+                    return Json(new ResultModel
+                    {
+                        IsSuccess = false,
+                        Errors = new List<IErrorModel> {new ErrorModel() {Message = "Select plan not correspond exist plan"}}
                     });
                 }
             }
