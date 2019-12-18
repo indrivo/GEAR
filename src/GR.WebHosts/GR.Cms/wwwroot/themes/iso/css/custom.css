@@ -139,3 +139,34 @@
 	height: 100%;
 	width: 100%;
 }
+
+
+.dataTables_paginate .pagination .paginate_button.previous,
+.dataTables_paginate .pagination .paginate_button.next {
+	font-size: 0;
+	position: relative;
+}
+
+	.dataTables_paginate .pagination .paginate_button.previous:hover,
+	.dataTables_paginate .pagination .paginate_button.next:hover {
+		background-color: #f8f8f8;
+	}
+
+	.dataTables_paginate .pagination .paginate_button.previous:before,
+	.dataTables_paginate .pagination .paginate_button.next:before {
+		content: '';
+		background-size: 8px;
+		background-repeat: no-repeat;
+		background-image: url(../../../images/arrow.svg);
+		background-position: center;
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		left: 0;
+		z-index: 1;
+		top: 0;
+	}
+
+	.dataTables_paginate .pagination .paginate_button.next:before {
+		transform: rotate(180deg);
+	}
