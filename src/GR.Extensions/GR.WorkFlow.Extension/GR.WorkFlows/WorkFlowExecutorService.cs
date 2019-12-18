@@ -373,7 +373,7 @@ namespace GR.WorkFlows
             if (entityName.IsNullOrEmpty() || workFlowId == null) return new InvalidParametersResultModel();
             var contract = await _workFlowContext.Contracts
                 .AsNoTracking()
-                .Include(x => x.WorkFlowId)
+                .Include(x => x.WorkFlow)
                 .FirstOrDefaultAsync(x => x.EntityName.Equals(entityName) && x.WorkFlowId.Equals(workFlowId));
             if (contract == null) return new NotFoundResultModel();
             _workFlowContext.Contracts.Remove(contract);
