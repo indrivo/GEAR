@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Web app for run gear product</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>c# gear app .net core web webapp framework</PackageTags>
-    <PackageReleaseNotes>-Fix libs restore</PackageReleaseNotes>
+    <PackageReleaseNotes>-Move app extensions</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

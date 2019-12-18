@@ -63,7 +63,11 @@ namespace GR.Identity.Services
         public async Task<ResultModel<GearUser>> GetCurrentUserAsync()
         {
             var result = new ResultModel<GearUser>();
-            if (_httpContextAccessor.HttpContext == null) return result;
+            if (_httpContextAccessor.HttpContext == null)
+            {
+                result.Errors.Add(new ErrorModel("", "Unauthorized user"));
+                return result;
+            }
             var user = await UserManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             result.IsSuccess = user != null;
             result.Result = user;

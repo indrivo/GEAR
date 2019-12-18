@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using GR.Core.Helpers;
 using GR.DynamicEntityStorage.Abstractions;
 using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.DynamicEntityStorage.Abstractions.Helpers;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Cms.Services.Abstractions;
 using GR.Cms.ViewModels.TreeISOViewModels;
@@ -301,7 +300,7 @@ namespace GR.Cms.Services
 				result.Errors = controlStructures.Errors;
 			}
 
-			var data = controlStructures.Result?.ToList();
+			var data = controlStructures.Result?.OrderBy(x => x.Order).ToList();
 			if (data == null)
 			{
 				result.Errors.Add(
@@ -322,7 +321,7 @@ namespace GR.Cms.Services
 					SecondLevels = secondLevels,
 					CollapseSelectors = collapseChilds
 				};
-			}).OrderBy(x => x.Number, new StringNumberComparer()).ToList();
+			}).ToList();
 
 			result.IsSuccess = true;
 			result.Result = rootResult;
@@ -469,7 +468,7 @@ namespace GR.Cms.Services
 			var data = source.Where(x => x.ParentId == parentId).Select(async x =>
 			{
 				var (_, content) = await GetControlContentAndGoalAsync((Guid)x.Id);
-				var documentCount = await _service.Table("ControlDocuments").Count(new Dictionary<string, object> {{"ControlStructureId", x.Id}});
+				var documentCount = await _service.Table("ControlDocuments").Count(new Dictionary<string, object> { { "ControlStructureId", x.Id } });
 				return new ControlThirdLevel
 				{
 					ParentId = parentId,

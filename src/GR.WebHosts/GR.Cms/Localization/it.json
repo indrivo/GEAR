@@ -839,5 +839,14 @@
   "start_state": "Stato di inizio",
   "next_state": "Stato successivo",
   "change_state": "Il cambiamento di stato",
-  "system_notifications_clear_all": "Cancella tutto"
+  "system_notifications_clear_all": "Cancella tutto",
+  "system_notificator_no_notifications": "Non hai notifiche",
+  "system_notifications_show_all": "Mostra tutti",
+  "system_notifications_delete_all": "Eliminare tutti",
+  "system_notifications_you_sure_delete_all": "Sei sicuro?",
+  "system_notifications_will_delete_all": "Tutte le notifiche saranno cancellati",
+  "system_notifications_confirm_delete": "Sì, eliminare",
+  "system_notifications_show_more": "Vedi di più",
+  "system_state_machine_contracts": "Contratti",
+  "system_state_machine_add_new_contract": "Aggiungi un nuovo contratto"
 }

@@ -839,5 +839,14 @@
   "start_state": "Starten Sie Zustand",
   "next_state": "Nächsten Zustand",
   "change_state": "Status ändern",
-  "system_notifications_clear_all": "Deaktivieren Sie alle"
+  "system_notifications_clear_all": "Deaktivieren Sie alle",
+  "system_notificator_no_notifications": "Sie haben keine Benachrichtigungen",
+  "system_notifications_show_all": "Alle anzeigen",
+  "system_notifications_delete_all": "Löschen Sie alle",
+  "system_notifications_you_sure_delete_all": "Sind Sie sicher?",
+  "system_notifications_will_delete_all": "Alle Benachrichtigungen werden gelöscht",
+  "system_notifications_confirm_delete": "Ja, löschen",
+  "system_notifications_show_more": "Mehr anzeigen",
+  "system_state_machine_contracts": "Verträge",
+  "system_state_machine_add_new_contract": "Hinzufügen neuer Vertrag"
 }
