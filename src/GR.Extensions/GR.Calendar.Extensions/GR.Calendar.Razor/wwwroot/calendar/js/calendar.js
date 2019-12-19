@@ -397,8 +397,8 @@
                 const isPopupElement = target.is('.details-popup *');
                 const isPopupAction = target.is('.details-popup .event-edit i') || target.is('.details-popup .event-delete i');
                 const isSelect = target.is('.select2-container *');
-                const isDatepicker = target.is('.datepicker *');
-                const isClockpicker = target.is('.clockpicker-popover *');
+                const isDatepicker = target.is('.datepicker *') || target.is('.datepicker');
+                const isClockpicker = target.is('.clockpicker-popover *') || target.is('.clockpicker-popover');
                 const popupCase = isPopup || isPopupElement || isSelect || isDatepicker || isClockpicker;
                 if (isEvent) {
                     addPopup(target, 'eventPopup');
@@ -593,12 +593,12 @@
                 $('.details-popup-priority .event-priority').on('change', function () {
                     const allPriorities = 'priority-0 priority-1 priority-2 priority-3';
                     const priority = $(this).val();
-                    console.log(priority);
                     $('.details-popup .event-priority-bullet').removeClass(allPriorities).addClass(`priority-${priority}`);
                 });
 
-                $('#edit-event').off().submit(function (e) {
+                $('#edit-event').submit(function (e) {
                     e.preventDefault();
+                    $('.details-popup').data('visibility', 'hidden').hide();
                     const scope = '#edit-event';
                     const startDateValue = $(`${scope} .event-start-date`).val();
                     const startDate = moment(startDateValue, 'MMM D, YYYY').format('YYYY-MM-DD');
@@ -620,7 +620,6 @@
                         const memberId = $(this).data('member-id');
                         event.members.push(memberId);
                     });
-
                     updateEvent(event);
                 });
 
