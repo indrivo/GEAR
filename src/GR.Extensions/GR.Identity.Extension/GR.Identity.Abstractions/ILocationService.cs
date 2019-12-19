@@ -54,7 +54,7 @@ namespace GR.Identity.Abstractions
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel<long>> AddCityToCountryAsync(StateOrProvince model);
+        Task<ResultModel<long>> AddCityToCountryAsync(AddCityViewModel model);
 
         /// <summary>
         /// Remove city by id

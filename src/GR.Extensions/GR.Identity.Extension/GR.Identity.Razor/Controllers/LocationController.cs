@@ -105,7 +105,7 @@ namespace GR.Identity.Razor.Controllers
         [HttpPost]
         [Route("api/[controller]/[action]")]
         [Produces("application/json", Type = typeof(ResultModel<long>))]
-        public async Task<JsonResult> AddCityToCountry([Required]StateOrProvince model)
+        public async Task<JsonResult> AddCityToCountry([Required]AddCityViewModel model)
             => !ModelState.IsValid ? Json(new ResultModel().AttachModelState(ModelState)) : Json(await _locationService.AddCityToCountryAsync(model));
 
 

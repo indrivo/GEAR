@@ -122,14 +122,17 @@ namespace GR.Identity.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<long>> AddCityToCountryAsync(StateOrProvince model)
+        public virtual async Task<ResultModel<long>> AddCityToCountryAsync(AddCityViewModel model)
         {
             if (model == null) return new InvalidParametersResultModel<long>();
-            await _context.StateOrProvinces.AddAsync(model);
+            var cities = await _context.StateOrProvinces.Select(x => x.Id).ToListAsync();
+            var id = cities.GenerateUniqueNumberThatNoIncludesNumbers();
+            var dataModel = model.Adapt<StateOrProvince>();
+            dataModel.Id = id;
+            await _context.StateOrProvinces.AddAsync(dataModel);
             var dbRequest = await _context.PushAsync();
-            return dbRequest.Map(model.Id);
+            return dbRequest.Map(dataModel.Id);
         }
-
 
         /// <summary>
         /// Remove city
