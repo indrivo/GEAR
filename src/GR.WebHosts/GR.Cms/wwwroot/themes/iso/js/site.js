@@ -1967,6 +1967,52 @@ $(document).ready(function () {
 	//$("body").append($(`<a target="_blank" href="/cart" class="buynow-btn btn btn-success text-white"><span class="material-icons mr-2 align-middle text-white">shopping_cart</span> <span class="text">View Cart</span></a>`));
 });
 
+function openColorPicker(event) {
+	if (event.preventDefault) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+	else {
+		event.returnValue = false;
+	}
+	const inputId = event.target.id;
+	const inputElem = $(`#${inputId}`);
+	inputElem.addClass('d-block');
+
+	inputElem.spectrum({
+		preferredFormat: "hex",
+		showPalette: true,
+		showButtons: false,
+		showSelectionPalette: true,
+		selectionPalette: [],
+		localStorageKey: 'colorPickerPallette',
+		maxSelectionSize: 10,
+		showInput: true,
+		showAlpha: true,
+		color: inputElem.val(),
+		move: function () {
+			const color = inputElem.spectrum("get").toHexString();
+			inputElem.val(color);
+		},
+		change: function () {
+			const color = inputElem.spectrum("get").toHexString();
+			inputElem.css('background-color', color);
+			inputElem.val(color);
+		}
+	});
+
+	inputElem.siblings('.sp-replacer').ready(() => {
+		inputElem.siblings('.sp-replacer').attr('style', `opacity: 0;
+			width: 100%;
+			height: 47px;
+			padding: 0;
+			top: -46px;
+			position: relative;`);
+		inputElem.spectrum("show");
+	});
+
+	inputElem
+}
 
 /************************************************
 					End Custom js

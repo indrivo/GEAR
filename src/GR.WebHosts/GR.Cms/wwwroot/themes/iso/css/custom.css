@@ -174,3 +174,8 @@
 table.dataTable {
 	width: 100% !important;
 }
+
+.color-input {
+	text-indent: -9999999px;
+}
+
