@@ -160,6 +160,14 @@
       "files": [
         "jsviews.min.js"
       ]
+    },
+    {
+      "library": "spectrum@1.8.0",
+      "destination": "wwwroot/lib/spectrum/",
+      "files": [
+        "spectrum.min.js",
+        "spectrum.min.css"
+      ]
     }
   ]
 }

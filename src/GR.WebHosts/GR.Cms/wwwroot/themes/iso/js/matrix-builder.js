@@ -299,7 +299,9 @@ class RiskMatrixBuilder {
 		label: "_",
 		value: undefined,
 		tagName: "input",
-		valueProp: "value"
+		valueProp: "value",
+		onClick: 'javascript:void(0)',
+		className: ''
 	}) {
 		const helper = new ST();
 		const c = document.createElement("div");
@@ -311,7 +313,8 @@ class RiskMatrixBuilder {
 		const input = document.createElement(conf.tagName);
 		input.id = inputId;
 		input[conf.valueProp] = conf.value;
-		input.setAttribute("class", "form-control");
+		input.setAttribute("class", "form-control " + conf.className);
+		input.setAttribute("onclick", conf.onClick);
 		input.setAttribute("type", conf.type);
 		input.style.minHeight = "3em";
 		c.appendChild(input);
@@ -343,6 +346,7 @@ class RiskMatrixBuilder {
 					maxWidth: "40%"
 				}
 			};
+
 			const modal = scope.templateManager.render("template_bootstrapModal", modalSettings);
 			$("body").append(modal);
 			const desc = $(ctx).find(".head-description").html();
@@ -386,6 +390,7 @@ class RiskMatrixBuilder {
 					maxWidth: "40%"
 				}
 			};
+
 			const modal = scope.templateManager.render("template_bootstrapModal", modalSettings);
 			$("body").append(modal);
 			const desc = $(ctx).html();
@@ -425,10 +430,12 @@ class RiskMatrixBuilder {
 		});
 
 		const colorBox = this.getInput({
-			type: "color",
+			type: "text",
 			label: window.translate("system_color"),
 			tagName: "input",
-			valueProp: "value"
+			valueProp: "value",
+			onClick: 'openColorPicker(event)',
+			className: 'color-input'
 		});
 		c.appendChild(pointsBox);
 		c.appendChild(nameBox);
@@ -453,8 +460,9 @@ class RiskMatrixBuilder {
 		modalEl.find("input[type='number']").val(points).on("keydown", function () {
 			$(ctx).find(".cell-points").html(this.value);
 		});
-		modalEl.find("input[type='color']")
+		modalEl.find("input.color-input")
 			.val(new ST().rgbToHex(ctx.style.background))
+			.css('background-color', new ST().rgbToHex(ctx.style.background))
 			.on("change", function () {
 				ctx.style.background = $(this).val();
 			});
@@ -462,7 +470,7 @@ class RiskMatrixBuilder {
 		const scope = this;
 		modalEl.on('hidden.bs.modal', function () {
 			const jqCtx = $(ctx);
-			const color = $(this).find("input[type='color']").val();
+			const color = $(this).find("input.color-input").val();
 			const name = $(this).find("input[type='text']").val();
 			const riskPoints = $(this).find("input[type='number']").val();
 			jqCtx.find(".cell-name").html(name);
@@ -530,10 +538,13 @@ class RiskMatrixBuilder {
 		});
 
 		const colorBox = this.getInput({
-			type: "color",
+			type: "text",
 			label: window.translate("system_color"),
 			tagName: "input",
-			valueProp: "value"
+			valueProp: "value",
+			onClick: 'openColorPicker(event)',
+			className: 'color-input'
+
 		});
 
 		c.appendChild(nameBox);
@@ -553,15 +564,16 @@ class RiskMatrixBuilder {
 		$('#headCellModal').find("input[type='text']").val(name).on("keydown", function () {
 			$(ctx).find(".head-name").html(this.value);
 		});
-		$('#headCellModal').find("input[type='color']")
+		$('#headCellModal').find("input.color-input")
 			.val(new ST().rgbToHex(ctx.style.background))
+			.css('background-color', new ST().rgbToHex(ctx.style.background))
 			.on("change", function () {
 				ctx.style.background = $(this).val();
 			});
 		$(`#headCellModal`).modal("show");
 		const scope = this;
 		$('#headCellModal').on('hidden.bs.modal', function () {
-			const color = $(this).find("input[type='color']").val();
+			const color = $(this).find("input.color-input").val();
 			const name = $(this).find("input[type='text']").val();
 			$(ctx).find(".head-name").html(name);
 			const jqCtx = $(ctx);
