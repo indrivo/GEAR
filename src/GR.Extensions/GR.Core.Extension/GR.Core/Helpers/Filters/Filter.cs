@@ -16,7 +16,7 @@ namespace GR.Core.Helpers.Filters
             Parameter = parameter;
             Value = value;
             Criteria = criteria;
-            SearchValue = value.ToString();
+            SearchValue = value?.ToString();
         }
 
         public Criteria Criteria { get; set; } = Criteria.Equals;

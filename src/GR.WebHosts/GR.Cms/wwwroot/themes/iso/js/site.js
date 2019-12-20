@@ -1635,145 +1635,145 @@ if (typeof TableInlineEdit !== "undefined") {
 			Override notificator
 ************************************************/
 if (typeof Notificator !== "undefined") {
-	const noNotifications = `<p id="noNotifications" class="text-muted p-3 m-0">${window.translate('system_notificator_no_notifications')}</p>`;
+    const noNotifications = `<p id="noNotifications" class="text-muted p-3 m-0">${window.translate('system_notificator_no_notifications')}</p>`;
 
-	const ajaxRequest = (requestUrl, requestType, requestData) => {
-		const baseUrl = '/api/Notifications';
-		return new Promise((resolve, reject) => {
-			$.ajax({
-				url: baseUrl + requestUrl,
-				type: requestType,
-				data: requestData,
-				success: (data) => {
-					if (Array.isArray(data)) {
-						resolve(data);
-					}
-					else {
-						if (data.is_success) {
-							resolve(data.result);
-						} else if (!data.is_success) {
-							reject(data.error_keys);
-						} else {
-							resolve(data);
-						}
-					}
-				},
-				error: (e) => {
-					reject(e);
-				}
-			});
-		});
-	}
+    const ajaxRequest = (requestUrl, requestType, requestData) => {
+        const baseUrl = '/api/Notifications';
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: baseUrl + requestUrl,
+                type: requestType,
+                data: requestData,
+                success: (data) => {
+                    if (Array.isArray(data)) {
+                        resolve(data);
+                    }
+                    else {
+                        if (data.is_success) {
+                            resolve(data.result);
+                        } else if (!data.is_success) {
+                            reject(data.error_keys);
+                        } else {
+                            resolve(data);
+                        }
+                    }
+                },
+                error: (e) => {
+                    reject(e);
+                }
+            });
+        });
+    }
 
-	const markAsRead = notificationId => {
-		const requestUrl = '/MarkAsRead';
-		return ajaxRequest(requestUrl, 'post', { notificationId });
-	}
+    const markAsRead = notificationId => {
+        const requestUrl = '/MarkAsRead';
+        return ajaxRequest(requestUrl, 'post', { notificationId });
+    }
 
-	const loaderClassString = 'notification-loader';
-	const loaderClass = `.${loaderClassString}`;
+    const loaderClassString = 'notification-loader';
+    const loaderClass = `.${loaderClassString}`;
 
-	const addLoader = elementDOM => {
-		const loadermarkup = `<div class="${loaderClassString}">
+    const addLoader = elementDOM => {
+        const loadermarkup = `<div class="${loaderClassString}">
 			<div class="${loaderClassString}-body justify-content-center align-items-center">
 			<div class="lds-dual-ring"></div>
 				</div>
 			</div>`;
-		elementDOM.append(loadermarkup);
-		elementDOM.find(loaderClass).fadeIn();
-	}
+        elementDOM.append(loadermarkup);
+        elementDOM.find(loaderClass).fadeIn();
+    }
 
-	const removeLoader = elementDOM => {
-		elementDOM.find(loaderClass).fadeOut();
-		setTimeout(function () { elementDOM.find(loaderClass).remove(); }, 400);
-	}
+    const removeLoader = elementDOM => {
+        elementDOM.find(loaderClass).fadeOut();
+        setTimeout(function () { elementDOM.find(loaderClass).remove(); }, 400);
+    }
 
-	const getNotificationsFromDropdown = () => {
-		let notifications = [];
-		$('#notificationList .notification-item').each(function () {
-			notifications.push($(this).data('notification-id'));
-		});
-		return notifications;
-	}
+    const getNotificationsFromDropdown = () => {
+        let notifications = [];
+        $('#notificationList .notification-item').each(function () {
+            notifications.push($(this).data('notification-id'));
+        });
+        return notifications;
+    }
 
-	let notificationsPage = 1;
-	let stopGetNotifications = false;
+    let notificationsPage = 1;
+    let stopGetNotifications = false;
 
-	addLoader($('#notificationList'));
+    addLoader($('#notificationList'));
 
-	$(document).click(() => {
-		$("#notificationList").collapse('hide');
-	});
-	$('#notificationDropdown').click(() => {
-		$("#notificationList").collapse('toggle');
-	});
-	$('#notificationList').click(e => {
-		e.stopPropagation();
-	});
-	$('#notificationList .clear-all').click(() => {
-		$('#notificationList .notifications').hide(500);
-		setTimeout(function () {
-			const markNotifications = getNotificationsFromDropdown();
-			$('#notificationList .notifications').html(noNotifications).slideDown(100);
-			$.each(markNotifications, function () {
-				markAsRead(this);
-			});
-		}, 500);
-	});
+    $(document).click(() => {
+        $("#notificationList").collapse('hide');
+    });
+    $('#notificationDropdown').click(() => {
+        $("#notificationList").collapse('toggle');
+    });
+    $('#notificationList').click(e => {
+        e.stopPropagation();
+    });
+    $('#notificationList .clear-all').click(() => {
+        $('#notificationList .notifications').hide(500);
+        setTimeout(function () {
+            const markNotifications = getNotificationsFromDropdown();
+            $('#notificationList .notifications').html(noNotifications).slideDown(100);
+            $.each(markNotifications, function () {
+                markAsRead(this);
+            });
+        }, 500);
+    });
 
-	$('#notificationList .show-more').click(() => {
-		if (!stopGetNotifications) {
-			addLoader($('#notificationList'));
-			Notificator.prototype.getAllNotifications(notificationsPage, 5, true).then(data => {
-				if (!data) return;
-				if (data.is_success) {
-					if (data.result.notifications.length > 0) {
-						notificationsPage++;
-					}
-					else {
-						$('#notificationList .show-more').hide();
-						stopGetNotifications = true;
-					}
-					$.each(data.result.notifications, (i, notification) => {
-						notificator.appendNotificationToContainer(notification);
-					});
-				}
-				$('#noNotifications').remove();
-				removeLoader($('#notificationList'));
-			}).catch(e => {
-				new ToastNotifier().notifyErrorList(e);
-			});
-		}
-	});
+    $('#notificationList .show-more').click(() => {
+        if (!stopGetNotifications) {
+            addLoader($('#notificationList'));
+            Notificator.prototype.getAllNotifications(notificationsPage, 5, true).then(data => {
+                if (!data) return;
+                if (data.is_success) {
+                    if (data.result.notifications.length > 0) {
+                        notificationsPage++;
+                    }
+                    else {
+                        $('#notificationList .show-more').hide();
+                        stopGetNotifications = true;
+                    }
+                    $.each(data.result.notifications, (i, notification) => {
+                        notificator.appendNotificationToContainer(notification);
+                    });
+                }
+                $('#noNotifications').remove();
+                removeLoader($('#notificationList'));
+            }).catch(e => {
+                new ToastNotifier().notifyErrorList(e);
+            });
+        }
+    });
 
 
-	//override notification populate container
-	Notificator.prototype.addNewNotificationToContainer = function (notification) {
-		const _ = $("#notificationAlarm");
-		if (!_.hasClass("notification"))
-			_.addClass("notification");
-		const template = this.createNotificationBodyContainer(notification);
-		const target = $("#notificationList .notifications");
-		$("#noNotifications").hide();
-		target.prepend(template);
-		this.registerOpenNotificationEvent();
-		$(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
-			$(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
-			setTimeout(function () {
-				markAsRead(notification.id).then(() => {
-					$(`.notification-item[data-notification-id="${notification.id}"]`).remove();
-				}).catch(e => {
-					new ToastNotifier().notifyErrorList(e);
-					$(`.notification-item[data-notification-id="${notification.id}"]`).show();
-				});
-			}, 500);
-		});
-	}
+    //override notification populate container
+    Notificator.prototype.addNewNotificationToContainer = function (notification) {
+        const _ = $("#notificationAlarm");
+        if (!_.hasClass("notification"))
+            _.addClass("notification");
+        const template = this.createNotificationBodyContainer(notification);
+        const target = $("#notificationList .notifications");
+        $("#noNotifications").hide();
+        target.prepend(template);
+        this.registerOpenNotificationEvent();
+        $(`.notification-item[data-notification-id="${notification.id}"] .delete-notification`).click(() => {
+            $(`.notification-item[data-notification-id="${notification.id}"]`).hide(500);
+            setTimeout(function () {
+                markAsRead(notification.id).then(() => {
+                    $(`.notification-item[data-notification-id="${notification.id}"]`).remove();
+                }).catch(e => {
+                    new ToastNotifier().notifyErrorList(e);
+                    $(`.notification-item[data-notification-id="${notification.id}"]`).show();
+                });
+            }, 500);
+        });
+    }
 
-	Notificator.prototype.createNotificationBodyContainer = function (n) {
-		const block = `
+    Notificator.prototype.createNotificationBodyContainer = function (n) {
+        const block = `
 			<div data-notification-id="${n.id
-			}" class="notification-item dropdown-item border-bottom position-relative">
+            }" class="notification-item dropdown-item border-bottom position-relative">
 				<div class="notification-body py-1">
 					<p class="mb-0"><small>${n.subject}</small></p>
 					<!--<p class="text-muted mb-0"><small>${n.content}</small></p>-->
@@ -1783,29 +1783,30 @@ if (typeof Notificator !== "undefined") {
 					</span>	
 				</div>
 			</div>`;
-		return block;
-	}
+        return block;
+    }
 
-	Notificator.prototype.getAllNotifications = function (page, perPage, onlyUnread) {
-		return new Promise((resolve, reject) => {
-			$.ajax({
-				url: `${this.origin()}/api/Notifications/GetUserNotificationsWithPagination`,
-				method: "get",
-				data: {
-					page,
-					perPage,
-					onlyUnread
-				},
-				success: function (data) {
-					resolve(data);
-				},
-				error: function (error) {
-					reject(error);
-				}
-			});
-		});
-	};
+    Notificator.prototype.getAllNotifications = function (page, perPage, onlyUnread) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `${this.origin()}/api/Notifications/GetUserNotificationsWithPagination`,
+                method: "get",
+                data: {
+                    page,
+                    perPage,
+                    onlyUnread
+                },
+                success: function (data) {
+                    resolve(data);
+                },
+                error: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    };
 }
+else console.warn("Notification plugin not injected");
 
 /***********************************************
 			Override DataInjector
