@@ -129,5 +129,18 @@ namespace GR.Identity.Abstractions.Extensions
             IdentityEvents.RegisterEvents();
             return services;
         }
+
+        /// <summary>
+        /// Register location service
+        /// </summary>
+        /// <typeparam name="TLocationService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
+            where TLocationService : class, ILocationService
+        {
+            services.AddSingleton<ILocationService, TLocationService>();
+            return services;
+        }
     }
 }

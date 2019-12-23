@@ -34,6 +34,10 @@
     <Compile Remove="Migrations\20190822104546_ApplicationDbContext_AddCountries.Designer.cs" />
     <Compile Remove="Migrations\20190904223609_test.cs" />
     <Compile Remove="Migrations\20190904223609_test.Designer.cs" />
+    <Compile Remove="Migrations\20191219134151_ApplicationDbContext_AddAutoIncrementOption.cs" />
+    <Compile Remove="Migrations\20191219134151_ApplicationDbContext_AddAutoIncrementOption.Designer.cs" />
+    <Compile Remove="Migrations\20191219134541_ApplicationDbContext_AddAutoIncrementOption.cs" />
+    <Compile Remove="Migrations\20191219134541_ApplicationDbContext_AddAutoIncrementOption.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="countries.json" Pack="true" PackagePath="">

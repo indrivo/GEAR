@@ -85,12 +85,16 @@ namespace GR.Identity.Data
                 .HasOne(ug => ug.AuthGroup)
                 .WithMany(ug => ug.UserGroups)
                 .HasForeignKey(ug => ug.AuthGroupId);
-
             builder.Entity<GearUser>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
             builder.Entity<GearRole>(x => { x.Property(p => p.Id).HasConversion<Guid>(); });
 
             builder.Entity<Country>().HasKey(k => k.Id);
             builder.Entity<StateOrProvince>().HasKey(k => k.Id);
+            builder.Entity<StateOrProvince>()
+                .Property(k => k.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.Entity<StateOrProvince>().Property(x => x.Id);
             builder.Entity<GearUser>()
                 .HasMany(x => x.Addresses)
                 .WithOne(x => x.ApplicationUser)

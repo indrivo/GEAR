@@ -55,11 +55,11 @@ namespace GR.Documents.Abstractions
         /// <summary>
         /// get documents by id an eliminate exist documents
         /// </summary>
-        /// <param name="typeId"></param>
-        /// <param name="listIgnireDocuments"></param>
+        /// <param name="categoryId"></param>
+        /// <param name="listDocumentId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsByCategoryIdAndListAsync(Guid? typeId,
-            IEnumerable<Guid> listIgnireDocuments);
+        Task<ResultModel<IEnumerable<DocumentViewModel>>> GetAllDocumentsByCategoryIdAndListAsync(Guid? categoryId,
+            IEnumerable<Guid> listDocumentId);
 
 
         /// <summary>
