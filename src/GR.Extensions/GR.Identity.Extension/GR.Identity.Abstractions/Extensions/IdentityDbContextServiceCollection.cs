@@ -1,8 +1,8 @@
-﻿using System;
-using GR.Core.Helpers.ConnectionStrings;
+﻿using GR.Core.Helpers.ConnectionStrings;
 using GR.Identity.Abstractions.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace GR.Identity.Abstractions.Extensions
 {
@@ -21,6 +21,7 @@ namespace GR.Identity.Abstractions.Extensions
                             IdentityConfig.DEFAULT_SCHEMA);
                     });
                     break;
+
                 case DbProviderType.PostgreSql:
                     builder.UseNpgsql(connectionString, opts =>
                     {
@@ -29,6 +30,7 @@ namespace GR.Identity.Abstractions.Extensions
                             IdentityConfig.DEFAULT_SCHEMA);
                     });
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }

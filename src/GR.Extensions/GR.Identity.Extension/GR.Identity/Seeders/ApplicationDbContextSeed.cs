@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using GR.Core;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
@@ -15,6 +6,15 @@ using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Data;
 using GR.Identity.Models.RolesViewModels;
 using GR.Identity.Models.UserViewModels;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Seeders
 {
@@ -124,14 +124,17 @@ namespace GR.Identity.Seeders
             /// List of system roles
             /// </summary>
             public List<RolesViewModel> ApplicationRoles { get; set; }
+
             /// <summary>
             /// List of system users
             /// </summary>
             public List<UserSeedViewModel> ApplicationUsers { get; set; }
+
             /// <summary>
             /// List of profiles
             /// </summary>
             public List<Profile> Profiles { get; set; }
+
             /// <summary>s
             /// List of groups
             /// </summary>

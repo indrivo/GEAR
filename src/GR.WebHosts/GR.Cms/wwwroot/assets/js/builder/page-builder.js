@@ -11,7 +11,6 @@ var images = [
     lp + 'work-desk.jpg', lp + 'phone-app.png', lp + 'bg-gr-v.png'
 ];
 
-
 var editor = grapesjs.init({
     avoidInlineStyle: 1,
     height: '60em',
@@ -370,7 +369,6 @@ var editor = grapesjs.init({
             ]
         }
     }
-
 });
 
 var pn = editor.Panels;
@@ -383,7 +381,6 @@ editor.Commands.add('canvas-clear', function () {
         setTimeout(function () { localStorage.clear(); }, 0);
     }
 });
-
 
 // Simple warn notifier
 try {
@@ -404,7 +401,6 @@ try {
 catch (exp) {
     //ignore
 }
-
 
 // Add and beautify tooltips
 [['sw-visibility', 'Show Borders'], ['preview', 'Preview'], ['fullscreen', 'Fullscreen'],
@@ -432,11 +428,9 @@ for (var i = 0; i < titles.length; i++) {
 // Show borders by default
 pn.getButton('options', 'sw-visibility').set('active', 1);
 
-
 // Store and load events
 editor.on('storage:load', function (e) { });
 editor.on('storage:store', function (e) { });
-
 
 // Do stuff on load
 editor.on('load', function () {
@@ -471,7 +465,6 @@ editor.on('load', function () {
     openBlocksBtn && openBlocksBtn.set('active', 1);
 });
 
-
 const iframe = editor.Canvas.getFrameEl();
 
 const styles = getStyles();
@@ -484,7 +477,6 @@ $.each(styles, function (index, link) {
     style.setAttribute("href", $(link).attr("href"));
     iframe.contentDocument.head.appendChild(style);
 });
-
 
 $.each(scripts, function (index, script) {
     const sc = document.createElement("script");

@@ -1,6 +1,6 @@
+using GR.Core;
 using System;
 using System.ComponentModel.DataAnnotations;
-using GR.Core;
 
 namespace GR.Identity.Abstractions.Models
 {
@@ -8,7 +8,7 @@ namespace GR.Identity.Abstractions.Models
     /// <summary>
     /// Group's permissions
     /// </summary>
-    public class GroupPermission: BaseModel
+    public class GroupPermission : BaseModel
     {
         /// <summary>
         /// The group this permission refers to
@@ -22,8 +22,8 @@ namespace GR.Identity.Abstractions.Models
         public AuthGroup AuthGroup { get; set; }
 
         /// <summary>
-        /// Represents a permission object represented as 
-        /// a formatted string with the following format: 
+        /// Represents a permission object represented as
+        /// a formatted string with the following format:
         /// {Service:Module:Action}
         /// e.g.
         /// "Identity:Users:Create"

@@ -1,4 +1,3 @@
-
 /*
  * Load data from server as json
  */
@@ -80,7 +79,6 @@ function getStyles() {
     return scr;
 }
 
-
 const scripts = getScripts();
 
 /*
@@ -161,7 +159,6 @@ grapesjs.plugins.add('gjs-dynamic-entities', (editor, options) => {
                             modal.setContent(container);
                             modal.open();
                         });
-
                     } catch (exp) {
                         console.log(exp);
                     }
@@ -180,13 +177,9 @@ grapesjs.plugins.add('gjs-dynamic-entities', (editor, options) => {
         }
     });
 
-
-
-
     //------------------------------------------------------------------------------------//
     //								Define custom traits
     //------------------------------------------------------------------------------------//
-
 
     //add custom traits
     domComps.addType('input', {
@@ -288,11 +281,9 @@ grapesjs.plugins.add('gjs-dynamic-entities', (editor, options) => {
         view: dView
     });
 
-
     //------------------------------------------------------------------------------------//
     //								Define custom blocks
     //------------------------------------------------------------------------------------//
-
 
     var blockManager = editor.BlockManager;
 
@@ -309,14 +300,13 @@ grapesjs.plugins.add('gjs-dynamic-entities', (editor, options) => {
             });
         });
 
-
     //Dynamic form
     blockManager.add('custom-form-block', {
         label: 'Dynamic Form',
         type: "Dynamic Form",
         category: "Dynamic Entities",
         content: `
-		 <div class="row"> 
+		 <div class="row">
                     <div class="col-lg-6">
                         <form class="form" style="margin-left: 1em !important">
                                     <div class="form-group">
@@ -341,7 +331,6 @@ grapesjs.plugins.add('gjs-dynamic-entities', (editor, options) => {
             class: "fa fa-align-justify"
         }
     });
-
 
     //Dynamic list
     blockManager.add('custom-list-block', {

@@ -1,10 +1,10 @@
-using System.IO;
-using System.Threading.Tasks;
+using GR.Application.Middleware.Services;
+using GR.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using GR.Application.Middleware.Services;
-using GR.Core;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace GR.Cms.Controllers
 {

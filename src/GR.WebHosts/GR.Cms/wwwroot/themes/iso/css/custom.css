@@ -73,7 +73,6 @@
 	background-color: #E4E4E4;
 }
 
-
 #notificationList .notification-item .delete-notification {
 	position: absolute;
 	right: 5px;
@@ -140,7 +139,6 @@
 	width: 100%;
 }
 
-
 .dataTables_paginate .pagination .paginate_button.previous,
 .dataTables_paginate .pagination .paginate_button.next {
 	font-size: 0;
@@ -178,4 +176,3 @@ table.dataTable {
 .color-input {
 	text-indent: -9999999px;
 }
-

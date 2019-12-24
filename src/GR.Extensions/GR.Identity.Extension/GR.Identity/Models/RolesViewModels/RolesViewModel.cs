@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using GR.Identity.Abstractions;
-using GR.Identity.Data.Permissions;
+﻿using GR.Identity.Abstractions;
+using System.Collections.Generic;
 
 namespace GR.Identity.Models.RolesViewModels
 {

@@ -1,8 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using GR.Audit.Abstractions.Attributes;
+﻿using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.Models.AddressModels
 {
@@ -43,6 +43,7 @@ namespace GR.Identity.Abstractions.Models.AddressModels
         /// District
         /// </summary>
         public Guid? DistrictId { get; set; }
+
         public District District { get; set; }
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace GR.Identity.Abstractions.Models.AddressModels
         /// </summary>
         [Required(ErrorMessage = "The {0} field is required.")]
         public long StateOrProvinceId { get; set; }
+
         public StateOrProvince StateOrProvince { get; set; }
 
         /// <summary>
@@ -58,12 +60,14 @@ namespace GR.Identity.Abstractions.Models.AddressModels
         [Required(ErrorMessage = "The {0} field is required.")]
         [StringLength(450)]
         public string CountryId { get; set; }
+
         public Country Country { get; set; }
 
         /// <summary>
         /// Reference to Users
         /// </summary>
         public GearUser ApplicationUser { get; set; }
+
         public string ApplicationUserId { get; set; }
 
         /// <summary>

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using GR.Identity.Abstractions.Models.AddressModels;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
-using GR.Identity.Abstractions.Models.AddressModels;
 
 namespace GR.Identity.Data
 {

@@ -18,7 +18,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.8.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
     <PackageReference Include="NLog" Version="4.6.7" />
@@ -32,11 +31,9 @@
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache\GR.Cache.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
-    <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj" />
     <ProjectReference Include="..\..\GR.Localization.Extension\GR.Localization.Abstractions\GR.Localization.Abstractions.csproj" />
-    <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Application.Middleware\GR.Application.Middleware.csproj" />
   </ItemGroup>
 

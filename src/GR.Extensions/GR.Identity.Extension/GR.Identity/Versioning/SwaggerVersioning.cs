@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace GR.Identity.Versioning
 {

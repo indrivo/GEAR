@@ -1,14 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using GR.Audit.Abstractions.Extensions;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions.Events;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GR.Audit.Abstractions.Extensions;
-using GR.Core;
-using GR.Core.Events;
-using GR.Core.Extensions;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions.Events;
 
 namespace GR.Identity.Abstractions.Extensions
 {

@@ -1,19 +1,19 @@
+using GR.Cms.Services.Abstractions;
+using GR.Cms.ViewModels.TreeISOViewModels;
+using GR.Core;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Comparers;
+using GR.Core.Helpers.Filters;
+using GR.DynamicEntityStorage.Abstractions;
+using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Entities.Abstractions.Models.Tables;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Abstractions.Models.Tables;
-using GR.Cms.Services.Abstractions;
-using GR.Cms.ViewModels.TreeISOViewModels;
-using GR.Core;
-using GR.Core.Helpers.Comparers;
-using GR.Core.Helpers.Filters;
 
 // ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable UnusedMember.Local
@@ -25,7 +25,7 @@ namespace GR.Cms.Services
 	public sealed class TreeIsoService : ITreeIsoService
 	{
 		/// <summary>
-		/// Tenant entity name what store tenant standard requirement filfullment method 
+		/// Tenant entity name what store tenant standard requirement filfullment method
 		/// </summary>
 		private const string ReqFillEntityName = "RequirementFillMethod";
 
@@ -43,7 +43,8 @@ namespace GR.Cms.Services
 			_service = service;
 		}
 
-		#region  Standart Structure
+		#region Standart Structure
+
 		/// <summary>
 		/// Load tree
 		/// </summary>
@@ -109,7 +110,6 @@ namespace GR.Cms.Services
 			return result;
 		}
 
-
 		/// <summary>
 		/// Load requirements
 		/// </summary>
@@ -137,7 +137,6 @@ namespace GR.Cms.Services
 					Hint = req.Hint ?? string.Empty,
 					Requirements = await LoadRequirements(requirementEntity, categoryId, req.Id),
 					Documents = new List<TreeRequirementDocument>(),
-
 				};
 
 				var rq = await dueModeCtx.GetAll<dynamic>(filters: new List<Filter>
@@ -281,8 +280,8 @@ namespace GR.Cms.Services
 
 			return result;
 		}
-		#endregion
 
+		#endregion Standart Structure
 
 		#region Control Structure
 
@@ -429,7 +428,6 @@ namespace GR.Cms.Services
 			return color;
 		}
 
-
 		/// <summary>
 		/// Get second level for controls
 		/// </summary>
@@ -566,13 +564,15 @@ namespace GR.Cms.Services
 			return item != null ? ((string, string))(item.Goal, item.Content) : (string.Empty, string.Empty);
 		}
 
-		#endregion
+		#endregion Control Structure
 
 		#region Helpers
+
 		private enum ActionState
 		{
 			Closed, InProgress, Open
 		}
-		#endregion
+
+		#endregion Helpers
 	}
 }

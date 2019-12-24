@@ -77,6 +77,5 @@ function refreshOrderItems(target) {
 	});
 }
 
-
 var cols = document.querySelectorAll('#columns .column');
 [].forEach.call(cols, addDnDHandlers);
