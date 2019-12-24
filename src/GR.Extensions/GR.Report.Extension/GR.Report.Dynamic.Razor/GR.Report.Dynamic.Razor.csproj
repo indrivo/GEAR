@@ -34,7 +34,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="libman.json">
+    <Content Include="libman.json" Pack="false">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
