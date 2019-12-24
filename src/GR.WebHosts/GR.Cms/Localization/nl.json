@@ -847,5 +847,19 @@
   "start_state": "Start staat",
   "next_state": "Volgende staat",
   "change_state": "Status wijzigen",
-  "system_loading": "Bezig met laden..."
+  "system_loading": "Bezig met laden...",
+  "system_gr_year": "Jaar",
+  "system_january": "Januari",
+  "system_february": "Februari",
+  "system_march": "Maart",
+  "system_april": "April",
+  "system_may": "Mei",
+  "system_june": "Juni",
+  "system_july": "Juli",
+  "system_august": "Augustus",
+  "system_september": "September",
+  "system_october": "Oktober",
+  "system_november": "November",
+  "system_december": "December",
+  "system_standard_requirement": "Standaardeis"
 }

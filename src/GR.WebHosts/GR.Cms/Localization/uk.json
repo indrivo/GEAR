@@ -847,5 +847,19 @@
   "start_state": "Початковий стан",
   "next_state": "Наступне стан",
   "change_state": "Зміна стану ",
-  "system_loading": "Завантаження..."
+  "system_loading": "Завантаження...",
+  "system_gr_year": "Рік",
+  "system_january": "Січня",
+  "system_february": "Лютий",
+  "system_march": "Березня",
+  "system_april": "Квітня",
+  "system_may": "Може",
+  "system_june": "Червня",
+  "system_july": "Липня",
+  "system_august": "Серпня",
+  "system_september": "Вересня",
+  "system_october": "Жовтня",
+  "system_november": "Листопада",
+  "system_december": "Грудня",
+  "system_standard_requirement": "Стандартна вимога"
 }

@@ -847,5 +847,19 @@
   "start_state": "État de départ",
   "next_state": "Suivant l'état",
   "change_state": "Changer d'état",
-  "system_loading": "Chargement..."
+  "system_loading": "Chargement...",
+  "system_gr_year": "Année",
+  "system_january": "Janvier",
+  "system_february": "Février",
+  "system_march": "Mars",
+  "system_april": "Avril",
+  "system_may": "Peut",
+  "system_june": "Juin",
+  "system_july": "Juillet",
+  "system_august": "Août",
+  "system_september": "Septembre",
+  "system_october": "Octobre",
+  "system_november": "Novembre",
+  "system_december": "Décembre",
+  "system_standard_requirement": "Exigence Standard"
 }

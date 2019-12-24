@@ -847,5 +847,19 @@
   "start_state": "开始状态",
   "next_state": "下一个状态",
   "change_state": "改变态",
-  "system_loading": "装载..."
+  "system_loading": "装载...",
+  "system_gr_year": "年",
+  "system_january": "一月",
+  "system_february": "二月",
+  "system_march": "三月",
+  "system_april": "四月",
+  "system_may": "可",
+  "system_june": "六月",
+  "system_july": "七月",
+  "system_august": "八月",
+  "system_september": "九月",
+  "system_october": "十月",
+  "system_november": "十一月",
+  "system_december": "十二月",
+  "system_standard_requirement": "标准的要求"
 }

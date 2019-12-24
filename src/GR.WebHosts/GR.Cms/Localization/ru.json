@@ -847,5 +847,19 @@
   "start_state": "Начальное состояние",
   "next_state": "Следующее состояние",
   "change_state": "Изменение состояния ",
-  "system_loading": "Загрузка..."
+  "system_loading": "Загрузка...",
+  "system_gr_year": "Год",
+  "system_january": "Января",
+  "system_february": "Февраль",
+  "system_march": "Марта",
+  "system_april": "Апреля",
+  "system_may": "Моай",
+  "system_june": "Июня",
+  "system_july": "Июля",
+  "system_august": "Августа",
+  "system_september": "Сентября",
+  "system_october": "Октября",
+  "system_november": "Ноября",
+  "system_december": "Декабря",
+  "system_standard_requirement": "Стандартное требование"
 }

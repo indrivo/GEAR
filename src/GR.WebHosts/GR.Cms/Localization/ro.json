@@ -847,5 +847,19 @@
   "start_state": "Statutul inițial",
   "next_state": "Următorul statut",
   "change_state": "Schimba stat",
-  "system_loading": "Se încarcă..."
+  "system_loading": "Se încarcă...",
+  "system_gr_year": "Anul",
+  "system_january": "Ianuarie",
+  "system_february": "Februarie",
+  "system_march": "Martie",
+  "system_april": "Aprilie",
+  "system_may": "Mai",
+  "system_june": "Iunie",
+  "system_july": "Iulie",
+  "system_august": "August",
+  "system_september": "Septembrie",
+  "system_october": "Octombrie",
+  "system_november": "Noiembrie",
+  "system_december": "Decembrie",
+  "system_standard_requirement": "Cerință Standard"
 }

@@ -847,5 +847,19 @@
   "start_state": "Starten Sie Zustand",
   "next_state": "Nächsten Zustand",
   "change_state": "Status ändern",
-  "system_loading": "Loading..."
+  "system_loading": "Loading...",
+  "system_gr_year": "Jahr",
+  "system_january": "Januar",
+  "system_february": "Februar",
+  "system_march": "März",
+  "system_april": "April",
+  "system_may": "Kann",
+  "system_june": "Juni",
+  "system_july": "Juli",
+  "system_august": "August",
+  "system_september": "September",
+  "system_october": "Oktober",
+  "system_november": "November",
+  "system_december": "Dezember",
+  "system_standard_requirement": "Standard-Anforderung"
 }

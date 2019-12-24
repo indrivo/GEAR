@@ -847,5 +847,19 @@
   "start_state": "Start state",
   "next_state": "Next state",
   "change_state": "Change statutul",
-  "system_loading": "Loading..."
+  "system_loading": "Loading...",
+  "system_gr_year": "Year",
+  "system_january": "January",
+  "system_february": "February",
+  "system_march": "March",
+  "system_april": "April",
+  "system_may": "May",
+  "system_june": "June",
+  "system_july": "July",
+  "system_august": "August",
+  "system_september": "September",
+  "system_october": "October",
+  "system_november": "November",
+  "system_december": "December",
+  "system_standard_requirement": "Standard requirement"
 }

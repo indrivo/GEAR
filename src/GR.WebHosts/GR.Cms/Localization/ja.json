@@ -847,5 +847,19 @@
   "start_state": "開始状態",
   "next_state": "次の状態",
   "change_state": "状態を変化さ",
-  "system_loading": "読み込み中..."
+  "system_loading": "読み込み中...",
+  "system_gr_year": "年",
+  "system_january": "月",
+  "system_february": "月",
+  "system_march": "月",
+  "system_april": "月",
+  "system_may": "月",
+  "system_june": "月",
+  "system_july": "月",
+  "system_august": "月",
+  "system_september": "月",
+  "system_october": "月",
+  "system_november": "月",
+  "system_december": "月",
+  "system_standard_requirement": "標準の要件"
 }

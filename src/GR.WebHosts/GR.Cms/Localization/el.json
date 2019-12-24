@@ -847,5 +847,19 @@
   "start_state": "Έναρξη μέλος",
   "next_state": "Επόμενη κατάσταση",
   "change_state": "Αλλαγή μέλους",
-  "system_loading": "Φόρτωση..."
+  "system_loading": "Φόρτωση...",
+  "system_gr_year": "Έτος",
+  "system_january": "Ιανουαρίου",
+  "system_february": "Φεβρουαρίου",
+  "system_march": "Μαρτίου",
+  "system_april": "Απριλίου",
+  "system_may": "Μπορεί να",
+  "system_june": "Ιουνίου",
+  "system_july": "Ιουλίου",
+  "system_august": "Τον αύγουστο",
+  "system_september": "Σεπτεμβρίου",
+  "system_october": "Οκτωβρίου",
+  "system_november": "Νοεμβρίου",
+  "system_december": "Δεκεμβρίου",
+  "system_standard_requirement": "Τυποποιημένη απαίτηση"
 }
