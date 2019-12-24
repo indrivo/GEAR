@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using GR.Core;
 using Microsoft.EntityFrameworkCore;
@@ -78,9 +79,12 @@ namespace GR.Entities.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public override async Task InvokeSeedAsync()
+        public override Task InvokeSeedAsync(IServiceProvider services)
         {
-            await EntitiesDbContextSeeder<EntitiesDbContext>.SeedAsync(this, GearSettings.TenantId);
+            EntitiesDbContextSeeder<EntitiesDbContext>
+                .SeedAsync(this, GearSettings.TenantId)
+                .Wait();
+            return Task.CompletedTask;
         }
     }
 }

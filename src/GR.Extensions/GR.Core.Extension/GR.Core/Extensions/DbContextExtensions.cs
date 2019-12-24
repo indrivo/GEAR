@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Abstractions;
 using GR.Core.Helpers;
+using GR.Core.Helpers.ConnectionStrings;
+using Microsoft.Extensions.Configuration;
 
 namespace GR.Core.Extensions
 {
@@ -16,10 +18,15 @@ namespace GR.Core.Extensions
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static DbContext GetContext(this IDbContext context)
-        {
-            return (DbContext)context;
-        }
+        public static DbContext GetContext(this IDbContext context) => (DbContext)context;
+
+        /// <summary>
+        /// Get provider type 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static (DbProviderType, string) GetConnectionStringInfo(this IConfiguration configuration)
+            => DbUtil.GetConnectionString(configuration);
 
         /// <summary>
         /// Check if context is disposed

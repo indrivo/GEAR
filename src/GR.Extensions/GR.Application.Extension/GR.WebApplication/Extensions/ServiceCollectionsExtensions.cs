@@ -9,6 +9,7 @@ using GR.Cache.Services;
 using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
+using GR.Core.Razor.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Data;
 using GR.Localization.Abstractions.Extensions;
@@ -43,6 +44,9 @@ namespace GR.WebApplication.Extensions
                 GearServices = services
             };
             configAction(configuration);
+
+            //Register core razor
+            services.RegisterCoreRazorModule();
 
             //Use compression
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
@@ -237,7 +241,7 @@ namespace GR.WebApplication.Extensions
                     name: "default",
                     template: singleTenantTemplate,
                     defaults: singleTenantTemplate
-                    //constraints: new { tenant = new TenantRouteConstraint() }
+                //constraints: new { tenant = new TenantRouteConstraint() }
                 );
             });
             return app;

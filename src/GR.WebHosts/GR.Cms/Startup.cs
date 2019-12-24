@@ -118,6 +118,7 @@ using GR.Documents.Data;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Permissions.Abstractions.Extensions;
+using GR.Install;
 using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
 using GR.Subscriptions.BackgroundServices;
@@ -197,8 +198,7 @@ namespace GR.Cms
 			config.CacheConfiguration.UseInMemoryCache = true;
 
 			//------------------------------Identity Module-------------------------------------
-			config.GearServices.AddIdentityModule<ApplicationDbContext>(Configuration, HostingEnvironment,
-					MigrationsAssembly, HostingEnvironment)
+			config.GearServices.AddIdentityModule<ApplicationDbContext>()
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
 				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
@@ -210,7 +210,7 @@ namespace GR.Cms
 			config.GearServices.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
-				.AddIdentityServer(Configuration, HostingEnvironment, MigrationsAssembly)
+				.AddIdentityServer(Configuration, MigrationsAssembly)
 				.AddHealthChecks(checks =>
 				{
 					//var minutes = 1;
@@ -380,8 +380,8 @@ namespace GR.Cms
 				})
 				.AddReportUIModule();
 
-
-			config.GearServices.AddInstallerModule();
+			//----------------------------------------Installer Module-------------------------------------
+			config.GearServices.AddInstallerModule<GearWebInstallerService>();
 
 			//----------------------------------------Email Module-------------------------------------
 			config.GearServices.AddEmailModule<EmailSender>()

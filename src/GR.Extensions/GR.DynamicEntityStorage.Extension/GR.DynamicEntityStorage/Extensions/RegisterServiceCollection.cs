@@ -39,6 +39,8 @@ namespace GR.DynamicEntityStorage.Extensions
             SystemEvents.Database.OnMigrateComplete += async (sender, args) =>
             {
                 var service = IoC.Resolve<ITablesService>();
+                if (!(args.DbContext is IDbContext)) return;
+                return;
                 var entities = service.GetEntitiesFromDbContexts(args.DbContext.GetType());
 
                 foreach (var ent in entities)

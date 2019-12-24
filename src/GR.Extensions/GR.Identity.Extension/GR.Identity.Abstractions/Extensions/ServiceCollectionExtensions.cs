@@ -8,7 +8,6 @@ using GR.Core;
 using GR.Core.Events;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
-using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Events;
 
 namespace GR.Identity.Abstractions.Extensions
@@ -19,14 +18,8 @@ namespace GR.Identity.Abstractions.Extensions
         /// Add context and identity
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="hostingEnvironment"></param>
-        /// <param name="migrationsAssembly"></param>
-        /// <param name="environment"></param>
         /// <returns></returns>
-        public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services,
-            IConfiguration configuration, IHostingEnvironment hostingEnvironment, string migrationsAssembly,
-            IHostingEnvironment environment)
+        public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services)
             where TContext : DbContext, IIdentityContext
         {
             services.AddIdentity<GearUser, GearRole>()
@@ -62,32 +55,14 @@ namespace GR.Identity.Abstractions.Extensions
             where TIdentityContext : DbContext, IIdentityContext
         {
             services.AddTransient<IIdentityContext, TIdentityContext>();
-            services.AddDbContext<TIdentityContext>(options =>
-            {
-                var connectionString = DbUtil.GetConnectionString(configuration);
-                if (connectionString.Item1 == DbProviderType.PostgreSql)
-                {
-                    options.UseNpgsql(connectionString.Item2, opts =>
-                    {
-                        opts.MigrationsAssembly(migrationsAssembly);
-                        opts.MigrationsHistoryTable("IdentityMigrationHistory", IdentityConfig.DEFAULT_SCHEMA);
-                    });
-                }
-                else
-                {
-                    options.UseSqlServer(connectionString.Item2, opts =>
-                    {
-                        opts.MigrationsAssembly(migrationsAssembly);
-                        opts.MigrationsHistoryTable("IdentityMigrationHistory", IdentityConfig.DEFAULT_SCHEMA);
-                    });
-                }
-            });
+            services.AddDbContext<TIdentityContext>(builder
+                => builder.RegisterIdentityStorage(configuration, migrationsAssembly));
 
             services.RegisterAuditFor<IIdentityContext>("Identity module");
-            SystemEvents.Database.OnMigrate += (sender, args) =>
-            {
-                GearApplication.GetHost<IWebHost>().MigrateDbContext<TIdentityContext>();
-            };
+            //SystemEvents.Database.OnMigrate += (sender, args) =>
+            //{
+            //    GearApplication.GetHost<IWebHost>().MigrateDbContext<TIdentityContext>();
+            //};
             return services;
         }
 

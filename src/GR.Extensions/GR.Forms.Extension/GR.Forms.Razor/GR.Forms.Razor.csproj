@@ -35,6 +35,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />

@@ -9,8 +9,10 @@ namespace GR.Install.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInstallerModule(this IServiceCollection services)
+        public static IServiceCollection AddInstallerModule<TInstallService>(this IServiceCollection services)
+            where TInstallService : class, IGearWebInstallerService
         {
+            services.AddSingleton<IGearWebInstallerService, TInstallService>();
             return services;
         }
     }

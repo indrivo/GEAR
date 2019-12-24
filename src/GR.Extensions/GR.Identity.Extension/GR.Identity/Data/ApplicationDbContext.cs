@@ -11,6 +11,7 @@ using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Abstractions.Models.Permmisions;
 using GR.Identity.Abstractions.Models.UserProfiles;
 using GR.Identity.Extensions;
+using GR.Identity.Seeders;
 
 namespace GR.Identity.Data
 {
@@ -119,8 +120,10 @@ namespace GR.Identity.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public  Task InvokeSeedAsync(IServiceProvider services)
         {
+            var seeder = new ApplicationDbContextSeed();
+            seeder.SeedAsync(this, services).Wait();
             return Task.CompletedTask;
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using GR.Core.Helpers;
+using GR.Core.Helpers.ConnectionStrings;
 
 namespace GR.Core.Extensions
 {

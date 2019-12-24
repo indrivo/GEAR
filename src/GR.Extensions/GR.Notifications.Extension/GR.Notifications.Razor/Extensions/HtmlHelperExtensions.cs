@@ -11,7 +11,7 @@ namespace GR.Notifications.Razor.Extensions
         /// </summary>
         /// <param name="htmlHelper"></param>
         /// <returns></returns>
-        public static HtmlString IncludeNotificationPlugin(this IHtmlHelper htmlHelper)
+        public static HtmlString IncludeNotificationJavascriptPlugins(this IHtmlHelper htmlHelper)
         {
             var script = htmlHelper.GetScriptDeclaration("/assets/notification-plugins/notification-plugin-v.0.1.js");
             return script;

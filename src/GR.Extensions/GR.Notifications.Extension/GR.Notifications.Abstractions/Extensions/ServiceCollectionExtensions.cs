@@ -5,7 +5,6 @@ using GR.Audit.Abstractions.Extensions;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
-using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
@@ -93,8 +92,9 @@ namespace GR.Notifications.Abstractions.Extensions
                 }
             };
 
-            SystemEvents.Database.OnSeed += async delegate
+            SystemEvents.Database.OnSeed += async (obj, args) =>
             {
+                if (!(args.DbContext is INotificationDbContext)) return;
                 try
                 {
                     var service = IoC.Resolve<INotificationSubscriptionRepository>();

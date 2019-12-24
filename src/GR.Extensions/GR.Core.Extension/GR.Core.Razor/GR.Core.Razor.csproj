@@ -8,14 +8,8 @@
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</RepositoryUrl>
     <Version>1.0.4</Version>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core.Razor</PackageProjectUrl>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Views\**" />
-    <Content Remove="Views\**" />
-    <EmbeddedResource Remove="Views\**" />
-    <None Remove="Views\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Templates\ActionTagTemplate.html" />
@@ -27,6 +21,20 @@
     <None Remove="Templates\ListTagHelperHtmlTemplate.html" />
     <None Remove="Templates\ListTagHelperJsTemplate.js" />
     <None Remove="Templates\ThSectionHtmlTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="libman.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="wwwroot\**\*" />
+    <Content Update="**\*.cshtml" Pack="false" />
+    <Content Include="wwwroot\**\*">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +72,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.96" />
   </ItemGroup>
 
   <ItemGroup>

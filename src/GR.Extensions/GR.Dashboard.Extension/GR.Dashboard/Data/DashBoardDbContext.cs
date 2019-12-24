@@ -79,7 +79,7 @@ namespace GR.Dashboard.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

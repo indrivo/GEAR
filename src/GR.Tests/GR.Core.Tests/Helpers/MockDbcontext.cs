@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using GR.Core.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +18,7 @@ namespace GR.Core.Tests.Helpers
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public virtual Task InvokeSeedAsync()
+        public virtual Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

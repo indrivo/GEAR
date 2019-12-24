@@ -39,8 +39,11 @@ namespace GR.Notifications.Abstractions.Seeders
             }
         }
 
-        private class SeedEntity
-        {
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private sealed class SeedEntity
+        {  
+            // ReSharper disable once CollectionNeverUpdated.Local
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public List<NotificationTypes> NotificationTypes { get; set; }
         }
     }

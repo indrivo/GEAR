@@ -1,81 +1,31 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using GR.Cache.Abstractions;
-using GR.Core;
-using GR.Core.Helpers;
-using GR.DynamicEntityStorage.Abstractions;
-using GR.Entities.Abstractions;
-using GR.Entities.Abstractions.Models.Tables;
-using GR.Entities.Data;
-using GR.Entities.EntityBuilder.MsSql.Controls.Query;
-using GR.Entities.EntityBuilder.Postgres.Controls.Query;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.CacheModels;
-using GR.Identity.Data;
-using GR.Identity.Permissions.Abstractions;
-using GR.MultiTenant.Abstractions.Helpers;
-using GR.Notifications.Abstractions;
-using GR.Notifications.Abstractions.Models.Notifications;
+using GR.Core.Extensions;
+using GR.Install.Abstractions;
+using GR.Install.Abstractions.Models;
 using GR.WebApplication;
-using GR.WebApplication.InstallerModels;
+using Microsoft.Extensions.Configuration;
 
 namespace GR.Install.Razor.Controllers
 {
     [AllowAnonymous]
     public class InstallerController : Controller
     {
-        /// <summary>
-        /// Inject hosting env
-        /// </summary>
-        private readonly IHostingEnvironment _hostingEnvironment;
+        #region Injectable
 
         /// <summary>
-        /// Inject entity db context
+        /// Inject configuration
         /// </summary>
-        private readonly IEntityContext _entitiesDbContext;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// Inject application context
+        /// Inject installer service
         /// </summary>
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IGearWebInstallerService _installerService;
 
-        /// <summary>
-        /// Inject SignIn Manager
-        /// </summary>
-        private readonly SignInManager<GearUser> _signInManager;
-
-        /// <summary>
-        /// Inject permission dataService
-        /// </summary>
-        private readonly IPermissionService _permissionService;
-
-        /// <summary>
-        /// Inject cache dataService
-        /// </summary>
-        private readonly ICacheService _cacheService;
-
-        /// <summary>
-        /// Inject notifier
-        /// </summary>
-        private readonly INotify<GearRole> _notify;
-
-        /// <summary>
-        /// Inject dynamic service
-        /// </summary>
-        private readonly IDynamicService _dynamicService;
-
-        /// <summary>
-        /// Inject entity repository
-        /// </summary>
-        private readonly IEntityRepository _entityRepository;
+        #endregion
 
         /// <summary>
         /// Is system configured
@@ -86,26 +36,13 @@ namespace GR.Install.Razor.Controllers
         /// Constructor
         /// </summary>
         /// <param name="hostingEnvironment"></param>
-        /// <param name="permissionService"></param>
-        /// <param name="applicationDbContext"></param>
-        /// <param name="signInManager"></param>
-        /// <param name="notify"></param>
-        /// <param name="cacheService"></param>
-        /// <param name="entitiesDbContext"></param>
-        /// <param name="dynamicService"></param>
-        /// <param name="entityRepository"></param>
-        public InstallerController(IHostingEnvironment hostingEnvironment, IPermissionService permissionService, ApplicationDbContext applicationDbContext, SignInManager<GearUser> signInManager, INotify<GearRole> notify, ICacheService cacheService, EntitiesDbContext entitiesDbContext, IDynamicService dynamicService, IEntityRepository entityRepository)
+        /// <param name="configuration"></param>
+        /// <param name="installerService"></param>
+        public InstallerController(IHostingEnvironment hostingEnvironment, IConfiguration configuration, IGearWebInstallerService installerService)
         {
-            _entitiesDbContext = entitiesDbContext;
-            _dynamicService = dynamicService;
-            _entityRepository = entityRepository;
-            _hostingEnvironment = hostingEnvironment;
-            _applicationDbContext = applicationDbContext;
-            _signInManager = signInManager;
-            _permissionService = permissionService;
-            _cacheService = cacheService;
-            _notify = notify;
-            _isConfigured = GearWebApplication.IsConfigured(_hostingEnvironment);
+            _configuration = configuration;
+            _installerService = installerService;
+            _isConfigured = GearWebApplication.IsConfigured(hostingEnvironment);
         }
 
         /// <summary>
@@ -117,18 +54,9 @@ namespace GR.Install.Razor.Controllers
         {
             if (_isConfigured) return RedirectToAction("Index", "Home");
             var model = new SetupModel();
-            var settings = GearWebApplication.Settings(_hostingEnvironment);
-            if (settings != null)
-            {
-                model.DataBaseType = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
-                    ? DbProviderType.PostgreSql
-                    : DbProviderType.MsSqlServer;
-
-                model.DatabaseConnectionString = settings.ConnectionStrings.PostgreSQL.UsePostgreSQL
-                    ? settings.ConnectionStrings.PostgreSQL.ConnectionString
-                    : settings.ConnectionStrings.MSSQLConnection;
-            }
-
+            var (provider, connectionString) = _configuration.GetConnectionStringInfo();
+            model.DataBaseType = provider;
+            model.DatabaseConnectionString = connectionString;
             model.SysAdminProfile = new SetupProfileModel
             {
                 FirstName = "admin",
@@ -155,121 +83,10 @@ namespace GR.Install.Razor.Controllers
         [HttpPost]
         public async Task<IActionResult> Setup(SetupModel model)
         {
-            var settings = GearWebApplication.Settings(_hostingEnvironment);
-
-            if (model.DataBaseType == DbProviderType.MsSqlServer)
-            {
-                var (isConnected, error) = new MsSqlTableQueryBuilder().IsSqlServerConnected(model.DatabaseConnectionString);
-                if (!isConnected)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                    return View(model);
-                }
-
-                settings.ConnectionStrings.PostgreSQL.UsePostgreSQL = false;
-                settings.ConnectionStrings.MSSQLConnection = model.DatabaseConnectionString;
-            }
-            else
-            {
-                var (isConnected, error) = new NpgTableQueryBuilder().IsSqlServerConnected(model.DatabaseConnectionString);
-                if (!isConnected)
-                {
-                    ModelState.AddModelError(string.Empty, error);
-                    return View(model);
-                }
-                settings.ConnectionStrings.PostgreSQL.UsePostgreSQL = true;
-                settings.ConnectionStrings.PostgreSQL.ConnectionString = model.DatabaseConnectionString;
-            }
-
-            var tenantMachineName = TenantUtils.GetTenantMachineName(model.Organization.Name);
-            if (string.IsNullOrEmpty(tenantMachineName))
-            {
-                ModelState.AddModelError(string.Empty, "Invalid name for organization");
-                return View(model);
-            }
-            settings.IsConfigured = true;
-            settings.SystemConfig.MachineIdentifier = $"_{tenantMachineName}_";
-            var result = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            await System.IO.File.WriteAllTextAsync(ResourceProvider.AppSettingsFilepath(_hostingEnvironment), result);
-            GearWebApplication.InitMigrations();
-
-            await _permissionService.RefreshCache();
-
-            var tenantExist =
-                await _applicationDbContext.Tenants.AnyAsync(x => x.MachineName == tenantMachineName || x.Id == GearSettings.TenantId);
-            if (tenantExist)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid name for organization because is used for another organization or organization was configured");
-                return View(model);
-            }
-
-            var tenant = new Tenant
-            {
-                Id = GearSettings.TenantId,
-                Name = model.Organization.Name,
-                MachineName = tenantMachineName,
-                Created = DateTime.Now,
-                Changed = DateTime.Now,
-                SiteWeb = model.Organization.SiteWeb,
-                Author = "System"
-            };
-
-            //Register new tenant to cache
-            await _cacheService.SetAsync($"_tenant_{tenant.MachineName}", new TenantSettings
-            {
-                AllowAccess = true,
-                TenantId = tenant.Id,
-                TenantName = tenant.MachineName
-            });
-
-            //Set user settings
-            var superUser = await _applicationDbContext.Users.FirstOrDefaultAsync();
-            if (superUser != null)
-            {
-                superUser.UserName = model.SysAdminProfile.UserName;
-                superUser.Email = model.SysAdminProfile.Email;
-                var hasher = new PasswordHasher<GearUser>();
-                var hashedPassword = hasher.HashPassword(superUser, model.SysAdminProfile.Password);
-                superUser.PasswordHash = hashedPassword;
-                await _signInManager.UserManager.UpdateAsync(superUser);
-            }
-            await _applicationDbContext.Tenants.AddAsync(tenant);
-
-            //Update super user information
-            await _applicationDbContext.SaveChangesAsync();
-
-            //Seed entity
-            await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
-            {
-                Changed = DateTime.Now,
-                Created = DateTime.Now,
-                IsSystem = true,
-                Author = superUser?.Id,
-                MachineName = tenant.MachineName,
-                Name = tenant.MachineName,
-                TenantId = tenant.Id
-            });
-
-            await _entitiesDbContext.SaveChangesAsync();
-
-            //Create dynamic tables for configured tenant
-            await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, tenantMachineName);
-
-            //Register in memory types
-            await _dynamicService.RegisterInMemoryDynamicTypesAsync();
-
-            //Send welcome message to user
-            await _notify.SendNotificationAsync(new List<Guid> { Guid.Parse(superUser?.Id ?? string.Empty) },
-                new Notification
-                {
-                    Content = $"Welcome to Gear Bpm {model.SysAdminProfile.FirstName} {model.SysAdminProfile.LastName}",
-                    Subject = "Info",
-                    NotificationTypeId = NotificationType.Info
-                });
-
-            //sign in user
-            await _signInManager.SignInAsync(superUser, true);
-            return RedirectToAction("Index", "Home");
+            var installResponse = await _installerService.InstallAsync(model);
+            if (installResponse.IsSuccess) return RedirectToAction("Index", "Home");
+            ModelState.AppendResultModelErrors(installResponse.Errors);
+            return View(model);
         }
 
         /// <summary>

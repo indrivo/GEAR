@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
@@ -67,9 +68,10 @@ namespace GR.Notifications.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public async Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
-            await NotificationManager.SeedNotificationTypesAsync();
+            NotificationManager.SeedNotificationTypesAsync().Wait();
+            return Task.CompletedTask;
         }
     }
 }

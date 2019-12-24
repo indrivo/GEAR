@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core.Abstractions;
@@ -70,7 +71,7 @@ namespace GR.Entities.Security.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public virtual Task InvokeSeedAsync()
+        public virtual Task InvokeSeedAsync(IServiceProvider services)
         {
             return Task.CompletedTask;
         }

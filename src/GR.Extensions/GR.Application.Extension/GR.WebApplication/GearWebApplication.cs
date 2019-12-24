@@ -5,15 +5,16 @@ using GR.Core.Helpers;
 using GR.Identity.Data;
 using GR.Identity.IdentityServer4;
 using GR.Identity.IdentityServer4.Seeders;
-using GR.Identity.Seeders;
 using GR.WebApplication.Extensions;
-using GR.WebApplication.InstallerModels;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core;
+using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
+using GR.Entities.Data;
+using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
 
 namespace GR.WebApplication
@@ -48,13 +49,10 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IWebHost Migrate()
         {
-            GlobalWebHost?.MigrateDbContext<PersistedGrantDbContext>()
-                .MigrateDbContext<ApplicationDbContext>((context, services) =>
-                {
-                    new ApplicationDbContextSeed()
-                        .SeedAsync(context, services)
-                        .Wait();
-                })
+            GlobalWebHost?
+                .MigrateDbContext<EntitiesDbContext>()
+                .MigrateDbContext<ApplicationDbContext>()
+                .MigrateDbContext<PersistedGrantDbContext>()
                 .MigrateDbContext<ConfigurationDbContext>((context, services) =>
                 {
                     var config = services.GetService<IConfiguration>();
@@ -64,6 +62,8 @@ namespace GR.WebApplication
                     IdentityServerConfigDbSeeder.SeedAsync(configurator, context, applicationDbContext, config, env)
                         .Wait();
                 });
+
+            SystemEvents.Database.Migrate(new DatabaseMigrateEventArgs());
 
             return GlobalWebHost;
         }
