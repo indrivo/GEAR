@@ -55,7 +55,6 @@ using GR.Process.Razor.Extensions;
 using GR.Report.Abstractions.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using GR.Application.Middleware.Extensions;
@@ -81,7 +80,6 @@ using GR.Entities.Security.Razor.Extensions;
 using GR.Files.Box;
 using GR.Files.Box.Abstraction.Extension;
 using GR.Files.Box.Data;
-using TreeIsoService = GR.Cms.Services.TreeIsoService;
 using GR.MultiTenant.Abstractions.Extensions;
 using GR.MultiTenant.Razor.Extensions;
 using GR.MultiTenant.Services;
@@ -123,74 +121,51 @@ using GR.Report.Dynamic;
 using GR.Report.Dynamic.Data;
 using GR.Subscriptions.BackgroundServices;
 using GR.WebApplication.Extensions;
+using GR.WebApplication.Helpers;
 using GR.WorkFlows;
 using GR.WorkFlows.Abstractions.Models;
 using GR.WorkFlows.Abstractions.Extensions;
 using GR.WorkFlows.Data;
 using GR.WorkFlows.Razor.Extensions;
+using TreeIsoService = GR.Cms.Services.TreeIsoService;
 
 #endregion
 
 namespace GR.Cms
 {
-	public class Startup
+	public class Startup : GearCoreStartup
 	{
-		/// <summary>
-		/// Migrations Assembly
-		/// </summary>
-		private static readonly string MigrationsAssembly =
-			typeof(Identity.DbSchemaNameConstants).GetTypeInfo().Assembly.GetName().Name;
-
-		/// <summary>
-		/// AppSettings configuration
-		/// </summary>
-		private IConfiguration Configuration { get; }
-
-		/// <summary>
-		/// Hosting configuration
-		/// </summary>
-		private IHostingEnvironment HostingEnvironment { get; }
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="configuration"></param>
 		/// <param name="env"></param>
-		public Startup(IConfiguration configuration, IHostingEnvironment env)
-		{
-			Configuration = configuration;
-			HostingEnvironment = env;
-		}
+		public Startup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env) { }
 
 		/// <summary>
 		/// Configure cms app
 		/// </summary>
 		/// <param name="app"></param>
-		public void Configure(IApplicationBuilder app)
-		{
-			app.UseGearWebApp(config =>
+		public override void Configure(IApplicationBuilder app)
+			=> app.UseGearWebApp(config =>
 				{
 					config.HostingEnvironment = HostingEnvironment;
 					config.Configuration = Configuration;
+					//rewrite root path to redirect on dynamic page, only for commerce landing page
 					config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
 					{
-						//rewrite root path to redirect on dynamic page, only for commerce landing page
 						{
-							"/", context =>
-							{
-								var originalPath = context.Request.Path.Value;
-								context.Items["originalPath"] = originalPath;
-								context.Request.Path = "/public";
-							}
+							"/", context => context.MapTo("/public")
 						}
 					};
-				})
-				//----------------------------------Calendar graphQl--------------------------------------
-				.UseCalendarGraphQl();
-		}
+				});
 
-		// This method gets called by the runtime. Use this method to add services to the container.
-		public IServiceProvider ConfigureServices(IServiceCollection services) =>
+		/// <summary>
+		/// This method gets called by the runtime. Use this method to add services to the container.
+		/// </summary>
+		/// <param name="services"></param>
+		/// <returns></returns>
+		public override IServiceProvider ConfigureServices(IServiceCollection services) =>
 			services.RegisterGearWebApp(config =>
 		{
 			config.Configuration = Configuration;
@@ -210,15 +185,7 @@ namespace GR.Cms
 			config.GearServices.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
-				.AddIdentityServer(Configuration, MigrationsAssembly)
-				.AddHealthChecks(checks =>
-				{
-					//var minutes = 1;
-					//if (int.TryParse(Configuration["HealthCheck:Timeout"], out var minutesParsed))
-					//	minutes = minutesParsed;
-
-					//checks.AddSqlCheck("ApplicationDbContext-DB", connectionString.Item2, TimeSpan.FromMinutes(minutes));
-				});
+				.AddIdentityServer(Configuration, MigrationsAssembly);
 
 			//Register MPass
 			config.GearServices.AddMPassSigningCredentials(new MPassSigningCredentials

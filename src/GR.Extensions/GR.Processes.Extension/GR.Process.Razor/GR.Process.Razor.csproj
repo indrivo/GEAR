@@ -13,14 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="bpmConfig.json" />
-    <None Remove="libman.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="bpmConfig.json">
+    <Content Include="Configuration\bpmConfig.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <EmbeddedResource Include="Configuration\bpmConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="libman.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

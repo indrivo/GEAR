@@ -277,11 +277,11 @@ namespace GR.PageRender.Razor.Controllers
         [HttpGet]
         public JsonResult GetScripts(Guid pageId)
         {
-            if (pageId == Guid.Empty) return Json(default(IEnumerable<string>));
+            if (pageId == Guid.Empty) return Json(new List<string>());
             var scripts = new HashSet<string>();
             var page = _pagesContext.Pages.Include(x => x.PageScripts).FirstOrDefault(x => x.Id.Equals(pageId));
 
-            if (page == null) return Json(default(IEnumerable<string>));
+            if (page == null) return Json(new List<string>());
 
             if (!page.IsLayout && page.LayoutId != null)
             {
