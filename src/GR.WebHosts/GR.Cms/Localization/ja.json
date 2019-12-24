@@ -846,5 +846,6 @@
   "system_gr_period": "期間",
   "start_state": "開始状態",
   "next_state": "次の状態",
-  "change_state": "状態を変化さ"
+  "change_state": "状態を変化さ",
+  "system_loading": "読み込み中..."
 }

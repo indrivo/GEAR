@@ -5,23 +5,19 @@
 
 <div class="card">
 	<div class="card-body">
-		<h4 class="card-title">@Localizer["pages"]</h4>
-		<h6 class="card-subtitle">@Localizer["page_list_subtitle"]</h6>
 		<div class="table-responsive">
 			<div class="mt-2">
 				<div class="d-flex">
-					<div class="mr-auto">
+					<div class="mr-auto d-flex flex-row">
 						<div class="form-group">
 							<a asp-action="Create" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["add_page"]
 							</a>
-							<small>@Localizer["new_page_will_added"]</small>
 						</div>
 						<div class="form-group">
 							<a id="generatePage" href="javascript:void(0)" class="btn btn-primary btn-sm">
 								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>@Localizer["generate_page"]
 							</a>
-                            <small>@Localizer["new_page_will_added"]</small>
 						</div>
 					</div>
 				</div>
@@ -205,8 +201,9 @@
 						"render": function(data, type, row, meta) {
 							return `
 	<div class="btn-group">
-          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            ${window.translate("list_actions")}
+          <button type="button" class="btn btn-info dropdown-toggle table-actions-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @* ${window.translate("list_actions")} *@
+				<span class="material-icons mr-1 align-middle">more_vert</span>
           </button>
           <div class="dropdown-menu">
            <a class="dropdown-item" href="${row.path}">Preview</a>

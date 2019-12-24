@@ -846,5 +846,6 @@
   "system_gr_period": "Perioada",
   "start_state": "Statutul inițial",
   "next_state": "Următorul statut",
-  "change_state": "Schimba stat"
+  "change_state": "Schimba stat",
+  "system_loading": "Se încarcă..."
 }

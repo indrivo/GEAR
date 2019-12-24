@@ -846,5 +846,6 @@
   "system_gr_period": "Zeit",
   "start_state": "Starten Sie Zustand",
   "next_state": "Nächsten Zustand",
-  "change_state": "Status ändern"
+  "change_state": "Status ändern",
+  "system_loading": "Loading..."
 }

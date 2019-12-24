@@ -846,5 +846,6 @@
   "system_gr_period": "Περίοδο",
   "start_state": "Έναρξη μέλος",
   "next_state": "Επόμενη κατάσταση",
-  "change_state": "Αλλαγή μέλους"
+  "change_state": "Αλλαγή μέλους",
+  "system_loading": "Φόρτωση..."
 }

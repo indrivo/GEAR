@@ -846,5 +846,6 @@
   "system_gr_period": "Период",
   "start_state": "Начальное состояние",
   "next_state": "Следующее состояние",
-  "change_state": "Изменение состояния "
+  "change_state": "Изменение состояния ",
+  "system_loading": "Загрузка..."
 }

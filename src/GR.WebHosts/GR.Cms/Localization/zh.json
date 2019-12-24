@@ -846,5 +846,6 @@
   "system_gr_period": "周期",
   "start_state": "开始状态",
   "next_state": "下一个状态",
-  "change_state": "改变态"
+  "change_state": "改变态",
+  "system_loading": "装载..."
 }

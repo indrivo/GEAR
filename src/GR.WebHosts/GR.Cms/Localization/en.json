@@ -846,5 +846,6 @@
   "system_gr_period": "Period",
   "start_state": "Start state",
   "next_state": "Next state",
-  "change_state": "Change statutul"
+  "change_state": "Change statutul",
+  "system_loading": "Loading..."
 }

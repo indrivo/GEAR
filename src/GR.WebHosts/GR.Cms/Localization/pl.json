@@ -846,5 +846,6 @@
   "system_gr_period": "Okres",
   "start_state": "Stan początkowy",
   "next_state": "Następujący stan",
-  "change_state": "Zmiana stanu "
+  "change_state": "Zmiana stanu ",
+  "system_loading": "Ładowanie..."
 }
