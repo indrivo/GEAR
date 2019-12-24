@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace GR.Core
 {
@@ -43,5 +44,10 @@ namespace GR.Core
         /// </summary>
         /// <returns></returns>
         public static bool IsHostedOnLinux() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
+        /// <summary>
+        /// Running project path
+        /// </summary>
+        public static  string RunningProjectPath => AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin", StringComparison.Ordinal));
     }
 }

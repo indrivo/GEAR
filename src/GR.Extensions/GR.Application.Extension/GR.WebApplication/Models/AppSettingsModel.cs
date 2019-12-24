@@ -46,7 +46,7 @@ namespace GR.WebApplication.Models
             public string ServerName { get; set; }
             public int ServerPort { get; set; }
             public bool UseSSL { get; set; }
-            public Credentials Credentials { get; set; }
+            public Credentials Credentials { get; set; } = new Credentials();
             public string SearchBase { get; set; }
             public string ContainerName { get; set; }
             public string DomainName { get; set; }
@@ -58,51 +58,52 @@ namespace GR.WebApplication.Models
             /// <summary>
             /// System config data
             /// </summary>
-            public SystemConfig SystemConfig { get; set; }
+            public SystemConfig SystemConfig { get; set; } = new SystemConfig();
 
             /// <summary>
             /// Connection Strings
             /// </summary>
-            public ConnectionStrings ConnectionStrings { get; set; }
+            public ConnectionStrings ConnectionStrings { get; set; } = new ConnectionStrings();
             /// <summary>
             /// Logging
             /// </summary>
-            public Logging Logging { get; set; }
+            public Logging Logging { get; set; } = new Logging();
             /// <summary>
             /// Health Check
             /// </summary>
-            public HealthCheck HealthCheck { get; set; }
+            public HealthCheck HealthCheck { get; set; } = new HealthCheck();
             /// <summary>
             /// Localization Config
             /// </summary>
-            public LocalizationConfigModel LocalizationConfig { get; set; }
+            public LocalizationConfigModel LocalizationConfig { get; set; } = new LocalizationConfigModel();
+
             /// <summary>
             /// Is Configured
             /// </summary>
-            public bool IsConfigured { get; set; }
+            public bool IsConfigured { get; set; } = false;
             /// <summary>
             /// LdapSettings
             /// </summary>
-            public LdapSettings LdapSettings { get; set; }
+            public LdapSettings LdapSettings { get; set; } = new LdapSettings();
             /// <summary>
             /// WebClients
             /// </summary>
-            public Dictionary<string, Dictionary<string, string>> WebClients { get; set; }
+            public Dictionary<string, Dictionary<string, string>> WebClients { get; set; } = new Dictionary<string, Dictionary<string, string>>();
 
             /// <summary>
             /// Backup settings
             /// </summary>
-            public BackupSettings BackupSettings { get; set; }
+            public BackupSettings BackupSettings { get; set; } = new BackupSettings();
 
             /// <summary>
             /// Email settings
             /// </summary>
-            public EmailSettingsViewModel EmailSettings { get; set; }
+            public EmailSettingsViewModel EmailSettings { get; set; } = new EmailSettingsViewModel();
 
             /// <summary>
             /// Redis connection configuration
             /// </summary>
-            public RedisConnectionConfig RedisConnection { get; set; }
+            public RedisConnectionConfig RedisConnection { get; set; } = new RedisConnectionConfig();
         }
     }
 }

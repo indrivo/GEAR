@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using GR.Core.Events;
 using GR.Core.Helpers;
 using GR.Identity.Data;
@@ -16,6 +19,7 @@ using GR.Core.Extensions;
 using GR.Entities.Data;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
+using Newtonsoft.Json;
 
 namespace GR.WebApplication
 {
@@ -98,6 +102,8 @@ namespace GR.WebApplication
         /// <returns></returns>
         private static IConfigurationRoot BuildConfiguration()
         {
+            InitAppsettingsFiles();
+
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddEnvironmentVariables()
@@ -108,6 +114,37 @@ namespace GR.WebApplication
 
             GlobalAppConfiguration = config;
             return config;
+        }
+
+        /// <summary>
+        /// Init appsettings files
+        /// </summary>
+        [Conditional("DEBUG")]
+        public static void InitAppsettingsFiles()
+        {
+
+            var envPaths = new List<string>
+            {
+                "Development", "Stage", string.Empty
+            };
+
+            var fails = 0;
+
+            foreach (var subPath in envPaths)
+            {
+                var pathBuilder = new StringBuilder("appsettings.");
+                if (!subPath.IsNullOrEmpty()) pathBuilder.AppendFormat("{0}.", subPath);
+                pathBuilder.Append("json");
+                var appSettingsFilePath = Path.Combine(RunningProjectPath, pathBuilder.ToString());
+                if (!File.Exists(appSettingsFilePath)) using (var _ = File.Create(appSettingsFilePath)) { }
+                var settings = JsonParser.ReadObjectDataFromJsonFile<AppSettingsModel.RootObject>(appSettingsFilePath);
+                if (settings != null) continue;
+                fails++;
+                var baseSettings = JsonConvert.SerializeObject(new AppSettingsModel.RootObject(), Formatting.Indented);
+                File.WriteAllText(appSettingsFilePath, baseSettings);
+            }
+
+            if (fails > 0) throw new Exception("Please restart the application to configure it correctly, we have created a template with which you can configure it in appsettings.{EnvName}.json");
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace GR.Identity.Data
         /// <returns></returns>
         public static IEnumerable<Country> GetCountriesFromJsonFile()
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "countries.json");
+            var path = Path.Combine(AppContext.BaseDirectory, "Configuration/countries.json");
             using (var reader = new FileStream(path, FileMode.Open))
             {
                 if (!reader.CanRead) throw new FileNotFoundException("countries.json not found for seed countries");

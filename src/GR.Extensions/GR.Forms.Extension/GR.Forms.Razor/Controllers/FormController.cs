@@ -525,7 +525,7 @@ namespace GR.Forms.Razor.Controllers
             var systemValidations = JsonParser
                 .ReadArrayDataFromJsonFile<Collection<FormValidation>>(
                     Path.Combine(AppContext.BaseDirectory,
-                    "FormValidations.json"));
+                    "Configuration/FormValidations.json"));
 
             if (systemValidations != null)
             {

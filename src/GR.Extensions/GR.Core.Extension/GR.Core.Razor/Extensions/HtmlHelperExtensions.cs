@@ -16,7 +16,7 @@ namespace GR.Core.Razor.Extensions
         public static HtmlString GetScriptDeclaration(this IHtmlHelper htmlHelper, string path, bool appendNewVersion = true)
         {
             var builder = new StringBuilder();
-            builder.AppendFormat("<script src=\"{0}\" asp-append-version=\"{1}\"></script>", path, appendNewVersion.ToString());
+            builder.AppendFormat("<script src=\"{0}\" asp-append-version=\"{1}\"></script>", path, appendNewVersion.ToString().ToLowerInvariant());
             return new HtmlString(builder.ToString());
         }
 

@@ -23,7 +23,7 @@ namespace GR.PageRender.Data
             var strategy = context.Database.CreateExecutionStrategy();
             await strategy.ExecuteAsync(async () =>
             {
-                var entity = JsonParser.ReadObjectDataFromJsonFile<SeedData>(Path.Combine(AppContext.BaseDirectory, "ViewModelFieldConfigCodes.json"));
+                var entity = JsonParser.ReadObjectDataFromJsonFile<SeedData>(Path.Combine(AppContext.BaseDirectory, "Configuration/ViewModelFieldConfigCodes.json"));
                 if (entity == null) return;
 
                 if (entity.ViewModelFieldCodes.Any())

@@ -158,8 +158,10 @@ namespace GR.Entities
         /// <param name="schemaName"></param>
         public async Task CreateDynamicTablesFromInitialConfigurationsFile(Guid tenantId, string schemaName = null)
         {
-            var syncronizer = IoC.Resolve<EntitySynchronizer>();
-            Arg.NotNull(syncronizer, nameof(EntitySynchronizer));
+            var synchronizer = IoC.Resolve<EntitySynchronizer>();
+            var context = IoC.Resolve<EntitiesDbContext>();
+            Arg.NotNull(synchronizer, nameof(EntitySynchronizer));
+            Arg.NotNull(context, nameof(EntitiesDbContext));
             var entitiesList = new List<SeedEntity>
             {
                 JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "SysEntities.json")),
@@ -172,9 +174,9 @@ namespace GR.Entities
                 if (item.SynchronizeTableViewModels == null) continue;
                 foreach (var ent in item.SynchronizeTableViewModels)
                 {
-                    if (!await IoC.Resolve<EntitiesDbContext>().Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
+                    if (!await context.Table.AnyAsync(s => s.Name == ent.Name && s.TenantId == tenantId))
                     {
-                        await syncronizer.SynchronizeEntities(ent, tenantId, schemaName);
+                        await synchronizer.SynchronizeEntities(ent, tenantId, schemaName);
                     }
                 }
             }

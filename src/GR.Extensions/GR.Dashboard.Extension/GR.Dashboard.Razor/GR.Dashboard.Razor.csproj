@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <Version>1.0.3</Version>
+    <Version>2.0.0</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>UI for dashboard builder</Description>
@@ -12,8 +12,8 @@
     <PackageTags>dashboard builder .net core gear</PackageTags>
     <PackageReleaseNotes>- Simple builder to add custom widgets and  gear reports
 - Fix custom preset for widgets</PackageReleaseNotes>
-    <AssemblyVersion>1.0.1.1</AssemblyVersion>
-    <FileVersion>1.0.1.1</FileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <FileVersion>2.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

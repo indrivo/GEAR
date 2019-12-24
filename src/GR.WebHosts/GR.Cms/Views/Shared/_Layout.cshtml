@@ -19,21 +19,21 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>@ViewData["Title"] - @(await AppProvider.GetAppName("core"))</title>
 		<partial name="_BootstrapThemeStyles" />
-		@Html.IncludeFormsStylePlugins();
+		@Html.IncludeFormsStylePlugins()
 		<layout-css-code layout-id="@layoutId"></layout-css-code>
 		<application-styles layout-id="@layoutId"></application-styles>
 		@RenderSection("PreScripts", required: false)
 		<partial name="_BootstrapThemeScripts" />
 		@RenderSection("Styles", required: false)
-		@Html.IncludeCoreJavascriptPlugins();
-		@Html.IncludeNotificationJavascriptPlugins();
+		@Html.IncludeCoreJavascriptPlugins()
+		@Html.IncludeNotificationJavascriptPlugins()
 	</head>
 	<body class="fix-header fix-sidebar card-no-border">
 		<App layout-id="@layoutId">
 			@RenderBody()
 			<script src="~/assets/EntityPlugins/st-data-data-injector-v.0.1.js" asp-append-version="true"></script>
 			<partial name="_LayoutScriptPartial" model="layoutId" />
-			@Html.IncludeFormsJavascriptPlugins();
+			@Html.IncludeFormsJavascriptPlugins()
 			<script src="~/assets/js/plugins/st-ui-table-column-visibility-v.0.1.js" asp-append-version="true"></script>
 			@RenderSection("Scripts", false)
 			<application-scripts layout-id="@layoutId"></application-scripts>

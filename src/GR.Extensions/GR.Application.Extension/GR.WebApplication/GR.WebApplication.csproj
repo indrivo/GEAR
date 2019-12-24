@@ -2,13 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>1.0.6</Version>
+    <Version>2.0.0</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Description>Web app for run gear product</Description>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <PackageTags>c# gear app .net core web webapp framework</PackageTags>
     <PackageReleaseNotes>-Move app extensions</PackageReleaseNotes>
+    <FileVersion>2.0.0</FileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCompression" Version="2.2.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="2.8.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
     <PackageReference Include="NLog" Version="4.6.7" />
@@ -28,6 +31,7 @@
     <ProjectReference Include="..\..\GR.Backup.Extension\GR.Backup.Abstractions\GR.Backup.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Cache.Extension\GR.Cache\GR.Cache.csproj" />
     <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core\GR.Core.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Email.Extension\GR.Email.Abstractions\GR.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.IdentityServer4\GR.Identity.IdentityServer4.csproj" />

@@ -5,13 +5,15 @@
     <LangVersion>7.3</LangVersion>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.1.5</Version>
+    <Version>2.0.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Description>This package is a core to the Gear Cms</Description>
     <NeutralLanguage>en</NeutralLanguage>
     <RepositoryUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core</RepositoryUrl>
     <PackageProjectUrl>https://github.com/indrivo/GEAR/tree/master/src/GR.Extensions/GR.Core.Extension/GR.Core</PackageProjectUrl>
     <PackageReleaseNotes>- Add long random extensions </PackageReleaseNotes>
+    <FileVersion>2.0.0</FileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
 
   </PropertyGroup>
 

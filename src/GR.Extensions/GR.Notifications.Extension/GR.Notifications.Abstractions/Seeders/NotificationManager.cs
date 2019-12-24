@@ -18,7 +18,7 @@ namespace GR.Notifications.Abstractions.Seeders
         {
             var dataService = IoC.Resolve<IDynamicService>();
             if (dataService == null) throw new Exception("IDynamicService is not registered");
-            var types = JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "NotificationTypes.json"));
+            var types = JsonParser.ReadObjectDataFromJsonFile<SeedEntity>(Path.Combine(AppContext.BaseDirectory, "Configuration/NotificationTypes.json"));
             if (types == null)
                 return;
 

@@ -7,12 +7,14 @@
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <LangVersion>7.3</LangVersion>
-    <Version>1.0.1</Version>
+    <Version>2.0.0</Version>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <Product>Gear</Product>
     <Description>BPMN</Description>
     <Copyright>Indrivo 2019</Copyright>
+    <FileVersion>2.0.0</FileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
