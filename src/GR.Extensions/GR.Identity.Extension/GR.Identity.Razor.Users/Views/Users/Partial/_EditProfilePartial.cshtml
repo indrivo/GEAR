@@ -27,7 +27,7 @@
         </div>
         <div class="form-group">
             <label asp-for="UserPhoneNumber">@Localizer["system_phone"]</label>
-            <input class="form-control" asp-for="UserPhoneNumber" type="number">
+            <input class="form-control" asp-for="UserPhoneNumber">
             <span asp-validation-for="UserPhoneNumber" class="text-danger"></span>
         </div>
 
@@ -43,8 +43,13 @@
 </form>
 
 <script type="text/javascript">
+    $(function () {
+        const notifier = new ToastNotifier();
+        const validator = new Validator();
+        validator.reAttachValidationsRulesToForm("#EditProfile");
 	$("form[name='EditProfile']").submit(function(e) {
-		e.preventDefault();
+        e.preventDefault();
+        if (!$("#EditProfile").valid()) return;
         const form = $(this);
         const serialData = form.serialize();
         $.ajax({
@@ -53,19 +58,26 @@
 			data: serialData
 		}).done((data) => {
 			if (data.is_success) {
-				new ToastNotifier().notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
+				notifier.notify({ icon: "success", heading: "@Localizer["profile_updated_successfully"]" });
 				$('#modal-container').modal('hide');
 				setTimeout(location.reload(), 5000);
 			} else {
-				new ToastNotifier().notifyErrorList(data.error_keys);
+				notifier.notifyErrorList(data.error_keys);
 			}
 
 		}).fail(() => {
-			notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
+			notifier.notify({ heading: "Error", text: "@Localizer["system_internal_error"]" });
 		});
     });
 
     $("#Birthday").datepicker({
-        autoclose: true
+      format: "dd/mm/yyyy",
+    startDate: "01-01-2015",
+    autoclose: true,
+    todayHighlight: true,
+    container: '#modal-container .modal-content',
+    orientation: "bottom"
     });
+    });
+
 </script>
