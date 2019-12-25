@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using GR.Core.BaseControllers;
+﻿using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.LocationViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -20,7 +20,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly ILocationService _locationService;
 
-        #endregion
+        #endregion Injectable
 
         public LocationController(ILocationService locationService)
         {
@@ -38,9 +38,8 @@ namespace GR.Identity.Razor.Controllers
         public async Task<JsonResult> AddNewCountry([Required]AddCountryViewModel model)
          => !ModelState.IsValid ? Json(new ResultModel().AttachModelState(ModelState)) : Json(await _locationService.AddNewCountryAsync(model));
 
-
         /// <summary>
-        /// Delete country 
+        /// Delete country
         /// </summary>
         /// <param name="countryId"></param>
         /// <returns></returns>
@@ -49,7 +48,6 @@ namespace GR.Identity.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> DeleteCountry([Required]string countryId)
             => await JsonAsync(_locationService.DeleteCountryAsync(countryId));
-
 
         /// <summary>
         /// Get all countries
@@ -72,7 +70,6 @@ namespace GR.Identity.Razor.Controllers
         public async Task<JsonResult> GetCountryById([Required]string countryId)
             => await JsonAsync(_locationService.GetCountryByIdAsync(countryId));
 
-
         /// <summary>
         /// Update country
         /// </summary>
@@ -83,7 +80,6 @@ namespace GR.Identity.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> UpdateCountry([Required]AddCountryViewModel model)
             => !ModelState.IsValid ? Json(new ResultModel().AttachModelState(ModelState)) : Json(await _locationService.UpdateCountryAsync(model));
-
 
         /// <summary>
         /// Get cities by country id
@@ -96,7 +92,6 @@ namespace GR.Identity.Razor.Controllers
         public async Task<JsonResult> GetCitiesByCountry([Required] string countryId)
             => await JsonAsync(_locationService.GetCitiesByCountryAsync(countryId));
 
-
         /// <summary>
         /// Add city to country
         /// </summary>
@@ -108,7 +103,6 @@ namespace GR.Identity.Razor.Controllers
         public async Task<JsonResult> AddCityToCountry([Required]AddCityViewModel model)
             => !ModelState.IsValid ? Json(new ResultModel().AttachModelState(ModelState)) : Json(await _locationService.AddCityToCountryAsync(model));
 
-
         /// <summary>
         /// Remove city bu id
         /// </summary>
@@ -119,7 +113,6 @@ namespace GR.Identity.Razor.Controllers
         [Produces("application/json", Type = typeof(ResultModel))]
         public async Task<JsonResult> RemoveCity([Required] long cityId)
             => await JsonAsync(_locationService.RemoveCityAsync(cityId));
-
 
         /// <summary>
         /// Get city by id

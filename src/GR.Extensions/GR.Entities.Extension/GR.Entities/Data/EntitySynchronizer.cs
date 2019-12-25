@@ -1,13 +1,13 @@
+using GR.Core.Extensions;
+using GR.Entities.Abstractions;
+using GR.Entities.Abstractions.Models.Tables;
+using GR.Entities.Abstractions.ViewModels.Table;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GR.Core.Extensions;
-using GR.Entities.Abstractions;
-using GR.Entities.Abstractions.Models.Tables;
-using GR.Entities.Abstractions.ViewModels.Table;
 
 namespace GR.Entities.Data
 {

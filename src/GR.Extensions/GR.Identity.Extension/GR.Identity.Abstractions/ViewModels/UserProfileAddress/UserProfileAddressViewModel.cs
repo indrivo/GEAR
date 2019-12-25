@@ -2,7 +2,7 @@
 
 namespace GR.Identity.Abstractions.ViewModels.UserProfileAddress
 {
-   public class UserProfileAddressViewModel
+    public class UserProfileAddressViewModel
     {
         public Guid Id { get; set; }
         public bool IsPrimary { get; set; }

@@ -1,11 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using GR.Cache.Abstractions;
+﻿using GR.Cache.Abstractions;
 using GR.Core;
+using GR.Core.Extensions;
+using GR.Core.Helpers;
+using GR.Core.Helpers.Templates;
+using GR.Email.Abstractions;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Enums;
+using GR.Identity.Abstractions.Events;
+using GR.Identity.Abstractions.Events.EventArgs.Authorization;
+using GR.Identity.Abstractions.Events.EventArgs.Users;
+using GR.Identity.Abstractions.Extensions;
+using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Data;
+using GR.Identity.LdapAuth.Abstractions;
+using GR.Identity.LdapAuth.Abstractions.Models;
+using GR.Identity.Razor.Extensions;
+using GR.Identity.Razor.ViewModels.AccountViewModels;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Services;
@@ -17,23 +27,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using GR.Core.Helpers;
-using GR.Core.Extensions;
-using GR.Core.Helpers.Templates;
-using GR.Email.Abstractions;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
-using GR.Identity.Data;
-using GR.Identity.Razor.Extensions;
-using GR.Identity.Razor.ViewModels.AccountViewModels;
 using ST.MPass.Gov;
-using GR.Identity.Abstractions.Events;
-using GR.Identity.Abstractions.Events.EventArgs.Authorization;
-using GR.Identity.Abstractions.Events.EventArgs.Users;
-using GR.Identity.Abstractions.Extensions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -43,7 +43,7 @@ namespace GR.Identity.Razor.Controllers
         #region Private Dependency Injection Fields
 
         /// <summary>
-        /// Inject distributed cache from redis 
+        /// Inject distributed cache from redis
         /// </summary>
         private readonly ICacheService _cache;
 
@@ -264,7 +264,6 @@ namespace GR.Identity.Razor.Controllers
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid model"));
                 return Json(resultModel);
             }
-
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -539,7 +538,6 @@ namespace GR.Identity.Razor.Controllers
 
             return Redirect(logout?.PostLogoutRedirectUri);
         }
-
 
         /// <summary>
         /// Show logout page
@@ -816,6 +814,7 @@ namespace GR.Identity.Razor.Controllers
                 case "Facebook":
                     picture = $"https://graph.facebook.com/{identifier}/picture?type=large";
                     break;
+
                 case "Google":
                     var index = name.LastIndexOf("(", StringComparison.Ordinal);
                     if (index > 0)
@@ -825,6 +824,7 @@ namespace GR.Identity.Razor.Controllers
 
                     picture = info.Principal.FindFirstValue("image");
                     break;
+
                 case "LinkedIn":
                     picture = info.Principal.FindFirstValue("image");
                     break;

@@ -1,15 +1,15 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GR.Core;
+﻿using GR.Core;
 using GR.Core.Extensions;
-using Mapster;
 using GR.Core.Helpers;
 using GR.Entities.Abstractions.Models.Tables;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Entities.Data;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Entities.Controls.Builders
 {
@@ -25,7 +25,6 @@ namespace GR.Entities.Controls.Builders
         /// </summary>
         /// <param name="entityName"></param>
         public static void ResetBuildEntity(string entityName) => EntityModels.TryRemove(entityName, out _);
-
 
         /// <summary>
         ///     Create Entity viewmodel Configuration structure by entity name
