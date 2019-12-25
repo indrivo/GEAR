@@ -1,11 +1,9 @@
 @inject IStringLocalizer Localizer
 @model GR.Identity.Roles.Razor.ViewModels.RoleViewModels.CreateRoleViewModel
 
-
 @{
     ViewData["Title"] = Localizer["role_create_title"];
 }
-
 
 <div class="card card-outline-info">
     <div class="card-header">
@@ -85,7 +83,6 @@
                 </div>
                 <div class="col-lg-2 col-md-3">
                     <button type="reset" class="btn btn-block  btn-inverse"> @Localizer["reset"]</button>
-
                 </div>
                 <div class="col-lg-2 col-md-3">
                     <a asp-action="Index" class="btn btn-block btn-link"> @Localizer["back"]</a>
@@ -94,7 +91,6 @@
         </form>
     </div>
 </div>
-
 
 @section Scripts {
     <script type="text/javascript" language="javascript">

@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using GR.Cache.Abstractions;
+﻿using GR.Cache.Abstractions;
 using GR.Core.Extensions;
 using GR.Identity.Abstractions;
 using GR.Identity.Permissions.Abstractions;
 using GR.Identity.Permissions.Abstractions.Configurators;
 using GR.Identity.Permissions.Abstractions.Models;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Permissions
 {
@@ -141,10 +141,9 @@ namespace GR.Identity.Permissions
             return store;
         }
 
-
         /// <inheritdoc />
         /// <summary>
-        /// Refresh cache by role 
+        /// Refresh cache by role
         /// </summary>
         /// <param name="roleName"></param>
         /// <param name="delete"></param>
@@ -175,7 +174,6 @@ namespace GR.Identity.Permissions
                 .ToListAsync();
 
             data.Permissions = permissions;
-
 
             if (storeDictionary.ContainsKey(data.Name))
             {

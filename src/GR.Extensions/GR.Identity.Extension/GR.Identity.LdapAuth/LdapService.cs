@@ -1,13 +1,13 @@
-﻿using System;
+﻿using GR.Identity.LdapAuth.Abstractions;
+using GR.Identity.LdapAuth.Abstractions.Models;
+using Microsoft.Extensions.Options;
+using Novell.Directory.Ldap;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
-using Microsoft.Extensions.Options;
-using Novell.Directory.Ldap;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
 using LdapEntry = GR.Identity.LdapAuth.Abstractions.Models.LdapEntry;
 
 namespace GR.Identity.LdapAuth
@@ -50,12 +50,12 @@ namespace GR.Identity.LdapAuth
         /// <returns></returns>
         protected virtual ILdapConnection GetConnection()
         {
-            var ldapConnection = new LdapConnection() {SecureSocketLayer = _ldapSettings.UseSSL};
+            var ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapSettings.UseSSL };
             try
             {
-                //Connect function will create a socket connection to the server - Port 389 for insecure and 3269 for secure    
+                //Connect function will create a socket connection to the server - Port 389 for insecure and 3269 for secure
                 ldapConnection.Connect(_ldapSettings.ServerName, _ldapSettings.ServerPort);
-                //Bind function with null user dn and password value will perform anonymous bind to LDAP server 
+                //Bind function with null user dn and password value will perform anonymous bind to LDAP server
                 ldapConnection.Bind(_ldapSettings.Credentials.DomainUserName, _ldapSettings.Credentials.Password);
             }
             catch (Exception e)
@@ -356,7 +356,7 @@ namespace GR.Identity.LdapAuth
         /// <returns></returns>
         public virtual bool Authenticate(string distinguishedName, string password)
         {
-            using (var ldapConnection = new LdapConnection() {SecureSocketLayer = _ldapSettings.UseSSL})
+            using (var ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapSettings.UseSSL })
             {
                 try
                 {
@@ -448,16 +448,16 @@ namespace GR.Identity.LdapAuth
                     switch (objectClass)
                     {
                         case "group":
-                        {
-                            allChildren.Add(CreateEntryFromAttributes(entry.DN, entry.getAttributeSet()));
-
-                            foreach (var child in GetChildren(string.Empty, entry.DN, objectCategory, objectClass))
                             {
-                                allChildren.Add(child);
-                            }
+                                allChildren.Add(CreateEntryFromAttributes(entry.DN, entry.getAttributeSet()));
 
-                            break;
-                        }
+                                foreach (var child in GetChildren(string.Empty, entry.DN, objectCategory, objectClass))
+                                {
+                                    allChildren.Add(child);
+                                }
+
+                                break;
+                            }
                         case "user":
                             allChildren.Add(CreateUserFromAttributes(entry.DN, entry.getAttributeSet()));
                             break;
@@ -542,7 +542,7 @@ namespace GR.Identity.LdapAuth
         protected virtual SecurityIdentifier GetDomainSid()
         {
             var administratorAcount = new NTAccount(_ldapSettings.DomainName, "administrator");
-            var administratorSId = (SecurityIdentifier) administratorAcount.Translate(typeof(SecurityIdentifier));
+            var administratorSId = (SecurityIdentifier)administratorAcount.Translate(typeof(SecurityIdentifier));
             return administratorSId.AccountDomainSid;
         }
     }

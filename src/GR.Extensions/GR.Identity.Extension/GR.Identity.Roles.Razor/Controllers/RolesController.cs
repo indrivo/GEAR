@@ -1,16 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using IdentityServer4.EntityFramework.DbContexts;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using GR.Core;
 using GR.Core.BaseControllers;
 using GR.Core.Helpers;
@@ -30,6 +17,19 @@ using GR.Identity.Permissions.Abstractions.Attributes;
 using GR.Identity.Roles.Razor.ViewModels.RoleViewModels;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
+using IdentityServer4.EntityFramework.DbContexts;
+using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Roles.Razor.Controllers
 {
@@ -62,7 +62,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         /// </summary>
         private readonly IUserManager<GearUser> _userManager;
 
-        #endregion
+        #endregion Injectable
 
         public RolesController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, SignInManager<GearUser> signInManager, ILogger<RolesController> logger, IPermissionService permissionService, ConfigurationDbContext configurationDbContext, IUserManager<GearUser> userManager1) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
@@ -72,7 +72,6 @@ namespace GR.Identity.Roles.Razor.Controllers
             ConfigurationDbContext = configurationDbContext;
             _userManager = userManager1;
         }
-
 
         /// <summary>
         /// RoleProfile / Add
@@ -150,7 +149,6 @@ namespace GR.Identity.Roles.Razor.Controllers
                 {
                     return RedirectToAction(nameof(Index));
                 }
-
 
                 if (model.SelectedProfileId != null && model.SelectedProfileId.Any())
                 {
@@ -405,7 +403,6 @@ namespace GR.Identity.Roles.Razor.Controllers
                     return View(model);
                 }
 
-
                 var role = await ApplicationDbContext.Roles.SingleOrDefaultAsync(m => m.Name == model.Name);
                 if (role == null)
                 {
@@ -553,39 +550,51 @@ namespace GR.Identity.Roles.Razor.Controllers
                 case "name":
                     result = result.OrderBy(a => a.Name).ToList();
                     break;
+
                 case "created":
                     result = result.OrderBy(a => a.Created).ToList();
                     break;
+
                 case "author":
                     result = result.OrderBy(a => a.Author).ToList();
                     break;
+
                 case "modifiedBy":
                     result = result.OrderBy(a => a.ModifiedBy).ToList();
                     break;
+
                 case "changed":
                     result = result.OrderBy(a => a.Changed).ToList();
                     break;
+
                 case "isDeleted":
                     result = result.OrderBy(a => a.IsDeleted).ToList();
                     break;
+
                 case "name DESC":
                     result = result.OrderByDescending(a => a.Name).ToList();
                     break;
+
                 case "created DESC":
                     result = result.OrderByDescending(a => a.Created).ToList();
                     break;
+
                 case "author DESC":
                     result = result.OrderByDescending(a => a.Author).ToList();
                     break;
+
                 case "modifiedBy DESC":
                     result = result.OrderByDescending(a => a.ModifiedBy).ToList();
                     break;
+
                 case "changed DESC":
                     result = result.OrderByDescending(a => a.Changed).ToList();
                     break;
+
                 case "isDeleted DESC":
                     result = result.OrderByDescending(a => a.IsDeleted).ToList();
                     break;
+
                 default:
                     result = result.AsQueryable().ToList();
                     break;
@@ -641,7 +650,7 @@ namespace GR.Identity.Roles.Razor.Controllers
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         [Route("api/[controller]/[action]")]

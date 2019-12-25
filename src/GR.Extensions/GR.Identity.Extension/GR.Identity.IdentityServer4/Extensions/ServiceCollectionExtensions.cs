@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using GR.Identity.Abstractions;
+﻿using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Configurations;
 using GR.Identity.Abstractions.Extensions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Identity_IProfileService = IdentityServer4.Services.IProfileService;
 using Identity_ProfileService = GR.Identity.Services.ProfileService;
 

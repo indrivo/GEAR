@@ -1,7 +1,7 @@
 @model IdentityServer4.EntityFramework.Entities.ApiResource
 @inject IStringLocalizer Localizer
 @{
-	ViewData["Title"] = $"Edit {Model.Name} tenant";
+    ViewData["Title"] = $"Edit {Model.Name} tenant";
 }
 
 <div class="card card-outline-primary">
@@ -53,9 +53,6 @@
     </div>
 </div>
 
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
-

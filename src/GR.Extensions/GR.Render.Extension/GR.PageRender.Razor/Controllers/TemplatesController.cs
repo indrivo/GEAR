@@ -1,25 +1,25 @@
+using GR.Cache.Abstractions;
+using GR.Core;
+using GR.Core.Attributes;
+using GR.Core.BaseControllers;
+using GR.Core.Helpers;
+using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Entities.Data;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Data;
+using GR.Notifications.Abstractions;
+using GR.PageRender.Abstractions;
+using GR.PageRender.Abstractions.Helpers;
+using GR.PageRender.Abstractions.Models.RenderTemplates;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using GR.Cache.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
-using GR.Core;
-using GR.Core.Attributes;
-using GR.Core.BaseControllers;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.PageRender.Abstractions;
-using GR.PageRender.Abstractions.Helpers;
-using GR.PageRender.Abstractions.Models.RenderTemplates;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -27,13 +27,15 @@ namespace GR.PageRender.Razor.Controllers
     public class TemplatesController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
         #region Injectable
+
         /// <summary>
         /// Inject page context
         /// </summary>
         private readonly IDynamicPagesContext _pagesContext;
 
         private readonly ICacheService _cacheService;
-        #endregion
+
+        #endregion Injectable
 
         public TemplatesController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
@@ -64,6 +66,7 @@ namespace GR.PageRender.Razor.Controllers
             };
             return Json(finalResult);
         }
+
         /// <summary>
         /// Index view
         /// </summary>
@@ -205,7 +208,6 @@ namespace GR.PageRender.Razor.Controllers
 
             return Json(new { message = "Fail to delete template!", success = false });
         }
-
 
         /// <summary>
         /// Get template by identifier

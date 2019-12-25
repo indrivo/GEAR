@@ -1,43 +1,45 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Mapster;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GR.Cache.Abstractions;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
-using GR.PageRender.Razor.ViewModels.PageViewModels;
 using GR.Core;
 using GR.Core.Attributes;
 using GR.Core.BaseControllers;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
+using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Entities.Data;
 using GR.Forms.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Data;
+using GR.Notifications.Abstractions;
 using GR.PageRender.Abstractions;
 using GR.PageRender.Abstractions.Events;
 using GR.PageRender.Abstractions.Events.EventArgs;
 using GR.PageRender.Abstractions.Helpers;
 using GR.PageRender.Abstractions.Models.Pages;
 using GR.PageRender.Abstractions.Models.PagesACL;
+using GR.PageRender.Razor.ViewModels.PageViewModels;
+using Mapster;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.PageRender.Razor.Controllers
 {
     public class PageController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
         #region Injectable
+
         /// <summary>
         /// Inject  page render
         /// </summary>
         private readonly IPageRender _pageRender;
+
         private readonly IFormService _formService;
         private readonly IDynamicPagesContext _pagesContext;
 
@@ -45,8 +47,8 @@ namespace GR.PageRender.Razor.Controllers
         /// Inject cache service
         /// </summary>
         private readonly ICacheService _cacheService;
-        #endregion
 
+        #endregion Injectable
 
         public PageController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IPageRender pageRender, IFormService formService, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
@@ -132,7 +134,7 @@ namespace GR.PageRender.Razor.Controllers
         }
 
         /// <summary>
-        /// Get page code by type 
+        /// Get page code by type
         /// </summary>
         /// <param name="id"></param>
         /// <param name="type"></param>
@@ -150,9 +152,11 @@ namespace GR.PageRender.Razor.Controllers
                 case "css":
                     code = page.Settings?.CssCode;
                     break;
+
                 case "js":
                     code = page.Settings?.JsCode;
                     break;
+
                 case "html":
                     code = page.Settings?.HtmlCode;
                     break;
@@ -198,9 +202,11 @@ namespace GR.PageRender.Razor.Controllers
                 case "css":
                     page.Settings.CssCode = model.Code;
                     break;
+
                 case "js":
                     page.Settings.JsCode = model.Code;
                     break;
+
                 case "html":
                     page.Settings.HtmlCode = model.Code;
                     break;
@@ -411,7 +417,6 @@ namespace GR.PageRender.Razor.Controllers
             return View(model);
         }
 
-
         /// <summary>
         /// Load pages with ajax
         /// </summary>
@@ -507,7 +512,6 @@ namespace GR.PageRender.Razor.Controllers
             });
             RemovePageFromCache(page.Id);
             return Json(new { message = "Page was delete with success!", success = true });
-
         }
 
         /// <summary>
@@ -604,7 +608,7 @@ namespace GR.PageRender.Razor.Controllers
         }
 
         /// <summary>
-        /// Scaffold pages 
+        /// Scaffold pages
         /// </summary>
         /// <param name="tableId"></param>
         /// <returns></returns>
@@ -710,7 +714,7 @@ namespace GR.PageRender.Razor.Controllers
         }
 
         /// <summary>
-        /// Remove page from cache 
+        /// Remove page from cache
         /// </summary>
         /// <param name="pageId"></param>
         [NonAction]

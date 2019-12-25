@@ -4,12 +4,9 @@
     ViewData["Title"] = "User Details";
 }
 
-
-
 <div class="box-header with-border">
     <h3 class="box-title">User Details <code>@Model.Email</code></h3>
 </div>
-
 
 <form role="form" class="ui form">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -18,7 +15,7 @@
         <div class="ui form">
             <label asp-for="UserName">First Name: </label>
             <label asp-for="UserName"></label>
-        </div>        
+        </div>
         <div class="ui form">
             <label asp-for="UserFirstName">First Name: </label>
             <label asp-for="UserFirstName"></label>
@@ -39,5 +36,3 @@
         <a asp-action="Index" class="ui  button">Back to List</a>
     </div>
 </form>
-
-

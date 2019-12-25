@@ -2,8 +2,8 @@
 @inject IStringLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["system_menu_item_items"];
-	var menu = (Menu)ViewBag.Menu;
-	var parent = (MenuItem)ViewBag.Parent;
+    var menu = (Menu)ViewBag.Menu;
+    var parent = (MenuItem)ViewBag.Parent;
 }
 <div class="card">
     <div class="card-body">
@@ -130,7 +130,6 @@
 			};
 			DeleteData(object);
 		}
-
 
 		function getSystemRoles() {
 			return load("/PageRender/GetRoles");

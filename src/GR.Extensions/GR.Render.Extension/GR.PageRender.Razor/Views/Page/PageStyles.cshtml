@@ -1,77 +1,76 @@
-
 @{
-	ViewData["Title"] = "Page styles";
-	var styles = (IEnumerable<PageStyle>)ViewBag.Styles;
+    ViewData["Title"] = "Page styles";
+    var styles = (IEnumerable<PageStyle>)ViewBag.Styles;
 }
 
 @section Styles
 {
-	<style>
-    	.delEvt:hover {
-    		color: red;
-    		cursor: pointer;
-    	}
-    
-    	.edit:hover {
-    		color: orange;
-    		cursor: pointer;
-    	}
-    
-    	.delEvt, .edit {
-    		font-size: 1.5em;
-    		padding-left: 1em;
-    		float: right;
-    	}
-    
-    	.save {
-    		margin: 1em;
-    		width: 7em;
-    	}
+    <style>
+        .delEvt:hover {
+            color: red;
+            cursor: pointer;
+        }
+
+        .edit:hover {
+            color: orange;
+            cursor: pointer;
+        }
+
+        .delEvt, .edit {
+            font-size: 1.5em;
+            padding-left: 1em;
+            float: right;
+        }
+
+        .save {
+            margin: 1em;
+            width: 7em;
+        }
     </style>
 }
 <div class="card">
-	<div class="card-body">
-		<h4 class="card-title">Page styles</h4>
-		<h6 class="card-subtitle">You can order styles by drag and drop</h6>
-		<div class="table-responsive">
-			<div class="mt-2">
-				<div class="d-flex">
-					<div class="mr-auto">
-						<div class="form-group">
-							<a href="javascript:void(0)" id="addScript" class="btn btn-primary btn-sm">
-								<i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add style
-							</a>
-							<small>You can add new style.</small>
-						</div>
-					</div>
-				</div>
-			</div>
+    <div class="card-body">
+        <h4 class="card-title">Page styles</h4>
+        <h6 class="card-subtitle">You can order styles by drag and drop</h6>
+        <div class="table-responsive">
+            <div class="mt-2">
+                <div class="d-flex">
+                    <div class="mr-auto">
+                        <div class="form-group">
+                            <a href="javascript:void(0)" id="addScript" class="btn btn-primary btn-sm">
+                                <i class="mdi mdi-circle-edit-outline mr-2" aria-hidden="true"></i>Add style
+                            </a>
+                            <small>You can add new style.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-			<ul class="list-group" id="columns">
-				@foreach (var item in styles)
-				{
-					<li class="list-group-item column" pageId="@item.PageId" dataId="@item.Id" order="@item.Order" draggable="true">
-						<input type="text" class="form-control" style="width: 80%;" value="@item.Script" />
-						<span class="fa fa-close delEvt"></span>
-						@*<span class="fa fa-pencil edit"></span>*@
-					</li>
-				}
-			</ul>
-			<button id="update" class="save btn btn-success">Update</button>
-		</div>
-	</div>
+            <ul class="list-group" id="columns">
+                @foreach (var item in styles)
+                {
+                    <li class="list-group-item column" pageId="@item.PageId" dataId="@item.Id" order="@item.Order" draggable="true">
+                        <input type="text" class="form-control" style="width: 80%;" value="@item.Script" />
+                        <span class="fa fa-close delEvt"></span>
+                        @*<span class="fa fa-pencil edit"></span>*@
+                    </li>
+                }
+            </ul>
+            <button id="update" class="save btn btn-success">Update</button>
+        </div>
+    </div>
 </div>
 
-<input type="hidden" id="pageId" value="@ViewBag.PageId"/>
+<input type="hidden" id="pageId" value="@ViewBag.PageId" />
 
 @section Scripts{
-	<script src="~/assets/js/builder/drag-and-drop-list.js"></script>
-	<script>
+    <script src="~/assets/js/builder/drag-and-drop-list.js"></script>
+    <script>
 		function evt1() {
 			alert("f0");
 			const t = $(this).parent().children()[0];
 			const val = $(t).text().replace(/"/gi, "'");
-			$(t).replaceWith(`<input class="form-control" value="${val}" style="width: 80%;" type="text"/>`);
+			$(t).replaceWith(`<input class="form-control" value="${val}" style="width: 80%;" type="text" />`);
 			$(this).removeClass("fa-pencil");
 
 			this.removeEventListener("click", evt1);
@@ -150,5 +149,5 @@
 			script.appendChild(span);
 			document.querySelector("#columns").appendChild(script);
 		 });
-	</script>
+    </script>
 }

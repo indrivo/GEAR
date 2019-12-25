@@ -1,58 +1,58 @@
 @model GR.Identity.Roles.Razor.ViewModels.RoleViewModels.UpdateRoleViewModel
 
 <div class="modal-dialog modal-lg">
-	<div class="modal-content">
-		<div class="modal-header">
-			<h4 class="modal-title">Edit <code>@Model.Name</code></h4>
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		</div>
-		<form id="updateRoleForm">
-			<input asp-for="Id" type="hidden" />
-			<div class="modal-body">
-				<div class="form-group">
-					<label asp-for="Name" class="control-label"></label>
-					@if (!Model.IsNoEditable)
-					{
-						<input asp-for="Name" class="form-control" />
-					}
-					else
-					{
-						<input asp-for="Name" class="disabled form-control" />
-						<span asp-validation-for="Name" class="text-danger"></span>
-					}
-				</div>
-				<div class="form-group">
-					<label asp-for="Title" class="control-label"></label>
-					<input asp-for="Title" class="form-control" />
-					<span asp-validation-for="Title" class="text-danger"></span>
-				</div>
-				<div class="form-group">
-					<label asp-for="SelectedProfileId"></label>
-					<select asp-for="SelectedProfileId" multiple style="width: 100%"  asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
-					<span asp-validation-for="SelectedProfileId" class="text-danger"></span>
-				</div>
-				<div class="form-group">
-					<label asp-for="SelectedPermissionId"></label>
-					<select asp-for="SelectedPermissionId" multiple style="width: 100%" asp-items="@(new MultiSelectList(Model.Permissions, "Id", "PermissionName", null))" class="form-control"></select>
-					<span asp-validation-for="SelectedPermissionId" class="text-danger"></span>
-				</div>
-				<div class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<div class="checkbox checkbox-success">
-								<input type="checkbox" asp-for="IsDeleted" />
-								<label asp-for="IsDeleted"></label>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
-				<button type="button" id="updatePermissionBtn" class="btn btn-success waves-effect waves-light">Save changes</button>
-			</div>
-		</form>
-	</div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Edit <code>@Model.Name</code></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        </div>
+        <form id="updateRoleForm">
+            <input asp-for="Id" type="hidden" />
+            <div class="modal-body">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    @if (!Model.IsNoEditable)
+                    {
+                        <input asp-for="Name" class="form-control" />
+                    }
+                    else
+                    {
+                        <input asp-for="Name" class="disabled form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    }
+                </div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SelectedProfileId"></label>
+                    <select asp-for="SelectedProfileId" multiple style="width: 100%" asp-items="@(new MultiSelectList(Model.Profiles, "Id", "ProfileName", null))" class="form-control"></select>
+                    <span asp-validation-for="SelectedProfileId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SelectedPermissionId"></label>
+                    <select asp-for="SelectedPermissionId" multiple style="width: 100%" asp-items="@(new MultiSelectList(Model.Permissions, "Id", "PermissionName", null))" class="form-control"></select>
+                    <span asp-validation-for="SelectedPermissionId" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="checkbox checkbox-success">
+                                <input type="checkbox" asp-for="IsDeleted" />
+                                <label asp-for="IsDeleted"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+                <button type="button" id="updatePermissionBtn" class="btn btn-success waves-effect waves-light">Save changes</button>
+            </div>
+        </form>
+    </div>
 </div>
 <script language="javascript" type="text/javascript">
 	$(document).ready(function () {
