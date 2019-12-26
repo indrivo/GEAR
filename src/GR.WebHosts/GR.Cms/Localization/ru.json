@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Да, удалить",
   "system_notifications_show_more": "Показать больше",
   "system_state_machine_contracts": "Контракты",
-  "system_state_machine_add_new_contract": "Добавить новый контракт"
+  "system_state_machine_add_new_contract": "Добавить новый контракт",
+  "system_drag_and_drop_event": "Перетащите событие",
+  "system_calendar_update_event": "Событие обновления ",
+  "system_countries": "Страны",
+  "system_countries_code_duplicates_error": "Страна с таким кодом уже существует",
+  "system_countries_edited_success": "Запись была сохранена",
+  "system_countries_added_success": "Товар добавлен успешно",
+  "system_country_code": "Код",
+  "system_country_name": "Название",
+  "system_countries_deleted_success": "Товар успешно удален"
 }

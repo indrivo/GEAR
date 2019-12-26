@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "是的，删除",
   "system_notifications_show_more": "显示出更多的",
   "system_state_machine_contracts": "合同",
-  "system_state_machine_add_new_contract": "添加新的合同"
+  "system_state_machine_add_new_contract": "添加新的合同",
+  "system_drag_and_drop_event": "拖你的事",
+  "system_calendar_update_event": "事件的更新",
+  "system_countries": "国家",
+  "system_countries_code_duplicates_error": "国家与这种代码已经存在",
+  "system_countries_edited_success": "记录已被救了",
+  "system_countries_added_success": "项目加有成功",
+  "system_country_code": "代码",
+  "system_country_name": "名称",
+  "system_countries_deleted_success": "项目成功删除"
 }

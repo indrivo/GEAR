@@ -41,6 +41,15 @@ namespace GR.Cms.Controllers
 		/// Dashboard view
 		/// </summary>
 		/// <returns></returns>
+		public IActionResult Countries()
+		{
+			return View();
+		}
+
+		/// <summary>
+		/// Dashboard view
+		/// </summary>
+		/// <returns></returns>
 		public IActionResult Index()
 		{
 			ViewBag.TotalUsers = _hub.GetOnlineUsers().Count();

@@ -25,9 +25,16 @@
         let requestEndDate = date.clone();
 
         if (currentView === 'month') {
-            displayDate = displayDate.local().hour(8);
-            requestStartDate = requestStartDate.local().hour(8);
-            requestEndDate = requestEndDate.local().hour(9);
+            const diffDays = displayDate.diff(moment(), 'days');
+            if (diffDays === 0) {
+                displayDate = moment().local().add(1, 'm');
+                requestStartDate = moment().local().add(1, 'm');
+                requestEndDate = moment().local().add(61, 'm');
+            } else {
+                displayDate = displayDate.local().hour(8);
+                requestStartDate = requestStartDate.local().hour(8);
+                requestEndDate = requestEndDate.local().hour(9);
+            }
         } else {
             requestStartDate = requestStartDate.local();
             requestEndDate = requestEndDate.local().add(1, 'h');
@@ -42,7 +49,7 @@
             location: eventObj.data('event-location'),
             startDate: requestStartDate,
             endDate: requestEndDate,
-            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,            
+            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,
         }
 
         if (eventObj.data('event-members').length != 0) {
@@ -158,6 +165,7 @@
             });
 
             $this.$calendarObj = $this.$calendar.fullCalendar({
+                locale: settings.localization.current.identifier,
                 slotDuration: '00:15:00', /* If we want to split day time each 15minutes */
                 minTime: '08:00:00',
                 maxTime: '19:00:00',
@@ -636,7 +644,7 @@
 
         function attachActionsDraftEvents() {
             $('#calendar-events .calendar-events .draft-event-edit').off().on('click', function () {
-                $('#edit-event').html(null);
+                $('#edit-event .form-content').html(null);
                 const draftEvent = $(this).closest('.calendar-events');
                 const event = {
                     draftId: draftEvent.data('draftid'),
@@ -647,7 +655,7 @@
                     members: draftEvent.data('event-members').split(',')
                 }
                 const htmlOutput = templates.editDraftEvent.render(event);
-                $('#edit-event').append(htmlOutput);
+                $('#edit-event .form-content').append(htmlOutput);
 
                 let selectMembersConfig = {
                     options: helpers.users,

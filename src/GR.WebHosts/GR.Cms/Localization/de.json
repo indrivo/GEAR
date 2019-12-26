@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Ja, löschen",
   "system_notifications_show_more": "Mehr anzeigen",
   "system_state_machine_contracts": "Verträge",
-  "system_state_machine_add_new_contract": "Hinzufügen neuer Vertrag"
+  "system_state_machine_add_new_contract": "Hinzufügen neuer Vertrag",
+  "system_drag_and_drop_event": "Drag-and-drop Ihre Veranstaltung",
+  "system_calendar_update_event": "Update-Ereignis",
+  "system_countries": "Ländern",
+  "system_countries_code_duplicates_error": "Land mit diesem code bereits vorhanden ist",
+  "system_countries_edited_success": "Der Datensatz wurde gespeichert",
+  "system_countries_added_success": "Item Hinzugefügt, mit Erfolg",
+  "system_country_code": "Code",
+  "system_country_name": "Name",
+  "system_countries_deleted_success": "Der Eintrag wurde erfolgreich gelöscht"
 }

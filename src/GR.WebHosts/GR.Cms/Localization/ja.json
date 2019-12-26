@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Yes削除",
   "system_notifications_show_more": "続きを見る",
   "system_state_machine_contracts": "契約",
-  "system_state_machine_add_new_contract": "新規契約"
+  "system_state_machine_add_new_contract": "新規契約",
+  "system_drag_and_drop_event": "ップロードを行う場合、カラーイベント",
+  "system_calendar_update_event": "イベントを更新",
+  "system_countries": "国",
+  "system_countries_code_duplicates_error": "国-このコードがすでに存在する",
+  "system_countries_edited_success": "の記録を保存してい",
+  "system_countries_added_success": "項目の追加に成功",
+  "system_country_code": "コード",
+  "system_country_name": "名称",
+  "system_countries_deleted_success": "商品の削除に成功し"
 }

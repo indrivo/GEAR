@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Ναι, διαγραφή",
   "system_notifications_show_more": "Εμφάνιση περισσότερων",
   "system_state_machine_contracts": "Συμβάσεις",
-  "system_state_machine_add_new_contract": "Προσθέστε νέο συμβόλαιο"
+  "system_state_machine_add_new_contract": "Προσθέστε νέο συμβόλαιο",
+  "system_drag_and_drop_event": "Σύρετε και αποθέστε την εκδήλωσή σας",
+  "system_calendar_update_event": "Ενημέρωση εκδήλωση",
+  "system_countries": "Χώρες",
+  "system_countries_code_duplicates_error": "Η χώρα με αυτό το κώδικα που ήδη υπάρχει",
+  "system_countries_edited_success": "Το αρχείο έχει αποθηκευτεί",
+  "system_countries_added_success": "Το στοιχείο προστέθηκε με επιτυχία",
+  "system_country_code": "Κώδικα",
+  "system_country_name": "Όνομα",
+  "system_countries_deleted_success": "Το στοιχείο διαγραφεί επιτυχώς"
 }
