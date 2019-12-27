@@ -29,6 +29,10 @@
 		z-index: 20;
 	}
 
+.content-wrapper {
+	margin-top: 0 !important;
+}
+
 .list-group-item-header {
 	background-color: #254258;
 	color: white;
@@ -178,4 +182,3 @@ table.dataTable {
 .color-input {
 	text-indent: -9999999px;
 }
-

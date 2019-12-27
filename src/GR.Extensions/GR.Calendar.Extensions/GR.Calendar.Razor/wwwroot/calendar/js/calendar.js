@@ -182,6 +182,7 @@
                 eventRender: function (event, element, view) {
                     $this.eventRender(event, element, view);
                 },
+                height: 800,
                 allDaySlot: false,
                 editable: true,
                 droppable: true, // this allows things to be dropped onto the calendar !!!
@@ -190,7 +191,8 @@
                 drop: function (date) { $this.onDrop($(this), date); },
                 eventDrop: function (event, delta, revertFunc) {
                     $this.eventDrop(event, delta, revertFunc);
-                }
+                },
+                slotLabelFormat: 'h:mma'
             });
 
             //on new event
