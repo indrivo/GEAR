@@ -37,7 +37,7 @@ namespace GR.Calendar.Abstractions.BackGroundServices
         /// <summary>
         /// Notifier
         /// </summary>
-        private readonly INotify<ApplicationRole> _notify;
+        private readonly INotify<GearRole> _notify;
         #endregion
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace GR.Calendar.Abstractions.BackGroundServices
         /// <param name="logger"></param>
         /// <param name="notify"></param>
         /// <param name="calendarDbContext"></param>
-        public EventReminderBackgroundService(ILogger<EventReminderBackgroundService> logger, INotify<ApplicationRole> notify, ICalendarDbContext calendarDbContext)
+        public EventReminderBackgroundService(ILogger<EventReminderBackgroundService> logger, INotify<GearRole> notify, ICalendarDbContext calendarDbContext)
         {
             _logger = logger;
             _notify = notify;

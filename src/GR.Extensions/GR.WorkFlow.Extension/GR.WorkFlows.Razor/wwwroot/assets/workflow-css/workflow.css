@@ -124,7 +124,6 @@
     right: 5px;
     width: 1em;
     height: 1em;
-    background-color: orange;
     cursor: pointer;
     box-shadow: 0 0 2px black;
     -webkit-transition: -webkit-box-shadow 0.25s ease-in;
@@ -409,3 +408,8 @@ path {
         .iso-tabs li a.active {
             color: #2862D6 !important;
         }
+
+#workflow-list .active-workflow .custom-control-label {
+    font-weight: 600;
+    color: #009010;
+}

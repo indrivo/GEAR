@@ -61,7 +61,7 @@ namespace GR.PageRender
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject http context
@@ -79,7 +79,7 @@ namespace GR.PageRender
         private readonly IEntityRoleAccessManager _entityRoleAccessManager;
         #endregion
 
-        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<ApplicationUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider, IEntityRoleAccessManager entityRoleAccessManager)
+        public PageRender(EntitiesDbContext context, ICacheService cacheService, UserManager<GearUser> userManager, IHttpContextAccessor contextAccessor, IDynamicPagesContext pagesContext, IOrganizationService<Tenant> organizationService, IAppProvider appProvider, IEntityRoleAccessManager entityRoleAccessManager)
         {
             _context = context;
             _cacheService = cacheService;
@@ -91,7 +91,7 @@ namespace GR.PageRender
             _entityRoleAccessManager = entityRoleAccessManager;
         }
 
-        private async Task<ApplicationUser> GetCurrentUserAsync()
+        private async Task<GearUser> GetCurrentUserAsync()
         {
             return await _userManager.GetUserAsync(_contextAccessor.HttpContext.User);
         }

@@ -10,7 +10,7 @@ namespace GR.Calendar.NetCore.Api.GraphQL.Models.GraphQLTypes
 {
     public class EventType : ObjectGraphType<CalendarEvent>
     {
-        public EventType(ICalendarDbContext dbContext, IUserManager<ApplicationUser> userManager)
+        public EventType(ICalendarDbContext dbContext, IUserManager<GearUser> userManager)
         {
             Field(x => x.Id, type: typeof(IdGraphType));
             Field(x => x.Title).Description("Event title");

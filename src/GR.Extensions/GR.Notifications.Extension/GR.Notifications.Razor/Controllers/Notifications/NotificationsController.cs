@@ -13,12 +13,12 @@ namespace GR.Notifications.Razor.Controllers.Notifications
 		/// <summary>
 		/// Inject notifier
 		/// </summary>
-		private readonly INotify<ApplicationRole> _notify;
+		private readonly INotify<GearRole> _notify;
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="notify"></param>
-		public NotificationsController(INotify<ApplicationRole> notify)
+		public NotificationsController(INotify<GearRole> notify)
 		{
 			_notify = notify;
 		}

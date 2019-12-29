@@ -14,11 +14,11 @@ namespace GR.Identity.Razor.Controllers
     [Route("api/[controller]")]
     public class IdentityController : Controller
     {
-        private UserManager<ApplicationUser> UserManager { get; }
+        private UserManager<GearUser> UserManager { get; }
 
         private readonly ApplicationDbContext _context;
 
-        public IdentityController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public IdentityController(UserManager<GearUser> userManager, ApplicationDbContext context)
         {
             UserManager = userManager;
             _context = context;

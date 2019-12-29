@@ -18,14 +18,14 @@ namespace GR.Notifications
         /// <summary>
         /// Inject role manager
         /// </summary>
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly RoleManager<GearRole> _roleManager;
 
         /// <summary>
         /// Inject notification db context
         /// </summary>
         private readonly INotificationDbContext _notificationDbContext;
 
-        public NotificationSubscriptionRepository(RoleManager<ApplicationRole> roleManager, INotificationDbContext notificationDbContext)
+        public NotificationSubscriptionRepository(RoleManager<GearRole> roleManager, INotificationDbContext notificationDbContext)
         {
             _roleManager = roleManager;
             _notificationDbContext = notificationDbContext;
@@ -34,7 +34,7 @@ namespace GR.Notifications
         /// <summary>
         /// Roles
         /// </summary>
-        public IEnumerable<ApplicationRole> Roles => _roleManager.Roles.ToList();
+        public IEnumerable<GearRole> Roles => _roleManager.Roles.ToList();
 
         /// <summary>
         /// Events
@@ -69,10 +69,10 @@ namespace GR.Notifications
         /// </summary>
         /// <param name="eventName"></param>
         /// <returns></returns>
-        public async Task<ResultModel<IEnumerable<ApplicationRole>>> GetRolesSubscribedToEventAsync(string eventName)
+        public async Task<ResultModel<IEnumerable<GearRole>>> GetRolesSubscribedToEventAsync(string eventName)
         {
             Arg.NotNullOrEmpty(eventName, nameof(GetRolesSubscribedToEventAsync));
-            var result = new ResultModel<IEnumerable<ApplicationRole>>();
+            var result = new ResultModel<IEnumerable<GearRole>>();
             var subscribed = await _notificationDbContext.NotificationSubscriptions
                 .Where(x => x.NotificationEventId.Equals(eventName)).ToListAsync();
             if (!subscribed.Any()) return result;

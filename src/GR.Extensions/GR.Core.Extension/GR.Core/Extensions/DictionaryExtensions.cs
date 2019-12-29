@@ -17,7 +17,14 @@ namespace GR.Core.Extensions
             if (context == null) context = new Dictionary<TKey, TValue>();
             foreach (var item in newItems)
             {
-                context.Add(item.Key, item.Value);
+                if (context.ContainsKey(item.Key))
+                {
+                    context[item.Key] = item.Value;
+                }
+                else
+                {
+                    context.Add(item.Key, item.Value);
+                }
             }
 
             return context;

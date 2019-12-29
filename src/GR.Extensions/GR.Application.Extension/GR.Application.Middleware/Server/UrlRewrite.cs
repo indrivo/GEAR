@@ -217,7 +217,7 @@ namespace GR.Application.Middleware.Server
                     {
                         var context = ctx.RequestServices.GetRequiredService<TContext>();
                         //Get signInManager
-                        var signInManager = ctx.RequestServices.GetRequiredService<SignInManager<ApplicationUser>>();
+                        var signInManager = ctx.RequestServices.GetRequiredService<SignInManager<GearUser>>();
                         var user = context.Users.FirstOrDefault(x => x.UserName.Equals(oid));
                         await signInManager.RefreshSignInAsync(user);
                     }

@@ -27,14 +27,14 @@ namespace GR.MultiTenant.Abstractions
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersByOrganizationIdAsync(Guid tenantId);
+        Task<ResultModel<IEnumerable<GearUser>>> GetUsersByOrganizationIdAsync(Guid tenantId);
 
         /// <summary>
         /// Get users for organization
         /// </summary>
         /// <param name="organization"></param>
         /// <returns></returns>
-        IEnumerable<ApplicationUser> GetUsersByOrganization(TTenant organization);
+        IEnumerable<GearUser> GetUsersByOrganization(TTenant organization);
 
         /// <summary>
         /// Get users by role
@@ -42,21 +42,21 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="organizationId"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        IEnumerable<ApplicationUser> GetUsersByOrganization(Guid organizationId, Guid roleId);
+        IEnumerable<GearUser> GetUsersByOrganization(Guid organizationId, Guid roleId);
 
         /// <summary>
         /// Get allowed users
         /// </summary>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        IEnumerable<ApplicationUser> GetAllowedUsersByOrganizationId(Guid organizationId);
+        IEnumerable<GearUser> GetAllowedUsersByOrganizationId(Guid organizationId);
 
         /// <summary>
         /// Get  disabled users
         /// </summary>
         /// <param name="organizationId"></param>
         /// <returns></returns>
-        IEnumerable<ApplicationUser> GetDisabledUsersByOrganizationId(Guid organizationId);
+        IEnumerable<GearUser> GetDisabledUsersByOrganizationId(Guid organizationId);
 
         /// <summary>
         /// Get all tenants
@@ -76,7 +76,7 @@ namespace GR.MultiTenant.Abstractions
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        TTenant GetUserOrganization(ApplicationUser user);
+        TTenant GetUserOrganization(GearUser user);
 
         /// <summary>
         /// Check if exist any user with this email
@@ -90,7 +90,7 @@ namespace GR.MultiTenant.Abstractions
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task SendInviteToEmailAsync(ApplicationUser user);
+        Task SendInviteToEmailAsync(GearUser user);
 
         /// <summary>
         /// Create new Organization User
@@ -98,7 +98,7 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="user"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        Task<ResultModel> CreateNewOrganizationUserAsync(ApplicationUser user, IEnumerable<string> roles);
+        Task<ResultModel> CreateNewOrganizationUserAsync(GearUser user, IEnumerable<string> roles);
 
         /// <summary>
         /// Get tenant by current user
@@ -110,7 +110,7 @@ namespace GR.MultiTenant.Abstractions
         /// Return list of available roles
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> GetRoles();
+        Task<IEnumerable<GearRole>> GetRoles();
 
         /// <summary>
         /// Get default image
@@ -157,7 +157,7 @@ namespace GR.MultiTenant.Abstractions
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task SendConfirmEmailRequest(ApplicationUser user);
+        Task SendConfirmEmailRequest(GearUser user);
 
         /// <summary>
         /// Check if tenant name is used
@@ -172,13 +172,15 @@ namespace GR.MultiTenant.Abstractions
         /// <param name="tenantId"></param>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        Task<ResultModel<IEnumerable<ApplicationUser>>> GetUsersInRoleAsync(Guid? tenantId, string roleName);
+        Task<ResultModel<IEnumerable<GearUser>>> GetUsersInRoleAsync(Guid? tenantId, string roleName);
 
         /// <summary>
         /// Get company administrator
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        Task<ResultModel<ApplicationUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId);
+        Task<ResultModel<GearUser>> GetCompanyAdministratorByTenantIdAsync(Guid? tenantId);
+
+
     }
 }

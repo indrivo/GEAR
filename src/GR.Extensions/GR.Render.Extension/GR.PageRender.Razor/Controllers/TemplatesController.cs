@@ -24,7 +24,7 @@ using GR.PageRender.Abstractions.Models.RenderTemplates;
 namespace GR.PageRender.Razor.Controllers
 {
     [Authorize]
-    public class TemplatesController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, ApplicationUser, ApplicationRole, Tenant, INotify<ApplicationRole>>
+    public class TemplatesController : BaseIdentityController<ApplicationDbContext, EntitiesDbContext, GearUser, GearRole, Tenant, INotify<GearRole>>
     {
         #region Injectable
         /// <summary>
@@ -35,7 +35,7 @@ namespace GR.PageRender.Razor.Controllers
         private readonly ICacheService _cacheService;
         #endregion
 
-        public TemplatesController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<ApplicationRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
+        public TemplatesController(UserManager<GearUser> userManager, RoleManager<GearRole> roleManager, ICacheService cacheService, ApplicationDbContext applicationDbContext, EntitiesDbContext context, INotify<GearRole> notify, IDynamicPagesContext pagesContext) : base(userManager, roleManager, applicationDbContext, context, notify)
         {
             _cacheService = cacheService;
             _pagesContext = pagesContext;

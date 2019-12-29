@@ -20,7 +20,7 @@ namespace GR.Entities.Security
 {
     public class EntityRoleAccessManager<TAclContext, TIdentityContext> : IEntityRoleAccessManager
         where TAclContext : EntitySecurityDbContext
-        where TIdentityContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+        where TIdentityContext : IdentityDbContext<GearUser, GearRole, string>
     {
         #region Inject Services
         /// <summary>
@@ -36,7 +36,7 @@ namespace GR.Entities.Security
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject entity context
@@ -51,7 +51,7 @@ namespace GR.Entities.Security
         /// <param name="identityContext"></param>
         /// <param name="userManager"></param>
         /// <param name="entityContext"></param>
-        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<ApplicationUser> userManager, IEntityContext entityContext)
+        public EntityRoleAccessManager(TAclContext context, TIdentityContext identityContext, IUserManager<GearUser> userManager, IEntityContext entityContext)
         {
             _context = context;
             _identityContext = identityContext;
@@ -62,7 +62,7 @@ namespace GR.Entities.Security
         /// <summary>
         /// Roles
         /// </summary>
-        public IQueryable<ApplicationRole> Roles => _userManager.RoleManager
+        public IQueryable<GearRole> Roles => _userManager.RoleManager
             .Roles.Where(x => !x.IsDeleted);
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace GR.Entities.Security
         /// <param name="user"></param>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(ApplicationUser user, Guid entityId)
+        public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(GearUser user, Guid entityId)
         {
             IEnumerable<string> roles = new List<string> { GlobalResources.Roles.ANONIMOUS_USER };
             if (user != null)
@@ -245,7 +245,7 @@ namespace GR.Entities.Security
         public virtual async Task<ICollection<EntityAccessType>> GetPermissionsAsync(IEnumerable<string> userRoles, Guid entityId)
         {
             var result = new List<EntityAccessType>();
-            var roles = _identityContext.Set<ApplicationRole>().Where(x => userRoles.Contains(x.Name)).ToList();
+            var roles = _identityContext.Set<GearRole>().Where(x => userRoles.Contains(x.Name)).ToList();
             if (roles.Select(x => x.Name).Contains(GlobalResources.Roles.ADMINISTRATOR))
             {
                 result.Add(EntityAccessType.FullControl);

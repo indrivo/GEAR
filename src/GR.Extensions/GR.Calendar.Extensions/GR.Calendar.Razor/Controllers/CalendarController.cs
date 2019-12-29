@@ -36,7 +36,7 @@ namespace GR.Calendar.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject organization service
@@ -51,7 +51,7 @@ namespace GR.Calendar.Razor.Controllers
         /// <summary>
         /// Inject signin manager
         /// </summary>
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<GearUser> _signInManager;
 
         /// <summary>
         /// Inject token provider
@@ -65,7 +65,7 @@ namespace GR.Calendar.Razor.Controllers
 
         #endregion
 
-        public CalendarController(ICalendarManager calendarManager, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService, SignInManager<ApplicationUser> signInManager, ICalendarExternalTokenProvider externalTokenProvider, ICalendarUserSettingsService userSettingsService)
+        public CalendarController(ICalendarManager calendarManager, IUserManager<GearUser> userManager, IOrganizationService<Tenant> organizationService, SignInManager<GearUser> signInManager, ICalendarExternalTokenProvider externalTokenProvider, ICalendarUserSettingsService userSettingsService)
         {
             _calendarManager = calendarManager;
             _userManager = userManager;

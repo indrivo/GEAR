@@ -4,7 +4,7 @@ using GR.Identity.Abstractions.Models.Permmisions;
 
 namespace GR.Identity.Permissions.Abstractions.Models
 {
-    public class RolePermissionViewModel : ApplicationRole
+    public class RolePermissionViewModel : GearRole
     {
         /// <summary>
         /// List of permissions

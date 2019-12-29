@@ -47,13 +47,13 @@ namespace GR.MobilPay
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         #endregion
 
         public MobilPayPaymentMethodService(IOrderProductService<Order> orderProductService,
             IPaymentService paymentService,
-            IUserManager<ApplicationUser> userManager,
+            IUserManager<GearUser> userManager,
             IOptions<MobilPayConfiguration> options,
             IUserAddressService userAddressService)
         {

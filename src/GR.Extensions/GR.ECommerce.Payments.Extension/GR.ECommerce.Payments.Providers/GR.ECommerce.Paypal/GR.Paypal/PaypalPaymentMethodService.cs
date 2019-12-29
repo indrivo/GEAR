@@ -48,7 +48,7 @@ namespace GR.Paypal
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject user address
@@ -61,7 +61,7 @@ namespace GR.Paypal
             IOptionsSnapshot<PaypalExpressConfigForm> payPalOptions,
             IOrderProductService<Order> orderProductService,
             IPaymentService paymentService,
-            IUserManager<ApplicationUser> userManager,
+            IUserManager<GearUser> userManager,
             IUserAddressService userAddressService)
         {
             _httpClientFactory = httpClientFactory;

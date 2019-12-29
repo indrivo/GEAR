@@ -20,7 +20,7 @@ namespace GR.Identity.Permissions
         /// <summary>
         /// Inject sign in manager
         /// </summary>
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<GearUser> _signInManager;
 
         /// <summary>
         /// Inject distributed cache
@@ -35,7 +35,7 @@ namespace GR.Identity.Permissions
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Constructor
@@ -44,8 +44,8 @@ namespace GR.Identity.Permissions
         /// <param name="cache"></param>
         /// <param name="context"></param>
         /// <param name="userManager"></param>
-        public PermissionService(SignInManager<ApplicationUser> signInManager, ICacheService cache,
-            TContext context, IUserManager<ApplicationUser> userManager)
+        public PermissionService(SignInManager<GearUser> signInManager, ICacheService cache,
+            TContext context, IUserManager<GearUser> userManager)
         {
             _signInManager = signInManager;
             _cache = cache;
@@ -73,7 +73,7 @@ namespace GR.Identity.Permissions
         /// <param name="user"></param>
         /// <param name="permission"></param>
         /// <returns></returns>
-        public async Task<bool> HasClaim(ApplicationUser user, string permission)
+        public async Task<bool> HasClaim(GearUser user, string permission)
         {
             if (user == null) return false;
             var claims = await _signInManager.UserManager.GetClaimsAsync(user);
@@ -114,7 +114,7 @@ namespace GR.Identity.Permissions
         public async Task<IEnumerable<RolePermissionViewModel>> RolesPermissionsAsync()
         {
             var result = new List<RolePermissionViewModel>();
-            var roles = await _context.SetEntity<ApplicationRole>().ToListAsync();
+            var roles = await _context.SetEntity<GearRole>().ToListAsync();
             foreach (var role in roles)
             {
                 var data = role.Adapt<RolePermissionViewModel>();
@@ -162,7 +162,7 @@ namespace GR.Identity.Permissions
                 return;
             }
 
-            var role = await _context.SetEntity<ApplicationRole>().FirstOrDefaultAsync(x => x.Name.Equals(roleName));
+            var role = await _context.SetEntity<GearRole>().FirstOrDefaultAsync(x => x.Name.Equals(roleName));
 
             if (role == null)
             {

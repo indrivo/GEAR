@@ -141,5 +141,20 @@ namespace GR.WorkFlows.Abstractions.Helpers
                 Transitions = Map(model.Transitions)
             };
         }
+
+        /// <summary>
+        /// Map
+        /// </summary>
+        /// <param name="histories"></param>
+        /// <returns></returns>
+        public static IEnumerable<EntryHistoryViewModel> Map(IEnumerable<EntryStateHistory> histories)
+            => histories.Select(x => new EntryHistoryViewModel
+            {
+                ToState = x.ToState,
+                FromState = x.FromState,
+                Author = x.Author,
+                Message = x.Message,
+                EntryId = x.EntryState.EntryId
+            });
     }
 }

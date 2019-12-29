@@ -15,14 +15,11 @@ using GR.ECommerce.Abstractions.Extensions;
 using GR.ECommerce.Abstractions.Helpers;
 using GR.ECommerce.Abstractions.Models;
 using GR.ECommerce.Razor.Helpers.BaseControllers;
-using GR.ECommerce.Razor.ViewModels;
 using System.ComponentModel.DataAnnotations;
 using GR.Core;
 using GR.ECommerce.Abstractions.Models.Currencies;
 using GR.ECommerce.Abstractions.ViewModels.ProductViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace GR.ECommerce.Razor.Controllers
 {
@@ -37,20 +34,13 @@ namespace GR.ECommerce.Razor.Controllers
         private readonly IProductService<Product> _productService;
         #endregion
 
-        #region Helpers
-
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        };
-
-        #endregion
-
         public ProductsController(ICommerceContext context, IDataFilter dataFilter, IProductService<Product> productService) : base(context, dataFilter)
         {
             _productService = productService;
         }
+
+
+        #region Views
 
         /// <inheritdoc />
         /// <summary>
@@ -98,56 +88,6 @@ namespace GR.ECommerce.Razor.Controllers
             result.ProductVariationList = GetProdVariationList(result.Id);
 
             return View(result);
-        }
-
-
-        /// <summary>
-        /// Remove variation option
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
-        public JsonResult GetPriceByVariation(ProductPriceVariationViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
-                return Json(model);
-            }
-
-            var resultModel = new ResultModel();
-
-            var prod = Context.Products.Include(i => i.ProductPrices).FirstOrDefault(x => x.Id == model.ProductId);
-
-            if (prod != null)
-            {
-                if (model.VariationId is null)
-                {
-                    resultModel.IsSuccess = true;
-                    resultModel.Result = new { Price = prod.PriceWithDiscount * model.Quantity };
-                    return Json(resultModel);
-                }
-
-                var productVariation = Context.ProductVariations.FirstOrDefault(x => x.Id == model.VariationId);
-
-                if (productVariation is null)
-                {
-                    resultModel.IsSuccess = false;
-                    resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-                    return Json(resultModel);
-                }
-
-                resultModel.IsSuccess = true;
-                resultModel.Result = new { Price = productVariation.Price * model.Quantity };
-                return Json(resultModel);
-            }
-
-            resultModel.IsSuccess = false;
-            resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-
-
-            return Json(resultModel, SerializerSettings);
         }
 
         /// <inheritdoc />
@@ -302,6 +242,98 @@ namespace GR.ECommerce.Razor.Controllers
             return View(model);
         }
 
+        #endregion
+
+        #region Api's
+
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="variationId"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> RemoveOptione([Required]Guid? productId, [Required]Guid? variationId)
+        {
+            var resultModel = new ResultModel();
+            if (productId is null || variationId is null)
+            {
+                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
+                return Json(resultModel);
+            }
+
+            var result = Context.ProductVariations
+                .FirstOrDefault(x => x.Id == variationId && x.ProductId == productId);
+
+            if (result == null) return Json(resultModel);
+            Context.ProductVariations.Remove(result);
+            var dbResult = await Context.PushAsync();
+            return Json(dbResult);
+        }
+
+        /// <summary>
+        /// Remove variation option
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel))]
+        public async Task<JsonResult> GetPriceByVariation(ProductPriceVariationViewModel model)
+        {
+            if (ModelState.IsValid) return await JsonAsync(_productService.GetPriceByVariationAsync(model));
+            ModelState.AddCommerceError(CommerceErrorKeys.InvalidModel);
+            return Json(model);
+        }
+
+        /// <summary>
+        /// Get subscription plans
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
+        public async Task<JsonResult> GetSubscriptionPlans() =>
+            await JsonAsync(_productService.GetSubscriptionPlansAsync());
+
+        /// <summary>
+        /// Get commerce statistic
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<SalesStatisticViewModel>))]
+        public async Task<JsonResult> GetCommerceGeneralStatistic(DateTime? startDate, DateTime? endDate) =>
+            await JsonAsync(_productService.GetCommerceGeneralStatisticAsync(startDate, endDate));
+
+        /// <summary>
+        /// Get year report
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Dictionary<int, object>>))]
+        public async Task<JsonResult> GetYearReport() =>
+            await JsonAsync(_productService.GetYearReportAsync());
+
+        /// <summary>
+        /// Get global currency
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
+        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
+        public async Task<JsonResult> GetGlobalCurrency() =>
+            Json(await _productService.GetGlobalCurrencyAsync());
+
+
+        /// <summary>
+        /// Set global currency
+        /// </summary>
+        /// <param name="currencyIdentifier"></param>
+        /// <returns></returns>
+        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
+        [HttpPost, Route("api/[controller]/[action]")]
+        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
+        public async Task<JsonResult> SetGlobalCurrency(string currencyIdentifier) =>
+            Json(await _productService.SetGlobalCurrencyAsync(currencyIdentifier));
+
         /// <summary>
         /// Load dropdown items
         /// </summary>
@@ -447,32 +479,6 @@ namespace GR.ECommerce.Razor.Controllers
             return Json(dbResult);
         }
 
-        /// <summary>
-        /// Remove variation option
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="variationId"></param>
-        /// <returns></returns>
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel))]
-        public async Task<JsonResult> RemoveOptione([Required]Guid? productId, [Required]Guid? variationId)
-        {
-            var resultModel = new ResultModel();
-            if (productId is null || variationId is null)
-            {
-                resultModel.Errors.Add(new ErrorModel(string.Empty, "Invalid parameters"));
-                return Json(resultModel);
-            }
-
-            var result = Context.ProductVariations
-                .FirstOrDefault(x => x.Id == variationId && x.ProductId == productId);
-
-            if (result == null) return Json(resultModel);
-            Context.ProductVariations.Remove(result);
-            var dbResult = await Context.PushAsync();
-            return Json(dbResult);
-        }
-
 
         [HttpGet]
         public JsonResult GetProductVariation(string productId) => Json(Context.ProductVariations
@@ -513,6 +519,7 @@ namespace GR.ECommerce.Razor.Controllers
                 x.IsPublished
             }));
 
+
         /// <summary>
         /// Remove attribute
         /// </summary>
@@ -521,16 +528,7 @@ namespace GR.ECommerce.Razor.Controllers
         /// <returns></returns>
         [HttpPost]
         public async Task<JsonResult> RemoveAttribute(Guid productId, Guid attributeId)
-        {
-            var resultModel = new ResultModel();
-            var result = Context.ProductAttributes
-                .FirstOrDefault(x => x.ProductAttributeId == attributeId && x.ProductId == productId);
-
-            if (result == null) return Json(resultModel);
-            Context.ProductAttributes.Remove(result);
-            var dbResult = await Context.PushAsync();
-            return Json(dbResult);
-        }
+            => await JsonAsync(_productService.RemoveAttributeAsync(productId, attributeId));
 
         /// <summary>
         /// Edit map product categories
@@ -565,39 +563,7 @@ namespace GR.ECommerce.Razor.Controllers
 
         [HttpGet]
         public JsonResult GetProductCategories(Guid productId)
-        {
-            return Json(Context.ProductCategories.Where(x => x.ProductId == productId));
-        }
-
-        /// <summary>
-        /// Get subscription plans
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
-        [Produces("application/json", Type = typeof(ResultModel<IEnumerable<SubscriptionPlanViewModel>>))]
-        public async Task<JsonResult> GetSubscriptionPlans() =>
-            Json(await _productService.GetSubscriptionPlansAsync(), SerializerSettings);
-
-
-        /// <summary>
-        /// Get global currency
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, Route("api/[controller]/[action]"), AllowAnonymous]
-        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
-        public async Task<JsonResult> GetGlobalCurrency() =>
-            Json(await _productService.GetGlobalCurrencyAsync());
-
-
-        /// <summary>
-        /// Set global currency
-        /// </summary>
-        /// <param name="currencyIdentifier"></param>
-        /// <returns></returns>
-        [Authorize(Roles = GlobalResources.Roles.ADMINISTRATOR)]
-        [HttpPost, Route("api/[controller]/[action]")]
-        [Produces("application/json", Type = typeof(ResultModel<Currency>))]
-        public async Task<JsonResult> SetGlobalCurrency(string currencyIdentifier) =>
-            Json(await _productService.SetGlobalCurrencyAsync(currencyIdentifier));
+            => Json(Context.ProductCategories.Where(x => x.ProductId == productId));
+        #endregion
     }
 }

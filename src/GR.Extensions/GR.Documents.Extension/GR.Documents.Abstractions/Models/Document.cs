@@ -33,8 +33,7 @@ namespace GR.Documents.Abstractions.Models
         /// <summary>
         /// Document Type id
         /// </summary>
-        [Required]
-        public virtual Guid DocumentTypeId { get; set; }
+        public virtual Guid? DocumentTypeId { get; set; }
 
 
         /// <summary>
@@ -53,30 +52,42 @@ namespace GR.Documents.Abstractions.Models
         [Required]
         public virtual Guid UserId { get; set; }
 
+        /// <summary>
+        /// Document Category
+        /// </summary>
+        public virtual DocumentCategory DocumentCategory { get; set; }
+
+
+        /// <summary>
+        /// Document Category Id
+        /// </summary>
+        [Required]
+        public virtual Guid DocumentCategoryId { get; set; }
+
 
         /// <summary>
         /// last File Id
         /// </summary>
-        public virtual Guid? LastFileId => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileStorageId;
+        public virtual Guid? LastFileId => DocumentVersions?.ToList()?.OrderBy(x => x.VersionNumber)?.LastOrDefault()?.FileStorageId;
 
         /// <summary>
         /// last version Id
         /// </summary>
-        public virtual Guid? LastVersionId =>DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Id;
+        public virtual Guid? LastVersionId =>DocumentVersions?.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Id;
 
         /// <summary>
         /// File name 
         /// </summary>
-        public virtual string FileName => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileName;
+        public virtual string FileName => DocumentVersions?.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.FileName;
 
         /// <summary>
         /// File url 
         /// </summary>
-        public virtual string LastUrl => DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Url;
+        public virtual string LastUrl => DocumentVersions?.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.Url;
 
         /// <summary>
         /// File version
         /// </summary>
-        public virtual double LastVersion =>  DocumentVersions.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.VersionNumber ?? 1;
+        public virtual double LastVersion =>  DocumentVersions?.ToList()?.OrderBy(x => x.VersionNumber).LastOrDefault()?.VersionNumber ?? 1;
     }
 }

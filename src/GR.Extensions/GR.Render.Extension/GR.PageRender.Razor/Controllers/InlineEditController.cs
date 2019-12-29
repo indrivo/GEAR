@@ -40,7 +40,7 @@ namespace GR.PageRender.Razor.Controllers
         /// Inject user manager
         /// </summary>
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
 
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
@@ -49,7 +49,7 @@ namespace GR.PageRender.Razor.Controllers
         /// </summary>
         private readonly IDynamicService _service;
 
-        public InlineEditController(IDynamicPagesContext pagesContext, IDynamicService service, UserManager<ApplicationUser> userManager)
+        public InlineEditController(IDynamicPagesContext pagesContext, IDynamicService service, UserManager<GearUser> userManager)
         {
             _pagesContext = pagesContext;
             _service = service;

@@ -103,6 +103,8 @@ namespace GR.WorkFlows.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<string>("Message");
+
                     b.Property<string>("ModifiedBy");
 
                     b.Property<Guid>("StateId");
@@ -120,6 +122,44 @@ namespace GR.WorkFlows.Migrations
                     b.HasIndex("StateId");
 
                     b.ToTable("EntryStates");
+                });
+
+            modelBuilder.Entity("GR.WorkFlows.Abstractions.Models.EntryStateHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Author");
+
+                    b.Property<DateTime>("Changed");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<Guid>("EntryStateId");
+
+                    b.Property<Guid>("FromStateId");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Message");
+
+                    b.Property<string>("ModifiedBy");
+
+                    b.Property<Guid?>("TenantId");
+
+                    b.Property<Guid>("ToStateId");
+
+                    b.Property<int>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntryStateId");
+
+                    b.HasIndex("FromStateId");
+
+                    b.HasIndex("ToStateId");
+
+                    b.ToTable("EntryStateHistories");
                 });
 
             modelBuilder.Entity("GR.WorkFlows.Abstractions.Models.State", b =>
@@ -344,6 +384,24 @@ namespace GR.WorkFlows.Migrations
                     b.HasOne("GR.WorkFlows.Abstractions.Models.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GR.WorkFlows.Abstractions.Models.EntryStateHistory", b =>
+                {
+                    b.HasOne("GR.WorkFlows.Abstractions.Models.EntryState", "EntryState")
+                        .WithMany("EntryStateHistories")
+                        .HasForeignKey("EntryStateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GR.WorkFlows.Abstractions.Models.State", "FromState")
+                        .WithMany()
+                        .HasForeignKey("FromStateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GR.WorkFlows.Abstractions.Models.State", "ToState")
+                        .WithMany()
+                        .HasForeignKey("ToStateId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

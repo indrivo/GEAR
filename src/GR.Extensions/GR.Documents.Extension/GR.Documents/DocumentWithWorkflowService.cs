@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GR.Core.Abstractions;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
@@ -13,7 +14,7 @@ using GR.WorkFlows.Abstractions;
 namespace GR.Documents
 {
     [Author(Authors.LUPEI_NICOLAE, 1.1, "Override methods for init start state of entry")]
-    public class DocumentWithWorkflowService : DocumentService, IDocumentServiceWithWorkflow
+    public class DocumentWithWorkflowService : DocumentService
     {
         #region Injectable
 
@@ -24,25 +25,13 @@ namespace GR.Documents
 
         #endregion
 
-        public DocumentWithWorkflowService(IDocumentContext documentContext, IUserManager<ApplicationUser> userManager, IFileManager fileManager, IWorkFlowExecutorService workFlowExecutorService) : base(documentContext, userManager, fileManager)
+
+        public DocumentWithWorkflowService(IDocumentContext documentContext, IUserManager<GearUser> userManager, IFileManager fileManager, IWorkFlowExecutorService workFlowExecutorService, IDataFilter dataFilter) : base(documentContext, userManager, fileManager, dataFilter)
         {
             WorkFlowExecutorService = workFlowExecutorService;
         }
 
-        /// <summary>
-        /// Add document
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        //public override async Task<ResultModel> AddDocumentAsync(AddDocumentViewModel model)
-        //{
-        //    var addNewVersionRequest = await base.AddDocumentAsync(model);
-        //    if (!addNewVersionRequest.IsSuccess) return addNewVersionRequest;
-        //    var entryId = (Guid)addNewVersionRequest.Result;
-        //    //TODO: Discuss with Ion if is the current implementation retrieve document version
-        //    return await WorkFlowExecutorService.SetStartStateForEntryAsync(nameof(DocumentVersion), entryId.ToString());
-        //}
-
+        
         /// <summary>
         /// Add new document version
         /// </summary>

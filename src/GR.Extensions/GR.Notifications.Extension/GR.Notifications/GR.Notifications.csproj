@@ -7,7 +7,7 @@
     <Authors>Lupei Nicolae</Authors>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Company>Indrivo</Company>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageReleaseNotes>- Send local or email configuration</PackageReleaseNotes>
 
   </PropertyGroup>

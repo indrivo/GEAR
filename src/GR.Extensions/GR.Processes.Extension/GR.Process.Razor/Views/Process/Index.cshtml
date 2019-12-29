@@ -7,7 +7,7 @@
 	<div class="card-body">
 		<h4 class="card-title">Processes</h4>
 		<h6 class="card-subtitle">List of diagrams</h6>
-		<div class="table-responsive">
+		<div class="table-dataTable">
 			<div class="mt-2">
 				<div class="d-flex">
 					<div class="mr-auto">
@@ -55,7 +55,8 @@
 				$(tableId).dataTable().empty();
 			}
 
-			$(tableId).DataTable({
+            $(tableId).DataTable({
+                dom: '<"table_render_tableDiagram" <"CustomizeColumns">lBfr<"table-responsive"t>ip >',
 				processing: true, // for show progress bar
 				serverSide: true, // for process server side
 				filter: true, // this is for disable filter (search box)
@@ -97,7 +98,14 @@
 									</div>`;
 						}
 					}
-				]
+				],
+                drawCallback: function () {
+                    if ($('.table_render_tableDiagram .dataTables_paginate .pagination li').length > 3) {
+                        $('.table_render_tableDiagram .dataTables_paginate').show();
+                    } else {
+                        $('.table_render_tableDiagram .dataTables_paginate').hide();
+                    }
+                }
 			});
 		});
 

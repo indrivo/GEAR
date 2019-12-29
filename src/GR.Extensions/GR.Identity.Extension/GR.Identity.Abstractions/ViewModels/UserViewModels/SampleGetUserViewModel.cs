@@ -4,7 +4,7 @@
     {
         public SampleGetUserViewModel() { }
 
-        public SampleGetUserViewModel(ApplicationUser user)
+        public SampleGetUserViewModel(GearUser user)
         {
             if (user == null) return;
             Id = user.Id;

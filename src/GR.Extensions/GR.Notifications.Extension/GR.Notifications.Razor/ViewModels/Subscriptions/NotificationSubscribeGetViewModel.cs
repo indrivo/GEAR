@@ -20,14 +20,14 @@ namespace GR.Notifications.Razor.ViewModels.Subscriptions
         /// <summary>
         /// Subscribed roles
         /// </summary>
-        public IEnumerable<ApplicationRole> SubscribedRoles { get; set; }
+        public IEnumerable<GearRole> SubscribedRoles { get; set; }
 
         /// <summary>
         /// Is role subscribed
         /// </summary>
         /// <param name="role"></param>
         /// <returns></returns>
-        public bool IsRoleSubscribed(ApplicationRole role)
+        public bool IsRoleSubscribed(GearRole role)
         {
             return SubscribedRoles?.Select(x => x.Name).Contains(role?.Name) ?? false;
         }

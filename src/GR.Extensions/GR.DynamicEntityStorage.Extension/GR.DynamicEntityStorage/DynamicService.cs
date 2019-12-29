@@ -50,7 +50,7 @@ namespace GR.DynamicEntityStorage
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _userManager;
+        private readonly IUserManager<GearUser> _userManager;
 
         /// <summary>
         /// Inject entity access manager
@@ -71,7 +71,7 @@ namespace GR.DynamicEntityStorage
         /// <param name="userManager"></param>
         /// <param name="httpContextAccessor"></param>
         /// <param name="entityRepository"></param>
-        public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor, IEntityRepository entityRepository)
+        public DynamicService(TContext context, IEntityRoleAccessManager entityRoleAccessManager, IUserManager<GearUser> userManager, IHttpContextAccessor httpContextAccessor, IEntityRepository entityRepository)
         {
             _context = context;
             _entityRoleAccessManager = entityRoleAccessManager;

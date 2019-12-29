@@ -30,15 +30,15 @@ namespace GR.Report.Dynamic
     {
         private readonly TContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IUserManager<ApplicationUser> _userManager;
-        private readonly ResultModel<ApplicationUser> _user;
+        private readonly IUserManager<GearUser> _userManager;
+        private readonly ResultModel<GearUser> _user;
 
         /// <summary>
         /// Inject organization service
         /// </summary>
         private readonly IOrganizationService<Tenant> _organizationService;
 
-        public DynamicReportsService(TContext context, IConfiguration configuration, IUserManager<ApplicationUser> userManager, IOrganizationService<Tenant> organizationService)
+        public DynamicReportsService(TContext context, IConfiguration configuration, IUserManager<GearUser> userManager, IOrganizationService<Tenant> organizationService)
         {
             _context = context;
             _configuration = configuration;

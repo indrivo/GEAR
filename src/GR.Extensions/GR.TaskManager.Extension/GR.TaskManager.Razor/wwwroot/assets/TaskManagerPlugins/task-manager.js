@@ -218,20 +218,17 @@ $(function () {
             statusesList: statuses,
             prioritiesList: priorities
         }
-        switch (tablePropertiesLocal.type) {
-            case 'active':
-                promise = manager.getUserTasks(tablePropertiesLocal);
-                break;
-            case 'deleted':
-                configuration.deleted = true;
-                promise = manager.getUserTasks(tablePropertiesLocal);
-                break;
-            case 'assigned':
-                promise = manager.getAssignedTasks(tablePropertiesLocal);
-                configuration.assigned = true;
-                break;
-            default:
-                toast.notifyErrorList("An error occured(such type of tasks doesn't exist)");
+        if (tablePropertiesLocal.type === "active") {
+            promise = manager.getUserTasks(tablePropertiesLocal);
+        } else if (tablePropertiesLocal.type === "deleted") {
+            configuration.deleted = true;
+            tablePropertiesLocal.deleted = true;
+            promise = manager.getUserTasks(tablePropertiesLocal);
+        } else if (tablePropertiesLocal.type === "assigned") {
+            configuration.assigned = true;
+            promise = manager.getAssignedTasks(tablePropertiesLocal);
+        } else {
+            toast.notifyErrorList("An error occured(such type of tasks doesn't exist)");
         }
         if (promise) {
             loadEachType(promise, configuration);
@@ -589,7 +586,7 @@ $(function () {
 
     function addTaskItem(taskId, taskItemName) {
         manager.createTaskItem({ TaskId: taskId, Name: taskItemName, IsDone: false }).then(result => {
-            const htmlOutput = taskItemsTemplate.render({ id: result, name: taskItemName, isDone: false }, { accessLevel: 'Author'});
+            const htmlOutput = taskItemsTemplate.render({ id: result, name: taskItemName, isDone: false }, { accessLevel: 'Author' });
             $("#task-items-tab .task-items").append(htmlOutput);
             addTaskItemsEvents(taskId);
             refreshTask(taskId).then(() => {

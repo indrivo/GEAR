@@ -46,7 +46,7 @@ namespace GR.Application.Middleware.Extensions
             services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
             services.AddTransient<IMPassService, MPassService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IGroupRepository<ApplicationDbContext, ApplicationUser>, GroupRepository<ApplicationDbContext>>();
+            services.AddTransient<IGroupRepository<ApplicationDbContext, GearUser>, GroupRepository<ApplicationDbContext>>();
             services.AddTransient<IFormService, FormService<FormDbContext>>();
             return services;
         }
@@ -154,11 +154,11 @@ namespace GR.Application.Middleware.Extensions
             //var env = services.BuildServiceProvider().GetService<IHostingEnvironment>();
 
             //Register notifier 
-            IoC.Container.Register(Component.For<INotify<ApplicationRole>>()
-                .ImplementedBy<Notify<ApplicationDbContext, ApplicationRole, ApplicationUser>>());
+            IoC.Container.Register(Component.For<INotify<GearRole>>()
+                .ImplementedBy<Notify<ApplicationDbContext, GearRole, GearUser>>());
 
             //Register user manager
-            IoC.Container.Register(Component.For<UserManager<ApplicationUser>>());
+            IoC.Container.Register(Component.For<UserManager<GearUser>>());
 
             //Dynamic data dataService
             IoC.Container.Register(Component.For<IDynamicService>()

@@ -38,10 +38,11 @@ namespace GR.WorkFlows.Abstractions
         /// <summary>
         /// Execute actions
         /// </summary>
+        /// <param name="entry"></param>
         /// <param name="transition"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task ExecuteActionsAsync(Transition transition, Dictionary<string, object> data);
+        Task ExecuteActionsAsync(EntryState entry, Transition transition, Dictionary<string, string> data);
 
         /// <summary>
         /// Force execute transition actions
@@ -50,14 +51,14 @@ namespace GR.WorkFlows.Abstractions
         /// <param name="transitionId"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task<ResultModel> ForceExecuteTransitionActionsAsync(Guid? entryId, Guid? transitionId, Dictionary<string, object> data);
+        Task<ResultModel> ForceExecuteTransitionActionsAsync(Guid? entryId, Guid? transitionId, Dictionary<string, string> data);
 
         /// <summary>
         /// Get roles for transition
         /// </summary>
         /// <param name="transition"></param>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> GetAllowedRolesToTransitionAsync(Transition transition);
+        Task<IEnumerable<GearRole>> GetAllowedRolesToTransitionAsync(Transition transition);
 
         /// <summary>
         /// Get next possible transitions
@@ -129,10 +130,24 @@ namespace GR.WorkFlows.Abstractions
         /// <summary>
         /// Change state for entry 
         /// </summary>
-        /// <param name="entryId"></param>
-        /// <param name="workFlowId"></param>
-        /// <param name="newStateId"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
-        Task<ResultModel> ChangeStateForEntryAsync([Required]string entryId, [Required] Guid? workFlowId, [Required] Guid? newStateId);
+        Task<ResultModel> ChangeStateForEntryAsync([Required]ObjectChangeStateViewModel model);
+
+        /// <summary>
+        /// Add entry changes to history
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="newState"></param>
+        /// <returns></returns>
+        Task<ResultModel> AddEntryChangesToHistoryAsync(EntryState state, Guid? newState);
+
+        /// <summary>
+        /// Get entry history
+        /// </summary>
+        /// <param name="workflowId"></param>
+        /// <param name="entryId"></param>
+        /// <returns></returns>
+        Task<ResultModel<IEnumerable<EntryHistoryViewModel>>> GetEntryHistoryByWorkflowIdAsync(Guid? workflowId, string entryId);
     }
 }

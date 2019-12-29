@@ -6,6 +6,6 @@ namespace GR.PageRender.Abstractions
 {
     public interface IPageAclService
     {
-        bool HasAccess(Page page, IEnumerable<ApplicationRole> roles);
+        bool HasAccess(Page page, IEnumerable<GearRole> roles);
     }
 }

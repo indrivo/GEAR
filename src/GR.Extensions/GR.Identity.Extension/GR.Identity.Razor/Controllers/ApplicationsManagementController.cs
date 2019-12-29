@@ -36,7 +36,7 @@ namespace GR.Identity.Razor.Controllers
         private PersistedGrantDbContext GrantDbContext { get; }
 
         private ApplicationDbContext ApplicationDbContext { get; }
-        private RoleManager<ApplicationRole> RoleManager { get; }
+        private RoleManager<GearRole> RoleManager { get; }
 
         /// <summary>
         /// Inject Logger
@@ -58,7 +58,7 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="permissionService"></param>
         /// <param name="grantDbContext"></param>
         public ApplicationsManagementController(ConfigurationDbContext configurationDbContext,
-            ApplicationDbContext applicationDbContext, RoleManager<ApplicationRole> roleManager,
+            ApplicationDbContext applicationDbContext, RoleManager<GearRole> roleManager,
             ILogger<ApplicationsManagementController> logger, IPermissionService permissionService, PersistedGrantDbContext grantDbContext)
         {
             ConfigurationDbContext = configurationDbContext;
@@ -382,7 +382,7 @@ namespace GR.Identity.Razor.Controllers
             var filtered = GetRolesFiltered(id, param.Search.Value, param.SortOrder, param.Start, param.Length,
                 out var totalCount);
 
-            var finalResult = new DTResult<ApplicationRole>
+            var finalResult = new DTResult<GearRole>
             {
                 Draw = param.Draw,
                 Data = filtered.ToList(),
@@ -392,7 +392,7 @@ namespace GR.Identity.Razor.Controllers
             return Json(finalResult);
         }
 
-        private List<ApplicationRole> GetRolesFiltered(int? id, string search, string sortOrder, int start, int length,
+        private List<GearRole> GetRolesFiltered(int? id, string search, string sortOrder, int start, int length,
             out int totalCount)
         {
             var result = ApplicationDbContext.Roles.AsNoTracking().ToList().Where(x =>
@@ -481,7 +481,7 @@ namespace GR.Identity.Razor.Controllers
                 return Json(new { success = false, message = "Model is not valid" });
             }
 
-            var applicationRole = new ApplicationRole
+            var applicationRole = new GearRole
             {
                 Name = model.Name,
                 Title = model.Title,
@@ -596,7 +596,7 @@ namespace GR.Identity.Razor.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> _EditRole([FromServices] SignInManager<ApplicationUser> signInManager,
+        public async Task<JsonResult> _EditRole([FromServices] SignInManager<GearUser> signInManager,
             [FromServices] INotificationHub hub, string id, UpdateRoleViewModel model)
         {
             if (id != model.Id)
@@ -802,7 +802,7 @@ namespace GR.Identity.Razor.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> _EditPermission([FromServices] SignInManager<ApplicationUser> signInManager,
+        public async Task<JsonResult> _EditPermission([FromServices] SignInManager<GearUser> signInManager,
             [FromServices] INotificationHub hub, EditPermissionViewModel model)
         {
             if (!ModelState.IsValid)

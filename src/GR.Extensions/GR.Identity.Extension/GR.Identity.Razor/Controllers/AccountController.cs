@@ -24,7 +24,6 @@ using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Data;
-using GR.Identity.LdapAuth.Abstractions;
 using GR.Identity.Razor.Extensions;
 using GR.Identity.Razor.ViewModels.AccountViewModels;
 using ST.MPass.Gov;
@@ -33,6 +32,8 @@ using GR.Identity.Abstractions.Events.EventArgs.Authorization;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.LdapAuth.Abstractions;
+using GR.Identity.LdapAuth.Abstractions.Models;
 
 namespace GR.Identity.Razor.Controllers
 {
@@ -54,7 +55,7 @@ namespace GR.Identity.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<ApplicationUser> _manager;
+        private readonly IUserManager<GearUser> _manager;
 
         private readonly IIdentityServerInteractionService _interactionService;
 
@@ -68,7 +69,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         private readonly IOptions<MPassOptions> _mpassOptions;
 
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly RoleManager<GearRole> _roleManager;
 
         /// <summary>
         /// Inject M pass dataService
@@ -80,15 +81,15 @@ namespace GR.Identity.Razor.Controllers
         /// <summary>
         /// Inject SignIn Manager
         /// </summary>
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly SignInManager<GearUser> _signInManager;
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<GearUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccesor;
 
         /// <summary>
         /// Inject Ldap User Manager
         /// </summary>
-        private readonly BaseLdapUserManager<ApplicationUser> _ldapUserManager;
+        private readonly BaseLdapUserManager<LdapUser> _ldapUserManager;
 
         /// <summary>
         /// Inject app context
@@ -102,17 +103,17 @@ namespace GR.Identity.Razor.Controllers
         private const string SamlRequest = "SAMLRequest";
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            UserManager<GearUser> userManager,
+            SignInManager<GearUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
             IIdentityServerInteractionService interactionService,
             IMPassService mPassService,
-            IUserManager<ApplicationUser> manager,
+            IUserManager<GearUser> manager,
             IMPassSigningCredentialsStore mpassSigningCredentialStore,
             IOptions<MPassOptions> mpassOptions,
             ICacheService cacheService, IHttpContextAccessor httpContextAccesor,
-            BaseLdapUserManager<ApplicationUser> ldapUserManager, ApplicationDbContext applicationDbContext, RoleManager<ApplicationRole> roleManager)
+            BaseLdapUserManager<LdapUser> ldapUserManager, ApplicationDbContext applicationDbContext, RoleManager<GearRole> roleManager)
         {
             _cache = cacheService;
             _httpContextAccesor = httpContextAccesor;
@@ -209,7 +210,7 @@ namespace GR.Identity.Razor.Controllers
 
                 var webClient = new WebClient();
                 var imageBytes = await webClient.DownloadDataTaskAsync(model.Picture);
-                var user = new ApplicationUser
+                var user = new GearUser
                 {
                     UserName = model.Name,
                     Email = model.Email,
@@ -400,7 +401,7 @@ namespace GR.Identity.Razor.Controllers
                     await _cache.SetAsync(user.Id,
                         Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(model.Password)));
 
-                    var hasher = new PasswordHasher<ApplicationUser>();
+                    var hasher = new PasswordHasher<GearUser>();
                     var hashedPassword = hasher.HashPassword(user, model.Password);
                     user.PasswordHash = hashedPassword;
                     var passChange = await _userManager.UpdateAsync(user);
@@ -452,7 +453,7 @@ namespace GR.Identity.Razor.Controllers
         /// <param name="user"></param>
         /// <returns></returns>
         [NonAction]
-        private async Task ClearUserClaims(ApplicationUser user)
+        private async Task ClearUserClaims(GearUser user)
         {
             var userClaims = await _applicationDbContext.UserClaims.Where(x => x.UserId == user.Id).ToListAsync();
             if (userClaims.Any())
@@ -467,7 +468,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private async Task<ApplicationUser> UseLdapAuth(LoginViewModel model)
+        private async Task<GearUser> UseLdapAuth(LoginViewModel model)
         {
             var ldapUser = await _ldapUserManager.FindByNameAsync(model.Email);
             if (ldapUser == null) return null;
@@ -476,13 +477,13 @@ namespace GR.Identity.Razor.Controllers
             var exists = await _userManager.FindByNameAsync(ldapUser.Name);
             if (exists != null) return exists;
             //Create new user
-            var user = new ApplicationUser
+            var user = new GearUser
             {
                 UserName = ldapUser.SamAccountName,
                 Email = ldapUser.EmailAddress,
                 AuthenticationType = AuthenticationType.Ad
             };
-            var hasher = new PasswordHasher<ApplicationUser>();
+            var hasher = new PasswordHasher<GearUser>();
             var passwordHash = hasher.HashPassword(user, model.Password);
             user.PasswordHash = passwordHash;
             user.Created = DateTime.Now;
@@ -579,7 +580,7 @@ namespace GR.Identity.Razor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<JsonResult> LocalLogout([FromServices] IUserManager<ApplicationUser> manager)
+        public async Task<JsonResult> LocalLogout([FromServices] IUserManager<GearUser> manager)
         {
             var result = new ResultModel();
             var userReq = await manager.GetCurrentUserAsync();
@@ -641,7 +642,7 @@ namespace GR.Identity.Razor.Controllers
         {
             ViewData[ReturnUrl] = returnUrl;
             if (!ModelState.IsValid) return View(model);
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new GearUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {

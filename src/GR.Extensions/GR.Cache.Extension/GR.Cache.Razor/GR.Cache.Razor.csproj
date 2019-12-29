@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Authors>Lupei Nicolae</Authors>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <PackageTags>redis cache ui gear</PackageTags>
     <PackageReleaseNotes>- Fix container scroll</PackageReleaseNotes>
   </PropertyGroup>
