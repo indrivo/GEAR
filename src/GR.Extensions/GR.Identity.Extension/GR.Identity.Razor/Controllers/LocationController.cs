@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using GR.Core;
+using GR.Identity.Abstractions.Helpers.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GR.Identity.Razor.Controllers
 {
+    [Authorize]
+    [Roles(GlobalResources.Roles.ADMINISTRATOR)]
     public class LocationController : BaseGearController
     {
         #region Injectable
@@ -25,6 +30,15 @@ namespace GR.Identity.Razor.Controllers
         public LocationController(ILocationService locationService)
         {
             _locationService = locationService;
+        }
+
+        /// <summary>
+        /// Get countries View
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult Countries()
+        {
+            return View();
         }
 
         /// <summary>
