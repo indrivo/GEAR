@@ -17,9 +17,7 @@ namespace GR.Entities.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterEntityBuilderJob(this IServiceCollection services)
         {
-            var context = services.BuildServiceProvider().GetService<EntitiesDbContext>();
-            var synchronizerParams = new Dictionary<string, object> { { "context", context } };
-            IoC.Container.Register(Component.For<EntitySynchronizer>().DependsOn(synchronizerParams));
+            IoC.Container.Register(Component.For<EntitySynchronizer>());
 
             //TODO: On entity change change only the updated section not remove entire entity 
             EntityEvents.Entities.OnEntityAddNewField += (sender, args) =>

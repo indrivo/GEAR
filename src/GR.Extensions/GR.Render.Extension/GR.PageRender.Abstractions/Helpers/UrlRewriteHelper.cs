@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.PageRender.Abstractions.Constants;
 using GR.PageRender.Abstractions.Models.Pages;
 using Microsoft.AspNetCore.Http;
@@ -29,9 +30,10 @@ namespace GR.PageRender.Abstractions.Helpers
             "/js",
             "/themes",
             "/PageRender",
-            "Localization",
+            "/Localization",
             "/favicon",
-            "images"
+            "images",
+            "/rtn"
         };
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace GR.PageRender.Abstractions.Helpers
         /// Route Match
         /// </summary>
         private static readonly Func<(Page, string, IEnumerable<KeyValuePair<string, string>>), bool> RouteFinder =
-            data => data.Item1.Path.Equals(data.Item2.ToLower()) && !data.Item2.Equals("/");
+            data => data.Item1.Path.ToLowerInvariant().Equals(data.Item2.ToLowerInvariant()) && !data.Item2.Equals("/");
 
         /// <summary>
         /// Check language
@@ -68,10 +70,9 @@ namespace GR.PageRender.Abstractions.Helpers
             var originalPath = ctx.Request.Path.Value;
             ctx.Items["originalPath"] = originalPath;
 
-            //TODO: Exclude MVC routes
-
             if (!IsNotSystemRoute(originalPath)) return false;
-
+            var contains = AppRoutes.RegisteredRoutes.AnyStartWith(originalPath);
+            if (contains) return false;
             var (match, page) = await MatchAsync(ctx, originalPath, parameters);
 
             if (!match) return false;

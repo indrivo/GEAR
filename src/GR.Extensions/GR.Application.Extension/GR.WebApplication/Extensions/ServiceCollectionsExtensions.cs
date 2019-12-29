@@ -171,10 +171,11 @@ namespace GR.WebApplication.Extensions
             //----------------------------------Origin Cors Usage-------------------------------------
             if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
 
-            //custom rules
-            app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules)
-                .UseAuthentication()
+            app.UseAuthentication()
                 .UseIdentityServer();
+
+            //custom rules
+            app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules);
 
             //--------------------------------------Swagger Usage-------------------------------------
             if (configuration.SwaggerConfiguration.UseSwaggerUI &&

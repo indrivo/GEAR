@@ -85,6 +85,22 @@ namespace GR.Core.Extensions
         }
 
         /// <summary>
+        /// Is first
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool IsFirst<T>(this IEnumerable<T> items, T item)
+        {
+            var list = items?.ToList() ?? new List<T>();
+            if (!list.Any())
+                return false;
+            var first = list.FirstOrDefault();
+            return item.Equals(first);
+        }
+
+        /// <summary>
         /// Get differences from 2 list 
         /// </summary>
         /// <typeparam name="TItem"></typeparam>
@@ -117,6 +133,23 @@ namespace GR.Core.Extensions
             return common.Any();
         }
 
+        /// <summary>
+        /// Any start with
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool AnyStartWith(this IEnumerable<string> source, IEnumerable<string> target)
+            => source.Any(x => target.Any(y => x.StartsWith(y, StringComparison.InvariantCultureIgnoreCase)));
+
+        /// <summary>
+        /// Any start with
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static bool AnyStartWith(this IEnumerable<string> source, string target)
+            => source.Any(x => x.StartsWith(target, StringComparison.InvariantCultureIgnoreCase));
 
         /// <summary>
         /// NameValueCollection to KeyValuePair
