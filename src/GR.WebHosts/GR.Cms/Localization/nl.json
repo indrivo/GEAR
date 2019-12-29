@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Ja, verwijderen",
   "system_notifications_show_more": "Toon meer",
   "system_state_machine_contracts": "Contracten",
-  "system_state_machine_add_new_contract": "Toevoegen nieuw contract"
+  "system_state_machine_add_new_contract": "Toevoegen nieuw contract",
+  "system_drag_and_drop_event": "Slepen en neerzetten van uw evenement",
+  "system_calendar_update_event": "Update evenement",
+  "system_countries": "Landen",
+  "system_countries_code_duplicates_error": "Land met deze code bestaat al",
+  "system_countries_edited_success": "De record is opgeslagen",
+  "system_countries_added_success": "Item toegevoegd met succes",
+  "system_country_code": "Code",
+  "system_country_name": "Naam",
+  "system_countries_deleted_success": "Item verwijderd"
 }

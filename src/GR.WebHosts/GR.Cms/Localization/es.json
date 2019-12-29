@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Sí, eliminar",
   "system_notifications_show_more": "Mostrar más",
   "system_state_machine_contracts": "Los contratos de",
-  "system_state_machine_add_new_contract": "Añadir un nuevo contrato"
+  "system_state_machine_add_new_contract": "Añadir un nuevo contrato",
+  "system_drag_and_drop_event": "Arrastrar y soltar su evento",
+  "system_calendar_update_event": "Evento de actualización",
+  "system_countries": "Países",
+  "system_countries_code_duplicates_error": "País con este código ya existe",
+  "system_countries_edited_success": "El registro se ha guardado",
+  "system_countries_added_success": "Elemento añadido con éxito",
+  "system_country_code": "Código",
+  "system_country_name": "Nombre",
+  "system_countries_deleted_success": "Elemento eliminado correctamente"
 }

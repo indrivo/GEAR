@@ -25,9 +25,16 @@
         let requestEndDate = date.clone();
 
         if (currentView === 'month') {
-            displayDate = displayDate.local().hour(8);
-            requestStartDate = requestStartDate.local().hour(8);
-            requestEndDate = requestEndDate.local().hour(9);
+            const diffDays = displayDate.diff(moment(), 'days');
+            if (diffDays === 0) {
+                displayDate = moment().local().add(1, 'm');
+                requestStartDate = moment().local().add(1, 'm');
+                requestEndDate = moment().local().add(61, 'm');
+            } else {
+                displayDate = displayDate.local().hour(8);
+                requestStartDate = requestStartDate.local().hour(8);
+                requestEndDate = requestEndDate.local().hour(9);
+            }
         } else {
             requestStartDate = requestStartDate.local();
             requestEndDate = requestEndDate.local().add(1, 'h');
@@ -42,7 +49,7 @@
             location: eventObj.data('event-location'),
             startDate: requestStartDate,
             endDate: requestEndDate,
-            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,            
+            priority: this.$helpers.EventPriority[eventObj.data('event-priority')].systemName,
         }
 
         if (eventObj.data('event-members').length != 0) {
@@ -158,6 +165,7 @@
             });
 
             $this.$calendarObj = $this.$calendar.fullCalendar({
+                locale: settings.localization.current.identifier,
                 slotDuration: '00:15:00', /* If we want to split day time each 15minutes */
                 minTime: '08:00:00',
                 maxTime: '19:00:00',
@@ -174,6 +182,7 @@
                 eventRender: function (event, element, view) {
                     $this.eventRender(event, element, view);
                 },
+                height: 800,
                 allDaySlot: false,
                 editable: true,
                 droppable: true, // this allows things to be dropped onto the calendar !!!
@@ -182,7 +191,8 @@
                 drop: function (date) { $this.onDrop($(this), date); },
                 eventDrop: function (event, delta, revertFunc) {
                     $this.eventDrop(event, delta, revertFunc);
-                }
+                },
+                slotLabelFormat: 'h:mma'
             });
 
             //on new event
@@ -397,8 +407,8 @@
                 const isPopupElement = target.is('.details-popup *');
                 const isPopupAction = target.is('.details-popup .event-edit i') || target.is('.details-popup .event-delete i');
                 const isSelect = target.is('.select2-container *');
-                const isDatepicker = target.is('.datepicker *');
-                const isClockpicker = target.is('.clockpicker-popover *');
+                const isDatepicker = target.is('.datepicker *') || target.is('.datepicker');
+                const isClockpicker = target.is('.clockpicker-popover *') || target.is('.clockpicker-popover');
                 const popupCase = isPopup || isPopupElement || isSelect || isDatepicker || isClockpicker;
                 if (isEvent) {
                     addPopup(target, 'eventPopup');
@@ -593,12 +603,12 @@
                 $('.details-popup-priority .event-priority').on('change', function () {
                     const allPriorities = 'priority-0 priority-1 priority-2 priority-3';
                     const priority = $(this).val();
-                    console.log(priority);
                     $('.details-popup .event-priority-bullet').removeClass(allPriorities).addClass(`priority-${priority}`);
                 });
 
-                $('#edit-event').off().submit(function (e) {
+                $('#edit-event').submit(function (e) {
                     e.preventDefault();
+                    $('.details-popup').data('visibility', 'hidden').hide();
                     const scope = '#edit-event';
                     const startDateValue = $(`${scope} .event-start-date`).val();
                     const startDate = moment(startDateValue, 'MMM D, YYYY').format('YYYY-MM-DD');
@@ -620,7 +630,6 @@
                         const memberId = $(this).data('member-id');
                         event.members.push(memberId);
                     });
-
                     updateEvent(event);
                 });
 
@@ -637,7 +646,7 @@
 
         function attachActionsDraftEvents() {
             $('#calendar-events .calendar-events .draft-event-edit').off().on('click', function () {
-                $('#edit-event').html(null);
+                $('#edit-event .form-content').html(null);
                 const draftEvent = $(this).closest('.calendar-events');
                 const event = {
                     draftId: draftEvent.data('draftid'),
@@ -648,7 +657,7 @@
                     members: draftEvent.data('event-members').split(',')
                 }
                 const htmlOutput = templates.editDraftEvent.render(event);
-                $('#edit-event').append(htmlOutput);
+                $('#edit-event .form-content').append(htmlOutput);
 
                 let selectMembersConfig = {
                     options: helpers.users,

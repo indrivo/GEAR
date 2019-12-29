@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Tak, usuń",
   "system_notifications_show_more": "Pokaż więcej",
   "system_state_machine_contracts": "Kontrakty",
-  "system_state_machine_add_new_contract": "Dodaj nowy kontrakt"
+  "system_state_machine_add_new_contract": "Dodaj nowy kontrakt",
+  "system_drag_and_drop_event": "Przeciągnij wydarzenie",
+  "system_calendar_update_event": "Wydarzenie aktualizacje ",
+  "system_countries": "Kraju",
+  "system_countries_code_duplicates_error": "Kraj z takim kodem już istnieje",
+  "system_countries_edited_success": "Wpis został zapisany",
+  "system_countries_added_success": "Produkt został dodany pomyślnie",
+  "system_country_code": "Kod",
+  "system_country_name": "Nazwa",
+  "system_countries_deleted_success": "Towar pomyślnie usunięty"
 }

@@ -6,6 +6,10 @@
     display: none;
 }
 
+.calendar-height {
+    height: calc(100% - 60px) !important;
+}
+
 .bg-popup-gray {
     background-color: #F4F6F8 !important;
 }
@@ -14,8 +18,12 @@ span.select2 {
     width: 100% !important;
 }
 
-.fc .fc-view .fc-body td {
+table.dataTable:not(.dynamic-table) tbody td, table:not(.dynamic-table) tbody td {
     padding: 0 !important;
+}
+
+.fc .fc-view .fc-body td.fc-axis {
+    padding: 0 4px !important;
 }
 
 .fc-toolbar .fc-button {

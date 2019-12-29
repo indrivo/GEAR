@@ -29,6 +29,10 @@
 		z-index: 20;
 	}
 
+.content-wrapper {
+	margin-top: 0 !important;
+}
+
 .list-group-item-header {
 	background-color: #254258;
 	color: white;
@@ -72,6 +76,7 @@
 .pagination .page-item.active .page-link {
 	background-color: #E4E4E4;
 }
+
 
 #notificationList .notification-item .delete-notification {
 	position: absolute;
@@ -138,6 +143,7 @@
 	height: 100%;
 	width: 100%;
 }
+
 
 .dataTables_paginate .pagination .paginate_button.previous,
 .dataTables_paginate .pagination .paginate_button.next {
