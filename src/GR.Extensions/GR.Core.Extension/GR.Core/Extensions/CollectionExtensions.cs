@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace GR.Core.Extensions
@@ -159,6 +161,95 @@ namespace GR.Core.Extensions
         public static IEnumerable<KeyValuePair<string, string>> ToKeyValuePair(this NameValueCollection collection)
         {
             return collection.AllKeys.Select(x => new KeyValuePair<string, string>(x, collection[x]));
+        }
+
+        /// <summary>
+        /// To observable collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="coll"></param>
+        /// <returns></returns>
+        public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> coll)
+        {
+            var c = new ObservableCollection<T>();
+            foreach (var e in coll)
+                c.Add(e);
+            return c;
+        }
+
+        /// <summary>
+        /// Randomize collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Randomize<T>(this IEnumerable<T> target)
+        {
+            var r = new Random();
+            return target.OrderBy(x => (r.Next()));
+        }
+
+        /// <summary>
+        /// Transpose
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> collection)
+        {
+            var values = collection?.ToList() ?? new List<IEnumerable<T>>();
+            if (!values.Any())
+                return values;
+            if (!values.First().Any())
+                return Transpose(values.Skip(1));
+
+            var x = values.First().First();
+            var xs = values.First().Skip(1);
+            var xss = values.Skip(1).ToList();
+            return
+                new[] {new[] {x}
+                        .Concat(xss.Select(ht => ht.First()))}
+                    .Concat(new[] { xs }
+                        .Concat(xss.Select(ht => ht.Skip(1)))
+                        .Transpose());
+        }
+
+        /// <summary>
+        /// To collection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable"></param>
+        /// <returns></returns>
+        public static Collection<T> ToCollection<T>(this IEnumerable<T> enumerable)
+        {
+            var collection = new Collection<T>();
+            foreach (var i in enumerable)
+                collection.Add(i);
+            return collection;
+        }
+
+
+        /// <summary>
+        ///   Returns all combinations of a chosen amount of selected elements in the sequence.
+        /// </summary>
+        /// <typeparam name = "T">The type of the elements of the input sequence.</typeparam>
+        /// <param name = "source">The source for this extension method.</param>
+        /// <param name = "select">The amount of elements to select for every combination.</param>
+        /// <param name = "repetition">True when repetition of elements is allowed.</param>
+        /// <returns>All combinations of a chosen amount of selected elements in the sequence.</returns>
+        public static IEnumerable<IEnumerable<T>> Combinations<T>(this IEnumerable<T> source, int select, bool repetition = false)
+        {
+            Contract.Requires(source != null);
+            Contract.Requires(select >= 0);
+
+            var enumerable = source.ToList();
+            return select == 0
+                ? new[] { new T[0] }
+                : enumerable.SelectMany((element, index) =>
+                    enumerable
+                        .Skip(repetition ? index : index + 1)
+                        .Combinations(select - 1, repetition)
+                        .Select(c => new[] { element }.Concat(c)));
         }
     }
 }
