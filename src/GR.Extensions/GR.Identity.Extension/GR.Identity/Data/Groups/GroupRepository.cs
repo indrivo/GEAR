@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using GR.Core.Helpers;
+using GR.Identity.Abstractions.Models.GroupModels;
 using UserGroup = GR.Identity.Abstractions.UserGroup;
 
 namespace GR.Identity.Data.Groups
@@ -130,6 +132,7 @@ namespace GR.Identity.Data.Groups
 
         private GroupResult ValidateUserAndGroupInput(GearUser user, string groupName, bool isValidatedAlready = false)
         {
+            Arg.NotNull(user, nameof(ValidateUserAndGroupInput));
             if (isValidatedAlready) return GroupResult.Success;
             var userProvided = user != null || !string.IsNullOrEmpty(user.Id);
             var groupNameProvided = !string.IsNullOrEmpty(groupName);

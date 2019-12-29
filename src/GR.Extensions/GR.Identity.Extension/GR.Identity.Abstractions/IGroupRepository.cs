@@ -1,8 +1,9 @@
+using System.Security.Claims;
+using GR.Identity.Abstractions.Models.GroupModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
-namespace GR.Identity.Data.Groups
+namespace GR.Identity.Abstractions
 {
     public interface IGroupRepository<T, in TUser> where T : DbContext where TUser : IdentityUser
     {

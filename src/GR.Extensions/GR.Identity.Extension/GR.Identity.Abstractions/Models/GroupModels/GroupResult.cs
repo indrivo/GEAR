@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GR.Identity.Data.Groups
+namespace GR.Identity.Abstractions.Models.GroupModels
 {
     public class GroupResult
     {

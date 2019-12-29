@@ -1,6 +1,5 @@
 #region Usings
 
-using GR.Application.Middleware.Extensions;
 using GR.Audit;
 using GR.Audit.Abstractions.Extensions;
 using GR.Backup.Abstractions.BackgroundServices;
@@ -123,10 +122,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using ST.MPass.Gov;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
+using GR.Forms;
+using GR.Identity.Data.Groups;
 using TreeIsoService = GR.Cms.Services.TreeIsoService;
 
 #endregion Usings
@@ -176,24 +175,16 @@ namespace GR.Cms
 			config.GearServices.AddIdentityModule<ApplicationDbContext>()
 				.AddIdentityUserManager<IdentityUserManager, GearUser>()
 				.AddIdentityModuleStorage<ApplicationDbContext>(Configuration, MigrationsAssembly)
-				.AddApplicationSpecificServices(HostingEnvironment, Configuration)
+				.RegisterGroupRepository<GroupRepository<ApplicationDbContext>, ApplicationDbContext, GearUser>()
 				.AddAppProvider<AppProvider>()
 				.AddUserAddressService<UserAddressService>()
 				.AddIdentityModuleEvents()
 				.RegisterLocationService<LocationService>();
 
-			config.GearServices.AddAuthenticationAndAuthorization(HostingEnvironment, Configuration)
+			config.GearServices.AddAuthentication(Configuration)
 				.AddPermissionService<PermissionService<ApplicationDbContext>>()
 				.AddIdentityModuleProfileServices()
 				.AddIdentityServer(Configuration, MigrationsAssembly);
-
-			//Register MPass
-			config.GearServices.AddMPassSigningCredentials(new MPassSigningCredentials
-			{
-				ServiceProviderCertificate =
-					new X509Certificate2("Certificates/samplempass.pfx", "qN6n31IT86684JO"),
-				IdentityProviderCertificate = new X509Certificate2("Certificates/testmpass.cer")
-			});
 
 			//---------------------------------------Entity Module-------------------------------------
 			config.GearServices.AddEntityModule<EntitiesDbContext, EntityRepository>()
@@ -323,6 +314,7 @@ namespace GR.Cms
 					options.GetDefaultOptions(Configuration);
 					options.EnableSensitiveDataLogging();
 				})
+				.RegisterFormService<FormService<FormDbContext>>()
 				.AddFormStaticFilesModule();
 
 			//-----------------------------------------Page Module-------------------------------------

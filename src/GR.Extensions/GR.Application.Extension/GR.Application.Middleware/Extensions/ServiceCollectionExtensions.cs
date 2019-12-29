@@ -1,88 +1,39 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor.MsDependencyInjection;
+using GR.Core.Helpers;
+using GR.DynamicEntityStorage;
+using GR.DynamicEntityStorage.Abstractions;
+using GR.Entities.Data;
+using GR.Identity.Abstractions;
+using GR.Identity.Data;
+using GR.Identity.Filters;
+using GR.Identity.Versioning;
+using GR.Notifications.Abstractions;
+using GR.Notifications.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
-using GR.Core.Helpers;
-using GR.DynamicEntityStorage;
-using GR.DynamicEntityStorage.Abstractions;
-using GR.Entities.Data;
-using GR.Forms;
-using GR.Forms.Abstractions;
-using GR.Forms.Data;
-using GR.Identity.Abstractions;
-using GR.Identity.Data;
-using GR.Identity.Data.Groups;
-using GR.Identity.Filters;
-using GR.Identity.Versioning;
-using ST.MPass.Gov;
-using GR.Notifications.Abstractions;
-using GR.Notifications.Services;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace GR.Application.Middleware.Extensions
 {
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Add services relative to this application
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="env"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddApplicationSpecificServices(this IServiceCollection services, IHostingEnvironment env, IConfiguration configuration)
-        {
-            services.Configure<FormOptions>(x => x.ValueCountLimit = int.MaxValue);
-            services.AddTransient<IMPassService, MPassService>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IGroupRepository<ApplicationDbContext, GearUser>, GroupRepository<ApplicationDbContext>>();
-            services.AddTransient<IFormService, FormService<FormDbContext>>();
-            return services;
-        }
-
-        /// <summary>
-        /// Add authentication
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="env"></param>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services,
-            IHostingEnvironment env, IConfiguration configuration)
-        {
-            var authority = configuration.GetSection("WebClients").GetSection("CORE");
-            var uri = authority.GetValue<string>("uri");
-
-            services.AddAuthentication()
-                .AddJwtBearer(opts =>
-                {
-                    opts.Audience = "core";
-                    opts.Authority = uri;
-                    opts.RequireHttpsMetadata = false;
-                });
-            return services;
-        }
-
-        /// <summary>
         /// Add swagger
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        /// <param name="env"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSwaggerModule(this IServiceCollection services, IConfiguration configuration,
-            IHostingEnvironment env)
+        public static IServiceCollection AddSwaggerModule(this IServiceCollection services, IConfiguration configuration)
         {
             // prevent from mapping "sub" claim to name identifier.
             //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -153,7 +104,7 @@ namespace GR.Application.Middleware.Extensions
             var context = services.BuildServiceProvider().GetService<EntitiesDbContext>();
             //var env = services.BuildServiceProvider().GetService<IHostingEnvironment>();
 
-            //Register notifier 
+            //Register notifier
             IoC.Container.Register(Component.For<INotify<GearRole>>()
                 .ImplementedBy<Notify<ApplicationDbContext, GearRole, GearUser>>());
 
@@ -191,26 +142,19 @@ namespace GR.Application.Middleware.Extensions
 
             return services;
         }
+
         /// <summary>
         /// Use Cors
         /// </summary>
         /// <param name="app"></param>
-        /// <param name="configuration"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseConfiguredCors(this IApplicationBuilder app, IConfiguration configuration)
+        public static IApplicationBuilder UseConfiguredCors(this IApplicationBuilder app)
         {
-            var minutes = 1;
-            if (int.TryParse(configuration["HealthCheck:Timeout"], out var minutesParsed))
-                minutes = minutesParsed;
-            //Enable CORS before calling app.UseMvc() and app.UseStaticFiles()
-
             app.UseCors("CorsPolicy")
                 .UseStaticFiles()
                 .UseSession()
                 .UseAuthentication()
                 .UseIdentityServer();
-
-            //.UseMiddleware<HealthCheckMiddleware>(configuration["HealthCheck:Path"], TimeSpan.FromMinutes(minutes));
             return app;
         }
 

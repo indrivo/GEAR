@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.MultiTenant.Abstractions.Events;
 
@@ -21,12 +18,6 @@ namespace GR.MultiTenant.Abstractions.Extensions
             where TRepository : class, IOrganizationService<TTenant>
         {
             services.AddTransient<IOrganizationService<TTenant>, TRepository>();
-            services.AddScoped<IUrlHelper>(factory =>
-            {
-                var actionContext = factory.GetService<IActionContextAccessor>()
-                    .ActionContext;
-                return new UrlHelper(actionContext);
-            });
             TenantEvents.RegisterEvents();
             return services;
         }

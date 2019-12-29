@@ -1,6 +1,5 @@
 ﻿using GR.PageRender.Abstractions;
 using GR.PageRender.Razor.Helpers;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.PageRender.Razor.Extensions
@@ -16,7 +15,6 @@ namespace GR.PageRender.Razor.Extensions
             where TPageRenderService : class, IPageRender
         {
             services.AddTransient<IPageRender, TPageRenderService>();
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.ConfigureOptions(typeof(PageRenderFileConfiguration));
             return services;
         }

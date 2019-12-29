@@ -1,19 +1,15 @@
-﻿using GR.Cache.Abstractions;
-using GR.Core;
+﻿using GR.Core;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Templates;
 using GR.Email.Abstractions;
 using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Events;
 using GR.Identity.Abstractions.Events.EventArgs.Authorization;
 using GR.Identity.Abstractions.Events.EventArgs.Users;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.MultiTenants;
 using GR.Identity.Data;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
 using GR.Identity.Razor.Extensions;
 using GR.Identity.Razor.ViewModels.AccountViewModels;
 using IdentityModel;
@@ -26,8 +22,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using ST.MPass.Gov;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,11 +37,6 @@ namespace GR.Identity.Razor.Controllers
         #region Private Dependency Injection Fields
 
         /// <summary>
-        /// Inject distributed cache from redis
-        /// </summary>
-        private readonly ICacheService _cache;
-
-        /// <summary>
         /// Inject email sender
         /// </summary>
         private readonly IEmailSender _emailSender;
@@ -55,7 +44,7 @@ namespace GR.Identity.Razor.Controllers
         /// <summary>
         /// Inject user manager
         /// </summary>
-        private readonly IUserManager<GearUser> _manager;
+        private readonly IUserManager<GearUser> _userManager;
 
         private readonly IIdentityServerInteractionService _interactionService;
 
@@ -65,31 +54,14 @@ namespace GR.Identity.Razor.Controllers
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Inject M pass options
-        /// </summary>
-        private readonly IOptions<MPassOptions> _mpassOptions;
-
-        private readonly RoleManager<GearRole> _roleManager;
-
-        /// <summary>
-        /// Inject M pass dataService
-        /// </summary>
-        private readonly IMPassService _mpassService;
-
-        private readonly IMPassSigningCredentialsStore _mpassSigningCredentialStore;
-
-        /// <summary>
         /// Inject SignIn Manager
         /// </summary>
         private readonly SignInManager<GearUser> _signInManager;
 
-        private readonly UserManager<GearUser> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccesor;
-
         /// <summary>
-        /// Inject Ldap User Manager
+        /// Inject accesor
         /// </summary>
-        private readonly BaseLdapUserManager<LdapUser> _ldapUserManager;
+        private readonly IHttpContextAccessor _httpContextAccesor;
 
         /// <summary>
         /// Inject app context
@@ -97,33 +69,19 @@ namespace GR.Identity.Razor.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
 
         #endregion Private Dependency Injection Fields
-
-        private const string MpassRequestSessionKey = "mpass_request_id";
         private const string ReturnUrl = "ReturnUrl";
-        private const string SamlRequest = "SAMLRequest";
 
         public AccountController(
-            UserManager<GearUser> userManager,
             SignInManager<GearUser> signInManager,
             IEmailSender emailSender,
             ILogger<AccountController> logger,
             IIdentityServerInteractionService interactionService,
-            IMPassService mPassService,
-            IUserManager<GearUser> manager,
-            IMPassSigningCredentialsStore mpassSigningCredentialStore,
-            IOptions<MPassOptions> mpassOptions,
-            ICacheService cacheService, IHttpContextAccessor httpContextAccesor,
-            BaseLdapUserManager<LdapUser> ldapUserManager, ApplicationDbContext applicationDbContext, RoleManager<GearRole> roleManager)
+            IUserManager<GearUser> userManager,
+            IHttpContextAccessor httpContextAccesor,
+            ApplicationDbContext applicationDbContext)
         {
-            _cache = cacheService;
             _httpContextAccesor = httpContextAccesor;
-            _ldapUserManager = ldapUserManager;
             _applicationDbContext = applicationDbContext;
-            _roleManager = roleManager;
-            _manager = manager;
-            _mpassOptions = mpassOptions;
-            _mpassSigningCredentialStore = mpassSigningCredentialStore;
-            _mpassService = mPassService;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -146,45 +104,6 @@ namespace GR.Identity.Razor.Controllers
         {
             ViewData["Title"] = nameof(AccessDenied);
             return View();
-        }
-
-        /// <summary>
-        /// Acs
-        /// </summary>
-        /// <param name="samlResponse"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> Acs(string samlResponse)
-        {
-            var usrInfo = _mpassService.GetMPassUserInfoFromLoginResponse(samlResponse);
-
-            var mpassCredentials = await _mpassSigningCredentialStore.GetMPassCredentialsAsync();
-            // NOTE: Keeping InResponseTo in an in-memory Session means this verification will always fail if the web app is restarted during a request
-            SamlMessage.LoadAndVerifyLoginResponse(samlResponse, mpassCredentials.IdentityProviderCertificate,
-                "http://localhost:9099/Account/Acs", TimeSpan.FromDays(30D),
-                usrInfo.RequestId, _mpassOptions.Value.SAMLIssuer, out var ns, out var sessionIndex, out var nameID,
-                out var attributes);
-
-            var existingUser = await _userManager.FindByNameAsync(usrInfo.NameID);
-
-            var authProps = new AuthenticationProperties
-            {
-                AllowRefresh = false,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(20),
-                IsPersistent = true
-            };
-            var reqId = await _cache.GetAsync<string>(MpassRequestSessionKey);
-            var returnUrl = await _cache.GetAsync<string>($"{reqId}_return_url");
-
-            if (existingUser == null)
-                return !string.IsNullOrEmpty(returnUrl)
-                    ? RedirectToLocal(returnUrl)
-                    : RedirectToAction("Index", "Home");
-            _logger.LogInformation("User exists in our database, logging him in");
-            await _signInManager.SignInAsync(existingUser, authProps);
-
-            return !string.IsNullOrEmpty(returnUrl) ? RedirectToLocal(returnUrl) : RedirectToAction("Index", "Home");
         }
 
         /// <summary>
@@ -218,10 +137,10 @@ namespace GR.Identity.Razor.Controllers
                     UserPhoto = imageBytes,
                 };
 
-                var result = await _userManager.CreateAsync(user);
+                var result = await _userManager.UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    result = await _userManager.UserManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, false);
@@ -265,20 +184,20 @@ namespace GR.Identity.Razor.Controllers
                 return Json(resultModel);
             }
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.UserManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "User not found"));
                 return Json(resultModel);
             }
 
-            if (!await _userManager.IsEmailConfirmedAsync(user))
+            if (!await _userManager.UserManager.IsEmailConfirmedAsync(user))
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Email is not confirmed"));
                 return Json(resultModel);
             }
 
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var code = await _userManager.UserManager.GeneratePasswordResetTokenAsync(user);
             if (code == null)
             {
                 resultModel.Errors.Add(new ErrorModel(string.Empty, "Error on generate reset token, try again"));
@@ -330,20 +249,6 @@ namespace GR.Identity.Razor.Controllers
                 return RedirectToAction("Index", "Home");
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            var requestId = $"_{Guid.NewGuid():n}";
-
-            var samlRequest = SamlMessage.BuildAuthnRequest(requestId, _mpassOptions.Value.SAMLDestination,
-                _mpassOptions.Value.SAMLAssertionConsumerUrl, _mpassOptions.Value.SAMLIssuer);
-            samlRequest = SamlMessage.Sign(samlRequest,
-                _mpassSigningCredentialStore.GetMPassCredentials().ServiceProviderCertificate);
-            samlRequest = SamlMessage.Encode(samlRequest);
-
-            await _cache.SetAsync(MpassRequestSessionKey, requestId);
-            if (!string.IsNullOrEmpty(returnUrl))
-                await _cache.SetAsync($"{requestId}_return_url", returnUrl);
-
-            ViewData[SamlRequest] = samlRequest;
             ViewData[ReturnUrl] = returnUrl;
             return View();
         }
@@ -365,7 +270,7 @@ namespace GR.Identity.Razor.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Email);
+            var user = _userManager.UserManager.Users.FirstOrDefault(x => x.UserName == model.Email);
             if (user != null)
             {
                 if (user.IsDeleted)
@@ -374,40 +279,11 @@ namespace GR.Identity.Razor.Controllers
                     return View(model);
                 }
 
-                if (user.IsPasswordExpired() && !await _userManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
+                if (user.IsPasswordExpired() && !await _userManager.UserManager.IsInRoleAsync(user, GlobalResources.Roles.ADMINISTRATOR))
                 {
                     ModelState.AddModelError(string.Empty,
                         "Password has been expired, you need to change the password");
                     return View(model);
-                }
-
-                if (user.AuthenticationType == AuthenticationType.Ad)
-                {
-                    var ldapUser = await _ldapUserManager.FindByNameAsync(model.Email);
-                    if (ldapUser == null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                        return View(model);
-                    }
-
-                    var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
-                    if (!bind)
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid credentials.");
-                        return View(model);
-                    }
-
-                    await _cache.SetAsync(user.Id,
-                        Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(model.Password)));
-
-                    var hasher = new PasswordHasher<GearUser>();
-                    var hashedPassword = hasher.HashPassword(user, model.Password);
-                    user.PasswordHash = hashedPassword;
-                    var passChange = await _userManager.UpdateAsync(user);
-                    if (!passChange.Succeeded)
-                    {
-                        //TODO: change ldap password
-                    }
                 }
 
                 await ClearUserClaims(user);
@@ -418,14 +294,14 @@ namespace GR.Identity.Razor.Controllers
                 if (result.Succeeded)
                 {
                     user.LastLogin = DateTime.Now;
-                    await _userManager.UpdateAsync(user);
+                    await _userManager.UserManager.UpdateAsync(user);
                     //Sync permissions to claims
                     //await user.RefreshClaims(_applicationDbContext, _signInManager);
                     _logger.LogInformation("User logged in.");
 
                     IdentityEvents.Authorization.UserLogin(new UserLogInEventArgs
                     {
-                        IpAdress = _manager.GetRequestIpAdress(),
+                        IpAdress = _userManager.GetRequestIpAdress(),
                         UserId = user.Id.ToGuid(),
                         Email = user.Email,
                         FirstName = user.UserFirstName,
@@ -434,7 +310,7 @@ namespace GR.Identity.Razor.Controllers
 
                     var claim = new Claim(nameof(Tenant).ToLowerInvariant(), user.TenantId.ToString());
 
-                    await _userManager.AddClaimAsync(user, claim);
+                    await _userManager.UserManager.AddClaimAsync(user, claim);
                     return RedirectToLocal(returnUrl);
                 }
 
@@ -460,40 +336,6 @@ namespace GR.Identity.Razor.Controllers
                 _applicationDbContext.UserClaims.RemoveRange(userClaims);
                 await _applicationDbContext.SaveAsync();
             }
-        }
-
-        /// <summary>
-        /// Use Ldap auth
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        private async Task<GearUser> UseLdapAuth(LoginViewModel model)
-        {
-            var ldapUser = await _ldapUserManager.FindByNameAsync(model.Email);
-            if (ldapUser == null) return null;
-            var bind = await _ldapUserManager.CheckPasswordAsync(ldapUser, model.Password);
-            if (!bind) return null;
-            var exists = await _userManager.FindByNameAsync(ldapUser.Name);
-            if (exists != null) return exists;
-            //Create new user
-            var user = new GearUser
-            {
-                UserName = ldapUser.SamAccountName,
-                Email = ldapUser.EmailAddress,
-                AuthenticationType = AuthenticationType.Ad
-            };
-            var hasher = new PasswordHasher<GearUser>();
-            var passwordHash = hasher.HashPassword(user, model.Password);
-            user.PasswordHash = passwordHash;
-            user.Created = DateTime.Now;
-            user.Changed = DateTime.Now;
-            var result = await _userManager.CreateAsync(user);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "CORELdap");
-            }
-
-            return await _userManager.FindByNameAsync(user.UserName);
         }
 
         /// <summary>
@@ -607,7 +449,7 @@ namespace GR.Identity.Razor.Controllers
                 Email = user.Email,
                 FirstName = user.UserFirstName,
                 LastName = user.UserLastName,
-                IpAdress = _manager.GetRequestIpAdress()
+                IpAdress = _userManager.GetRequestIpAdress()
             });
 
             result.IsSuccess = true;
@@ -641,7 +483,7 @@ namespace GR.Identity.Razor.Controllers
             ViewData[ReturnUrl] = returnUrl;
             if (!ModelState.IsValid) return View(model);
             var user = new GearUser { UserName = model.Email, Email = model.Email };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
@@ -672,7 +514,7 @@ namespace GR.Identity.Razor.Controllers
                 NotFound();
             }
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
+            var user = await _userManager.UserManager.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
             if (user == null)
             {
                 return NotFound();
@@ -692,18 +534,18 @@ namespace GR.Identity.Razor.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.UserManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found");
                 return View(model);
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            var result = await _userManager.UserManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
                 user.LastPasswordChanged = DateTime.Now;
-                await _userManager.UpdateAsync(user);
+                await _userManager.UserManager.UpdateAsync(user);
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
 
@@ -730,7 +572,7 @@ namespace GR.Identity.Razor.Controllers
         [AllowAnonymous]
         public async Task<JsonResult> GetCurrentUser()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.UserManager.GetUserAsync(User);
             return Json(new ResultModel
             {
                 IsSuccess = user != null,

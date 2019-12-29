@@ -24,6 +24,28 @@ namespace GR.Identity.Abstractions.Extensions
             return services;
         }
 
+
+        /// <summary>
+        /// Add authentication
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var authority = configuration.GetSection("WebClients").GetSection("CORE");
+            var uri = authority.GetValue<string>("uri");
+
+            services.AddAuthentication()
+                .AddJwtBearer(opts =>
+                {
+                    opts.Audience = "core";
+                    opts.Authority = uri;
+                    opts.RequireHttpsMetadata = false;
+                });
+            return services;
+        }
+
         /// <summary>
         /// Add identity user manager
         /// </summary>
@@ -87,6 +109,23 @@ namespace GR.Identity.Abstractions.Extensions
         {
             services.AddTransient<IUserAddressService, TAddressService>();
             IoC.RegisterTransientService<IUserAddressService, TAddressService>();
+            return services;
+        }
+
+        /// <summary>
+        /// Register group repository
+        /// </summary>
+        /// <typeparam name="TGroupRepository"></typeparam>
+        /// <typeparam name="TContext"></typeparam>
+        /// <typeparam name="TUser"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterGroupRepository<TGroupRepository, TContext, TUser>(this IServiceCollection services)
+            where TGroupRepository : class, IGroupRepository<TContext, TUser>
+            where TContext : DbContext where TUser : IdentityUser
+        {
+            services.AddTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
+            IoC.RegisterTransientService<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;
         }
 

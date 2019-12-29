@@ -11,17 +11,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="IdentityConfiguration.json" />
-    <None Remove="Static\Embedded Resources\user.jpg" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="IdentityConfiguration.json">
+    <Content Include="Configuration\IdentityConfiguration.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+
+    <EmbeddedResource Include="Configuration\IdentityConfiguration.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+
     <EmbeddedResource Include="Static\Embedded Resources\user.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+
+    <Content Include="Static\Embedded Resources\user.jpg">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

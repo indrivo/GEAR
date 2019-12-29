@@ -12,14 +12,17 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// <summary>
         /// Hosting environment
         /// </summary>
-        public IHostingEnvironment HostingEnvironment { get; set; }
+        public virtual IHostingEnvironment HostingEnvironment { get; set; }
 
         /// <summary>
         /// App configuration
         /// </summary>
-        public IConfiguration Configuration { get; set; }
+        public virtual IConfiguration Configuration { get; set; }
 
-        public IServiceCollection GearServices { get; set; }
+        /// <summary>
+        /// Gear services
+        /// </summary>
+        public virtual IServiceCollection GearServices { get; set; }
 
         /// <summary>
         /// Use Cors default configuration
@@ -56,6 +59,11 @@ namespace GR.WebApplication.Helpers.AppConfigurations
         /// Swagger configuration
         /// </summary>
         public virtual SwaggerServicesConfiguration SwaggerServicesConfiguration { get; set; } = new SwaggerServicesConfiguration();
+
+        /// <summary>
+        /// Server configuration
+        /// </summary>
+        public virtual ServerConfiguration ServerConfiguration { get; set; } = new ServerConfiguration();
     }
 
     public sealed class CacheConfiguration
@@ -79,5 +87,13 @@ namespace GR.WebApplication.Helpers.AppConfigurations
     public sealed class SwaggerServicesConfiguration
     {
         public bool UseDefaultConfiguration { get; set; } = true;
+    }
+
+    public sealed class ServerConfiguration
+    {
+        /// <summary>
+        /// Represent max size on upload data
+        /// </summary>
+        public int UploadMaximSize { get; set; } = int.MaxValue;
     }
 }

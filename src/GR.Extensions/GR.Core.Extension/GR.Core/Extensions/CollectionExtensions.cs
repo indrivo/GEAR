@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace GR.Core.Extensions
 {
-    public static class ListExtensions
+    public static class CollectionExtensions
     {
         /// <summary>
         /// Add range for hash list
@@ -114,6 +115,17 @@ namespace GR.Core.Extensions
             if (!enumeratedSource.Any() || !enumeratedTarget.Any()) return false;
             var common = enumeratedSource.Intersect(enumeratedTarget);
             return common.Any();
+        }
+
+
+        /// <summary>
+        /// NameValueCollection to KeyValuePair
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static IEnumerable<KeyValuePair<string, string>> ToKeyValuePair(this NameValueCollection collection)
+        {
+            return collection.AllKeys.Select(x => new KeyValuePair<string, string>(x, collection[x]));
         }
     }
 }

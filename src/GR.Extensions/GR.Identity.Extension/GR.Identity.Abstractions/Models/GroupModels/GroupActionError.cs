@@ -1,4 +1,4 @@
-namespace GR.Identity.Data.Groups
+namespace GR.Identity.Abstractions.Models.GroupModels
 {
     public class GroupActionError
     {

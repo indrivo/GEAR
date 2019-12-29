@@ -25,6 +25,20 @@ namespace GR.Forms.Abstractions.Extensions
         }
 
         /// <summary>
+        /// Register form service
+        /// </summary>
+        /// <typeparam name="TFormService"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterFormService<TFormService>(this IServiceCollection services)
+            where TFormService : class, IFormService
+        {
+            services.AddTransient<IFormService, TFormService>();
+            IoC.RegisterTransientService<IFormService, TFormService>();
+            return services;
+        }
+
+        /// <summary>
         /// Register form module context
         /// </summary>
         /// <typeparam name="TFormContext"></typeparam>
