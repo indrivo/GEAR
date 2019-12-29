@@ -1,4 +1,5 @@
-﻿using GR.Audit.Abstractions.Extensions;
+﻿using Castle.MicroKernel.Registration;
+using GR.Audit.Abstractions.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Events;
 using Microsoft.AspNetCore.Identity;
@@ -21,6 +22,10 @@ namespace GR.Identity.Abstractions.Extensions
             services.AddIdentity<GearUser, GearRole>()
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
+
+            //Register user manager
+            IoC.Container.Register(Component.For<UserManager<GearUser>>());
+
             return services;
         }
 

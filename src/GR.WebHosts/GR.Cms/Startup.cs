@@ -126,6 +126,7 @@ using System;
 using System.Collections.Generic;
 using GR.Forms;
 using GR.Identity.Data.Groups;
+using GR.Notifications.Services;
 using TreeIsoService = GR.Cms.Services.TreeIsoService;
 
 #endregion Usings
@@ -147,17 +148,18 @@ namespace GR.Cms
 		/// <param name="app"></param>
 		public override void Configure(IApplicationBuilder app)
 			=> app.UseGearWebApp(config =>
-				{
-					config.HostingEnvironment = HostingEnvironment;
-					config.Configuration = Configuration;
-					//rewrite root path to redirect on dynamic page, only for commerce landing page
-					config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
+			{
+				config.AppName = "ISO APP";
+				config.HostingEnvironment = HostingEnvironment;
+				config.Configuration = Configuration;
+				//rewrite root path to redirect on dynamic page, only for commerce landing page
+				config.CustomMapRules = new Dictionary<string, Action<HttpContext>>
 					{
 						{
 							"/", context => context.MapTo("/public")
 						}
 					};
-				});
+			});
 
 		/// <summary>
 		/// This method gets called by the runtime. Use this method to add services to the container.
@@ -229,8 +231,9 @@ namespace GR.Cms
 				})
 				.RegisterProgramAssembly(typeof(Program));
 
-			//--------------------------Notification subscriptions-------------------------------------
-			config.GearServices.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
+			//-------------------------------Notification Module-------------------------------------
+			config.GearServices.AddNotificationModule<Notify<ApplicationDbContext, GearRole, GearUser>, GearRole>()
+				.AddNotificationSubscriptionModule<NotificationSubscriptionRepository>()
 				.AddNotificationModuleEvents()
 				.AddNotificationSubscriptionModuleStorage<NotificationDbContext>(options =>
 				{

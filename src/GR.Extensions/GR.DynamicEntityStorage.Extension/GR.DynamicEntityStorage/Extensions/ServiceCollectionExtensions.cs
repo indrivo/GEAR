@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GR.DynamicEntityStorage.Extensions
 {
-    public static class RegisterServiceCollection
+    public static class ServiceCollectionExtensions
     {
         /// <summary>
         /// Register new data access services
@@ -26,6 +26,8 @@ namespace GR.DynamicEntityStorage.Extensions
             services.AddTransient<IDynamicDataCreateService, DynamicService<TContext>>();
             services.AddTransient<IDynamicDataUpdateService, DynamicService<TContext>>();
             services.AddTransient<IDataFilter, DataFilter>();
+
+            IoC.RegisterTransientService<IDynamicService, DynamicService<TContext>>();
             SystemEvents.Application.OnApplicationStarted += async (sender, args) =>
             {
                 if (!GearApplication.Configured) return;

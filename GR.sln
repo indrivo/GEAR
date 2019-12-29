@@ -199,8 +199,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Core", "src\GR.Extension
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Core.Razor", "src\GR.Extensions\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj", "{B153B830-714A-4FFB-937C-EB5370C8D3AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Application.Middleware", "src\GR.Extensions\GR.Application.Extension\GR.Application.Middleware\GR.Application.Middleware.csproj", "{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Core.Benchmark", "src\GR.Extensions\GR.Core.Extension\GR.Core.Benchmark\GR.Core.Benchmark.csproj", "{44100038-4507-41A5-959F-84FDE99EE5C7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Processes.Abstractions", "src\GR.Extensions\GR.Processes.Extension\GR.Processes.Abstractions\GR.Processes.Abstractions.csproj", "{2228A314-7F4E-4D53-BAF8-1929F0E684E9}"
@@ -291,11 +289,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Demo", "src\GR.WebHosts\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GR.Logger.Extension", "GR.Logger.Extension", "{67772CD9-5D26-40A4-8E04-B2EF02AB9B25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Logger.Abstractions", "src\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj", "{21F57F9A-D410-48CF-8B62-C30CCAEBBC53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Logger.Abstractions", "src\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj", "{21F57F9A-D410-48CF-8B62-C30CCAEBBC53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Logger", "src\GR.Extensions\GR.Logger.Extension\GR.Logger\GR.Logger.csproj", "{1D732A36-0B68-410E-8142-5A05B1B93EB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Logger", "src\GR.Extensions\GR.Logger.Extension\GR.Logger\GR.Logger.csproj", "{1D732A36-0B68-410E-8142-5A05B1B93EB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GR.Logger.Razor", "src\GR.Extensions\GR.Logger.Extension\GR.Logger.Razor\GR.Logger.Razor.csproj", "{8B70C09A-3881-4D1F-9329-6BC10FECC35B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GR.Logger.Razor", "src\GR.Extensions\GR.Logger.Extension\GR.Logger.Razor\GR.Logger.Razor.csproj", "{8B70C09A-3881-4D1F-9329-6BC10FECC35B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -730,12 +728,6 @@ Global
 		{B153B830-714A-4FFB-937C-EB5370C8D3AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B153B830-714A-4FFB-937C-EB5370C8D3AB}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{B153B830-714A-4FFB-937C-EB5370C8D3AB}.Stage|Any CPU.Build.0 = Debug|Any CPU
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4}.Stage|Any CPU.Build.0 = Debug|Any CPU
 		{44100038-4507-41A5-959F-84FDE99EE5C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44100038-4507-41A5-959F-84FDE99EE5C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44100038-4507-41A5-959F-84FDE99EE5C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1059,7 +1051,6 @@ Global
 		{2F5E1A35-F80C-4BA1-97B3-95128B15F7C6} = {EC563E5C-D43C-436D-A40D-2D182B1594B6}
 		{76AD08DF-F19A-485F-9C47-5CCE06E102E1} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
 		{B153B830-714A-4FFB-937C-EB5370C8D3AB} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
-		{A7DD4DE0-A0C8-4BF0-ADEB-A1196267ABA4} = {B595C1E9-D7E5-4A9D-8995-55720F89A815}
 		{44100038-4507-41A5-959F-84FDE99EE5C7} = {DF6A01E5-548B-4FD8-9305-5A6E87B48DC1}
 		{2228A314-7F4E-4D53-BAF8-1929F0E684E9} = {7F596461-2B6C-43FD-AABF-4691B8732AEF}
 		{6C0353A9-7363-49EB-9CF5-409F5FCB1ED8} = {EC563E5C-D43C-436D-A40D-2D182B1594B6}

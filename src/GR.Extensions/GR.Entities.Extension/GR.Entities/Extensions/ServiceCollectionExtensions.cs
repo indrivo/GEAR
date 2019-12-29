@@ -1,5 +1,9 @@
-﻿using GR.Entities.Abstractions.Events;
+﻿using System.Collections.Generic;
+using Castle.MicroKernel.Registration;
+using GR.Core.Helpers;
+using GR.Entities.Abstractions.Events;
 using GR.Entities.Controls.Builders;
+using GR.Entities.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Entities.Extensions
@@ -13,6 +17,10 @@ namespace GR.Entities.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterEntityBuilderJob(this IServiceCollection services)
         {
+            var context = services.BuildServiceProvider().GetService<EntitiesDbContext>();
+            var synchronizerParams = new Dictionary<string, object> { { "context", context } };
+            IoC.Container.Register(Component.For<EntitySynchronizer>().DependsOn(synchronizerParams));
+
             //TODO: On entity change change only the updated section not remove entire entity 
             EntityEvents.Entities.OnEntityAddNewField += (sender, args) =>
             {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace GR.Application.Middleware.Services
+namespace GR.WebApplication.Services
 {
     public static class ExportDataIo
     {

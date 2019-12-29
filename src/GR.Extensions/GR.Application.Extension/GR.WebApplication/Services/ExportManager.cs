@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.DynamicEntityStorage.Abstractions;
@@ -17,8 +15,10 @@ using GR.Entities.Data;
 using GR.Forms.Abstractions;
 using GR.Identity.Data;
 using GR.PageRender.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
-namespace GR.Application.Middleware.Services
+namespace GR.WebApplication.Services
 {
     public static class ExportManager
     {

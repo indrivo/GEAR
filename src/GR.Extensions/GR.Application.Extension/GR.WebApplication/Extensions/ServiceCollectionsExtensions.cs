@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GR.Application.Middleware.Extensions;
+using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Exceptions;
 using GR.Cache.Abstractions.Extensions;
 using GR.Cache.Services;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
 using GR.Core.Razor.Extensions;
-using GR.Identity.Abstractions;
-using GR.Identity.Data;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Notifications.Extensions;
@@ -109,14 +108,14 @@ namespace GR.WebApplication.Extensions
 
             //--------------------------------------SignalR Module-------------------------------------
             if (configuration.SignlarConfiguration.UseDefaultConfiguration)
-                services.AddSignalRModule<ApplicationDbContext, GearUser, GearRole>();
+                services.AddSignalRModule();
 
 
             //--------------------------------------Swagger Module-------------------------------------
             if (configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
                 services.AddSwaggerModule(configuration.Configuration);
 
-            return services.AddWindsorContainers();
+            return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
 
         /// <summary>
@@ -173,7 +172,9 @@ namespace GR.WebApplication.Extensions
             if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
 
             //custom rules
-            app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules);
+            app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules)
+                .UseAuthentication()
+                .UseIdentityServer();
 
             //--------------------------------------Swagger Usage-------------------------------------
             if (configuration.SwaggerConfiguration.UseSwaggerUI &&

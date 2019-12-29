@@ -11,11 +11,28 @@ using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ServiceBuilder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace GR.Notifications.Abstractions.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Add notification module
+        /// </summary>
+        /// <typeparam name="TNotifyService"></typeparam>
+        /// <typeparam name="TRole"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddNotificationModule<TNotifyService, TRole>(this IServiceCollection services)
+            where TNotifyService : class, INotify<TRole>
+            where TRole : IdentityRole<string>
+        {
+            services.AddTransient<INotify<TRole>, TNotifyService>();
+            IoC.RegisterTransientService<INotify<TRole>, TNotifyService>();
+            return services;
+        }
+
         /// <summary>
         /// Add notification subscriptions module
         /// </summary>

@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core.Helpers;
 using GR.Notifications.Abstractions;
 using GR.Notifications.Hubs;
-using GR.Notifications.Services;
 
 namespace GR.Notifications.Extensions
 {
@@ -30,13 +27,13 @@ namespace GR.Notifications.Extensions
             });
             return app;
         }
+
         /// <summary>
         /// Add SignalR
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSignalRModule<TContext, TUser, TRole>(this IServiceCollection services) where TContext : IdentityDbContext<TUser, TRole, string>
-            where TUser : IdentityUser where TRole : IdentityRole<string>
+        public static IServiceCollection AddSignalRModule(this IServiceCollection services) 
         {
             Arg.NotNull(services, nameof(services));
             services.AddSignalR(options =>
@@ -45,7 +42,6 @@ namespace GR.Notifications.Extensions
             });
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddTransient<INotificationHub, LocalNotificationHub>();
-            services.AddTransient<INotify<TRole>, Notify<TContext, TRole, TUser>>();
             return services;
         }
     }

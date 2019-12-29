@@ -19,7 +19,6 @@ dotnet pack ./GR.Extensions/GR.Core.Extension/GR.Core.Razor/GR.Core.Razor.csproj
 
 ::Pack application modules
 dotnet pack ./GR.Extensions/GR.Application.Extension/GR.WebApplication/GR.WebApplication.csproj -o ../../../nupkgs
-dotnet pack ./GR.Extensions/GR.Application.Extension/GR.Application.Middleware/GR.Application.Middleware.csproj -o ../../../nupkgs
 
 ::Pack cache modules
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Abstractions/GR.Cache.Abstractions.csproj -o ../../../nupkgs
@@ -160,7 +159,6 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Core.Razor*
 
 ::Push application modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.WebApplication*
-dotnet nuget push -k %pushKey% -s %pushHost% GR.Application.Middleware*
 
 :: Push cache modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Abstractions*

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Linq;
 
-namespace GR.Identity.Filters
+namespace GR.Core.Razor.Helpers.Filters
 {
     /// <summary>
     ///     Swagger authorize check filter
@@ -18,11 +18,15 @@ namespace GR.Identity.Filters
         /// <param name="context"></param>
         public void Apply(Operation operation, OperationFilterContext context)
         {
-            var authAttributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
-                .Union(context.MethodInfo.GetCustomAttributes(true))
-                .OfType<AuthorizeAttribute>();
+            if (context.MethodInfo.DeclaringType != null)
+            {
+                var authAttributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
+                    .Union(context.MethodInfo.GetCustomAttributes(true))
+                    .OfType<AuthorizeAttribute>();
 
-            if (!authAttributes.Any()) return;
+                if (!authAttributes.Any()) return;
+            }
+
             operation.Responses.Add("401", new Response { Description = "Unauthorized" });
             operation.Responses.Add("403", new Response { Description = "Forbidden" });
         }
