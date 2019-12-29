@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Yes, delete",
   "system_notifications_show_more": "Show more",
   "system_state_machine_contracts": "Contracts",
-  "system_state_machine_add_new_contract": "Add new contract"
+  "system_state_machine_add_new_contract": "Add new contract",
+  "system_drag_and_drop_event": "Drag and drop your event",
+  "system_calendar_update_event": "Update event",
+  "system_countries": "Countries",
+  "system_countries_code_duplicates_error": "Country with this code already exists",
+  "system_countries_edited_success": "The record has been saved",
+  "system_countries_added_success": "Item added with success",
+  "system_country_code": "Code",
+  "system_country_name": "Name",
+  "system_countries_deleted_success": "Item successfully deleted"
 }

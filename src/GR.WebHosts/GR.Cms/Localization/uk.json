@@ -848,5 +848,14 @@
   "system_notifications_confirm_delete": "Так, видалити",
   "system_notifications_show_more": "Показати більше",
   "system_state_machine_contracts": "Контракти",
-  "system_state_machine_add_new_contract": "Додати новий контракт"
+  "system_state_machine_add_new_contract": "Додати новий контракт",
+  "system_drag_and_drop_event": "Перетягніть подія",
+  "system_calendar_update_event": "Подія оновлення ",
+  "system_countries": "Країни",
+  "system_countries_code_duplicates_error": "Країна з таким кодом вже існує",
+  "system_countries_edited_success": "Запис була збережена",
+  "system_countries_added_success": "Товар успішно доданий",
+  "system_country_code": "Код",
+  "system_country_name": "Назва",
+  "system_countries_deleted_success": "Товар успішно видалений"
 }
