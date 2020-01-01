@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using Mapster;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -14,7 +15,7 @@ namespace GR.Core.Extensions
         /// <summary>
         /// Serialize settings
         /// </summary>
-        private static readonly JsonSerializerSettings SerializeSettings = new JsonSerializerSettings
+        internal static readonly JsonSerializerSettings SerializeSettings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -117,6 +118,12 @@ namespace GR.Core.Extensions
          => target != null ? getValue(target) : default;
 
 
+        /// <summary>
+        /// Parse
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static T Parse<T>(this string value)
         {
             // Get default value for type so if string
@@ -129,6 +136,34 @@ namespace GR.Core.Extensions
             var tc = TypeDescriptor.GetConverter(typeof(T));
             result = (T)tc.ConvertFrom(value);
             return result;
+        }
+
+        /// <summary>
+        /// Adapt extension of Mapster
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T MapType<T>(this object obj)
+            => obj.Adapt<T>();
+
+        /// <summary>
+        /// Check object type and return cast object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T Is<T>(this object obj)
+        {
+            switch (obj)
+            {
+                case null:
+                    return default;
+                case T mapped:
+                    return mapped;
+                default:
+                    return default;
+            }
         }
     }
 }

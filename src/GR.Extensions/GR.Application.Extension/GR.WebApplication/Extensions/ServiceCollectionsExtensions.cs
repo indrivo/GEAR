@@ -92,7 +92,7 @@ namespace GR.WebApplication.Extensions
             if (configuration.CacheConfiguration.UseDistributedCache)
             {
                 services.AddDistributedMemoryCache()
-                .AddCacheModule<RedisDistributedCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+                .AddCacheModule<DistributedCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
             }
             else if (configuration.CacheConfiguration.UseInMemoryCache)
             {
