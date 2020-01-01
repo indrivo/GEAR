@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace GR.Core.Extensions
@@ -114,5 +115,13 @@ namespace GR.Core.Extensions
             return Regex.IsMatch(s,
                 @"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b");
         }
+
+        /// <summary>
+        /// To bytes
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static byte[] ToBytes(this string str)
+            => str.IsNull() ? default : Encoding.ASCII.GetBytes(str);
     }
 }

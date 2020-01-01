@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using StackExchange.Redis;
+using GR.Cache.Abstractions.Models;
 
 namespace GR.Cache.Abstractions
 {
@@ -34,14 +34,14 @@ namespace GR.Cache.Abstractions
         /// Get all cache values
         /// </summary>
         /// <returns></returns>
-        IEnumerable<RedisKey> GetAllKeys();
+        IEnumerable<CacheEntry> GetAllKeys();
 
         /// <summary>
         /// Get keys by pattern
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
-        IEnumerable<RedisKey> GetAllByPatternFilter(string pattern);
+        IEnumerable<CacheEntry> GetAllByPatternFilter(string pattern);
 
         /// <summary>
         /// Check if provider is connected

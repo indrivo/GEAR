@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GR.Cache.Abstractions;
+using GR.Cache.Abstractions.Models;
+using GR.Core.Extensions;
 using Microsoft.Extensions.Caching.Memory;
-using StackExchange.Redis;
 
 namespace GR.Cache.Services
 {
@@ -33,15 +35,16 @@ namespace GR.Cache.Services
         public Task<TObject> GetAsync<TObject>(string key) where TObject : class
             => Task.Factory.StartNew(() => _inMemoryCacheService.Get<TObject>(key));
 
-        public IEnumerable<RedisKey> GetAllByPatternFilter(string pattern)
-             => new List<RedisKey>();
+        public IEnumerable<CacheEntry> GetAllByPatternFilter(string pattern)
+             => new List<CacheEntry>();
 
         /// <summary>
         /// Get all keys
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<RedisKey> GetAllKeys()
-            => new List<RedisKey>();
+        public IEnumerable<CacheEntry> GetAllKeys()
+        => _inMemoryCacheService.GetEntries()?.Select(x => new CacheEntry(x.Key.ToString(), x.Value)).ToList() ??
+           new List<CacheEntry>();
 
         /// <summary>
         /// Is connected

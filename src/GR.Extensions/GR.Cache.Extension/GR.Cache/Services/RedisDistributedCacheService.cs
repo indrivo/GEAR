@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using GR.Cache.Abstractions;
+using GR.Cache.Abstractions.Models;
 
 namespace GR.Cache.Services
 {
@@ -90,20 +92,16 @@ namespace GR.Cache.Services
         /// Get all keys
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<RedisKey> GetAllKeys()
-        {
-            return _redisConnection.GetAll();
-        }
+        public virtual IEnumerable<CacheEntry> GetAllKeys()
+            => Map(_redisConnection.GetAll());
 
         /// <summary>
         /// Get all by pattern
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
-        public virtual IEnumerable<RedisKey> GetAllByPatternFilter(string pattern)
-        {
-            return _redisConnection.GetByPatternFilter(pattern);
-        }
+        public virtual IEnumerable<CacheEntry> GetAllByPatternFilter(string pattern)
+            => Map(_redisConnection.GetByPatternFilter(pattern));
 
         /// <summary>
         /// Remove key from cache service
@@ -122,5 +120,18 @@ namespace GR.Cache.Services
         /// Flush all keys
         /// </summary>
         public virtual void FlushAll() => _redisConnection.FlushAll();
+
+
+        #region Helpers
+
+        /// <summary>
+        /// Map redis keys to cache entry
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        private static IEnumerable<CacheEntry> Map(IEnumerable<RedisKey> keys)
+            => keys.Select(x => x.ToString()).Select(x => new CacheEntry(x, ""));
+
+        #endregion
     }
 }
