@@ -9,10 +9,11 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using GR.Cache.Abstractions;
 using GR.Cache.Abstractions.Models;
+using GR.Core.Extensions;
 
 namespace GR.Cache.Services
 {
-    public class RedisDistributedCacheService : ICacheService
+    public class DistributedCacheService : ICacheService
     {
         /// <summary>
         /// Inject distributed cache
@@ -31,7 +32,7 @@ namespace GR.Cache.Services
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="redisConnection"></param>
-        public RedisDistributedCacheService(IDistributedCache cache, IRedisConnection redisConnection)
+        public DistributedCacheService(IDistributedCache cache, IRedisConnection redisConnection)
         {
             _cache = cache;
             _redisConnection = redisConnection;
@@ -53,8 +54,7 @@ namespace GR.Cache.Services
         {
             try
             {
-                var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj, _jsonSerializerSettings));
-                await _cache.SetAsync(key, bytes);
+                await _cache.SetAsync(key, JsonConvert.SerializeObject(obj, _jsonSerializerSettings).ToBytes());
                 return true;
             }
             catch (Exception ex)

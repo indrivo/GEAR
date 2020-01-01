@@ -71,5 +71,12 @@ namespace GR.Entities.Abstractions
         /// <param name="model"></param>
         /// <returns></returns>
         Task<ResultModel> GenerateTablesForTenantAsync(Tenant model);
+
+        /// <summary>
+        /// Find table by id
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<ResultModel<TableModel>> FindTableByNameAsync(string name);
     }
 }
