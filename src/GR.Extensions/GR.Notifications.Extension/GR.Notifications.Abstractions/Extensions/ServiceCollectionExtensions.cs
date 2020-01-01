@@ -28,8 +28,7 @@ namespace GR.Notifications.Abstractions.Extensions
             where TNotifyService : class, INotify<TRole>
             where TRole : IdentityRole<string>
         {
-            services.AddTransient<INotify<TRole>, TNotifyService>();
-            IoC.RegisterTransientService<INotify<TRole>, TNotifyService>();
+            services.AddGearTransient<INotify<TRole>, TNotifyService>();
             return services;
         }
 
@@ -41,9 +40,7 @@ namespace GR.Notifications.Abstractions.Extensions
         public static INotificationSubscriptionServiceCollection AddNotificationSubscriptionModule<TRepository>(this IServiceCollection services)
             where TRepository : class, INotificationSubscriptionRepository
         {
-            Arg.NotNull(services, nameof(AddNotificationSubscriptionModule));
-            IoC.RegisterScopedService<INotificationSubscriptionRepository, TRepository>();
-            services.AddTransient<INotificationSubscriptionRepository, TRepository>();
+            services.AddGearScoped<INotificationSubscriptionRepository, TRepository>();
             return new NotificationSubscriptionServiceCollection(services);
         }
 
@@ -60,7 +57,7 @@ namespace GR.Notifications.Abstractions.Extensions
             Arg.NotNull(services, nameof(AddNotificationSubscriptionModuleStorage));
             services.Services.AddDbContext<TContext>(options);
             services.Services.AddScopedContextFactory<INotificationDbContext, TContext>();
-            services.Services.RegisterAuditFor<INotificationDbContext>("Notification module");
+            services.Services.RegisterAuditFor<INotificationDbContext>($"{nameof(Notification)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();

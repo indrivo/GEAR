@@ -1,4 +1,5 @@
-﻿using GR.Identity.Versioning;
+﻿using System;
+using GR.Identity.Versioning;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -9,6 +10,9 @@ namespace GR.WebApplication.Helpers.AppConfigurations
 {
     public class GearServiceCollectionConfig
     {
+        private static IServiceProvider BuildServices { get; set; }
+        public IServiceProvider BuildGearServices => BuildServices ?? (BuildServices = GearServices.BuildServiceProvider());
+
         /// <summary>
         /// Hosting environment
         /// </summary>

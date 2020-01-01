@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using GR.Audit.Abstractions.Attributes;
+using GR.Audit.Abstractions.Enums;
 using GR.Calendar.Abstractions.Enums;
 using GR.Core;
 
 namespace GR.Calendar.Abstractions.Models
 {
+    [TrackEntity(Option = TrackEntityOption.AllFields)]
     public class CalendarEvent : BaseModel
     {
         /// <summary>

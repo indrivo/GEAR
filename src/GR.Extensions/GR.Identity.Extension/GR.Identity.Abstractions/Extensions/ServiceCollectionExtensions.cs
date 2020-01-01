@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Events;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,6 @@ namespace GR.Identity.Abstractions.Extensions
 
             //Register user manager
             IoC.Container.Register(Component.For<UserManager<GearUser>>());
-
             return services;
         }
 
@@ -62,7 +62,7 @@ namespace GR.Identity.Abstractions.Extensions
             where TUser : GearUser
             where TUserManager : class, IUserManager<TUser>
         {
-            services.AddTransient<IUserManager<TUser>, TUserManager>();
+            services.AddGearTransient<IUserManager<TUser>, TUserManager>();
             return services;
         }
 
@@ -98,8 +98,7 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddAppProvider<TAppProvider>(this IServiceCollection services)
             where TAppProvider : class, IAppProvider
         {
-            services.AddTransient<IAppProvider, TAppProvider>();
-            IoC.RegisterTransientService<IAppProvider, TAppProvider>();
+            services.AddGearTransient<IAppProvider, TAppProvider>();
             return services;
         }
 
@@ -112,8 +111,7 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddUserAddressService<TAddressService>(this IServiceCollection services)
             where TAddressService : class, IUserAddressService
         {
-            services.AddTransient<IUserAddressService, TAddressService>();
-            IoC.RegisterTransientService<IUserAddressService, TAddressService>();
+            services.AddGearTransient<IUserAddressService, TAddressService>();
             return services;
         }
 
@@ -129,8 +127,7 @@ namespace GR.Identity.Abstractions.Extensions
             where TGroupRepository : class, IGroupRepository<TContext, TUser>
             where TContext : DbContext where TUser : IdentityUser
         {
-            services.AddTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
-            IoC.RegisterTransientService<IGroupRepository<TContext, TUser>, TGroupRepository>();
+            services.AddGearTransient<IGroupRepository<TContext, TUser>, TGroupRepository>();
             return services;
         }
 
@@ -154,7 +151,7 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection RegisterLocationService<TLocationService>(this IServiceCollection services)
             where TLocationService : class, ILocationService
         {
-            services.AddSingleton<ILocationService, TLocationService>();
+            services.AddGearSingleton<ILocationService, TLocationService>();
             return services;
         }
     }

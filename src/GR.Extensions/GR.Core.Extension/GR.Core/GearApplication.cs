@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Castle.Windsor;
+using GR.Core.Helpers;
 
 namespace GR.Core
 {
     public abstract class GearApplication
     {
+        /// <summary>
+        /// Services container
+        /// </summary>
+        public static IWindsorContainer ServicesContainer => IoC.Container;
+
         /// <summary>
         /// Is configured
         /// </summary>
@@ -48,6 +55,6 @@ namespace GR.Core
         /// <summary>
         /// Running project path
         /// </summary>
-        public static  string RunningProjectPath => AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin", StringComparison.Ordinal));
+        public static string RunningProjectPath => AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin", StringComparison.Ordinal));
     }
 }

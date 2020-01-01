@@ -8,7 +8,6 @@ using GR.Core.Helpers;
 using GR.Identity.Data;
 using GR.Identity.IdentityServer4;
 using GR.Identity.IdentityServer4.Seeders;
-using GR.WebApplication.Extensions;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +16,7 @@ using GR.Core;
 using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Entities.Data;
+using GR.Logger.Extensions;
 using GR.WebApplication.Models;
 using Microsoft.AspNetCore;
 using Newtonsoft.Json;
@@ -122,7 +122,7 @@ namespace GR.WebApplication
         [Conditional("DEBUG")]
         public static void InitAppsettingsFiles()
         {
-
+            //System env
             var envPaths = new List<string>
             {
                 "Development", "Stage", string.Empty
@@ -144,7 +144,8 @@ namespace GR.WebApplication
                 File.WriteAllText(appSettingsFilePath, baseSettings);
             }
 
-            if (fails > 0) throw new Exception("Please restart the application to configure it correctly, we have created a template with which you can configure it in appsettings.{EnvName}.json");
+            if (fails > 0) throw new Exception("Please restart the application to configure it correctly, " +
+                                               "we have created a template with which you can configure it in appsettings.{EnvName}.json");
         }
 
         /// <summary>
@@ -157,15 +158,14 @@ namespace GR.WebApplication
             GlobalAppHost = GlobalWebHost = WebHost.CreateDefaultBuilder(args)
                 .UseSetting(WebHostDefaults.DetailedErrorsKey, "true")
                 .UseConfiguration(BuildConfiguration())
-                .StartLogging()
+                .RegisterGearLoggingProviders()
                 .CaptureStartupErrors(true)
                 .UseStartup<TStartUp>()
                 .ConfigureAppConfiguration((hostingContext, conf) =>
                 {
                     var path = Path.Combine(AppContext.BaseDirectory, "translationSettings.json");
-                    conf.AddJsonFile(path, optional: true, reloadOnChange: true);
+                    conf.AddJsonFile(path, true, true);
                 })
-                .UseSentry()
                 .Build();
 
             return GlobalWebHost;

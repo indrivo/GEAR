@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Exceptions;
 using GR.Cache.Abstractions.Extensions;
@@ -24,6 +25,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -57,8 +59,8 @@ namespace GR.WebApplication.Extensions
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(x => { x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat; });
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddUrlHelper();
 
             //Register core razor
@@ -114,6 +116,10 @@ namespace GR.WebApplication.Extensions
             //--------------------------------------Swagger Module-------------------------------------
             if (configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
                 services.AddSwaggerModule(configuration.Configuration);
+
+            //Register memory cache
+            var cacheService = configuration.BuildGearServices.GetService<IMemoryCache>();
+            IoC.Container.Register(Component.For<IMemoryCache>().Instance(cacheService));
 
             return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }

@@ -60,8 +60,7 @@ namespace GR.PageRender.Abstractions.Extensions
         public static IServiceCollection RegisterViewModelService<TViewModelService>(this IServiceCollection services)
             where TViewModelService : class, IViewModelService
         {
-            services.AddTransient<IViewModelService, TViewModelService>();
-            IoC.RegisterTransientService<IViewModelService, TViewModelService>();
+            services.AddGearTransient<IViewModelService, TViewModelService>();
             return services;
         }
 
