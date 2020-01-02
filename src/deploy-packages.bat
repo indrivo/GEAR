@@ -25,6 +25,11 @@ dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Abstractions/GR.Cache.Ab
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache/GR.Cache.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Cache.Extension/GR.Cache.Razor/GR.Cache.Razor.csproj -o ../../../nupkgs
 
+::Pack logger modules
+dotnet pack ./GR.Extensions/GR.Logger.Extension/GR.Logger.Abstractions/GR.Logger.Abstractions.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Logger.Extension/GR.Logger/GR.Logger.csproj -o ../../../nupkgs
+dotnet pack ./GR.Extensions/GR.Logger.Extension/GR.Logger.Razor/GR.Logger.Razor.csproj -o ../../../nupkgs
+
 ::Pack calendar modules
 dotnet pack ./GR.Extensions/GR.Calendar.Extensions/GR.Calendar.Abstraction/GR.Calendar.Abstractions.csproj -o ../../../nupkgs
 dotnet pack ./GR.Extensions/GR.Calendar.Extensions/GR.Calendar/GR.Calendar.csproj -o ../../../nupkgs
@@ -165,6 +170,10 @@ dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Abstractions*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache*
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Cache.Razor*
 
+:: Push logger modules
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Logger.Abstractions*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Logger*
+dotnet nuget push -k %pushKey% -s %pushHost% GR.Logger.Razor*
 
 :: Push calendar modules
 dotnet nuget push -k %pushKey% -s %pushHost% GR.Calendar.Abstraction*
