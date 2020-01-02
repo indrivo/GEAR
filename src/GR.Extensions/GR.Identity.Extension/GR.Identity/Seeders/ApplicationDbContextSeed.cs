@@ -32,7 +32,7 @@ namespace GR.Identity.Seeders
             var roleManager = services.GetRequiredService<RoleManager<GearRole>>();
             var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(ApplicationDbContextSeed));
             var baseDirectory = AppContext.BaseDirectory;
-            var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "IdentityConfiguration.json"));
+            var entity = JsonParser.ReadObjectDataFromJsonFile<SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
 
             if (entity == null)
             {

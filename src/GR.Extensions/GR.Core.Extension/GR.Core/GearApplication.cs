@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Castle.Windsor;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Helpers;
+using GR.Core.Helpers.Global;
 
 namespace GR.Core
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Abstract Gear app for be extended on " +
+                                        "different platforms like web, mobile, desktop")]
     public abstract class GearApplication
     {
         /// <summary>

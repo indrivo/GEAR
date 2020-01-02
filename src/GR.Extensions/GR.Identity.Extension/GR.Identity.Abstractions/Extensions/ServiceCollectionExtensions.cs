@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using GR.Audit.Abstractions.Extensions;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -20,7 +21,20 @@ namespace GR.Identity.Abstractions.Extensions
         public static IServiceCollection AddIdentityModule<TContext>(this IServiceCollection services)
             where TContext : DbContext, IIdentityContext
         {
-            services.AddIdentity<GearUser, GearRole>()
+            services.AddIdentity<GearUser, GearRole>(options =>
+                {
+                    options.Lockout = new LockoutOptions
+                    {
+                        MaxFailedAccessAttempts = 4,
+                        AllowedForNewUsers = true,
+                        DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15)
+                    };
+
+                    //options.SignIn = new SignInOptions
+                    //{
+                    //    RequireConfirmedEmail = true
+                    //};
+                })
                 .AddEntityFrameworkStores<TContext>()
                 .AddDefaultTokenProviders();
 
@@ -77,15 +91,11 @@ namespace GR.Identity.Abstractions.Extensions
             IConfiguration configuration, string migrationsAssembly)
             where TIdentityContext : DbContext, IIdentityContext
         {
-            services.AddTransient<IIdentityContext, TIdentityContext>();
+            services.AddScopedContextFactory<IIdentityContext, TIdentityContext>();
             services.AddDbContext<TIdentityContext>(builder
-                => builder.RegisterIdentityStorage(configuration, migrationsAssembly));
+                => builder.RegisterIdentityStorage(configuration, migrationsAssembly), ServiceLifetime.Transient);
 
             services.RegisterAuditFor<IIdentityContext>("Identity module");
-            //SystemEvents.Database.OnMigrate += (sender, args) =>
-            //{
-            //    GearApplication.GetHost<IWebHost>().MigrateDbContext<TIdentityContext>();
-            //};
             return services;
         }
 

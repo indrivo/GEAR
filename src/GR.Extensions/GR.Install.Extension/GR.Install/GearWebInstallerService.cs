@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GR.Core;
+using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.ConnectionStrings;
 using GR.DynamicEntityStorage.Abstractions;
@@ -12,7 +13,6 @@ using GR.Entities.EntityBuilder.MsSql.Controls.Query;
 using GR.Entities.EntityBuilder.Postgres.Controls.Query;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.Identity.Data;
 using GR.Identity.Permissions.Abstractions;
 using GR.Install.Abstractions;
 using GR.Install.Abstractions.Models;
@@ -44,7 +44,7 @@ namespace GR.Install
         /// <summary>
         /// Inject application context
         /// </summary>
-        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly IIdentityContext _applicationDbContext;
 
         /// <summary>
         /// Inject SignIn Manager
@@ -73,7 +73,7 @@ namespace GR.Install
 
         #endregion
 
-        public GearWebInstallerService(IEntityContext entitiesDbContext, IDynamicService dynamicService, IEntityRepository entityRepository, INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, ApplicationDbContext applicationDbContext, IHostingEnvironment hostingEnvironment)
+        public GearWebInstallerService(IEntityContext entitiesDbContext, IDynamicService dynamicService, IEntityRepository entityRepository, INotify<GearRole> notify, IPermissionService permissionService, SignInManager<GearUser> signInManager, IIdentityContext applicationDbContext, IHostingEnvironment hostingEnvironment)
         {
             _entitiesDbContext = entitiesDbContext;
             _dynamicService = dynamicService;
@@ -158,7 +158,8 @@ namespace GR.Install
             };
 
             //Set user settings
-            var superUser = await _applicationDbContext.Users.FirstOrDefaultAsync();
+            var superUser = await _signInManager.UserManager.Users.FirstOrDefaultAsync();
+
             if (superUser != null)
             {
                 superUser.UserName = model.SysAdminProfile.UserName;
@@ -170,8 +171,9 @@ namespace GR.Install
             }
             await _applicationDbContext.Tenants.AddAsync(tenant);
 
-            //Update super user information
-            await _applicationDbContext.SaveChangesAsync();
+            var contextRequest = await _applicationDbContext.PushAsync();
+
+            if (!contextRequest.IsSuccess) return contextRequest;
 
             //Seed entity
             await _entitiesDbContext.EntityTypes.AddAsync(new EntityType
@@ -185,7 +187,8 @@ namespace GR.Install
                 TenantId = tenant.Id
             });
 
-            await _entitiesDbContext.SaveChangesAsync();
+            var entitiesRequest = await _entitiesDbContext.PushAsync();
+            if (!entitiesRequest.IsSuccess) return contextRequest;
 
             //Create dynamic tables for configured tenant
             await _entityRepository.CreateDynamicTablesFromInitialConfigurationsFile(tenant.Id, GearSettings.DEFAULT_ENTITY_SCHEMA);
@@ -196,7 +199,7 @@ namespace GR.Install
             //Send welcome message to user
             await _notify.SendNotificationAsync(new List<Guid>
                 {
-                    Guid.Parse(superUser?.Id ?? string.Empty)
+                    superUser?.Id.ToGuid() ?? Guid.Empty
                 },
                 new Notification
                 {

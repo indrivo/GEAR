@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GR.Core;
+using GR.Core.Attributes.Documentation;
 using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
+using GR.Core.Helpers.Global;
 using GR.Entities.Data;
 using GR.Logger.Extensions;
 using GR.WebApplication.Models;
@@ -23,6 +25,7 @@ using Newtonsoft.Json;
 
 namespace GR.WebApplication
 {
+    [Author(Authors.LUPEI_NICOLAE, 1.1, "Gear app for run on web env")]
     public class GearWebApplication : GearApplication
     {
         /// <summary>

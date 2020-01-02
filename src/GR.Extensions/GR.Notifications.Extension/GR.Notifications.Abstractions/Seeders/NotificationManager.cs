@@ -27,7 +27,7 @@ namespace GR.Notifications.Abstractions.Seeders
                 foreach (var item in types.NotificationTypes)
                 {
                     var exist = await dataService.GetAll<NotificationTypes>(x => x["Name"].Equals(item.Name));
-                    if (exist.Result.Any()) continue;
+                    if (exist.Result?.Any() ?? false) continue;
                     item.Author = "admin";
                     item.ModifiedBy = "admin";
                     var response = await dataService.AddWithReflection(item);
@@ -41,7 +41,7 @@ namespace GR.Notifications.Abstractions.Seeders
 
         // ReSharper disable once ClassNeverInstantiated.Local
         private sealed class SeedEntity
-        {  
+        {
             // ReSharper disable once CollectionNeverUpdated.Local
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public List<NotificationTypes> NotificationTypes { get; set; }

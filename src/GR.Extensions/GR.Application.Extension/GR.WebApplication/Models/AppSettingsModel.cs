@@ -7,54 +7,17 @@ using GR.Localization.Abstractions.ViewModels.LocalizationViewModels;
 
 namespace GR.WebApplication.Models
 {
-    public class AppSettingsModel
+    public sealed class AppSettingsModel
     {
-
         public RootObject RootObjects { get; set; }
-
-        public class ConnectionStrings
-        {
-            public string Provider { get; set; }
-            public string ConnectionString { get; set; }
-        }
-
-        public class LogLevel
-        {
-            public string Default { get; set; }
-        }
-
-        public class Logging
-        {
-            public bool IncludeScopes { get; set; }
-            public LogLevel LogLevel { get; set; }
-        }
-
-        public class HealthCheck
-        {
-            public int Timeout { get; set; }
-            public string Path { get; set; }
-        }
-
-        public class Credentials
-        {
-            public string DomainUserName { get; set; }
-            public string Password { get; set; }
-        }
-
-        public sealed class LdapSettings
-        {
-            public string ServerName { get; set; }
-            public int ServerPort { get; set; }
-            public bool UseSSL { get; set; }
-            public Credentials Credentials { get; set; } = new Credentials();
-            public string SearchBase { get; set; }
-            public string ContainerName { get; set; }
-            public string DomainName { get; set; }
-            public string DomainDistinguishedName { get; set; }
-        }
 
         public sealed class RootObject
         {
+            /// <summary>
+            /// Is Configured
+            /// </summary>
+            public bool IsConfigured { get; set; } = false;
+
             /// <summary>
             /// System config data
             /// </summary>
@@ -76,11 +39,6 @@ namespace GR.WebApplication.Models
             /// Localization Config
             /// </summary>
             public LocalizationConfigModel LocalizationConfig { get; set; } = new LocalizationConfigModel();
-
-            /// <summary>
-            /// Is Configured
-            /// </summary>
-            public bool IsConfigured { get; set; } = false;
             /// <summary>
             /// LdapSettings
             /// </summary>
@@ -104,6 +62,47 @@ namespace GR.WebApplication.Models
             /// Redis connection configuration
             /// </summary>
             public RedisConnectionConfig RedisConnection { get; set; } = new RedisConnectionConfig();
+        }
+
+        public sealed class ConnectionStrings
+        {
+            public string Provider { get; set; }
+            public string ConnectionString { get; set; }
+        }
+
+        public sealed class LogLevel
+        {
+            public string Default { get; set; }
+        }
+
+        public sealed class Logging
+        {
+            public bool IncludeScopes { get; set; }
+            public LogLevel LogLevel { get; set; }
+        }
+
+        public sealed class HealthCheck
+        {
+            public int Timeout { get; set; }
+            public string Path { get; set; }
+        }
+
+        public sealed class Credentials
+        {
+            public string DomainUserName { get; set; }
+            public string Password { get; set; }
+        }
+
+        public sealed class LdapSettings
+        {
+            public string ServerName { get; set; }
+            public int ServerPort { get; set; }
+            public bool UseSSL { get; set; }
+            public Credentials Credentials { get; set; } = new Credentials();
+            public string SearchBase { get; set; }
+            public string ContainerName { get; set; }
+            public string DomainName { get; set; }
+            public string DomainDistinguishedName { get; set; }
         }
     }
 }

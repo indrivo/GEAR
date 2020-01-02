@@ -10,6 +10,8 @@ namespace GR.Identity.Abstractions
 {
     public interface IIdentityContext : IDbContext
     {
+        DbSet<GearRole> Roles { get; set; }
+        DbSet<GearUser> Users { get; set; }
         DbSet<Tenant> Tenants { get; set; }
         DbSet<AuthGroup> AuthGroups { get; set; }
         DbSet<UserGroup> UserGroups { get; set; }

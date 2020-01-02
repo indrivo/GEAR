@@ -81,6 +81,9 @@ namespace GR.Dashboard.Data
         /// <returns></returns>
         public Task InvokeSeedAsync(IServiceProvider services)
         {
+            var service = IoC.Resolve<IDashboardService>();
+            service?.SeedWidgetsAsync().Wait();
+
             return Task.CompletedTask;
         }
     }

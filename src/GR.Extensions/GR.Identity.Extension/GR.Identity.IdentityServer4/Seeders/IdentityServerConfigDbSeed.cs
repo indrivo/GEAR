@@ -91,7 +91,7 @@ namespace GR.Identity.IdentityServer4.Seeders
                 }
 
                 var baseDirectory = AppContext.BaseDirectory;
-                var entity = JsonParser.ReadObjectDataFromJsonFile<ApplicationDbContextSeed.SeedApplication>(Path.Combine(baseDirectory, "IdentityConfiguration.json"));
+                var entity = JsonParser.ReadObjectDataFromJsonFile<ApplicationDbContextSeed.SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
 
                 //Set core permissions for roles
                 var coreClientId = clients.FirstOrDefault(y => y.ClientId.Equals("core"))?.Id;

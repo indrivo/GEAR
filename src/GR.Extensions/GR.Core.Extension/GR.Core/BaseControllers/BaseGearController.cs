@@ -18,11 +18,6 @@ namespace GR.Core.BaseControllers
 
         #endregion
 
-        protected BaseGearController()
-        {
-
-        }
-
         /// <summary>
         /// Return json async
         /// </summary>

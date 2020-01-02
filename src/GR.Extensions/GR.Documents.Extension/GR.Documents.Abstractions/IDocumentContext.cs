@@ -1,9 +1,6 @@
 ﻿using GR.Core.Abstractions;
 using GR.Documents.Abstractions.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GR.Documents.Abstractions
 {

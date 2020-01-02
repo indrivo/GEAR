@@ -32,7 +32,7 @@ namespace GR.PageRender.Abstractions.Helpers
             "/PageRender",
             "/Localization",
             "/favicon",
-            "images",
+            "/images",
             "/rtn"
         };
 

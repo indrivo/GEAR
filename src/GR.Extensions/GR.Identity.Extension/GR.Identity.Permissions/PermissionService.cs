@@ -114,7 +114,7 @@ namespace GR.Identity.Permissions
         public async Task<IEnumerable<RolePermissionViewModel>> RolesPermissionsAsync()
         {
             var result = new List<RolePermissionViewModel>();
-            var roles = await _context.SetEntity<GearRole>().ToListAsync();
+            var roles = await _context.Roles.ToListAsync();
             foreach (var role in roles)
             {
                 var data = role.Adapt<RolePermissionViewModel>();

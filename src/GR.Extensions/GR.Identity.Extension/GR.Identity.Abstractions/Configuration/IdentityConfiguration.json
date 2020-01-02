@@ -13,6 +13,13 @@
       "Title": "This role is used for users that don't have a user account or that are not authenticated.Authenticated user: this role is automatically granted to all logged in users.",
       "ClientId": "1",
       "Author": "System"
+    },
+    {
+      "Name": "User",
+      "IsNoEditable": true,
+      "Title": "This role is used for users that are authentificated",
+      "ClientId": "1",
+      "Author": "System"
     }
   ],
   "Groups": [

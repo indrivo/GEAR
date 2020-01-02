@@ -13,7 +13,7 @@ namespace GR.Install.Abstractions.Extensions
         public static IServiceCollection AddInstallerModule<TInstallService>(this IServiceCollection services)
             where TInstallService : class, IGearWebInstallerService
         {
-            services.AddGearSingleton<IGearWebInstallerService, TInstallService>();
+            services.AddGearTransient<IGearWebInstallerService, TInstallService>();
             return services;
         }
     }

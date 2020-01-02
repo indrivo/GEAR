@@ -44,6 +44,7 @@ namespace GR.Core.Events
         public static void OnMigrationCompleteHandler(object sender, DatabaseMigrateEventArgs args)
         {
             //Trigger seed data
+            Console.WriteLine($"Context {args.ContextName}");
             SystemEvents.Database.Seed(new DatabaseSeedEventArgs
             {
                 DbContext = args.DbContext,
