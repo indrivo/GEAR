@@ -1,12 +1,12 @@
-﻿using System;
+﻿using GR.Core.Helpers;
+using GR.Identity.Abstractions;
+using GR.Identity.Permissions.Abstractions.Events.EventArgs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions;
-using GR.Identity.Permissions.Abstractions.Events.EventArgs;
 using Activator = System.Activator;
 
 namespace GR.Identity.Permissions.Abstractions.Configurators
@@ -37,7 +37,7 @@ namespace GR.Identity.Permissions.Abstractions.Configurators
         protected IIdentityContext IdentityContext => IoC.Resolve<IIdentityContext>();
 
         /// <summary>
-        /// Trigger 
+        /// Trigger
         /// </summary>
         public void PermissionsSeedComplete()
         {

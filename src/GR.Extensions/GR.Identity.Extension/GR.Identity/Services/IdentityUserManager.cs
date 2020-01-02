@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using GR.Core;
+﻿using GR.Core;
 using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
@@ -16,7 +8,15 @@ using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Extensions;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.UserViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Services
 {
@@ -118,7 +118,6 @@ namespace GR.Identity.Services
                 return val;
             }
         }
-
 
         /// <inheritdoc />
         /// <summary>

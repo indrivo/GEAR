@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GR.Identity.Abstractions;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GR.Identity.Abstractions;
 
 namespace GR.Identity.LdapAuth.Abstractions.Models
 {

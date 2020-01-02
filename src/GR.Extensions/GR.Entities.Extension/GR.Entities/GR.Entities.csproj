@@ -3,12 +3,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.0.1</Version>
+    <Version>1.6.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <AssemblyName>GR.Entities</AssemblyName>
     <RootNamespace>GR.Entities</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <Configurations>Debug;Release;Stage</Configurations>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Seed\**" />

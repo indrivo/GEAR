@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GR.Audit.Contexts;
 using GR.Core;
@@ -26,7 +27,7 @@ namespace GR.Forms.Data
         public FormDbContext(DbContextOptions<FormDbContext> options)
             : base(options)
         {
-            //TODO: Do some actions on context instance
+
         }
 
         /// <summary>
@@ -141,9 +142,10 @@ namespace GR.Forms.Data
         /// Seed data
         /// </summary>
         /// <returns></returns>
-        public async Task InvokeSeedAsync()
+        public Task InvokeSeedAsync(IServiceProvider services)
         {
-            await FormDbContextSeeder<FormDbContext>.SeedAsync(this, GearSettings.TenantId);
+            FormDbContextSeeder<FormDbContext>.SeedAsync(this, GearSettings.TenantId).Wait();
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using GR.Identity.Abstractions;
+﻿using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Models.Permmisions;
+using System.Collections.Generic;
 
 namespace GR.Identity.Permissions.Abstractions.Models
 {

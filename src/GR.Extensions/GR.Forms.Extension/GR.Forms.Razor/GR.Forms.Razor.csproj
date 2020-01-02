@@ -9,13 +9,15 @@
     <Description>Represent UI component for form management</Description>
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
-    <Version>1.0.1</Version>
+    <Version>1.6.0</Version>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Product>UI form management</Product>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="libman.json">
+    <Content Include="libman.json" Pack="false">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
@@ -35,6 +37,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.DynamicEntityStorage.Extension\GR.DynamicEntityStorage.Abstractions\GR.DynamicEntityStorage.Abstractions.csproj" />
     <ProjectReference Include="..\..\GR.MultiTenant.Extension\GR.MultiTenant\GR.MultiTenant.csproj" />
     <ProjectReference Include="..\..\GR.Notifications.Extension\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />

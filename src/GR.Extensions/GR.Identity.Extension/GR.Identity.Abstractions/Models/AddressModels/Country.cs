@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using GR.Audit.Abstractions.Attributes;
+﻿using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core.Abstractions;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.Models.AddressModels
 {
@@ -16,7 +16,6 @@ namespace GR.Identity.Abstractions.Models.AddressModels
 
         public Country()
         {
-
         }
 
         public Country(string id)

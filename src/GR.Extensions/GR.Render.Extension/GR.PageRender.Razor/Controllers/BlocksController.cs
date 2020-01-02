@@ -1,24 +1,24 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using GR.Core;
+using GR.Core.Attributes;
+using GR.Core.BaseControllers;
+using GR.Core.Helpers;
+using GR.DynamicEntityStorage.Abstractions.Extensions;
+using GR.Entities.Data;
+using GR.Identity.Abstractions;
+using GR.Identity.Abstractions.Models.MultiTenants;
+using GR.Identity.Data;
+using GR.Notifications.Abstractions;
+using GR.PageRender.Abstractions;
+using GR.PageRender.Abstractions.Models.Pages;
+using GR.PageRender.Razor.ViewModels.PageViewModels;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GR.DynamicEntityStorage.Abstractions.Extensions;
-using GR.Entities.Data;
-using GR.Identity.Data;
-using GR.Notifications.Abstractions;
-using GR.PageRender.Razor.ViewModels.PageViewModels;
-using GR.Core;
-using GR.Core.Attributes;
-using GR.Core.BaseControllers;
-using GR.Core.Helpers;
-using GR.Identity.Abstractions;
-using GR.Identity.Abstractions.Models.MultiTenants;
-using GR.PageRender.Abstractions;
-using GR.PageRender.Abstractions.Models.Pages;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace GR.PageRender.Razor.Controllers
 {
@@ -41,6 +41,7 @@ namespace GR.PageRender.Razor.Controllers
         {
             return View();
         }
+
         /// <summary>
         /// Create new block view
         /// </summary>

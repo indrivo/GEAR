@@ -1,9 +1,9 @@
-﻿using System;
+﻿using GR.Identity.LdapAuth.Abstractions;
+using GR.Identity.LdapAuth.Abstractions.Models;
+using Microsoft.AspNetCore.Identity;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using GR.Identity.LdapAuth.Abstractions;
-using GR.Identity.LdapAuth.Abstractions.Models;
 
 namespace GR.Identity.LdapAuth
 {
@@ -33,6 +33,7 @@ namespace GR.Identity.LdapAuth
         {
             return Task.Run(() => LdapService.Authenticate(user.DistinguishedName, password));
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Find user by id
@@ -43,6 +44,7 @@ namespace GR.Identity.LdapAuth
         {
             return FindByNameAsync(userId);
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Find user by name
@@ -53,6 +55,7 @@ namespace GR.Identity.LdapAuth
         {
             return Task.FromResult(LdapService.GetUserByUserName(userName));
         }
+
         /// <inheritdoc />
         /// <summary>
         /// Create user
@@ -73,6 +76,7 @@ namespace GR.Identity.LdapAuth
 
             return await Task.FromResult(IdentityResult.Success);
         }
+
         /// <summary>
         /// Delete user
         /// </summary>

@@ -4,15 +4,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
-    <Version>1.0.2</Version>
+    <Version>1.6.0</Version>
 
     <Authors>Lupei Nicolae</Authors>
     <Company>Indrivo</Company>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="libman.json">
+    <Content Include="libman.json" Pack="false">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>

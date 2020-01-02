@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions.Models;
 using GR.Identity.Abstractions.Models.Permmisions;
@@ -15,6 +5,16 @@ using GR.Identity.Data;
 using GR.Identity.Data.Permissions;
 using GR.Identity.IdentityServer4.Extensions;
 using GR.Identity.Seeders;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.IdentityServer4.Seeders
 {
@@ -91,7 +91,7 @@ namespace GR.Identity.IdentityServer4.Seeders
                 }
 
                 var baseDirectory = AppContext.BaseDirectory;
-                var entity = JsonParser.ReadObjectDataFromJsonFile<ApplicationDbContextSeed.SeedApplication>(Path.Combine(baseDirectory, "IdentityConfiguration.json"));
+                var entity = JsonParser.ReadObjectDataFromJsonFile<ApplicationDbContextSeed.SeedApplication>(Path.Combine(baseDirectory, "Configuration/IdentityConfiguration.json"));
 
                 //Set core permissions for roles
                 var coreClientId = clients.FirstOrDefault(y => y.ClientId.Equals("core"))?.Id;

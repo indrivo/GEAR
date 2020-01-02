@@ -1,7 +1,7 @@
 ﻿@model GR.Cache.Abstractions.RedisConnectionConfig
 
 @{
-    ViewData["Title"] = "Cache credentials";
+    ViewData["Title"] = "Distributed Cache credentials";
 }
 
 <div class="card card-outline-info">
@@ -14,14 +14,14 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="Host"></label>
-                        <input asp-for="Host" class="form-control"/>
+                        <input asp-for="Host" class="form-control" />
                         <span asp-validation-for="Host" class="text-danger"></span><br />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="Port"></label>
-                        <input asp-for="Port" class="form-control"/>
+                        <input asp-for="Port" class="form-control" />
                         <span asp-validation-for="Port" class="text-danger"></span><br />
                     </div>
                 </div>

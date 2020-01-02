@@ -2,22 +2,19 @@
     ViewData["Title"] = "Menu tree";
 }
 
-
 <div class="card">
     <div class="card-head">
         <h2>On progress ... [1/4] completion (Now only display way)</h2>
     </div>
     <div class="card-body">
         <div id="menuTree">
-
         </div>
     </div>
 </div>
 
-
 @section Styles
 {
-    <link rel="stylesheet" type="text/css" href="~/lib/jqtree/jqtree.css"/>
+    <link rel="stylesheet" type="text/css" href="~/lib/jqtree/jqtree.css" />
     <style>
         div.jqtree_common, #menuTree {
             border: 1px solid black;
@@ -74,6 +71,5 @@
                 console.log(err);
             });
         });
-
     </script>
 }

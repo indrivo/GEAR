@@ -80,55 +80,6 @@ namespace GR.DynamicEntityStorage
             _entityRepository = entityRepository;
         }
 
-        /// <summary>
-        /// Get entity info 
-        /// </summary>
-        /// <typeparam name="TEntity"></typeparam>
-        /// <exception cref="NullReferenceException"></exception>
-        /// <returns></returns>
-        // ReSharper disable once UnusedTupleComponentInReturnValue
-        protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema<TEntity>()
-        {
-            var typeName = typeof(TEntity).Name;
-            return GetEntityInfoSchema(typeName);
-        }
-
-        /// <summary>
-        /// Get entity info 
-        /// </summary>
-        /// <exception cref="NullReferenceException"></exception>
-        /// <returns></returns>
-        // ReSharper disable once UnusedTupleComponentInReturnValue
-        protected virtual (string, bool, ErrorModel, TableModel) GetEntityInfoSchema(string entity)
-        {
-            var table = _context.Table
-                .Include(x => x.TableFields)
-                .ThenInclude(x => x.TableFieldConfigValues)
-                .ThenInclude(x => x.TableFieldConfig)
-                .FirstOrDefault(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId
-                                     || x.Name.Equals(entity) && x.IsCommon
-                                     || x.IsPartOfDbContext && x.Name.Equals(entity));
-            if (table == null)
-                return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
-
-            return (table.EntityType, true, null, table);
-        }
-
-        /// <summary>
-        /// Get entity info 
-        /// </summary>
-        /// <exception cref="NullReferenceException"></exception>
-        /// <returns></returns>
-        // ReSharper disable once UnusedTupleComponentInReturnValue
-        protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync(string entity)
-        {
-            var table = await _context.Table.FirstOrDefaultAsync(x => x.Name.Equals(entity) && x.TenantId == _userManager.CurrentUserTenantId || x.Name.Equals(entity) && x.IsCommon);
-            if (table == null)
-                return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
-
-            return (table.EntityType, true, null, table);
-        }
-
         /// <inheritdoc />
         /// <summary>
         /// Get all with adapt to Model
@@ -143,11 +94,7 @@ namespace GR.DynamicEntityStorage
             if (!data.IsSuccess) return result;
             var model = GetObject<TEntity>(data.Result)?.ToList();
             if (model == null) return result;
-            foreach (var item in model)
-            {
-                item.TenantId = _userManager.CurrentUserTenantId;
-            }
-
+            foreach (var item in model) item.TenantId = _userManager.CurrentUserTenantId;
             model = (await IncludeReferencesOnList(model)).ToList();
             result.IsSuccess = true;
             var adapt = model.Adapt<IEnumerable<TOutput>>();
@@ -306,7 +253,7 @@ namespace GR.DynamicEntityStorage
             //    var translator = new QueryTranslator();
             //    var wherePredicate = translator.Translate(expression);
             //}
-            var (schema, state, errorModel, table) = GetEntityInfoSchema<TEntity>();
+            var (schema, state, errorModel, table) = await GetEntityInfoSchemaAsync<TEntity>();
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -337,7 +284,7 @@ namespace GR.DynamicEntityStorage
             var result = new ResultModel<IEnumerable<Dictionary<string, object>>>();
 
             if (string.IsNullOrEmpty(entity)) return result;
-            var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, table) = await GetEntityInfoSchemaAsync(entity);
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -368,12 +315,9 @@ namespace GR.DynamicEntityStorage
         {
             var listWithoutInclude = await GetAll(entity, expression, filters);
             if (!listWithoutInclude.IsSuccess) return listWithoutInclude;
-            var table = _context.Table
-                .Include(x => x.TableFields)
-                .ThenInclude(x => x.TableFieldConfigValues)
-                .ThenInclude(x => x.TableFieldConfig)
-                .FirstOrDefault(x => x.Name == entity);
-            if (table == null) return listWithoutInclude;
+            var tableRequest = await _entityRepository.FindTableByNameAsync(entity);
+            if (!tableRequest.IsSuccess) return listWithoutInclude;
+            var table = tableRequest.Result;
             var fieldReferences = table.TableFields
                 .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return listWithoutInclude;
@@ -462,7 +406,7 @@ namespace GR.DynamicEntityStorage
         {
             var result = new ResultModel<Dictionary<string, object>>();
             if (string.IsNullOrEmpty(entity)) return result;
-            var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, table) = await GetEntityInfoSchemaAsync(entity);
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -490,12 +434,9 @@ namespace GR.DynamicEntityStorage
         {
             var obj = await GetById(entity, id);
             if (!obj.IsSuccess) return obj;
-            var table = _context.Table
-                .Include(x => x.TableFields)
-                .ThenInclude(x => x.TableFieldConfigValues)
-                .ThenInclude(x => x.TableFieldConfig)
-                .FirstOrDefault(x => x.Name == entity);
-            if (table == null) return obj;
+            var tableRequest = await _entityRepository.FindTableByNameAsync(entity);
+            if (!tableRequest.IsSuccess) return obj;
+            var table = tableRequest.Result;
             var fieldReferences = table.TableFields
                 .Where(x => x.TableFieldConfigValues.Any(y => y.TableFieldConfig.Code == TableFieldConfigCode.Reference.ForeingTable)).ToList();
             if (!fieldReferences.Any()) return obj;
@@ -583,8 +524,6 @@ namespace GR.DynamicEntityStorage
 
             result.Result = table.Adapt<TTable>();
             result.IsSuccess = true;
-
-            //result.IsSuccess = true;
             return result;
         }
         /// <inheritdoc />
@@ -618,7 +557,7 @@ namespace GR.DynamicEntityStorage
             };
             var entity = typeof(TEntity).Name;
             if (string.IsNullOrEmpty(entity)) return result;
-            var (schema, state, errorModel, table) = GetEntityInfoSchema<TEntity>();
+            var (schema, state, errorModel, table) = await GetEntityInfoSchemaAsync<TEntity>();
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -666,7 +605,7 @@ namespace GR.DynamicEntityStorage
         {
             var response = new ResultModel<PaginationResponseViewModel>();
             if (entity.IsNullOrEmpty()) return response;
-            var (schema, state, errorModel, table) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, table) = await GetEntityInfoSchemaAsync(entity);
             if (!state)
             {
                 response.Errors.Add(errorModel);
@@ -717,7 +656,7 @@ namespace GR.DynamicEntityStorage
 
             var entity = typeof(TEntity);
             if (string.IsNullOrEmpty(entity.Name)) return result;
-            var (schema, state, errorModel, dto) = GetEntityInfoSchema(entity.Name);
+            var (schema, state, errorModel, dto) = await GetEntityInfoSchemaAsync(entity.Name);
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -833,7 +772,7 @@ namespace GR.DynamicEntityStorage
         public virtual async Task<ResultModel<Guid>> Update(string entity, Dictionary<string, object> model)
         {
             var result = new ResultModel<Guid>();
-            var (schema, state, errorModel, dto) = GetEntityInfoSchema(entity);
+            var (schema, state, errorModel, dto) = await GetEntityInfoSchemaAsync(entity);
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -888,7 +827,7 @@ namespace GR.DynamicEntityStorage
         public virtual async Task<ResultModel<Guid>> DeletePermanent<TEntity>(Guid id) where TEntity : BaseModel
         {
             var result = new ResultModel<Guid>();
-            var (schema, state, errorModel, dto) = GetEntityInfoSchema<TEntity>();
+            var (schema, state, errorModel, dto) = await GetEntityInfoSchemaAsync<TEntity>();
             if (!state)
             {
                 result.Errors.Add(errorModel);
@@ -1028,7 +967,7 @@ namespace GR.DynamicEntityStorage
                 Fields = new List<EntityFieldsViewModel>()
             };
 
-            model = ViewModelBuilderFactory.Resolve(_context, model);
+            model = await ViewModelBuilderFactory.ResolveAsync(_context, model);
             return (TViewModel)model;
         }
 
@@ -1221,5 +1160,38 @@ namespace GR.DynamicEntityStorage
         /// <returns></returns>
         public virtual async Task<(List<object>, int)> Filter(string entity, string search, string sortOrder, int start, int length, Expression<Func<object, bool>> predicate = null, IEnumerable<Filter> filters = null)
             => await Table(entity).Filter(entity, search, sortOrder, start, length, predicate, filters);
+
+
+        #region Helpers
+
+        /// <summary>
+        /// Get entity info 
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <returns></returns>
+        // ReSharper disable once UnusedTupleComponentInReturnValue
+        protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync<TEntity>()
+        {
+            var typeName = typeof(TEntity).Name;
+            return await GetEntityInfoSchemaAsync(typeName);
+        }
+
+        /// <summary>
+        /// Get entity info 
+        /// </summary>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <returns></returns>
+        // ReSharper disable once UnusedTupleComponentInReturnValue
+        protected virtual async Task<(string, bool, ErrorModel, TableModel)> GetEntityInfoSchemaAsync(string entity)
+        {
+            var tableRequest = await _entityRepository.FindTableByNameAsync(entity);
+            if (!tableRequest.IsSuccess)
+                return (null, false, new ErrorModel("entity_not_found", "Entity not found!"), null);
+
+            return (tableRequest.Result.EntityType, true, null, tableRequest.Result);
+        }
+
+        #endregion
     }
 }

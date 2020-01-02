@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GR.Core.Attributes.Documentation;
+﻿using GR.Core.Attributes.Documentation;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Core.Helpers.Global;
@@ -11,6 +8,9 @@ using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.LocationViewModels;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Services
 {
@@ -24,13 +24,12 @@ namespace GR.Identity.Services
         /// </summary>
         private readonly IIdentityContext _context;
 
-        #endregion
+        #endregion Injectable
 
         public LocationService(IIdentityContext context)
         {
             _context = context;
         }
-
 
         /// <summary>
         /// Add new country
@@ -162,7 +161,7 @@ namespace GR.Identity.Services
         }
 
         /// <summary>
-        /// Update city 
+        /// Update city
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

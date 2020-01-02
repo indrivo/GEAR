@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GR.Core.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GR.Install.Abstractions.Extensions
 {
@@ -9,8 +10,10 @@ namespace GR.Install.Abstractions.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInstallerModule(this IServiceCollection services)
+        public static IServiceCollection AddInstallerModule<TInstallService>(this IServiceCollection services)
+            where TInstallService : class, IGearWebInstallerService
         {
+            services.AddGearTransient<IGearWebInstallerService, TInstallService>();
             return services;
         }
     }

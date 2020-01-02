@@ -1,10 +1,10 @@
-using System.IO;
-using System.Threading.Tasks;
+using GR.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using GR.Application.Middleware.Services;
-using GR.Core;
+using System.IO;
+using System.Threading.Tasks;
+using GR.WebApplication.Services;
 
 namespace GR.Cms.Controllers
 {
@@ -20,6 +20,7 @@ namespace GR.Cms.Controllers
 			var (stream, contentType, name) = await ExportManager.ExportAsync();
 			return File(stream, contentType, name);
 		}
+
 		/// <summary>
 		/// Import config zip file
 		/// </summary>

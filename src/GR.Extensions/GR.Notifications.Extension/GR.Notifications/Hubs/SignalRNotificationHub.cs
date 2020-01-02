@@ -1,22 +1,13 @@
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions.Models.Config;
 
 namespace GR.Notifications.Hubs
 {
     public class SignalRNotificationHub : Hub
     {
-        private readonly UserManager<GearUser> _userManager;
-
-        public SignalRNotificationHub(UserManager<GearUser> userManager)
-        {
-            _userManager = userManager;
-        }
-
         internal static class UserConnections
         {
             /// <summary>

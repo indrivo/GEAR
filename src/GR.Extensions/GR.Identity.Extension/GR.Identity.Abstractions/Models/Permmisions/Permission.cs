@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using GR.Core;
+﻿using GR.Core;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.Models.Permmisions
 {
@@ -10,15 +10,18 @@ namespace GR.Identity.Abstractions.Models.Permmisions
         /// </summary>
         [MaxLength(100)]
         public string PermissionName { get; set; }
+
         /// <summary>
         /// Store client id
         /// </summary>
         public int ClientId { get; set; }
+
         /// <summary>
         /// Set a description for permissions
         /// </summary>
         [MaxLength(300)]
         public string Description { get; set; }
+
         /// <summary>
         /// Unique permission name used by system
         /// </summary>

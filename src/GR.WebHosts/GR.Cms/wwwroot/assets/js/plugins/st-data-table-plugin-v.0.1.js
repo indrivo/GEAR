@@ -7,7 +7,6 @@
  * Author: Lupei Nicolae
  */
 
-
 // Make sure jQuery has been loaded
 if (typeof jQuery === "undefined") {
     throw new Error("Data Table plugin require JQuery");
@@ -21,7 +20,6 @@ window.DisableAutoGenerateTableBuilder = false;
 //------------------------------------------------------------------------------------//
 
 function RenderTableSelect() {
-
 }
 
 RenderTableSelect.prototype.constructor = RenderTableSelect;
@@ -70,7 +68,7 @@ TableExport.prototype.oldExportAction = function (self, e, dt, button, config) {
 };
 
 /**
- * Override default export 
+ * Override default export
  * @param {any} e
  * @param {any} dt
  * @param {any} button
@@ -267,7 +265,7 @@ class TableBuilder {
                     });
                 });
 
-            //Show action columns 
+            //Show action columns
             if (this.showActionsColumn) {
                 const actionCol = document.createElement("th");
                 actionCol.innerHTML = window.translate("list_actions");
@@ -406,7 +404,6 @@ class TableBuilder {
 
                         //    $(item.container).on('selectValueChange',
                         //        (event, arg) => {
-
                         //        });
                         //});
                     }
@@ -430,7 +427,6 @@ class TableBuilder {
 
                             // bind to date change
                             $(picker).on('rangeChangeDate', (event) => {
-
                             });
 
                             // bind to closing datepicker
@@ -782,7 +778,6 @@ TableBuilder.prototype.deleteSelectedRowsPermanentHandler = function (ctx) {
         cancelButtonText: window.translate("cancel")
     }).then((result) => {
         if (result.value) {
-
             const viewModelId = $(`#${tableId}`).attr("db-viewmodel");
             if (selected.length > 0) {
                 const toDeleteItems = Array.from(selected.map(x => {
@@ -831,7 +826,6 @@ TableBuilder.prototype.deleteRestoreApiAsync = function (ctx, data, viewModelId,
             });
     });
 };
-
 
 /**
  * Delete items from api
@@ -974,7 +968,6 @@ TableBuilder.prototype.dtConfs = {};
 TableBuilder.prototype.onInitComplete = function (settings, json) {
     //do something after table complete
 }
-
 
 TableBuilder.prototype.appendColumnsBeforeActions = function () {
     return "";

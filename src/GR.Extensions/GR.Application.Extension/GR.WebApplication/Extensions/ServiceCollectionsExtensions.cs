@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GR.Application.Middleware.Extensions;
-using GR.Application.Middleware.Server;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor.MsDependencyInjection;
 using GR.Cache.Abstractions.Exceptions;
 using GR.Cache.Abstractions.Extensions;
 using GR.Cache.Services;
 using GR.Core;
 using GR.Core.Extensions;
+using GR.Core.Helpers;
 using GR.Core.Helpers.ModelBinders.ModelBinderProviders;
-using GR.Identity.Abstractions;
-using GR.Identity.Data;
+using GR.Core.Razor.Extensions;
 using GR.Localization.Abstractions.Extensions;
 using GR.Localization.Abstractions.Models;
 using GR.Notifications.Extensions;
+using GR.PageRender.Abstractions.Extensions;
 using GR.WebApplication.Helpers;
 using GR.WebApplication.Helpers.AppConfigurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -43,6 +47,24 @@ namespace GR.WebApplication.Extensions
                 GearServices = services
             };
             configAction(configuration);
+
+            services.Configure<FormOptions>(x => x.ValueCountLimit =
+                configuration.ServerConfiguration.UploadMaximSize);
+
+            //Global settings
+            services.AddMvc(options =>
+                {
+                    options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(x => { x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat; });
+
+            services.AddGearSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddGearSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddUrlHelper();
+
+            //Register core razor
+            services.RegisterCoreRazorModule();
 
             //Use compression
             if (configuration.AddResponseCompression && configuration.HostingEnvironment.IsProduction()) services.AddResponseCompression();
@@ -70,23 +92,12 @@ namespace GR.WebApplication.Extensions
             if (configuration.CacheConfiguration.UseDistributedCache)
             {
                 services.AddDistributedMemoryCache()
-                .AddCacheModule<RedisDistributedCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
+                .AddCacheModule<DistributedCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
             }
             else if (configuration.CacheConfiguration.UseInMemoryCache)
             {
                 services.AddCacheModule<InMemoryCacheService, RedisConnection>(configuration.HostingEnvironment, configuration.Configuration);
             }
-
-            //Global settings
-            services.AddMvc(options =>
-                {
-                    options.ModelBinderProviders.Insert(0, new GearDictionaryModelBinderProvider());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(x =>
-                {
-                    x.SerializerSettings.DateFormatString = GearSettings.Date.DateFormat;
-                });
 
             //---------------------------------Api version Module-------------------------------------
             services.AddApiVersioning(options =>
@@ -99,14 +110,18 @@ namespace GR.WebApplication.Extensions
 
             //--------------------------------------SignalR Module-------------------------------------
             if (configuration.SignlarConfiguration.UseDefaultConfiguration)
-                services.AddSignalRModule<ApplicationDbContext, GearUser, GearRole>();
+                services.AddSignalRModule();
 
 
             //--------------------------------------Swagger Module-------------------------------------
             if (configuration.SwaggerServicesConfiguration.UseDefaultConfiguration)
-                services.AddSwaggerModule(configuration.Configuration, configuration.HostingEnvironment);
+                services.AddSwaggerModule(configuration.Configuration);
 
-            return services.AddWindsorContainers();
+            //Register memory cache
+            var cacheService = configuration.BuildGearServices.GetService<IMemoryCache>();
+            IoC.Container.Register(Component.For<IMemoryCache>().Instance(cacheService));
+
+            return WindsorRegistrationHelper.CreateServiceProvider(IoC.Container, services);
         }
 
         /// <summary>
@@ -124,11 +139,12 @@ namespace GR.WebApplication.Extensions
                 .GetRequiredService<IServiceScopeFactory>()
                 .CreateScope())
             {
-                var environment = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
+                var sp = serviceScope.ServiceProvider;
+                var environment = sp.GetService<IHostingEnvironment>();
                 GearWebApplication.IsConfigured(environment);
 
                 var lifeTimeService = serviceScope.ServiceProvider.GetService<IApplicationLifetime>();
-                lifeTimeService.RegisterAppEvents(app, "GEAR_APP");
+                lifeTimeService.RegisterAppEvents(app, configuration.AppName);
 
                 //----------------------------------Localization Usage-------------------------------------
 
@@ -159,7 +175,10 @@ namespace GR.WebApplication.Extensions
             if (configuration.UseCustomUrlRewrite) app.UseUrlRewriteModule();
 
             //----------------------------------Origin Cors Usage-------------------------------------
-            if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors(configuration.Configuration);
+            if (configuration.UseDefaultCorsConfiguration) app.UseConfiguredCors();
+
+            app.UseAuthentication()
+                .UseIdentityServer();
 
             //custom rules
             app.UseAppMvc(configuration.Configuration, configuration.CustomMapRules);
@@ -237,7 +256,7 @@ namespace GR.WebApplication.Extensions
                     name: "default",
                     template: singleTenantTemplate,
                     defaults: singleTenantTemplate
-                    //constraints: new { tenant = new TenantRouteConstraint() }
+                //constraints: new { tenant = new TenantRouteConstraint() }
                 );
             });
             return app;

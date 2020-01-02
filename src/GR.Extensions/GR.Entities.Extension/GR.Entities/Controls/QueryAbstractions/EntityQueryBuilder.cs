@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using GR.Entities.Abstractions.Query;
+﻿using GR.Entities.Abstractions.Query;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
+using System;
+using System.Collections.Generic;
 
 namespace GR.Entities.Controls.QueryAbstractions
 {
     public abstract class EntityQueryBuilder : IEntityQueryBuilder
     {
         public abstract string DeleteByIdQuery(EntityViewModel viewModel, bool completeDelete = false);
+
         public abstract string DeleteByIdQuery(EntityViewModel viewModel, Guid parameterId, bool completeDelete = false);
+
         public abstract string DeleteByParamQuery(string tableName, string parameterName, string parameter,
             bool completeDelete = false);
 
@@ -27,12 +29,19 @@ namespace GR.Entities.Controls.QueryAbstractions
             Dictionary<string, object> parameters);
 
         public abstract string GetByColumnParameterQuery(EntityViewModel viewModel);
+
         public abstract string GetByIdQuery(EntityViewModel viewModel);
+
         public abstract string GetCountByParameter(EntityViewModel viewModel, string parameterName, string parameter);
+
         public abstract string GetCountByParameters(EntityViewModel viewModel);
+
         public abstract string GetCountByParameter(EntityViewModel viewModel, Dictionary<string, object> parameters);
+
         public abstract string InsertQuery(EntityViewModel viewModel);
+
         public abstract string UpdateQuery(EntityViewModel viewModel, Guid parameterId);
+
         public abstract string UpdateQuery(EntityViewModel viewModel);
 
         public abstract string GetByIncludeParam(EntityViewModel parentTable, EntityViewModel childTable,
@@ -40,7 +49,6 @@ namespace GR.Entities.Controls.QueryAbstractions
 
         protected abstract string GetWhereString(EntityViewModel viewModel, string nullName = "null",
             string isNullName = "isnull");
-
 
         /// <summary>
         /// Get pagination query with filters

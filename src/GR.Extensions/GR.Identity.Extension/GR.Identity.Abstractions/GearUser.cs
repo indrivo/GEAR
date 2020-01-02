@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using GR.Audit.Abstractions.Attributes;
 using GR.Audit.Abstractions.Enums;
 using GR.Core.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Models.AddressModels;
 using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GR.Identity.Abstractions
 {
@@ -140,7 +140,6 @@ namespace GR.Identity.Abstractions
         /// User addresses
         /// </summary>
         public ICollection<Address> Addresses { get; set; }
-
 
         [NotMapped]
         [Display(Name = "Password")]

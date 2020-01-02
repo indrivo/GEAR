@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace GR.Identity.Permissions.Abstractions.Attributes
 {

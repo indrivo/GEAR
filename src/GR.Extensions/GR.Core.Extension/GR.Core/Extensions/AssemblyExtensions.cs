@@ -7,10 +7,10 @@ namespace GR.Core.Extensions
         /// <summary>
         /// Get type 
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="_"></param>
         /// <param name="className"></param>
         /// <returns></returns>
-        public static Type GetTypeFromAssembliesByClassName(this object context, string className)
+        public static Type GetTypeFromAssembliesByClassName(this object _, string className)
         {
             Type type = null;
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())

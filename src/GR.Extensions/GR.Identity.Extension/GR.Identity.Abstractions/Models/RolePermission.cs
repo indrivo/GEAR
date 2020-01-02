@@ -1,14 +1,14 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using GR.Core;
 using GR.Identity.Abstractions.Models.Permmisions;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Abstractions.Models
 {
     /// <inheritdoc />
     /// <summary>
     /// Role -&gt; Permission junction model. Represents
-    /// a many-to-many relationship between these two 
+    /// a many-to-many relationship between these two
     /// models
     /// </summary>
     public class RolePermission : BaseModel
@@ -27,8 +27,8 @@ namespace GR.Identity.Abstractions.Models
         public Permission Permission { get; set; }
 
         /// <summary>
-        /// Represents a permission object represented as 
-        /// a formatted string with the following format: 
+        /// Represents a permission object represented as
+        /// a formatted string with the following format:
         /// {Service:Module:Action}
         /// e.g.
         /// "Identity:Users:Create"

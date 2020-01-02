@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using GR.Core.Helpers;
+﻿using GR.Core.Helpers;
 using GR.Identity.Abstractions.Models.AddressModels;
 using GR.Identity.Abstractions.ViewModels.LocationViewModels;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GR.Identity.Abstractions
 {
@@ -63,14 +63,12 @@ namespace GR.Identity.Abstractions
         /// <returns></returns>
         Task<ResultModel> RemoveCityAsync(long cityId);
 
-
         /// <summary>
         /// Get city by id
         /// </summary>
         /// <param name="cityId"></param>
         /// <returns></returns>
         Task<ResultModel<StateOrProvince>> GetCityByIdAsync(long cityId);
-
 
         /// <summary>
         /// Update city

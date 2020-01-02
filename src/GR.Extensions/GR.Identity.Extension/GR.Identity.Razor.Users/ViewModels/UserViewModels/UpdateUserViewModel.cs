@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using GR.Core;
 using GR.Entities.Abstractions.ViewModels.DynamicEntities;
 using GR.Identity.Abstractions;
 using GR.Identity.Abstractions.Enums;
 using GR.Identity.Abstractions.Models.MultiTenants;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GR.Identity.Razor.Users.ViewModels.UserViewModels
 {

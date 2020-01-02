@@ -5,18 +5,33 @@ using GR.Audit.Abstractions.Extensions;
 using GR.Core;
 using GR.Core.Events;
 using GR.Core.Events.EventArgs;
-using GR.Core.Events.EventArgs.Database;
 using GR.Core.Extensions;
 using GR.Core.Helpers;
 using GR.Identity.Abstractions;
 using GR.Notifications.Abstractions.Models.Notifications;
 using GR.Notifications.Abstractions.ServiceBuilder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace GR.Notifications.Abstractions.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Add notification module
+        /// </summary>
+        /// <typeparam name="TNotifyService"></typeparam>
+        /// <typeparam name="TRole"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddNotificationModule<TNotifyService, TRole>(this IServiceCollection services)
+            where TNotifyService : class, INotify<TRole>
+            where TRole : IdentityRole<string>
+        {
+            services.AddGearTransient<INotify<TRole>, TNotifyService>();
+            return services;
+        }
+
         /// <summary>
         /// Add notification subscriptions module
         /// </summary>
@@ -25,9 +40,7 @@ namespace GR.Notifications.Abstractions.Extensions
         public static INotificationSubscriptionServiceCollection AddNotificationSubscriptionModule<TRepository>(this IServiceCollection services)
             where TRepository : class, INotificationSubscriptionRepository
         {
-            Arg.NotNull(services, nameof(AddNotificationSubscriptionModule));
-            IoC.RegisterScopedService<INotificationSubscriptionRepository, TRepository>();
-            services.AddTransient<INotificationSubscriptionRepository, TRepository>();
+            services.AddGearScoped<INotificationSubscriptionRepository, TRepository>();
             return new NotificationSubscriptionServiceCollection(services);
         }
 
@@ -44,7 +57,7 @@ namespace GR.Notifications.Abstractions.Extensions
             Arg.NotNull(services, nameof(AddNotificationSubscriptionModuleStorage));
             services.Services.AddDbContext<TContext>(options);
             services.Services.AddScopedContextFactory<INotificationDbContext, TContext>();
-            services.Services.RegisterAuditFor<INotificationDbContext>("Notification module");
+            services.Services.RegisterAuditFor<INotificationDbContext>($"{nameof(Notification)} module");
             SystemEvents.Database.OnMigrate += (sender, args) =>
             {
                 GearApplication.GetHost<IWebHost>().MigrateDbContext<TContext>();
@@ -93,8 +106,9 @@ namespace GR.Notifications.Abstractions.Extensions
                 }
             };
 
-            SystemEvents.Database.OnSeed += async delegate
+            SystemEvents.Database.OnSeed += async (obj, args) =>
             {
+                if (!(args.DbContext is INotificationDbContext)) return;
                 try
                 {
                     var service = IoC.Resolve<INotificationSubscriptionRepository>();

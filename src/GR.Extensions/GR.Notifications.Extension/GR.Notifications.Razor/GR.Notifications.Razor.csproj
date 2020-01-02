@@ -7,7 +7,9 @@
     <Authors>Lupei Nicolae</Authors>
     <PackageIconUrl>https://i.ibb.co/KFYfF4D/indrivo-logo.jpg</PackageIconUrl>
     <Company>Indrivo</Company>
-    <Version>1.0.3</Version>
+    <Version>1.6.0</Version>
+    <FileVersion>1.6.0</FileVersion>
+    <AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="libman.json">
+    <Content Include="libman.json" Pack="false">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
@@ -28,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\GR.Core.Extension\GR.Core.Razor\GR.Core.Razor.csproj" />
     <ProjectReference Include="..\..\GR.Identity.Extension\GR.Identity.Abstractions\GR.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\GR.Notifications.Abstractions\GR.Notifications.Abstractions.csproj" />
   </ItemGroup>
@@ -40,6 +43,7 @@
     </Content>
   </ItemGroup>
 
+
   <ItemGroup>
     <Content Update="Views\_ViewImports.cshtml">
       <Pack>false</Pack>
@@ -47,9 +51,5 @@
     <Content Update="Views\_ViewStart.cshtml">
       <Pack>false</Pack>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\NotificationType\" />
   </ItemGroup>
 </Project>

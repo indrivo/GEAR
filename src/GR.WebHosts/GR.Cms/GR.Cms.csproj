@@ -7,13 +7,16 @@
 	<TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
 	<IsPackable>false</IsPackable>
 	<LangVersion>7.3</LangVersion>
-	<Version>1.0.2</Version>
+	<Version>1.6.0</Version>
 	<Authors>Lupei Nicolae</Authors>
 	<Company>Indrivo</Company>
 	<Product>Gear</Product>
 	<Description>BPMN</Description>
 	<Copyright>Indrivo 2019</Copyright>
+	<FileVersion>1.6.0</FileVersion>
+	<AssemblyVersion>1.6.0</AssemblyVersion>
   </PropertyGroup>
+
    <ItemGroup>
 	<PackageReference Include="AspNet.Security.OAuth.LinkedIn" Version="2.1.0" />
 	<PackageReference Include="Microsoft.AspNetCore.All" />
@@ -28,19 +31,7 @@
 	<DotNetCliToolReference Include="Microsoft.DotNet.Xdt.Tools" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
-	<Content Include="Certificates\testmpass.cer">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
 	<EmbeddedResource Include="Configuration\CustomEntities.json">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\category.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\notifications.html">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Static\Templates\renderMenu.html">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</EmbeddedResource>
   </ItemGroup>
@@ -91,7 +82,9 @@
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install.Razor\GR.Install.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Install.Extension\GR.Install\GR.Install.csproj" />	
 	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization.Razor\GR.Localization.Razor.csproj" />	
-	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.csproj" />
+	<ProjectReference Include="..\..\GR.Extensions\GR.Localization.Extension\GR.Localization\GR.Localization.csproj" />	
+	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Abstractions\GR.Logger.Abstractions.csproj" />	
+	<ProjectReference Include="..\..\GR.Extensions\GR.Logger.Extension\GR.Logger.Razor\GR.Logger.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.MultiTenant.Extension\GR.MultiTenant.Razor\GR.MultiTenant.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications.Razor\GR.Notifications.Razor.csproj" />
 	<ProjectReference Include="..\..\GR.Extensions\GR.Notifications.Extension\GR.Notifications\GR.Notifications.csproj" />
@@ -112,14 +105,6 @@
 	<Content Update="nlog.config">
 	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</Content>
-	<Content Update="Views\Notifications\Index.cshtml">
-	  <Pack>false</Pack>
-	</Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Certificates\samplempass.pfx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Target Name="ApplyXdtTransform" BeforeTargets="_TransformWebConfig">
 	<PropertyGroup>

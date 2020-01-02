@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using GR.PageRender.Abstractions.Models.ViewModels;
+﻿using GR.PageRender.Abstractions.Models.ViewModels;
+using System.Collections.Generic;
 
 namespace GR.PageRender.Razor.ViewModels.TableColumnsViewModels
 {

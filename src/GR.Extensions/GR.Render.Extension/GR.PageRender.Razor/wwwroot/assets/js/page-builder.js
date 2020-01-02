@@ -9,7 +9,6 @@ cmdm.add("save", function () {
     console.log(script);
     html += script.innerText;
 
-
     console.log(script.innerText);
 
     const url = new URL(location.href);
@@ -49,7 +48,6 @@ cmdm.add("save", function () {
     });
 });
 
-
 pn.addButton('options', {
     id: 'save',
     className: 'fa fa-save',
@@ -59,8 +57,6 @@ pn.addButton('options', {
         'data-tooltip-pos': 'bottom'
     }
 });
-
-
 
 // Add info command
 var mdlClass = 'gjs-mdl-dialog-sm';
