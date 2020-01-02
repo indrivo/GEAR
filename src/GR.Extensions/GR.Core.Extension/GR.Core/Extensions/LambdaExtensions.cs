@@ -12,8 +12,9 @@ namespace GR.Core.Extensions
         /// <typeparam name="TResult"></typeparam>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static Expression<Func<TObject, TResult>> ToExpression<TObject, TResult>(this Func<TObject, TResult> func)
-            => Expression.Lambda<Func<TObject, TResult>>(Expression.Call(func.Method));
+        public static Expression<Func<TObject, TResult>> ToExpression<TObject, TResult>(
+            this Func<TObject, TResult> func)
+            => x => func(x);
 
         /// <summary>
         /// Func to object
