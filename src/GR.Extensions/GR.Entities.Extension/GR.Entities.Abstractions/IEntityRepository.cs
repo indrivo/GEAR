@@ -76,7 +76,8 @@ namespace GR.Entities.Abstractions
         /// Find table by id
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        Task<ResultModel<TableModel>> FindTableByNameAsync(string name);
+        Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null);
     }
 }

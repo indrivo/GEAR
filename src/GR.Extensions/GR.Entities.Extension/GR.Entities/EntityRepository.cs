@@ -439,16 +439,20 @@ namespace GR.Entities
         /// Find table by name
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        public virtual async Task<ResultModel<TableModel>> FindTableByNameAsync(string name)
+        public virtual async Task<ResultModel<TableModel>> FindTableByNameAsync(string name, Func<TableModel, bool> filter = null)
         {
             var key = $"entity_{name}";
 
+            if (filter == null)
+                filter = x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
+                     || x.Name.Equals(name) && x.IsCommon
+                     || x.IsPartOfDbContext && x.Name.Equals(name);
+
             var tables = _memoryCache.Get<IEnumerable<TableModel>>(key)?.ToList() ?? new List<TableModel>();
 
-            var table = tables.FirstOrDefault(x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
-                                                   || x.Name.Equals(name) && x.IsCommon
-                                                   || x.IsPartOfDbContext && x.Name.Equals(name));
+            var table = tables.FirstOrDefault(filter.GetValueOrDefault());
 
             if (table != null) return new SuccessResultModel<TableModel>(table);
 
@@ -457,15 +461,12 @@ namespace GR.Entities
                 .ThenInclude(x => x.TableFieldConfigValues)
                 .ThenInclude(x => x.TableFieldConfig)
                 .ThenInclude(x => x.TableFieldType)
-                .FirstOrDefaultAsync(x => x.Name.Equals(name) && x.TenantId == _userManager.CurrentUserTenantId
-                                     || x.Name.Equals(name) && x.IsCommon
-                                     || x.IsPartOfDbContext && x.Name.Equals(name));
+                .FirstOrDefaultAsync(filter.GetValueOrDefault().ToExpression());
 
             if (dbTable == null) return new NotFoundResultModel<TableModel>();
 
             tables.Add(dbTable);
             _memoryCache.Set(key, tables);
-
             return new SuccessResultModel<TableModel>(dbTable);
         }
 

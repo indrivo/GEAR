@@ -7,6 +7,7 @@ using Mapster;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GR.Core;
 using GR.Entities.Abstractions;
 
 namespace GR.Entities.Controls.Builders
@@ -25,7 +26,10 @@ namespace GR.Entities.Controls.Builders
 
             var model = new List<EntityFieldsViewModel>();
             if (entityName.IsNullOrEmpty()) return model;
-            var entityRequest = await service.FindTableByNameAsync(entityName);
+            var entityRequest = await service.FindTableByNameAsync(entityName, d => d.Name == entityName.Trim()
+                                                                                    && d.EntityType.Equals(GearSettings.DEFAULT_ENTITY_SCHEMA)
+                                                                                    || d.Name == entityName.Trim() && d.IsPartOfDbContext
+            );
 
             if (!entityRequest.IsSuccess) return model;
             var entity = entityRequest.Result;
